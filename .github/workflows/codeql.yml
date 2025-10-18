@@ -22,8 +22,8 @@ jobs:
         language: [ 'java-kotlin', 'javascript-typescript' ]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
-      - uses: github/codeql-action/init@7a63fc29565e929abdb0fc4f6955b7d6c2397477 #v3
+      - uses: github/codeql-action/init@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3
         with:
           languages: ${{ matrix.language }}
-      - uses: github/codeql-action/autobuild@7a63fc29565e929abdb0fc4f6955b7d6c2397477 #v3
-      - uses: github/codeql-action/analyze@7a63fc29565e929abdb0fc4f6955b7d6c2397477 #v3
+      - uses: github/codeql-action/autobuild@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3
+      - uses: github/codeql-action/analyze@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3
