@@ -42,7 +42,7 @@ jobs:
     # Permissions are inherited from workflow level
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
 
       - name: 🧩 Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
@@ -51,7 +51,7 @@ jobs:
 
 
       - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@25e6813418e91845859fadb665e49c7590667caf
+        uses: mongolyy/reviewdog-action-biome@dbe7192276cbc6cd32369a21f525ed02438c3e26
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./client
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
@@ -91,7 +91,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
@@ -102,7 +102,7 @@ jobs:
         run: pnpm test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v4
         if: secrets.CODECOV_TOKEN != ''
         with:
           files: ./coverage/lcov.info # Adjust path if necessary, common for JS projects
