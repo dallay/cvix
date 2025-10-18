@@ -13,26 +13,34 @@
 		"every weekend"
 	],
 	"automergeSchedule": ["before 4am on the first day of the month"],
+
+	"semanticCommits": true,
+	"semanticCommitType": "chore",
+
 	"packageRules": [
 		{
 			"matchUpdateTypes": ["minor", "patch"],
 			"matchCurrentVersion": "!/^0/",
-			"automerge": true
+			"automerge": true,
+			"semanticCommitType": "chore"
 		},
 		{
 			"extends": ["monorepo:kotlin"],
 			"groupName": "kotlin monorepo",
-			"matchUpdateTypes": ["digest", "patch", "minor", "major"]
+			"matchUpdateTypes": ["digest", "patch", "minor", "major"],
+			"semanticCommitType": "chore"
 		},
 		{
 			"groupName": "spring backend",
 			"matchDepNames": ["org.springframework"],
-			"matchPackageNames": ["org.springframework:{/,}**"]
+			"matchPackageNames": ["org.springframework:{/,}**"],
+			"semanticCommitType": "fix"
 		},
 		{
 			"extends": ["monorepo:github-workflows-kt"],
 			"groupName": "github-workflows-kt monorepo",
-			"matchUpdateTypes": ["digest", "patch", "minor", "major"]
+			"matchUpdateTypes": ["digest", "patch", "minor", "major"],
+			"semanticCommitType": "chore"
 		}
 	]
 }
