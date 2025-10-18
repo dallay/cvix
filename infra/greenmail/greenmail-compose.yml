@@ -1,0 +1,31 @@
+services:
+  greenmail:
+    image: greenmail/standalone:${GREENMAIL_VERSION}
+    container_name: greenmail-${APP_NAME}
+    environment:
+      - GREENMAIL_OPTS=-Dgreenmail.setup.test.all -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.auth.disabled -Dgreenmail.verbose -Dgreenmail.users=developer:secret@loomify.local
+    ports:
+      - "3025:3025"   # SMTP
+      - "3110:3110"   # POP3
+      - "3143:3143"   # IMAP
+      - "3465:3465"   # SMTPS
+      - "3993:3993"   # IMAPS
+      - "3995:3995"   # POP3S
+      - "8081:8080"   # Web interface (mapped to 8081 to avoid conflict with Spring Boot)
+    networks:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "echo", "quit", "|", "telnet", "localhost", "3025"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels:
+      org.springframework.boot.ignore: true
+
+networks:
+  frontend:
+
+  backend:
+

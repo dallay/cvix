@@ -1,0 +1,135 @@
+[versions]
+kotlin = "2.0.20"
+springBoot = "3.3.4"
+springdoc = "2.6.0"
+junit = "5.11.2"
+klint-plugin = "12.1.1"
+detekt = "1.23.7"
+owasp = "12.1.0"
+asciidoctor = "4.0.2"
+dokka = "1.9.20"
+frontend-gradle-plugin = "8.0.0"
+springManagement = "1.1.6"
+reflections = "0.10.2"
+keycloak-admin-client = "26.0.0"
+kotest = "5.9.1"
+testcontainers = "1.20.2"
+testcontainers-keycloak = "3.4.0"
+jsonwebtoken = "0.12.6"
+cucumber = "7.20.0"
+apacheCommon = "1.12.0"
+jackson = "2.18.0"
+springSecurity = "6.3.1"
+
+[libraries]
+# Gradle Plugins
+gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradle-ktlint = { module = "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin", version.ref = "klint-plugin" }
+gradle-ktlint-idea = { module = "org.jlleitschuh.gradle.ktlint-idea:org.jlleitschuh.gradle.ktlint-idea.gradle.plugin", version.ref = "klint-plugin" }
+gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+
+# Utils
+gradle-updates = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.52.0" }
+gradle-owasp-depcheck = { module = "org.owasp:dependency-check-gradle", version.ref = "owasp" }
+gradle-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version = "0.8.3" }
+gradle-asciidoctor = { module = "org.asciidoctor:asciidoctor-gradle-jvm", version.ref = "asciidoctor" }
+spring-dotenv = 'me.paulschwarz:spring-dotenv:4.0.0'
+sendgrid = 'com.sendgrid:sendgrid-java:4.10.3'
+
+# Frontend
+gradle-frontend = { module = "org.siouan:frontend-jdk17", version.ref = "frontend-gradle-plugin" }
+
+# Detekt
+gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.22" }
+detekt-compose2 = { module = "ru.kode:detekt-rules-compose", version = "1.4.0" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
+# Spring Boot
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "springBoot" }
+springdoc-openapi-starter-webflux-ui = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
+springdoc-openapi-starter-webflux-api = { module = "org.springdoc:springdoc-openapi-starter-webflux-api", version.ref = "springdoc" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop", version.ref = "springBoot" }
+# Spring Boot Dev
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
+spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose", version.ref = "springBoot" }
+# Spring Boot Database
+spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc", version.ref = "springBoot" }
+spring-boot-starter-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server", version.ref = "springBoot" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "springBoot" }
+# SSO & Keycloak
+keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak-admin-client" }
+spring-security-core = { module = "org.springframework.security:spring-security-core", version.ref = "springSecurity" }
+spring-security-oauth2-client = { module = "org.springframework.security:spring-security-oauth2-client", version.ref = "springSecurity" }
+spring-security-oauth2-jose = { module = "org.springframework.security:spring-security-oauth2-jose", version.ref = "springSecurity" }
+# Kotlin Libraries
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.2.3" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.9.0" }
+# External Libraries
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
+
+
+# Testing
+junit = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
+spring-security-test = { module = "org.springframework.security:spring-security-test", version="6.3.3" }
+reactor-test = { module = "io.projectreactor:reactor-test", version = "3.6.10" }
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+mockk = { module = "io.mockk:mockk", version = "1.13.12" }
+faker = { module = "net.datafaker:datafaker", version = "2.4.0" }
+assertj = { module ="org.assertj:assertj-core", version = "3.26.3" }
+kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+kotest-assertions-json = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-testcontainers = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version = "2.0.2" }
+# Testcontainers
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+#frontend-gradle-plugin = { id = "org.siouan.frontend-jdk17", version.ref = "frontend-gradle-plugin" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springManagement" }
+gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.2" }
+
+[bundles]
+spring-boot = [
+  "spring-boot-starter-webflux",
+  "springdoc-openapi-starter-webflux-ui",
+  "springdoc-openapi-starter-webflux-api",
+  "spring-boot-starter-actuator",
+  "spring-boot-starter-aop",
+]
+spring-boot-dev = ["spring-boot-devtools", "spring-boot-docker-compose"]
+spring-boot-test = ["spring-boot-starter-test", "spring-security-test", "reactor-test", "cucumber-java"]
+spring-boot-database = [
+  "spring-boot-starter-data-r2dbc",
+  "spring-boot-starter-oauth2-resource-server",
+  "spring-boot-starter-security",
+]
+spring-boot-sso = [
+  "keycloak-admin-client",
+  "spring-security-core",
+  "spring-security-oauth2-client",
+  "spring-security-oauth2-jose",
+]
+jackson = ["jackson-annotations", "jackson-core", "jackson-databind", "jackson-module-kotlin"]
+kotlin-jvm = ["kotlin-reflect", "kotlinx-coroutines-reactor", "reactor-kotlin-extensions", "reflections"]
+keycloak = [ "keycloak-admin-client"]
+kotest = ["kotest-assertions-core-jvm", "kotest-assertions-json", "kotest-runner-junit5", "kotest-testcontainers"]
+tetscontainers = ["testcontainers", "testcontainers-junit-jupiter", "testcontainers-keycloak"]
+jjwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]

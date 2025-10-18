@@ -1,0 +1,36 @@
+- name: "area:backend"
+  color: "0e8a16"
+  description: "Changes in backend code (server/**)"
+
+- name: "area:shared"
+  color: "5319e7"
+  description: "Changes in shared code (shared/**)"
+
+- name: "area:frontend:web"
+  color: "fbca04"
+  description: "Changes in frontend web app (client/apps/web/**)"
+
+- name: "area:frontend:landing"
+  color: "fbca04"
+  description: "Changes in landing page (client/apps/marketing/**)"
+
+- name: "area:docs"
+  color: "0052cc"
+  description: "Documentation changes (docs/**, *.md, *.mdx)"
+
+- name: "area:ci"
+  color: "5319e7"
+  description: "Continuous integration or GitHub Actions changes"
+
+- name: "type:chore"
+  color: "d4c5f9"
+  description: "Code maintenance and configuration changes"
+
+- name: "type:test"
+  color: "c2e0c6"
+  description: "Test files or test infrastructure changes"
+
+- name: "area:infra"
+  color: "fef2c0"
+  description: "Infrastructure or deployment related changes"
+

@@ -1,0 +1,14 @@
+{
+	"title": "Básico",
+	"description": "Para equipos pequeños que están empezando.",
+	"price": 0,
+	"interval": "month",
+	"features": [
+		{ "text": "Hasta 500 suscriptores" },
+		{ "text": "Funcionalidades básicas" },
+		{ "text": "Soporte limitado" },
+		{ "text": "Envíos manuales" },
+		{ "text": "Tu marca en el pie de página" }
+	],
+	"order": 0
+}

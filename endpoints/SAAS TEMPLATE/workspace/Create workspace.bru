@@ -1,0 +1,26 @@
+meta {
+  name: Create workspace
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{url}}/api/organization/{{$randomUUID}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Accept: application/vnd.api.v1+json
+}
+
+body:json {
+  {
+      "name": "Lyra Vault",
+      "userId": "efc4b2b8-08be-4020-93d5-f795762bf5c9"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

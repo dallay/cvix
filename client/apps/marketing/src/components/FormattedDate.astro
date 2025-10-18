@@ -1,0 +1,28 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { type Lang, useTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
+
+interface Props extends HTMLAttributes<"span"> {
+	date: Date;
+}
+const { date, ...attrs } = Astro.props;
+
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+---
+
+<span
+class={
+	cn(
+		"text-gray-500 dark:text-gray-400 font-inter text-[9px] leading-[140%] tracking-widest uppercase rounded gap-1",
+		attrs.class
+	)
+}
+aria-label={t("post.date.aria", { date: new Intl.DateTimeFormat(currentLocale, { day: "numeric", month: "long" }).format(date) })}
+{...attrs}
+>
+<time datetime={date.toISOString()}>
+	{new Intl.DateTimeFormat(currentLocale, { day: "numeric", month: "long" }).format(date)}, {date.getFullYear()}
+</time>
+</span>

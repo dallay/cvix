@@ -1,0 +1,41 @@
+{
+	"name": "@loomify/tsconfig",
+	"description": "Shared TypeScript configurations for loomify",
+	"version": "0.0.1",
+	"type": "module",
+	"license": "MIT",
+	"homepage": "https://loomify.tech",
+	"author": "loomify Team",
+	"keywords": [
+		"loomify",
+		"tsconfig",
+		"typescript"
+	],
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.13.1",
+	"files": [
+		"tsconfig.base.json",
+		"tsconfig.node.json",
+		"tsconfig.strict.json",
+		"tsconfig.strictest.json",
+		"tsconfig.vue.json"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yacosta738/saas-template.git",
+		"directory": "client/packages/tsconfig",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/yacosta738/saas-template/issues"
+	},
+	"scripts": {
+		"test": "sh -c \"echo 'No test specified'\""
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

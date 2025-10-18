@@ -1,0 +1,128 @@
+---
+import { Icon } from "astro-icon/components";
+import Brand from "@/components/Brand.astro";
+import { type Lang, useTranslatedPath, useTranslations } from "@/i18n";
+import { footerNavLinks } from "@/models/menu/menu.constants";
+import { filterMenuItems } from "@/models/menu/menu.service";
+
+// Get the current language from Astro context
+const lang = (Astro.currentLocale as Lang) || "en";
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+// Filter footer links based on their conditions
+const visibleFooterLinks = filterMenuItems(footerNavLinks);
+
+// Group footer links into categories
+const companyLinks = visibleFooterLinks.filter((link) =>
+	["footer.about", "footer.contact"].includes(link.translationKey),
+);
+
+const resourceLinks = visibleFooterLinks.filter((link) =>
+	["footer.donate", "footer.rss"].includes(link.translationKey),
+);
+
+const legalLinks = visibleFooterLinks.filter((link) =>
+	["footer.privacyPolicy", "footer.termsOfUse"].includes(link.translationKey),
+);
+---
+
+<footer class="bg-white dark:bg-gray-900">
+  <div class="mx-auto w-full max-w-screen-xl p-4 py-16 lg:py-24">
+    <div class="md:flex md:justify-between">
+      <div class="mb-12 md:mb-0">
+        <Brand />
+        <p class="mt-8 max-w-sm text-gray-600 dark:text-gray-400">
+          {t("footer.description")}
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-3">
+        <div>
+          <h2 class="mb-8 text-lg font-bold text-gray-900 dark:text-white">{t("footer.company")}</h2>
+          <ul class="text-gray-600 dark:text-gray-400 font-medium space-y-5">
+            {companyLinks.map((link) => (
+              link.type === 'link' && (
+                <li>
+                  <a
+                    href={translatePath(link.href)}
+                    class="hover:underline"
+                    aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
+                    target={link.target}
+                  >
+                    {t(link.translationKey)}
+                  </a>
+                </li>
+              )
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 class="mb-8 text-lg font-bold text-gray-900 dark:text-white">{t("footer.resources")}</h2>
+          <ul class="text-gray-600 dark:text-gray-400 font-medium space-y-5">
+            {resourceLinks.map((link) => (
+              link.type === 'link' && (
+                <li>
+                  <a
+                    href={translatePath(link.href)}
+                    class="hover:underline"
+                    aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
+                    target={link.target}
+                  >
+                    {t(link.translationKey)}
+                  </a>
+                </li>
+              )
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 class="mb-8 text-lg font-bold text-gray-900 dark:text-white">{t("footer.legal")}</h2>
+          <ul class="text-gray-600 dark:text-gray-400 font-medium space-y-5">
+            {legalLinks.map((link) => (
+              link.type === 'link' && (
+                <li>
+                  <a
+                    href={translatePath(link.href)}
+                    class="hover:underline"
+                    aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
+                    target={link.target}
+                  >
+                    {t(link.translationKey)}
+                  </a>
+                </li>
+              )
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <hr class="my-10 border-gray-200 dark:border-gray-700 lg:my-12" />
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <span class="text-base text-gray-600 dark:text-gray-400 sm:text-center">
+        © {new Date().getFullYear()} <a href={translatePath('/')} class="hover:underline">{t('footer.brand')}</a>. All Rights Reserved.
+      </span>
+      <div class="flex mt-6 space-x-5 sm:justify-center sm:mt-0">
+        <a href="https://www.facebook.com/yacosta738" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+          <Icon name="tabler:brand-facebook" class="w-5 h-5" />
+          <span class="sr-only">Facebook page</span>
+        </a>
+        <a href="https://www.instagram.com/yacosta738" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+          <Icon name="tabler:brand-instagram" class="w-5 h-5" />
+          <span class="sr-only">Instagram page</span>
+        </a>
+        <a href="https://www.x.com/yacosta738" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+          <Icon name="tabler:brand-x" class="w-5 h-5" />
+          <span class="sr-only">Twitter page</span>
+        </a>
+        <a href="https://www.github.com/yacosta738" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+          <Icon name="tabler:brand-github" class="w-5 h-5" />
+          <span class="sr-only">GitHub account</span>
+        </a>
+        <a href="https://www.linkedin.com/in/yacosta738" class="text-gray-500 hover:text-gray-900 dark:hover:text-white">
+          <Icon name="tabler:brand-linkedin" class="w-5 h-5" />
+          <span class="sr-only">LinkedIn account</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

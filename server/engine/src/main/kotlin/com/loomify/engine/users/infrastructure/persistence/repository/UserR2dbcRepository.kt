@@ -1,0 +1,24 @@
+package com.loomify.engine.users.infrastructure.persistence.repository
+
+import com.loomify.engine.users.infrastructure.persistence.entity.UserEntity
+import com.loomify.spring.boot.repository.ReactiveSearchRepository
+import java.util.UUID
+import org.springframework.data.r2dbc.repository.Modifying
+import org.springframework.data.r2dbc.repository.Query
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface UserR2dbcRepository :
+    CoroutineCrudRepository<UserEntity, UUID>,
+    ReactiveSearchRepository<UserEntity> {
+    @Query(
+        """
+        INSERT INTO users (id, email, full_name)
+        VALUES (:id, :email, :fullName)
+        ON CONFLICT (id) DO NOTHING
+    """,
+    )
+    @Modifying
+    suspend fun insertIgnoreConflict(id: UUID, email: String, fullName: String)
+}

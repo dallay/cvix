@@ -1,0 +1,24 @@
+services:
+  maildev:
+    image: djfarrelly/maildev:latest
+    container_name: maildev-${APP_NAME}
+    ports:
+      - "1025:25"   # SMTP
+      - "1080:80"   # Web interface
+    networks:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "25"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels:
+      org.springframework.boot.ignore: true
+
+networks:
+  frontend:
+
+  backend:
+

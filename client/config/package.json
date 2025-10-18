@@ -1,0 +1,53 @@
+{
+	"name": "@loomify/config",
+	"description": "loomify shared configuration",
+	"version": "0.0.1",
+	"type": "module",
+	"license": "MIT",
+	"homepage": "https://loomify.tech",
+	"author": "loomify Team",
+	"keywords": [
+		"loomify",
+		"config"
+	],
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.13.1",
+	"files": [
+		"stylelint.config.cjs",
+		"styles/**/*",
+		"vite.config.shared.mjs",
+		"vite.config.shared.d.ts",
+		"vitest.config.shared.mjs",
+		"vitest.config.shared.d.ts"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yacosta738/saas-template.git",
+		"directory": "client/config",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/yacosta738/saas-template/issues"
+	},
+	"scripts": {
+		"test": "sh -c \"echo 'No test specified 😎'\""
+	},
+	"devDependencies": {
+		"@codecov/vite-plugin": "1.9.1",
+		"@loomify/tsconfig": "workspace:*",
+		"@tailwindcss/typography": "^0.5.16",
+		"postcss": "^8.5.6",
+		"stylelint": "^16.22.0",
+		"stylelint-config-standard-scss": "^15.0.1",
+		"stylelint-order": "^7.0.0",
+		"tailwindcss": "^4.1.11",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^3.2.4"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

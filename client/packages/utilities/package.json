@@ -1,0 +1,76 @@
+{
+	"name": "@loomify/utilities",
+	"version": "0.0.1",
+	"description": "A collection of utilities for the Loomify",
+	"license": "MIT",
+	"type": "module",
+	"homepage": "https://example.com",
+	"author": "Loomify",
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.13.1",
+	"main": "./dist/utilities.js",
+	"module": "./dist/utilities.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/utilities.js",
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/utilities.js"
+			}
+		}
+	},
+	"files": [
+		"package.json",
+		"dist"
+	],
+	"keywords": [
+		"Loomify",
+		"utilities"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yacosta738/saas-template.git",
+		"directory": "client/packages/utilities",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/yacosta738/saas-template/issues"
+	},
+	"scripts": {
+		"dev": "vite dev --mode development",
+		"clean:types": "rimraf dist tsconfig.build.tsbuildinfo",
+		"build:types:raw": "tsc --build",
+		"build:types": "run-s clean:types build:types:raw",
+		"build:vite": "vite build",
+		"build:all": "run-s build:types build:vite",
+		"build": "run-s build:all",
+		"preview": "vite preview",
+		"check:tsc": "tsc --noEmit --skipLibCheck",
+		"check": "pnpm run check:tsc",
+		"format": "biome format . --write",
+		"clean": "rimraf dist coverage",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage"
+	},
+	"dependencies": {
+		"gravatar-url": "^4.0.1"
+	},
+	"devDependencies": {
+		"@loomify/config": "workspace:*",
+		"@loomify/tsconfig": "workspace:*",
+		"@internationalized/date": "^3.8.2",
+		"@vitest/coverage-v8": "^3.2.4",
+		"typescript": "^5.8.3",
+		"vite-plugin-dts": "^4.5.4",
+		"vitest": "^3.2.4"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

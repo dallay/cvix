@@ -1,0 +1,37 @@
+---
+import HeaderProgressBar from "@/components/HeaderProgressBar.astro";
+import BaseLayout from "@/layouts/General.astro";
+import type Article from "@/models/article/article.model";
+import { getOgImagePath } from "@/utils/open-graph/og.service";
+
+interface Props extends Article {
+	url: string;
+	minutesRead: string;
+}
+
+const {
+	title,
+	description,
+	tags = [],
+	url = Astro.request.url,
+	minutesRead,
+} = Astro.props;
+// const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+---
+
+<BaseLayout {title} {description} {ogImage}>
+	<div class="fixed" slot="subheader">
+		<HeaderProgressBar
+			title={title}
+			description={description}
+			url={url}
+			tags={tags.map((tag) => tag.title)}
+			minutesRead={minutesRead}
+		/>
+	</div>
+	<article class="py-28">
+		<slot />
+	</article>
+</BaseLayout>

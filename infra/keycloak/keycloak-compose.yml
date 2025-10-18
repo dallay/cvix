@@ -1,0 +1,51 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+    container_name: keycloak-${APP_NAME}
+    command: ["start-dev", "--import-realm"]
+    volumes:
+      # Use absolute paths with ${PWD} to ensure paths are relative to the compose file location
+      - ./realm-config:/opt/keycloak/data/import
+      - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh
+      - ./themes:/opt/keycloak/themes
+    environment:
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME=${KC_HOSTNAME}
+      - KC_HTTP_ENABLED=true
+      - KC_DB=postgres
+      - KC_DB_USERNAME=${POSTGRESQL_USER}
+      - KC_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - KC_DB_URL=jdbc:postgresql://postgresql:5432/keycloak
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KC_METRICS_ENABLED=true
+      - KC_HEALTH_ENABLED=true
+      - KEYCLOAK_LOGLEVEL=INFO
+      - KC_FEATURES=scripts
+      - KC_HTTP_PORT=${KC_HTTP_PORT}
+      - KC_HTTPS_PORT=${KC_HTTPS_PORT}
+      - KC_HEALTH_ENABLED=true
+      - KC_HTTP_MANAGEMENT_PORT=9990
+    depends_on:
+      - postgresql
+    # Ports are exposed to all interfaces to allow access from other Docker services
+    ports:
+      - ${KC_HTTP_PORT}:9080
+      - ${KC_HTTPS_PORT}:9443
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: "bash /opt/keycloak/health-check.sh"
+      interval: 5s
+      timeout: 5s
+      # Increased retries due to slow Keycloak startup in GitHub Actions using MacOS
+      retries: 50
+      start_period: 10s
+    labels:
+      org.springframework.boot.ignore: true
+networks:
+  frontend:
+
+  backend:
+

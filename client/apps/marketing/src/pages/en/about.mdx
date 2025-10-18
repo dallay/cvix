@@ -1,0 +1,44 @@
+---
+layout: "@/layouts/Page.astro"
+title: "About this SaaS template"
+description: "Learn what this SaaS starter template provides and who it's for."
+---
+import PageHeadline from "@/components/PageHeadline.astro";
+import Waitlist from  "@/components/Waitlist.astro"
+import { SITE_TITLE } from "@/consts";
+
+<PageHeadline title={frontmatter.title} />
+
+## What is this template?
+
+This repository provides a lightweight, opinionated starter for building a SaaS product. It includes common patterns for a marketing site, documentation, asset structure, and developer tooling so teams can focus on product features instead of boilerplate.
+
+Designed as a template, the project is intentionally generic so you can adapt it to your product and brand.
+
+## Who is it for?
+
+- Product teams launching a new SaaS offering.
+- Developers who want a tested starting point with frontend, docs and example assets.
+- Teams that value a clear project layout and sensible defaults.
+
+## What you'll find here
+
+- A marketing site with multilingual pages and legal templates.
+- Documentation scaffolding powered by Astro / Starlight.
+- Example assets (favicons, logos) and conventions for theming.
+- CI-friendly linting, formatting, and build configuration.
+
+## Customize it
+
+Replace brand names, logos, and copy with your product's information. Remove or extend example pages as needed — this template is a foundation, not a strict opinion.
+
+<div class="not-prose border-t border-t-main-light dark:border-t-main-dark">
+	<Waitlist
+		formId="about-cta-waitlist-form"
+		title="Join the early access list"
+		description="Get updates about the template, starter guides, and recommended integrations."
+	/>
+	<p class="text-sm text-gray-500 mt-2">
+		This template includes example legal pages; review them and adapt to your jurisdiction. See the <a href="/privacy-policy" class="underline">Privacy Policy</a> and <a href="/terms-of-use" class="underline">Terms of Use</a> for starter text.
+	</p>
+</div>

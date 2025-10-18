@@ -1,0 +1,18 @@
+packages:
+  - client/apps/*
+  - client/packages/*
+  - client/config
+  - docs
+
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - lefthook
+  - maplibre-gl
+  - msw
+  - pre-commit
+  - pre-commit-hooks
+  - sharp
+  - spawn-sync
+  - vue-demi

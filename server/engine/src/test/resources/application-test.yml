@@ -1,0 +1,46 @@
+# File: application-test.yml
+server:
+  ssl:
+    bundle: "web-server"
+    enabled: true
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2.client: DEBUG
+    com.loomify: DEBUG
+spring:
+    main:
+        banner-mode: off
+        allow-bean-definition-overriding: true
+    security:
+        oauth2:
+            client:
+                registration:
+                    oidc:
+                        client-secret: web_app
+                        client-id: web_app
+                        scope: openid,profile,email
+                provider:
+                    oidc:
+                        issuer-uri: ${application.security.oauth2.issuer-uri}
+    ssl:
+      bundle:
+        pem:
+          keycloak:
+            reload-on-update: true
+            truststore:
+              certificate: "classpath:ssl/cert.pem"
+        jks:
+          web-server:
+            key:
+              alias: "server"
+              password: "testing"
+            keystore:
+              location: "classpath:ssl/keystore.p12"
+              password: "testing"
+              type: "PKCS12"
+testing:
+  security:
+      username: "john.doe@loomify.com"
+      password: "S3cr3tP@ssw0rd*123"

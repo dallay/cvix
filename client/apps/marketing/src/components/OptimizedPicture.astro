@@ -1,0 +1,50 @@
+---
+import {
+	type LocalImageProps,
+	Picture,
+	type RemoteImageProps,
+} from "astro:assets";
+import type { ImageOutputFormat } from "astro";
+import type { HTMLAttributes } from "astro/types";
+
+type Props = (LocalImageProps | RemoteImageProps) & {
+	formats?: ImageOutputFormat[];
+	fallbackFormat?: ImageOutputFormat;
+	pictureAttributes?: HTMLAttributes<"picture">;
+	class?: string | null;
+};
+
+const {
+	formats = ["avif", "webp"],
+	fallbackFormat = "avif",
+	// Use undefined as the default so the prop is omitted when not explicitly set.
+	// Some runtimes/types include 'auto' for loading, but Astro's Picture
+	// typing expects 'eager' | 'lazy' | null | undefined. Default to undefined
+	// and map 'auto' below to avoid type errors.
+	loading = undefined,
+	fetchpriority = "auto",
+	class: className = "mx-auto w-full max-w-full rounded-lg",
+	...props
+} = Astro.props;
+
+// Normalize loading to the narrower set accepted by Astro's Picture.
+// Read the raw prop in a permissive way so we can handle 'auto' when present
+// without causing a TypeScript incompatible comparison.
+const rawLoading =
+	((Astro.props as unknown as Record<string, unknown>).loading as
+		| string
+		| undefined) ?? loading;
+const picLoading: "eager" | "lazy" | null | undefined =
+	rawLoading === "auto"
+		? undefined
+		: (rawLoading as "eager" | "lazy" | null | undefined);
+---
+
+<Picture
+	{...props}
+	formats={formats}
+	fallbackFormat={fallbackFormat}
+	loading={picLoading}
+	fetchpriority={fetchpriority}
+	class={className}
+/>

@@ -1,0 +1,15 @@
+{
+	"title": "Pro",
+	"description": "For growing businesses and professionals.",
+	"price": 19,
+	"interval": "month",
+	"features": [
+		{ "text": "Up to 5,000 subscribers" },
+		{ "text": "Advanced features" },
+		{ "text": "Priority support" },
+		{ "text": "No branding" },
+		{ "text": "Open and click analytics" }
+	],
+	"highlighted": true,
+	"order": 1
+}

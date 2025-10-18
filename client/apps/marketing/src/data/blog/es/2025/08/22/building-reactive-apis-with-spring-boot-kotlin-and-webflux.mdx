@@ -1,0 +1,134 @@
+---
+title: Construyendo APIs Reactivas con Spring Boot, Kotlin y WebFlux
+description: Aprende a crear APIs RESTful de alto rendimiento y no bloqueantes usando la poderosa combinación de Spring Boot, Kotlin y WebFlux.
+date: 2025-08-23T20:22:00
+lastModified: 2025-08-22T20:20:00
+author: es/yuniel-acosta
+cover: src/assets/images/blog-placeholder-1.avif
+tags:
+  - es/backend
+  - es/engineering
+category: es/product
+draft: false
+---
+La programación reactiva permite manejar eficientemente solicitudes concurrentes con hilos mínimos. Combinar la conveniencia de Spring Boot con la expresividad de Kotlin y las capacidades reactivas de WebFlux crea un stack poderoso para construir aplicaciones responsivas, resilientes y elásticas.
+
+En esta guía, construiremos una API REST reactiva simple que demuestre operaciones no bloqueantes desde el controlador hasta la base de datos.
+
+## Configuración del Proyecto
+
+Comienza generando tu proyecto usando [Spring Initializr](https://start.spring.io/), seleccionando:
+
+- **Project**: Gradle - Kotlin
+
+- **Language**: Kotlin
+
+- **Spring Boot**: 3.4.0
+
+- **Dependencies**: Spring Reactive Web, Spring Data R2DBC, H2 Database
+
+## El Flujo Reactivo
+
+### 1. Define una Data Class
+
+Crea un modelo de datos simple:
+
+```kotlin
+
+data class Product(
+
+    val id: Long? = null,
+
+    val name: String,
+
+    val price: Double
+
+)
+
+```
+
+### 2. Crea un Repositorio Reactivo
+
+Spring Data R2DBC proporciona soporte para repositorios reactivos:
+
+```kotlin
+
+interface ProductRepository : ReactiveCrudRepository<Product, Long>
+
+```
+
+### 3. Implementa un Controlador Reactivo
+
+WebFlux utiliza controladores funcionales o basados en anotaciones. Aquí el enfoque con anotaciones:
+
+```kotlin
+
+@RestController
+
+@RequestMapping("/products")
+
+class ProductController(private val productRepository: ProductRepository) {
+
+    @GetMapping
+
+    fun getAllProducts(): Flux<Product> {
+
+        return productRepository.findAll()
+
+    }
+
+    @GetMapping("/{id}")
+
+    fun getProduct(@PathVariable id: Long): Mono<Product> {
+
+        return productRepository.findById(id)
+
+    }
+
+    @PostMapping
+
+    fun createProduct(@RequestBody product: Mono<Product>): Mono<Product> {
+
+        return product.flatMap { productRepository.save(it) }
+
+    }
+
+}
+
+```
+
+### 4. Configura las Propiedades de la Aplicación
+
+En `application.properties`:
+
+```
+
+spring.r2dbc.url=r2dbc:h2:file://./testdb
+
+spring.r2dbc.username=sa
+
+spring.r2dbc.password=
+
+```
+
+## Beneficios Clave
+
+- **E/S no bloqueante**: Maneja más solicitudes concurrentes con menos hilos
+
+- **Preparado para backpressure**: Los consumidores controlan la tasa de flujo de datos
+
+- **Programación funcional**: Código limpio y expresivo con Kotlin
+
+- **Escalabilidad**: Uso eficiente de recursos bajo cargas pesadas
+
+## Mejores Prácticas
+
+- Adopta el paradigma reactivo en toda tu stack
+
+- Usa drivers reactivos para bases de datos (R2DBC, MongoDB Reactive)
+
+- Prueba con `StepVerifier` de Project Reactor
+
+- Monitorea el performance con Micrometer y herramientas de observabilidad
+
+Esta combinación proporciona una base excelente para construir aplicaciones responsivas que pueden manejar alto throughput con recursos limitados.

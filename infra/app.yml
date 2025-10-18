@@ -1,0 +1,17 @@
+name: loomify
+include:
+  - ./infra/common.yml
+  - ./infra/postgresql/postgresql-compose.yml
+  - ./infra/keycloak/keycloak-compose.yml
+services:
+  web:
+    image: n4t5u/loomify:latest
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: r2dbc:postgresql://postgresql:5432/postgres
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    networks:
+      - frontend
+      - backend

@@ -1,0 +1,41 @@
+---
+import { render } from "astro:content";
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "astro-icon/components";
+import { type Lang, useTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
+import type FAQ from "@/models/faq/faq.model";
+
+interface Props extends HTMLAttributes<"details"> {
+	faq: FAQ;
+}
+const { faq, ...attrs } = Astro.props;
+
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+if (!faq || !faq.entry) {
+	throw new Error(t("errors.faqNotFound"));
+}
+const { Content } = await render(faq.entry);
+---
+
+<details
+  class={cn(
+    "group bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700",
+    attrs.class,
+  )}
+  {...attrs}
+>
+  <summary class="flex items-center justify-between cursor-pointer list-none">
+    <span class="text-lg font-semibold text-gray-900 dark:text-white">
+      {faq.question}
+    </span>
+    <div class="text-gray-900 dark:text-white">
+      <Icon name="tabler:plus" class="w-6 h-6 block group-open:hidden" />
+      <Icon name="tabler:minus" class="w-6 h-6 hidden group-open:block" />
+    </div>
+  </summary>
+  <div class="prose lg:prose-xl dark:prose-invert">
+    <Content />
+  </div>
+</details>

@@ -1,0 +1,14 @@
+{
+	"title": "Basic",
+	"description": "For small teams getting started.",
+	"price": 0,
+	"interval": "month",
+	"features": [
+		{ "text": "Up to 500 subscribers" },
+		{ "text": "Basic features" },
+		{ "text": "Limited support" },
+		{ "text": "Manual sending" },
+		{ "text": "Your brand in footer" }
+	],
+	"order": 0
+}

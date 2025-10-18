@@ -1,0 +1,42 @@
+
+
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-update-timestamp-function
+      author: loomify
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              CREATE OR REPLACE FUNCTION set_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+  - changeSet:
+      id: 006-trigger-workspaces-updated-at
+      author: loomify
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trg_workspaces_updated_at
+              BEFORE UPDATE ON workspaces
+              FOR EACH ROW
+              EXECUTE FUNCTION set_updated_at_column();
+
+  - changeSet:
+      id: 007-trigger-workspace-members-updated-at
+      author: loomify
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trg_workspace_members_updated_at
+              BEFORE UPDATE ON workspace_members
+              FOR EACH ROW
+              EXECUTE FUNCTION set_updated_at_column();

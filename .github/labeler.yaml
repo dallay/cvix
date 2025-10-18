@@ -1,0 +1,59 @@
+# GitHub Labeler Configuration
+# This file defines rules for automatically labeling PRs based on file paths
+
+area:backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'server/**'
+
+area:shared:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'shared/**'
+
+area:frontend:web:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'client/apps/web/**'
+          - 'client/packages/**'
+
+area:frontend:landing:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'client/apps/marketing/**'
+
+area:docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+          - '**/*.mdx'
+
+area:ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+type:chore:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - 'config/**'
+          - 'scripts/**'
+          - '.editorconfig'
+          - '.prettier*'
+          - '.eslintrc*'
+
+type:test:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.spec.*'
+          - '**/*.test.*'
+          - 'tests/**'
+
+area:infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docker/**'
+          - 'infrastructure/**'
+          - 'iac/**'

@@ -1,0 +1,14 @@
+# .github/issue-labeler-config.yml
+feature:
+  - client
+  - frontend
+bug:
+  - bug
+  - fix
+  - error
+documentation:
+  - documentation
+  - docs
+backend:
+  - server
+  - backend

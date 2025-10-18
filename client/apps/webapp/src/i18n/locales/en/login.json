@@ -1,0 +1,22 @@
+{
+	"login": {
+		"title": "Login",
+		"description": "Enter your credentials below to login to your account.",
+		"form": {
+			"username": "Username",
+			"username-placeholder": "Enter your username",
+			"password": "Password",
+			"password-placeholder": "Enter your password",
+			"rememberMe": "Remember Me",
+			"submit": "Login",
+			"forgotPassword": "Forgot Password?",
+			"loading": "Logging in...",
+			"register": "Don't have an account?",
+			"register-link": "Sign up",
+			"validation": {
+				"username-required": "Username is required",
+				"password-required": "Password is required"
+			}
+		}
+	}
+}

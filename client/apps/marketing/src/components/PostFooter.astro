@@ -1,0 +1,31 @@
+---
+import ByAuthor from "@/components/ByAuthor.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import SocialMediaShare from "@/components/SocialMediaShare.astro";
+import type Article from "@/models/article/article.model";
+import PostCategory from "./PostCategory.astro";
+import PostTags from "./PostTags.astro";
+
+interface Props {
+	post: Article;
+}
+
+const { post } = Astro.props;
+---
+
+<div class="flex flex-col justify-center mt-8 not-prose">
+	<SocialMediaShare
+		url={Astro.request.url}
+		title={post.title}
+		description={post.description}
+		tags={post.tags.map((tag) => tag.title)}
+	/>
+	<div class="flex justify-between flex-wrap gap-2 border-t border-t-secondary-foreground-light dark:border-t-secondary-foreground-dark pt-6 mt-6">
+		<div class="flex flex-col gap-2">
+			<ByAuthor author={post.author}/>
+			<FormattedDate date={post.date}/>
+			{"category" in post && <PostCategory category={post.category} />}
+		</div>
+		<PostTags tags={post.tags} />
+	</div>
+</div>

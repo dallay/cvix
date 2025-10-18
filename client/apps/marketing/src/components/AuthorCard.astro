@@ -1,0 +1,70 @@
+---
+import type Author from "@/models/author/author.model";
+import OptimizedPicture from "./OptimizedPicture.astro";
+
+export interface Props {
+	author?: Author;
+	size?: "sm" | "md" | "lg";
+}
+
+const { author, size = "md" } = Astro.props;
+
+const getInitials = (name: string): string => {
+	if (!name) return "";
+	const names = name.trim().split(/\s+/);
+	if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
+	return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase();
+};
+
+// Clases basadas en el tamaño
+const sizeClasses = {
+	sm: "h-8 w-8",
+	md: "h-10 w-10",
+	lg: "h-12 w-12",
+};
+
+const textSizes = {
+	sm: {
+		name: "text-sm font-semibold text-gray-900 dark:text-white",
+		bio: "text-xs text-gray-600 dark:text-gray-400",
+	},
+	md: {
+		name: "font-semibold text-gray-900 dark:text-white",
+		bio: "text-xs text-gray-600 dark:text-gray-400",
+	},
+	lg: {
+		name: "text-base font-semibold text-gray-900 dark:text-white",
+		bio: "text-sm text-gray-600 dark:text-gray-400",
+	},
+};
+
+const avatarClasses = `${sizeClasses[size]} mr-3 relative flex shrink-0 overflow-hidden rounded-full border bg-gray-100 border-[var(--border)] dark:bg-gray-700 dark:border-gray-600`;
+const nameClasses = textSizes[size].name;
+const bioClasses = textSizes[size].bio;
+---
+
+{author && (
+    <div class="flex items-center mb-2 sm:mb-0">
+        <div class={avatarClasses}>
+            {author.avatar ? (
+                <OptimizedPicture
+                    src={author.avatar}
+                    alt={author.name}
+                    width={100}
+                    height={100}
+                    class="aspect-square h-full w-full object-cover"
+                />
+            ) : (
+                <div class="flex h-full w-full items-center justify-center bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300 font-medium text-sm">
+                    {getInitials(author.name)}
+                </div>
+            )}
+        </div>
+        <div>
+            <p class={nameClasses}>{author.name}</p>
+            {author.role && (
+                <p class={bioClasses}>{author.role}</p>
+            )}
+        </div>
+    </div>
+)}

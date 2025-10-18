@@ -1,0 +1,15 @@
+{
+	"title": "Pro",
+	"description": "Para empresas en crecimiento y profesionales.",
+	"price": 19,
+	"interval": "month",
+	"features": [
+		{ "text": "Hasta 5,000 suscriptores" },
+		{ "text": "Funcionalidades avanzadas" },
+		{ "text": "Soporte prioritario" },
+		{ "text": "Sin marca" },
+		{ "text": "Análisis de apertura y clics" }
+	],
+	"highlighted": true,
+	"order": 1
+}

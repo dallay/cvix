@@ -1,0 +1,77 @@
+---
+import { Icon } from "astro-icon/components";
+import { buttonVariants } from "@/components/ui/button";
+import { type Lang, useTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
+
+interface Props {
+	lang: Lang;
+	class?: string;
+}
+
+const { lang, class: className = "" } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class={className}>
+  <!-- Mobile menu button -->
+  <button
+    class={cn(buttonVariants({ variant: "outline", size: "icon" }), "md:hidden mr-4")}
+    id="mobile-menu-button"
+    aria-label={t("header.menu")}
+  >
+    <Icon name="tabler:menu-2" class="size-6 text-gray-900 dark:text-white" />
+  </button>
+
+  <!-- Mobile menu overlay (hidden by default) -->
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm hidden md:hidden"
+  >
+    <div class="fixed inset-y-0 left-0 w-full max-w-sm bg-background shadow-lg">
+      <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold">{t("header.menu")}</h2>
+        <button
+          class={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+          id="mobile-menu-close"
+          aria-label={t("header.close")}
+        >
+          <Icon name="tabler:x" class="size-6" />
+        </button>
+      </div>
+
+      <nav class="p-4">
+        <ul class="space-y-4">
+          <li><a href="/" class="block text-foreground hover:text-primary">{t("header.nav.home")}</a></li>
+          <li><a href="/products" class="block text-foreground hover:text-primary">{t("header.nav.products")}</a></li>
+          <li><a href="/pricing" class="block text-foreground hover:text-primary">{t("header.nav.pricing")}</a></li>
+          <li><a href="/blog" class="block text-foreground hover:text-primary">{t("header.nav.blog")}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mobile menu functionality
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+  if (mobileMenuButton && mobileMenu && mobileMenuClose) {
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.remove('hidden');
+    });
+
+    mobileMenuClose.addEventListener('click', () => {
+      mobileMenu.classList.add('hidden');
+    });
+
+    // Close menu when clicking on overlay
+    mobileMenu.addEventListener('click', (e) => {
+      if (e.target === mobileMenu) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  }
+</script>

@@ -1,0 +1,116 @@
+---
+title: Building Reactive APIs with Spring Boot, Kotlin, and WebFlux
+description: Learn how to create high-performance, non-blocking RESTful APIs using the powerful combination of Spring Boot, Kotlin, and WebFlux.
+date: 2025-08-23T20:22:00
+lastModified: 2025-08-22T20:20:00
+author: en/yuniel-acosta
+cover: src/assets/images/blog-placeholder-1.avif
+tags:
+  - en/backend
+  - en/engineering
+category: en/product
+draft: false
+---
+Reactive programming enables efficient handling of concurrent requests with minimal threads. Combining Spring Boot's convenience with Kotlin's expressiveness and WebFlux's reactive capabilities creates a powerful stack for building responsive, resilient, and elastic applications.
+
+In this guide, we'll build a simple reactive REST API that demonstrates non-blocking operations from controller to database.
+
+## Project Setup
+
+Start by generating your project using [Spring Initializr](https://start.spring.io/), selecting:
+### 4. Configure Application Properties
+---
+title: "Building Reactive APIs with Spring Boot, Kotlin, and WebFlux"
+description: "Learn how to create high-performance, non-blocking RESTful APIs using Spring Boot, Kotlin, and WebFlux."
+date: 2025-08-23T20:22:00
+lastModified: 2025-08-22T20:20:00
+author: en/yuniel-acosta
+cover: src/assets/images/blog-placeholder-1.avif
+tags:
+    - en/backend
+    - en/engineering
+category: en/product
+draft: false
+---
+
+Reactive programming enables efficient handling of concurrent requests with minimal threads. Combining Spring Boot's convenience with Kotlin's expressiveness and WebFlux's reactive capabilities creates a powerful stack for building responsive, resilient, and elastic applications.
+
+In this guide we'll build a simple reactive REST API that demonstrates non-blocking operations from controller to database.
+
+## Project setup
+
+Generate your project using Spring Initializr (https://start.spring.io) with:
+
+- Project: Gradle - Kotlin
+- Language: Kotlin
+- Spring Boot: 3.4.0
+- Dependencies: Spring Reactive Web, Spring Data R2DBC, H2 Database
+
+## The reactive flow
+
+### 1. Define a data class
+
+Create a simple data model:
+
+```kotlin
+data class Product(
+    val id: Long? = null,
+    val name: String,
+    val price: Double
+)
+```
+
+### 2. Create a reactive repository
+
+Spring Data R2DBC provides reactive repository support:
+
+```kotlin
+interface ProductRepository : ReactiveCrudRepository<Product, Long>
+```
+
+### 3. Implement a reactive controller
+
+WebFlux supports functional and annotation-based controllers; below is an annotation-based example:
+
+```kotlin
+@RestController
+@RequestMapping("/products")
+class ProductController(private val productRepository: ProductRepository) {
+    @GetMapping
+    fun getAllProducts(): Flux<Product> = productRepository.findAll()
+
+    @GetMapping("/{id}")
+    fun getProduct(@PathVariable id: Long): Mono<Product> = productRepository.findById(id)
+
+    @PostMapping
+    fun createProduct(@RequestBody product: Mono<Product>): Mono<Product> =
+        product.flatMap { productRepository.save(it) }
+}
+```
+
+### 4. Configure application properties
+
+In `application.properties`:
+
+```properties
+spring.r2dbc.url=r2dbc:h2:file://./testdb
+spring.r2dbc.username=sa
+spring.r2dbc.password=
+```
+
+## Key benefits
+
+- **Non-blocking I/O** — handle more concurrent requests with fewer threads
+- **Backpressure-ready** — consumers control the data flow rate
+- **Functional programming** — clean, expressive code with Kotlin
+- **Scalability** — efficient resource utilization under heavy loads
+
+## Best practices
+
+- Embrace the reactive paradigm throughout your stack
+- Use reactive database drivers (R2DBC, reactive MongoDB drivers)
+- Test reactive code with `StepVerifier` from Project Reactor
+- Monitor performance with Micrometer and observability tools
+
+This combination provides a solid foundation for building responsive applications that handle high throughput with limited resources.
+- Monitor performance with Micrometer and observability tools

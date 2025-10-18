@@ -1,0 +1,45 @@
+/**
+ * Main CSS entry point for loomify.tech
+ *
+ * This file imports and re-exports all other CSS files in the project
+ * in the correct cascade order.
+ */
+
+/* Import global styles first (includes Tailwind) */
+@import "./global.css";
+
+/* Additional CSS imports can be added here */
+
+/* Short-term SVG theming: force shapes to inherit currentColor so
+	 logos and favicons switch with light/dark theme. This is a small,
+	 reversible change that improves theme responsiveness without
+	 editing individual SVG files. For a long-term fix, replace inline
+	 fills/strokes in each SVG with `fill="currentColor"` and
+	 theme-aware gradients. */
+svg,
+img[role="img" i] svg {
+	color: inherit; /* ensure color inheritance */
+}
+
+/* Force basic shape elements to use currentColor when possible */
+svg :where(path, circle, rect, ellipse, polygon, polyline, line) {
+	fill: currentColor !important;
+	stroke: currentColor !important;
+}
+
+/* Provide sensible defaults for light/dark appearance */
+:root {
+	--site-ui-color: #0f172a; /* default dark text */
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--site-ui-color: #e6eef8; /* light text on dark */
+	}
+}
+
+/* Apply color variable to root so that SVGs using currentColor follow it */
+html,
+body {
+	color: var(--site-ui-color);
+}

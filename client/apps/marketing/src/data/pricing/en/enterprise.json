@@ -1,0 +1,14 @@
+{
+	"title": "Enterprise",
+	"description": "For large organizations with advanced needs.",
+	"price": 49,
+	"interval": "month",
+	"features": [
+		{ "text": "Up to 20,000 subscribers" },
+		{ "text": "Premium features" },
+		{ "text": "Advanced integrations" },
+		{ "text": "Dedicated support" },
+		{ "text": "Custom sending domain" }
+	],
+	"order": 2
+}

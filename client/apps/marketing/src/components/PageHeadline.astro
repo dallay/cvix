@@ -1,0 +1,45 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { cn } from "@/lib/utils";
+
+interface Props extends HTMLAttributes<"section"> {
+	title: string;
+	subtitle?: string;
+	placeholder?: string;
+	clearLabel?: string;
+}
+
+const {
+	title,
+	subtitle,
+	placeholder = "",
+	clearLabel = "",
+	...attrs
+} = Astro.props;
+---
+
+<section
+  {...attrs}
+  class={cn(
+    "py-16 md:py-20 lg:py-24",
+    "bg-gradient-to-br from-background to-muted/30 relative overflow-hidden text-center",
+    attrs.class,
+  )}
+>
+  <div class="container mx-auto px-4">
+    <div class="text-center max-w-4xl mx-auto">
+      <h1
+        class={cn(
+          "text-gray-900 dark:text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight relative",
+          "transition-colors duration-350 animate-fadeIn font-heading text-center",
+        )}
+      >
+        {title}
+      </h1>
+
+      <slot />
+
+      {subtitle && <p class="text-xl text-muted-foreground mb-8 leading-relaxed">{subtitle}</p>}
+    </div>
+  </div>
+</section>

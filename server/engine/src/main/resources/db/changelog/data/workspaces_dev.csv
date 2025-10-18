@@ -1,0 +1,4 @@
+"id";"name";"description";"owner_id";"created_by";"created_at";"updated_by";"updated_at";"is_default"
+a1b2c3d4-e5f6-7890-abcd-ef1234567890;Admin Workspace;Default workspace for Admin loomify;"4c973896-5761-41fc-8217-07c5d13a004b";system;2025-08-12T21:04:19.117;;;true
+b2c3d4e5-f6a7-8901-bcde-f23456789012;User Workspace;Default workspace for Basic User loomify;c4af4e2f-b432-4c3b-8405-cca86cd5b97b;system;2025-08-12T21:04:19.117;;;true
+44130a13-029f-352a-a6a2-b318640aecec;John Doe's Workspace;Default workspace created automatically upon user registration;956cc148-2335-442b-96ee-e42646de10e8;system;2025-08-12T22:42:30.572;;2025-08-12T22:42:30.515;true

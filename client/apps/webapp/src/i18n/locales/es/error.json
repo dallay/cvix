@@ -1,0 +1,7 @@
+{
+	"error": {
+		"title": "Ocurrió un error",
+		"message": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo más tarde.",
+		"backToHome": "Volver al inicio"
+	}
+}

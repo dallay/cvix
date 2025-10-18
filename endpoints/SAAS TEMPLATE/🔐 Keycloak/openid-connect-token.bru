@@ -1,0 +1,26 @@
+meta {
+  name: openid-connect/token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{keycloak-url}}/realms/{{realm}}/protocol/openid-connect/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  grant_type: password
+  client_id: {{clientId}}
+  username: john.doe@lyra.com
+  password: S3cr3tP@ssw0rd*123
+}
+
+settings {
+  encodeUrl: true
+}

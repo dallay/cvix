@@ -1,0 +1,79 @@
+{
+	"name": "loomify",
+	"version": "1.0.0",
+	"description": "loomify Monorepo",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"homepage": "https://loomify.tech",
+	"author": "loomify Team",
+	"keywords": [
+		"loomify",
+		"monorepo"
+	],
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.15.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yacosta738/saas-template.git",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/yacosta738/saas-template/issues"
+	},
+	"workspaces": {
+		"packages": [
+			"client/apps/*",
+			"client/packages/*",
+			"client/config",
+			"docs"
+		]
+	},
+	"scripts": {
+		"update-deps": "pnpm update -i -r --latest",
+		"preinstall": "npx only-allow pnpm",
+		"prepare": "pnpm exec lefthook install && pnpm run ruler:apply",
+		"ruler:check": "ruler check",
+		"ruler:apply": "ruler apply",
+		"dev": "pnpm run ruler:check && pnpm --recursive --parallel run dev",
+		"dev:landing": "pnpm --filter @loomify/marketing dev",
+		"dev:web": "pnpm --filter @loomify/webapp dev",
+		"dev:docs": "pnpm --filter @loomify/docs dev",
+		"build": "pnpm --recursive run build",
+		"build:landing": "pnpm --filter @loomify/marketing build",
+		"preview:landing": "pnpm --filter @loomify/marketing preview",
+		"build:web": "pnpm --filter @loomify/webapp build",
+		"build:docs": "pnpm --filter @loomify/docs build",
+		"test": "pnpm --recursive run test",
+		"test:ui": "pnpm --recursive run test:ui",
+		"test:coverage": "pnpm --recursive run test:coverage",
+		"lint": "pnpm --recursive --parallel run lint",
+		"lint:strict": "pnpm --recursive --parallel run lint:strict",
+		"check": "pnpm run -r check && biome check . --write",
+		"clean": "pnpm --recursive run clean",
+		"backend:build": "./gradlew build",
+		"backend:run": "./gradlew bootRun",
+		"backend:test": "./gradlew test",
+		"backend:clean": "./gradlew clean",
+		"start": "run-p backend:run dev",
+		"test:all": "pnpm --recursive run test && pnpm run backend:test",
+		"precommit": "pnpm run ruler:apply"
+	},
+	"dependencies": {
+		"zod": "^4.0.17"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.1.2",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"lefthook": "^1.12.3",
+		"npm-run-all2": "^8.0.4",
+		"rimraf": "^6.0.1",
+		"tree-extended": "^4.6.0",
+		"vite": "^7.1.3",
+		"vitest": "^3.2.4"
+	}
+}

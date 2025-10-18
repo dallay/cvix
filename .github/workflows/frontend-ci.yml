@@ -1,0 +1,113 @@
+name: Frontend CI
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/frontend-ci.yml'
+      - '.github/actions/setup/node/**'
+  pull_request:
+    paths:
+      - 'client/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/frontend-ci.yml'
+      - '.github/actions/setup/node/**'
+
+env:
+  NODE_VERSION: '22'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint with Biome # Renamed
+    runs-on: ubuntu-latest
+    # Permissions are inherited from workflow level
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: 🧩 Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+
+      - name: Run Biome with Reviewdog
+        uses: mongolyy/reviewdog-action-biome@25e6813418e91845859fadb665e49c7590667caf
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./client
+          reporter: github-pr-review
+          fail_on_error: true
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build
+        run: pnpm build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-artifacts
+          path: |
+            client/apps/*/dist/
+            client/marketing/dist/
+            client/docs/dist/
+          retention-days: 7
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Test
+        run: pnpm test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+        if: secrets.CODECOV_TOKEN != ''
+        with:
+          files: ./coverage/lcov.info # Adjust path if necessary, common for JS projects
+          # flags: frontend # Optional
+          # name: codecov-frontend # Optional
+          # fail_ci_if_error: true # Optional
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

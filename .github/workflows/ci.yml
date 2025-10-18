@@ -1,0 +1,239 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        type: choice
+        options:
+          - development
+          - staging
+        default: 'development'
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  security-events: write # Required for CodeQL to upload results
+
+jobs:
+  labeler:
+    name: Label PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - name: Run Labeler
+        # Pinned to v5 commit hash for security
+        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # Required to upload CodeQL results
+      actions: read # Required for running CodeQL analysis
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'java' ] # Add other languages as needed
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - name: Initialize CodeQL
+        # Pinned to v3 commit hash for security
+        uses: github/codeql-action/init@7c651bd38dd1af6b6a3150197b37799cb367fb05 # v3
+        with:
+          languages: ${{ matrix.language }}
+          # queries: +security-extended,security-and-quality
+      - name: Autobuild
+        # Pinned to v3 commit hash for security
+        uses: github/codeql-action/autobuild@7c651bd38dd1af6b6a3150197b37799cb367fb05 # v3
+      - name: Perform CodeQL Analysis
+        # Pinned to v3 commit hash for security
+        uses: github/codeql-action/analyze@7c651bd38dd1af6b6a3150197b37799cb367fb05 # v3
+
+  super-linter:
+    name: Super Linter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # Required to report status checks
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Lint Code Base
+        # Pinned to v5 commit hash for security
+        uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1 # v5
+        env:
+          VALIDATE_ALL_CODEBASE: true  # Lint entire codebase
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Configure specific linters if necessary, for example:
+          # VALIDATE_JAVASCRIPT_ES: true
+          # VALIDATE_KOTLIN: true
+          # VALIDATE_YAML: true
+          # VALIDATE_MARKDOWN: true
+          # VALIDATE_JSON: true
+          # VALIDATE_GITLEAKS: true
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to read dependency files
+      pull-requests: write # Required to comment on PRs
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - name: Dependency Review
+        # Pinned to v4 commit hash for security
+        uses: actions/dependency-review-action@da24556b548a50705dd671f47852072ea4c105d9 # v4
+        with:
+          # You can specify configuration options here, e.g.:
+          # fail-on-severity: critical
+          # allow-licenses: Apache-2.0, MIT
+          # deny-licenses: GPL-3.0
+          comment-summary-in-pr: always # Add a summary comment to PRs
+
+  owasp-dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # To read dependency files
+      # issues: write # If you want to create issues for vulnerabilities (optional)
+      # pull-requests: write # If you want to comment on PRs (optional)
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
+        with:
+          project: 'Loomify-monorepo'
+          path: '.'
+          format: 'HTML' # You can choose other formats like XML, JSON, CSV
+          # Optional: specify suppression file if you have one
+          # suppressionPath: 'config/owasp/owasp-suppression.xml'
+          # Optional: fail the build if vulnerabilities are found
+        # Optional: Upload the report as an artifact
+      - name: Upload OWASP Dependency Check Report
+        if: always() # Ensure report is uploaded even if previous steps fail
+        # Pinned to v4 commit hash for security
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: owasp-dependency-check-report
+          path: reports/dependency-check-report.html # Default path for HTML report
+          retention-days: 7
+
+  backend:
+    name: Backend
+    uses: ./.github/workflows/backend-ci.yml
+    secrets:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  frontend:
+    name: Frontend
+    uses: ./.github/workflows/frontend-ci.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test:
+    name: Test
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: '22'
+
+      - name: Download backend artifacts
+        # Pinned to v4 commit hash for security
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: backend-artifacts
+          path: backend-artifacts
+
+      - name: Download frontend artifacts
+        # Pinned to v4 commit hash for security
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: frontend-artifacts
+          path: frontend-artifacts
+
+      - name: Cache Gradle
+        # Pinned to v4 commit hash for security
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/settings.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run tests
+        run: |
+          cd backend
+          ./gradlew test
+
+      - name: Generate test report
+        run: |
+          mkdir -p test-report
+          cp backend/build/reports/tests/test/* test-report/ || true
+
+      - name: Upload test report
+        # Pinned to v4 commit hash for security
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-report
+          path: test-report/
+          retention-days: 7
+
+  markdown:
+    name: Markdown lint (docs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - name: Markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@b4c9feab76d8025d1e83c653fa3990936df0e6c8
+        with:
+          globs: |
+            **/*.md
+            **/*.mdx

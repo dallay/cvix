@@ -1,0 +1,397 @@
+name: 'Frontend Web App Docker Build and Push'
+description: 'Builds and pushes a Vue.js web application Docker image with multi-stage build support'
+
+inputs:
+  image-name:
+    description: 'Name of the Docker image'
+    required: true
+    default: 'frontend-web'
+  github-token:
+    description: 'GitHub token for authentication'
+    required: true
+  docker-username:
+    description: 'Docker Hub username'
+    required: false
+  docker-password:
+    description: 'Docker Hub password'
+    required: false
+  deliver:
+    description: 'Whether to push to registries'
+    required: false
+    default: 'true'
+  build-env:
+    description: 'Build environment (development, staging, production)'
+    required: false
+    default: 'production'
+  dockerfile:
+    description: 'Path to Dockerfile'
+    required: false
+    default: './client/apps/web/Dockerfile'
+  context:
+    description: 'Build context'
+    required: false
+    default: '.'
+  api-url:
+    description: 'API URL for the frontend application'
+    required: false
+    default: ''
+
+outputs:
+  image-full-name:
+    description: 'Full name of the built image including registry and tag'
+    value: ${{ steps.image-info.outputs.image-full-name }}
+  image-tags:
+    description: 'Tags applied to the image'
+    value: ${{ steps.meta.outputs.tags }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js and pnpm
+      uses: ./.github/actions/setup/node
+
+    - name: Set up Docker Buildx
+      # Pinned to v3 commit hash for security
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+
+    - name: Login to GitHub Container Registry
+      id: ghcr-login
+      # Pinned to v3 commit hash for security
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      continue-on-error: true
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+
+    - name: Handle GHCR login failure
+      if: steps.ghcr-login.outcome != 'success'
+      shell: bash
+      run: |
+        echo "❌ Failed to authenticate with GitHub Container Registry"
+        echo "🔍 Common authentication issues:"
+        echo "  - GitHub token may have expired"
+        echo "  - GitHub token may not have required permissions (write:packages, read:packages)"
+        echo "  - GitHub Container Registry may be experiencing issues"
+        echo "  - Network connectivity problems"
+
+        if [ "${{ inputs.deliver }}" == "true" ]; then
+          echo "⚠️ Authentication failure will prevent pushing to GHCR"
+          echo "⚠️ Build will continue but delivery to GHCR will fail"
+        fi
+
+    - name: Login to Docker Hub
+      id: dockerhub-login
+      if: inputs.docker-username != '' && inputs.docker-password != ''
+      # Pinned to v3 commit hash for security
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      continue-on-error: true
+      with:
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Handle Docker Hub login failure
+      if: inputs.docker-username != '' && inputs.docker-password != '' && steps.dockerhub-login.outcome != 'success'
+      shell: bash
+      run: |
+        echo "❌ Failed to authenticate with Docker Hub"
+        echo "🔍 Common authentication issues:"
+        echo "  - Docker Hub credentials may be incorrect"
+        echo "  - Docker Hub account may have 2FA enabled requiring a personal access token"
+        echo "  - Docker Hub may be experiencing issues"
+        echo "  - Network connectivity problems"
+
+        if [ "${{ inputs.deliver }}" == "true" ]; then
+          echo "⚠️ Authentication failure will prevent pushing to Docker Hub"
+          echo "⚠️ Build will continue but delivery to Docker Hub will fail"
+        fi
+
+    - name: Extract metadata for Docker
+      id: meta
+      # Pinned to v5 commit hash for security
+      uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
+          ${{ inputs.docker-username != '' && format('{0}/{1}', inputs.docker-username, inputs.image-name) || '' }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=sha,format=long
+
+    - name: Prepare build arguments
+      id: build-args
+      shell: bash
+      run: |
+        # Prepare build arguments with newline separation for docker/build-push-action
+        BUILD_ARGS="BUILD_ENV=${{ inputs.build-env }}"
+
+        # Add API URL if provided
+        if [ -n "${{ inputs.api-url }}" ]; then
+          BUILD_ARGS="$BUILD_ARGS
+          API_URL=${{ inputs.api-url }}"
+        fi
+
+        echo "args<<EOF" >> $GITHUB_OUTPUT
+        echo "$BUILD_ARGS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+        echo "📋 Build arguments:"
+        echo "$BUILD_ARGS" | sed 's/^/  /'
+
+    - name: Check Dockerfile existence
+      shell: bash
+      run: |
+        if [ ! -f "${{ inputs.dockerfile }}" ]; then
+          echo "❌ Dockerfile not found at ${{ inputs.dockerfile }}"
+          echo "🔍 Please check the path and ensure the Dockerfile exists"
+          exit 1
+        else
+          echo "✅ Dockerfile found at ${{ inputs.dockerfile }}"
+        fi
+
+    - name: Record build start time
+      id: build-start
+      shell: bash
+      run: |
+        echo "start-time=$(date +%s)" >> $GITHUB_OUTPUT
+        echo "⏱️ Starting build at $(date)"
+
+    - name: Build and push Docker image
+      id: build
+      # Pinned to v5 commit hash for security
+      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        push: ${{ inputs.deliver == 'true' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: ${{ steps.build-args.outputs.args }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        provenance: false
+        outputs: type=image,name=${{ inputs.image-name }},push-by-digest=true,name-canonical=true,push=${{ inputs.deliver == 'true' }}
+
+    - name: Record build end time and calculate duration
+      id: build-end
+      shell: bash
+      run: |
+        END_TIME=$(date +%s)
+        START_TIME=${{ steps.build-start.outputs.start-time }}
+        if [ -n "$START_TIME" ]; then
+          DURATION=$((END_TIME - START_TIME))
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+          echo "⏱️ Build completed in $DURATION seconds"
+        else
+          echo "⚠️ Could not calculate build duration - start time not available"
+        fi
+
+    - name: Log build cache status
+      shell: bash
+      run: |
+        echo "🔍 Docker build cache information:"
+        echo "  Cache from: type=gha"
+        echo "  Cache to: type=gha,mode=max"
+
+        # Check if cache was used
+        if docker buildx du 2>/dev/null | grep -q "cache"; then
+          echo "✅ Build cache was utilized"
+          CACHE_SIZE=$(docker buildx du 2>/dev/null | grep "cache" | awk '{print $1}')
+          echo "  Cache size: $CACHE_SIZE"
+        else
+          echo "⚠️ No build cache was utilized or cache information unavailable"
+        fi
+
+    - name: Handle build errors
+      if: failure() && steps.build.outcome == 'failure'
+      shell: bash
+      run: |
+        echo "❌ Vue.js Docker image build failed"
+        echo "🔍 Common issues to check:"
+        echo "  - Node.js dependency issues"
+        echo "  - TypeScript compilation errors"
+        echo "  - Vite build configuration"
+        echo "  - Environment variable configuration"
+        echo "  - Disk space or memory constraints"
+
+        # Create log directory for build output
+        mkdir -p /tmp/build-logs
+        ERROR_LOG="/tmp/build-logs/docker-build-error.log"
+
+        # Capture Docker build logs if available
+        docker buildx ls &> /dev/null
+        if [ $? -eq 0 ]; then
+          echo "📋 Capturing Docker build logs..."
+          docker buildx du 2>/dev/null > $ERROR_LOG
+          docker buildx ls 2>/dev/null >> $ERROR_LOG
+        fi
+
+        # Check for common Node.js errors in the logs
+        if grep -q "ERR_PNPM" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+          echo "⚠️ pnpm dependency resolution error detected"
+          echo "  - Check pnpm-lock.yaml for inconsistencies"
+          echo "  - Verify package.json dependencies"
+          echo "  - Try clearing pnpm cache and rebuilding"
+        fi
+
+        if grep -q "TypeScript error" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+          echo "⚠️ TypeScript compilation error detected"
+          echo "  - Check for type errors in your code"
+          echo "  - Verify tsconfig.json configuration"
+          echo "  - Ensure all required type definitions are installed"
+        fi
+
+        if grep -q "Vite" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+          echo "⚠️ Vite build error detected"
+          echo "  - Check vite.config.ts for configuration issues"
+          echo "  - Verify environment variables are properly set"
+          echo "  - Check for plugin compatibility issues"
+        fi
+
+        if grep -q "ENOSPC" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+          echo "⚠️ Disk space issue detected"
+          echo "  - Free up disk space on the runner"
+          echo "  - Consider optimizing build to use less disk space"
+        fi
+
+        if grep -q "network timeout" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+          echo "⚠️ Network timeout detected"
+          echo "  - Check network connectivity"
+          echo "  - Consider increasing timeout values"
+          echo "  - Try using a different registry mirror"
+        fi
+
+        # Check Docker daemon status
+        if ! docker info &>/dev/null; then
+          echo "⚠️ Docker daemon issue detected"
+          echo "  - Docker daemon may not be running"
+          echo "  - Check Docker service status"
+          echo "  - Verify Docker socket permissions"
+        fi
+
+        # Upload error log as artifact
+        echo "::group::Upload error log"
+        if [ -f "$ERROR_LOG" ]; then
+          echo "build-error-log=$ERROR_LOG" >> $GITHUB_OUTPUT
+          echo "⚠️ Error log captured for debugging"
+        fi
+        echo "::endgroup::"
+
+        echo "⚠️ For detailed troubleshooting, check the workflow run logs"
+
+        exit 1
+
+    - name: Upload build logs as artifact
+      if: always() && failure() && steps.build.outcome == 'failure'
+      # Pinned to v4 commit hash for security
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      continue-on-error: true
+      with:
+        name: ${{ inputs.image-name }}-build-logs
+        path: /tmp/build-logs/docker-build-error.log
+        retention-days: 7
+
+    - name: Extract first tag
+      id: first-tag
+      shell: bash
+      run: |
+        # Extract the first tag from the multiline output
+        FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+        echo "value=$FIRST_TAG" >> $GITHUB_OUTPUT
+
+    - name: Scan Docker image for vulnerabilities
+      uses: ./.github/actions/docker/security-scan
+      with:
+        image-ref: ${{ steps.first-tag.outputs.value }}@${{ steps.build.outputs.digest }}
+        report-name: ${{ inputs.image-name }}-security-scan
+        category: frontend-web-trivy
+        severity: 'HIGH,CRITICAL'
+        fail-on-error: 'false'
+
+    - name: Set image info for outputs
+      id: image-info
+      shell: bash
+      run: |
+        # Get the first tag as the primary image reference
+        FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+        echo "image-full-name=$FIRST_TAG" >> $GITHUB_OUTPUT
+
+        echo "📋 Image build summary:"
+        echo "  Primary image: $FIRST_TAG"
+        echo "  All tags: ${{ steps.meta.outputs.tags }}"
+        echo "  Labels: ${{ steps.meta.outputs.labels }}"
+        echo "  Build environment: ${{ inputs.build-env }}"
+        echo "  Image Digest: ${{ steps.build.outputs.digest }}"
+        echo "  Image ID: ${{ steps.build.outputs.imageID }}"
+
+        # Get image details if available
+        if docker inspect "$FIRST_TAG" &>/dev/null; then
+          echo "  Image ID: $(docker inspect --format='{{.Id}}' "$FIRST_TAG" | cut -d':' -f2 | cut -c1-12)"
+          echo "  Created: $(docker inspect --format='{{.Created}}' "$FIRST_TAG")"
+          echo "  Size: $(docker inspect --format='{{.Size}}' "$FIRST_TAG" | numfmt --to=iec-i --suffix=B --format="%.2f")"
+          echo "  Architecture: $(docker inspect --format='{{.Architecture}}' "$FIRST_TAG")"
+          echo "  OS: $(docker inspect --format='{{.Os}}' "$FIRST_TAG")"
+        fi
+
+        # Log cache information for debugging
+        echo "🔍 Cache information:"
+        echo "  pnpm cache: $(ls -la $PNPM_STORE_PATH 2>/dev/null | wc -l 2>/dev/null || echo "unavailable") entries"
+
+        # Get Docker cache info
+        CACHE_INFO=$(docker buildx du -v 2>/dev/null || echo "")
+        if [ -n "$CACHE_INFO" ]; then
+          CACHE_COUNT=$(echo "$CACHE_INFO" | grep -c "cache" || echo "0")
+          CACHE_SIZE=$(echo "$CACHE_INFO" | grep "cache" | awk '{sum+=$1} END {print sum}')
+          echo "  Docker cache entries: $CACHE_COUNT"
+          if [ -n "$CACHE_SIZE" ] && [ "$CACHE_SIZE" != "0" ]; then
+            echo "  Docker cache size: $CACHE_SIZE"
+          fi
+
+          # Check cache hit ratio if available
+          CACHE_HITS=$(echo "$CACHE_INFO" | grep -c "hit" || echo "0")
+          CACHE_MISSES=$(echo "$CACHE_INFO" | grep -c "miss" || echo "0")
+          if [ "$CACHE_HITS" -gt 0 ] || [ "$CACHE_MISSES" -gt 0 ]; then
+            TOTAL=$((CACHE_HITS + CACHE_MISSES))
+            if [ "$TOTAL" -gt 0 ]; then
+              HIT_RATIO=$((CACHE_HITS * 100 / TOTAL))
+              echo "  Cache hit ratio: ${HIT_RATIO}% ($CACHE_HITS hits, $CACHE_MISSES misses)"
+            fi
+          fi
+        else
+          echo "  Docker cache: information unavailable"
+        fi
+
+        # Log registry information
+        if [ "${{ inputs.deliver }}" == "true" ]; then
+          echo "📦 Registry information:"
+          echo "  GHCR: ghcr.io/${{ github.repository }}/${{ inputs.image-name }}"
+          if [ -n "${{ inputs.docker-username }}" ]; then
+            echo "  Docker Hub: ${{ inputs.docker-username }}/${{ inputs.image-name }}"
+          fi
+
+          # Check registry connectivity
+          echo "  Registry connectivity:"
+          if curl -s -o /dev/null -w "%{http_code}" https://ghcr.io/v2/ 2>/dev/null | grep -q "200\|401"; then
+            echo "    GHCR: ✅ Available"
+          else
+            echo "    GHCR: ⚠️ Connectivity issues"
+          fi
+
+          if [ -n "${{ inputs.docker-username }}" ]; then
+            if curl -s -o /dev/null -w "%{http_code}" https://registry.hub.docker.com/v2/ 2>/dev/null | grep -q "200\|401"; then
+              echo "    Docker Hub: ✅ Available"
+            else
+              echo "    Docker Hub: ⚠️ Connectivity issues"
+            fi
+          fi
+        fi
+
+        # Log build performance metrics
+        echo "⏱️ Build performance metrics:"
+        if [ -n "${{ steps.build-end.outputs.duration }}" ]; then
+          echo "  Build duration: ${{ steps.build-end.outputs.duration }} seconds"
+        else
+          echo "  Build duration: information unavailable"
+        fi
+        echo "  Image digest: ${{ steps.build.outputs.digest }}"

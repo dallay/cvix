@@ -1,0 +1,19 @@
+name: Issue Labeler
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label issues
+        uses: github/issue-labeler@c1b0f9f52a63158c4adc09425e858e87b32e9685
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/issue-labeler-config.yml
+          enable-versioned-regex: false # or true, depending on your needs

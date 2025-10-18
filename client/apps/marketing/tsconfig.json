@@ -1,0 +1,17 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"baseUrl": ".",
+		"strictNullChecks": true,
+		"paths": {
+			"@/*": ["./src/*"],
+			"@i18n": ["./src/i18n/index.ts"],
+			"@lib/*": ["./src/lib/*"],
+			"@models/*": ["./src/lib/models/*"],
+			"@components/*": ["./src/components/*"]
+		},
+		"jsx": "preserve"
+	}
+}

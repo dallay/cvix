@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002c-add-workspaces-is-default-column
+      author: loomify
+      changes:
+        - addColumn:
+            tableName: workspaces
+            columns:
+              - column:
+                  name: is_default
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropColumn:
+            tableName: workspaces
+            columnName: is_default
+
+  - changeSet:
+      id: 002c-cleanup-workspaces-default
+      author: loomify
+      changes:
+        # Step 1: Ensure all workspaces have is_default set to false
+        - sql:
+            sql: |
+              UPDATE workspaces
+              SET is_default = false;
+
+              -- Step 2: For each owner, set the oldest workspace as default
+              WITH cte AS (
+                SELECT id,
+                       ROW_NUMBER() OVER (PARTITION BY owner_id ORDER BY created_at ASC, id ASC) as rn
+                FROM workspaces
+              )
+              UPDATE workspaces w
+              SET is_default = true
+              FROM cte
+              WHERE w.id = cte.id
+                AND cte.rn = 1;
+
+  - changeSet:
+      id: 002c-add-workspace-default-constraint
+      author: loomify
+      runInTransaction: false
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Drop any existing (possibly wrong) unique index to avoid conflicts
+              DROP INDEX CONCURRENTLY IF EXISTS idx_workspaces_owner_default;
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Ensure only one default workspace per owner (partial unique index)
+              CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS idx_workspaces_owner_default
+              ON workspaces(owner_id)
+              WHERE is_default IS TRUE;
+      rollback:
+        - sql:
+            splitStatements: false
+            sql: |
+              DROP INDEX IF EXISTS idx_workspaces_owner_default;
+      comment: "Ensure only one default workspace per owner and add unique constraint"

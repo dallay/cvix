@@ -1,0 +1,26 @@
+meta {
+  name: Get Session
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{url}}/api/session
+  body: text
+  auth: none
+}
+
+headers {
+  X-XSRF-TOKEN: {{xsrf-token}}
+}
+
+body:text {
+  {
+      "username": "john.doe@loomify.com",
+      "password": "S3cr3tP@ssw0rd*123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

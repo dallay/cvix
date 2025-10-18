@@ -1,0 +1,48 @@
+---
+import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+
+// Determine the language to use
+const astroLocale = Astro.currentLocale;
+let langToUse: Lang;
+
+if (astroLocale && LOCALES[astroLocale as Lang]) {
+	langToUse = astroLocale as Lang;
+} else {
+	langToUse = DEFAULT_LOCALE;
+}
+const t = useTranslations(langToUse);
+---
+<section class="bg-white dark:bg-gray-900 py-12 sm:py-16 lg:py-20">
+  <div class="px-4 mx-auto max-w-screen-xl">
+    <div class="max-w-screen-md mx-auto mb-8 text-center lg:mb-12">
+      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{t('features.heading')}</h2>
+      <p class="text-gray-500 sm:text-xl dark:text-gray-400">{t('features.subheading')}</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="flex flex-col items-center text-center p-6">
+        <!-- Custom Icon: Content Automation -->
+        <svg class="w-12 h-12 mb-4 text-primary-600" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v4H4V4zm0 6h10v4H4v-4zm0 6h16v4H4v-4z" fill="currentColor"/></svg>
+        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.contentAutomation.title')}</h3>
+        <p class="text-gray-500 dark:text-gray-400">{t('features.contentAutomation.description')}</p>
+      </div>
+      <div class="flex flex-col items-center text-center p-6">
+        <!-- Custom Icon: Multi-Channel Publishing -->
+        <svg class="w-12 h-12 mb-4 text-primary-600" viewBox="0 0 24 24" fill="none"><path d="M12 2l4 4-4 4-4-4 4-4zm0 12l4 4-4 4-4-4 4-4z" fill="currentColor"/></svg>
+        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.multiChannel.title')}</h3>
+        <p class="text-gray-500 dark:text-gray-400">{t('features.multiChannel.description')}</p>
+      </div>
+      <div class="flex flex-col items-center text-center p-6">
+        <!-- Custom Icon: Real-Time Analytics -->
+        <svg class="w-12 h-12 mb-4 text-primary-600" viewBox="0 0 24 24" fill="none"><path d="M3 17h18v2H3v-2zm2-6h4v8H5v-8zm6-4h4v12h-4V7zm6-3h4v15h-4V4z" fill="currentColor"/></svg>
+        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.analytics.title')}</h3>
+        <p class="text-gray-500 dark:text-gray-400">{t('features.analytics.description')}</p>
+      </div>
+      <div class="flex flex-col items-center text-center p-6">
+        <!-- Custom Icon: Subscriber Management -->
+        <svg class="w-12 h-12 mb-4 text-primary-600" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/></svg>
+        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.subscribers.title')}</h3>
+        <p class="text-gray-500 dark:text-gray-400">{t('features.subscribers.description')}</p>
+      </div>
+    </div>
+  </div>
+</section>

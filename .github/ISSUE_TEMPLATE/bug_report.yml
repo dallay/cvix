@@ -1,0 +1,87 @@
+name: Bug report
+description: Report a reproducible issue in loomify
+title: "fix: [area] concise bug description"
+labels: ["type:bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your report. Please fill in the fields below to help us reproduce the problem.
+  - type: checkboxes
+    id: sanity
+    attributes:
+      label: Pre-checks
+      options:
+        - label: I searched for existing related issues
+          required: true
+        - label: I reviewed the documentation and README
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Affected version/branch
+      placeholder: "v0.1.0 or feature/x"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area(s)
+      options:
+        - backend
+        - frontend:web
+        - frontend:landing
+        - docs
+        - ci/cd
+        - infra
+      multiple: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Run 'pnpm run ...' / './gradlew ...'
+        3. Observe error '...'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence (logs, screenshots)
+      description: Attach relevant logs or screenshots (no sensitive data).
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "OS, Java 21, Node 20, pnpm, Postgres, Docker"
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested priority
+      options:
+        - low
+        - medium
+        - high
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Agreements
+      options:
+        - label: I agree to the Code of Conduct
+          required: true
+        - label: I followed the CONTRIBUTING guide
+          required: true

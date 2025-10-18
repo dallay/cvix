@@ -1,0 +1,19 @@
+meta {
+  name: Get All Workspaces
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{url}}/api/organization
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/vnd.api.v1+json
+}
+
+settings {
+  encodeUrl: true
+}

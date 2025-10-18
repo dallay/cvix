@@ -1,0 +1,26 @@
+name: Sync labels 🏷️
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/labels.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  sync-labels:
+    # skip on forks (manual runs there typically lack permissions)
+    if: ${{ !github.event.repository.fork }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: labels-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      # existing steps here
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+      - uses: crazy-max/ghaction-github-labeler@24d110aa46a59976b8a7f35518cb7f14f434c916 #v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          yaml-file: .github/labels.yml

@@ -1,0 +1,318 @@
+name: "Backend Docker Build"
+description: "Builds and pushes Spring Boot Docker images using Gradle bootBuildImage"
+
+inputs:
+  image-name:
+    description: "Name of the Docker image"
+    required: true
+    default: "backend"
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
+  docker-username:
+    description: "Docker Hub username"
+    required: false
+  docker-password:
+    description: "Docker Hub password"
+    required: false
+  deliver:
+    description: "Whether to push to registries"
+    required: false
+    default: "false"
+  gradle-args:
+    description: "Additional Gradle arguments"
+    required: false
+    default: ""
+  module-path:
+    description: "Path to the Gradle module to build"
+    required: false
+    default: "server:engine"
+  java-version:
+    description: "Java version to use"
+    required: false
+    default: "21"
+
+outputs:
+  image-full-name:
+    description: "Full name of the built image including registry and tag"
+    value: ${{ steps.image-info.outputs.image-full-name }}
+  image-tags:
+    description: "Tags applied to the image"
+    value: ${{ steps.meta.outputs.tags }}
+  build-status:
+    description: "Status of the build process (success, failed)"
+    value: ${{ steps.build-status.outputs.status }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK
+      # Pinned to v4 commit hash for security
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: "temurin"
+        cache: gradle
+
+    - name: Log build start
+      shell: bash
+      run: |
+        echo "🚀 Starting backend Docker build for ${{ inputs.image-name }}"
+        echo "  Using Gradle bootBuildImage with JDK ${{ inputs.java-version }}"
+        echo "  Additional Gradle args: ${{ inputs.gradle-args || 'none' }}"
+
+        # Create log directory
+        mkdir -p /tmp/docker-build-logs
+        echo "  Log directory: /tmp/docker-build-logs"
+
+    - name: Login to GitHub Container Registry
+      if: ${{ inputs.deliver == 'true' }}
+      # Pinned to v3 commit hash for security
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      id: ghcr-login
+      continue-on-error: true
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+
+    - name: Check GHCR login status
+      shell: bash
+      if: ${{ inputs.deliver == 'true' }}
+      run: |
+        if [ "${{ steps.ghcr-login.outcome }}" == "success" ]; then
+          echo "✅ Successfully logged in to GitHub Container Registry"
+        else
+          echo "❌ Failed to log in to GitHub Container Registry"
+          echo "  Error: Authentication failed. Please check your GitHub token."
+          echo "  This may affect the ability to push images to GHCR."
+        fi
+
+    - name: Login to Docker Hub
+      if: ${{ inputs.deliver == 'true' && inputs.docker-username != '' && inputs.docker-password != '' }}
+      # Pinned to v3 commit hash for security
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      id: dockerhub-login
+      continue-on-error: true
+      with:
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Check Docker Hub login status
+      shell: bash
+      if: ${{ inputs.deliver == 'true' && inputs.docker-username != '' && inputs.docker-password != '' }}
+      run: |
+        if [ "${{ steps.dockerhub-login.outcome }}" == "success" ]; then
+          echo "✅ Successfully logged in to Docker Hub"
+        else
+          echo "❌ Failed to log in to Docker Hub"
+          echo "  Error: Authentication failed. Please check your Docker Hub credentials."
+          echo "  This may affect the ability to push images to Docker Hub."
+        fi
+
+    - name: Set up Docker Buildx
+      # Pinned to v3 commit hash for security
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+
+    - name: Extract metadata for Docker
+      id: meta
+      # Pinned to v5 commit hash for security
+      uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+      with:
+        images: |
+          ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
+          ${{ inputs.docker-username != '' && inputs.docker-password != '' && format('{0}/{1}', inputs.docker-username, inputs.image-name) || '' }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=sha,format=long
+
+    - name: Build with Gradle bootBuildImage
+      id: gradle-build
+      shell: bash
+      continue-on-error: true
+      run: |
+        # Create log file
+        BUILD_LOG="/tmp/docker-build-logs/${{ inputs.image-name }}-build.log"
+
+        echo "🔨 Building Docker image with Gradle bootBuildImage"
+        echo "  Image name: ${{ inputs.image-name }}"
+        echo "  Build log: $BUILD_LOG"
+
+        # Extract the first image name from metadata
+        IMAGE_NAME=$(echo '${{ steps.meta.outputs.tags }}' | head -n 1)
+        echo "  Target image: $IMAGE_NAME"
+
+        # Run Gradle bootBuildImage with detailed logging
+        ./gradlew bootBuildImage \
+          --imageName=$IMAGE_NAME \
+          -x test \
+          ${{ inputs.gradle-args }} \
+          --info \
+          2>&1 | tee $BUILD_LOG
+
+        # Store the exit code
+        BUILD_EXIT_CODE=${PIPESTATUS[0]}
+
+        # Check for common Gradle build errors in the log
+        if [ $BUILD_EXIT_CODE -ne 0 ]; then
+          echo "❌ Gradle build failed with exit code $BUILD_EXIT_CODE"
+
+          # Check for common errors
+          if grep -q "Could not resolve all files for configuration" $BUILD_LOG; then
+            echo "  Error: Dependency resolution failed. Check your network connection and Gradle repositories."
+          elif grep -q "Execution failed for task" $BUILD_LOG; then
+            FAILED_TASK=$(grep "Execution failed for task" $BUILD_LOG | head -1)
+            echo "  Error: $FAILED_TASK"
+          elif grep -q "No space left on device" $BUILD_LOG; then
+            echo "  Error: No disk space left on the build machine."
+          elif grep -q "Connection refused" $BUILD_LOG; then
+            echo "  Error: Connection refused. Check Docker daemon status and network connectivity."
+          elif grep -q "DOCKER_BUILDKIT" $BUILD_LOG; then
+            echo "  Error: Docker BuildKit issue. Check Docker configuration."
+          else
+            echo "  Error: Unknown build failure. Check the build log for details."
+          fi
+
+          # Show the last few lines of the log for context
+          echo "  Last 10 lines of build log:"
+          tail -10 $BUILD_LOG | sed 's/^/    /'
+
+          exit $BUILD_EXIT_CODE
+        else
+          echo "✅ Gradle build completed successfully"
+          echo "  Image built: $IMAGE_NAME"
+
+          # Check for warnings
+          WARNINGS=$(grep -i "warning:" $BUILD_LOG | wc -l)
+          if [ $WARNINGS -gt 0 ]; then
+            echo "  ⚠️ Build completed with $WARNINGS warnings"
+          fi
+
+          # Check for cache statistics
+          CACHE_HITS=$(grep -i "from cache" $BUILD_LOG | wc -l)
+          echo "  📊 Cache statistics: approximately $CACHE_HITS cache hits"
+        fi
+
+    - name: Set build status
+      id: build-status
+      shell: bash
+      run: |
+        if [ "${{ steps.gradle-build.outcome }}" == "success" ]; then
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Build status: SUCCESS"
+        else
+          echo "status=failed" >> $GITHUB_OUTPUT
+          echo "❌ Build status: FAILED"
+          echo "  Check the build logs for more details"
+        fi
+
+    - name: Push Docker image
+      if: ${{ inputs.deliver == 'true' && steps.build-status.outputs.status == 'success' }}
+      id: push
+      shell: bash
+      continue-on-error: true
+      run: |
+        # Create log file
+        PUSH_LOG="/tmp/docker-build-logs/${{ inputs.image-name }}-push.log"
+
+        echo "📤 Pushing Docker image to registries"
+
+        # Push to GHCR if login was successful
+        if [ "${{ steps.ghcr-login.outcome }}" == "success" ]; then
+          echo "  Pushing to GitHub Container Registry..."
+          GHCR_IMAGE=$(echo '${{ steps.meta.outputs.tags }}' | grep "ghcr.io" | head -n 1)
+
+          docker push $GHCR_IMAGE 2>&1 | tee -a $PUSH_LOG
+
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "  ✅ Successfully pushed to GitHub Container Registry: $GHCR_IMAGE"
+          else
+            echo "  ❌ Failed to push to GitHub Container Registry"
+            echo "    Error details in log: $PUSH_LOG"
+          fi
+        else
+          echo "  ⚠️ Skipping GitHub Container Registry push due to login failure"
+        fi
+
+        # Push to Docker Hub if credentials were provided and login was successful
+        if [[ -n "${{ inputs.docker-username }}" && -n "${{ inputs.docker-password }}" && "${{ steps.dockerhub-login.outcome }}" == "success" ]]; then
+          echo "  Pushing to Docker Hub..."
+          DOCKERHUB_IMAGE=$(echo '${{ steps.meta.outputs.tags }}' | grep -v "ghcr.io" | head -n 1)
+
+          if [ -n "$DOCKERHUB_IMAGE" ]; then
+            docker push $DOCKERHUB_IMAGE 2>&1 | tee -a $PUSH_LOG
+
+            if [ ${PIPESTATUS[0]} -eq 0 ]; then
+              echo "  ✅ Successfully pushed to Docker Hub: $DOCKERHUB_IMAGE"
+            else
+              echo "  ❌ Failed to push to Docker Hub"
+              echo "    Error details in log: $PUSH_LOG"
+            fi
+          else
+            echo "  ⚠️ No Docker Hub image tag found to push"
+          fi
+        else
+          echo "  ⚠️ Skipping Docker Hub push due to missing credentials or login failure"
+        fi
+
+    - name: Set image info
+      id: image-info
+      shell: bash
+      run: |
+        # Get the first image tag
+        IMAGE_FULL_NAME=$(echo '${{ steps.meta.outputs.tags }}' | head -n 1)
+        echo "image-full-name=$IMAGE_FULL_NAME" >> $GITHUB_OUTPUT
+
+        echo "📋 Image information:"
+        echo "  Full name: $IMAGE_FULL_NAME"
+        echo "  All tags:"
+        echo '${{ steps.meta.outputs.tags }}' | sed 's/^/    /'
+        echo "  Labels:"
+        echo '${{ steps.meta.outputs.labels }}' | sed 's/^/    /'
+
+    - name: Upload build logs
+      if: ${{ always() }}
+      # Pinned to v4 commit hash for security
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: ${{ inputs.image-name }}-build-logs
+        path: /tmp/docker-build-logs/
+        retention-days: 7
+
+    - name: Build summary
+      shell: bash
+      run: |
+        echo "🏁 Backend Docker build summary for ${{ inputs.image-name }}"
+        echo "  Build status: ${{ steps.build-status.outputs.status }}"
+
+        if [ "${{ steps.build-status.outputs.status }}" == "success" ]; then
+          echo "  Image: ${{ steps.image-info.outputs.image-full-name }}"
+
+          if [ "${{ inputs.deliver }}" == "true" ]; then
+            echo "  Registry pushes:"
+
+            if [ "${{ steps.ghcr-login.outcome }}" == "success" ]; then
+              echo "    - GitHub Container Registry: ✅"
+            else
+              echo "    - GitHub Container Registry: ❌ (login failed)"
+            fi
+
+            if [ "${{ inputs.docker-username != '' && inputs.docker-password != '' }}" == "true" ]; then
+              if [ "${{ steps.dockerhub-login.outcome }}" == "success" ]; then
+                echo "    - Docker Hub: ✅"
+              else
+                echo "    - Docker Hub: ❌ (login failed)"
+              fi
+            else
+              echo "    - Docker Hub: ⚠️ (credentials not provided)"
+            fi
+          else
+            echo "  Image delivery: disabled (deliver=false)"
+          fi
+        else
+          echo "  ❌ Build failed - no image produced"
+          echo "  Check build logs for details"
+        fi
+
+        echo "  Build logs saved as artifact: ${{ inputs.image-name }}-build-logs"

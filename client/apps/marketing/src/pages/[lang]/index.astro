@@ -1,0 +1,29 @@
+---
+import CTA from "@/components/sections/CTA.astro";
+import FAQ from "@/components/sections/FAQ.astro";
+import Feature from "@/components/sections/Feature.astro";
+import Footer from "@/components/sections/Footer.astro";
+import Hero from "@/components/sections/Hero.astro";
+import LatestArticles from "@/components/sections/LatestArticles.astro";
+import Pricing from "@/components/sections/Pricing.astro";
+import { type Lang, LOCALES, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Base.astro";
+
+const locale = Astro.currentLocale as Lang;
+const t = useTranslations(locale);
+
+export const getStaticPaths = () =>
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
+---
+
+<Layout title={t('home.title')} description={t('home.description')}>
+  <Hero />
+  <Feature />
+  <CTA />
+  <Pricing />
+  <LatestArticles />
+  <FAQ />
+  <Footer />
+</Layout>

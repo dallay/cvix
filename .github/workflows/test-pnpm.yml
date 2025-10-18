@@ -1,0 +1,27 @@
+name: Test PNPM Setup
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        # Pinned to v4 commit hash for security
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+
+
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: '22'
+
+      - name: Test pnpm installation
+        run: |
+          echo "PATH=$PATH"
+          which pnpm || echo "pnpm not found"
+          pnpm --version

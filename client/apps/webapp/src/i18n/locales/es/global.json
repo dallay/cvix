@@ -1,0 +1,45 @@
+{
+	"global": {
+		"common": {
+			"auth": {
+				"login": "Iniciar sesión",
+				"logout": "Cerrar sesión"
+			},
+			"loading": "Cargando...",
+			"error": "Ocurrió un error",
+			"notFound": "Página no encontrada",
+			"backToHome": "Volver al inicio",
+			"search": "Buscar",
+			"submit": "Enviar",
+			"cancel": "Cancelar",
+			"save": "Guardar",
+			"delete": "Eliminar",
+			"edit": "Editar",
+			"view": "Ver",
+			"update": "Actualizar",
+			"create": "Crear",
+			"confirm": "Confirmar",
+			"yes": "Sí",
+			"no": "No"
+		},
+		"ribbon": {
+			"dev": "Desarrollo"
+		},
+		"navigation": {
+			"dashboard": "Tablero",
+			"tags": "Etiquetas",
+			"audience": "Audiencia",
+			"subscribers": "Suscriptores",
+			"account": "Cuenta",
+			"settings": "Configuración",
+			"changePassword": "Cambiar contraseña",
+			"admin": "Administración",
+			"userManagement": "Gestión de usuarios",
+			"systemSettings": "Configuración del sistema",
+			"userManagementTooltip": "Administrar usuarios del sistema",
+			"systemSettingsTooltip": "Configurar los ajustes del sistema",
+			"home": "Inicio",
+			"profile": "Perfil"
+		}
+	}
+}

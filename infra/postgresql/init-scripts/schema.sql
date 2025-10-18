@@ -1,0 +1,191 @@
+-- -- ENUMS
+-- DROP TYPE IF EXISTS subscriber_status CASCADE;
+-- CREATE TYPE subscriber_status AS ENUM ('ENABLED', 'DISABLED', 'BLOCKLISTED');
+--
+-- DROP TYPE IF EXISTS role_type CASCADE;
+-- CREATE TYPE role_type AS ENUM ('OWNER', 'ADMIN', 'EDITOR', 'VIEWER');
+--
+-- -- USERS
+-- CREATE TABLE users (
+--                      id UUID PRIMARY KEY,
+--                      email VARCHAR(255) NOT NULL UNIQUE,
+--                      full_name VARCHAR(255),
+--                      created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+--                      updated_at TIMESTAMPTZ
+-- );
+--
+-- -- WORKSPACES
+-- CREATE TABLE workspaces (
+--                           id UUID PRIMARY KEY,
+--                           name VARCHAR(100) NOT NULL,
+--                           description VARCHAR(500),
+--                           owner_id UUID NOT NULL,
+--                           created_by VARCHAR(50) DEFAULT 'system' NOT NULL,
+--                           created_at TIMESTAMP DEFAULT now() NOT NULL,
+--                           updated_by VARCHAR(50),
+--                           updated_at TIMESTAMP,
+--                           CONSTRAINT fk_workspace_owner FOREIGN KEY (owner_id)
+--                             REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+--
+-- -- WORKSPACE MEMBERS
+-- CREATE TABLE workspace_members (
+--                                  workspace_id UUID NOT NULL,
+--                                  user_id UUID NOT NULL,
+--                                  role role_type NOT NULL,
+--                                  created_at TIMESTAMPTZ DEFAULT now(),
+--                                  updated_at TIMESTAMPTZ DEFAULT now(),
+--                                  PRIMARY KEY (workspace_id, user_id),
+--                                  CONSTRAINT fk_member_workspace FOREIGN KEY (workspace_id)
+--                                    REFERENCES workspaces(id) ON DELETE CASCADE ON UPDATE CASCADE,
+--                                  CONSTRAINT fk_member_user FOREIGN KEY (user_id)
+--                                    REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+--
+-- -- SUBSCRIBERS
+-- CREATE TABLE subscribers (
+--                            id UUID PRIMARY KEY,
+--                            email TEXT NOT NULL,
+--                            firstname TEXT NOT NULL,
+--                            lastname TEXT,
+--                            status subscriber_status NOT NULL DEFAULT 'ENABLED',
+--                            attributes JSONB,
+--                            workspace_id UUID NOT NULL,
+--                            created_at TIMESTAMPTZ DEFAULT now(),
+--                            updated_at TIMESTAMPTZ DEFAULT now(),
+--                            deleted_at TIMESTAMPTZ,
+--                            CONSTRAINT fk_workspace_subscriber FOREIGN KEY (workspace_id)
+--                              REFERENCES workspaces(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+--
+-- CREATE UNIQUE INDEX idx_subs_email_workspace
+--   ON subscribers (lower(email), workspace_id);
+-- CREATE INDEX idx_subs_status ON subscribers (status);
+-- CREATE INDEX idx_subs_created_at ON subscribers (created_at);
+--
+-- -- FORMS
+-- CREATE TABLE forms (
+--                      id UUID PRIMARY KEY,
+--                      name TEXT NOT NULL,
+--                      header TEXT,
+--                      description TEXT,
+--                      input_placeholder TEXT,
+--                      button_text TEXT,
+--                      button_color TEXT,
+--                      background_color TEXT,
+--                      text_color TEXT,
+--                      button_text_color TEXT,
+--                      workspace_id UUID NOT NULL,
+--                      created_at TIMESTAMPTZ DEFAULT now(),
+--                      updated_at TIMESTAMPTZ DEFAULT now(),
+--                      deleted_at TIMESTAMPTZ,
+--                      CONSTRAINT fk_form_workspace FOREIGN KEY (workspace_id)
+--                        REFERENCES workspaces(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+--
+-- CREATE INDEX idx_forms_workspace ON forms (workspace_id);
+-- CREATE INDEX idx_forms_created_at ON forms (created_at);
+--
+-- -- TAGS
+-- CREATE TABLE tags (
+--                     id UUID PRIMARY KEY,
+--                     name TEXT NOT NULL,
+--                     color TEXT NOT NULL CHECK (
+--                       color IN ('default', 'purple', 'pink', 'red', 'blue', 'yellow')
+--                       ),
+--                     workspace_id UUID NOT NULL,
+--                     created_at TIMESTAMPTZ DEFAULT now(),
+--                     updated_at TIMESTAMPTZ DEFAULT now(),
+--                     deleted_at TIMESTAMPTZ,
+--                     CONSTRAINT fk_tags_workspace FOREIGN KEY (workspace_id)
+--                       REFERENCES workspaces(id) ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+--
+-- -- SUBSCRIBER_TAGS (Many-to-many)
+-- CREATE TABLE subscriber_tags (
+--                                subscriber_id UUID NOT NULL,
+--                                tag_id UUID NOT NULL,
+--                                PRIMARY KEY (subscriber_id, tag_id),
+--                                CONSTRAINT fk_subscriber_id FOREIGN KEY (subscriber_id)
+--                                  REFERENCES subscribers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+--                                CONSTRAINT fk_tag_id FOREIGN KEY (tag_id)
+--                                  REFERENCES tags(id) ON DELETE CASCADE ON UPDATE CASCADE,
+--                                created_at TIMESTAMPTZ DEFAULT now(),
+--                                updated_at TIMESTAMPTZ DEFAULT now()
+-- );
+--
+-- -- TRIGGER FUNCTION
+-- CREATE OR REPLACE FUNCTION set_updated_at_column()
+--   RETURNS TRIGGER AS $$
+-- BEGIN
+--   NEW.updated_at = CURRENT_TIMESTAMP;
+--   RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+--
+-- -- TRIGGERS
+-- CREATE TRIGGER trg_users_updated_at
+--   BEFORE UPDATE ON users
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_workspaces_updated_at
+--   BEFORE UPDATE ON workspaces
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_workspace_members_updated_at
+--   BEFORE UPDATE ON workspace_members
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_subscribers_updated_at
+--   BEFORE UPDATE ON subscribers
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_forms_updated_at
+--   BEFORE UPDATE ON forms
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_tags_updated_at
+--   BEFORE UPDATE ON tags
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- CREATE TRIGGER trg_subscriber_tags_updated_at
+--   BEFORE UPDATE ON subscriber_tags
+--   FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+--
+-- -- RLS
+-- ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE forms ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE workspaces ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE workspace_members ENABLE ROW LEVEL SECURITY;
+--
+-- -- RLS POLICIES
+-- CREATE POLICY subscriber_policy ON subscribers
+--   FOR SELECT TO PUBLIC
+--   USING (
+--   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   );
+--
+-- CREATE POLICY form_policy ON forms
+--   FOR SELECT TO PUBLIC
+--   USING (
+--   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   );
+--
+-- CREATE POLICY tags_policy ON tags
+--   FOR SELECT TO PUBLIC
+--   USING (
+--   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   );
+--
+-- CREATE POLICY workspace_policy ON workspaces
+--   FOR SELECT TO PUBLIC
+--   USING (
+--   id = current_setting('loomify.current_workspace')::uuid
+--   );
+--
+-- CREATE POLICY workspace_members_policy ON workspace_members
+--   FOR SELECT TO PUBLIC
+--   USING (
+--   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   );

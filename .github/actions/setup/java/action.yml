@@ -1,0 +1,29 @@
+name: 'Setup Java'
+description: 'Sets up Java and Gradle with caching'
+
+inputs:
+  java-version:
+    description: 'Java version to use'
+    required: false
+    default: '21'
+  distribution:
+    description: 'Java distribution to use'
+    required: false
+    default: 'temurin'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK
+      # Pinned to v4 commit hash for security
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: ${{ inputs.distribution }}
+        cache: gradle
+
+    - name: Setup Gradle
+      # Pinned to v3 commit hash for security
+      uses: gradle/actions/setup-gradle@6cfc8b8e8bb586cc164bef1c478c1eea3a4d6a19 # v3
+      with:
+        gradle-version: wrapper

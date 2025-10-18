@@ -1,0 +1,26 @@
+meta {
+  name: User Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/api/login
+  body: json
+  auth: none
+}
+
+headers {
+  X-XSRF-TOKEN: {{xsrfToken}}
+}
+
+body:json {
+  {
+      "username": "john.doe@loomify.com",
+      "password": "S3cr3tP@ssw0rd*123"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

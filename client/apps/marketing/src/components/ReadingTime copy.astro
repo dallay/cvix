@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { type Lang, useTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
+
+interface Props extends HTMLAttributes<"span"> {
+	readingTime: string;
+}
+const { readingTime, ...attrs } = Astro.props;
+
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+---
+
+{
+	readingTime && (
+		<span
+			class={
+				cn("text-gray-500 dark:text-gray-400 font-inter text-[9px] leading-[140%] tracking-widest uppercase rounded gap-1", attrs.class)
+			}
+			aria-label={t("post.reading.time.aria", { time: readingTime })}
+		>
+			{t("post.reading.time", { time: readingTime })}
+		</span>
+	)
+}

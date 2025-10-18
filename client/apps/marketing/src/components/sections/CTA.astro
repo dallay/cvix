@@ -1,0 +1,27 @@
+---
+import { Icon } from "astro-icon/components";
+import CtaDashboardMockup from "@/assets/cta-dashboard-mockup.svg";
+import CtaDashboardMockupDark from "@/assets/cta-dashboard-mockup-dark.svg";
+import Link from "@/components/Link.astro";
+import OptimizedPicture from "@/components/OptimizedPicture.astro";
+import { type Lang, useTranslations } from "@/i18n";
+
+const lang = Astro.currentLocale as Lang;
+const t = useTranslations(lang);
+---
+<section class="bg-white dark:bg-gray-900">
+  <div class="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
+    <div class="order-1">
+      <OptimizedPicture class="mx-auto rounded-2xl shadow-2xl w-full dark:hidden" src={CtaDashboardMockup} alt="dashboard image" />
+      <OptimizedPicture class="mx-auto rounded-2xl shadow-2xl w-full hidden dark:block" src={CtaDashboardMockupDark} alt="dashboard image" />
+    </div>
+    <div class="mt-4 md:mt-0 order-2">
+      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{t('cta.heading')}</h2>
+      <p class="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">{t('cta.description')}</p>
+      <Link href="#" variant="default">
+        {t('cta.button')}
+        <Icon name="tabler:arrow-right" class="ml-2 -mr-1 w-5 h-5" />
+      </Link>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,87 @@
+{
+	"name": "@loomify/logger",
+	"version": "0.0.1",
+	"description": "A lightweight, powerful, and universal TypeScript logging library for loomify",
+	"license": "MIT",
+	"type": "module",
+	"homepage": "https://loomify.tech",
+	"author": "loomify Team",
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.13.1",
+	"main": "./dist/logger.cjs",
+	"module": "./dist/logger.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/logger.cjs",
+			"import": "./dist/logger.mjs"
+		}
+	},
+	"files": [
+		"package.json",
+		"dist"
+	],
+	"keywords": [
+		"loomify",
+		"logger",
+		"logging",
+		"typescript",
+		"universal",
+		"browser",
+		"nodejs"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yacosta738/saas-template.git",
+		"directory": "client/packages/logger",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/yacosta738/saas-template/issues"
+	},
+	"scripts": {
+		"dev:build": "vite build --watch --mode development",
+		"dev:types": "tsc --build --watch",
+		"dev:full": "run-p dev:types dev:build",
+		"clean:types": "rimraf dist tsconfig.tsbuildinfo",
+		"build:types:raw": "tsc --build",
+		"build:types": "run-s clean:types build:types:raw",
+		"build:vite": "vite build",
+		"build:all": "run-s build:types build:vite",
+		"build": "run-s build:all",
+		"preview": "vite preview",
+		"typecheck": "tsc --noEmit --skipLibCheck",
+		"typecheck:build": "tsc --build --noEmit",
+		"check": "run-s typecheck",
+		"format": "biome format . --write",
+		"format:check": "biome format . --check",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint . --write",
+		"clean": "rimraf dist coverage tsconfig.tsbuildinfo",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"ci": "run-s clean typecheck build test"
+	},
+	"devDependencies": {
+		"@loomify/config": "workspace:*",
+		"@loomify/tsconfig": "workspace:*",
+		"@types/node": "^24.1.0",
+		"@vitest/coverage-v8": "^3.2.4",
+		"jsdom": "^26.1.0",
+		"npm-run-all2": "^8.0.4",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.6",
+		"vite-plugin-dts": "^4.5.4",
+		"vitest": "^3.2.4"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

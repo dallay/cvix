@@ -1,0 +1,19 @@
+services:
+  postgresql:
+    image: postgres:16.9-alpine
+    container_name: postgresql-${APP_NAME}
+    environment:
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRESQL_DB}
+    shm_size: 128mb
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+networks:
+  backend:
+

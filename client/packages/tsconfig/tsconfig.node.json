@@ -1,0 +1,34 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"noUnusedLocals": true,
+		"strict": true,
+		"strictNullChecks": true,
+
+		"baseUrl": ".",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"resolveJsonModule": true,
+		"types": ["vite/client", "vitest/globals"],
+
+		"noEmit": true,
+
+		"allowJs": true,
+
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+
+		"jsx": "preserve",
+		"lib": ["ESNext", "DOM"],
+		"target": "esnext",
+
+		"skipLibCheck": true
+	}
+}

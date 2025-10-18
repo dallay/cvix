@@ -1,0 +1,17 @@
+{
+	"register": {
+		"form": {
+			"validation": {
+				"firstName-min": "First name must be at least 2 characters.",
+				"lastName-min": "Last name must be at least 2 characters.",
+				"email-invalid": "Please enter a valid email address.",
+				"password-min": "Password must be at least 8 characters.",
+				"password-uppercase": "Password must include at least one uppercase letter.",
+				"password-lowercase": "Password must include at least one lowercase letter.",
+				"password-number": "Password must include at least one number.",
+				"password-special": "Password must include at least one special character.",
+				"password-match": "Passwords do not match."
+			}
+		}
+	}
+}

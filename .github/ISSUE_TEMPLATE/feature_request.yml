@@ -1,0 +1,74 @@
+name: Feature request
+description: Propose an enhancement or new functionality
+title: "feat: [area] concise proposal"
+labels: ["type:feature", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem and the proposed solution clearly. Include acceptance criteria.
+  - type: input
+    id: version
+    attributes:
+      label: Version/branch context (optional)
+      placeholder: "v0.1.0 or main"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area(s)
+      options:
+        - backend
+        - frontend:web
+        - frontend:landing
+        - docs
+        - ci/cd
+        - infra
+      multiple: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What user/business problem does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Explain the solution (API, UI, flows, etc.).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (Given/When/Then)
+      placeholder: |
+        - Given ...
+          When ...
+          Then ...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - low
+        - medium
+        - high
+    validations:
+      required: true
+  - type: textarea
+    id: breaking
+    attributes:
+      label: Breaking changes or migrations?
+      description: Note any API changes or DB migrations.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context

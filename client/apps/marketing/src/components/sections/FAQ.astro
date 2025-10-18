@@ -1,0 +1,19 @@
+---
+import FAQCard from "@/components/FAQCard.astro";
+import { type Lang, useTranslations } from "@/i18n";
+import { getFAQs } from "@/models/faq/faq.service";
+
+const currentLanguage = Astro.currentLocale as Lang;
+const t = useTranslations(currentLanguage);
+const faqs = await getFAQs({
+	lang: currentLanguage,
+});
+---
+<section class="bg-white dark:bg-gray-900">
+  <div class="py-24 px-4 md:px-10 lg:px-20 mx-auto max-w-screen-xl">
+    <h2 class="mb-16 text-5xl font-bold text-center text-gray-900 dark:text-white">{t('faq.title')}</h2>
+    <div class="flex flex-col gap-6">
+      {faqs.map(faq => (<FAQCard faq={faq} />))}
+    </div>
+  </div>
+</section>

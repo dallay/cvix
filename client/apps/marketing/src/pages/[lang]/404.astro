@@ -1,0 +1,86 @@
+---
+export const prerender = true;
+
+import { type Lang, LOCALES, localeParams, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Base.astro";
+
+const t = useTranslations(Astro.currentLocale as Lang);
+
+const title = t({
+	en: "Page Not Found",
+	es: "Página No Encontrada",
+});
+
+export const getStaticPaths = () => localeParams;
+---
+
+<Layout {title}>
+  <section class="text-center p-8 rounded-2xl min-w-screen flex justify-center items-center flex-col mt-24">
+    <h1 class="text-caution text-2xl">
+      <b class="block text-9xl font-black -tracking-wider opacity-60">404</b>
+      {title}
+    </h1>
+
+    <p class="mt-4">
+      {
+        t({
+          en: "The page you are looking for could not be found. Please return to the top or try another language.",
+          es: "La página que estás buscando no se pudo encontrar. Por favor, vuelve al inicio o prueba en otro idioma.",
+        })
+      }
+    </p>
+
+    <a href="/" class="inline-block mt-4 px-6 py-2 rounded-full text-xl font-bold bg-theme">
+      {
+        t({
+          en: "Top Page",
+          es: "Página Principal",
+        })
+      }
+    </a>
+
+    <section class="mt-8">
+      <h2>
+        {
+          t({
+            en: "View in other languages",
+            es: "Ver en otros idiomas",
+          })
+        }
+      </h2>
+
+      <ul class="mt-4 flex gap-4 justify-center">
+        {
+          Object.entries(LOCALES).map(([lang, { label }]) => (
+              <li>
+                <a
+                    href={`/${lang}/`}
+                    data-lang-path={lang}
+                    onclick={`localStorage.selectedLang = "${lang}"`}
+                    dir={LOCALES[lang].dir || null}
+                    class="text-theme underline"
+                >
+                  {label}
+                </a>
+              </li>
+          ))
+        }
+      </ul>
+    </section>
+  </section>
+</Layout>
+
+<script is:inline>
+  if (localStorage.userAccessPath) {
+    history.replaceState("", "", localStorage.userAccessPath);
+
+    document.querySelectorAll("a[data-lang-path]").forEach((a) => {
+      const pathnames = localStorage.userAccessPath.split("/");
+      const lang = a.getAttribute("data-lang-path");
+      pathnames[1] = lang;
+      a.href = pathnames.join("/");
+    });
+
+    localStorage.removeItem("userAccessPath");
+  }
+</script>

@@ -1,0 +1,14 @@
+{
+	"title": "Empresarial",
+	"description": "Para grandes organizaciones con necesidades avanzadas.",
+	"price": 49,
+	"interval": "month",
+	"features": [
+		{ "text": "Hasta 20,000 suscriptores" },
+		{ "text": "Funcionalidades premium" },
+		{ "text": "Integraciones avanzadas" },
+		{ "text": "Soporte dedicado" },
+		{ "text": "Dominio de envío personalizado" }
+	],
+	"order": 2
+}

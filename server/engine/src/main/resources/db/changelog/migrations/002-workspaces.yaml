@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-workspaces
+      author: loomify
+      changes:
+        - createTable:
+            tableName: workspaces
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: owner_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(50)
+                  defaultValue: 'system'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: varchar(50)
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+        - addForeignKeyConstraint:
+            baseTableName: workspaces
+            baseColumnNames: owner_id
+            constraintName: fk_workspace_owner
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 004-create-workspace-members
+      author: loomify
+      changes:
+        - createTable:
+            tableName: workspace_members
+            columns:
+              - column:
+                  name: workspace_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: role_type
+                  defaultValue: EDITOR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addPrimaryKey:
+            tableName: workspace_members
+            columnNames: workspace_id, user_id
+            constraintName: pk_workspace_members
+        - addForeignKeyConstraint:
+            baseTableName: workspace_members
+            baseColumnNames: workspace_id
+            constraintName: fk_member_workspace
+            referencedTableName: workspaces
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: workspace_members
+            baseColumnNames: user_id
+            constraintName: fk_member_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE

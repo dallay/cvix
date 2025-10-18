@@ -1,0 +1,66 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import CTAEmail from "@/components/ui/cta-email/CTAEmail.vue";
+import { type Lang, useTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
+
+interface Props extends HTMLAttributes<"section"> {
+	title?: string;
+	description?: string;
+	formId?: string;
+}
+const { title, description, formId, ...attrs } = Astro.props as Props;
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+---
+
+<section
+	class={cn(
+		"flex w-full will-change-transform",
+		attrs.class
+	)}
+	id={formId}
+	{...attrs}
+>
+	<div
+		class={cn(
+			"flex py-5 px-0",
+			"transition-colors duration-[350ms] ease-in-out w-full"
+		)}
+	>
+		<div class="flex gap-5 mx-auto w-full">
+			<div class="flex flex-col w-full max-w-4xl">
+				<h1
+					class={cn(
+						"text-gray-900 dark:text-white text-3xl @md:text-5xl font-bold leading-tight tracking-tight relative",
+						"transition-colors duration-350 animate-fadeIn font-heading"
+					)}
+				>
+					{title || t("cta.title")}
+				</h1>
+				<p
+					class={cn(
+						"text-gray-900 dark:text-white relative mt-2 text-base font-medium tracking-wide leading-relaxed",
+						"animate-fadeIn animation-delay-150"
+					)}
+				>
+					{description || t("cta.description")}
+				</p>
+				<div class="flex mt-6 w-full">
+						<CTAEmail
+							emailPlaceholder={t({
+                en: "Enter your email",
+                es: "Ingresa tu correo electrónico",
+              })}
+							buttonText={t({
+                en: "Join the waitlist",
+                es: "Únete a la lista de espera",
+              })}
+							lang={currentLocale}
+							client:visible
+						/>
+					</div>
+			</div>
+		</div>
+	</div>
+</section>

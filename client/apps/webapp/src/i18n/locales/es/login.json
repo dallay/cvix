@@ -1,0 +1,22 @@
+{
+	"login": {
+		"title": "Iniciar sesión",
+		"description": "Ingrese sus credenciales abajo para acceder a su cuenta.",
+		"form": {
+			"username": "Usuario",
+			"username-placeholder": "Ingrese su usuario",
+			"password": "Contraseña",
+			"password-placeholder": "Ingrese su contraseña",
+			"rememberMe": "Recuérdame",
+			"submit": "Iniciar sesión",
+			"forgotPassword": "¿Olvidó su contraseña?",
+			"loading": "Iniciando sesión...",
+			"register": "¿No tienes una cuenta?",
+			"register-link": "Regístrate",
+			"validation": {
+				"username-required": "El usuario es obligatorio",
+				"password-required": "La contraseña es obligatoria"
+			}
+		}
+	}
+}

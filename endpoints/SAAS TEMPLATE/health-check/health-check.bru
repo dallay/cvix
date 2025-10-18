@@ -1,0 +1,42 @@
+meta {
+  name: health-check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/api/health-check
+  body: none
+  auth: none
+}
+
+headers {
+  ~X-XSRF-TOKEN: {{xsrfToken}}
+}
+
+script:pre-request {
+  // Pre-request script para añadir XSRF-TOKEN en el header
+   const xsrfToken = bru.getEnvVar('xsrfToken');
+
+   if (xsrfToken) {
+     req.headers['X-XSRF-TOKEN'] = xsrfToken;
+     console.log('XSRF-TOKEN añadido al header de la request');
+   } else {
+     console.log('Variable xsrfToken no encontrada en el entorno');
+   }
+
+}
+
+script:post-response {
+  const setCookieHeader = res.headers['set-cookie'][0];
+
+  const xsrfTokenMatch  = setCookieHeader.match(/XSRF-TOKEN=([^;]+)/);
+
+  const xsrfToken = decodeURIComponent(xsrfTokenMatch[1]);
+
+  bru.setEnvVar('X-XSRF-TOKEN',xsrfToken);
+}
+
+settings {
+  encodeUrl: true
+}

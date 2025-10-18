@@ -1,0 +1,32 @@
+name: Documentation improvement
+description: Request changes or additions to documentation
+title: "docs: [section] concise description"
+labels: ["type:docs", "needs-triage"]
+assignees: []
+body:
+  - type: input
+    id: scope
+    attributes:
+      label: Page/section
+      placeholder: "docs/src/content/docs/... or README.md"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current state
+      description: What's missing or outdated?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Provide expected content and examples if applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: References
+      description: Related issues/PRs, external links.

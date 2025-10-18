@@ -1,0 +1,38 @@
+name: ${APP_NAME}
+include:
+  - ./infra/common.yml
+services:
+  keycloak:
+    extends:
+      service: keycloak
+      file: ./infra/keycloak/keycloak-compose.yml
+    depends_on:
+      - postgresql
+      - greenmail
+    networks:
+      - frontend
+      - backend
+
+  postgresql:
+    extends:
+      service: postgresql
+      file: ./infra/postgresql/postgresql-compose.yml
+    networks:
+      - backend
+
+  greenmail:
+    extends:
+      service: greenmail
+      file: ./infra/greenmail/greenmail-compose.yml
+    networks:
+      - backend
+      - frontend
+
+  # Uncomment to use MailDev instead of GreenMail
+  # maildev:
+  #   extends:
+  #     service: maildev
+  #     file: ./infra/maildev/maildev-compose.yml
+  #   networks:
+  #     - backend
+  #     - frontend

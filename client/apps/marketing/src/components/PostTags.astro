@@ -1,0 +1,19 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { cn } from "@/lib/utils";
+import type Tag from "@/models/tag/tag.model";
+import PostTag from "./PostTag.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+	tags: Tag[];
+}
+const { tags, ...attrs } = Astro.props;
+---
+
+<div class={cn("flex flex-wrap gap-2", attrs.class)}>
+	{
+		tags?.map((tag) => (
+			<PostTag tag={tag} />
+		))
+	}
+</div>

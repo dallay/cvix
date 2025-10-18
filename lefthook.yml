@@ -1,0 +1,36 @@
+# @file lefthook.yml
+# @ref https://evilmartians.github.io/lefthook/
+
+pre-commit:
+  commands:
+    generate_structure_docs:
+      run: ./scripts/generate-structure-docs.sh
+    biome:
+      run: pnpm run lint
+    git-update:
+      run: git update-index --again
+    ruler-apply:
+      glob: ".ruler/**/*"
+      run: pnpm run ruler:apply
+
+commit-msg:
+  commands:
+    a_lint:
+      run: npx --no-install commitlint --edit
+
+post-commit:
+  commands:
+    notify_user:
+      run: echo "✅ Commit successful! Don't forget to push your changes."
+
+pre-push:
+  parallel: true
+  commands:
+    lychee_link_check:
+      run: lychee --no-progress --exclude-path node_modules --exclude-path public/admin ./**/*.md
+    pnpm_check:
+      run: pnpm run check
+    kotlin_static_analysis:
+      run: ./gradlew detektAll
+    check_secrets:
+      run: ./scripts/check-secrets.sh

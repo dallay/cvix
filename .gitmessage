@@ -1,0 +1,16 @@
+# <type>(<scope>): <subject>
+# |<---- Max 120 characters ---->|
+
+# <body>
+# |<---- Recommended 72-100 characters per line (max 220) ---->|
+# Explain the problem that this commit is solving. Focus on why you
+# are making this change as opposed to how. Are there side effects
+# or other unintuitive consequences of this change?
+
+# <footer>
+# Provide links to any relevant tickets, articles or other resources
+# Examples:
+# Fixes #123
+# Closes #456
+# Related to #789
+# BREAKING CHANGE: <description of the breaking change>

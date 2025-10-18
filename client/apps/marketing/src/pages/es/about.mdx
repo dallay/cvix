@@ -1,0 +1,39 @@
+---
+layout: "@/layouts/Page.astro"
+title: "Acerca de este template SaaS"
+description: "Qué incluye este template y para quién está pensado."
+---
+import PageHeadline from "@/components/PageHeadline.astro";
+import Waitlist from  "@/components/Waitlist.astro"
+
+<PageHeadline title={frontmatter.title} />
+
+## ¿Qué es este template?
+
+Este repositorio es un punto de partida genérico para construir un producto SaaS. Incluye patrones comunes para el sitio de marketing, documentación, estructura de assets y herramientas de desarrollo para que los equipos puedan centrarse en el producto.
+
+## ¿Para quién es?
+
+- Equipos que lanzan un nuevo servicio SaaS.
+- Desarrolladores que quieren una base probada con frontend, documentación y ejemplos de assets.
+- Equipos que prefieren una estructura de proyecto clara y configuraciones por defecto sensatas.
+
+## Qué encontrarás
+
+- Sitio de marketing con páginas multilingües y plantillas legales.
+- Estructura de documentación (Astro / Starlight).
+- Assets de ejemplo (favicons, logos) y convenciones de theming.
+- Configuraciones de CI, linters y scripts de construcción.
+
+## Personalízalo
+
+Sustituye nombres, logos y textos por tu marca. Elimina o amplía las páginas de ejemplo según necesites.
+
+<div class="not-prose border-t border-t-main-light dark:border-t-main-dark">
+	<Waitlist
+		formId="about-cta-waitlist-form"
+		title="Apúntate a la lista"
+		description="Recibe actualizaciones sobre el template, guías de inicio y recomendaciones."
+	/>
+	<p class="text-sm text-gray-500 mt-2">Revisa y adapta las plantillas legales a tu jurisdicción: <a href="/es/privacy-policy" class="underline">Política de Privacidad</a> y <a href="/es/terms-of-use" class="underline">Términos de Uso</a>.</p>
+</div>
