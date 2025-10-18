@@ -24,5 +24,5 @@ jobs:
         with:
           pr-mode: false
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_29247905 }}
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_7691663 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
