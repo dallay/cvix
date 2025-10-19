@@ -51,7 +51,7 @@ jobs:
 
 
       - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@25e6813418e91845859fadb665e49c7590667caf
+        uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./client
