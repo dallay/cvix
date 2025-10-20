@@ -30,7 +30,7 @@ This document consolidates research findings for implementing a production-ready
 - Backend validates tokens and sets HTTP-only cookies
 
 **References**:
-- Keycloak Documentation: https://www.keycloak.org/docs/latest/securing_apps/
+- Keycloak Documentation: https://www.keycloak.org/guides.html#securing-apps
 - OAuth 2.0 for Browser-Based Apps: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps
 
 ---
@@ -74,7 +74,7 @@ axiosInstance.get('/api/protected', { withCredentials: true })
 - Cookie domain restricted to application domain
 
 **References**:
-- OWASP: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheatsheet.html
+- OWASP: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html
 - Web Security Academy: https://portswigger.net/web-security/csrf/tokens
 
 ---
@@ -291,7 +291,6 @@ data class RateLimitEntry(
 
 **References**:
 - OWASP Rate Limiting: https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html
-- Redis Rate Limiting: https://redis.io/docs/reference/patterns/rate-limiter/
 
 ---
 

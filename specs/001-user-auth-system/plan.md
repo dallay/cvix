@@ -12,6 +12,7 @@ Build a production-ready authentication system enabling users to register, login
 ## Technical Context
 
 **Backend:**
+
 - **Language/Version**: Kotlin 2.0.20+ with Spring Boot 3.3.4+
 - **Framework**: Spring Boot WebFlux (reactive), Spring Security with OAuth2 Resource Server
 - **Primary Dependencies**:
@@ -32,6 +33,7 @@ Build a production-ready authentication system enabling users to register, login
   - Token refresh must be transparent (99% success rate)
 
 **Frontend:**
+
 - **Language/Version**: TypeScript 5.x with Vue 3.5.17+
 - **Framework**: Vue 3 Composition API with `<script setup lang="ts">`
 - **Architecture Pattern**: Feature-driven screaming architecture (bounded contexts)
@@ -76,27 +78,63 @@ client/apps/web/src/features/authentication/
     └── stores/          # authStore (Pinia)
 ```
 
-**Backend Structure:**
+**Backend Structure (implementada):**
 
 ```
 server/engine/src/main/kotlin/com/loomify/engine/authentication/
-├── domain/              # Pure Kotlin, zero Spring dependencies
-│   ├── model/           # User, Session, AuthEvent entities (value objects)
-│   ├── repository/      # Repository interfaces (ports)
-│   ├── events/          # Domain events (UserRegistered, LoginSucceeded, etc.)
-│   └── exceptions/      # Domain exceptions
-├── application/         # CQRS commands/queries, framework-agnostic
-│   ├── commands/        # RegisterUserCommand, LoginCommand, LogoutCommand
-│   ├── queries/         # GetUserQuery, GetActiveSessionsQuery
-│   └── handlers/        # Command/query handlers
-└── infrastructure/      # Spring Boot adapters
-    ├── web/             # REST controllers (HTTP adapter)
-    ├── persistence/     # R2DBC repositories (database adapter)
-    ├── security/        # Spring Security configuration
-    └── keycloak/        # Keycloak integration adapter
+├── domain/
+│   ├── AccessToken.kt
+│   ├── AuthoritiesConstants.kt
+│   ├── RefreshToken.kt
+│   ├── RefreshTokenManager.kt
+│   ├── Role.kt
+│   ├── Roles.kt
+│   ├── UserAuthenticationException.kt
+│   ├── UserAuthenticator.kt
+│   ├── UserAuthenticatorLogout.kt
+│   ├── UserSession.kt
+│   ├── Username.kt
+│   └── error/                  # Excepciones de autenticación
+├── application/
+│   ├── AuthenticateUserQueryHandler.kt
+│   ├── AuthenticatedUser.kt
+│   ├── RefreshTokenQueryHandler.kt
+│   ├── UserAuthenticatorService.kt
+│   └── logout/
+│       ├── UserLogoutCommand.kt
+│       ├── UserLogoutCommandHandler.kt
+│       └── UserLogoutService.kt
+│   └── query/
+│       ├── AuthenticateUserQuery.kt
+│       ├── GetUserSessionQuery.kt
+│       ├── GetUserSessionQueryHandler.kt
+│       └── RefreshTokenQuery.kt
+├── infrastructure/
+│   ├── ApplicationSecurityProperties.kt
+│   ├── AudienceValidator.kt
+│   ├── AuthenticationExceptionAdvice.kt
+│   ├── ClaimExtractor.kt
+│   ├── Claims.kt
+│   ├── CustomClaimConverter.kt
+│   ├── JwtGrantedAuthorityConverter.kt
+│   ├── OAuth2Configuration.kt
+│   ├── SecurityConfiguration.kt
+│   └── cookie/                 # Utilidades para cookies de autenticación
+│   └── csrf/                   # CSRF token handler
+│   └── filter/                 # Filtros WebFlux y JWT
+│   └── http/                   # Controladores REST y modelos de request
+│   └── mapper/                 # Mapeo de respuestas
+│   └── persistence/            # Repositorios R2DBC y Keycloak
 ```
 
-**Integration Points:**
+Cada capa sigue la arquitectura hexagonal:
+- **domain/**: Modelos, constantes y excepciones de autenticación.
+- **application/**: Handlers, servicios y comandos/queries CQRS.
+- **infrastructure/**: Adaptadores y configuración Spring Boot, utilidades, controladores y persistencia.
+
+Esta estructura documenta fielmente lo que está implementado hasta ahora y sirve como referencia para el equipo.
+
+**Integration Points**:
 - Keycloak OIDC endpoints (authorization code flow with PKCE)
 - PostgreSQL database (user profiles, sessions, audit events)
 - IP geolocation service (for session location metadata)
@@ -280,115 +318,56 @@ client/apps/web/src/features/authentication/
 
 server/engine/src/main/kotlin/com/loomify/engine/authentication/
 ├── domain/
-│   ├── model/
-│   │   ├── User.kt               # User aggregate root
-│   │   ├── UserId.kt             # UUID value object
-│   │   ├── Email.kt              # Email value object with validation
-│   │   ├── Password.kt           # Password value object
-│   │   ├── Session.kt            # Session entity
-│   │   ├── SessionId.kt          # UUID value object
-│   │   ├── AuthEvent.kt          # Authentication event
-│   │   ├── FederatedIdentity.kt  # Federated identity link
-│   │   └── UserProfile.kt        # User profile value object
-│   ├── repository/
-│   │   ├── UserRepository.kt     # Port (interface)
-│   │   ├── SessionRepository.kt  # Port (interface)
-│   │   └── AuthEventRepository.kt # Port (interface)
-│   ├── events/
-│   │   ├── UserRegistered.kt
-│   │   ├── LoginSucceeded.kt
-│   │   ├── LoginFailed.kt
-│   │   ├── LogoutCompleted.kt
-│   │   └── SessionTerminated.kt
-│   └── exceptions/
-│       ├── AuthenticationException.kt
-│       ├── InvalidCredentialsException.kt
-│       ├── SessionExpiredException.kt
-│       ├── RateLimitExceededException.kt
-│       └── UserAlreadyExistsException.kt
+│   ├── AccessToken.kt
+│   ├── AuthoritiesConstants.kt
+│   ├── RefreshToken.kt
+│   ├── RefreshTokenManager.kt
+│   ├── Role.kt
+│   ├── Roles.kt
+│   ├── UserAuthenticationException.kt
+│   ├── UserAuthenticator.kt
+│   ├── UserAuthenticatorLogout.kt
+│   ├── UserSession.kt
+│   ├── Username.kt
+│   └── error/                  # Excepciones de autenticación
 ├── application/
-│   ├── commands/
-│   │   ├── RegisterUserCommand.kt
-│   │   ├── LoginUserCommand.kt
-│   │   ├── LogoutUserCommand.kt
-│   │   ├── RefreshTokenCommand.kt
-│   │   ├── TerminateSessionCommand.kt
-│   │   └── TerminateAllSessionsCommand.kt
-│   ├── queries/
-│   │   ├── GetUserQuery.kt
-│   │   ├── GetActiveSessionsQuery.kt
-│   │   └── GetAuthEventsQuery.kt
-│   └── handlers/
-│       ├── RegisterUserHandler.kt
-│       ├── LoginUserHandler.kt
-│       ├── LogoutUserHandler.kt
-│       ├── RefreshTokenHandler.kt
-│       ├── TerminateSessionHandler.kt
-│       ├── GetUserHandler.kt
-│       └── GetActiveSessionsHandler.kt
-└── infrastructure/
-    ├── web/
-    │   ├── AuthController.kt         # REST endpoints for auth
-    │   ├── SessionController.kt      # REST endpoints for sessions
-    │   ├── UserController.kt         # REST endpoints for user profile
-    │   └── dto/
-    │       ├── RegisterRequest.kt
-    │       ├── LoginRequest.kt
-    │       ├── TokenResponse.kt
-    │       └── SessionDto.kt
-    ├── persistence/
-    │   ├── R2dbcUserRepository.kt    # UserRepository implementation
-    │   ├── R2dbcSessionRepository.kt # SessionRepository implementation
-    │   ├── R2dbcAuthEventRepository.kt
-    │   └── entity/
-    │       ├── UserEntity.kt
-    │       ├── SessionEntity.kt
-    │       └── AuthEventEntity.kt
-    ├── security/
-    │   ├── SecurityConfig.kt         # Spring Security configuration
-    │   ├── JwtAuthenticationFilter.kt # JWT validation filter
-    │   ├── RateLimitFilter.kt        # Rate limiting filter
-    │   └── CorsConfig.kt             # CORS configuration
-    └── keycloak/
-        ├── KeycloakClient.kt         # Keycloak Admin Client wrapper
-        ├── KeycloakUserService.kt    # User management via Keycloak
-        └── KeycloakTokenValidator.kt # JWT token validation
-
-server/engine/src/main/resources/db/changelog/
-├── db.changelog-master.xml
-└── changes/
-    ├── 001-create-users-table.xml
-    ├── 002-create-sessions-table.xml
-    ├── 003-create-auth-events-table.xml
-    ├── 004-create-federated-identities-table.xml
-    └── 005-create-indexes.xml
-
-server/engine/src/test/kotlin/com/loomify/engine/authentication/
-├── domain/
-│   └── model/                    # Unit tests for domain models
-├── application/
-│   └── handlers/                 # Unit tests for command/query handlers
-└── infrastructure/
-    ├── web/                      # Integration tests for controllers
-    ├── persistence/              # Integration tests for repositories
-    └── keycloak/                 # Integration tests for Keycloak integration
-
-client/apps/web/src/features/authentication/__tests__/
-├── unit/
-│   ├── validators/               # Unit tests for Zod schemas
-│   ├── composables/              # Unit tests for composables
-│   └── stores/                   # Unit tests for Pinia stores
-├── integration/
-│   └── components/               # Integration tests for Vue components
-└── e2e/
-    ├── login.spec.ts             # E2E test for login flow
-    ├── register.spec.ts          # E2E test for registration flow
-    ├── logout.spec.ts            # E2E test for logout flow
-    ├── session-management.spec.ts # E2E test for session management
-    └── federated-login.spec.ts   # E2E test for OAuth flows
+│   ├── AuthenticateUserQueryHandler.kt
+│   ├── AuthenticatedUser.kt
+│   ├── RefreshTokenQueryHandler.kt
+│   ├── UserAuthenticatorService.kt
+│   └── logout/
+│       ├── UserLogoutCommand.kt
+│       ├── UserLogoutCommandHandler.kt
+│       └── UserLogoutService.kt
+│   └── query/
+│       ├── AuthenticateUserQuery.kt
+│       ├── GetUserSessionQuery.kt
+│       ├── GetUserSessionQueryHandler.kt
+│       └── RefreshTokenQuery.kt
+├── infrastructure/
+│   ├── ApplicationSecurityProperties.kt
+│   ├── AudienceValidator.kt
+│   ├── AuthenticationExceptionAdvice.kt
+│   ├── ClaimExtractor.kt
+│   ├── Claims.kt
+│   ├── CustomClaimConverter.kt
+│   ├── JwtGrantedAuthorityConverter.kt
+│   ├── OAuth2Configuration.kt
+│   ├── SecurityConfiguration.kt
+│   └── cookie/                 # Utilidades para cookies de autenticación
+│   └── csrf/                   # CSRF token handler
+│   └── filter/                 # Filtros WebFlux y JWT
+│   └── http/                   # Controladores REST y modelos de request
+│   └── mapper/                 # Mapeo de respuestas
+│   └── persistence/            # Repositorios R2DBC y Keycloak
 ```
 
-**Structure Decision**: This is a full-stack web application following the monorepo pattern. The frontend uses feature-driven screaming architecture with clear separation of concerns (domain, application, infrastructure, presentation). The backend follows hexagonal architecture with domain-driven design. Both follow identical layering patterns for consistency and maintainability.
+Cada capa sigue la arquitectura hexagonal:
+- **domain/**: Modelos, constantes y excepciones de autenticación.
+- **application/**: Handlers, servicios y comandos/queries CQRS.
+- **infrastructure/**: Adaptadores y configuración Spring Boot, utilidades, controladores y persistencia.
+
+Esta estructura documenta fielmente lo que está implementado hasta ahora y sirve como referencia para el equipo.
 
 ## Complexity Tracking
 
@@ -467,4 +446,3 @@ All Phase 1 artifacts have been generated successfully:
 5. Provide estimated effort and dependencies
 
 **Do not proceed to implementation** until Phase 2 tasks are generated and reviewed.
-

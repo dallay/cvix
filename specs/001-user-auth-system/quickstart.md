@@ -188,7 +188,7 @@ curl http://localhost:8080/actuator/health
 # Open: http://localhost:8080/swagger-ui.html
 ```
 
-**Backend Base URL**: <http://localhost:8080/api/v1>
+**Backend Base URL**: <http://localhost:8080/api>
 
 ---
 
