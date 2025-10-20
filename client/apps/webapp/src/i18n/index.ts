@@ -16,7 +16,8 @@ export const SUPPORTED_LOCALES = LANGUAGES.map(
 ) as readonly Language["code"][];
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
-export const DEFAULT_LOCALE: SupportedLocale = LANGUAGES[0].code;
+export const DEFAULT_LOCALE: SupportedLocale =
+	LANGUAGES.length > 0 ? LANGUAGES[0].code : "en";
 
 export const LANGUAGE_STORAGE_KEY = "currentLanguage";
 

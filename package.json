@@ -38,7 +38,7 @@
 		"prepare": "pnpm exec lefthook install && pnpm run ruler:apply",
 		"ruler:check": "ruler check",
 		"ruler:apply": "ruler apply",
-		"dev": "pnpm run ruler:check && pnpm --recursive --parallel run dev",
+		"dev": "pnpm --recursive --parallel run dev",
 		"dev:landing": "pnpm --filter @loomify/marketing dev",
 		"dev:web": "pnpm --filter @loomify/webapp dev",
 		"dev:docs": "pnpm --filter @loomify/docs dev",
