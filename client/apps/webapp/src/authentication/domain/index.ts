@@ -9,7 +9,6 @@ export {
 
 export { Authority } from "./Authority";
 
-
 // Errors
 export {
 	AccessDeniedError,

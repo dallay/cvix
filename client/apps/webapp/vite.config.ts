@@ -1,34 +1,39 @@
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
+import vue from "@vitejs/plugin-vue";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
 import Components from "unplugin-vue-components/vite";
-import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools(), tailwindcss(), Components({
-    dts: true,
-    resolvers: [
-      IconsResolver({
-        prefix: "",
-        enabledCollections: ["ph"],
-      }),
-    ],
-  }),
-  Icons({
-    autoInstall: true,
-    compiler: "vue3",
-  })],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "~icons": "virtual:icons",
-    },
-  },
-  define: {
+	plugins: [
+		vue(),
+		vueDevTools(),
+		tailwindcss(),
+		Components({
+			dts: true,
+			resolvers: [
+				IconsResolver({
+					prefix: "",
+					enabledCollections: ["ph"],
+				}),
+			],
+		}),
+		Icons({
+			autoInstall: true,
+			compiler: "vue3",
+		}),
+	],
+	resolve: {
+		alias: {
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+			"~icons": "virtual:icons",
+		},
+	},
+	define: {
 		I18N_HASH: '"generated_hash"',
 		SERVER_API_URL: '"/"',
 		APP_VERSION: `"${process.env.APP_VERSION ? process.env.APP_VERSION : "DEV"}"`,

@@ -16,8 +16,9 @@
  * @example
  * const account = transformUserResponseToAccount(apiUserResponse);
  */
-import type { Account } from "@/authentication/domain/Account";
+
 import { avatar } from "@loomify/utilities";
+import type { Account } from "@/authentication/domain/Account";
 import type { UserResponse } from "../UserResponse";
 
 export function transformUserResponseToAccount(data: UserResponse): Account {
