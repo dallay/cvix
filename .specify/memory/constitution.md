@@ -326,7 +326,7 @@ Follow-up TODOs: None
 
 Follow Conventional Commits specification:
 
-```
+```conventionalcommit
 <type>[optional scope]: <description>
 
 [optional body]
