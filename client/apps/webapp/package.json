@@ -26,7 +26,6 @@
 		"check": "run-p type-check lint"
 	},
 	"dependencies": {
-		"@loomify/logger": "workspace:*",
 		"@loomify/utilities": "workspace:*",
 		"@tailwindcss/vite": "^4.1.11",
 		"@tanstack/vue-table": "^8.21.3",

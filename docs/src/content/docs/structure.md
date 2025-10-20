@@ -1065,31 +1065,6 @@ description: Overview of the project structure and organization.
 │   │   ├───vitest.config.shared.d.ts
 │   │   └───vitest.config.shared.mjs
 │   └───packages/
-│       ├───logger/
-│       │   ├───src/
-│       │   │   ├───transports/
-│       │   │   │   ├───ConsoleTransport.ts
-│       │   │   │   └───index.ts
-│       │   │   ├───ConfigurationValidator.ts
-│       │   │   ├───LogManager.ts
-│       │   │   ├───Logger.ts
-│       │   │   ├───LoggerConfigurationBuilder.ts
-│       │   │   ├───LoggerState.ts
-│       │   │   ├───index.ts
-│       │   │   └───types.ts
-│       │   ├───tests/
-│       │   │   ├───transports/
-│       │   │   │   └───ConsoleTransport.test.ts
-│       │   │   ├───LogManager.test.ts
-│       │   │   ├───Logger.test.ts
-│       │   │   └───LoggerConfigurationBuilder.test.ts
-│       │   ├───package.json
-│       │   ├───test-built-exports.mjs
-│       │   ├───tsconfig.build.json
-│       │   ├───tsconfig.json
-│       │   ├───vite.config.ts
-│       │   ├───vitest.config.ts
-│       │   └───vitest.setup.ts
 │       ├───tsconfig/
 │       │   ├───package.json
 │       │   ├───tsconfig.base.json
@@ -1752,6 +1727,19 @@ description: Overview of the project structure and organization.
 │       │                   └───spring/
 │       │                       └───...
 │       └───build.gradle.kts
+├───specs/
+│   └───001-user-auth-system/
+│       ├───checklists/
+│       │   └───requirements.md
+│       ├───contracts/
+│       │   ├───auth-api.yaml
+│       │   ├───session-api.yaml
+│       │   └───user-api.yaml
+│       ├───data-model.md
+│       ├───plan.md
+│       ├───quickstart.md
+│       ├───research.md
+│       └───spec.md
 ├───.editorconfig
 ├───.env.example
 ├───.gitattributes
