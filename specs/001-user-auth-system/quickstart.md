@@ -310,7 +310,7 @@ curl -X POST http://localhost:8080/api/v1/auth/token/refresh \
 The frontend uses **Pinia** for state management. The `authStore` is located at:
 
 ```
-client/apps/webapp/src/features/authentication/infrastructure/store/authStore.ts
+client/apps/webapp/src/authentication/infrastructure/store/authStore.ts
 ```
 
 ### Testing Authentication in the UI
@@ -485,7 +485,7 @@ docker compose up -d keycloak postgresql maildev
 
 Now that you have the authentication system running locally:
 
-1. **Implement Frontend Components**: Build the login, registration, and session management UI components (see `client/apps/webapp/src/features/authentication/presentation/`)
+1. **Implement Frontend Components**: Build the login, registration, and session management UI components (see `client/apps/webapp/src/authentication/presentation/`)
 2. **Implement Backend Handlers**: Build the command/query handlers for authentication operations (see `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/`)
 3. **Write Tests**: Add unit and integration tests for all layers
 4. **Security Review**: Verify CSRF protection, rate limiting, and token security

@@ -109,7 +109,7 @@ A user closes their browser or navigates away from the application while authent
 
 2. **Given** a user with a persistent session, **When** they navigate directly to a protected resource, **Then** they can access it immediately without being redirected to login.
 
-3. **Given** a user's persistent session has expired, **When** they return to the application, **Then** they are prompted to log in again.
+3. **Given** a user's persistent session has expired, **When** they return to the application, **Then** they are prompted to log in again with a clear message explaining the expiration.
 
 4. **Given** an authenticated user, **When** they explicitly choose "Remember Me" during login, **Then** their session persists for an extended period (e.g., 30 days) instead of the standard session duration.
 
@@ -155,7 +155,7 @@ An authenticated user accesses a dedicated session management panel where they c
 
 **Acceptance Scenarios**:
 
-1. **Given** an authenticated user with sessions on multiple devices, **When** they access the session management panel, **Then** they see a list of all active sessions with device type, browser, approximate location, and last activity timestamp.
+1. **Given** an authenticated user with sessions on multiple devices, **When** they access the session management panel, **Then** they see a list of all active sessions with device type, browser, approximate location (based on IP address), and last activity timestamp.
 
 2. **Given** a user viewing the session management panel, **When** they identify their current session, **Then** it is clearly marked as "Current session" to prevent accidental self-logout.
 

@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002d-create-sessions-table
+      author: loomify
+      comment: |
+        Create sessions table to support authentication session management.
+        This table stores user session data including:
+        - Session tokens and expiration
+        - Device and location metadata
+        - Session status and activity tracking
+      changes:
+        - createTable:
+            tableName: sessions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: refresh_token_hash
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  defaultValue: 'ACTIVE'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: device_type
+                  type: varchar(100)
+              - column:
+                  name: device_name
+                  type: varchar(255)
+              - column:
+                  name: browser_name
+                  type: varchar(100)
+              - column:
+                  name: browser_version
+                  type: varchar(50)
+              - column:
+                  name: os_name
+                  type: varchar(100)
+              - column:
+                  name: os_version
+                  type: varchar(50)
+              - column:
+                  name: ip_address
+                  type: varchar(45)
+              - column:
+                  name: location
+                  type: varchar(255)
+              - column:
+                  name: expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_activity_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+
+        - addForeignKeyConstraint:
+            baseTableName: sessions
+            baseColumnNames: user_id
+            constraintName: fk_sessions_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE

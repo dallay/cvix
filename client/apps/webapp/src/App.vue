@@ -1,11 +1,18 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { RouterView } from "vue-router";
+import { useAuthStore } from "./authentication/presentation/stores/authStore.ts";
+
+const authStore = useAuthStore();
+
+onMounted(() => {
+	// Initialize auth store and restore session if valid
+	authStore.initialize();
+});
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <RouterView />
 </template>
 
 <style scoped></style>

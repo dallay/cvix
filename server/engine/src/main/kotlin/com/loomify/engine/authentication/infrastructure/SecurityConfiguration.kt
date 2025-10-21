@@ -73,7 +73,8 @@ private const val POLICY =
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 class SecurityConfiguration(
-    val applicationSecurityProperties: ApplicationSecurityProperties
+    val applicationSecurityProperties: ApplicationSecurityProperties,
+    private val rateLimitingFilter: com.loomify.engine.authentication.infrastructure.ratelimit.RateLimitingFilter
 ) {
     @Value("\${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private val issuerUri: String? = null
@@ -138,6 +139,7 @@ class SecurityConfiguration(
             }
             .addFilterAt(CookieCsrfFilter(applicationSecurityProperties), SecurityWebFiltersOrder.REACTOR_CONTEXT)
             .addFilterAt(JwtCookieOrHeaderFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+            .addFilterBefore(rateLimitingFilter, SecurityWebFiltersOrder.HTTP_BASIC)
 //            .addFilterAfter(SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
             .redirectToHttps {
                     httpsRedirect ->
@@ -161,7 +163,7 @@ class SecurityConfiguration(
                     auth ->
                 configureAuthorization(auth)
             }
-            // .oauth2Login(withDefaults())
+            .oauth2Login(withDefaults())
             .oauth2Client(withDefaults())
             .oauth2ResourceServer {
                     oauth2 ->
@@ -183,6 +185,7 @@ class SecurityConfiguration(
             .pathMatchers(
                 "/", "/api/health-check", "/api/register",
                 "/api/refresh-token", "/api/login", "/api/logout",
+                "/api/auth/federated/**", "/oauth2/**", "/login/oauth2/**",
                 "actuator/info",
             ).permitAll()
             .pathMatchers(
