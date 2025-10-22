@@ -125,9 +125,9 @@ server/engine/src/main/kotlin/com/loomify/engine/
 
 | Method | Endpoint                           | Description               | Status         |
 | ------ | ---------------------------------- | ------------------------- | -------------- |
-| POST   | `/api/register`                    | Register new user         | ✅ Implemented  |
-| POST   | `/api/login`                       | Login with email/password | ✅ Implemented  |
-| POST   | `/api/logout`                      | Logout current user       | ✅ Implemented  |
+| POST   | `/api/auth/register`                    | Register new user         | ✅ Implemented  |
+| POST   | `/api/auth/login`                       | Login with email/password | ✅ Implemented  |
+| POST   | `/api/auth/logout`                      | Logout current user       | ✅ Implemented  |
 | POST   | `/api/auth/refresh`                | Refresh access token      | ✅ Backend only |
 | GET    | `/api/auth/user`                   | Get current user          | ✅ Implemented  |
 | GET    | `/oauth2/authorization/{provider}` | Initiate OAuth            | ✅ Backend only |
@@ -183,16 +183,16 @@ pnpm install  # If not already done
 pnpm dev
 ```
 
-Frontend runs on: <http://localhost:5173>
+Frontend runs on: <http://localhost:9876>
 
 ### 4. Test the Application
 
-1. Navigate to <http://localhost:5173/register>
+1. Navigate to <http://localhost:9876/register>
 2. Fill out the registration form
 3. Submit - you'll be automatically logged in and redirected to the dashboard
 4. View your user information
 5. Logout using the button
-6. Login again at <http://localhost:5173/login>
+6. Login again at <http://localhost:9876/login>
 
 ## Remaining Tasks
 

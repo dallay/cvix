@@ -499,7 +499,7 @@ test.describe("Complete Authentication Flow", () => {
 			page,
 			context,
 		}) => {
-			await context.route("**/api/login", (route) => route.abort());
+			await context.route("**/api/auth/login", (route) => route.abort());
 
 			await page.goto("/login");
 			await page.getByLabel(/email/i).fill("test@example.com");

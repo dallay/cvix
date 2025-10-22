@@ -24,7 +24,7 @@
 - [X] T012 [US1] Implement real-time validation logic using VeeValidate in `client/apps/webapp/src/features/authentication/domain/validators/auth.schema.ts`
 - [X] T013 [US1] Create `RegisterUserCommand` in `server/engine/src/main/kotlin/com/loomify/engine/users/application/register/RegisterUserCommand.kt`
 - [X] T014 [US1] Implement `RegisterUserCommandHandler` in `server/engine/src/main/kotlin/com/loomify/engine/users/application/register/RegisterUserCommandHandler.kt`
-- [X] T015 [US1] Add `/api/register` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/users/infrastructure/http/UserRegisterController.kt`
+- [X] T015 [US1] Add `/api/auth/register` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/users/infrastructure/http/UserRegisterController.kt`
 - [X] T016 [US1] Write integration tests for registration flow in `server/engine/src/test/kotlin/com/loomify/engine/users`
 
 ### Phase 4: User Story 2 - User Login with Email/Password (P1)
@@ -33,7 +33,7 @@
 - [X] T018 [US2] Implement login logic using Axios in `client/apps/webapp/src/features/authentication/infrastructure/http/AuthHttpClient.ts`
 - [X] T019 [US2] Create `LoginUserQuery` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/query/AuthenticateUserQuery.kt`
 - [X] T020 [US2] Implement `AuthenticateUserQueryHandler` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/AuthenticateUserQueryHandler.kt`
-- [X] T021 [US2] Add `/api/login` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserAuthenticatorController.kt`
+- [X] T021 [US2] Add `/api/auth/login` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserAuthenticatorController.kt`
 - [X] T022 [US2] Write integration tests for login flow in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
 
 ### Phase 5: User Story 3 - Federated Identity Provider Login (P2)
@@ -65,7 +65,7 @@
 - [X] T033 [US6] Implement logout logic in `client/apps/webapp/src/features/authentication/infrastructure/http/AuthHttpClient.ts`
 - [X] T034 [US6] Create `LogoutUserCommand` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/logout/UserLogoutCommand.kt`
 - [X] T035 [US6] Implement `LogoutUserCommandHandler` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/logout/UserLogoutCommandHandler.kt`
-- [X] T036 [US6] Add `/api/logout` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserLogoutController.kt`
+- [X] T036 [US6] Add `/api/auth/logout` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserLogoutController.kt`
 - [X] T037 [US6] Write integration tests for logout flow in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
 
 ### Final Phase: Polish & Cross-Cutting Concerns

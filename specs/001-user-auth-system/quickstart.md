@@ -208,10 +208,10 @@ pnpm dev
 
 # Expected output:
 # VITE v7.x.x  ready in XXX ms
-# ➜  Local:   http://localhost:5173/
+# ➜  Local:   http://localhost:9876/
 ```
 
-**Frontend Base URL**: <http://localhost:5173>
+**Frontend Base URL**: <http://localhost:9876>
 
 ---
 
@@ -287,7 +287,7 @@ curl -X POST http://localhost:8080/api/v1/auth/token/refresh \
 
 ### Test Federated Login (via Browser)
 
-1. Open <http://localhost:5173>
+1. Open <http://localhost:9876>
 2. Click **Login with Google** (or other provider)
 3. You will be redirected to Keycloak
 4. Keycloak will redirect to Google for authentication
@@ -315,7 +315,7 @@ client/apps/webapp/src/authentication/infrastructure/store/authStore.ts
 
 ### Testing Authentication in the UI
 
-1. Open <http://localhost:5173/auth/register>
+1. Open <http://localhost:9876/auth/register>
 2. Register a new account with valid credentials
 3. You should be redirected to `/dashboard` with the user context displayed
 4. Open DevTools → Application → Cookies → Verify `refresh_token` cookie exists (HttpOnly, Secure)
@@ -424,7 +424,7 @@ docker compose logs postgresql
 
 ### Issue: Frontend cannot connect to backend (CORS error)
 
-**Solution**: Verify the backend CORS configuration allows `http://localhost:5173`.
+**Solution**: Verify the backend CORS configuration allows `http://localhost:9876`.
 
 Edit `server/engine/src/main/resources/application.yml`:
 
@@ -432,7 +432,7 @@ Edit `server/engine/src/main/resources/application.yml`:
 spring:
   web:
     cors:
-      allowed-origins: "http://localhost:5173"
+      allowed-origins: "http://localhost:9876"
       allowed-methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
       allowed-headers: "*"
       allow-credentials: true

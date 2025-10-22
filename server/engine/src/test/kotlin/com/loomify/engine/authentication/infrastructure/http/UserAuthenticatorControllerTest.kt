@@ -18,7 +18,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/login"
+private const val ENDPOINT = "/api/auth/login"
 
 @UnitTest
 class UserAuthenticatorControllerTest {

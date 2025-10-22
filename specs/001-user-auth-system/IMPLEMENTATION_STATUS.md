@@ -128,8 +128,8 @@ The backend already has comprehensive implementation:
 - `UserAuthenticatorService` - Authentication service
 
 #### Infrastructure Layer
-- `UserAuthenticatorController` - `/api/login` endpoint
-- `UserLogoutController` - `/api/logout` endpoint
+- `UserAuthenticatorController` - `/api/auth/login` endpoint
+- `UserLogoutController` - `/api/auth/logout` endpoint
 - `RefreshTokenController` - Token refresh endpoint
 - `SessionController` - Session management
 - Security configuration with OAuth2 Resource Server
@@ -139,7 +139,7 @@ The backend already has comprehensive implementation:
 
 #### User Management
 - `RegisterUserCommand` and handler already implemented
-- `UserRegisterController` - `/api/register` endpoint
+- `UserRegisterController` - `/api/auth/register` endpoint
 - User domain with email, username, name, credentials
 - Comprehensive validation and error handling
 
@@ -181,7 +181,7 @@ The backend already has comprehensive implementation:
    # Start frontend
    cd client/apps/webapp && pnpm dev
 
-   # Navigate to http://localhost:5173/register
+   # Navigate to http://localhost:9876/register
    ```
 
 2. **Implement token refresh interceptor** in `AuthHttpClient.ts`:
@@ -203,9 +203,9 @@ The backend already has comprehensive implementation:
 
 ## API Endpoints (Backend)
 
-- `POST /api/register` - Register new user
-- `POST /api/login` - Login with email/password
-- `POST /api/logout` - Logout current user
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login with email/password
+- `POST /api/auth/logout` - Logout current user
 - `POST /api/auth/refresh` - Refresh access token
 - `GET /api/auth/user` - Get current authenticated user
 - `GET /oauth2/authorization/{provider}` - Initiate OAuth login

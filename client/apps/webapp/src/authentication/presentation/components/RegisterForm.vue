@@ -29,6 +29,14 @@ const submitError = ref<string | null>(null);
 
 const { handleSubmit, errors } = useForm<RegisterFormData>({
 	validationSchema: toTypedSchema(registerSchema),
+	initialValues: {
+		firstName: "",
+		lastName: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+		acceptTerms: false,
+	},
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -144,12 +152,11 @@ const onSubmit = handleSubmit(async (values) => {
       </FormField>
 
       <!-- Accept Terms -->
-      <FormField v-slot="{ value, handleChange }" name="acceptTerms">
+      <FormField v-slot="{ componentField }" name="acceptTerms" type="checkbox">
         <FormItem class="flex flex-row items-start space-x-3 space-y-0">
           <FormControl>
             <Checkbox
-              :checked="value"
-              @update:checked="handleChange"
+              v-bind="componentField"
               :disabled="isSubmitting"
             />
           </FormControl>

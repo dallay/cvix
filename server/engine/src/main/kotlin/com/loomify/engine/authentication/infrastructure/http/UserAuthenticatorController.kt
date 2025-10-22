@@ -54,7 +54,7 @@ class UserAuthenticatorController(private val authenticateUserQueryHandler: Auth
     }
 
     companion object {
-        const val LOGIN_ROUTE = "/login"
+        const val LOGIN_ROUTE = "/auth/login"
         private val log = org.slf4j.LoggerFactory.getLogger(UserAuthenticatorController::class.java)
     }
 }

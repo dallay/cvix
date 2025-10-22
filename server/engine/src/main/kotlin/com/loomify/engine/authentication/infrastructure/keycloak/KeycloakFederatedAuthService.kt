@@ -4,13 +4,12 @@ import com.loomify.engine.authentication.application.FederatedAuthService
 import com.loomify.engine.authentication.application.FederatedIdentity
 import com.loomify.engine.authentication.application.UserInfo
 import com.loomify.engine.authentication.domain.Role
-import com.loomify.engine.users.domain.User
 import com.loomify.engine.users.infrastructure.persistence.UserStoreR2dbcRepository
+import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.util.UUID
 
 /**
  * Implementation of [FederatedAuthService] that integrates with Keycloak.

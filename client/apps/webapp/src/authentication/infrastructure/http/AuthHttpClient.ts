@@ -33,7 +33,7 @@ interface RegisterResponse {
 	id: string;
 	email: string;
 	firstName: string;
-	lastName: string;
+	lastname: string;
 }
 
 interface RefreshTokenResponse {
@@ -66,11 +66,14 @@ export class AuthHttpClient {
 		this.client = axios.create({
 			baseURL,
 			headers: {
-				"Content-Type": "application/vnd.api.v1+json",
-				Accept: "application/vnd.api.v1+json",
+				"Content-Type": "application/json",
+				Accept: "application/vnd.api.v1+json", // API versioning header
 			},
 			withCredentials: true, // Enable cookies for HTTP-only tokens
 			timeout: 10000,
+			// Axios will automatically read the XSRF-TOKEN cookie and send it as X-XSRF-TOKEN header
+			xsrfCookieName: "XSRF-TOKEN",
+			xsrfHeaderName: "X-XSRF-TOKEN",
 		});
 
 		this.setupInterceptors();
@@ -94,7 +97,7 @@ export class AuthHttpClient {
 					error.response?.status === 401 &&
 					!originalRequest._retry &&
 					!originalRequest.url?.includes("/auth/refresh") &&
-					!originalRequest.url?.includes("/login")
+					!originalRequest.url?.includes("/auth/login")
 				) {
 					originalRequest._retry = true;
 
@@ -176,28 +179,17 @@ export class AuthHttpClient {
 	/**
 	 * Register a new user
 	 */
-	async register(data: RegisterFormData): Promise<User> {
+	async register(data: RegisterFormData): Promise<void> {
 		try {
-			const response = await this.client.post<RegisterResponse>(
-				"/auth/register",
-				{
-					email: data.email,
-					password: data.password,
-					firstName: data.firstName,
-					lastName: data.lastName,
-				},
-			);
+			// Ensure CSRF token is initialized before POST request
+			await this.initializeCsrf();
 
-			return {
-				id: response.data.id,
-				email: response.data.email,
-				firstName: response.data.firstName,
-				lastName: response.data.lastName,
-				roles: ["USER"],
-				emailVerified: false,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			};
+			await this.client.post<RegisterResponse>("/auth/register", {
+				email: data.email,
+				password: data.password,
+				firstname: data.firstName,
+				lastname: data.lastName,
+			});
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
 		}
@@ -208,7 +200,7 @@ export class AuthHttpClient {
 	 */
 	async login(data: LoginFormData): Promise<Session> {
 		try {
-			const response = await this.client.post<LoginResponse>("/login", {
+			const response = await this.client.post<LoginResponse>("/auth/login", {
 				username: data.email,
 				password: data.password,
 			});
@@ -230,7 +222,7 @@ export class AuthHttpClient {
 	 */
 	async logout(): Promise<void> {
 		try {
-			await this.client.post("/logout");
+			await this.client.post("/auth/logout");
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
 		}
@@ -275,6 +267,24 @@ export class AuthHttpClient {
 			};
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
+		}
+	}
+
+	/**
+	 * Initialize CSRF token by making a GET request to a public endpoint
+	 * This ensures the XSRF-TOKEN cookie is set before any POST/PUT/DELETE requests
+	 */
+	async initializeCsrf(): Promise<void> {
+		try {
+			// Make a GET request to a public endpoint to trigger CSRF cookie creation
+			await this.client.get("/health-check");
+			console.debug("CSRF token initialized successfully");
+		} catch (error) {
+			// Log the error but don't throw - the CSRF cookie might be set on the first real request
+			console.warn(
+				"Failed to initialize CSRF token, will retry on first request:",
+				error,
+			);
 		}
 	}
 

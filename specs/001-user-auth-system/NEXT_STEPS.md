@@ -230,7 +230,7 @@ pnpm test:e2e
 
 - [ ] Backend is running on http://localhost:8080
 - [ ] Keycloak is accessible at http://localhost:9080
-- [ ] Frontend dev server is running on http://localhost:5173
+- [ ] Frontend dev server is running on http://localhost:9876
 - [ ] Can register a new user
 - [ ] Can login with registered user
 - [ ] Dashboard shows user information

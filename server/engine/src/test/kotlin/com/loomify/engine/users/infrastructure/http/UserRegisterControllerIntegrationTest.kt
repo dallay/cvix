@@ -12,7 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/register"
+private const val ENDPOINT = "/api/auth/register"
 @Suppress("MultilineRawStringIndentation")
 @AutoConfigureWebTestClient
 internal class UserRegisterControllerIntegrationTest : InfrastructureTestContainers() {

@@ -10,7 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/login"
+private const val ENDPOINT = "/api/auth/login"
 
 private const val TITLE = "User authentication failed"
 

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/refresh-token"
+private const val ENDPOINT = "/api/auth/refresh-token"
 
 @UnitTest
 internal class RefreshTokenControllerTest {

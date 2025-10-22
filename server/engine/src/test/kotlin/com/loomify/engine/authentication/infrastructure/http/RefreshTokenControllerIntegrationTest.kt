@@ -14,7 +14,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
 
-private const val ENDPOINT = "/api/refresh-token"
+private const val ENDPOINT = "/api/auth/refresh-token"
 
 @Suppress("MultilineRawStringIndentation")
 @AutoConfigureWebTestClient
@@ -33,7 +33,7 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
         val returnResult = webTestClient
             .mutateWith(csrf())
             .post()
-            .uri("/api/login")
+            .uri("/api/auth/login")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """

@@ -52,8 +52,8 @@ paths:
                 value:
                   email: jane.doe@example.com
                   password: SecurePass123!
-                  firstName: Jane
-                  lastName: Doe
+                  firstname: Jane
+                  lastname: Doe
       responses:
         '201':
           description: User account created successfully

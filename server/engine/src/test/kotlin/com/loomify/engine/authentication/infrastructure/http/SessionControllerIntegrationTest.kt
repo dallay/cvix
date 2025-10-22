@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 
-private const val ENDPOINT = "/api/session"
+private const val ENDPOINT = "/api/auth/session"
 
 internal class SessionControllerIntegrationTest : ControllerIntegrationTest() {
 

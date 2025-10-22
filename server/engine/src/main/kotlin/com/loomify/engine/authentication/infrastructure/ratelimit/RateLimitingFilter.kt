@@ -41,13 +41,13 @@ class RateLimitingFilter(
         private val LOGIN_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 5,
             windowDuration = Duration.ofMinutes(15),
-            paths = listOf("/api/login", "/api/auth/login")
+            paths = listOf("/api/auth/login", "/api/auth/login")
         )
 
         private val REGISTRATION_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 3,
             windowDuration = Duration.ofHours(1),
-            paths = listOf("/api/register", "/api/auth/register")
+            paths = listOf("/api/auth/register", "/api/auth/register")
         )
 
         private val PASSWORD_RESET_RATE_LIMIT = RateLimitConfig(
@@ -59,7 +59,7 @@ class RateLimitingFilter(
         private val TOKEN_REFRESH_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 10,
             windowDuration = Duration.ofMinutes(1),
-            paths = listOf("/api/refresh-token", "/api/auth/token/refresh")
+            paths = listOf("/api/auth/refresh-token", "/api/auth/token/refresh")
         )
 
         private val FEDERATED_LOGIN_RATE_LIMIT = RateLimitConfig(
@@ -88,10 +88,10 @@ class RateLimitingFilter(
             return sendRateLimitResponse(exchange, clientIdentifier, rateLimitConfig)
         }
 
-        // Add rate limit headers to response
-        return chain.filter(exchange).doFinally {
-            addRateLimitHeaders(exchange, clientIdentifier, rateLimitConfig)
-        }
+        // Add rate limit headers to response before processing
+        addRateLimitHeaders(exchange, clientIdentifier, rateLimitConfig)
+
+        return chain.filter(exchange)
     }
 
     private fun findRateLimitConfig(path: String): RateLimitConfig? {
@@ -158,12 +158,17 @@ class RateLimitingFilter(
 
         val resetTime = rateLimiter.getTimeUntilReset(identifier, config.windowDuration)
 
-        exchange.response.headers.apply {
-            set("X-RateLimit-Limit", config.maxAttempts.toString())
-            set("X-RateLimit-Remaining", remaining.toString())
-            resetTime?.let {
-                set("X-RateLimit-Reset", Instant.now().plus(it).epochSecond.toString())
+        try {
+            exchange.response.headers.apply {
+                set("X-RateLimit-Limit", config.maxAttempts.toString())
+                set("X-RateLimit-Remaining", remaining.toString())
+                resetTime?.let {
+                    set("X-RateLimit-Reset", Instant.now().plus(it).epochSecond.toString())
+                }
             }
+        } catch (e: UnsupportedOperationException) {
+            // Headers are already committed (read-only), log and continue
+            logger.debug("Cannot add rate limit headers - response already committed for $identifier")
         }
     }
 
