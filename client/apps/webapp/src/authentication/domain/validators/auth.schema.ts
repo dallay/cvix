@@ -6,9 +6,10 @@ import { z } from "zod";
 export const registerSchema = z
 	.object({
 		email: z
-			.email("Invalid email format")
+			.string()
 			.min(1, "Email is required")
-			.max(255, "Email must be less than 255 characters"),
+			.max(255, "Email must be less than 255 characters")
+			.email("Invalid email format"),
 
 		password: z
 			.string()
@@ -55,7 +56,7 @@ export const registerSchema = z
  * Schema for user login validation
  */
 export const loginSchema = z.object({
-	email: z.email("Invalid email format").min(1, "Email is required"),
+	email: z.string().min(1, "Email is required").email("Invalid email format"),
 
 	password: z.string().min(1, "Password is required"),
 

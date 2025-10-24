@@ -143,7 +143,12 @@ export const useAuthStore = defineStore("auth", () => {
 	 */
 	async function initialize(): Promise<void> {
 		if (authSessionStorage.isSessionValid()) {
-			await checkAuth();
+			try {
+				await useAuthStore().checkAuth();
+			} catch {
+				user.value = null;
+				session.value = null;
+			}
 		}
 	}
 

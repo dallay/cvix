@@ -49,7 +49,7 @@
 		"vue-i18n": "^11.1.12",
 		"vue-router": "^4.6.3",
 		"vue-sonner": "^2.0.9",
-		"zod": "^4.1.12"
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@iconify-json/ph": "^1.2.2",

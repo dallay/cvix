@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
 import Components from "unplugin-vue-components/vite";
+import type { PluginOption } from "vite";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
@@ -21,11 +22,11 @@ export default defineConfig({
 					enabledCollections: ["ph"],
 				}),
 			],
-		}),
+		}) as PluginOption,
 		Icons({
 			autoInstall: true,
 			compiler: "vue3",
-		}),
+		}) as PluginOption,
 	],
 	resolve: {
 		alias: {
