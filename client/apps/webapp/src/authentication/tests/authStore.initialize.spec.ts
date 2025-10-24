@@ -5,14 +5,11 @@ import { authSessionStorage } from "../infrastructure/storage/SessionStorage";
 import { useAuthStore } from "../presentation/stores/authStore";
 
 const mockUser: User = {
-	id: "test-user-id",
+	username: "testuser",
 	email: "test@example.com",
 	firstName: "Test",
 	lastName: "User",
 	roles: ["USER"],
-	emailVerified: true,
-	createdAt: new Date(),
-	updatedAt: new Date(),
 };
 
 const mockSession: Session = {

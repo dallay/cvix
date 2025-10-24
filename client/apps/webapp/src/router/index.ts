@@ -1,30 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { authRoutes } from "@/authentication/presentation/authRoutes";
 import { useAuthStore } from "@/authentication/presentation/stores/authStore";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
-		{
-			path: "/login",
-			name: "Login",
-			component: () =>
-				import("@/authentication/presentation/pages/LoginPage.vue"),
-			meta: { requiresGuest: true },
-		},
-		{
-			path: "/register",
-			name: "Register",
-			component: () =>
-				import("@/authentication/presentation/pages/RegisterPage.vue"),
-			meta: { requiresGuest: true },
-		},
-		{
-			path: "/dashboard",
-			name: "Dashboard",
-			component: () =>
-				import("@/authentication/presentation/pages/DashboardPage.vue"),
-			meta: { requiresAuth: true },
-		},
+		...authRoutes,
 		{
 			path: "/",
 			redirect: "/dashboard",
@@ -33,11 +14,13 @@ const router = createRouter({
 });
 
 // Navigation guard for authentication
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, from, next) => {
 	const authStore = useAuthStore();
 
-	// Check authentication status on first load
-	if (!authStore.isAuthenticated && to.meta.requiresAuth) {
+	// Check authentication status on first load or when navigating to a protected route
+	// Skip checkAuth if we're coming from login page (we just authenticated)
+	const comingFromLogin = from.path === "/login";
+	if (!authStore.isAuthenticated && to.meta.requiresAuth && !comingFromLogin) {
 		try {
 			await authStore.checkAuth();
 		} catch {
@@ -56,8 +39,28 @@ router.beforeEach(async (to, _from, next) => {
 
 	// Handle routes that require guest (not authenticated)
 	if (to.meta.requiresGuest && authStore.isAuthenticated) {
-		next("/dashboard");
+		const redirectPath = (to.query.redirect as string) || "/dashboard";
+		next(redirectPath);
 		return;
+	}
+
+	// Handle routes that require specific roles
+	if (to.meta.requiresAuth && to.meta.roles) {
+		const requiredRoles = Array.isArray(to.meta.roles)
+			? to.meta.roles
+			: [to.meta.roles];
+		const hasRequiredRole = requiredRoles.some((role) =>
+			authStore.hasRole(role as string),
+		);
+
+		if (!hasRequiredRole) {
+			// User doesn't have required role, redirect to unauthorized page
+			next({
+				path: "/unauthorized",
+				query: { from: to.fullPath },
+			});
+			return;
+		}
 	}
 
 	next();

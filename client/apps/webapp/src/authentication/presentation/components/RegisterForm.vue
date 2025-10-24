@@ -45,8 +45,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 	try {
 		await authStore.register(values);
-		// Redirect to dashboard after successful registration
-		await router.push("/dashboard");
+		await router.push("/login");
 	} catch (error) {
 		submitError.value =
 			error instanceof Error

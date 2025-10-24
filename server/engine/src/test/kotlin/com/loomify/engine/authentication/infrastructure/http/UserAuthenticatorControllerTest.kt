@@ -40,7 +40,7 @@ class UserAuthenticatorControllerTest {
         // Arrange
         val loginRequest = createLoginRequest()
 
-        coEvery { userAuthenticator.authenticate(any(), any()) } returns accessToken
+        coEvery { userAuthenticator.authenticate(any(), any(), any()) } returns accessToken
 
         // Act & Assert
         webTestClient.post().uri(ENDPOINT)
@@ -58,7 +58,7 @@ class UserAuthenticatorControllerTest {
             .jsonPath("$.scope").isEqualTo(accessToken.scope!!)
 
         // Verify
-        coVerify { userAuthenticator.authenticate(any(), any()) }
+        coVerify { userAuthenticator.authenticate(any(), any(), any()) }
     }
 
     @Test
@@ -68,7 +68,7 @@ class UserAuthenticatorControllerTest {
         val loginRequest = createLoginRequest()
 
         coEvery {
-            userAuthenticator.authenticate(any(), any())
+            userAuthenticator.authenticate(any(), any(), any())
         } throws UserAuthenticationException("Invalid account. User probably hasn't verified email.")
 
         // Act & Assert
@@ -82,17 +82,19 @@ class UserAuthenticatorControllerTest {
             .jsonPath("$.detail").isEqualTo("Invalid account. User probably hasn't verified email.")
 
         // Verify
-        coVerify { userAuthenticator.authenticate(any(), any()) }
+        coVerify { userAuthenticator.authenticate(any(), any(), any()) }
     }
 
     private fun createLoginRequest(
-        username: String = faker.internet().emailAddress(),
+        email: String = faker.internet().emailAddress(),
         password: String? = null,
+        rememberMe: Boolean = false,
     ): LoginRequest {
         val finalPassword = password ?: generateValidPassword()
         return LoginRequest(
-            username = username,
+            email = email,
             password = finalPassword,
+            rememberMe = rememberMe,
         )
     }
 

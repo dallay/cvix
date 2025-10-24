@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ const authStore = useAuthStore();
 const isSubmitting = ref(false);
 const submitError = ref<string | null>(null);
 
-const { handleSubmit } = useForm<LoginFormData>({
+const form = useForm<LoginFormData>({
 	validationSchema: toTypedSchema(loginSchema),
 	initialValues: {
 		email: "",
@@ -37,7 +37,7 @@ const { handleSubmit } = useForm<LoginFormData>({
 	},
 });
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = form.handleSubmit(async (values) => {
 	isSubmitting.value = true;
 	submitError.value = null;
 
@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 		// Redirect to original destination or dashboard
 		const redirectTo = (route.query.redirect as string) || "/dashboard";
-		router.push(redirectTo);
+		await router.push(redirectTo);
 	} catch (error) {
 		submitError.value =
 			error instanceof Error

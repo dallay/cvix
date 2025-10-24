@@ -30,6 +30,8 @@ export const useAuthStore = defineStore("auth", () => {
 
 	/**
 	 * Register a new user
+	 * Per registration flow diagram: After successful registration, redirect to login page
+	 * User must verify email (if Keycloak is configured) before being able to login
 	 */
 	async function register(data: RegisterFormData): Promise<void> {
 		isLoading.value = true;
@@ -37,13 +39,6 @@ export const useAuthStore = defineStore("auth", () => {
 
 		try {
 			await httpClient.register(data);
-
-			// After successful registration, automatically log in
-			await login({
-				email: data.email,
-				password: data.password,
-				rememberMe: false,
-			});
 		} catch (err) {
 			error.value = err instanceof Error ? err.message : "Registration failed";
 			throw err;
@@ -67,8 +62,7 @@ export const useAuthStore = defineStore("auth", () => {
 			authSessionStorage.setSessionExpiration(newSession.expiresIn);
 
 			// Fetch user details after successful login
-			const currentUser = await httpClient.getCurrentUser();
-			user.value = currentUser;
+			user.value = await httpClient.getCurrentUser();
 		} catch (err) {
 			error.value = err instanceof Error ? err.message : "Login failed";
 			throw err;
@@ -104,7 +98,6 @@ export const useAuthStore = defineStore("auth", () => {
 		try {
 			const newSession = await httpClient.refreshToken();
 			session.value = newSession;
-			// Update session expiration after refresh
 			authSessionStorage.setSessionExpiration(newSession.expiresIn);
 		} catch (err) {
 			// If token refresh fails, logout the user
@@ -115,6 +108,7 @@ export const useAuthStore = defineStore("auth", () => {
 
 	/**
 	 * Check if user is authenticated and fetch current user
+	 * This is used to restore session on page reload
 	 */
 	async function checkAuth(): Promise<void> {
 		isLoading.value = true;
@@ -123,8 +117,19 @@ export const useAuthStore = defineStore("auth", () => {
 		try {
 			const currentUser = await httpClient.getCurrentUser();
 			user.value = currentUser;
+
+			// If we successfully got the user, it means we have a valid session
+			// Create a minimal session object if we don't have one
+			if (!session.value) {
+				session.value = {
+					accessToken: "", // Token is in HTTP-only cookie
+					refreshToken: "",
+					expiresIn: 0,
+					tokenType: "Bearer",
+					scope: "",
+				};
+			}
 		} catch {
-			// User is not authenticated
 			user.value = null;
 			session.value = null;
 		} finally {

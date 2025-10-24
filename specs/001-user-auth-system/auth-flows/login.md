@@ -17,3 +17,24 @@ J -->|Redirect| K["Dashboard"]
 I -->|Axios Error| L["Show Error"]
 ```
 
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Vite (9876)
+    participant Backend (8080)
+
+    Browser->>Vite (9876): GET /api/health-check
+    Vite (9876)->>Backend (8080): Proxy request
+    Backend (8080)->>Backend (8080): Genera CSRF token
+    Backend (8080)-->>Vite (9876): Set-Cookie: XSRF-TOKEN (sin domain, SameSite=Lax)
+    Vite (9876)-->>Browser: Cookie establecida en localhost:9876
+
+    Browser->>Browser: BaseHttpClient lee cookie manualmente
+    Browser->>Vite (9876): POST /api/auth/login<br/>+ Cookie: XSRF-TOKEN<br/>+ Header: X-XSRF-TOKEN
+    Vite (9876)->>Backend (8080): Proxy con headers y cookies
+    Backend (8080)->>Backend (8080): Valida CSRF token
+    Backend (8080)-->>Vite (9876): 200 OK ✅
+    Vite (9876)-->>Browser: Success
+```
+

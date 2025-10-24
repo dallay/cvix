@@ -47,12 +47,24 @@ export default defineConfig({
 				secure: false,
 				changeOrigin: true,
 				ws: true,
+				// Preserve cookies between proxy and backend
+				cookieDomainRewrite: {
+					"*": "",
+				},
 				configure: (proxy, _options) => {
 					proxy.on("error", (err, _req, _res) => {
 						console.log("proxy error", err);
 					});
 					proxy.on("proxyReq", (_proxyReq, req, _res) => {
 						console.log("Sending Request to the Target:", req.method, req.url);
+						// Log cookies being sent
+						if (req.headers.cookie) {
+							console.log("  Cookies:", req.headers.cookie);
+						}
+						// Log CSRF header being sent
+						if (req.headers["x-xsrf-token"]) {
+							console.log("  CSRF Token:", req.headers["x-xsrf-token"]);
+						}
 					});
 					proxy.on("proxyRes", (proxyRes, req, _res) => {
 						console.log(
@@ -60,6 +72,10 @@ export default defineConfig({
 							proxyRes.statusCode,
 							req.url,
 						);
+						// Log Set-Cookie headers from backend
+						if (proxyRes.headers["set-cookie"]) {
+							console.log("  Set-Cookie:", proxyRes.headers["set-cookie"]);
+						}
 					});
 				},
 			},
@@ -67,26 +83,25 @@ export default defineConfig({
 				target: "http://localhost:8080",
 				secure: false,
 				changeOrigin: true,
+				cookieDomainRewrite: {
+					"*": "",
+				},
 			},
 			"/oauth2": {
 				target: "http://localhost:8080",
 				secure: false,
 				changeOrigin: true,
-			},
-			"/login": {
-				target: "http://localhost:8080",
-				secure: false,
-				changeOrigin: true,
+				cookieDomainRewrite: {
+					"*": "",
+				},
 			},
 			"/v3/api-docs": {
 				target: "http://localhost:8080",
 				secure: false,
 				changeOrigin: true,
-			},
-			"/h2-console": {
-				target: "http://localhost:8080",
-				secure: false,
-				changeOrigin: true,
+				cookieDomainRewrite: {
+					"*": "",
+				},
 			},
 		},
 	},

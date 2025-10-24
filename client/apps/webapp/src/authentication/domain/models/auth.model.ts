@@ -2,14 +2,11 @@
  * Represents an authenticated user in the application
  */
 export interface User {
-	id: string;
+	username: string;
 	email: string;
-	firstName: string;
-	lastName: string;
+	firstName: string | null;
+	lastName: string | null;
 	roles: string[];
-	emailVerified: boolean;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
 /**

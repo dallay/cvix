@@ -1,8 +1,5 @@
-import axios, {
-	type AxiosError,
-	type AxiosInstance,
-	type InternalAxiosRequestConfig,
-} from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { BaseHttpClient } from "@/shared/BaseHttpClient.ts";
 import {
 	AuthenticationError,
 	InvalidCredentialsError,
@@ -19,71 +16,49 @@ import type {
 } from "../../domain/validators/auth.schema.ts";
 
 /**
- * Authentication API response types
+ * Authentication API response types matching the OpenAPI contract
  */
-interface LoginResponse {
+interface AuthResponse {
 	accessToken: string;
-	refreshToken: string;
 	expiresIn: number;
 	tokenType: string;
-	scope: string;
+	user: {
+		id: string;
+		email: string;
+		firstname: string;
+		lastname: string;
+		displayName: string;
+		accountStatus: string;
+	};
 }
 
-interface RegisterResponse {
-	id: string;
-	email: string;
-	firstName: string;
-	lastname: string;
-}
-
-interface RefreshTokenResponse {
+interface TokenRefreshResponse {
 	accessToken: string;
-	refreshToken: string;
 	expiresIn: number;
 	tokenType: string;
 }
 
 interface UserResponse {
-	id: string;
+	username: string;
 	email: string;
-	firstName: string;
-	lastName: string;
-	roles: string[];
-	emailVerified: boolean;
-	createdAt: string;
-	updatedAt: string;
+	firstname: string | null;
+	lastname: string | null;
+	authorities: string[];
 }
 
 /**
  * HTTP client for authentication operations
+ * Extends BaseHttpClient with authentication-specific logic
  */
-export class AuthHttpClient {
-	private readonly client: AxiosInstance;
-	private readonly baseURL: string;
-
+export class AuthHttpClient extends BaseHttpClient {
 	constructor(baseURL = import.meta.env.VITE_API_BASE_URL || "/api") {
-		this.baseURL = baseURL;
-		this.client = axios.create({
-			baseURL,
-			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/vnd.api.v1+json", // API versioning header
-			},
-			withCredentials: true, // Enable cookies for HTTP-only tokens
-			timeout: 10000,
-			// Axios will automatically read the XSRF-TOKEN cookie and send it as X-XSRF-TOKEN header
-			xsrfCookieName: "XSRF-TOKEN",
-			xsrfHeaderName: "X-XSRF-TOKEN",
-		});
-
-		this.setupInterceptors();
+		super({ baseURL });
 	}
 
 	/**
-	 * Setup request and response interceptors
+	 * Setup response interceptors with token refresh logic
 	 */
-	private setupInterceptors(): void {
-		// Response interceptor for token refresh and error handling
+	protected override setupResponseInterceptors(): void {
 		this.client.interceptors.response.use(
 			(response) => response,
 			async (error: AxiosError) => {
@@ -96,7 +71,7 @@ export class AuthHttpClient {
 					originalRequest &&
 					error.response?.status === 401 &&
 					!originalRequest._retry &&
-					!originalRequest.url?.includes("/auth/refresh") &&
+					!originalRequest.url?.includes("/auth/token/refresh") &&
 					!originalRequest.url?.includes("/auth/login")
 				) {
 					originalRequest._retry = true;
@@ -109,11 +84,11 @@ export class AuthHttpClient {
 						return this.client(originalRequest);
 					} catch {
 						// Refresh failed, let the error propagate
-						return Promise.reject(this.handleError(error));
+						throw this.handleError(error);
 					}
 				}
 
-				return Promise.reject(this.handleError(error));
+				throw this.handleError(error);
 			},
 		);
 	}
@@ -126,12 +101,8 @@ export class AuthHttpClient {
 			return new NetworkError();
 		}
 
-		const { status, data } = error.response;
-		const errorData = data as {
-			message?: string;
-			code?: string;
-			errors?: Record<string, string[]>;
-		};
+		const { status } = error.response;
+		const errorData = this.getErrorData(error);
 
 		switch (status) {
 			case 400:
@@ -155,9 +126,23 @@ export class AuthHttpClient {
 					errorData.message || "Invalid email or password",
 				);
 
+			case 403:
+				return new AuthenticationError(
+					errorData.message || "Access denied",
+					"FORBIDDEN",
+					403,
+				);
+
 			case 409:
 				return new UserAlreadyExistsError(
 					errorData.message || "An account with this email already exists",
+				);
+
+			case 429:
+				return new AuthenticationError(
+					errorData.message || "Too many requests. Please try again later.",
+					"RATE_LIMIT_EXCEEDED",
+					429,
 				);
 
 			case 500:
@@ -177,14 +162,14 @@ export class AuthHttpClient {
 	}
 
 	/**
-	 * Register a new user
+	 * Register a new user - Maps to POST /auth/register
+	 * Follows the registration flow diagram
 	 */
 	async register(data: RegisterFormData): Promise<void> {
 		try {
-			// Ensure CSRF token is initialized before POST request
-			await this.initializeCsrf();
-
-			await this.client.post<RegisterResponse>("/auth/register", {
+			// POST /auth/register returns 201 with AuthResponse (includes tokens and user)
+			// But we don't need the response here as we'll auto-login
+			await this.post<AuthResponse>("/auth/register", {
 				email: data.email,
 				password: data.password,
 				firstname: data.firstName,
@@ -196,21 +181,25 @@ export class AuthHttpClient {
 	}
 
 	/**
-	 * Login with email and password
+	 * Login with email and password - Maps to POST /auth/login
+	 * Follows the login flow diagram
 	 */
 	async login(data: LoginFormData): Promise<Session> {
 		try {
-			const response = await this.client.post<LoginResponse>("/auth/login", {
-				username: data.email,
+			// POST /auth/login returns AuthResponse with tokens and user data
+			const response = await this.post<AuthResponse>("/auth/login", {
+				email: data.email,
 				password: data.password,
+				rememberMe: data.rememberMe,
 			});
 
+			// Map AuthResponse to Session domain model
 			return {
-				accessToken: response.data.accessToken,
-				refreshToken: response.data.refreshToken,
-				expiresIn: response.data.expiresIn,
-				tokenType: response.data.tokenType,
-				scope: response.data.scope,
+				accessToken: response.accessToken,
+				refreshToken: "", // Refresh token is in HTTP-only cookie
+				expiresIn: response.expiresIn,
+				tokenType: response.tokenType,
+				scope: "", // Scope not returned in v1 API
 			};
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
@@ -218,29 +207,34 @@ export class AuthHttpClient {
 	}
 
 	/**
-	 * Logout the current user
+	 * Logout the current user - Maps to POST /auth/logout
+	 * Follows the logout flow diagram
 	 */
 	async logout(): Promise<void> {
 		try {
-			await this.client.post("/auth/logout");
+			// POST /auth/logout returns 204 No Content
+			await this.post("/auth/logout");
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
 		}
 	}
 
 	/**
-	 * Refresh the access token
+	 * Refresh the access token - Maps to POST /auth/token/refresh
+	 * Uses refresh token from HTTP-only cookie
 	 */
 	async refreshToken(): Promise<Session> {
 		try {
-			const response =
-				await this.client.post<RefreshTokenResponse>("/auth/refresh");
+			// POST /auth/token/refresh returns TokenRefreshResponse
+			const response = await this.post<TokenRefreshResponse>(
+				"/auth/token/refresh",
+			);
 
 			return {
-				accessToken: response.data.accessToken,
-				refreshToken: response.data.refreshToken,
-				expiresIn: response.data.expiresIn,
-				tokenType: response.data.tokenType,
+				accessToken: response.accessToken,
+				refreshToken: "", // Refresh token is in HTTP-only cookie
+				expiresIn: response.expiresIn,
+				tokenType: response.tokenType,
 				scope: "",
 			};
 		} catch {
@@ -249,21 +243,18 @@ export class AuthHttpClient {
 	}
 
 	/**
-	 * Get the current authenticated user
+	 * Get the current authenticated user - Maps to GET /api/account
 	 */
 	async getCurrentUser(): Promise<User> {
 		try {
-			const response = await this.client.get<UserResponse>("/auth/user");
+			const response = await this.get<UserResponse>("/account");
 
 			return {
-				id: response.data.id,
-				email: response.data.email,
-				firstName: response.data.firstName,
-				lastName: response.data.lastName,
-				roles: response.data.roles,
-				emailVerified: response.data.emailVerified,
-				createdAt: new Date(response.data.createdAt),
-				updatedAt: new Date(response.data.updatedAt),
+				username: response.username,
+				email: response.email,
+				firstName: response.firstname,
+				lastName: response.lastname,
+				roles: response.authorities,
 			};
 		} catch (error) {
 			throw this.handleError(error as AxiosError);
@@ -271,33 +262,15 @@ export class AuthHttpClient {
 	}
 
 	/**
-	 * Initialize CSRF token by making a GET request to a public endpoint
-	 * This ensures the XSRF-TOKEN cookie is set before any POST/PUT/DELETE requests
-	 */
-	async initializeCsrf(): Promise<void> {
-		try {
-			// Make a GET request to a public endpoint to trigger CSRF cookie creation
-			await this.client.get("/health-check");
-			console.debug("CSRF token initialized successfully");
-		} catch (error) {
-			// Log the error but don't throw - the CSRF cookie might be set on the first real request
-			console.warn(
-				"Failed to initialize CSRF token, will retry on first request:",
-				error,
-			);
-		}
-	}
-
-	/**
 	 * Initiate federated login (redirect to identity provider)
+	 * Maps to GET /auth/federated/initiate
 	 */
 	initiateOAuthLogin(provider: string, redirectUri?: string): void {
 		const params = new URLSearchParams();
+		params.append("provider", provider);
 		if (redirectUri) {
-			params.append("redirect_uri", redirectUri);
+			params.append("redirectUri", redirectUri);
 		}
-
-		const url = `${this.baseURL}/oauth2/authorization/${provider}${params.toString() ? `?${params.toString()}` : ""}`;
-		window.location.href = url;
+		globalThis.location.href = `${this.baseURL}/auth/federated/initiate?${params.toString()}`;
 	}
 }

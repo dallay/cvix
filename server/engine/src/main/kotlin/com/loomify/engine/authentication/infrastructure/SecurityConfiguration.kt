@@ -118,7 +118,11 @@ class SecurityConfiguration(
                 csrf
                     .csrfTokenRepository(
                         CookieServerCsrfTokenRepository.withHttpOnlyFalse().apply {
-                            if (applicationSecurityProperties.domain.isNotEmpty()) {
+                            // Set header name to X-XSRF-TOKEN to match Axios default behavior
+                            setHeaderName("X-XSRF-TOKEN")
+                            // Only set cookie domain if domain is configured and not localhost
+                            if (applicationSecurityProperties.domain.isNotEmpty() &&
+                                applicationSecurityProperties.domain != "localhost") {
                                 setCookieCustomizer {
                                     it.domain(
                                         if (applicationSecurityProperties.domain.startsWith(".")) {
