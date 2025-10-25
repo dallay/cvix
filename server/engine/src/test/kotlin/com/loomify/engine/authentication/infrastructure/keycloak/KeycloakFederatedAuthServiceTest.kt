@@ -5,13 +5,13 @@ import com.loomify.engine.users.infrastructure.persistence.UserStoreR2dbcReposit
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import reactor.test.StepVerifier
-import java.util.UUID
 
 @DisplayName("Keycloak Federated Auth Service Tests")
 class KeycloakFederatedAuthServiceTest {
@@ -41,17 +41,17 @@ class KeycloakFederatedAuthServiceTest {
 
             // When
             val result = service.findOrCreateUser(
-                provider, externalUserId, email, firstName, lastName, displayName
+                provider, externalUserId, email, firstName, lastName, displayName,
             )
 
             // Then
             StepVerifier.create(result)
                 .expectNextMatches { user ->
                     user.email == email &&
-                    user.firstName == firstName &&
-                    user.lastName == lastName &&
-                    user.displayName == displayName &&
-                    user.roles.contains(Role.USER)
+                        user.firstName == firstName &&
+                        user.lastName == lastName &&
+                        user.displayName == displayName &&
+                        user.roles.contains(Role.USER)
                 }
                 .verifyComplete()
 
@@ -74,16 +74,16 @@ class KeycloakFederatedAuthServiceTest {
 
             // When
             val result = service.findOrCreateUser(
-                provider, externalUserId, email, firstName, lastName, displayName
+                provider, externalUserId, email, firstName, lastName, displayName,
             )
 
             // Then
             StepVerifier.create(result)
                 .expectNextMatches { user ->
                     user.email == email &&
-                    user.firstName == firstName &&
-                    user.lastName == lastName &&
-                    user.displayName == "Existing User"
+                        user.firstName == firstName &&
+                        user.lastName == lastName &&
+                        user.displayName == "Existing User"
                 }
                 .verifyComplete()
 
@@ -111,9 +111,9 @@ class KeycloakFederatedAuthServiceTest {
             StepVerifier.create(result)
                 .expectNextMatches { identity ->
                     identity.userId == userId &&
-                    identity.provider == provider &&
-                    identity.externalUserId == externalUserId &&
-                    identity.email == email
+                        identity.provider == provider &&
+                        identity.externalUserId == externalUserId &&
+                        identity.email == email
                 }
                 .verifyComplete()
         }

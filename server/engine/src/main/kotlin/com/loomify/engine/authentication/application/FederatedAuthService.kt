@@ -1,8 +1,7 @@
 package com.loomify.engine.authentication.application
 
-import com.loomify.engine.authentication.domain.Username
-import reactor.core.publisher.Mono
 import java.util.UUID
+import reactor.core.publisher.Mono
 
 /**
  * Data class representing a federated identity link.

@@ -1,10 +1,10 @@
 package com.loomify.engine.authentication.infrastructure.ratelimit
 
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 
 /**
  * In-memory rate limiter using a sliding window algorithm.
@@ -89,22 +89,32 @@ open class InMemoryRateLimiter {
     /**
      * Gets the time until the rate limit resets for an identifier.
      *
+     * This method calculates when the oldest request in the current window will expire,
+     * allowing a new request to be made. Returns null if the identifier is not currently
+     * rate-limited.
+     *
      * @param identifier The identifier to check
+     * @param maxAttempts Maximum number of attempts allowed in the time window
      * @param windowDuration Duration of the time window
-     * @return Duration until reset, or null if no rate limiting active
+     * @return Duration until reset, or null if not currently rate-limited
      */
-    fun getTimeUntilReset(
+    open fun getTimeUntilReset(
         identifier: String,
+        maxAttempts: Int,
         windowDuration: Duration
     ): Duration? {
+        val now = Instant.now()
+        val windowStart = now.minus(windowDuration)
+
         val requests = requestMap[identifier] ?: return null
 
         synchronized(requests) {
-            if (requests.isEmpty()) return null
+            requests.removeIf { it.isBefore(windowStart) }
 
-            val oldestRequest = requests.minOrNull() ?: return null
+            if (requests.size < maxAttempts) return null
+
+            val oldestRequest = requests.firstOrNull() ?: return null
             val resetTime = oldestRequest.plus(windowDuration)
-            val now = Instant.now()
 
             return if (resetTime.isAfter(now)) {
                 Duration.between(now, resetTime)

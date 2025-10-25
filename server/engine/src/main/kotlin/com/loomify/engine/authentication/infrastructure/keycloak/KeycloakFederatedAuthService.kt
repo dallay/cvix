@@ -42,7 +42,7 @@ class KeycloakFederatedAuthService(
         return findUserByFederatedIdentity(provider, externalUserId)
             .switchIfEmpty(
                 // Create new user account
-                createNewUser(email, firstName, lastName, displayName, provider, externalUserId)
+                createNewUser(email, firstName, lastName, displayName, provider, externalUserId),
             )
     }
 
@@ -64,8 +64,8 @@ class KeycloakFederatedAuthService(
                 provider = provider,
                 externalUserId = externalUserId,
                 email = email,
-                displayName = ""
-            )
+                displayName = "",
+            ),
         )
     }
 
@@ -75,7 +75,9 @@ class KeycloakFederatedAuthService(
     ): Mono<UserInfo> {
         // TODO: Implement proper federated identity lookup when the federated_identity table is created
         // For now, we'll return empty to trigger the fallback flow
-        logger.debug("Federated identity lookup not yet implemented: provider=$provider, externalUserId=$externalUserId")
+        logger.debug(
+            "Federated identity lookup not yet implemented: provider=$provider, externalUserId=$externalUserId",
+        )
         return Mono.empty()
     }
 
@@ -111,7 +113,7 @@ class KeycloakFederatedAuthService(
                 firstName = firstName.takeIf { it.isNotBlank() },
                 lastName = lastName.takeIf { it.isNotBlank() },
                 displayName = fullName,
-                roles = setOf(Role.USER)
+                roles = setOf(Role.USER),
             )
         }
             .flatMap { userInfo ->

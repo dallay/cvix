@@ -7,6 +7,9 @@ import com.loomify.engine.authentication.infrastructure.keycloak.FederatedAuthCo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.net.URI
+import java.time.Instant
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -20,9 +23,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebSession
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.net.URI
-import java.time.Instant
-import java.util.UUID
 
 @DisplayName("Federated Login Controller Tests")
 class FederatedLoginControllerTest {
@@ -61,8 +61,8 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/oauth2/authorization/google") &&
-                    sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
+                        response.headers.location == URI.create("/oauth2/authorization/google") &&
+                        sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
                 }
                 .verifyComplete()
         }
@@ -84,8 +84,8 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/oauth2/authorization/microsoft") &&
-                    sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
+                        response.headers.location == URI.create("/oauth2/authorization/microsoft") &&
+                        sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
                 }
                 .verifyComplete()
         }
@@ -107,8 +107,8 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/oauth2/authorization/github") &&
-                    sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
+                        response.headers.location == URI.create("/oauth2/authorization/github") &&
+                        sessionAttributes["OAUTH2_REDIRECT_URI"] == redirectUri
                 }
                 .verifyComplete()
         }
@@ -185,7 +185,7 @@ class FederatedLoginControllerTest {
                 givenName = "Jane",
                 familyName = "Doe",
                 subject = "google-user-123",
-                issuer = "https://accounts.google.com"
+                issuer = "https://accounts.google.com",
             )
 
             val sessionAttributes = mutableMapOf<String, Any>("OAUTH2_REDIRECT_URI" to "/dashboard")
@@ -196,7 +196,7 @@ class FederatedLoginControllerTest {
                 firstName = "Jane",
                 lastName = "Doe",
                 displayName = "Jane Doe",
-                roles = setOf(Role.USER)
+                roles = setOf(Role.USER),
             )
 
             every { exchange.session } returns Mono.just(session)
@@ -209,7 +209,7 @@ class FederatedLoginControllerTest {
                     email = "jane.doe@gmail.com",
                     firstName = "Jane",
                     lastName = "Doe",
-                    displayName = "Jane Doe"
+                    displayName = "Jane Doe",
                 )
             } returns Mono.just(authenticatedUser)
 
@@ -220,7 +220,7 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/dashboard")
+                        response.headers.location == URI.create("/dashboard")
                 }
                 .verifyComplete()
 
@@ -235,7 +235,7 @@ class FederatedLoginControllerTest {
                 givenName = "John",
                 familyName = "Smith",
                 subject = "microsoft-user-456",
-                issuer = "https://login.microsoftonline.com/common/v2.0"
+                issuer = "https://login.microsoftonline.com/common/v2.0",
             )
 
             val sessionAttributes = mutableMapOf<String, Any>("OAUTH2_REDIRECT_URI" to "/workspace/xyz")
@@ -246,7 +246,7 @@ class FederatedLoginControllerTest {
                 firstName = "John",
                 lastName = "Smith",
                 displayName = "John Smith",
-                roles = setOf(Role.USER)
+                roles = setOf(Role.USER),
             )
 
             every { exchange.session } returns Mono.just(session)
@@ -259,7 +259,7 @@ class FederatedLoginControllerTest {
                     email = "john.smith@outlook.com",
                     firstName = "John",
                     lastName = "Smith",
-                    displayName = "John Smith"
+                    displayName = "John Smith",
                 )
             } returns Mono.just(authenticatedUser)
 
@@ -270,7 +270,7 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/workspace/xyz")
+                        response.headers.location == URI.create("/workspace/xyz")
                 }
                 .verifyComplete()
         }
@@ -283,7 +283,7 @@ class FederatedLoginControllerTest {
                 givenName = "Dev",
                 familyName = "User",
                 subject = "github-user-789",
-                issuer = "https://github.com"
+                issuer = "https://github.com",
             )
 
             val sessionAttributes = mutableMapOf<String, Any>()
@@ -294,7 +294,7 @@ class FederatedLoginControllerTest {
                 firstName = "Dev",
                 lastName = "User",
                 displayName = "Dev User",
-                roles = setOf(Role.USER)
+                roles = setOf(Role.USER),
             )
 
             every { exchange.session } returns Mono.just(session)
@@ -307,7 +307,7 @@ class FederatedLoginControllerTest {
                     email = "developer@github.com",
                     firstName = "Dev",
                     lastName = "User",
-                    displayName = "Dev User"
+                    displayName = "Dev User",
                 )
             } returns Mono.just(authenticatedUser)
 
@@ -318,7 +318,7 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.FOUND &&
-                    response.headers.location == URI.create("/dashboard") // default redirect
+                        response.headers.location == URI.create("/dashboard") // default redirect
                 }
                 .verifyComplete()
         }
@@ -332,7 +332,7 @@ class FederatedLoginControllerTest {
                 givenName = "Existing",
                 familyName = "User",
                 subject = "google-user-999",
-                issuer = "https://accounts.google.com"
+                issuer = "https://accounts.google.com",
             )
 
             val sessionAttributes = mutableMapOf<String, Any>()
@@ -343,7 +343,7 @@ class FederatedLoginControllerTest {
                 firstName = "Existing",
                 lastName = "User",
                 displayName = "Existing User",
-                roles = setOf(Role.USER)
+                roles = setOf(Role.USER),
             )
 
             every { exchange.session } returns Mono.just(session)
@@ -356,7 +356,7 @@ class FederatedLoginControllerTest {
                     email = "existing@example.com",
                     firstName = "Existing",
                     lastName = "User",
-                    displayName = "Existing User"
+                    displayName = "Existing User",
                 )
             } returns Mono.just(authenticatedUser)
 
@@ -387,7 +387,7 @@ class FederatedLoginControllerTest {
                 givenName = "Test",
                 familyName = "User",
                 subject = "test-123",
-                issuer = "https://accounts.google.com"
+                issuer = "https://accounts.google.com",
             )
 
             // When
@@ -397,8 +397,8 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.OK &&
-                    response.body?.get("authenticated") == true &&
-                    response.body?.get("email") == "test@example.com"
+                        response.body?.get("authenticated") == true &&
+                        response.body?.get("email") == "test@example.com"
                 }
                 .verifyComplete()
         }
@@ -412,7 +412,7 @@ class FederatedLoginControllerTest {
             StepVerifier.create(result)
                 .expectNextMatches { response ->
                     response.statusCode == HttpStatus.OK &&
-                    response.body?.get("authenticated") == false
+                        response.body?.get("authenticated") == false
                 }
                 .verifyComplete()
         }

@@ -1,9 +1,9 @@
 package com.loomify.engine.authentication.infrastructure.cookie
 
 import com.loomify.engine.authentication.domain.AccessToken
+import java.time.Duration
 import org.springframework.http.ResponseCookie
 import org.springframework.http.server.reactive.ServerHttpResponse
-import java.time.Duration
 
 /**
  * [AuthCookieBuilder] is a utility class that builds cookies for the authentication process.
@@ -16,8 +16,8 @@ object AuthCookieBuilder {
     private const val SAME_SITE_LAX = "Lax"
 
     // Token durations
-    private val REMEMBER_ME_REFRESH_TOKEN_DURATION = Duration.ofDays(30)  // 30 days for remember me
-    private val STANDARD_REFRESH_TOKEN_DURATION = Duration.ofDays(1)      // 1 day for standard login
+    private val REMEMBER_ME_REFRESH_TOKEN_DURATION = Duration.ofDays(30) // 30 days for remember me
+    private val STANDARD_REFRESH_TOKEN_DURATION = Duration.ofDays(1) // 1 day for standard login
 
     /**
      * Builds cookies for the access token.

@@ -75,7 +75,7 @@ class KeycloakAuthenticatorRepository(
             val keycloak = newKeycloakBuilderWithPasswordCredentials(
                 username.value,
                 password.value,
-                rememberMe
+                rememberMe,
             ).build()
             val accessTokenResponse = keycloak.tokenManager().accessToken
             accessTokenResponse.toAccessToken().also {

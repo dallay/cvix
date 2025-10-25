@@ -48,7 +48,7 @@ class UserAuthenticatorController(private val authenticateUserQueryHandler: Auth
         val authenticateUserQuery = AuthenticateUserQuery(
             email = email,
             password = password,
-            rememberMe = rememberMe
+            rememberMe = rememberMe,
         )
         val accessToken = authenticateUserQueryHandler.handle(authenticateUserQuery)
 

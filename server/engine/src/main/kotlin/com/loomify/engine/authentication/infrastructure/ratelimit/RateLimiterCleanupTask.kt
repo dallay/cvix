@@ -1,9 +1,9 @@
 package com.loomify.engine.authentication.infrastructure.ratelimit
 
+import java.time.Duration
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.time.Duration
 
 /**
  * Scheduled task for cleaning up expired rate limit entries.
@@ -25,7 +25,7 @@ class RateLimiterCleanupTask(
      * Cleans up expired rate limit entries.
      * Runs every 5 minutes.
      */
-    @Scheduled(fixedRate = 300000) // 5 minutes
+    @Scheduled(fixedRate = 300_000) // 5 minutes
     fun cleanupExpiredEntries() {
         logger.debug("Running rate limiter cleanup task")
 

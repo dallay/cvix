@@ -1,6 +1,8 @@
 package com.loomify.engine.authentication.infrastructure.ratelimit
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.time.Duration
+import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpStatus
@@ -10,8 +12,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import java.time.Duration
-import java.time.Instant
 
 /**
  * WebFlux filter for rate limiting authentication endpoints.
@@ -41,31 +41,31 @@ class RateLimitingFilter(
         private val LOGIN_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 5,
             windowDuration = Duration.ofMinutes(15),
-            paths = listOf("/api/auth/login", "/api/auth/login")
+            paths = listOf("/api/auth/login", "/api/auth/login"),
         )
 
         private val REGISTRATION_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 3,
             windowDuration = Duration.ofHours(1),
-            paths = listOf("/api/auth/register", "/api/auth/register")
+            paths = listOf("/api/auth/register", "/api/auth/register"),
         )
 
         private val PASSWORD_RESET_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 3,
             windowDuration = Duration.ofHours(1),
-            paths = listOf("/api/password/reset", "/api/auth/password/reset")
+            paths = listOf("/api/password/reset", "/api/auth/password/reset"),
         )
 
         private val TOKEN_REFRESH_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 10,
             windowDuration = Duration.ofMinutes(1),
-            paths = listOf("/api/auth/refresh-token", "/api/auth/token/refresh")
+            paths = listOf("/api/auth/refresh-token", "/api/auth/token/refresh"),
         )
 
         private val FEDERATED_LOGIN_RATE_LIMIT = RateLimitConfig(
             maxAttempts = 10,
             windowDuration = Duration.ofMinutes(5),
-            paths = listOf("/api/auth/federated/initiate")
+            paths = listOf("/api/auth/federated/initiate"),
         )
     }
 
@@ -82,8 +82,9 @@ class RateLimitingFilter(
         if (!rateLimiter.isAllowed(
                 clientIdentifier,
                 rateLimitConfig.maxAttempts,
-                rateLimitConfig.windowDuration
-            )) {
+                rateLimitConfig.windowDuration,
+            )
+        ) {
             logger.warn("Rate limit exceeded for $path from $clientIdentifier")
             return sendRateLimitResponse(exchange, clientIdentifier, rateLimitConfig)
         }
@@ -100,7 +101,7 @@ class RateLimitingFilter(
             REGISTRATION_RATE_LIMIT,
             PASSWORD_RESET_RATE_LIMIT,
             TOKEN_REFRESH_RATE_LIMIT,
-            FEDERATED_LOGIN_RATE_LIMIT
+            FEDERATED_LOGIN_RATE_LIMIT,
         ).firstOrNull { config ->
             config.paths.any { path.contains(it) }
         }
@@ -135,8 +136,8 @@ class RateLimitingFilter(
                 "code" to "RATE_LIMIT_EXCEEDED",
                 "message" to "Too many requests. Please try again later.",
                 "timestamp" to Instant.now().toString(),
-                "retryAfter" to rateLimiter.getTimeUntilReset(identifier, config.windowDuration)?.seconds
-            )
+                "retryAfter" to rateLimiter.getTimeUntilReset(identifier, config.maxAttempts, config.windowDuration)?.seconds,
+            ),
         )
 
         val bytes = objectMapper.writeValueAsBytes(errorResponse)
@@ -153,10 +154,10 @@ class RateLimitingFilter(
         val remaining = rateLimiter.getRemainingAttempts(
             identifier,
             config.maxAttempts,
-            config.windowDuration
+            config.windowDuration,
         )
 
-        val resetTime = rateLimiter.getTimeUntilReset(identifier, config.windowDuration)
+        val resetTime = rateLimiter.getTimeUntilReset(identifier, config.maxAttempts, config.windowDuration)
 
         try {
             exchange.response.headers.apply {
@@ -166,7 +167,7 @@ class RateLimitingFilter(
                     set("X-RateLimit-Reset", Instant.now().plus(it).epochSecond.toString())
                 }
             }
-        } catch (e: UnsupportedOperationException) {
+        } catch (_: UnsupportedOperationException) {
             // Headers are already committed (read-only), log and continue
             logger.debug("Cannot add rate limit headers - response already committed for $identifier")
         }

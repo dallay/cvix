@@ -25,7 +25,6 @@ class CsrfController {
      * @return Empty response with CSRF token set as cookie
      */
     @GetMapping("/auth/csrf")
-    fun getCsrfToken(token: Mono<CsrfToken>): Mono<ResponseEntity<Void>> {
-        return token.map { ResponseEntity.ok().build() }
-    }
+    fun getCsrfToken(token: Mono<CsrfToken>): Mono<ResponseEntity<Void>> =
+        token.map { ResponseEntity.ok().build() }
 }

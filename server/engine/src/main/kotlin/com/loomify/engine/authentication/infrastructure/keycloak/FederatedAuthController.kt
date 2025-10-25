@@ -1,6 +1,7 @@
 package com.loomify.engine.authentication.infrastructure.keycloak
 
 import com.loomify.engine.authentication.application.FederatedAuthService
+import java.net.URI
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -11,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import java.net.URI
+
+private const val GITHUB = "github"
+
+private const val MICROSOFT = "microsoft"
+
+private const val GOOGLE = "google"
 
 /**
  * REST controller for handling federated authentication (OAuth2/OIDC) flows.
@@ -48,10 +54,10 @@ class FederatedAuthController(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>> {
         // Validate provider
-        val validProviders = listOf("google", "microsoft", "github")
+        val validProviders = listOf(GOOGLE, MICROSOFT, GITHUB)
         if (provider !in validProviders) {
             return Mono.just(
-                ResponseEntity.badRequest().build()
+                ResponseEntity.badRequest().build(),
             )
         }
 
@@ -65,7 +71,7 @@ class FederatedAuthController(
             Mono.just(
                 ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(authorizationUrl))
-                    .build()
+                    .build(),
             )
         }
     }
@@ -98,9 +104,9 @@ class FederatedAuthController(
             // Get provider from issuer
             val issuer = oidcUser.issuer?.toString() ?: ""
             val provider = when {
-                issuer.contains("google") -> "google"
-                issuer.contains("microsoft") || issuer.contains("live.com") -> "microsoft"
-                issuer.contains("github") -> "github"
+                issuer.contains(GOOGLE) -> GOOGLE
+                issuer.contains(MICROSOFT) || issuer.contains("live.com") -> MICROSOFT
+                issuer.contains(GITHUB) -> GITHUB
                 else -> "unknown"
             }
 
@@ -111,7 +117,7 @@ class FederatedAuthController(
                 email = email,
                 firstName = firstName,
                 lastName = lastName,
-                displayName = oidcUser.fullName ?: "$firstName $lastName"
+                displayName = oidcUser.fullName ?: "$firstName $lastName",
             ).flatMap { _ ->
                 // Spring Security OAuth2 login automatically manages the session
                 // No need to manually set cookies as the OAuth2LoginAuthenticationWebFilter handles this
@@ -120,7 +126,7 @@ class FederatedAuthController(
                 Mono.just(
                     ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(redirectUri))
-                        .build()
+                        .build(),
                 )
             }
         }
@@ -144,15 +150,15 @@ class FederatedAuthController(
                         "authenticated" to true,
                         "provider" to (oidcUser.issuer?.toString() ?: "unknown"),
                         "email" to oidcUser.email,
-                        "displayName" to (oidcUser.fullName ?: "${oidcUser.givenName} ${oidcUser.familyName}")
-                    )
-                )
+                        "displayName" to (oidcUser.fullName ?: "${oidcUser.givenName} ${oidcUser.familyName}"),
+                    ),
+                ),
             )
         } else {
             Mono.just(
                 ResponseEntity.ok(
-                    mapOf("authenticated" to false)
-                )
+                    mapOf("authenticated" to false),
+                ),
             )
         }
     }

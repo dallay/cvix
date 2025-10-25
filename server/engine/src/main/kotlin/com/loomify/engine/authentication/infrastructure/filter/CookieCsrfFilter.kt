@@ -39,7 +39,8 @@ class CookieCsrfFilter(
 
                     // Only set domain if configured and not localhost (localhost doesn't work with domain attribute)
                     if (applicationSecurityProperties.domain.isNotEmpty() &&
-                        applicationSecurityProperties.domain != "localhost") {
+                        applicationSecurityProperties.domain != "localhost"
+                    ) {
                         cookieBuilder.domain(
                             if (applicationSecurityProperties.domain.startsWith(".")) {
                                 applicationSecurityProperties.domain

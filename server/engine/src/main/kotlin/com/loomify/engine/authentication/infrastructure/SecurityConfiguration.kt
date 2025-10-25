@@ -122,7 +122,8 @@ class SecurityConfiguration(
                             setHeaderName("X-XSRF-TOKEN")
                             // Only set cookie domain if domain is configured and not localhost
                             if (applicationSecurityProperties.domain.isNotEmpty() &&
-                                applicationSecurityProperties.domain != "localhost") {
+                                applicationSecurityProperties.domain != "localhost"
+                            ) {
                                 setCookieCustomizer {
                                     it.domain(
                                         if (applicationSecurityProperties.domain.startsWith(".")) {
