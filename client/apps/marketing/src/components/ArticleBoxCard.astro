@@ -12,6 +12,7 @@ import {
 import { type Lang, useTranslations } from "@/i18n";
 import type Article from "@/models/article/article.model";
 import { cleanEntityId } from "@/utils/collection.entity";
+import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
 import AuthorAvatarAstro from "./AuthorCard.astro";
 import FormattedDate from "./FormattedDate.astro";
 import Link from "./Link.astro";
@@ -31,52 +32,78 @@ if (!article.entry) {
 	throw new Error(`No entry found for article: ${article.id}`);
 }
 const { remarkPluginFrontmatter } = await render(article.entry);
+
+// Prepare the cover image for rendering
+const coverImage = article.cover
+	? await prepareImageForOptimizedPicture(article.cover)
+	: undefined;
+function isImageMetadata(img: unknown): img is ImageMetadata {
+	return (
+		!!img &&
+		typeof img === "object" &&
+		"src" in img &&
+		"width" in img &&
+		"height" in img
+	);
+}
 ---
 
-<Card class="group flex flex-col h-full overflow-hidden p-0 bg-card border border-border hover:bg-accent/50 transition-all duration-300">
-    <a href={blogUrl} class="block">
-        {article.cover && (
-            <div class="w-full h-48 md:h-56 overflow-hidden">
-                <OptimizedPicture
-                    src={article.cover}
-                    alt={`Cover image for "${article.title}" article`}
-                    width={800}
-                    height={450}
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    formats={["avif", "webp"]}
-                    loading="lazy"
-                />
-            </div>
-        )}
-        <CardHeader class="p-6">
-            {article.category && (
-                <Badge variant="secondary" class="mb-3">
-                    Article
-                </Badge>
-            )}
-            <div class="flex items-center justify-between mb-2 text-sm">
-                <FormattedDate date={article.date} class="text-muted-foreground text-sm" />
-                <ReadingTime readingTime={remarkPluginFrontmatter.minutesRead} class="text-muted-foreground text-sm" />
-            </div>
-            <CardTitle class="text-xl md:text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-2">
-                {article.title}
-            </CardTitle>
-        </CardHeader>
-        <CardContent class="p-6 pt-0 flex-grow">
-            {article.description && (
-                <CardDescription class="text-muted-foreground text-base line-clamp-3 mb-4">
-                    {article.description}
-                </CardDescription>
-            )}
-            <Link href={blogUrl}>
-                {t('blog.readMore')} &rarr;
-            </Link>
-        </CardContent>
-    </a>
-    <CardFooter class="p-6 pt-4 mt-auto">
-        <div class="flex flex-col justify-center w-full">
-            <AuthorAvatarAstro author={article.author} size="sm" />
+<Card
+  class="group flex flex-col h-full overflow-hidden p-0 bg-card border border-border hover:bg-accent/50 transition-all duration-300"
+>
+  <a href={blogUrl} class="block">
+    {
+      isImageMetadata(coverImage) && (
+        <div class="w-full h-48 md:h-56 overflow-hidden">
+          <OptimizedPicture
+            src={coverImage}
+            alt={`Cover image for "${article.title}" article`}
+            width={800}
+            height={450}
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            formats={["avif", "webp"]}
+            loading="lazy"
+          />
         </div>
-
-    </CardFooter>
+      )
+    }
+    <CardHeader class="p-6">
+      {
+        article.category && (
+          <Badge variant="secondary" class="mb-3">
+            Article
+          </Badge>
+        )
+      }
+      <div class="flex items-center justify-between mb-2 text-sm">
+        <FormattedDate date={article.date} class="text-muted-foreground text-sm" />
+        <ReadingTime
+          readingTime={remarkPluginFrontmatter.minutesRead}
+          class="text-muted-foreground text-sm"
+        />
+      </div>
+      <CardTitle
+        class="text-xl md:text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors line-clamp-2"
+      >
+        {article.title}
+      </CardTitle>
+    </CardHeader>
+    <CardContent class="p-6 pt-0 flex-grow">
+      {
+        article.description && (
+          <CardDescription class="text-muted-foreground text-base line-clamp-3 mb-4">
+            {article.description}
+          </CardDescription>
+        )
+      }
+      <Link href={blogUrl}>
+        {t("blog.readMore")} &rarr;
+      </Link>
+    </CardContent>
+  </a>
+  <CardFooter class="p-6 pt-4 mt-auto">
+    <div class="flex flex-col justify-center w-full">
+      <AuthorAvatarAstro author={article.author} size="sm" />
+    </div>
+  </CardFooter>
 </Card>
