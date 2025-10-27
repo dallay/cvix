@@ -21,4 +21,3 @@ sealed class RateLimitResult {
      */
     data class Denied(val retryAfter: Duration) : RateLimitResult()
 }
-

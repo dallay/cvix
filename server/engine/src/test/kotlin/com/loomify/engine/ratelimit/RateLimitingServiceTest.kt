@@ -8,13 +8,13 @@ import com.loomify.engine.ratelimit.infrastructure.RateLimitStrategy
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import java.time.Duration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.time.Duration
 
 /**
  * Unit tests for RateLimitingService.
@@ -125,7 +125,7 @@ class RateLimitingServiceTest {
                     event.identifier shouldBe identifier
                     event.endpoint shouldBe endpoint
                     event.windowDuration shouldBe retryAfter
-                }
+                },
             )
         }
     }
@@ -178,7 +178,7 @@ class RateLimitingServiceTest {
                     event.identifier shouldBe identifier
                     event.endpoint shouldBe endpoint
                     event.windowDuration shouldBe retryAfter
-                }
+                },
             )
         }
     }
@@ -192,8 +192,8 @@ class RateLimitingServiceTest {
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         } returns Mono.just(RateLimitResult.Allowed(10)) andThen
-                Mono.just(RateLimitResult.Allowed(9)) andThen
-                Mono.just(RateLimitResult.Allowed(8))
+            Mono.just(RateLimitResult.Allowed(9)) andThen
+            Mono.just(RateLimitResult.Allowed(8))
 
         // When/Then - First request
         StepVerifier.create(service.consumeToken(identifier, endpoint))
@@ -235,7 +235,7 @@ class RateLimitingServiceTest {
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         } returns Mono.just(RateLimitResult.Allowed(1)) andThen
-                Mono.just(RateLimitResult.Denied(retryAfter))
+            Mono.just(RateLimitResult.Denied(retryAfter))
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
 
@@ -319,4 +319,3 @@ class RateLimitingServiceTest {
         verify(exactly = 1) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 }
-

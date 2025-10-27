@@ -8,10 +8,10 @@ import com.loomify.engine.ratelimit.infrastructure.config.RateLimitProperties
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import java.time.Duration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.test.StepVerifier
-import java.time.Duration
 
 /**
  * Unit tests for Bucket4jRateLimiter.
@@ -37,35 +37,35 @@ class Bucket4jRateLimiterTest {
                 limits = listOf(
                     RateLimitProperties.BandwidthLimit(
                         name = "per-minute",
-                        capacity = 5,  // Small capacity for testing
+                        capacity = 5, // Small capacity for testing
                         refillTokens = 5,
-                        refillDuration = Duration.ofMinutes(1)
-                    )
-                )
+                        refillDuration = Duration.ofMinutes(1),
+                    ),
+                ),
             ),
             business = RateLimitProperties.BusinessRateLimitConfig(
                 enabled = true,
                 pricingPlans = mapOf(
                     "free" to RateLimitProperties.BandwidthLimit(
                         name = "free-plan",
-                        capacity = 3,  // Small capacity for testing
+                        capacity = 3, // Small capacity for testing
                         refillTokens = 3,
-                        refillDuration = Duration.ofHours(1)
+                        refillDuration = Duration.ofHours(1),
                     ),
                     "basic" to RateLimitProperties.BandwidthLimit(
                         name = "basic-plan",
                         capacity = 5,
                         refillTokens = 5,
-                        refillDuration = Duration.ofHours(1)
+                        refillDuration = Duration.ofHours(1),
                     ),
                     "professional" to RateLimitProperties.BandwidthLimit(
                         name = "professional-plan",
                         capacity = 10,
                         refillTokens = 10,
-                        refillDuration = Duration.ofHours(1)
-                    )
-                )
-            )
+                        refillDuration = Duration.ofHours(1),
+                    ),
+                ),
+            ),
         )
         val configStrategy = BucketConfigurationStrategy(properties)
         rateLimiter = Bucket4jRateLimiter(configStrategy)
@@ -311,4 +311,3 @@ class Bucket4jRateLimiterTest {
             .verifyComplete()
     }
 }
-

@@ -4,14 +4,13 @@ import com.loomify.engine.ratelimit.domain.RateLimitResult
 import com.loomify.engine.ratelimit.domain.RateLimiter
 import com.loomify.engine.ratelimit.infrastructure.config.BucketConfigurationStrategy
 import io.github.bucket4j.Bucket
-import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.ConsumptionProbe
+import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
-import java.time.Duration
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Type of rate limiting strategy.
@@ -47,9 +46,8 @@ class Bucket4jRateLimiter(
     private val logger = LoggerFactory.getLogger(Bucket4jRateLimiter::class.java)
     private val cache = ConcurrentHashMap<String, Bucket>()
 
-    override fun consumeToken(identifier: String): Mono<RateLimitResult> {
-        return consumeToken(identifier, RateLimitStrategy.BUSINESS)
-    }
+    override fun consumeToken(identifier: String): Mono<RateLimitResult> =
+        consumeToken(identifier, RateLimitStrategy.BUSINESS)
 
     /**
      * Consumes a token with a specific rate limiting strategy.
@@ -65,13 +63,17 @@ class Bucket4jRateLimiter(
             val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
             if (probe.isConsumed) {
-                logger.debug("Token consumed for identifier: {}, strategy: {}, remaining: {}",
-                    identifier, strategy, probe.remainingTokens)
+                logger.debug(
+                    "Token consumed for identifier: {}, strategy: {}, remaining: {}",
+                    identifier, strategy, probe.remainingTokens,
+                )
                 RateLimitResult.Allowed(probe.remainingTokens)
             } else {
                 val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
-                logger.warn("Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}",
-                    identifier, strategy, retryAfter)
+                logger.warn(
+                    "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}",
+                    identifier, strategy, retryAfter,
+                )
                 RateLimitResult.Denied(retryAfter)
             }
         }.subscribeOn(Schedulers.boundedElastic())
@@ -83,9 +85,14 @@ class Bucket4jRateLimiter(
                 logger.debug("Creating AUTH bucket for identifier: {}", identifier)
                 configurationStrategy.createAuthBucketConfiguration()
             }
+
             RateLimitStrategy.BUSINESS -> {
                 val pricingPlan = PricingPlan.resolvePlanFromApiKey(identifier)
-                logger.debug("Creating BUSINESS bucket for identifier: {} with plan: {}", identifier, pricingPlan.name)
+                logger.debug(
+                    "Creating BUSINESS bucket for identifier: {} with plan: {}",
+                    identifier,
+                    pricingPlan.name,
+                )
                 configurationStrategy.createBusinessBucketConfiguration(pricingPlan.name.lowercase())
             }
         }

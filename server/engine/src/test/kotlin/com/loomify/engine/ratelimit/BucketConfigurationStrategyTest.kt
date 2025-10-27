@@ -6,9 +6,9 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import java.time.Duration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Duration
 
 /**
  * Unit tests for BucketConfigurationStrategy.
@@ -37,15 +37,15 @@ class BucketConfigurationStrategyTest {
                         name = "per-minute",
                         capacity = 10,
                         refillTokens = 10,
-                        refillDuration = Duration.ofMinutes(1)
+                        refillDuration = Duration.ofMinutes(1),
                     ),
                     RateLimitProperties.BandwidthLimit(
                         name = "per-hour",
                         capacity = 100,
                         refillTokens = 100,
-                        refillDuration = Duration.ofHours(1)
-                    )
-                )
+                        refillDuration = Duration.ofHours(1),
+                    ),
+                ),
             ),
             business = RateLimitProperties.BusinessRateLimitConfig(
                 enabled = true,
@@ -54,22 +54,22 @@ class BucketConfigurationStrategyTest {
                         name = "free-plan",
                         capacity = 20,
                         refillTokens = 20,
-                        refillDuration = Duration.ofHours(1)
+                        refillDuration = Duration.ofHours(1),
                     ),
                     "basic" to RateLimitProperties.BandwidthLimit(
                         name = "basic-plan",
                         capacity = 40,
                         refillTokens = 40,
-                        refillDuration = Duration.ofHours(1)
+                        refillDuration = Duration.ofHours(1),
                     ),
                     "professional" to RateLimitProperties.BandwidthLimit(
                         name = "professional-plan",
                         capacity = 100,
                         refillTokens = 100,
-                        refillDuration = Duration.ofHours(1)
-                    )
-                )
-            )
+                        refillDuration = Duration.ofHours(1),
+                    ),
+                ),
+            ),
         )
         strategy = BucketConfigurationStrategy(properties)
     }
@@ -174,7 +174,7 @@ class BucketConfigurationStrategyTest {
     fun `should return false when auth rate limiting is disabled specifically`() {
         // Given
         val disabledAuthProperties = properties.copy(
-            auth = properties.auth.copy(enabled = false)
+            auth = properties.auth.copy(enabled = false),
         )
         val disabledAuthStrategy = BucketConfigurationStrategy(disabledAuthProperties)
 
@@ -211,7 +211,7 @@ class BucketConfigurationStrategyTest {
     fun `should return false when business rate limiting is disabled specifically`() {
         // Given
         val disabledBusinessProperties = properties.copy(
-            business = properties.business.copy(enabled = false)
+            business = properties.business.copy(enabled = false),
         )
         val disabledBusinessStrategy = BucketConfigurationStrategy(disabledBusinessProperties)
 
@@ -226,7 +226,7 @@ class BucketConfigurationStrategyTest {
     fun `should handle empty auth limits list gracefully`() {
         // Given
         val emptyLimitsProperties = properties.copy(
-            auth = properties.auth.copy(limits = emptyList())
+            auth = properties.auth.copy(limits = emptyList()),
         )
         val emptyLimitsStrategy = BucketConfigurationStrategy(emptyLimitsProperties)
 
@@ -246,10 +246,10 @@ class BucketConfigurationStrategyTest {
                         name = "per-minute",
                         capacity = 10,
                         refillTokens = 10,
-                        refillDuration = Duration.ofMinutes(1)
-                    )
-                )
-            )
+                        refillDuration = Duration.ofMinutes(1),
+                    ),
+                ),
+            ),
         )
         val singleLimitStrategy = BucketConfigurationStrategy(singleLimitProperties)
 
@@ -272,10 +272,10 @@ class BucketConfigurationStrategyTest {
                         capacity = 100,
                         refillTokens = 50,
                         refillDuration = Duration.ofHours(1),
-                        initialTokens = 10
-                    )
-                )
-            )
+                        initialTokens = 10,
+                    ),
+                ),
+            ),
         )
         val customStrategy = BucketConfigurationStrategy(customProperties)
 
@@ -286,4 +286,3 @@ class BucketConfigurationStrategyTest {
         config.bandwidths.size shouldBe 1
     }
 }
-

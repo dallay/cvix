@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.loomify.engine.ratelimit.application.RateLimitingService
 import com.loomify.engine.ratelimit.domain.RateLimitResult
 import com.loomify.engine.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpStatus
@@ -13,12 +14,11 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import java.time.Instant
 
 /**
  * WebFlux filter for rate limiting authentication endpoints.
- * This filter uses the application's [com.loomify.engine.ratelimit.application.RateLimitingService] to apply rate limits
- * based on IP addresses for authentication endpoints, following the hexagonal architecture.
+ * This filter uses the application's [com.loomify.engine.ratelimit.application.RateLimitingService]
+ * to apply rate limits based on IP addresses for authentication endpoints, following the hexagonal architecture.
  *
  * Authentication endpoints use strict time-based limits (per-minute, per-hour) to prevent brute force attacks,
  * while business endpoints use pricing plan-based limits for API usage quotas.
@@ -40,21 +40,7 @@ class RateLimitingFilter(
         val path = exchange.request.path.pathWithinApplication().value()
         logger.debug("Rate limit filter invoked for path: {}", path)
 
-        val alreadyProcessed = exchange.attributes.putIfAbsent(RATE_LIMIT_PROCESSED_KEY, true) != null
-        if (alreadyProcessed) {
-            logger.debug("Request already processed by rate limiter, skipping")
-            return chain.filter(exchange)
-        }
-
-        // Only apply rate limiting to authentication endpoints
-        if (!isAuthenticationEndpoint(path)) {
-            logger.debug("Path {} is not an authentication endpoint, skipping rate limit", path)
-            return chain.filter(exchange)
-        }
-
-        // Check if auth rate limiting is enabled
-        if (!configurationStrategy.isAuthRateLimitEnabled()) {
-            logger.debug("Authentication rate limiting is disabled, skipping")
+        if (shouldSkipRateLimiting(exchange, path)) {
             return chain.filter(exchange)
         }
 
@@ -75,6 +61,29 @@ class RateLimitingFilter(
                     }
                 }
             }
+    }
+
+    private fun shouldSkipRateLimiting(exchange: ServerWebExchange, path: String): Boolean {
+        val alreadyProcessed = exchange.attributes.putIfAbsent(RATE_LIMIT_PROCESSED_KEY, true) != null
+        if (alreadyProcessed) {
+            logger.debug("Request already processed by rate limiter, skipping")
+            return true
+        }
+
+        val isAuthEndpoint = isAuthenticationEndpoint(path)
+        val isRateLimitEnabled = configurationStrategy.isAuthRateLimitEnabled()
+
+        return when {
+            !isAuthEndpoint -> {
+                logger.debug("Path {} is not an authentication endpoint, skipping rate limit", path)
+                true
+            }
+            !isRateLimitEnabled -> {
+                logger.debug("Authentication rate limiting is disabled, skipping")
+                true
+            }
+            else -> false
+        }
     }
 
     private fun isAuthenticationEndpoint(path: String): Boolean {
@@ -116,8 +125,8 @@ class RateLimitingFilter(
                 "message" to "Too many authentication attempts. Please try again later.",
                 "timestamp" to Instant.now().toString(),
                 "retryAfter" to retryAfterSeconds,
-                "path" to path
-            )
+                "path" to path,
+            ),
         )
 
         val bytes = objectMapper.writeValueAsBytes(errorResponse)

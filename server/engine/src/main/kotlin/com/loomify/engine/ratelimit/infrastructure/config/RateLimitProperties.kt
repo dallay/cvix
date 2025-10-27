@@ -1,7 +1,7 @@
 package com.loomify.engine.ratelimit.infrastructure.config
 
-import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
+import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
  * Configuration properties for rate limiting.
@@ -77,7 +77,7 @@ data class RateLimitProperties(
             "/api/auth/password/reset",
             "/api/auth/refresh-token",
             "/api/auth/token/refresh",
-            "/api/auth/federated"
+            "/api/auth/federated",
         ),
 
         /**
@@ -89,14 +89,14 @@ data class RateLimitProperties(
                 name = "per-minute",
                 capacity = 10,
                 refillTokens = 10,
-                refillDuration = Duration.ofMinutes(1)
+                refillDuration = Duration.ofMinutes(1),
             ),
             BandwidthLimit(
                 name = "per-hour",
                 capacity = 100,
                 refillTokens = 100,
-                refillDuration = Duration.ofHours(1)
-            )
+                refillDuration = Duration.ofHours(1),
+            ),
         )
     )
 
@@ -119,20 +119,20 @@ data class RateLimitProperties(
                 name = "free-plan",
                 capacity = 20,
                 refillTokens = 20,
-                refillDuration = Duration.ofHours(1)
+                refillDuration = Duration.ofHours(1),
             ),
             "basic" to BandwidthLimit(
                 name = "basic-plan",
                 capacity = 40,
                 refillTokens = 40,
-                refillDuration = Duration.ofHours(1)
+                refillDuration = Duration.ofHours(1),
             ),
             "professional" to BandwidthLimit(
                 name = "professional-plan",
                 capacity = 100,
                 refillTokens = 100,
-                refillDuration = Duration.ofHours(1)
-            )
+                refillDuration = Duration.ofHours(1),
+            ),
         )
     )
 
@@ -166,4 +166,3 @@ data class RateLimitProperties(
         val initialTokens: Long? = null
     )
 }
-

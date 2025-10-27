@@ -46,7 +46,7 @@ class PricingPlanServiceTest {
         val bucket2 = service.resolveBucket(apiKey)
 
         // Then
-        bucket1 shouldBe bucket2  // Same instance
+        bucket1 shouldBe bucket2 // Same instance
     }
 
     @Test
@@ -104,7 +104,7 @@ class PricingPlanServiceTest {
         val bucket2 = service.resolveBucket(apiKey)
 
         // Then
-        bucket1 shouldNotBe bucket2  // Different instances
+        bucket1 shouldNotBe bucket2 // Different instances
     }
 
     @Test

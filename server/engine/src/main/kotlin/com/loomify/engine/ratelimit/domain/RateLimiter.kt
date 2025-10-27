@@ -15,4 +15,3 @@ interface RateLimiter {
      */
     fun consumeToken(identifier: String): Mono<RateLimitResult>
 }
-

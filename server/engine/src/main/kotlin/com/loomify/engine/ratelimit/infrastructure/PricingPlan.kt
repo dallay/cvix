@@ -10,24 +10,42 @@ import java.time.Duration
  */
 enum class PricingPlan {
     FREE {
-        override fun getLimit(): Bandwidth {
-            return Bandwidth.classic(20, Refill.intervally(20, Duration.ofHours(1)))
-        }
+        override fun getLimit(): Bandwidth = Bandwidth.classic(
+            FREE_CAPACITY,
+            Refill.intervally(FREE_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
+        )
     },
     BASIC {
-        override fun getLimit(): Bandwidth {
-            return Bandwidth.classic(40, Refill.intervally(40, Duration.ofHours(1)))
-        }
+        override fun getLimit(): Bandwidth = Bandwidth.classic(
+            BASIC_CAPACITY,
+            Refill.intervally(BASIC_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
+        )
     },
     PROFESSIONAL {
-        override fun getLimit(): Bandwidth {
-            return Bandwidth.classic(100, Refill.intervally(100, Duration.ofHours(1)))
-        }
+        override fun getLimit(): Bandwidth = Bandwidth.classic(
+            PROFESSIONAL_CAPACITY,
+            Refill.intervally(PROFESSIONAL_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
+        )
     };
 
     abstract fun getLimit(): Bandwidth
 
     companion object {
+        // Refill window used by all plans (in hours)
+        private const val REFILL_HOURS: Long = 1L
+
+        // FREE plan limits
+        private const val FREE_CAPACITY: Long = 20L
+        private const val FREE_REFILL_TOKENS: Long = 20L
+
+        // BASIC plan limits
+        private const val BASIC_CAPACITY: Long = 40L
+        private const val BASIC_REFILL_TOKENS: Long = 40L
+
+        // PROFESSIONAL plan limits
+        private const val PROFESSIONAL_CAPACITY: Long = 100L
+        private const val PROFESSIONAL_REFILL_TOKENS: Long = 100L
+
         /**
          * Resolves the pricing plan from a given API key.
          *

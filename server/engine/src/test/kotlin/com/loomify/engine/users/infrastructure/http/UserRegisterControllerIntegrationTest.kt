@@ -3,6 +3,7 @@ package com.loomify.engine.users.infrastructure.http
 import com.loomify.common.domain.vo.credential.Credential
 import com.loomify.engine.config.InfrastructureTestContainers
 import io.kotest.assertions.print.print
+import java.util.concurrent.atomic.AtomicInteger
 import net.datafaker.Faker
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -11,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
-import java.util.concurrent.atomic.AtomicInteger
 
 private const val ENDPOINT = "/api/auth/register"
 

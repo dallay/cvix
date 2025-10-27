@@ -1,13 +1,14 @@
 package com.loomify.engine.ratelimit
 
 import com.loomify.engine.ratelimit.domain.event.RateLimitExceededEvent
+import com.loomify.engine.ratelimit.infrastructure.RateLimitStrategy
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
-import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.Instant
+import org.junit.jupiter.api.Test
 
 /**
  * Unit tests for RateLimitExceededEvent domain event.
@@ -38,8 +39,9 @@ class RateLimitExceededEventTest {
             attemptCount = attemptCount,
             maxAttempts = maxAttempts,
             windowDuration = windowDuration,
+            strategy = RateLimitStrategy.AUTH,
             timestamp = timestamp,
-            resetTime = resetTime
+            resetTime = resetTime,
         )
 
         // Then
@@ -48,6 +50,7 @@ class RateLimitExceededEventTest {
         event.attemptCount shouldBe attemptCount
         event.maxAttempts shouldBe maxAttempts
         event.windowDuration shouldBe windowDuration
+        event.strategy shouldBe RateLimitStrategy.AUTH
         event.timestamp shouldBe timestamp
         event.resetTime shouldBe resetTime
     }
@@ -64,7 +67,8 @@ class RateLimitExceededEventTest {
             endpoint = endpoint,
             attemptCount = null,
             maxAttempts = null,
-            windowDuration = Duration.ofHours(1)
+            windowDuration = Duration.ofHours(1),
+            strategy = RateLimitStrategy.BUSINESS,
         )
 
         // Then
@@ -72,6 +76,7 @@ class RateLimitExceededEventTest {
         event.endpoint shouldBe endpoint
         event.attemptCount shouldBe null
         event.maxAttempts shouldBe null
+        event.strategy shouldBe RateLimitStrategy.BUSINESS
     }
 
     @Test
@@ -83,7 +88,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = null,
                 maxAttempts = null,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
 
@@ -93,7 +99,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = null,
                 maxAttempts = null,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
     }
@@ -107,7 +114,8 @@ class RateLimitExceededEventTest {
                 endpoint = "",
                 attemptCount = null,
                 maxAttempts = null,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
     }
@@ -121,7 +129,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = 0,
                 maxAttempts = 10,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
 
@@ -131,7 +140,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = -1,
                 maxAttempts = 10,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
     }
@@ -145,7 +155,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = 10,
                 maxAttempts = 0,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
     }
@@ -159,7 +170,8 @@ class RateLimitExceededEventTest {
                 endpoint = "/api/test",
                 attemptCount = 5,
                 maxAttempts = 10,
-                windowDuration = Duration.ofMinutes(1)
+                windowDuration = Duration.ofMinutes(1),
+                strategy = RateLimitStrategy.AUTH,
             )
         }
     }
@@ -172,7 +184,8 @@ class RateLimitExceededEventTest {
             endpoint = "/api/test",
             attemptCount = 10,
             maxAttempts = 10,
-            windowDuration = Duration.ofMinutes(1)
+            windowDuration = Duration.ofMinutes(1),
+            strategy = RateLimitStrategy.AUTH,
         )
 
         // Then
@@ -188,7 +201,8 @@ class RateLimitExceededEventTest {
             endpoint = "/api/auth/login",
             attemptCount = 11,
             maxAttempts = 10,
-            windowDuration = Duration.ofMinutes(5)
+            windowDuration = Duration.ofMinutes(5),
+            strategy = RateLimitStrategy.AUTH,
         )
 
         // When
@@ -208,7 +222,8 @@ class RateLimitExceededEventTest {
             endpoint = "/api/business/data",
             attemptCount = null,
             maxAttempts = null,
-            windowDuration = Duration.ofHours(1)
+            windowDuration = Duration.ofHours(1),
+            strategy = RateLimitStrategy.BUSINESS,
         )
 
         // When
@@ -231,8 +246,9 @@ class RateLimitExceededEventTest {
             attemptCount = null,
             maxAttempts = null,
             windowDuration = Duration.ofMinutes(5),
+            strategy = RateLimitStrategy.BUSINESS,
             timestamp = now,
-            resetTime = resetTime
+            resetTime = resetTime,
         )
 
         // When
@@ -244,6 +260,38 @@ class RateLimitExceededEventTest {
     }
 
     @Test
+    fun `should correctly store and retrieve AUTH strategy`() {
+        // Given
+        val event = RateLimitExceededEvent(
+            identifier = "IP:192.168.1.1",
+            endpoint = "/api/auth/login",
+            attemptCount = 11,
+            maxAttempts = 10,
+            windowDuration = Duration.ofMinutes(5),
+            strategy = RateLimitStrategy.AUTH,
+        )
+
+        // Then
+        event.strategy shouldBe RateLimitStrategy.AUTH
+    }
+
+    @Test
+    fun `should correctly store and retrieve BUSINESS strategy`() {
+        // Given
+        val event = RateLimitExceededEvent(
+            identifier = "API:test-key",
+            endpoint = "/api/business/data",
+            attemptCount = null,
+            maxAttempts = null,
+            windowDuration = Duration.ofHours(1),
+            strategy = RateLimitStrategy.BUSINESS,
+        )
+
+        // Then
+        event.strategy shouldBe RateLimitStrategy.BUSINESS
+    }
+
+    @Test
     fun `should return null for time until reset when reset time is null`() {
         // Given
         val event = RateLimitExceededEvent(
@@ -252,7 +300,8 @@ class RateLimitExceededEventTest {
             attemptCount = null,
             maxAttempts = null,
             windowDuration = Duration.ofMinutes(5),
-            resetTime = null
+            strategy = RateLimitStrategy.BUSINESS,
+            resetTime = null,
         )
 
         // When
@@ -273,15 +322,15 @@ class RateLimitExceededEventTest {
             endpoint = "/api/test",
             attemptCount = null,
             maxAttempts = null,
-            windowDuration = Duration.ofMinutes(5)
+            windowDuration = Duration.ofMinutes(5),
+            strategy = RateLimitStrategy.BUSINESS,
         )
 
         val after = Instant.now()
 
         // Then
         event.timestamp shouldNotBe null
-        (event.timestamp.isAfter(before) || event.timestamp == before) shouldBe true
-        (event.timestamp.isBefore(after) || event.timestamp == after) shouldBe true
+        !event.timestamp.isBefore(before) shouldBe true
+        !event.timestamp.isAfter(after) shouldBe true
     }
 }
-

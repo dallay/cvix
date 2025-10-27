@@ -15,8 +15,6 @@ class RateLimitConfiguration {
      * Creates a BucketConfigurationStrategy bean that can be injected into other components.
      */
     @Bean
-    fun bucketConfigurationStrategy(properties: RateLimitProperties): BucketConfigurationStrategy {
-        return BucketConfigurationStrategy(properties)
-    }
+    fun bucketConfigurationStrategy(properties: RateLimitProperties): BucketConfigurationStrategy =
+        BucketConfigurationStrategy(properties)
 }
-

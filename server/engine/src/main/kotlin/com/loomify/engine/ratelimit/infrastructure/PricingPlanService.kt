@@ -39,7 +39,7 @@ class PricingPlanService {
      */
     fun resolveBucket(apiKey: String): Bucket {
         return cache.computeIfAbsent(apiKey) { key ->
-            logger.debug("Creating new bucket for API key: ${key.take(10)}...")
+            logger.debug("Creating new bucket for API key: ${key.take(API_KEY_PREVIEW_LENGTH)}...")
             newBucket(key)
         }
     }
@@ -52,7 +52,7 @@ class PricingPlanService {
      */
     private fun newBucket(apiKey: String): Bucket {
         val pricingPlan = PricingPlan.resolvePlanFromApiKey(apiKey)
-        logger.info("Resolved pricing plan $pricingPlan for API key ${apiKey.take(10)}...")
+        logger.info("Resolved pricing plan $pricingPlan for API key ${apiKey.take(API_KEY_PREVIEW_LENGTH)}...")
 
         return Bucket.builder()
             .addLimit(pricingPlan.getLimit())
@@ -72,5 +72,10 @@ class PricingPlanService {
     fun clearCache() {
         cache.clear()
         logger.debug("Cleared all cached buckets")
+    }
+
+    companion object {
+        // Number of characters to show when logging a short preview of an API key
+        private const val API_KEY_PREVIEW_LENGTH = 10
     }
 }

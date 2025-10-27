@@ -8,6 +8,7 @@ import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import com.loomify.engine.ratelimit.infrastructure.config.BucketConfigurationStrategy
 import io.kotest.matchers.shouldBe
 import io.mockk.*
+import java.time.Duration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,7 +18,6 @@ import org.springframework.mock.web.server.MockServerWebExchange
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.time.Duration
 
 /**
  * Unit tests for RateLimitingFilter.
@@ -400,4 +400,3 @@ class RateLimitingFilterTest {
             .verifyComplete()
     }
 }
-

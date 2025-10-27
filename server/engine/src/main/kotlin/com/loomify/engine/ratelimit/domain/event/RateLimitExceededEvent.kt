@@ -1,5 +1,6 @@
 package com.loomify.engine.ratelimit.domain.event
 
+import com.loomify.engine.ratelimit.infrastructure.RateLimitStrategy
 import java.time.Duration
 import java.time.Instant
 
@@ -19,6 +20,7 @@ import java.time.Instant
  * @property attemptCount The number of attempts made within the window
  * @property maxAttempts The maximum attempts allowed
  * @property windowDuration The time window for the rate limit
+ * @property strategy The rate limiting strategy that was applied (AUTH or BUSINESS)
  * @property timestamp When the rate limit was exceeded
  * @property resetTime When the rate limit will reset
  *
@@ -30,6 +32,7 @@ data class RateLimitExceededEvent(
     val attemptCount: Int?,
     val maxAttempts: Int?,
     val windowDuration: Duration,
+    val strategy: RateLimitStrategy,
     val timestamp: Instant = Instant.now(),
     val resetTime: Instant? = null,
 ) {

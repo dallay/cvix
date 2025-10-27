@@ -27,8 +27,10 @@ class BucketConfigurationStrategy(
         properties.auth.limits.forEach { limit ->
             val bandwidth = createBandwidth(limit)
             builder.addLimit(bandwidth)
-            logger.debug("Added auth limit: {} - capacity={}, refill={} tokens per {}",
-                limit.name, limit.capacity, limit.refillTokens, limit.refillDuration)
+            logger.debug(
+                "Added auth limit: {} - capacity={}, refill={} tokens per {}",
+                limit.name, limit.capacity, limit.refillTokens, limit.refillDuration,
+            )
         }
 
         return builder.build()
@@ -43,10 +45,14 @@ class BucketConfigurationStrategy(
      */
     fun createBusinessBucketConfiguration(planName: String): BucketConfiguration {
         val limit = properties.business.pricingPlans[planName.lowercase()]
-            ?: throw IllegalArgumentException("Unknown pricing plan: $planName. Available plans: ${properties.business.pricingPlans.keys}")
+            ?: throw IllegalArgumentException(
+                "Unknown pricing plan: $planName. Available plans: ${properties.business.pricingPlans.keys}",
+            )
 
-        logger.debug("Creating business bucket configuration for plan: {} - capacity={}, refill={} tokens per {}",
-            planName, limit.capacity, limit.refillTokens, limit.refillDuration)
+        logger.debug(
+            "Creating business bucket configuration for plan: {} - capacity={}, refill={} tokens per {}",
+            planName, limit.capacity, limit.refillTokens, limit.refillDuration,
+        )
 
         val bandwidth = createBandwidth(limit)
         return BucketConfiguration.builder()
@@ -64,7 +70,7 @@ class BucketConfigurationStrategy(
         // Bucket4j v8 uses Bandwidth.classic() with Refill strategies
         return Bandwidth.classic(
             limit.capacity,
-            Refill.greedy(limit.refillTokens, limit.refillDuration)
+            Refill.greedy(limit.refillTokens, limit.refillDuration),
         )
     }
 
@@ -83,4 +89,3 @@ class BucketConfigurationStrategy(
      */
     fun isBusinessRateLimitEnabled(): Boolean = properties.enabled && properties.business.enabled
 }
-
