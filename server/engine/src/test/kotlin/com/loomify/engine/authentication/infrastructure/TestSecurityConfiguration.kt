@@ -1,6 +1,5 @@
 package com.loomify.engine.authentication.infrastructure
 
-import com.loomify.engine.authentication.infrastructure.ratelimit.TestRateLimiterConfiguration
 import org.mockito.Mockito.mock
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -23,7 +22,7 @@ private const val BASIC_URL = "$PROTOCOL://$DOMAIN"
  * Esta clase permite ejecutar pruebas unitarias e integradas sin un IdP.
  */
 @TestConfiguration
-@Import(OAuth2Configuration::class, TestRateLimiterConfiguration::class)
+@Import(OAuth2Configuration::class)
 class TestSecurityConfiguration {
     @Bean
     fun clientRegistration(): ClientRegistration = clientRegistrationBuilder().build()

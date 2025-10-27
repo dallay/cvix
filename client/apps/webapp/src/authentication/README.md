@@ -174,7 +174,7 @@ const authStore = useAuthStore();
 
 await authStore.login({
   email: "user@example.com",
-  password: "password123",
+  password: "gp1O_Kj_3x0XybL*123",
   rememberMe: true  // Cookies de 30 días, false = 1 día
 });
 

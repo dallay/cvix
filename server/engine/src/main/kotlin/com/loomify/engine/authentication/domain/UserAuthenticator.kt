@@ -24,7 +24,6 @@ interface UserAuthenticator {
      * @param password the password of the user to be logged in
      * @return the access token of the user
      */
-    suspend fun authenticate(username: Username, password: Credential): AccessToken {
-        return authenticate(username, password, false)
-    }
+    suspend fun authenticate(username: Username, password: Credential): AccessToken =
+        authenticate(username, password, false)
 }

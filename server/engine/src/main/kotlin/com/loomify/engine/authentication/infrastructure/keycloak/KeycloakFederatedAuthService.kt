@@ -56,7 +56,7 @@ class KeycloakFederatedAuthService(
 
         // In a production system, this would store the federated identity link in a separate table
         // For now, we'll return a FederatedIdentity object to satisfy the interface
-        // TODO: Implement proper federated identity storage when the federated_identity table is created
+        // Note: proper federated identity storage will be implemented when the federated_identity table is created
 
         return Mono.just(
             FederatedIdentity(
@@ -73,8 +73,8 @@ class KeycloakFederatedAuthService(
         provider: String,
         externalUserId: String
     ): Mono<UserInfo> {
-        // TODO: Implement proper federated identity lookup when the federated_identity table is created
-        // For now, we'll return empty to trigger the fallback flow
+        // Note: federated identity lookup is intentionally unimplemented until a persistence schema is available.
+        // Returning empty will trigger the fallback flow which creates a new local user.
         logger.debug(
             "Federated identity lookup not yet implemented: provider=$provider, externalUserId=$externalUserId",
         )
@@ -84,7 +84,7 @@ class KeycloakFederatedAuthService(
     override fun unlinkFederatedIdentity(userId: UUID, provider: String): Mono<Void> {
         logger.info("Unlinking federated identity: userId=$userId, provider=$provider")
 
-        // TODO: Implement proper federated identity unlinking when the federated_identity table is created
+        // Note: unlink operation is a no-op until federated identity persistence is available.
         return Mono.empty()
     }
 

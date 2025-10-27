@@ -1,0 +1,50 @@
+# Rate Limiting Configuration for Development/Testing
+# More permissive limits to facilitate development and testing
+
+application:
+  rate-limit:
+    enabled: true
+
+    auth:
+      enabled: true
+      endpoints:
+        - /api/auth/login
+        - /api/auth/register
+        - /api/auth/password/reset
+        - /api/auth/refresh-token
+        - /api/auth/token/refresh
+        - /api/auth/federated
+
+      # More permissive limits for development
+      limits:
+        - name: per-minute
+          capacity: 100
+          refill-tokens: 100
+          refill-duration: 1m
+
+        - name: per-hour
+          capacity: 1000
+          refill-tokens: 1000
+          refill-duration: 1h
+
+    business:
+      enabled: true
+      pricing-plans:
+        free:
+          name: free-plan
+          capacity: 1000
+          refill-tokens: 1000
+          refill-duration: 1h
+
+        basic:
+          name: basic-plan
+          capacity: 2000
+          refill-tokens: 2000
+          refill-duration: 1h
+
+        professional:
+          name: professional-plan
+          capacity: 10000
+          refill-tokens: 10000
+          refill-duration: 1h
+

@@ -30,7 +30,7 @@ internal class UserLogoutControllerIntegrationTest : ControllerIntegrationTest()
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "$password"
                 }
                 """.trimIndent(),

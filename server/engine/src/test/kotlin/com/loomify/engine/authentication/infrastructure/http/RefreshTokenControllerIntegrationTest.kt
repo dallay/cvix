@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.returnResult
 
 private const val ENDPOINT = "/api/auth/refresh-token"
 
@@ -30,7 +29,7 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
     @BeforeEach
     fun setUp() {
         startInfrastructure()
-        val returnResult = webTestClient
+        accessToken = webTestClient
             .mutateWith(csrf())
             .post()
             .uri("/api/auth/login")
@@ -38,14 +37,16 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "$password"
                 }
                 """.trimIndent(),
             )
             .exchange()
-            .returnResult<AccessToken>()
-        accessToken = returnResult.responseBody.blockFirst()
+            .expectStatus().isOk
+            .expectBody(AccessToken::class.java)
+            .returnResult()
+            .responseBody
     }
 
     @Test

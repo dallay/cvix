@@ -5,6 +5,7 @@ import com.loomify.engine.authentication.domain.Role
 import com.loomify.engine.authentication.infrastructure.csrf.SpaCsrfTokenRequestHandler
 import com.loomify.engine.authentication.infrastructure.filter.CookieCsrfFilter
 import com.loomify.engine.authentication.infrastructure.filter.JwtCookieOrHeaderFilter
+import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -74,7 +75,7 @@ private const val POLICY =
 @EnableReactiveMethodSecurity
 class SecurityConfiguration(
     val applicationSecurityProperties: ApplicationSecurityProperties,
-    private val rateLimitingFilter: com.loomify.engine.authentication.infrastructure.ratelimit.RateLimitingFilter
+    private val rateLimitingFilter: RateLimitingFilter
 ) {
     @Value("\${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private val issuerUri: String? = null

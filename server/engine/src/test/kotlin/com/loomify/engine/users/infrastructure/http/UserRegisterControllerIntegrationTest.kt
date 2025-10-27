@@ -11,12 +11,17 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.util.concurrent.atomic.AtomicInteger
 
 private const val ENDPOINT = "/api/auth/register"
+
 @Suppress("MultilineRawStringIndentation")
 @AutoConfigureWebTestClient
 internal class UserRegisterControllerIntegrationTest : InfrastructureTestContainers() {
     private val faker = Faker()
+
+    // Counter to generate unique IPs for each test to avoid rate limiting conflicts
+    private val ipCounter = AtomicInteger(0)
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
@@ -26,10 +31,16 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
         startInfrastructure()
     }
 
+    /**
+     * Generates a unique IP for each test to ensure rate limiting doesn't interfere between tests.
+     */
+    private fun uniqueIp(): String = "192.168.1.${ipCounter.incrementAndGet()}"
+
     @Test
     fun `should not register a new user without csrf token`() {
         webTestClient.post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", uniqueIp())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -51,6 +62,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", uniqueIp())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -76,11 +88,13 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
         val password = Credential.generateRandomCredentialPassword()
         val firstname = faker.name().firstName()
         val lastname = faker.name().lastName()
+        val testIp = uniqueIp()
 
         webTestClient
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", testIp)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -103,6 +117,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", testIp)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -128,6 +143,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", uniqueIp())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -155,6 +171,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
                 .mutateWith(csrf())
                 .post()
                 .uri(ENDPOINT)
+                .header("X-Forwarded-For", uniqueIp())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(
                     """
@@ -181,6 +198,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", uniqueIp())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
@@ -206,6 +224,7 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
             .mutateWith(csrf())
             .post()
             .uri(ENDPOINT)
+            .header("X-Forwarded-For", uniqueIp())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
