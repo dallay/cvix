@@ -21,31 +21,27 @@ const mockSession: Session = {
 };
 
 // Mock the HTTP client
-vi.mock("../infrastructure/http/AuthHttpClient", () => ({
-	AuthHttpClient: vi.fn().mockImplementation(() => ({
-		async login() {
-			return mockSession;
-		},
-		async getCurrentUser() {
-			return mockUser;
-		},
-		async logout() {
-			return;
-		},
-		async refreshToken() {
-			return mockSession;
-		},
-		async register() {
-			return mockUser;
-		},
-		setupInterceptors() {
-			return;
-		},
-		initiateOAuthLogin() {
-			return;
-		},
-	})),
-}));
+vi.mock("../infrastructure/http/AuthHttpClient", () => {
+	return {
+		AuthHttpClient: vi.fn(function AuthHttpClient(this: {
+			login: () => Promise<Session>;
+			getCurrentUser: () => Promise<User>;
+			logout: () => Promise<void>;
+			refreshToken: () => Promise<Session>;
+			register: () => Promise<User>;
+			setupInterceptors: () => void;
+			initiateOAuthLogin: () => void;
+		}) {
+			this.login = async () => mockSession;
+			this.getCurrentUser = async () => mockUser;
+			this.logout = async () => {};
+			this.refreshToken = async () => mockSession;
+			this.register = async () => mockUser;
+			this.setupInterceptors = () => {};
+			this.initiateOAuthLogin = () => {};
+		}),
+	};
+});
 
 describe("authStore.initialize", () => {
 	beforeEach(() => {

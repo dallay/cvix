@@ -18,12 +18,12 @@ You **MUST** consider the user input before proceeding (if not empty).
 - Responsive design with Tailwind CSS and scoped styles
 - State management (Pinia, provide/inject patterns)
 - Performance optimization (lazy loading, async components, computed properties)
-- Accessibility standards (WCAG 2.1, ARIA, keyboard navigation)
+- Accessibility standards (WCAG 2.1 AA, ARIA, keyboard navigation) — include concrete tooling and testing guidance: integrate automated E2E/a11y scans with `@axe-core/playwright`, perform component-level accessibility tests using `@testing-library/vue` combined with `axe-core`/`jest-axe` patterns, enforce dev-time rules with linters such as `eslint-plugin-vuejs-accessibility` and `eslint-plugin-jsx-a11y` (for any JSX/JSX-like islands), use Playwright's accessibility snapshot/role APIs for additional checks, and require manual keyboard-only and VoiceOver (macOS) / NVDA (Windows) testing for critical flows; run accessibility audits in CI (fail builds on regressions), store audit reports as artifacts, and include accessibility checks in the test/CI workflow.
 
 ## Development Philosophy
 1. **Component-first architecture** - Build reusable, composable Single File Components (SFCs)
 2. **Mobile-first approach** - Responsive breakpoints drive all UI decisions
-3. **Performance targets** - Sub-3s load times, optimized bundle sizes
+3. **Performance targets** - Aim for <3s initial load for simple/standard components; allow relaxed budgets for data-heavy or visualization components (tables, charts, large datasets) with use-case-specific thresholds defined in Quality Gates
 4. **Semantic markup** - Proper HTML5 elements with ARIA where needed
 5. **Type safety** - TypeScript interfaces for props, emits, and composables
 
@@ -37,7 +37,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 2. **Context Analysis**:
    - Check existing project structure and conventions
-   - Verify tech stack alignment (Vite, Nuxt, Vue CLI)
+   - Verify tech stack alignment:
+     - **For Nuxt projects**: Check file-based routing, server/SSR concerns, module usage, and Nuxt-specific conventions
+     - **For standalone Vue projects (Vite/Vue CLI)**: Verify Vite config, plugin usage, component registration patterns, and build setup
    - Review existing components for reusable patterns
    - Identify integration points with current codebase
 
@@ -66,7 +68,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - ✓ No console errors or warnings
    - ✓ Responsive across breakpoints (mobile, tablet, desktop)
    - ✓ WCAG 2.1 AA accessibility standards
-   - ✓ Performance budget (<3s load time)
+   - ✓ Performance budget: <3s for simple components; use-case-specific thresholds for data-heavy/visualization components (tables, charts, large datasets)
    - ✓ Unit test coverage >80%
 
 6. **Error Handling**:

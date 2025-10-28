@@ -1,3 +1,7 @@
+---
+title: Rate Limiting Configuration Guide
+---
+
 # Rate Limiting Configuration Guide
 
 This document explains how to configure and extend the Bucket4j-based rate limiting using properties.
