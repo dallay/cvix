@@ -8,8 +8,11 @@ object AppConfiguration {
     const val appName = "loomify"
     const val packageName = "com.loomify"
 
-    val useJavaVersion = JavaVersion.VERSION_21
-    val jvmTarget = KtJvmTarget.fromTarget(useJavaVersion.toString())
+    val useJavaVersion = JavaVersion.toVersion("25")
+    // The Kotlin compiler does not yet support a JVM target of 25.
+    // We are setting the JVM target to 21 to ensure compatibility.
+    // The project will still be built with Java 25 and run on the Java 25 runtime.
+    val jvmTarget = KtJvmTarget.fromTarget("21")
     val jvmTargetStr = jvmTarget.target
-    val kotlinVersion = KtVersion.KOTLIN_1_9
+    val kotlinVersion = KtVersion.KOTLIN_2_1
 }
