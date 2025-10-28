@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002f-create-federated-identities-table
+      author: loomify
+      comment: |
+        Create federated_identities table to support federated authentication.
+        This table stores links between local users and their federated identity provider accounts.
+      changes:
+        - createTable:
+            tableName: federated_identities
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: external_user_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: display_name
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+
+        - addForeignKeyConstraint:
+            baseTableName: federated_identities
+            baseColumnNames: user_id
+            constraintName: fk_federated_identities_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE

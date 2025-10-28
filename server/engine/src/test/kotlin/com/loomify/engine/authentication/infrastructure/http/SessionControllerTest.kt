@@ -34,7 +34,7 @@ internal class SessionControllerTest {
     fun `should return session data when access token is valid`(): Unit = runTest {
         coEvery { mediator.send(GetUserSessionQuery(VALID_ACCESS_TOKEN)) } returns EXPECTED_USER_SESSION
 
-        webTestClient.get().uri("/api/session")
+        webTestClient.get().uri("/api/auth/session")
             .cookie(AuthCookieBuilder.ACCESS_TOKEN, VALID_ACCESS_TOKEN)
             .exchange()
             .expectStatus().isOk
@@ -45,7 +45,7 @@ internal class SessionControllerTest {
     @Test
     @DisplayName("should return 401 when access token is missing")
     fun `should return 401 when access token is missing`(): Unit = runTest {
-        webTestClient.get().uri("/api/session")
+        webTestClient.get().uri("/api/auth/session")
             .exchange()
             .expectStatus().isUnauthorized
     }
@@ -57,7 +57,7 @@ internal class SessionControllerTest {
             mediator.send(GetUserSessionQuery(INVALID_ACCESS_TOKEN))
         } throws InvalidTokenException("Invalid access token")
 
-        webTestClient.get().uri("/api/session")
+        webTestClient.get().uri("/api/auth/session")
             .cookie(AuthCookieBuilder.ACCESS_TOKEN, INVALID_ACCESS_TOKEN)
             .exchange()
             .expectStatus().isUnauthorized

@@ -14,7 +14,7 @@ area:shared:
 area:frontend:web:
   - changed-files:
       - any-glob-to-any-file:
-          - 'client/apps/web/**'
+          - 'client/apps/webapp/**'
           - 'client/packages/**'
 
 area:frontend:landing:

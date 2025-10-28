@@ -1,0 +1,284 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-optimize-session-queries
+      author: loomify
+      comment: |
+        Add indexes to optimize session management queries.
+        These indexes support the authentication system's performance requirements:
+        - FR-019: Session operations must complete within 2 seconds
+        - FR-021: Token refresh must be transparent with 99% success rate
+        - Session lookup by user_id and status
+        - Token validation queries
+        - Session expiration cleanup queries
+      changes:
+        # Index for finding active sessions by user
+        - createIndex:
+            indexName: idx_sessions_user_id_status
+            tableName: sessions
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: status
+            where: "status = 'ACTIVE'"
+
+        # Index for finding sessions by refresh token hash (for token refresh)
+        - createIndex:
+            indexName: idx_sessions_refresh_token_hash
+            tableName: sessions
+            unique: true
+            columns:
+              - column:
+                  name: refresh_token_hash
+            where: "status = 'ACTIVE'"
+
+        # Index for session expiration cleanup queries
+        - createIndex:
+            indexName: idx_sessions_expires_at
+            tableName: sessions
+            columns:
+              - column:
+                  name: expires_at
+            where: "status = 'ACTIVE'"
+
+        # Index for session last activity queries (for idle timeout)
+        - createIndex:
+            indexName: idx_sessions_last_activity_at
+            tableName: sessions
+            columns:
+              - column:
+                  name: last_activity_at
+            where: "status = 'ACTIVE'"
+
+        # Composite index for user session queries with device filtering
+        - createIndex:
+            indexName: idx_sessions_user_device_status
+            tableName: sessions
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: device_type
+              - column:
+                  name: status
+
+        # Index for authentication event queries by user and timestamp
+        - createIndex:
+            indexName: idx_auth_events_user_occurred_at
+            tableName: authentication_events
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: occurred_at
+                  descending: true
+
+        # Index for authentication event queries by session
+        - createIndex:
+            indexName: idx_auth_events_session_id
+            tableName: authentication_events
+            columns:
+              - column:
+                  name: session_id
+
+        # Index for failed login attempts (for rate limiting and security monitoring)
+        - createIndex:
+            indexName: idx_auth_events_failed_logins
+            tableName: authentication_events
+            columns:
+              - column:
+                  name: ip_address
+              - column:
+                  name: occurred_at
+                  descending: true
+            where: "outcome = 'FAILURE' AND event_type IN ('LOGIN', 'PASSWORD_LOGIN')"
+
+        # Index for federated identity lookup
+        - createIndex:
+            indexName: idx_federated_identity_provider_external
+            tableName: federated_identities
+            unique: true
+            columns:
+              - column:
+                  name: provider_name
+              - column:
+                  name: external_user_id
+
+        # Index for finding federated identities by user
+        - createIndex:
+            indexName: idx_federated_identity_user_id
+            tableName: federated_identities
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 004-add-session-statistics-view
+      author: loomify
+      comment: |
+        Create a materialized view for session statistics to optimize
+        dashboard queries and reduce load on the main sessions table.
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE MATERIALIZED VIEW session_statistics AS
+              SELECT
+                user_id,
+                COUNT(*) FILTER (WHERE status = 'ACTIVE') AS active_sessions_count,
+                COUNT(*) FILTER (WHERE status = 'EXPIRED') AS expired_sessions_count,
+                MAX(last_activity_at) FILTER (WHERE status = 'ACTIVE') AS last_active_session_at,
+                MIN(created_at) FILTER (WHERE status = 'ACTIVE') AS oldest_active_session_at,
+                COUNT(DISTINCT device_type) FILTER (WHERE status = 'ACTIVE') AS active_device_types_count
+              FROM sessions
+              GROUP BY user_id;
+
+              CREATE UNIQUE INDEX idx_session_stats_user_id ON session_statistics (user_id);
+
+              -- Refresh strategy: can be refreshed periodically via scheduled job
+              COMMENT ON MATERIALIZED VIEW session_statistics IS
+                'Session statistics per user. Refresh periodically for better performance.';
+
+  - changeSet:
+      id: 005-add-session-cleanup-function
+      author: loomify
+      comment: |
+        Add a database function to efficiently clean up expired sessions.
+        This function can be called periodically to maintain database performance.
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE OR REPLACE FUNCTION cleanup_expired_sessions()
+              RETURNS INTEGER AS $$
+              DECLARE
+                deleted_count INTEGER;
+              BEGIN
+                -- Mark sessions as expired if they have passed their expiration time
+                WITH updated AS (
+                  UPDATE sessions
+                  SET status = 'EXPIRED',
+                      updated_at = CURRENT_TIMESTAMP
+                  WHERE status = 'ACTIVE'
+                    AND expires_at < CURRENT_TIMESTAMP
+                  RETURNING id
+                )
+                SELECT COUNT(*) INTO deleted_count FROM updated;
+
+                -- Optionally delete old expired sessions (older than 90 days)
+                DELETE FROM sessions
+                WHERE status = 'EXPIRED'
+                  AND expires_at < CURRENT_TIMESTAMP - INTERVAL '90 days';
+
+                RETURN deleted_count;
+              END;
+              $$ LANGUAGE plpgsql;
+
+              COMMENT ON FUNCTION cleanup_expired_sessions() IS
+                'Marks expired sessions and optionally deletes old expired sessions. Returns the number of sessions updated.';
+
+  - changeSet:
+      id: 006-add-rate-limiting-table
+      author: loomify
+      comment: |
+        Create a table for tracking rate limit attempts.
+        This supports the rate limiting requirements (FR-010, FR-004).
+      changes:
+        - createTable:
+            tableName: rate_limit_attempts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: endpoint
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attempt_count
+                  type: integer
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: window_start
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: window_end
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Composite unique index to prevent duplicate entries
+        - createIndex:
+            indexName: idx_rate_limit_identifier_endpoint_window
+            tableName: rate_limit_attempts
+            unique: true
+            columns:
+              - column:
+                  name: identifier
+              - column:
+                  name: endpoint
+              - column:
+                  name: window_start
+
+        # Index for cleanup queries
+        - createIndex:
+            indexName: idx_rate_limit_window_end
+            tableName: rate_limit_attempts
+            columns:
+              - column:
+                  name: window_end
+
+        - sql:
+            sql: |
+              COMMENT ON TABLE rate_limit_attempts IS
+                'Tracks rate limiting attempts per identifier (IP address, user ID) and endpoint.';
+
+  - changeSet:
+      id: 007-add-session-triggers
+      author: loomify
+      comment: |
+        Add triggers to automatically update session statistics and timestamps.
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Trigger to update the updated_at timestamp on sessions
+              CREATE OR REPLACE FUNCTION update_session_updated_at()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+              CREATE TRIGGER trigger_sessions_updated_at
+                BEFORE UPDATE ON sessions
+                FOR EACH ROW
+                EXECUTE FUNCTION update_session_updated_at();
+
+              COMMENT ON TRIGGER trigger_sessions_updated_at ON sessions IS
+                'Automatically updates the updated_at timestamp when a session is modified.';

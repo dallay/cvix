@@ -56,3 +56,45 @@ class InvalidTokenException(
     message: String? = null,
     cause: Throwable? = null
 ) : AuthenticationException(message, cause)
+
+/**
+ * An exception that is thrown when invalid credentials are provided.
+ * @param message A detailed message describing the invalid credentials issue.
+ * @param cause The underlying exception that caused this authentication error (optional).
+ */
+class InvalidCredentialsException(
+    message: String? = "Invalid email or password",
+    cause: Throwable? = null
+) : AuthenticationException(message, cause)
+
+/**
+ * An exception that is thrown when a user account is disabled or suspended.
+ * @param message A detailed message describing why the account is disabled.
+ * @param cause The underlying exception that caused this authentication error (optional).
+ */
+class AccountDisabledException(
+    message: String? = "This account has been disabled",
+    cause: Throwable? = null
+) : AuthenticationException(message, cause)
+
+/**
+ * An exception that is thrown when federated authentication fails.
+ * @param provider The identity provider name (e.g., "google", "microsoft", "github").
+ * @param message A detailed message describing the federated authentication failure.
+ * @param cause The underlying exception that caused this authentication error (optional).
+ */
+class FederatedAuthenticationException(
+    val provider: String,
+    message: String? = "Failed to authenticate with $provider",
+    cause: Throwable? = null
+) : AuthenticationException(message, cause)
+
+/**
+ * An exception that is thrown when a session is not found or has expired.
+ * @param message A detailed message describing the session issue.
+ * @param cause The underlying exception that caused this authentication error (optional).
+ */
+class SessionNotFoundException(
+    message: String? = "Session not found or expired",
+    cause: Throwable? = null
+) : AuthenticationException(message, cause)

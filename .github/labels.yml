@@ -8,7 +8,7 @@
 
 - name: "area:frontend:web"
   color: "fbca04"
-  description: "Changes in frontend web app (client/apps/web/**)"
+  description: "Changes in frontend web app (client/apps/webapp/**)"
 
 - name: "area:frontend:landing"
   color: "fbca04"

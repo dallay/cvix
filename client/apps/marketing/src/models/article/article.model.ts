@@ -9,7 +9,7 @@ export default interface Article {
 	title: string;
 	description: string;
 	author: Author;
-	cover?: ImageMetadata;
+	cover?: ImageMetadata | string;
 	tags: Tag[];
 	draft: boolean;
 	body: string;

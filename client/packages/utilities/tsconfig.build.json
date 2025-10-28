@@ -9,8 +9,9 @@
 		"target": "ES2022",
 		"moduleResolution": "bundler",
 		"module": "ESNext",
-		"types": ["vitest"],
+		"types": [],
 		"lib": ["es2022", "dom"]
 	},
-	"include": ["src"]
+	"include": ["src"],
+	"exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
 }

@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api", produces = ["application/vnd.api.v1+json"])
 class UserAuthenticatorController(private val authenticateUserQueryHandler: AuthenticateUserQueryHandler) {
     /**
-     * Logs in a user with the provided username and password.
+     * Logs in a user with the provided email and password.
      *
-     * @param loginRequest The login request containing the username and password.
+     * @param loginRequest The login request containing the email, password, and rememberMe flag.
      * @return A ResponseEntity containing the response object with the access token.
      */
     @Operation(summary = "Login endpoint")
@@ -43,18 +43,22 @@ class UserAuthenticatorController(private val authenticateUserQueryHandler: Auth
         @Validated @RequestBody loginRequest: LoginRequest,
         response: ServerHttpResponse
     ): ResponseEntity<AccessToken> {
-        log.debug("Logging a user in")
-        val (username, password) = loginRequest
-        val authenticateUserQuery = AuthenticateUserQuery(username = username, password = password)
+        log.debug("Logging a user in with email: {} (rememberMe: {})", loginRequest.email, loginRequest.rememberMe)
+        val (email, password, rememberMe) = loginRequest
+        val authenticateUserQuery = AuthenticateUserQuery(
+            email = email,
+            password = password,
+            rememberMe = rememberMe,
+        )
         val accessToken = authenticateUserQueryHandler.handle(authenticateUserQuery)
 
-        buildCookies(response, accessToken)
+        buildCookies(response, accessToken, rememberMe)
 
         return ResponseEntity.ok(accessToken)
     }
 
     companion object {
-        const val LOGIN_ROUTE = "/login"
+        const val LOGIN_ROUTE = "/auth/login"
         private val log = org.slf4j.LoggerFactory.getLogger(UserAuthenticatorController::class.java)
     }
 }

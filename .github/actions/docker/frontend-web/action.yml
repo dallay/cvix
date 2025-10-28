@@ -26,7 +26,7 @@ inputs:
   dockerfile:
     description: 'Path to Dockerfile'
     required: false
-    default: './client/apps/web/Dockerfile'
+    default: './client/apps/webapp/Dockerfile'
   context:
     description: 'Build context'
     required: false

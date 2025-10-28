@@ -8,6 +8,7 @@
 - Use 4 spaces for indentation.
 - Use `val` over `var` whenever possible.
 - Prefer expression bodies for functions when concise.
+- Functions with exact one statement, the return statement, should be rewritten with ExpressionBodySyntax
 
 ## Null Safety
 
