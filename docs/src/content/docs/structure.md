@@ -2029,10 +2029,14 @@ description: Overview of the project structure and organization.
 │   │   │   ├───kover/
 │   │   │   │   ├───bin-reports/
 │   │   │   │   │   └───test.ic
+│   │   │   │   ├───.artifact
+│   │   │   │   ├───jvm.artifact
 │   │   │   │   └───kover-jvm-agent-0.8.3.jar
 │   │   │   ├───libs/
 │   │   │   │   └───common-1.15.1.jar
 │   │   │   ├───reports/
+│   │   │   │   ├───kover/
+│   │   │   │   │   └───verify.err
 │   │   │   │   └───tests/
 │   │   │   │       └───test/
 │   │   │   │           ├───classes/
@@ -2108,6 +2112,9 @@ description: Overview of the project structure and organization.
 │   │   │   └───tmp/
 │   │   │       ├───jar/
 │   │   │       │   └───MANIFEST.MF
+│   │   │       ├───koverCachedVerify/
+│   │   │       │   ├───agg-ic.ic
+│   │   │       │   └───agg-smap.smap
 │   │   │       └───test/
 │   │   │           └───kover-agent.args
 │   │   ├───src/
@@ -2173,10 +2180,14 @@ description: Overview of the project structure and organization.
 │       │   │   ├───bin-reports/
 │       │   │   │   ├───coverage-error.log
 │       │   │   │   └───test.ic
+│       │   │   ├───.artifact
+│       │   │   ├───jvm.artifact
 │       │   │   └───kover-jvm-agent-0.8.3.jar
 │       │   ├───libs/
 │       │   │   └───spring-boot-common-1.15.1.jar
 │       │   ├───reports/
+│       │   │   ├───kover/
+│       │   │   │   └───verify.err
 │       │   │   └───tests/
 │       │   │       └───test/
 │       │   │           ├───classes/
@@ -2236,6 +2247,9 @@ description: Overview of the project structure and organization.
 │       │   └───tmp/
 │       │       ├───jar/
 │       │       │   └───MANIFEST.MF
+│       │       ├───koverCachedVerify/
+│       │       │   ├───agg-ic.ic
+│       │       │   └───agg-smap.smap
 │       │       └───test/
 │       │           └───kover-agent.args
 │       ├───src/
