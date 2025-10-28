@@ -26,8 +26,8 @@ pluginManagement {
 }
 
 plugins {
-    id("com.gradle.develocity") version "3.18.1"
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+    id("com.gradle.develocity") version "4.2.2"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 // Keep in sync with build-logic/settings.gradle.kts
