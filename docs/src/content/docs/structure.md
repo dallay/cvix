@@ -2272,28 +2272,38 @@ description: Overview of the project structure and organization.
 │       │                       └───...
 │       └───build.gradle.kts
 ├───specs/
-│   └───001-user-auth-system/
-│       ├───auth-flows/
-│       │   ├───login.md
-│       │   ├───logout.md
-│       │   └───registration.md
+│   ├───001-user-auth-system/
+│   │   ├───auth-flows/
+│   │   │   ├───login.md
+│   │   │   ├───logout.md
+│   │   │   └───registration.md
+│   │   ├───checklists/
+│   │   │   └───requirements.md
+│   │   ├───contracts/
+│   │   │   ├───auth-api.yaml
+│   │   │   ├───session-api.yaml
+│   │   │   └───user-api.yaml
+│   │   ├───ACCESSIBILITY_AUDIT.md
+│   │   ├───FRONTEND_FLOW_ANALYSIS.md
+│   │   ├───IMPLEMENTATION_STATUS.md
+│   │   ├───NEXT_STEPS.md
+│   │   ├───README.md
+│   │   ├───data-model.md
+│   │   ├───plan.md
+│   │   ├───quickstart.md
+│   │   ├───research.md
+│   │   ├───spec.md
+│   │   └───tasks.md
+│   └───002-workspace-selection/
 │       ├───checklists/
 │       │   └───requirements.md
 │       ├───contracts/
-│       │   ├───auth-api.yaml
-│       │   ├───session-api.yaml
-│       │   └───user-api.yaml
-│       ├───ACCESSIBILITY_AUDIT.md
-│       ├───FRONTEND_FLOW_ANALYSIS.md
-│       ├───IMPLEMENTATION_STATUS.md
-│       ├───NEXT_STEPS.md
-│       ├───README.md
+│       │   └───workspace-api.yaml
 │       ├───data-model.md
 │       ├───plan.md
 │       ├───quickstart.md
 │       ├───research.md
-│       ├───spec.md
-│       └───tasks.md
+│       └───spec.md
 ├───.editorconfig
 ├───.env.example
 ├───.gitattributes
