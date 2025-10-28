@@ -106,7 +106,7 @@ kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotl
 #frontend-gradle-plugin = { id = "org.siouan.frontend-jdk17", version.ref = "frontend-gradle-plugin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springManagement" }
-gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.2" }
+gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.3" }
 
 [bundles]
 spring-boot = [
