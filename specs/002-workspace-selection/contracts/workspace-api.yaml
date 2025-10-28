@@ -237,6 +237,7 @@ components:
           items:
             $ref: '#/components/schemas/Workspace'
           description: Array of workspaces accessible to the user
+          maxItems: 100
         meta:
           type: object
           required:
