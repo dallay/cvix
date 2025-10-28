@@ -1,27 +1,23 @@
 # Loomify SaaS Template Constitution
 
 <!--
-Sync Impact Report - Version 1.0.0 (Initial Creation)
-======================================================
-Version Change: none → 1.0.0
-Principles Created:
-  - I. Hexagonal Architecture (Ports & Adapters)
-  - II. Test-Driven Development (NON-NEGOTIABLE)
-  - III. Code Quality & Static Analysis
-  - IV. Security-First Development
-  - V. User Experience Consistency
-  - VI. Performance & Scalability
-  - VII. Observability & Monitoring
-Added Sections:
-  - Technology Standards
-  - Development Workflow
-  - Quality Gates
-  - Governance
+Sync Impact Report - Version 1.1.0 (Principles Refinement)
+===========================================================
+Version Change: 1.0.0 → 1.1.0
+Principles Modified:
+  - II. Test-Driven Development (TDD) - Added specific coverage targets, test naming conventions, and tool specifications
+  - III. Code Quality & Static Analysis - Enhanced with concrete rules, line limits, and documentation requirements
+  - V. User Experience Consistency - Added viewport specifications, design token requirements, and RTL support
+  - VI. Performance & Scalability - Added specific performance metrics and targets
+Rationale: MINOR bump - material expansion of existing principles with actionable requirements
+Added Sections: None (refinement only)
+Removed Sections: None
 Templates Status:
-  ✅ plan-template.md - Aligned with constitution principles
-  ✅ spec-template.md - Includes user story prioritization and acceptance criteria
-  ✅ tasks-template.md - Organized by user story with test-first approach
+  ✅ plan-template.md - Already aligned with constitution principles (constitution check section present)
+  ✅ spec-template.md - Already aligned (user story prioritization and acceptance criteria present)
+  ✅ tasks-template.md - Already aligned (organized by user story with test-first approach)
 Follow-up TODOs: None
+Last Updated: 2025-10-28
 -->
 
 ## Core Principles
@@ -38,9 +34,11 @@ Follow-up TODOs: None
 
 **Rationale**: This architecture ensures testability, maintainability, and the ability to swap implementations (e.g., database, web framework) without touching business logic. It enforces separation of concerns and makes the codebase resilient to framework changes.
 
-### II. Test-Driven Development (NON-NEGOTIABLE)
+### II. Test-Driven Development (TDD)
 
-**TDD is mandatory for all new features:**
+**TDD is mandatory for all new features. Tests MUST be written before implementation code.**
+
+**TDD Workflow (NON-NEGOTIABLE):**
 
 1. **Write tests first** → User approves acceptance criteria → Tests fail (red)
 2. **Implement minimal code** to make tests pass (green)
@@ -48,54 +46,107 @@ Follow-up TODOs: None
 
 **Test Pyramid MUST be maintained:**
 
-- **Base (largest)**: Unit tests - fast, isolated, testing individual functions/components
-- **Middle**: Integration tests - verify component interactions (use Testcontainers for backend, mock API calls for frontend)
-- **Top (smallest)**: E2E tests - critical user flows only (Playwright for full system tests)
+- **Base (largest)**: Unit tests - fast (<100ms per test), isolated, testing individual functions/components
+  - Mock ALL external dependencies using MockK (Kotlin) or Vitest mocks (TypeScript)
+  - Each unit test MUST test ONE behavior
+- **Middle**: Integration tests - verify component interactions (use Testcontainers for backend database tests)
+  - Backend: `@DataR2dbcTest` for repository tests, `@WebFluxTest` for controller tests
+  - Frontend: Test components with Pinia stores or composables making mock API calls
+- **Top (smallest)**: E2E tests - critical user flows only using Playwright
+  - E2E tests run against staging environment only
+  - Use user-facing locators (`getByRole`, `getByLabel`, `getByText`)
 
-**Coverage targets:**
+**Coverage Requirements (NON-NEGOTIABLE):**
 
-- Backend: Minimum 80% code coverage (Kover) focusing on domain and application layers
-- Frontend: Minimum 75% coverage (Vitest) for components and composables
-- ALL business logic MUST have unit tests
-- ALL API contracts MUST have contract tests
-- ALL critical user flows MUST have E2E tests
+- Backend: Minimum 80% line coverage (Kover) - Domain layer MUST have 100% coverage
+- Frontend: Minimum 75% line coverage (Vitest) for components, composables, and utilities
+- ALL business logic (domain layer, service layer) MUST have unit tests
+- ALL API contracts MUST have integration/contract tests
+- ALL critical user flows (login, signup, core features) MUST have E2E tests
 
-**Test naming**: Use descriptive names following the pattern `should do something when condition` (in backticks for Kotlin tests).
+**Test Naming Conventions:**
 
-**Rationale**: TDD ensures code is designed for testability from the start, reduces bugs, serves as living documentation, and enables confident refactoring. The test pyramid balances thoroughness with execution speed.
+- Kotlin: `` `should return user when user exists` `` (use backticks for readability)
+- TypeScript: `"should render error message when validation fails"`
+- Pattern: `should [expected behavior] when [condition]`
+- Test files: `UserServiceTest.kt`, `UserProfileCard.test.ts`
+
+**Test Organization:**
+
+- Backend: Tests in `src/test/kotlin` mirroring `src/main/kotlin` structure
+- Frontend: Tests co-located with components: `UserProfile.vue` + `UserProfile.test.ts`
+- E2E tests: `client/e2e/` directory with `*.spec.ts` naming
+
+**Test Annotations (Backend):**
+
+- `@UnitTest` for isolated unit tests
+- `@IntegrationTest` for integration tests
+- Controller tests MUST extend `ControllerIntegrationTest` base class
+
+**Rationale**: TDD ensures code is designed for testability from inception, reduces bugs discovered late, serves as living documentation, and enables confident refactoring. The test pyramid balances thoroughness with execution speed and maintenance cost. Specific coverage targets ensure business-critical code is verified.
 
 ### III. Code Quality & Static Analysis
 
-**Code quality is enforced automatically and MUST pass before merge:**
+**Code quality is enforced automatically and MUST pass before merge. Zero violations required.**
 
-**Backend (Kotlin):**
+**Backend (Kotlin) - NON-NEGOTIABLE Rules:**
 
-- Follow official Kotlin coding conventions
+- Follow official [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
+- Use 4 spaces for indentation (enforced by Detekt)
 - Use `val` over `var` (immutability by default)
-- Strictly AVOID the `!!` operator (null-safety is mandatory)
-- Prefer sealed classes/interfaces for restricted hierarchies
+- STRICTLY AVOID the `!!` operator - null-safety is mandatory
+  - Use `?.`, `?:`, `requireNotNull()`, or explicit null checks instead
+- Prefer sealed classes/interfaces for restricted hierarchies (state, results, errors)
 - Use `Result<T>` or sealed classes for error handling instead of throwing exceptions
+- Functions with EXACTLY one statement (the return statement) MUST use expression body syntax
+- Use top-level functions for pure, stateless utility operations
+- Extension functions for enhancing existing classes
+- Keep functions small (max 50 lines) and single-purpose
+- Constants: `UPPER_SNAKE_CASE`
+- Functions/Variables: `camelCase`
+- Classes/Interfaces: `PascalCase`
 - Run `./gradlew detektAll` - zero violations required
-- Use Detekt for static analysis with project-specific rules in `config/detekt.yml`
+- Detekt configuration: `config/detekt.yml`
 
-**Frontend (TypeScript/Vue):**
+**Frontend (TypeScript/Vue) - NON-NEGOTIABLE Rules:**
 
-- Use Biome for all linting and formatting (`pnpm check`)
-- TypeScript `strict` mode MUST be enabled
-- AVOID `any` - use `unknown` with type guards instead
-- Use `<script setup lang="ts">` for all Vue components
-- Prefer `type` over `interface` for object shapes
-- Use absolute imports with `@/` alias
+- Use Biome for ALL linting and formatting (`pnpm check`)
+- Use 2 spaces for indentation and always use semicolons
+- TypeScript `strict` mode MUST be enabled in all `tsconfig.json` files
+- STRICTLY AVOID `any` - use `unknown` with type guards or proper types instead
+- Use `<script setup lang="ts">` for ALL Vue components
+- Prefer `type` over `interface` for object shapes (unless declaration merging needed)
+- Use absolute imports with `@/` alias (configured in `tsconfig.json`)
 - Prefer named exports over default exports
+- Use arrow functions by default: `const fn = () => {}`
+- Keep functions small (max 50 lines) and single-purpose
+- File naming: `kebab-case.ts` or `PascalCase.vue`
+- Types/Interfaces: `PascalCase`
+- Variables/Functions: `camelCase`
+- Constants: `UPPER_SNAKE_CASE`
+- Use `readonly` for immutability enforcement
+- Use utility types (`Partial`, `Pick`, `Omit`) and `as const` for literal types
 
-**General:**
+**Documentation Requirements:**
 
-- Keep functions small and single-purpose (max 50 lines)
-- Use descriptive variable names (no single-letter names except loop indices)
+- ALL public APIs MUST have JSDoc/KDoc comments with:
+  - Description of purpose
+  - `@param` documentation for each parameter
+  - `@return` documentation for return value
+  - `@throws` documentation for exceptions (if applicable)
 - Comment WHY not WHAT (code should be self-documenting)
-- All public APIs MUST have documentation comments
+- NO `TODO` or `FIXME` comments without linked GitHub issues
 
-**Rationale**: Consistent code style reduces cognitive load, makes code reviews faster, prevents bugs, and ensures codebase maintainability as the team grows.
+**Code Review Checklist:**
+
+- Functions serve single purpose (Single Responsibility Principle)
+- No magic numbers (use named constants)
+- No duplicated code (DRY principle)
+- Error cases handled explicitly
+- Edge cases considered and tested
+- Performance implications considered
+
+**Rationale**: Consistent code style reduces cognitive load, accelerates code reviews, prevents entire classes of bugs (null pointer, type errors), and ensures long-term maintainability as the team scales. Strict null-safety and type-safety eliminate runtime errors. Small, focused functions are easier to understand, test, and reuse. Documentation enables API discoverability and correct usage.
 
 ### IV. Security-First Development
 
@@ -143,80 +194,198 @@ Follow-up TODOs: None
 
 ### V. User Experience Consistency
 
-**Frontend MUST provide a cohesive, accessible experience:**
+**Frontend MUST provide a cohesive, accessible, and predictable user experience across all applications.**
 
-**Design System:**
+**Design System (MANDATORY):**
 
-- Use Shadcn-Vue as the primary UI component library
-- Use Tailwind CSS utility classes for styling
-- Maintain consistent spacing, typography, and color schemes via design tokens
+- Use **Shadcn-Vue** (built on Reka UI) as the PRIMARY UI component library
+- Use **Tailwind CSS 4.x** utility classes for ALL styling
+- Maintain consistent design tokens:
+  - Spacing scale: 4px base unit (0.5, 1, 1.5, 2, 2.5, 3, 4, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96)
+  - Typography scale: rem-based (text-xs through text-9xl)
+  - Color palette: Defined in `tailwind.config.js` (primary, secondary, accent, neutral, semantic)
 - Custom components ONLY when Shadcn-Vue cannot fulfill the requirement
+- Document custom components in Storybook or project docs
 
-**Accessibility (a11y):**
+**Accessibility (a11y) - NON-NEGOTIABLE:**
 
-- ALL interactive elements MUST be keyboard accessible
-- Use semantic HTML (`<nav>`, `<main>`, `<article>`, `<section>`, `<footer>`)
-- Provide descriptive `alt` attributes for images
-- Use `aria-*` attributes where necessary
-- Test with screen readers and keyboard-only navigation
+- ALL interactive elements MUST be keyboard accessible (Tab, Enter, Space, Escape, Arrow keys)
+- Use semantic HTML ALWAYS:
+  - Navigation: `<nav>`, `<header>`
+  - Content structure: `<main>`, `<article>`, `<section>`, `<aside>`, `<footer>`
+  - Forms: `<form>`, `<label>`, `<fieldset>`, `<legend>`
+  - Buttons: `<button>` (NOT `<div>` or `<span>` with click handlers)
+- Provide descriptive `alt` attributes for ALL images (empty `alt=""` for decorative images)
+- Use `aria-*` attributes where semantic HTML insufficient:
+  - `aria-label`, `aria-labelledby`, `aria-describedby`
+  - `aria-expanded`, `aria-selected`, `aria-checked` for custom components
+  - `role` attribute for custom interactive elements
+- Color contrast ratios MUST meet WCAG AA standards (4.5:1 for normal text, 3:1 for large text)
+- Test with screen readers (NVDA on Windows, VoiceOver on macOS/iOS)
+- Test keyboard-only navigation (no mouse)
+- Focus indicators MUST be visible (never `outline: none` without replacement)
 
-**Internationalization (i18n):**
+**Internationalization (i18n) - MANDATORY:**
 
-- ALL user-facing text MUST use `vue-i18n` (`$t()` function)
-- Organize translation keys by domain (e.g., `userProfile.title`)
-- Support RTL languages when applicable
+- ALL user-facing text MUST use `vue-i18n` with `$t()` function
+- NO hardcoded strings in templates or components
+- Organize translation keys by domain: `auth.login.title`, `profile.settings.email`
+- Translation files: `client/apps/*/locales/{lang}.json`
+- Support RTL (right-to-left) languages:
+  - Use logical properties (`margin-inline-start` instead of `margin-left`)
+  - Test with `dir="rtl"` attribute
+- Date/time formatting: Use `Intl.DateTimeFormat` API
+- Number formatting: Use `Intl.NumberFormat` API
 
-**State Management:**
+**State Management (Pinia) - MANDATORY:**
 
-- Use Pinia for all shared state
-- Organize stores by domain (e.g., `useUserStore`, `useAuthStore`)
-- Always provide strong TypeScript types for state, getters, and actions
+- Use **Pinia 3.x** for ALL shared state across components
+- Organize stores by domain: `useAuthStore`, `useUserStore`, `useProjectStore`
+- Store file structure: `client/apps/*/stores/{domain}.ts`
+- ALWAYS provide TypeScript types for:
+  - State interface
+  - Getters return types
+  - Actions parameters and return types
+- Use composition API style: `defineStore(() => { ... })`
+- Keep stores focused (Single Responsibility Principle)
 
-**Responsiveness:**
+**Responsiveness - MANDATORY:**
 
-- Design mobile-first
-- Test on common viewport sizes (320px, 768px, 1024px, 1440px)
-- Use responsive Tailwind classes (`sm:`, `md:`, `lg:`, `xl:`)
+- Design mobile-first (start with smallest viewport)
+- Test on standard breakpoints:
+  - Mobile: 320px, 375px, 414px
+  - Tablet: 768px, 834px, 1024px
+  - Desktop: 1280px, 1440px, 1920px
+- Use responsive Tailwind classes:
+  - Mobile (default): no prefix
+  - Tablet: `md:` (768px+)
+  - Desktop: `lg:` (1024px+), `xl:` (1280px+), `2xl:` (1536px+)
+- Images MUST be responsive: use `srcset` and `sizes` attributes or Astro `<Image />` component
+- Touch targets MUST be ≥44px × 44px on mobile (WCAG guideline)
+- Avoid horizontal scrolling on any viewport size
 
-**Rationale**: Consistent UX reduces user confusion, improves satisfaction, and reduces support costs. Accessibility is both a legal requirement and a moral imperative. A design system accelerates development and ensures brand coherence.
+**Component Best Practices:**
+
+- Name components using `PascalCase` (e.g., `UserProfileCard.vue`)
+- Use `<script setup lang="ts">` syntax for ALL components
+- Define props with `defineProps<T>()` and provide defaults with `withDefaults()`
+- Explicitly declare emitted events with `defineEmits<T>()`
+- Co-locate styles in `<style scoped>` blocks
+- Use slots for composition over complex prop configurations
+
+**Performance:**
+
+- Lazy-load routes: Use `defineAsyncComponent()` for Vue components
+- Lazy-load images: Use `loading="lazy"` attribute
+- Use `v-memo` for lists with static content
+- Use `v-once` for content that never changes
+- Clean up subscriptions/timers in `onUnmounted()` lifecycle hook
+
+**Rationale**: Consistent UX reduces user confusion, increases user satisfaction, and decreases support costs. Accessibility is legally required (ADA, WCAG) and morally imperative—everyone deserves access. A unified design system accelerates development velocity by 3-5x, ensures brand coherence across applications, and prevents design drift. Internationalization expands market reach. State management prevents prop-drilling and makes state predictable. Responsiveness is mandatory in a mobile-first world.
 
 ### VI. Performance & Scalability
 
-**The system MUST be designed for production scale from day one:**
+**The system MUST be designed for production scale from day one. Performance is a feature.**
 
-**Backend Performance:**
+**Backend Performance (Spring Boot + WebFlux) - MANDATORY:**
 
-- Use reactive programming (Spring WebFlux + R2DBC) for non-blocking I/O
-- NEVER call `.block()` in application code - embrace `Mono<T>` and `Flux<T>`
-- Use database indexes on all foreign keys and frequently-queried columns
-- Implement pagination for all collection endpoints (default page size: 20)
-- Use caching for frequently-accessed, rarely-changing data
-- Target: p95 response time < 200ms for API endpoints
+- Use reactive programming (Spring WebFlux + R2DBC) for non-blocking I/O on ALL endpoints
+- NEVER call `.block()` in application code - embrace `Mono<T>` and `Flux<T>` throughout
+  - Exception: Test code only
+- Use backpressure strategies for streams to prevent memory overflow
+- Implement pagination for ALL collection endpoints:
+  - Default page size: 20 items
+  - Maximum page size: 100 items
+  - Use cursor-based pagination for large datasets (>10k records)
+- Use caching strategically:
+  - Cache frequently-accessed, rarely-changing data (configuration, lookup tables)
+  - Use Spring Cache abstraction with Redis backend for production
+  - Cache invalidation MUST be explicit and tested
+- **Performance Targets (NON-NEGOTIABLE):**
+  - p50 response time: <100ms for simple queries
+  - p95 response time: <200ms for API endpoints
+  - p99 response time: <500ms for complex operations
+  - Database query execution: <50ms for indexed queries, <500ms for complex aggregations
+  - Throughput: Minimum 1000 requests/second per instance (simple endpoints)
 
-**Frontend Performance:**
+**Frontend Performance (Vue 3 + Vite) - MANDATORY:**
 
-- Lazy-load routes and components (`defineAsyncComponent`)
-- Use `v-memo` and `v-once` for static content
-- Optimize images (use Astro's `<Image />` component for marketing site)
-- Avoid shipping unnecessary JavaScript to the client
-- Clean up side effects in `onUnmounted` (timers, listeners, subscriptions)
-- Target: First Contentful Paint < 1.5s, Time to Interactive < 3.5s
+- Lazy-load routes using dynamic imports: `component: () => import('./views/Dashboard.vue')`
+- Lazy-load components with `defineAsyncComponent()` for modals, tabs, heavy widgets
+- Use `v-memo` directive for lists with static content to skip re-renders
+- Use `v-once` directive for content that never changes
+- Optimize images:
+  - Use WebP format with JPEG/PNG fallback
+  - Provide `srcset` with multiple resolutions
+  - Use `loading="lazy"` attribute for below-fold images
+  - Use Astro `<Image />` component for automatic optimization (marketing site)
+- Minimize JavaScript bundle size:
+  - Code-split by route (automatic with Vue Router + Vite)
+  - Tree-shake unused dependencies
+  - Avoid importing entire libraries (e.g., import specific lodash functions)
+- Clean up side effects in `onUnmounted()`:
+  - Clear timers (`setInterval`, `setTimeout`)
+  - Remove event listeners
+  - Cancel subscriptions (API calls, WebSockets)
+- Use Web Workers for CPU-intensive tasks (large data transformations, parsing)
+- **Performance Targets (NON-NEGOTIABLE):**
+  - First Contentful Paint (FCP): <1.5 seconds
+  - Largest Contentful Paint (LCP): <2.5 seconds
+  - Time to Interactive (TTI): <3.5 seconds
+  - Cumulative Layout Shift (CLS): <0.1
+  - First Input Delay (FID): <100ms
+  - Total Bundle Size: <250KB gzipped (main bundle)
+  - Lighthouse Performance Score: ≥90
 
-**Database:**
+**Database Performance (PostgreSQL + R2DBC) - MANDATORY:**
 
-- Use UUIDs (v4) for all primary keys
-- Implement Row-Level Security (RLS) for multi-tenant isolation
-- Create indexes on `tenant_id` and other filter columns
-- Use Liquibase migrations for schema changes (never manual ALTER statements)
-- Target: Query execution time < 50ms for simple queries, < 500ms for complex aggregations
+- Use UUID v4 for ALL primary keys (generated in application layer)
+- Create indexes on ALL foreign keys and frequently-queried columns:
+  - `CREATE INDEX idx_table_tenant_id ON table (tenant_id);`
+  - Composite indexes for common query patterns
+- Implement Row-Level Security (RLS) for multi-tenant data isolation:
+  - Enable RLS on ALL tenant-scoped tables
+  - Set `app.current_tenant` session variable on connection
+- Use Liquibase for ALL schema changes (never manual `ALTER` statements)
+- Optimize queries:
+  - Use `EXPLAIN ANALYZE` to identify slow queries
+  - Avoid N+1 queries (use JOINs or batch fetching)
+  - Use database-level aggregations instead of fetching all data
+  - Limit result sets with WHERE clauses
+- **Performance Targets:**
+  - Query execution: <50ms for simple indexed queries
+  - Complex aggregations: <500ms
+  - Connection pool: Min 5, Max 20 connections per instance
+  - Connection acquisition: <10ms
 
-**Infrastructure:**
+**Infrastructure Scalability - MANDATORY:**
 
-- Design for horizontal scalability (stateless services)
-- Use connection pooling for database access
-- Implement rate limiting on public API endpoints
+- Design services to be STATELESS (horizontal scaling ready)
+  - NO in-memory session storage (use Redis or database)
+  - NO local file storage (use S3 or equivalent)
+- Use connection pooling for database access (HikariCP for R2DBC)
+- Implement rate limiting on ALL public API endpoints:
+  - Anonymous users: 100 requests/hour
+  - Authenticated users: 1000 requests/hour
+  - Configurable per endpoint via `application.yml`
+- Use async processing for long-running tasks:
+  - Email sending
+  - Report generation
+  - Batch operations
+- Implement circuit breakers for external service calls (Resilience4j)
+- Use API gateway pattern for request routing and load balancing
 
-**Rationale**: Performance is a feature. Slow applications lose users. Reactive programming and proper indexing enable handling thousands of concurrent users on modest hardware. Lazy loading improves perceived performance significantly.
+**Monitoring & Optimization:**
+
+- Profile application under load before production deployment (JMeter, Gatling)
+- Monitor JVM metrics: heap usage, GC pauses, thread count
+- Monitor database metrics: connection pool usage, query duration, cache hit rate
+- Set up alerts for performance degradation:
+  - p95 response time exceeds SLO by 50%
+  - Error rate >1%
+  - Database connection pool exhaustion
+
+**Rationale**: Performance directly impacts user satisfaction, conversion rates, and operational costs. Slow applications lose users (53% abandon sites taking >3s to load). Reactive programming enables handling 10-100x more concurrent users with the same hardware. Proper indexing and caching prevent database bottlenecks. Lazy loading and code-splitting reduce initial load time significantly. Horizontal scalability enables handling traffic spikes without downtime. Performance targets are based on industry standards (Google Core Web Vitals, RAIL model) and real-world user expectations.
 
 ### VII. Observability & Monitoring
 
@@ -484,4 +653,4 @@ This Constitution is a living document. As the project evolves:
 - New principles may be added as patterns emerge
 - Outdated practices MUST be deprecated explicitly
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-20 | **Last Amended**: 2025-10-20
+**Version**: 1.1.0 | **Ratified**: 2025-10-20 | **Last Amended**: 2025-10-28
