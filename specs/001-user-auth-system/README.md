@@ -208,7 +208,7 @@ Frontend runs on: <http://localhost:9876>
 5. **OAuth Configuration**: Complete Keycloak OAuth provider setup
 6. **Email Verification**: Send verification emails after registration
 7. **Password Reset**: Forgot password flow
-8. **Rate Limiting**: Prevent brute force attacks
+8. **Rate-Limiting**: Prevent brute force attacks
 
 ## Testing Commands
 

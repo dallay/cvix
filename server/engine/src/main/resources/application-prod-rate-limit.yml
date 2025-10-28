@@ -1,4 +1,4 @@
-# Rate Limiting Configuration for Production
+# Rate-Limiting Configuration for Production
 # This file shows recommended production settings for rate limiting
 
 application:

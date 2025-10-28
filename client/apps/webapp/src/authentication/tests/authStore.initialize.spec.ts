@@ -60,11 +60,10 @@ describe("authStore.initialize", () => {
 			// Execute: Initialize the store
 			await authStore.initialize();
 
-			// Verify: checkAuth should have been called and user info fetched
-			// Note: isAuthenticated will be false because we don't store tokens in sessionStorage
-			// (security best practice). User data is fetched but session tokens are not restored.
+			// Verify: User should be authenticated with restored session
 			expect(authStore.user).toBeTruthy();
 			expect(authStore.user?.email).toBe("test@example.com");
+			expect(authStore.isAuthenticated).toBe(true);
 		});
 
 		it("should not restore session when session is expired", async () => {
@@ -115,7 +114,8 @@ describe("authStore.initialize", () => {
 	});
 
 	describe("loading state", () => {
-		it("should set loading state during initialization", async () => {
+		it("should call checkAuth during initialization when session is valid", async () => {
+			// Setup: Store a valid session
 			authSessionStorage.setSessionExpiration(3600);
 
 			const authStore = useAuthStore();
@@ -126,20 +126,33 @@ describe("authStore.initialize", () => {
 				resolveCheckAuth = resolve;
 			});
 
-			vi.spyOn(authStore, "checkAuth").mockReturnValue(checkAuthPromise);
+			const checkAuthSpy = vi
+				.spyOn(authStore, "checkAuth")
+				.mockImplementation(async () => {
+					// Mimic the real checkAuth behavior with loading state
+					authStore.isLoading = true;
+					await checkAuthPromise;
+					authStore.isLoading = false;
+				});
 
 			// Start initialization
 			const initPromise = authStore.initialize();
 
-			// Loading should be true during checkAuth
+			// Verify: checkAuth should be called during initialization
+			expect(checkAuthSpy).toHaveBeenCalledTimes(1);
+
+			// Loading should be true while checkAuth is pending
 			await new Promise((resolve) => setTimeout(resolve, 0));
-			// Note: Loading state is managed by checkAuth internally
+			expect(authStore.isLoading).toBe(true);
 
 			// Resolve the checkAuth
 			if (resolveCheckAuth) {
 				resolveCheckAuth();
 			}
 			await initPromise;
+
+			// Loading should be false after initialization completes
+			expect(authStore.isLoading).toBe(false);
 		});
 	});
 

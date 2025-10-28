@@ -1,8 +1,8 @@
 ---
-title: Rate Limiting Configuration Guide
+title: Rate-Limiting Configuration Guide
 ---
 
-# Rate Limiting Configuration Guide
+# Rate-Limiting Configuration Guide
 
 This document explains how to configure and extend the Bucket4j-based rate limiting using properties.
 
@@ -195,7 +195,7 @@ application:
 
 An attacker must pass **all** configured limits for the request to be processed.
 
-### 5. Temporarily Disable Rate Limiting
+### 5. Temporarily Disable Rate-Limiting
 
 To disable rate limiting entirely (e.g., for debugging):
 
@@ -326,5 +326,5 @@ If you see errors related to `BucketConfigurationStrategy` or `RateLimitProperti
 
 - [Bucket4j Documentation](https://github.com/bucket4j/bucket4j)
 - [Spring Boot Configuration Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config)
-- [OWASP Rate Limiting](https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks)
+- [OWASP Rate-Limiting](https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks)
 

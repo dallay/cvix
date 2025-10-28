@@ -1,4 +1,4 @@
-# Rate Limiting Configuration for Development/Testing
+# Rate-Limiting Configuration for Development/Testing
 # More permissive limits to facilitate development and testing
 
 application:

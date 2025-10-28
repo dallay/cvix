@@ -362,7 +362,7 @@ Throughout the user's session, the application maintains and displays their curr
 
 12. **Token Refresh Window**: Access tokens are refreshed automatically when they have 5 minutes or less remaining before expiration.
 
-13. **Rate Limiting**: Failed authentication attempts are rate-limited to maximum 5 attempts per email address within a 15-minute sliding window, with exponential backoff for subsequent attempts.
+13. **Rate-Limiting**: Failed authentication attempts are rate-limited to maximum 5 attempts per email address within a 15-minute sliding window, with exponential backoff for subsequent attempts.
 
 14. **Profile Information**: Minimum required registration information includes email address, password (for local accounts), first name, and last name. Additional optional profile fields can be collected but are not required for account creation.
 

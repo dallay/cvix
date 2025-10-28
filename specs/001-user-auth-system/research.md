@@ -224,7 +224,7 @@ interface SessionRepository {
 
 ---
 
-## 5. Rate Limiting Strategy
+## 5. Rate-Limiting Strategy
 
 ### Decision: Sliding Window with Redis or PostgreSQL Counter
 
@@ -290,7 +290,7 @@ data class RateLimitEntry(
 - CAPTCHA challenge after 3 failed attempts (optional enhancement)
 
 **References**:
-- OWASP Rate Limiting: https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html
+- OWASP Rate-Limiting: https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html
 
 ---
 
