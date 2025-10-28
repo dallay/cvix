@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Gradle project
         if: matrix.language == 'java-kotlin'
-        run: ./gradlew build -x test
+        run: ./gradlew build --stacktrace
 
       - name: Setup Node.js and pnpm
         if: matrix.language == 'javascript-typescript'
