@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{url}}/api/register
+  url: {{url}}/api/auth/register
   body: json
   auth: none
 }
@@ -15,11 +15,11 @@ headers {
 }
 
 body:json {
-  {	
-      "email": "hatcgrid@hotmail.com",	
-      "password": "vCX6Zr33>EgxX",	
-      "firstname": "Ha",	
-      "lastname": "Bergstrom"	
+  {
+      "email": "hatcgrid@hotmail.com",
+      "password": "vCX6Zr33>EgxX",
+      "firstname": "Ha",
+      "lastname": "Bergstrom"
   }
 }
 

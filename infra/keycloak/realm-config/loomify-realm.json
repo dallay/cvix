@@ -880,7 +880,8 @@
 				"roles",
 				"loomify",
 				"profile",
-				"email"
+				"email",
+				"openid"
 			],
 			"optionalClientScopes": [
 				"address",
@@ -1038,7 +1039,8 @@
 				"roles",
 				"loomify",
 				"profile",
-				"email"
+				"email",
+				"openid"
 			],
 			"optionalClientScopes": [
 				"address",
@@ -1049,6 +1051,15 @@
 		}
 	],
 	"clientScopes": [
+		{
+			"id": "f75916a6-13de-49e2-8734-423b086833a9",
+			"name": "openid",
+			"protocol": "openid-connect",
+			"attributes": {
+				"include.in.token.scope": "true",
+				"display.on.consent.screen": "false"
+			}
+		},
 		{
 			"id": "44d24405-87bf-4b37-a627-e3fdabb93f50",
 			"name": "email",

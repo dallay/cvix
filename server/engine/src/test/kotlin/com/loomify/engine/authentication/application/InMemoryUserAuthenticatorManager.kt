@@ -22,9 +22,10 @@ class InMemoryUserAuthenticatorManager(
      *
      * @param username the username of the user to be logged in
      * @param password the password of the user to be logged in
+     * @param rememberMe whether to extend the session duration
      * @return the access token of the user
      */
-    override suspend fun authenticate(username: Username, password: Credential): AccessToken {
+    override suspend fun authenticate(username: Username, password: Credential, rememberMe: Boolean): AccessToken {
         return if (database[username.value] == password.value) {
             accessToken()
         } else {

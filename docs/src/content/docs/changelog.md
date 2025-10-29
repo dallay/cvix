@@ -1,6 +1,8 @@
 ---
 title: "Changelog"
 description: "Project changelog and release notes."
+prev: false
+next: false
 ---
 
 ## Changelog

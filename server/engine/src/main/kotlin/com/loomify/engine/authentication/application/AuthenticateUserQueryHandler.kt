@@ -24,11 +24,11 @@ class AuthenticateUserQueryHandler(private val authenticator: UserAuthenticatorS
      * @return The response of the query.
      */
     override suspend fun handle(query: AuthenticateUserQuery): AccessToken {
-        val sanitizedUsername = query.username.replace("\n", "").replace("\r", "")
-        log.info("Authenticating user with username: {}", sanitizedUsername)
-        val username = Username(query.username)
+        val sanitizedEmail = query.email.replace("\n", "").replace("\r", "")
+        log.info("Authenticating user with email: {} (rememberMe: {})", sanitizedEmail, query.rememberMe)
+        val username = Username(query.email)
         val password = Credential(CredentialId(UUID.randomUUID()), query.password)
-        return authenticator.authenticate(username, password)
+        return authenticator.authenticate(username, password, query.rememberMe)
     }
     companion object {
         private val log = LoggerFactory.getLogger(AuthenticateUserQueryHandler::class.java)

@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+
+let result: { ok: true; id: string } | { ok: false; error: string };
+try {
+	const entry = await getEntry("docs", "404");
+	result = { ok: true, id: entry?.id ?? "<undefined>" };
+} catch (error) {
+	result = {
+		ok: false,
+		error: error instanceof Error ? error.message : String(error),
+	};
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Check 404 entry</title>
+  </head>
+  <body>
+    <pre>{JSON.stringify(result, null, 2)}</pre>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+---
+import { getCollection } from "astro:content";
+
+const docs = await getCollection("docs");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Docs Entries Debug</title>
+  </head>
+  <body>
+    <pre>{JSON.stringify(docs.map((entry) => entry.id), null, 2)}</pre>
+  </body>
+</html>

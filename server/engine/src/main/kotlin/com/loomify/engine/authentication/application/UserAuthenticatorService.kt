@@ -18,11 +18,12 @@ class UserAuthenticatorService(private val userAuthenticator: UserAuthenticator)
      *
      * @param username the username of the user to be authenticated
      * @param password the password of the user to be authenticated
+     * @param rememberMe whether to extend the session duration
      * @return the access token of the user
      */
-    suspend fun authenticate(username: Username, password: Credential): AccessToken {
-        log.info("Authenticating user with username: {}", username)
-        return userAuthenticator.authenticate(username, password)
+    suspend fun authenticate(username: Username, password: Credential, rememberMe: Boolean = false): AccessToken {
+        log.info("Authenticating user with username: {} (rememberMe: {})", username, rememberMe)
+        return userAuthenticator.authenticate(username, password, rememberMe)
     }
 
     companion object {

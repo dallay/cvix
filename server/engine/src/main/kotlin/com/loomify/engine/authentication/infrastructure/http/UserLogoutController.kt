@@ -45,7 +45,7 @@ class UserLogoutController(
         ApiResponse(responseCode = "400", description = "Bad request, missing cookies"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     @ResponseStatus(HttpStatus.OK)
     suspend fun logout(
         request: ServerHttpRequest,

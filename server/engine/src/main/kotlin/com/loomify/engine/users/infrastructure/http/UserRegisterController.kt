@@ -38,7 +38,7 @@ class UserRegisterController(
         ApiResponse(responseCode = "400", description = "Bad request - Validation error or user already exists"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     suspend fun registerUser(@Validated @RequestBody registerUserRequest: RegisterUserRequest):
         ResponseEntity<ApiDataResponse<UserResponse>> {
         log.debug(

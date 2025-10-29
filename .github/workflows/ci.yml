@@ -86,7 +86,7 @@ jobs:
           fetch-depth: 0
       - name: Lint Code Base
         # Pinned to v5 commit hash for security
-        uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1 # v5
+        uses: github/super-linter@45fc0d88288beee4701c62761281edfee85655d7 # v5
         env:
           VALIDATE_ALL_CODEBASE: true  # Lint entire codebase
           DEFAULT_BRANCH: main
@@ -232,7 +232,7 @@ jobs:
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@b4c9feab76d8025d1e83c653fa3990936df0e6c8
+        uses: DavidAnson/markdownlint-cli2-action@ea23e85383042f0c9db1fba07ff5a2f8ec63d544
         with:
           globs: |
             **/*.md

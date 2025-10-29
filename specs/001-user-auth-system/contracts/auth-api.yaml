@@ -1,0 +1,714 @@
+openapi: 3.0.3
+info:
+  title: Authentication API
+  description: |
+    RESTful API for user authentication and registration.
+    Handles email/password and federated identity provider authentication flows.
+  version: 1.0.0
+  contact:
+    name: Platform Team
+    email: platform@loomify.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.loomify.com/v1
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - CookieAuth: []
+
+tags:
+  - name: Registration
+    description: User account registration operations
+  - name: Authentication
+    description: Login and logout operations
+  - name: Token Management
+    description: Token refresh and validation operations
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user account
+      description: |
+        Creates a new user account with email and password credentials.
+        Returns access and refresh tokens upon successful registration.
+
+        **Requirements**: FR-001, FR-002, FR-003, FR-004, FR-005
+        **Rate Limit**: 3 attempts per hour per IP address
+      tags:
+        - Registration
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              standardRegistration:
+                summary: Standard registration
+                value:
+                  email: jane.doe@example.com
+                  password: SecurePass123!
+                  firstname: Jane
+                  lastname: Doe
+      responses:
+        '201':
+          description: User account created successfully
+          headers:
+            Set-Cookie:
+              description: HTTP-only secure cookie containing refresh token
+              schema:
+                type: string
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                success:
+                  summary: Successful registration
+                  value:
+                    accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImphbmUuZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNjk3ODI0ODAwLCJleHAiOjE2OTc4Mjg0MDB9.signature
+                    expiresIn: 3600
+                    tokenType: Bearer
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: jane.doe@example.com
+                      firstName: Jane
+                      lastName: Doe
+                      displayName: Jane Doe
+                      accountStatus: ACTIVE
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email address already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicateEmail:
+                  summary: Duplicate email
+                  value:
+                    error:
+                      code: EMAIL_ALREADY_EXISTS
+                      message: An account with this email address already exists
+                      timestamp: '2025-10-20T14:30:00Z'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      summary: Authenticate with email and password
+      description: |
+        Authenticates a user with email/password credentials.
+        Returns access and refresh tokens upon successful authentication.
+
+        **Requirements**: FR-007, FR-008, FR-009, FR-010, FR-011, FR-013
+        **Rate Limit**: 5 attempts per 15 minutes per IP address
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              standardLogin:
+                summary: Standard login
+                value:
+                  email: jane.doe@example.com
+                  password: SecurePass123!
+                  rememberMe: false
+              rememberMeLogin:
+                summary: Login with remember me
+                value:
+                  email: jane.doe@example.com
+                  password: SecurePass123!
+                  rememberMe: true
+      responses:
+        '200':
+          description: Authentication successful
+          headers:
+            Set-Cookie:
+              description: HTTP-only secure cookie containing refresh token
+              schema:
+                type: string
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                success:
+                  summary: Successful login
+                  value:
+                    accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImphbmUuZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNjk3ODI0ODAwLCJleHAiOjE2OTc4Mjg0MDB9.signature
+                    expiresIn: 3600
+                    tokenType: Bearer
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: jane.doe@example.com
+                      firstName: Jane
+                      lastName: Doe
+                      displayName: Jane Doe
+                      accountStatus: ACTIVE
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials or account disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidCredentials:
+                  summary: Invalid credentials
+                  value:
+                    error:
+                      code: INVALID_CREDENTIALS
+                      message: Email or password is incorrect
+                      timestamp: '2025-10-20T14:30:00Z'
+                accountDisabled:
+                  summary: Account disabled
+                  value:
+                    error:
+                      code: ACCOUNT_DISABLED
+                      message: This account has been disabled
+                      timestamp: '2025-10-20T14:30:00Z'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/federated/initiate:
+    get:
+      summary: Initiate federated authentication flow
+      description: |
+        Redirects the user to the specified OAuth/OIDC identity provider for authentication.
+        Uses Authorization Code Flow with PKCE for maximum security.
+
+        **Requirements**: FR-024, FR-025
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      parameters:
+        - name: provider
+          in: query
+          required: true
+          description: Identity provider name
+          schema:
+            type: string
+            enum: [google, microsoft, github]
+          example: google
+        - name: redirectUri
+          in: query
+          required: false
+          description: URI to redirect to after authentication (must be whitelisted)
+          schema:
+            type: string
+            format: uri
+            default: /dashboard
+          example: /workspace/abc123
+      responses:
+        '302':
+          description: Redirect to identity provider authorization endpoint
+          headers:
+            Location:
+              description: OAuth provider authorization URL with PKCE parameters
+              schema:
+                type: string
+                example: https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&response_type=code&scope=openid%20email%20profile&state=...&code_challenge=...&code_challenge_method=S256
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/federated/callback:
+    get:
+      summary: Handle OAuth callback from identity provider
+      description: |
+        Processes the authorization code received from the OAuth provider.
+        Creates or links user account and issues access/refresh tokens.
+
+        **Requirements**: FR-024, FR-025, FR-026
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      parameters:
+        - name: code
+          in: query
+          required: true
+          description: Authorization code from OAuth provider
+          schema:
+            type: string
+          example: 4/0AY0e-g7...
+        - name: state
+          in: query
+          required: true
+          description: State parameter for CSRF protection
+          schema:
+            type: string
+          example: MTIzNDU2Nzg5MA==
+      responses:
+        '302':
+          description: Redirect to application with tokens set
+          headers:
+            Location:
+              description: Redirect URI with session established
+              schema:
+                type: string
+                example: /dashboard
+            Set-Cookie:
+              description: HTTP-only secure cookie containing refresh token
+              schema:
+                type: string
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: OAuth authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                authFailed:
+                  summary: Authentication failed
+                  value:
+                    error:
+                      code: FEDERATED_AUTH_FAILED
+                      message: Unable to authenticate with identity provider
+                      timestamp: '2025-10-20T14:30:00Z'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      summary: Terminate current session
+      description: |
+        Logs out the authenticated user by revoking their current session tokens.
+        Clears the refresh token cookie and invalidates the access token.
+
+        **Requirements**: FR-014, FR-015, FR-016
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+        - CookieAuth: []
+      responses:
+        '204':
+          description: Logout successful, session terminated
+          headers:
+            Set-Cookie:
+              description: Clear refresh token cookie
+              schema:
+                type: string
+                example: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/api/v1/auth/token/refresh
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/token/refresh:
+    post:
+      summary: Refresh access token
+      description: |
+        Exchanges a valid refresh token for a new access token.
+        Automatically extends the session and updates the user's last activity timestamp.
+
+        **Requirements**: FR-017, FR-018, FR-019, FR-020, FR-021
+        **Token Lifetime**: Access token = 1 hour, Refresh token = 30 days
+      tags:
+        - Token Management
+      security:
+        - CookieAuth: []  # Requires refresh token cookie
+      responses:
+        '200':
+          description: Token refresh successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponse'
+              examples:
+                success:
+                  summary: New access token issued
+                  value:
+                    accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImphbmUuZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNjk3ODI4NDAwLCJleHAiOjE2OTc4MzIwMDB9.signature
+                    expiresIn: 3600
+                    tokenType: Bearer
+        '401':
+          description: Refresh token invalid, expired, or revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                tokenExpired:
+                  summary: Refresh token expired
+                  value:
+                    error:
+                      code: REFRESH_TOKEN_EXPIRED
+                      message: Your session has expired. Please login again.
+                      timestamp: '2025-10-20T14:30:00Z'
+                tokenRevoked:
+                  summary: Refresh token revoked
+                  value:
+                    error:
+                      code: REFRESH_TOKEN_REVOKED
+                      message: This session has been terminated. Please login again.
+                      timestamp: '2025-10-20T14:30:00Z'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/token/validate:
+    post:
+      summary: Validate access token
+      description: |
+        Validates an access token and returns the associated user information.
+        Used for debugging and third-party integrations.
+      tags:
+        - Token Management
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidationResponse'
+              examples:
+                valid:
+                  summary: Valid token
+                  value:
+                    valid: true
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: jane.doe@example.com
+                      displayName: Jane Doe
+                    expiresAt: '2025-10-20T16:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token in Authorization header
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: refresh_token
+      description: HTTP-only secure cookie containing refresh token
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: User's email address (must be unique)
+          example: jane.doe@example.com
+        password:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+          description: User's password (min 12 chars, must meet complexity requirements)
+          example: SecurePass123!
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: User's first name
+          example: Jane
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: User's last name
+          example: Doe
+        displayName:
+          type: string
+          maxLength: 200
+          description: Optional display name (defaults to "firstName lastName")
+          example: Jane Doe
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: jane.doe@example.com
+        password:
+          type: string
+          format: password
+          description: User's password
+          example: SecurePass123!
+        rememberMe:
+          type: boolean
+          default: false
+          description: If true, issues a persistent session (30 days)
+          example: false
+
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - expiresIn
+        - tokenType
+        - user
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token (expires in 1 hour)
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImphbmUuZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNjk3ODI0ODAwLCJleHAiOjE2OTc4Mjg0MDB9.signature
+        expiresIn:
+          type: integer
+          description: Access token lifetime in seconds
+          example: 3600
+        tokenType:
+          type: string
+          enum: [Bearer]
+          description: Token type (always "Bearer")
+          example: Bearer
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    TokenRefreshResponse:
+      type: object
+      required:
+        - accessToken
+        - expiresIn
+        - tokenType
+      properties:
+        accessToken:
+          type: string
+          description: New JWT access token
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImphbmUuZG9lQGV4YW1wbGUuY29tIiwiaWF0IjoxNjk3ODI4NDAwLCJleHAiOjE2OTc4MzIwMDB9.signature
+        expiresIn:
+          type: integer
+          description: Access token lifetime in seconds
+          example: 3600
+        tokenType:
+          type: string
+          enum: [Bearer]
+          description: Token type (always "Bearer")
+          example: Bearer
+
+    TokenValidationResponse:
+      type: object
+      required:
+        - valid
+        - user
+        - expiresAt
+      properties:
+        valid:
+          type: boolean
+          description: Whether the token is valid
+          example: true
+        user:
+          type: object
+          required:
+            - id
+            - email
+            - displayName
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: User ID
+              example: 550e8400-e29b-41d4-a716-446655440000
+            email:
+              type: string
+              format: email
+              description: User's email
+              example: jane.doe@example.com
+            displayName:
+              type: string
+              description: User's display name
+              example: Jane Doe
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiration timestamp (ISO 8601)
+          example: '2025-10-20T16:30:00Z'
+
+    UserProfile:
+      type: object
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - displayName
+        - accountStatus
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User ID (UUID v4)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: jane.doe@example.com
+        firstName:
+          type: string
+          description: User's first name
+          example: Jane
+        lastName:
+          type: string
+          description: User's last name
+          example: Doe
+        displayName:
+          type: string
+          description: User's display name
+          example: Jane Doe
+        accountStatus:
+          type: string
+          enum: [ACTIVE, DISABLED, SUSPENDED, PENDING_VERIFICATION]
+          description: Account status
+          example: ACTIVE
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - timestamp
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              example: INVALID_CREDENTIALS
+            message:
+              type: string
+              description: Human-readable error message
+              example: Email or password is incorrect
+            timestamp:
+              type: string
+              format: date-time
+              description: Error occurrence timestamp (ISO 8601)
+              example: '2025-10-20T14:30:00Z'
+            details:
+              type: array
+              description: Additional error details (e.g., validation failures)
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: email
+                  message:
+                    type: string
+                    example: Email format is invalid
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            validationError:
+              summary: Validation error
+              value:
+                error:
+                  code: VALIDATION_ERROR
+                  message: Request validation failed
+                  timestamp: '2025-10-20T14:30:00Z'
+                  details:
+                    - field: email
+                      message: Email format is invalid
+                    - field: password
+                      message: Password must be at least 12 characters
+
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missingToken:
+              summary: Missing token
+              value:
+                error:
+                  code: MISSING_TOKEN
+                  message: Authentication token is required
+                  timestamp: '2025-10-20T14:30:00Z'
+            invalidToken:
+              summary: Invalid token
+              value:
+                error:
+                  code: INVALID_TOKEN
+                  message: Authentication token is invalid or expired
+                  timestamp: '2025-10-20T14:30:00Z'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying
+          schema:
+            type: integer
+            example: 900
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            rateLimitExceeded:
+              summary: Rate limit exceeded
+              value:
+                error:
+                  code: RATE_LIMIT_EXCEEDED
+                  message: Too many requests. Please try again in 15 minutes.
+                  timestamp: '2025-10-20T14:30:00Z'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            serverError:
+              summary: Internal error
+              value:
+                error:
+                  code: INTERNAL_ERROR
+                  message: An unexpected error occurred. Please try again later.
+                  timestamp: '2025-10-20T14:30:00Z'

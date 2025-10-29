@@ -10,7 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/login"
+private const val ENDPOINT = "/api/auth/login"
 
 private const val TITLE = "User authentication failed"
 
@@ -42,7 +42,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "$password"
                 }
                 """.trimIndent(),
@@ -61,7 +61,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "$password"
                 }
                 """.trimIndent(),
@@ -83,7 +83,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
     }
 
     @Test
-    fun `should authenticate a user by username`() {
+    fun `should not authenticate with invalid email format`() {
         webTestClient
             .mutateWith(csrf())
             .post()
@@ -92,25 +92,17 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "username": "$username",
+                    "email": "$username",
                     "password": "$password"
                 }
                 """.trimIndent(),
             )
             .exchange()
-            .expectStatus().isOk
+            .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.token").isNotEmpty
-            .jsonPath("$.expiresIn").isNotEmpty
-            .jsonPath("$.refreshToken").isNotEmpty
-            .jsonPath("$.refreshExpiresIn").isNotEmpty
-            .jsonPath("$.tokenType").isNotEmpty
-            .jsonPath("$.notBeforePolicy").isNotEmpty
-            .jsonPath("$.sessionState").isNotEmpty
-            .jsonPath("$.scope").isNotEmpty
-            .consumeWith {
-                println(it.responseBody?.print())
-            }
+            .jsonPath("$.title").isEqualTo("validation failed")
+            .jsonPath("$.status").isEqualTo(400)
+            .jsonPath("$.detail").isEqualTo("Request validation failed. Please check the provided data.")
     }
 
     @Test
@@ -123,7 +115,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "${password}invalidPassword"
                 }
                 """.trimIndent(),
@@ -148,7 +140,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "username": "${username}invalidUsername",
+                    "email": "invalid.user@loomify.com",
                     "password": "$password"
                 }
                 """.trimIndent(),

@@ -1,0 +1,47 @@
+---
+// @ts-nocheck
+import { type RenderResult, render } from "astro:content";
+import Page from "../components/Page.astro";
+import { getRoute, useRouteData } from "../utils/routing/data";
+import { attachRouteDataAndRunMiddleware } from "../utils/routing/middleware";
+
+const route = await getRoute(Astro);
+
+let renderResult: RenderResult;
+let renderError: unknown;
+try {
+	renderResult = await render(route.entry);
+} catch (error) {
+	renderError = error;
+	console.warn(
+		"[starlight] Failed to render docs entry for",
+		route?.entry?.slug,
+		error instanceof Error ? error.message : error,
+	);
+	renderResult = {
+		Content: undefined,
+		headings: [],
+	} as RenderResult;
+}
+
+await attachRouteDataAndRunMiddleware(
+	Astro,
+	useRouteData(Astro, route, renderResult),
+);
+
+const { Content, entry } = Astro.locals.starlightRoute;
+---
+
+<Page>
+  {
+    Content ? (
+      <Content frontmatter={entry.data} />
+    ) : (
+      <section class="sl-fallback-404">
+        <h1>Page Not Found</h1>
+        <p>The content for this page could not be generated.</p>
+        {renderError && <pre class="sl-fallback-404__details">{String(renderError)}</pre>}
+      </section>
+    )
+  }
+</Page>

@@ -5,6 +5,7 @@ import com.loomify.engine.authentication.domain.Role
 import com.loomify.engine.authentication.infrastructure.csrf.SpaCsrfTokenRequestHandler
 import com.loomify.engine.authentication.infrastructure.filter.CookieCsrfFilter
 import com.loomify.engine.authentication.infrastructure.filter.JwtCookieOrHeaderFilter
+import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -73,7 +74,8 @@ private const val POLICY =
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 class SecurityConfiguration(
-    val applicationSecurityProperties: ApplicationSecurityProperties
+    val applicationSecurityProperties: ApplicationSecurityProperties,
+    private val rateLimitingFilter: RateLimitingFilter
 ) {
     @Value("\${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private val issuerUri: String? = null
@@ -117,7 +119,12 @@ class SecurityConfiguration(
                 csrf
                     .csrfTokenRepository(
                         CookieServerCsrfTokenRepository.withHttpOnlyFalse().apply {
-                            if (applicationSecurityProperties.domain.isNotEmpty()) {
+                            // Set header name to X-XSRF-TOKEN to match Axios default behavior
+                            setHeaderName("X-XSRF-TOKEN")
+                            // Only set cookie domain if domain is configured and not localhost
+                            if (applicationSecurityProperties.domain.isNotEmpty() &&
+                                applicationSecurityProperties.domain != "localhost"
+                            ) {
                                 setCookieCustomizer {
                                     it.domain(
                                         if (applicationSecurityProperties.domain.startsWith(".")) {
@@ -138,6 +145,7 @@ class SecurityConfiguration(
             }
             .addFilterAt(CookieCsrfFilter(applicationSecurityProperties), SecurityWebFiltersOrder.REACTOR_CONTEXT)
             .addFilterAt(JwtCookieOrHeaderFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+            .addFilterBefore(rateLimitingFilter, SecurityWebFiltersOrder.HTTP_BASIC)
 //            .addFilterAfter(SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
             .redirectToHttps {
                     httpsRedirect ->
@@ -161,7 +169,7 @@ class SecurityConfiguration(
                     auth ->
                 configureAuthorization(auth)
             }
-            // .oauth2Login(withDefaults())
+            .oauth2Login(withDefaults())
             .oauth2Client(withDefaults())
             .oauth2ResourceServer {
                     oauth2 ->
@@ -181,8 +189,10 @@ class SecurityConfiguration(
         auth
             .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .pathMatchers(
-                "/", "/api/health-check", "/api/register",
-                "/api/refresh-token", "/api/login", "/api/logout",
+                "/", "/api/health-check", "/api/auth/register",
+                "/api/auth/refresh-token", "/api/auth/login", "/api/auth/logout",
+                "/api/auth/csrf",
+                "/api/auth/federated/**", "/oauth2/**", "/login/oauth2/**",
                 "actuator/info",
             ).permitAll()
             .pathMatchers(

@@ -22,7 +22,7 @@
 
 ## Frontend Structure (`client/`)
 
-- **`client/apps/web`**: The main Vue.js SPA.
+- **`client/apps/webapp`**: The main Vue.js SPA.
 - **`client/apps/marketing`**: The Astro-based marketing and landing page site.
 - **`client/packages/*`**: Shared frontend code, such as utilities and TypeScript configurations.
 

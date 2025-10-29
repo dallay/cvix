@@ -25,5 +25,22 @@ jobs:
       - uses: github/codeql-action/init@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3
         with:
           languages: ${{ matrix.language }}
-      - uses: github/codeql-action/autobuild@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3
+      - name: Setup Java
+        if: matrix.language == 'java-kotlin'
+        uses: ./.github/actions/setup/java
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build Gradle project
+        if: matrix.language == 'java-kotlin'
+        run: ./gradlew build -x test --stacktrace
+
+      - name: Setup Node.js and pnpm
+        if: matrix.language == 'javascript-typescript'
+        uses: ./.github/actions/setup/node
+
+      - name: Build PNPM project
+        if: matrix.language == 'javascript-typescript'
+        run: pnpm run build
       - uses: github/codeql-action/analyze@42213152a85ae7569bdb6bec7bcd74cd691bfe41 # v3

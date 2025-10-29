@@ -4,20 +4,18 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/layouts/components/sidebar/AppSidebar.vue";
 import { getNavigationItems } from "@/shared/config/navigation";
 import AppHeader from "./components/AppHeader.vue";
-import SimpleLayout from "./SimpleLayout.vue";
 
-// Get navigation items reactively
 const navigationItems = computed(() => getNavigationItems());
 </script>
 
 <template>
-  <SidebarProvider>
+  <SidebarProvider class="bg-muted/30">
     <AppSidebar :items="navigationItems" />
-    <SidebarInset>
+    <SidebarInset class="bg-background">
       <AppHeader />
-      <SimpleLayout>
+      <div class="flex flex-1 flex-col">
         <slot />
-      </SimpleLayout>
+      </div>
     </SidebarInset>
   </SidebarProvider>
 </template>
