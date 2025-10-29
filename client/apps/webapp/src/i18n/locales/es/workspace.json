@@ -1,0 +1,44 @@
+{
+	"workspace": {
+		"selector": {
+			"title": "Seleccionar Espacio de Trabajo",
+			"placeholder": "Elige un espacio de trabajo",
+			"noWorkspaces": "No hay espacios de trabajo disponibles",
+			"loading": "Cargando espacios de trabajo...",
+			"defaultBadge": "Predeterminado",
+			"currentBadge": "Actual",
+			"switchWorkspace": "Cambiar Espacio de Trabajo"
+		},
+		"loading": {
+			"autoLoad": "Cargando tu espacio de trabajo...",
+			"switching": "Cambiando espacio de trabajo...",
+			"fetchingList": "Obteniendo espacios de trabajo..."
+		},
+		"error": {
+			"loadFailed": "Error al cargar espacios de trabajo",
+			"switchFailed": "Error al cambiar espacio de trabajo",
+			"networkError": "Error de red. Por favor verifica tu conexión.",
+			"apiError": "Error del servidor. Por favor intenta más tarde.",
+			"validationError": "Datos de espacio de trabajo inválidos.",
+			"noWorkspaces": "No tienes acceso a ningún espacio de trabajo.",
+			"workspaceNotFound": "Espacio de trabajo no encontrado.",
+			"noDefaultWorkspace": "No hay espacio de trabajo predeterminado configurado.",
+			"unauthorized": "No tienes permiso para acceder a este espacio de trabajo.",
+			"retry": "Reintentar",
+			"contactSupport": "Si el problema persiste, por favor contacta a soporte."
+		},
+		"success": {
+			"switched": "Espacio de trabajo cambiado exitosamente",
+			"loaded": "Espacio de trabajo cargado"
+		},
+		"accessibility": {
+			"openSelector": "Abrir selector de espacios de trabajo",
+			"closeSelector": "Cerrar selector de espacios de trabajo",
+			"selectWorkspace": "Seleccionar espacio de trabajo {name}",
+			"workspaceList": "Lista de espacios de trabajo disponibles",
+			"currentWorkspace": "El espacio de trabajo actual es {name}",
+			"loadingState": "Cargando información del espacio de trabajo",
+			"errorState": "Error al cargar espacios de trabajo"
+		}
+	}
+}

@@ -26,13 +26,13 @@ Based on plan.md, all frontend code lives in:
 
 **Purpose**: Project initialization and workspace feature structure
 
-- [ ] T001 Create workspace feature directory structure per plan.md at `client/apps/webapp/src/workspace/`
-- [ ] T002 [P] Create domain directory with index.ts barrel export at `client/apps/webapp/src/workspace/domain/index.ts`
-- [ ] T003 [P] Create application directory with index.ts barrel export at `client/apps/webapp/src/workspace/application/index.ts`
-- [ ] T004 [P] Create infrastructure directory structure (store/, api/, storage/, http/) at `client/apps/webapp/src/workspace/infrastructure/`
-- [ ] T005 [P] Create presentation directory structure (components/, composables/) at `client/apps/webapp/src/workspace/presentation/`
-- [ ] T006 [P] Setup i18n keys for workspace feature in `client/apps/webapp/src/locales/en/workspace.json`
-- [ ] T007 [P] Setup i18n keys for workspace feature in `client/apps/webapp/src/locales/es/workspace.json`
+- [X] T001 Create workspace feature directory structure per plan.md at `client/apps/webapp/src/workspace/`
+- [X] T002 [P] Create domain directory with index.ts barrel export at `client/apps/webapp/src/workspace/domain/index.ts`
+- [X] T003 [P] Create application directory with index.ts barrel export at `client/apps/webapp/src/workspace/application/index.ts`
+- [X] T004 [P] Create infrastructure directory structure (store/, api/, storage/, http/) at `client/apps/webapp/src/workspace/infrastructure/`
+- [X] T005 [P] Create presentation directory structure (components/, composables/) at `client/apps/webapp/src/workspace/presentation/`
+- [X] T006 [P] Setup i18n keys for workspace feature in `client/apps/webapp/src/i18n/locales/en/workspace.json`
+- [X] T007 [P] Setup i18n keys for workspace feature in `client/apps/webapp/src/i18n/locales/es/workspace.json`
 
 ---
 
@@ -44,21 +44,21 @@ Based on plan.md, all frontend code lives in:
 
 ### Foundation Tests (TDD - Write First) 🧪
 
-- [ ] T008 [P] Write tests for WorkspaceId value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceId.test.ts`
-- [ ] T009 [P] Write tests for WorkspaceName value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceName.test.ts`
-- [ ] T010 [P] Write tests for Workspace entity factory in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceEntity.test.ts`
-- [ ] T011 Write tests for workspaceHttpClient extending BaseHttpClient in `client/apps/webapp/src/workspace/infrastructure/http/__tests__/workspaceHttpClient.test.ts`
-- [ ] T012 Write tests for workspaceLocalStorage adapter in `client/apps/webapp/src/workspace/infrastructure/storage/__tests__/workspaceLocalStorage.test.ts`
+- [X] T008 [P] Write tests for WorkspaceId value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceId.test.ts`
+- [X] T009 [P] Write tests for WorkspaceName value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceName.test.ts`
+- [X] T010 [P] Write tests for Workspace entity factory in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceEntity.test.ts`
+- [X] T011 Write tests for workspaceHttpClient extending BaseHttpClient in `client/apps/webapp/src/workspace/infrastructure/http/__tests__/workspaceHttpClient.test.ts`
+- [X] T012 Write tests for workspaceLocalStorage adapter in `client/apps/webapp/src/workspace/infrastructure/storage/__tests__/workspaceLocalStorage.test.ts`
 
 ### Foundation Implementation 🔴 → ♻️ → ✅
 
-- [ ] T013 [P] Implement WorkspaceId value object with UUID validation in `client/apps/webapp/src/workspace/domain/WorkspaceId.ts`
-- [ ] T014 [P] Implement WorkspaceName value object with 1-100 char validation in `client/apps/webapp/src/workspace/domain/WorkspaceName.ts`
-- [ ] T015 [P] Define Workspace entity TypeScript interface in `client/apps/webapp/src/workspace/domain/WorkspaceEntity.ts`
-- [ ] T016 [P] Define WorkspaceError interface and WorkspaceErrorCode enum in `client/apps/webapp/src/workspace/domain/WorkspaceError.ts`
-- [ ] T017 Create workspaceHttpClient extending BaseHttpClient from `client/apps/webapp/src/shared/BaseHttpClient.ts` in `client/apps/webapp/src/workspace/infrastructure/http/workspaceHttpClient.ts`
-- [ ] T018 Implement local storage adapter with STORAGE_KEY constant in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
-- [ ] T019 Define WorkspaceApiClient interface in `client/apps/webapp/src/workspace/infrastructure/api/WorkspaceApiClient.ts`
+- [X] T013 [P] Implement WorkspaceId value object with UUID validation in `client/apps/webapp/src/workspace/domain/WorkspaceId.ts`
+- [X] T014 [P] Implement WorkspaceName value object with 1-100 char validation in `client/apps/webapp/src/workspace/domain/WorkspaceName.ts`
+- [X] T015 [P] Define Workspace entity TypeScript interface in `client/apps/webapp/src/workspace/domain/WorkspaceEntity.ts`
+- [X] T016 [P] Define WorkspaceError interface and WorkspaceErrorCode enum in `client/apps/webapp/src/workspace/domain/WorkspaceError.ts`
+- [X] T017 Create workspaceHttpClient extending BaseHttpClient from `client/apps/webapp/src/shared/BaseHttpClient.ts` in `client/apps/webapp/src/workspace/infrastructure/http/workspaceHttpClient.ts`
+- [X] T018 Implement local storage adapter with STORAGE_KEY constant in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
+- [X] T019 Define WorkspaceApiClient interface in `client/apps/webapp/src/workspace/infrastructure/api/WorkspaceApiClient.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
