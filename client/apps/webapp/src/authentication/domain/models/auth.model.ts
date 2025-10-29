@@ -2,6 +2,7 @@
  * Represents an authenticated user in the application
  */
 export interface User {
+	id: string;
 	username: string;
 	email: string;
 	firstName: string | null;

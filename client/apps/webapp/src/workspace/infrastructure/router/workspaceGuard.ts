@@ -32,7 +32,7 @@ export async function workspaceGuard(
 	const authStore = useAuthStore();
 
 	// Skip if not authenticated
-	if (!authStore.isAuthenticated || !authStore.user?.username) {
+	if (!authStore.isAuthenticated || !authStore.user?.id) {
 		next();
 		return;
 	}
@@ -43,7 +43,7 @@ export async function workspaceGuard(
 		}
 
 		const { loadWorkspaceOnLogin } = useWorkspaceLoader();
-		await loadWorkspaceOnLogin(authStore.user.username);
+		await loadWorkspaceOnLogin(authStore.user.id);
 
 		workspaceLoadedForSession = true;
 

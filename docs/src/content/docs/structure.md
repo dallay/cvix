@@ -40,7 +40,11 @@ description: Overview of the project structure and organization.
 │   │       └───node/
 │   │           └───action.yml
 │   ├───agents/
-│   │   └───astro-frontend-engineer-agent.md
+│   │   ├───astro-frontend-engineer-agent.md
+│   │   ├───database-agent.md
+│   │   ├───frontend-vue-agent.md
+│   │   ├───kotlin-spring-boot-agent.md
+│   │   └───security-agent.md
 │   ├───prompts/
 │   │   ├───frontend-developer-vue.prompt.md
 │   │   ├───speckit.analyze.prompt.md
@@ -1335,18 +1339,18 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
-│   │   │   │   ├───en_e55c978.pf_fragment
+│   │   │   │   ├───en_f060f56.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_1eda2a6.pf_index
-│   │   │   │   └───en_f38a70d.pf_index
+│   │   │   │   ├───en_797fd18.pf_index
+│   │   │   │   └───en_b8af773.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_98bcf128e1.pf_meta
+│   │   │   ├───pagefind.en_6bd883db74.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
@@ -1665,8 +1669,10 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   └───classpath-snapshot/
-│       │   │   │       └───shrunk-classpath-snapshot.bin
+│       │   │   │   ├───classpath-snapshot/
+│       │   │   │   │   └───shrunk-classpath-snapshot.bin
+│       │   │   │   └───local-state/
+│       │   │   │       └───build-history.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/

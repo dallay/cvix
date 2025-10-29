@@ -37,6 +37,7 @@ class AccountResourceService {
         val authorities = Claims.extractAuthorityFromClaims(attributes)
         return Mono.just(
             UserResponse(
+                id = attributes["sub"] as String,
                 username = attributes["preferred_username"] as String,
                 email = attributes["email"] as String,
                 firstname = attributes["given_name"] as String,

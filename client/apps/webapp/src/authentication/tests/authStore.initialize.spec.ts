@@ -5,6 +5,7 @@ import { authSessionStorage } from "../infrastructure/storage/SessionStorage";
 import { useAuthStore } from "../presentation/stores/authStore";
 
 const mockUser: User = {
+	id: "123e4567-e89b-12d3-a456-426614174000",
 	username: "testuser",
 	email: "test@example.com",
 	firstName: "Test",
