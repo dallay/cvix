@@ -17,6 +17,7 @@ import {
 import type { Component } from "vue";
 import { computed, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 import { useAuthStore } from "@/authentication/presentation/stores/authStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import type { NavigationItem } from "@/shared/config/navigation";
+import { WorkspaceSelector } from "@/workspace";
 
 interface Props {
 	items: NavigationItem[];
@@ -121,6 +123,7 @@ const userName = computed(() => {
 });
 
 const userEmail = computed(() => authStore.user?.email ?? "No email");
+const workspaceUserId = computed(() => authStore.user?.username ?? null);
 
 const userInitials = computed(() => {
 	const user = authStore.user;
@@ -162,6 +165,10 @@ const handleLogout = async () => {
 		isLoggingOut.value = false;
 	}
 };
+
+const handleWorkspaceSelected = () => {
+	toast.success("Workspace switched successfully");
+};
 </script>
 
 <template>
@@ -177,6 +184,13 @@ const handleLogout = async () => {
         </div>
       </div>
       <Badge variant="outline" class="w-fit text-xs font-medium">{{ activeTeam.plan }} plan</Badge>
+      <div v-if="workspaceUserId" class="mt-4">
+        <WorkspaceSelector
+          :user-id="workspaceUserId"
+          class="w-full"
+          @workspace-selected="handleWorkspaceSelected"
+        />
+      </div>
     </SidebarHeader>
 
     <SidebarContent>

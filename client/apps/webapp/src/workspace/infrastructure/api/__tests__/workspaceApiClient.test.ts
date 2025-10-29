@@ -80,8 +80,13 @@ describe("workspaceApiClient", () => {
 		});
 
 		it("should parse dates correctly from API response", async () => {
+			const mockApiWorkspace = {
+				...mockWorkspace1,
+				createdAt: "2025-10-01T10:00:00Z",
+				updatedAt: "2025-10-01T10:00:00Z",
+			};
 			const mockGet = vi.fn().mockResolvedValue({
-				data: [mockWorkspace1],
+				data: [mockApiWorkspace],
 			});
 			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
 
@@ -89,6 +94,9 @@ describe("workspaceApiClient", () => {
 
 			expect(result[0]?.createdAt).toBeInstanceOf(Date);
 			expect(result[0]?.updatedAt).toBeInstanceOf(Date);
+			expect(result[0]?.createdAt.toISOString()).toBe(
+				"2025-10-01T10:00:00.000Z",
+			);
 		});
 	});
 

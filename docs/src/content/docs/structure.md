@@ -39,6 +39,8 @@ description: Overview of the project structure and organization.
 │   │       │   └───action.yml
 │   │       └───node/
 │   │           └───action.yml
+│   ├───agents/
+│   │   └───astro-frontend-engineer-agent.md
 │   ├───prompts/
 │   │   ├───frontend-developer-vue.prompt.md
 │   │   ├───speckit.analyze.prompt.md
@@ -1070,9 +1072,11 @@ description: Overview of the project structure and organization.
 │   │       │   ├───workspace/
 │   │       │   │   ├───application/
 │   │       │   │   │   ├───__tests__/
-│   │       │   │   │   │   └───useWorkspaceLoader.test.ts
+│   │       │   │   │   │   ├───useWorkspaceLoader.test.ts
+│   │       │   │   │   │   └───useWorkspaceSelection.test.ts
 │   │       │   │   │   ├───index.ts
-│   │       │   │   │   └───useWorkspaceLoader.ts
+│   │       │   │   │   ├───useWorkspaceLoader.ts
+│   │       │   │   │   └───useWorkspaceSelection.ts
 │   │       │   │   ├───domain/
 │   │       │   │   │   ├───__tests__/
 │   │       │   │   │   │   ├───WorkspaceEntity.test.ts
@@ -1107,7 +1111,10 @@ description: Overview of the project structure and organization.
 │   │       │   │   │   └───index.ts
 │   │       │   │   ├───presentation/
 │   │       │   │   │   ├───components/
-│   │       │   │   │   │   └───__tests__/
+│   │       │   │   │   │   ├───__tests__/
+│   │       │   │   │   │   │   └───...
+│   │       │   │   │   │   ├───WorkspaceSelector.vue
+│   │       │   │   │   │   └───WorkspaceSelectorItem.vue
 │   │       │   │   │   ├───composables/
 │   │       │   │   │   │   └───__tests__/
 │   │       │   │   │   └───index.ts
@@ -1327,19 +1334,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
-│   │   │   │   ├───en_6aa89ce.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
+│   │   │   │   ├───en_e55c978.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_6d897ba.pf_index
-│   │   │   │   └───en_b4759d6.pf_index
+│   │   │   │   ├───en_1eda2a6.pf_index
+│   │   │   │   └───en_f38a70d.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_63823f6315.pf_meta
+│   │   │   ├───pagefind.en_98bcf128e1.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
@@ -1658,10 +1665,8 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   ├───classpath-snapshot/
-│       │   │   │   │   └───shrunk-classpath-snapshot.bin
-│       │   │   │   └───local-state/
-│       │   │   │       └───build-history.bin
+│       │   │   │   └───classpath-snapshot/
+│       │   │   │       └───shrunk-classpath-snapshot.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -2034,6 +2039,11 @@ description: Overview of the project structure and organization.
 │   │   │   ├───classes/
 │   │   │   │   └───kotlin/
 │   │   │   │       ├───main/
+│   │   │   │       │   ├───META-INF/
+│   │   │   │       │   │   └───common.kotlin_module
+│   │   │   │       │   └───com/
+│   │   │   │       │       └───loomify/
+│   │   │   │       │           └───...
 │   │   │   │       └───test/
 │   │   │   │           ├───META-INF/
 │   │   │   │           │   └───common_test.kotlin_module
@@ -2045,15 +2055,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   ├───cacheable/
 │   │   │   │   │   │   ├───caches-jvm/
 │   │   │   │   │   │   │   ├───inputs/
+│   │   │   │   │   │   │   │   └───...
 │   │   │   │   │   │   │   ├───jvm/
+│   │   │   │   │   │   │   │   └───...
 │   │   │   │   │   │   │   └───lookups/
-│   │   │   │   │   │   └───dirty-sources.txt
-│   │   │   │   │   ├───classpath-snapshot/
-│   │   │   │   │   └───local-state/
-│   │   │   │   │       └───build-history.bin
+│   │   │   │   │   │   │       └───...
+│   │   │   │   │   │   └───last-build.bin
+│   │   │   │   │   └───classpath-snapshot/
+│   │   │   │   │       └───shrunk-classpath-snapshot.bin
 │   │   │   │   └───compileTestKotlin/
 │   │   │   │       ├───cacheable/
 │   │   │   │       │   ├───caches-jvm/
+│   │   │   │       │   │   ├───compilerPluginFiles/
+│   │   │   │       │   │   │   └───...
 │   │   │   │       │   │   ├───inputs/
 │   │   │   │       │   │   │   └───...
 │   │   │   │       │   │   ├───jvm/
@@ -2064,7 +2078,6 @@ description: Overview of the project structure and organization.
 │   │   │   │       ├───classpath-snapshot/
 │   │   │   │       │   └───shrunk-classpath-snapshot.bin
 │   │   │   │       └───local-state/
-│   │   │   │           └───build-history.bin
 │   │   │   ├───kover/
 │   │   │   │   ├───bin-reports/
 │   │   │   │   │   └───test.ic
@@ -2197,13 +2210,13 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   ├───classpath-snapshot/
-│       │   │   │   │   └───shrunk-classpath-snapshot.bin
-│       │   │   │   └───local-state/
-│       │   │   │       └───build-history.bin
+│       │   │   │   └───classpath-snapshot/
+│       │   │   │       └───shrunk-classpath-snapshot.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
+│       │   │       │   │   ├───compilerPluginFiles/
+│       │   │       │   │   │   └───...
 │       │   │       │   │   ├───inputs/
 │       │   │       │   │   │   └───...
 │       │   │       │   │   ├───jvm/
@@ -2214,7 +2227,6 @@ description: Overview of the project structure and organization.
 │       │   │       ├───classpath-snapshot/
 │       │   │       │   └───shrunk-classpath-snapshot.bin
 │       │   │       └───local-state/
-│       │   │           └───build-history.bin
 │       │   ├───kover/
 │       │   │   ├───bin-reports/
 │       │   │   │   ├───coverage-error.log

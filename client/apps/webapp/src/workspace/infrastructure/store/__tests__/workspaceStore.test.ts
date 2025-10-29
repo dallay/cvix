@@ -1,7 +1,7 @@
 // @ts-nocheck - Vitest module mocking with TypeScript is complex, tests pass in runtime
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Workspace } from "../../domain/WorkspaceEntity";
+import type { Workspace } from "../../../domain/WorkspaceEntity";
 import { useWorkspaceStore } from "../workspaceStore";
 
 // Mock the HTTP client module
@@ -12,7 +12,15 @@ vi.mock("../../http/workspaceHttpClient", () => ({
 	},
 }));
 
+vi.mock("../../storage/workspaceLocalStorage", () => ({
+	saveLastSelected: vi.fn(),
+	getLastSelected: vi.fn(),
+	clearLastSelected: vi.fn(),
+}));
+
+import { WorkspaceErrorCode } from "../../../domain/WorkspaceError";
 import { workspaceHttpClient } from "../../http/workspaceHttpClient";
+import { saveLastSelected } from "../../storage/workspaceLocalStorage";
 
 describe("workspaceStore", () => {
 	const mockWorkspace1: Workspace = {
@@ -45,6 +53,84 @@ describe("workspaceStore", () => {
 
 	afterEach(() => {
 		vi.useRealTimers();
+	});
+
+	describe("selectWorkspace", () => {
+		const userId = "123e4567-e89b-42d3-a456-426614174000";
+
+		it("should select an existing workspace and persist the selection", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [...mockWorkspaces];
+			store.currentWorkspace = null;
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await store.selectWorkspace(mockWorkspace1.id, userId);
+
+			expect(store.currentWorkspace).toEqual(mockWorkspace1);
+			expect(saveLastSelected).toHaveBeenCalledWith(userId, mockWorkspace1.id);
+			expect(store.error).toBeNull();
+		});
+
+		it("should fetch workspace when not present in store", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [mockWorkspace1];
+			const remoteWorkspace = {
+				...mockWorkspace2,
+				id: "770e8400-e29b-41d4-a716-446655440002",
+			};
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(
+				remoteWorkspace,
+			);
+
+			await store.selectWorkspace(remoteWorkspace.id, userId);
+
+			expect(workspaceHttpClient.getWorkspace).toHaveBeenCalledWith(
+				remoteWorkspace.id,
+			);
+			expect(store.workspaces).toContainEqual(remoteWorkspace);
+			expect(store.currentWorkspace).toEqual(remoteWorkspace);
+			expect(saveLastSelected).toHaveBeenCalledWith(userId, remoteWorkspace.id);
+		});
+
+		it("should set error when workspace cannot be found", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await expect(
+				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),
+			).rejects.toThrow();
+
+			expect(store.error).not.toBeNull();
+			expect(store.error?.code).toBe(WorkspaceErrorCode.WORKSPACE_NOT_FOUND);
+			expect(saveLastSelected).not.toHaveBeenCalled();
+		});
+
+		it("should propagate validation errors", async () => {
+			const store = useWorkspaceStore();
+
+			await expect(store.selectWorkspace("invalid", userId)).rejects.toThrow(
+				"Invalid workspace ID",
+			);
+
+			expect(store.error?.code).toBe(WorkspaceErrorCode.VALIDATION_ERROR);
+		});
+
+		it("should surface storage errors without preventing selection", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [...mockWorkspaces];
+			const storageError = new Error("Storage unavailable");
+			vi.mocked(saveLastSelected).mockImplementation(() => {
+				throw storageError;
+			});
+
+			await expect(
+				store.selectWorkspace(mockWorkspace2.id, userId),
+			).rejects.toThrow("Storage unavailable");
+
+			expect(store.currentWorkspace).toEqual(mockWorkspace2);
+			expect(store.error?.code).toBe(WorkspaceErrorCode.SELECTION_FAILED);
+		});
 	});
 
 	describe("initial state", () => {

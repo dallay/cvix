@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { WorkspaceSelectionPreference } from "../../../domain/WorkspaceEntity";
 import {
 	clearLastSelected,
 	getLastSelected,
@@ -28,10 +27,17 @@ describe("workspaceLocalStorage", () => {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			expect(stored).not.toBeNull();
 
-			const parsed: WorkspaceSelectionPreference = JSON.parse(stored!);
+			if (!stored) {
+				throw new Error("Preference should be persisted");
+			}
+
+			const parsed = JSON.parse(stored);
 			expect(parsed.userId).toBe(userId);
 			expect(parsed.lastSelectedWorkspaceId).toBe(workspaceId);
-			expect(parsed.selectedAt).toBeTruthy();
+			expect(typeof parsed.selectedAt).toBe("string");
+			expect(new Date(parsed.selectedAt).toISOString()).toBe(
+				new Date(parsed.selectedAt).toISOString(),
+			);
 		});
 
 		it("should overwrite existing preference for same user", () => {
@@ -43,7 +49,15 @@ describe("workspaceLocalStorage", () => {
 			saveLastSelected(userId, workspace2);
 
 			const stored = localStorage.getItem(STORAGE_KEY);
-			const parsed: WorkspaceSelectionPreference = JSON.parse(stored!);
+			expect(stored).not.toBeNull();
+
+			if (!stored) {
+				throw new Error("Preference should be persisted");
+			}
+
+			const parsed = JSON.parse(stored) as {
+				lastSelectedWorkspaceId: string | null;
+			};
 
 			expect(parsed.lastSelectedWorkspaceId).toBe(workspace2);
 		});
@@ -79,6 +93,7 @@ describe("workspaceLocalStorage", () => {
 			expect(result).not.toBeNull();
 			expect(result?.userId).toBe(userId);
 			expect(result?.lastSelectedWorkspaceId).toBe(workspaceId);
+			expect(result?.selectedAt).toBeInstanceOf(Date);
 		});
 
 		it("should return null when no preference exists", () => {

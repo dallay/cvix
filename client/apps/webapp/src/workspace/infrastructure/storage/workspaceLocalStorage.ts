@@ -1,6 +1,12 @@
 import type { WorkspaceSelectionPreference } from "../../domain/WorkspaceEntity";
 import { WorkspaceId } from "../../domain/WorkspaceId";
 
+interface StoredWorkspacePreference {
+	userId: string;
+	lastSelectedWorkspaceId: string | null;
+	selectedAt: string | null;
+}
+
 /**
  * Storage key for workspace selection preference
  */
@@ -23,10 +29,10 @@ export function saveLastSelected(userId: string, workspaceId: string): void {
 		throw new Error(`Invalid workspace ID: ${workspaceId}`);
 	}
 
-	const preference: WorkspaceSelectionPreference = {
+	const preference: StoredWorkspacePreference = {
 		userId,
 		lastSelectedWorkspaceId: workspaceId,
-		selectedAt: new Date(),
+		selectedAt: new Date().toISOString(),
 	};
 
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
@@ -52,16 +58,20 @@ export function getLastSelected(
 	}
 
 	try {
-		const preference: WorkspaceSelectionPreference = JSON.parse(stored);
+		const preference = JSON.parse(stored) as StoredWorkspacePreference;
 
-		// Check if the stored preference is for this user
 		if (preference.userId !== userId) {
 			return null;
 		}
 
-		return preference;
+		return {
+			userId: preference.userId,
+			lastSelectedWorkspaceId: preference.lastSelectedWorkspaceId,
+			selectedAt: preference.selectedAt
+				? new Date(preference.selectedAt)
+				: null,
+		};
 	} catch {
-		// Return null if JSON parsing fails (corrupted data)
 		return null;
 	}
 }

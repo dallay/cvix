@@ -73,6 +73,7 @@ Based on plan.md, all frontend code lives in:
 ### Tests for User Story 1 (TDD - Write First) 🧪
 
 ### Tests (Write First - TDD)
+
 - [X] **T020** - Write WorkspaceSelectionService.determineWorkspaceToLoad() test
 - [X] **T021** - Write workspaceApiClient.getAllWorkspaces() test
 - [X] **T022** - Write workspaceStore.loadWorkspaces() test
@@ -82,6 +83,7 @@ Based on plan.md, all frontend code lives in:
 ### Implementation for User Story 1 🔴 → ♻️ → ✅
 
 ### Implementation (Make Tests Pass - TDD)
+
 - [X] **T025** - Implement WorkspaceSelectionService.determineWorkspaceToLoad() domain logic
 - [X] **T026** - Implement workspaceHttpClient singleton export
 - [X] **T027-T029** - Create Pinia workspace store (state, actions, getters)
@@ -103,27 +105,27 @@ Based on plan.md, all frontend code lives in:
 
 ### Tests for User Story 2 (TDD - Write First) 🧪
 
-- [ ] T035 [P] [US2] Write tests for workspaceApiClient.getWorkspace(id) in `client/apps/webapp/src/workspace/infrastructure/api/__tests__/workspaceApiClient.test.ts`
-- [ ] T036 [P] [US2] Write tests for workspaceStore.selectWorkspace(id) action in `client/apps/webapp/src/workspace/infrastructure/store/__tests__/workspaceStore.test.ts`
-- [ ] T037 [P] [US2] Write tests for workspaceLocalStorage.saveLastSelected() in `client/apps/webapp/src/workspace/infrastructure/storage/__tests__/workspaceLocalStorage.test.ts`
-- [ ] T038 [P] [US2] Write tests for useWorkspaceSelection composable in `client/apps/webapp/src/workspace/application/__tests__/useWorkspaceSelection.test.ts`
-- [ ] T039 [P] [US2] Write component tests for WorkspaceSelector.vue in `client/apps/webapp/src/workspace/presentation/components/__tests__/WorkspaceSelector.test.ts`
-- [ ] T040 [P] [US2] Write component tests for WorkspaceSelectorItem.vue in `client/apps/webapp/src/workspace/presentation/components/__tests__/WorkspaceSelectorItem.test.ts`
-- [ ] T041 [US2] Write E2E test for manual workspace selection in `client/e2e/workspace-selection.spec.ts` (test: "should switch workspace on manual selection")
+- [X] T035 [P] [US2] Write tests for workspaceApiClient.getWorkspace(id) in `client/apps/webapp/src/workspace/infrastructure/api/__tests__/workspaceApiClient.test.ts`
+- [X] T036 [P] [US2] Write tests for workspaceStore.selectWorkspace(id) action in `client/apps/webapp/src/workspace/infrastructure/store/__tests__/workspaceStore.test.ts`
+- [X] T037 [P] [US2] Write tests for workspaceLocalStorage.saveLastSelected() in `client/apps/webapp/src/workspace/infrastructure/storage/__tests__/workspaceLocalStorage.test.ts`
+- [X] T038 [P] [US2] Write tests for useWorkspaceSelection composable in `client/apps/webapp/src/workspace/application/__tests__/useWorkspaceSelection.test.ts`
+- [X] T039 [P] [US2] Write component tests for WorkspaceSelector.vue in `client/apps/webapp/src/workspace/presentation/components/__tests__/WorkspaceSelector.test.ts`
+- [X] T040 [P] [US2] Write component tests for WorkspaceSelectorItem.vue in `client/apps/webapp/src/workspace/presentation/components/__tests__/WorkspaceSelectorItem.test.ts`
+- [X] T041 [US2] Write E2E test for manual workspace selection in `client/e2e/workspace-selection.spec.ts` (test: "should switch workspace on manual selection")
 
 ### Implementation for User Story 2 🔴 → ♻️ → ✅
 
-- [ ] T042 [US2] Implement workspaceApiClient.getWorkspace(id) in `client/apps/webapp/src/workspace/infrastructure/api/workspaceApiClient.ts`
-- [ ] T043 [US2] Implement workspaceLocalStorage.saveLastSelected(userId, workspaceId) in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
-- [ ] T044 [US2] Implement workspaceLocalStorage.getLastSelected(userId) in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
-- [ ] T045 [US2] Implement workspaceStore.selectWorkspace(id) action with persistence in `client/apps/webapp/src/workspace/infrastructure/store/workspaceStore.ts`
-- [ ] T046 [US2] Implement useWorkspaceSelection composable exposing selectWorkspace, currentWorkspace, workspaces in `client/apps/webapp/src/workspace/application/useWorkspaceSelection.ts`
-- [ ] T047 [P] [US2] Create WorkspaceSelectorItem.vue component with workspace name, description, isDefault badge in `client/apps/webapp/src/workspace/presentation/components/WorkspaceSelectorItem.vue`
-- [ ] T048 [US2] Create WorkspaceSelector.vue container component using Shadcn-Vue Select in `client/apps/webapp/src/workspace/presentation/components/WorkspaceSelector.vue`
-- [ ] T049 [US2] Implement workspace selection click handler in WorkspaceSelector.vue calling selectWorkspace()
-- [ ] T050 [US2] Add @workspace-selected event emitter in WorkspaceSelector.vue
-- [ ] T051 [US2] Add ARIA labels and keyboard navigation (role="combobox", aria-expanded) to WorkspaceSelector.vue
-- [ ] T052 [US2] Integrate WorkspaceSelector component into app header/navigation in `client/apps/webapp/src/layouts/AppLayout.vue`
+- [X] T042 [US2] Implement workspaceApiClient.getWorkspace(id) in `client/apps/webapp/src/workspace/infrastructure/api/workspaceApiClient.ts`
+- [X] T043 [US2] Implement workspaceLocalStorage.saveLastSelected(userId, workspaceId) in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
+- [X] T044 [US2] Implement workspaceLocalStorage.getLastSelected(userId) in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
+- [X] T045 [US2] Implement workspaceStore.selectWorkspace(id) action with persistence in `client/apps/webapp/src/workspace/infrastructure/store/workspaceStore.ts`
+- [X] T046 [US2] Implement useWorkspaceSelection composable exposing selectWorkspace, currentWorkspace, workspaces in `client/apps/webapp/src/workspace/application/useWorkspaceSelection.ts`
+- [X] T047 [P] [US2] Create WorkspaceSelectorItem.vue component with workspace name, description, isDefault badge in `client/apps/webapp/src/workspace/presentation/components/WorkspaceSelectorItem.vue`
+- [X] T048 [US2] Create WorkspaceSelector.vue container component using Shadcn-Vue Select in `client/apps/webapp/src/workspace/presentation/components/WorkspaceSelector.vue`
+- [X] T049 [US2] Implement workspace selection click handler in WorkspaceSelector.vue calling selectWorkspace()
+- [X] T050 [US2] Add @workspace-selected event emitter in WorkspaceSelector.vue
+- [X] T051 [US2] Add ARIA labels and keyboard navigation (role="combobox", aria-expanded) to WorkspaceSelector.vue
+- [X] T052 [US2] Integrate WorkspaceSelector component into app header/navigation in `client/apps/webapp/src/layouts/AppLayout.vue`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently → users can auto-load AND manually switch workspaces
 
