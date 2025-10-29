@@ -32,6 +32,18 @@ curl -H "Authorization: Bearer <your-jwt-token>" \
 
 Expected response: `200 OK` with array of workspaces.
 
+### 3. Architecture Note: BaseHttpClient Reuse
+
+The workspace feature leverages the existing `BaseHttpClient` class from `client/apps/webapp/src/shared/BaseHttpClient.ts` for all HTTP communication. This provides:
+
+- Automatic Bearer token injection via Axios interceptors
+- CSRF token handling (automatic retry on 403 CSRF errors)
+- Standardized error response parsing
+- Request/response logging in development
+- Configurable timeouts and retry logic
+
+The `workspaceHttpClient` extends `BaseHttpClient` and adds workspace-specific API methods while inheriting all base functionality.
+
 ## Basic Usage
 
 ### Using the Composable

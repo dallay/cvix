@@ -47,7 +47,7 @@ Based on plan.md, all frontend code lives in:
 - [ ] T008 [P] Write tests for WorkspaceId value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceId.test.ts`
 - [ ] T009 [P] Write tests for WorkspaceName value object in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceName.test.ts`
 - [ ] T010 [P] Write tests for Workspace entity factory in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceEntity.test.ts`
-- [ ] T011 Write tests for workspaceHttpClient in `client/apps/webapp/src/workspace/infrastructure/http/__tests__/workspaceHttpClient.test.ts`
+- [ ] T011 Write tests for workspaceHttpClient extending BaseHttpClient in `client/apps/webapp/src/workspace/infrastructure/http/__tests__/workspaceHttpClient.test.ts`
 - [ ] T012 Write tests for workspaceLocalStorage adapter in `client/apps/webapp/src/workspace/infrastructure/storage/__tests__/workspaceLocalStorage.test.ts`
 
 ### Foundation Implementation 🔴 → ♻️ → ✅
@@ -56,7 +56,7 @@ Based on plan.md, all frontend code lives in:
 - [ ] T014 [P] Implement WorkspaceName value object with 1-100 char validation in `client/apps/webapp/src/workspace/domain/WorkspaceName.ts`
 - [ ] T015 [P] Define Workspace entity TypeScript interface in `client/apps/webapp/src/workspace/domain/WorkspaceEntity.ts`
 - [ ] T016 [P] Define WorkspaceError interface and WorkspaceErrorCode enum in `client/apps/webapp/src/workspace/domain/WorkspaceError.ts`
-- [ ] T017 Implement HTTP client wrapper with Bearer token auth in `client/apps/webapp/src/workspace/infrastructure/http/workspaceHttpClient.ts`
+- [ ] T017 Create workspaceHttpClient extending BaseHttpClient from `client/apps/webapp/src/shared/BaseHttpClient.ts` in `client/apps/webapp/src/workspace/infrastructure/http/workspaceHttpClient.ts`
 - [ ] T018 Implement local storage adapter with STORAGE_KEY constant in `client/apps/webapp/src/workspace/infrastructure/storage/workspaceLocalStorage.ts`
 - [ ] T019 Define WorkspaceApiClient interface in `client/apps/webapp/src/workspace/infrastructure/api/WorkspaceApiClient.ts`
 

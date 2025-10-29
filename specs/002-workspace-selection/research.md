@@ -30,12 +30,28 @@ This document consolidates research findings for implementing workspace selectio
 **Integration Pattern**:
 
 ```typescript
-// HTTP client wrapper using fetch API
-interface WorkspaceApiClient {
-  getAllWorkspaces(): Promise<Workspace[]>;
-  getWorkspace(id: string): Promise<Workspace | null>;
+// workspaceHttpClient extends BaseHttpClient
+// Inherits: Bearer token auth, CSRF handling, error parsing, interceptors
+class WorkspaceHttpClient extends BaseHttpClient {
+  async getAllWorkspaces(): Promise<Workspace[]> {
+    // Uses inherited get() method with automatic auth headers
+    const response = await this.get<GetAllWorkspacesResponse>('/workspace');
+    return response.data;
+  }
+
+  async getWorkspace(id: string): Promise<Workspace | null> {
+    const response = await this.get<GetWorkspaceResponse>(`/workspace/${id}`);
+    return response.data;
+  }
 }
 ```
+
+**Implementation Note**: The workspace feature reuses the existing `BaseHttpClient` class from `client/apps/webapp/src/shared/BaseHttpClient.ts`. This provides:
+- Automatic Bearer token injection (no manual Authorization header management)
+- CSRF token handling with automatic retry on 403 errors
+- Standardized error response parsing (`ApiErrorResponse` interface)
+- Request/response interceptors for logging and monitoring
+- Axios instance configuration (timeout: 10s, withCredentials, content-type)
 
 ### Alternatives Considered
 
