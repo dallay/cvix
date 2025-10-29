@@ -72,26 +72,26 @@ Based on plan.md, all frontend code lives in:
 
 ### Tests for User Story 1 (TDD - Write First) 🧪
 
-- [ ] T020 [P] [US1] Write tests for WorkspaceSelectionService.determineWorkspaceToLoad() in `client/apps/webapp/src/workspace/domain/__tests__/WorkspaceSelectionService.test.ts`
-- [ ] T021 [P] [US1] Write tests for workspaceApiClient.getAllWorkspaces() in `client/apps/webapp/src/workspace/infrastructure/api/__tests__/workspaceApiClient.test.ts`
-- [ ] T022 [P] [US1] Write tests for workspaceStore.loadWorkspaces() action in `client/apps/webapp/src/workspace/infrastructure/store/__tests__/workspaceStore.test.ts`
-- [ ] T023 [US1] Write tests for useWorkspaceLoader composable in `client/apps/webapp/src/workspace/application/__tests__/useWorkspaceLoader.test.ts`
-- [ ] T024 [US1] Write E2E test for auto-load on login in `client/e2e/workspace-selection.spec.ts` (test: "should auto-load last selected workspace on login")
+### Tests (Write First - TDD)
+- [X] **T020** - Write WorkspaceSelectionService.determineWorkspaceToLoad() test
+- [X] **T021** - Write workspaceApiClient.getAllWorkspaces() test
+- [X] **T022** - Write workspaceStore.loadWorkspaces() test
+- [X] **T023** - Write useWorkspaceLoader composable test
+- [X] **T024** - Write E2E test: "should auto-load last selected workspace on login"
 
 ### Implementation for User Story 1 🔴 → ♻️ → ✅
 
-- [ ] T025 [US1] Implement WorkspaceSelectionService.determineWorkspaceToLoad(workspaces, lastSelectedId) logic in `client/apps/webapp/src/workspace/domain/WorkspaceSelectionService.ts`
-- [ ] T026 [US1] Implement workspaceApiClient.getAllWorkspaces() with fetch wrapper in `client/apps/webapp/src/workspace/infrastructure/api/workspaceApiClient.ts`
-- [ ] T027 [US1] Create Pinia workspace store with initial state structure in `client/apps/webapp/src/workspace/infrastructure/store/workspaceStore.ts`
-- [ ] T028 [US1] Implement workspaceStore.loadWorkspaces() action with API call and cache logic in `client/apps/webapp/src/workspace/infrastructure/store/workspaceStore.ts`
-- [ ] T029 [US1] Implement workspaceStore getters (hasWorkspaces, defaultWorkspace, workspaceCount) in `client/apps/webapp/src/workspace/infrastructure/store/workspaceStore.ts`
-- [ ] T030 [US1] Implement useWorkspaceLoader composable with loadWorkspaces + determineWorkspaceToLoad in `client/apps/webapp/src/workspace/application/useWorkspaceLoader.ts`
-- [ ] T031 [US1] Create Vue Router navigation guard (workspaceAutoLoadGuard) in `client/apps/webapp/src/router/guards/workspaceGuard.ts`
-- [ ] T032 [US1] Register workspaceAutoLoadGuard in router.beforeEach() in `client/apps/webapp/src/router/index.ts`
-- [ ] T033 [US1] Add error handling and retry logic (3 attempts, exponential backoff) to workspaceStore.loadWorkspaces()
-- [ ] T034 [US1] Add logging statements for workspace auto-load events (console logging in dev)
+### Implementation (Make Tests Pass - TDD)
+- [X] **T025** - Implement WorkspaceSelectionService.determineWorkspaceToLoad() domain logic
+- [X] **T026** - Implement workspaceHttpClient singleton export
+- [X] **T027-T029** - Create Pinia workspace store (state, actions, getters)
+- [X] **T030** - Implement useWorkspaceLoader composable with retry logic and logging
+- [X] **T031** - Create Vue Router navigation guard for workspace auto-loading
+- [X] **T032** - Integrate guard with router/index.ts
+- [X] **T033** - Add error handling with 3-attempt exponential backoff retry (1s, 2s, 4s delays)
+- [X] **T034** - Add console logging for workspace events (dev mode only)
 
-**Checkpoint**: At this point, User Story 1 should be fully functional → users auto-load workspace on login
+**✅ Checkpoint**: User Story 1 is COMPLETE → users auto-load workspace on login with retry logic and dev logging
 
 ---
 

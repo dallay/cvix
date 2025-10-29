@@ -5,4 +5,5 @@
 
 // Composables
 export * from "./useWorkspaceLoader";
-export * from "./useWorkspaceSelection";
+// Phase 4 - TODO: Uncomment when implemented
+// export * from "./useWorkspaceSelection";

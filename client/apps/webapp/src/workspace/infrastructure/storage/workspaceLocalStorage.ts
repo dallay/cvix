@@ -72,3 +72,12 @@ export function getLastSelected(
 export function clearLastSelected(): void {
 	localStorage.removeItem(STORAGE_KEY);
 }
+
+/**
+ * Singleton object providing workspace local storage operations
+ */
+export const workspaceLocalStorage = {
+	saveLastSelected,
+	getLastSelected,
+	clearLastSelected,
+};

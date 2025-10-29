@@ -3,13 +3,13 @@
  * Contains framework-specific implementations (Pinia, API clients, storage adapters)
  */
 
+// API Client Interface
 export * from "./api/WorkspaceApiClient";
 
-// API Client
-export * from "./api/workspaceApiClient";
-// HTTP Client
+// HTTP Client (also serves as API client implementation)
 export * from "./http/workspaceHttpClient";
-
+// Re-export HTTP client instance as API client for convenience
+export { workspaceHttpClient as workspaceApiClient } from "./http/workspaceHttpClient";
 // Storage Adapter
 export * from "./storage/workspaceLocalStorage";
 // Pinia Store

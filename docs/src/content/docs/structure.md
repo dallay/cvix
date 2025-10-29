@@ -1029,12 +1029,14 @@ description: Overview of the project structure and organization.
 │   │       │   │   │   │   ├───error.json
 │   │       │   │   │   │   ├───global.json
 │   │       │   │   │   │   ├───login.json
-│   │       │   │   │   │   └───register.json
+│   │       │   │   │   │   ├───register.json
+│   │       │   │   │   │   └───workspace.json
 │   │       │   │   │   └───es/
 │   │       │   │   │       ├───error.json
 │   │       │   │   │       ├───global.json
 │   │       │   │   │       ├───login.json
-│   │       │   │   │       └───register.json
+│   │       │   │   │       ├───register.json
+│   │       │   │   │       └───workspace.json
 │   │       │   │   ├───index.ts
 │   │       │   │   ├───load.locale.test.ts
 │   │       │   │   ├───load.locales.ts
@@ -1065,6 +1067,51 @@ description: Overview of the project structure and organization.
 │   │       │   │   └───globals.css
 │   │       │   ├───types/
 │   │       │   │   └───icons.d.ts
+│   │       │   ├───workspace/
+│   │       │   │   ├───application/
+│   │       │   │   │   ├───__tests__/
+│   │       │   │   │   │   └───useWorkspaceLoader.test.ts
+│   │       │   │   │   ├───index.ts
+│   │       │   │   │   └───useWorkspaceLoader.ts
+│   │       │   │   ├───domain/
+│   │       │   │   │   ├───__tests__/
+│   │       │   │   │   │   ├───WorkspaceEntity.test.ts
+│   │       │   │   │   │   ├───WorkspaceId.test.ts
+│   │       │   │   │   │   ├───WorkspaceName.test.ts
+│   │       │   │   │   │   └───WorkspaceSelectionService.test.ts
+│   │       │   │   │   ├───WorkspaceEntity.ts
+│   │       │   │   │   ├───WorkspaceError.ts
+│   │       │   │   │   ├───WorkspaceId.ts
+│   │       │   │   │   ├───WorkspaceName.ts
+│   │       │   │   │   ├───WorkspaceSelectionService.ts
+│   │       │   │   │   └───index.ts
+│   │       │   │   ├───infrastructure/
+│   │       │   │   │   ├───api/
+│   │       │   │   │   │   ├───__tests__/
+│   │       │   │   │   │   │   └───...
+│   │       │   │   │   │   └───WorkspaceApiClient.ts
+│   │       │   │   │   ├───http/
+│   │       │   │   │   │   ├───__tests__/
+│   │       │   │   │   │   │   └───...
+│   │       │   │   │   │   └───workspaceHttpClient.ts
+│   │       │   │   │   ├───router/
+│   │       │   │   │   │   └───workspaceGuard.ts
+│   │       │   │   │   ├───storage/
+│   │       │   │   │   │   ├───__tests__/
+│   │       │   │   │   │   │   └───...
+│   │       │   │   │   │   └───workspaceLocalStorage.ts
+│   │       │   │   │   ├───store/
+│   │       │   │   │   │   ├───__tests__/
+│   │       │   │   │   │   │   └───...
+│   │       │   │   │   │   └───workspaceStore.ts
+│   │       │   │   │   └───index.ts
+│   │       │   │   ├───presentation/
+│   │       │   │   │   ├───components/
+│   │       │   │   │   │   └───__tests__/
+│   │       │   │   │   ├───composables/
+│   │       │   │   │   │   └───__tests__/
+│   │       │   │   │   └───index.ts
+│   │       │   │   └───index.ts
 │   │       │   ├───App.vue
 │   │       │   └───main.ts
 │   │       ├───test-results/
@@ -1100,7 +1147,8 @@ description: Overview of the project structure and organization.
 │   │   └───vitest.config.shared.mjs
 │   ├───e2e/
 │   │   ├───auth.spec.ts
-│   │   └───authentication-flows.spec.ts
+│   │   ├───authentication-flows.spec.ts
+│   │   └───workspace-selection.spec.ts
 │   ├───packages/
 │   │   ├───tsconfig/
 │   │   │   ├───package.json
@@ -1279,19 +1327,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
-│   │   │   │   ├───en_75a2e81.pf_fragment
+│   │   │   │   ├───en_6aa89ce.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_1355f5f.pf_index
-│   │   │   │   └───en_43a7729.pf_index
+│   │   │   │   ├───en_6d897ba.pf_index
+│   │   │   │   └───en_b4759d6.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_d330b26ce6.pf_meta
+│   │   │   ├───pagefind.en_63823f6315.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
@@ -1986,11 +2034,6 @@ description: Overview of the project structure and organization.
 │   │   │   ├───classes/
 │   │   │   │   └───kotlin/
 │   │   │   │       ├───main/
-│   │   │   │       │   ├───META-INF/
-│   │   │   │       │   │   └───common.kotlin_module
-│   │   │   │       │   └───com/
-│   │   │   │       │       └───loomify/
-│   │   │   │       │           └───...
 │   │   │   │       └───test/
 │   │   │   │           ├───META-INF/
 │   │   │   │           │   └───common_test.kotlin_module
@@ -2002,14 +2045,10 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   ├───cacheable/
 │   │   │   │   │   │   ├───caches-jvm/
 │   │   │   │   │   │   │   ├───inputs/
-│   │   │   │   │   │   │   │   └───...
 │   │   │   │   │   │   │   ├───jvm/
-│   │   │   │   │   │   │   │   └───...
 │   │   │   │   │   │   │   └───lookups/
-│   │   │   │   │   │   │       └───...
-│   │   │   │   │   │   └───last-build.bin
+│   │   │   │   │   │   └───dirty-sources.txt
 │   │   │   │   │   ├───classpath-snapshot/
-│   │   │   │   │   │   └───shrunk-classpath-snapshot.bin
 │   │   │   │   │   └───local-state/
 │   │   │   │   │       └───build-history.bin
 │   │   │   │   └───compileTestKotlin/
@@ -2305,6 +2344,7 @@ description: Overview of the project structure and organization.
 │       ├───research.md
 │       ├───spec.md
 │       └───tasks.md
+├───.dockerignore
 ├───.editorconfig
 ├───.env.example
 ├───.gitattributes

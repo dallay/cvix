@@ -45,3 +45,8 @@ export class WorkspaceHttpClient extends BaseHttpClient {
 		return response?.data ?? null;
 	}
 }
+
+/**
+ * Singleton instance of the workspace HTTP client
+ */
+export const workspaceHttpClient = new WorkspaceHttpClient();
