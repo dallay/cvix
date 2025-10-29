@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: User Profile API
+  description: |
+    RESTful API for managing user profile information.
+    Provides read and write access to user account details.
+  version: 1.0.0
+  contact:
+    name: Platform Team
+    email: platform@loomify.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+  - url: https://api.loomify.com/v1
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: User Profile
+    description: Operations for viewing and updating user profile information
+
+paths:
+  /user/profile:
+    get:
+      summary: Get the authenticated user's profile
+      description: |
+        Returns the complete profile information for the currently authenticated user.
+        Includes account status, display name, and linked identity providers.
+
+        **Requirements**: FR-027, FR-028
+      tags:
+        - User Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+              examples:
+                standardUser:
+                  summary: User with email/password authentication
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    email: jane.doe@example.com
+                    firstName: Jane
+                    lastName: Doe
+                    displayName: Jane Doe
+                    accountStatus: ACTIVE
+                    createdAt: '2025-10-15T10:30:00Z'
+                    updatedAt: '2025-10-20T09:15:00Z'
+                    lastLoginAt: '2025-10-20T14:15:00Z'
+                    linkedProviders: []
+                federatedUser:
+                  summary: User with federated authentication
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    email: jane.doe@example.com
+                    firstName: Jane
+                    lastName: Doe
+                    displayName: Jane Doe
+                    accountStatus: ACTIVE
+                    createdAt: '2025-10-15T10:30:00Z'
+                    updatedAt: '2025-10-20T09:15:00Z'
+                    lastLoginAt: '2025-10-20T14:15:00Z'
+                    linkedProviders:
+                      - providerName: GOOGLE
+                        email: jane.doe@gmail.com
+                        linkedAt: '2025-10-15T10:30:00Z'
+                        lastAuthAt: '2025-10-20T14:15:00Z'
+                      - providerName: MICROSOFT
+                        email: jane.doe@outlook.com
+                        linkedAt: '2025-10-16T12:00:00Z'
+                        lastAuthAt: '2025-10-19T08:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Update the authenticated user's profile
+      description: |
+        Updates specific fields of the user's profile.
+        Only the fields provided in the request body will be updated.
+
+        **Requirements**: FR-027, FR-028
+      tags:
+        - User Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            examples:
+              updateName:
+                summary: Update name only
+                value:
+                  firstName: Janet
+                  lastName: Smith
+              updateDisplayName:
+                summary: Update display name
+                value:
+                  displayName: J. Smith
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+              examples:
+                updated:
+                  summary: Updated profile
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    email: jane.doe@example.com
+                    firstName: Janet
+                    lastName: Smith
+                    displayName: J. Smith
+                    accountStatus: ACTIVE
+                    createdAt: '2025-10-15T10:30:00Z'
+                    updatedAt: '2025-10-20T16:45:00Z'
+                    lastLoginAt: '2025-10-20T14:15:00Z'
+                    linkedProviders: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/profile/linked-providers:
+    get:
+      summary: Get linked identity providers
+      description: |
+        Returns a list of all identity providers linked to the user's account.
+        Includes provider name, linked email, and last authentication timestamp.
+
+        **Requirements**: FR-025, FR-026
+      tags:
+        - User Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Linked providers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedProvidersResponse'
+              examples:
+                multipleProviders:
+                  summary: User with multiple linked providers
+                  value:
+                    providers:
+                      - providerName: GOOGLE
+                        email: jane.doe@gmail.com
+                        displayName: Jane Doe
+                        linkedAt: '2025-10-15T10:30:00Z'
+                        lastAuthAt: '2025-10-20T14:15:00Z'
+                      - providerName: GITHUB
+                        email: jane.doe@users.noreply.github.com
+                        displayName: janedoe
+                        linkedAt: '2025-10-16T09:00:00Z'
+                        lastAuthAt: '2025-10-18T11:30:00Z'
+                    totalCount: 2
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Unlink an identity provider
+      description: |
+        Removes the link between the user's account and a specific identity provider.
+        The user must have at least one authentication method remaining (email/password or another provider).
+
+        **Requirements**: FR-025, FR-026
+      tags:
+        - User Profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: providerName
+          in: query
+          required: true
+          description: Identity provider to unlink
+          schema:
+            type: string
+            enum: [GOOGLE, MICROSOFT, GITHUB]
+          example: GOOGLE
+      responses:
+        '204':
+          description: Provider unlinked successfully
+        '400':
+          description: Cannot unlink the last authentication method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                lastProvider:
+                  summary: Cannot unlink last provider
+                  value:
+                    error:
+                      code: CANNOT_UNLINK_LAST_PROVIDER
+                      message: You must have at least one authentication method. Please set up email/password authentication before unlinking this provider.
+                      timestamp: '2025-10-20T14:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Provider not linked to this account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notLinked:
+                  summary: Provider not linked
+                  value:
+                    error:
+                      code: PROVIDER_NOT_LINKED
+                      message: This identity provider is not linked to your account
+                      timestamp: '2025-10-20T14:30:00Z'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token in Authorization header
+
+  schemas:
+    UserProfileResponse:
+      type: object
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - displayName
+        - accountStatus
+        - createdAt
+        - updatedAt
+        - linkedProviders
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User ID (UUID v4)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: jane.doe@example.com
+        firstName:
+          type: string
+          description: User's first name
+          example: Jane
+        lastName:
+          type: string
+          description: User's last name
+          example: Doe
+        displayName:
+          type: string
+          description: User's display name
+          example: Jane Doe
+        accountStatus:
+          type: string
+          enum: [ACTIVE, DISABLED, SUSPENDED, PENDING_VERIFICATION]
+          description: Account status
+          example: ACTIVE
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp (ISO 8601)
+          example: '2025-10-15T10:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last profile update timestamp (ISO 8601)
+          example: '2025-10-20T09:15:00Z'
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last successful login timestamp (ISO 8601)
+          example: '2025-10-20T14:15:00Z'
+        linkedProviders:
+          type: array
+          description: List of linked identity providers
+          items:
+            $ref: '#/components/schemas/LinkedProvider'
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: User's first name
+          example: Janet
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: User's last name
+          example: Smith
+        displayName:
+          type: string
+          maxLength: 200
+          description: User's display name
+          example: J. Smith
+      minProperties: 1
+
+    LinkedProvider:
+      type: object
+      required:
+        - providerName
+        - email
+        - linkedAt
+        - lastAuthAt
+      properties:
+        providerName:
+          type: string
+          enum: [GOOGLE, MICROSOFT, GITHUB]
+          description: Identity provider name
+          example: GOOGLE
+        email:
+          type: string
+          format: email
+          description: Email from identity provider
+          example: jane.doe@gmail.com
+        displayName:
+          type: string
+          nullable: true
+          description: Display name from identity provider
+          example: Jane Doe
+        linkedAt:
+          type: string
+          format: date-time
+          description: Timestamp when provider was linked (ISO 8601)
+          example: '2025-10-15T10:30:00Z'
+        lastAuthAt:
+          type: string
+          format: date-time
+          description: Last authentication via this provider (ISO 8601)
+          example: '2025-10-20T14:15:00Z'
+
+    LinkedProvidersResponse:
+      type: object
+      required:
+        - providers
+        - totalCount
+      properties:
+        providers:
+          type: array
+          description: List of linked identity providers
+          items:
+            $ref: '#/components/schemas/LinkedProvider'
+        totalCount:
+          type: integer
+          description: Total number of linked providers
+          example: 2
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - timestamp
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              description: Human-readable error message
+              example: Request validation failed
+            timestamp:
+              type: string
+              format: date-time
+              description: Error occurrence timestamp (ISO 8601)
+              example: '2025-10-20T14:30:00Z'
+            details:
+              type: array
+              description: Additional error details (e.g., validation failures)
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: firstName
+                  message:
+                    type: string
+                    example: First name must be between 2 and 100 characters
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            validationError:
+              summary: Validation error
+              value:
+                error:
+                  code: VALIDATION_ERROR
+                  message: Request validation failed
+                  timestamp: '2025-10-20T14:30:00Z'
+                  details:
+                    - field: firstName
+                      message: First name must be between 2 and 100 characters
+
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missingToken:
+              summary: Missing token
+              value:
+                error:
+                  code: MISSING_TOKEN
+                  message: Authentication token is required
+                  timestamp: '2025-10-20T14:30:00Z'
+            invalidToken:
+              summary: Invalid token
+              value:
+                error:
+                  code: INVALID_TOKEN
+                  message: Authentication token is invalid or expired
+                  timestamp: '2025-10-20T14:30:00Z'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            serverError:
+              summary: Internal error
+              value:
+                error:
+                  code: INTERNAL_ERROR
+                  message: An unexpected error occurred. Please try again later.
+                  timestamp: '2025-10-20T14:30:00Z'

@@ -23,8 +23,8 @@ img[role="img" i] svg {
 
 /* Force basic shape elements to use currentColor when possible */
 svg :where(path, circle, rect, ellipse, polygon, polyline, line) {
-	fill: currentColor !important;
-	stroke: currentColor !important;
+	fill: currentColor;
+	stroke: currentColor;
 }
 
 /* Provide sensible defaults for light/dark appearance */

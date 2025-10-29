@@ -801,7 +801,7 @@ naming:
         '**/jsTest/**',
         '**/iosTest/**',
       ]
-    maximumVariableNameLength: 30
+    maximumVariableNameLength: 35
   VariableMinLength:
     active: false
     excludes:

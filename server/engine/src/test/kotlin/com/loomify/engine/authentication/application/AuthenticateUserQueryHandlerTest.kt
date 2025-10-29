@@ -43,7 +43,7 @@ class AuthenticateUserQueryHandlerTest {
     fun `should authenticate a user`() = runTest {
         val accessToken = authenticateUserQueryHandler.handle(
             AuthenticateUserQuery(
-                username = USER,
+                email = USER,
                 password = PASSWORD,
             ),
         )
@@ -64,7 +64,7 @@ class AuthenticateUserQueryHandlerTest {
             runBlocking {
                 authenticateUserQueryHandler.handle(
                     AuthenticateUserQuery(
-                        username = "unknown",
+                        email = "unknown",
                         password = PASSWORD,
                     ),
                 )

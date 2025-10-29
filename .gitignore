@@ -108,8 +108,6 @@ $RECYCLE.BIN/
 
 
 # START Ruler Generated Files
-.aider.conf.yml
-.aider.conf.yml.bak
 .cursor/mcp.json
 .cursor/mcp.json.bak
 .cursor/rules/ruler_cursor_instructions.mdc
@@ -126,6 +124,4 @@ CLAUDE.md
 CLAUDE.md.bak
 GEMINI.md
 GEMINI.md.bak
-ruler_aider_instructions.md
-ruler_aider_instructions.md.bak
 # END Ruler Generated Files

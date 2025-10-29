@@ -54,7 +54,7 @@ class RefreshTokenController(private val refreshTokenQueryHandler: RefreshTokenQ
     }
 
     companion object {
-        const val REFRESH_TOKEN_ROUTE = "/refresh-token"
+        const val REFRESH_TOKEN_ROUTE = "/auth/refresh-token"
         private val log = LoggerFactory.getLogger(RefreshTokenController::class.java)
     }
 }

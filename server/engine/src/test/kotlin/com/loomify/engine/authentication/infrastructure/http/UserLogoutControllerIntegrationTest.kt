@@ -9,7 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.web.reactive.server.returnResult
 
-private const val ENDPOINT = "/api/logout"
+private const val ENDPOINT = "/api/auth/logout"
 
 @Suppress("MultilineRawStringIndentation")
 internal class UserLogoutControllerIntegrationTest : ControllerIntegrationTest() {
@@ -25,12 +25,12 @@ internal class UserLogoutControllerIntegrationTest : ControllerIntegrationTest()
         val returnResult = webTestClient
             .mutateWith(csrf())
             .post()
-            .uri("/api/login")
+            .uri("/api/auth/login")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 """
                 {
-                    "username": "$email",
+                    "email": "$email",
                     "password": "$password"
                 }
                 """.trimIndent(),

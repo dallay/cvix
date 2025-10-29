@@ -62,6 +62,7 @@ dependencies {
 
     implementation(libs.bundles.kotlin.jvm)
     implementation(libs.commons.text)
+    implementation(libs.bucket4j.core)
 
     implementation(libs.spring.dotenv)
     implementation(libs.sendgrid)

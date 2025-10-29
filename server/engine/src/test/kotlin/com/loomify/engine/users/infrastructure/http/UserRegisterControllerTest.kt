@@ -24,7 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
-private const val ENDPOINT = "/api/register"
+private const val ENDPOINT = "/api/auth/register"
 
 @UnitTest
 @DisplayName("UserRegisterController Unit Tests")

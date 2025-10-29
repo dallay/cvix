@@ -91,6 +91,50 @@ application:
       allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
       max-age: ${CORS_MAX_AGE:3600}
     domain: ${HOSTNAME:localhost}
+  # Rate limiting configuration
+  rate-limit:
+    enabled: true
+    # Authentication endpoints rate limiting (time-based to prevent brute force attacks)
+    auth:
+      enabled: true
+      endpoints:
+        - /api/auth/login
+        - /api/auth/register
+        - /api/auth/password/reset
+        - /api/auth/refresh-token
+        - /api/auth/token/refresh
+        - /api/auth/federated
+      # Multiple limits can be applied simultaneously for better protection
+      limits:
+        # Short-term limit: prevents burst attacks
+        - name: per-minute
+          capacity: 10
+          refill-tokens: 10
+          refill-duration: 1m
+        # Long-term limit: prevents sustained attacks
+        - name: per-hour
+          capacity: 100
+          refill-tokens: 100
+          refill-duration: 1h
+    # Business endpoints rate limiting (pricing plan-based for API usage quotas)
+    business:
+      enabled: true
+      pricing-plans:
+        free:
+          name: free-plan
+          capacity: 20
+          refill-tokens: 20
+          refill-duration: 1h
+        basic:
+          name: basic-plan
+          capacity: 40
+          refill-tokens: 40
+          refill-duration: 1h
+        professional:
+          name: professional-plan
+          capacity: 100
+          refill-tokens: 100
+          refill-duration: 1h
 
 management:
   endpoints:

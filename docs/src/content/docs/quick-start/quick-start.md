@@ -41,7 +41,7 @@ pnpm dev
 1. Run the frontend app (simple example):
 
 ```bash
-cd client/apps/web
+cd client/apps/webapp
 pnpm install
 pnpm dev
 ```

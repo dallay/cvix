@@ -29,20 +29,28 @@ class CookieCsrfFilter(
                     )
                 }
                 .doOnNext { token: CsrfToken ->
-                    val cookie =
+                    val cookieBuilder =
                         ResponseCookie.from(CSRF_COOKIE_NAME, token.token)
                             .maxAge(-1)
                             .httpOnly(false)
                             .path(getRequestContext(exchange.request))
-                            .domain(
-                                if (applicationSecurityProperties.domain.startsWith(".")) {
-                                    applicationSecurityProperties.domain
-                                } else {
-                                    "." + applicationSecurityProperties.domain
-                                },
-                            )
                             .secure(Optional.ofNullable(exchange.request.sslInfo).isPresent)
-                            .build()
+                            .sameSite("Lax")
+
+                    // Only set domain if configured and not localhost (localhost doesn't work with domain attribute)
+                    if (applicationSecurityProperties.domain.isNotEmpty() &&
+                        applicationSecurityProperties.domain != "localhost"
+                    ) {
+                        cookieBuilder.domain(
+                            if (applicationSecurityProperties.domain.startsWith(".")) {
+                                applicationSecurityProperties.domain
+                            } else {
+                                "." + applicationSecurityProperties.domain
+                            },
+                        )
+                    }
+
+                    val cookie = cookieBuilder.build()
                     exchange.response.cookies.add(CSRF_COOKIE_NAME, cookie)
                 }
                 .then(

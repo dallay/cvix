@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from "astro/types";
 import { type Lang, useTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
 import OptimizedPicture from "./OptimizedPicture.astro";
 
 type Article = {
@@ -10,18 +11,19 @@ type Article = {
 	url?: string;
 	slug?: string;
 	_id?: string;
-	image?: ImageMetadata;
+	image?: ImageMetadata | string;
 };
 
 interface Props extends HTMLAttributes<"article"> {
 	title?: string;
 	description?: string;
 	url?: string;
-	image?: ImageMetadata;
+	image?: ImageMetadata | string;
 	loading?: "lazy" | "eager" | undefined;
 	// allow passing the whole article object
 	article?: Article;
 }
+
 const {
 	article,
 	image: propImage,
@@ -39,48 +41,63 @@ const url = propUrl || article?.url || article?.slug || article?._id || "#";
 const image = propImage || article?.image || null;
 const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
+
+// Prepare the image for rendering
+const resolvedImage = image
+	? await prepareImageForOptimizedPicture(image)
+	: undefined;
+
+function isImageMetadata(img: unknown): img is ImageMetadata {
+	return (
+		!!img &&
+		typeof img === "object" &&
+		"src" in img &&
+		"width" in img &&
+		"height" in img
+	);
+}
 ---
 
 <article
-	class={cn(
-		"@container group relative flex aspect-video h-full w-full cursor-pointer flex-col overflow-hidden bg-white dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg focus-within:shadow-lg",
-		"transition-all duration-300 ease-in-out",
-		"transition-transform duration-500 hover:-translate-y-1 hover:scale-100",
-		attrs.class
-	)}
-	{...attrs}
+  class={cn(
+    "@container group relative flex aspect-video h-full w-full cursor-pointer flex-col overflow-hidden bg-white dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg focus-within:shadow-lg",
+    "transition-all duration-300 ease-in-out",
+    "transition-transform duration-500 hover:-translate-y-1 hover:scale-100",
+    attrs.class,
+  )}
+  {...attrs}
 >
-	<a
-		href={url}
-		rel="noopener nofollow ugc"
-		class="h-full w-full"
-		aria-label={`${t("read.article")}: ${title}`}
-	>
-		<span class="sr-only">{title}</span>
-		{
-			image && (
-				<OptimizedPicture
-					src={image}
-					alt={title}
-					loading={loading}
-					class="h-full w-full object-cover"
-				/>
-			)
-		}
-		<footer
-			class={cn(
-				"text-gray-900 dark:text-white",
-				"pointer-events-none absolute bottom-0 z-10 flex w-full flex-col gap-1 @sm:gap-2 bg-shark-300/90 dark:bg-shark-600/90 p-2 @sm:p-3 @md:p-4 opacity-0",
-				"transition-opacity duration-300 ease-out group-focus-within:opacity-100 group-hover:opacity-100",
-				"rounded-b-lg"
-			)}
-		>
-			<h2 class="text-base @sm:text-lg @md:text-xl font-medium line-clamp-2">
-				{title}
-			</h2>
-			<p class="flex flex-row items-center gap-1 @sm:gap-2 text-xs @sm:text-sm">
-				<span class="line-clamp-1 @sm:line-clamp-2 @md:line-clamp-3">{description}</span>
-			</p>
-		</footer>
-	</a>
+  <a
+    href={url}
+    rel="noopener nofollow ugc"
+    class="h-full w-full"
+    aria-label={`${t("read.article")}: ${title}`}
+  >
+    <span class="sr-only">{title}</span>
+    {
+      isImageMetadata(resolvedImage) && (
+        <OptimizedPicture
+          src={resolvedImage}
+          alt={title}
+          loading={loading}
+          class="h-full w-full object-cover"
+        />
+      )
+    }
+    <footer
+      class={cn(
+        "text-gray-900 dark:text-white",
+        "pointer-events-none absolute bottom-0 z-10 flex w-full flex-col gap-1 @sm:gap-2 bg-shark-300/90 dark:bg-shark-600/90 p-2 @sm:p-3 @md:p-4 opacity-0",
+        "transition-opacity duration-300 ease-out group-focus-within:opacity-100 group-hover:opacity-100",
+        "rounded-b-lg",
+      )}
+    >
+      <h2 class="text-base @sm:text-lg @md:text-xl font-medium line-clamp-2">
+        {title}
+      </h2>
+      <p class="flex flex-row items-center gap-1 @sm:gap-2 text-xs @sm:text-sm">
+        <span class="line-clamp-1 @sm:line-clamp-2 @md:line-clamp-3">{description}</span>
+      </p>
+    </footer>
+  </a>
 </article>
