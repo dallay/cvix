@@ -36,10 +36,10 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
       - name: Run Labeler
         # Pinned to v5 commit hash for security
-        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
+        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -56,19 +56,19 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
       - name: Initialize CodeQL
         # Pinned to v3 commit hash for security
-        uses: github/codeql-action/init@d198d2fabf39a7f36b5ce57ce70d4942944f006e # v3
+        uses: github/codeql-action/init@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3
         with:
           languages: ${{ matrix.language }}
           # queries: +security-extended,security-and-quality
       - name: Autobuild
         # Pinned to v3 commit hash for security
-        uses: github/codeql-action/autobuild@d198d2fabf39a7f36b5ce57ce70d4942944f006e # v3
+        uses: github/codeql-action/autobuild@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3
       - name: Perform CodeQL Analysis
         # Pinned to v3 commit hash for security
-        uses: github/codeql-action/analyze@d198d2fabf39a7f36b5ce57ce70d4942944f006e # v3
+        uses: github/codeql-action/analyze@4e94bd11f71e507f7f87df81788dff88d1dacbfb # v3
 
   super-linter:
     name: Super Linter
@@ -80,13 +80,13 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
       - name: Lint Code Base
         # Pinned to v5 commit hash for security
-        uses: github/super-linter@45fc0d88288beee4701c62761281edfee85655d7 # v5
+        uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1 # v5
         env:
           VALIDATE_ALL_CODEBASE: true  # Lint entire codebase
           DEFAULT_BRANCH: main
@@ -108,10 +108,10 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
       - name: Dependency Review
         # Pinned to v4 commit hash for security
-        uses: actions/dependency-review-action@da24556b548a50705dd671f47852072ea4c105d9 # v4
+        uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a # v4
         with:
           # You can specify configuration options here, e.g.:
           # fail-on-severity: critical
@@ -129,7 +129,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
@@ -143,7 +143,7 @@ jobs:
       - name: Upload OWASP Dependency Check Report
         if: always() # Ensure report is uploaded even if previous steps fail
         # Pinned to v4 commit hash for security
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
         with:
           name: owasp-dependency-check-report
           path: reports/dependency-check-report.html # Default path for HTML report
@@ -170,7 +170,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
 
       - name: Setup Java
         uses: ./.github/actions/setup/java
@@ -185,21 +185,21 @@ jobs:
 
       - name: Download backend artifacts
         # Pinned to v4 commit hash for security
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v4
         with:
           name: backend-artifacts
           path: backend-artifacts
 
       - name: Download frontend artifacts
         # Pinned to v4 commit hash for security
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v4
         with:
           name: frontend-artifacts
           path: frontend-artifacts
 
       - name: Cache Gradle
         # Pinned to v4 commit hash for security
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             ~/.gradle/caches
@@ -220,7 +220,7 @@ jobs:
 
       - name: Upload test report
         # Pinned to v4 commit hash for security
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
         with:
           name: test-report
           path: test-report/
@@ -230,9 +230,9 @@ jobs:
     name: Markdown lint (docs)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v4
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@ea23e85383042f0c9db1fba07ff5a2f8ec63d544
+        uses: DavidAnson/markdownlint-cli2-action@451cad2cde7304d9c243aaaf2e894d74b428c4be
         with:
           globs: |
             **/*.md
