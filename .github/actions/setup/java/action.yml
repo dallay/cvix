@@ -24,6 +24,6 @@ runs:
 
     - name: Setup Gradle
       # Pinned to v3 commit hash for security
-      uses: gradle/actions/setup-gradle@6cfc8b8e8bb586cc164bef1c478c1eea3a4d6a19 # v3
+      uses: gradle/actions/setup-gradle@d9c87d481d55275bb5441eef3fe0e46805f9ef70 # v3
       with:
         gradle-version: wrapper
