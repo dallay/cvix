@@ -11,13 +11,9 @@ type ApiWorkspace = {
 	name: string;
 	description?: string | null;
 	isDefault?: boolean;
-	is_default?: boolean;
 	ownerId?: string;
-	owner_id?: string;
 	createdAt?: string | Date;
-	created_at?: string | Date;
 	updatedAt?: string | Date;
-	updated_at?: string | Date;
 };
 
 type WorkspacePayload = Workspace | ApiWorkspace;
@@ -31,39 +27,17 @@ export class WorkspaceHttpClient
 	implements WorkspaceApiClient
 {
 	private normalize(workspace: WorkspacePayload): Workspace {
-		const createdAtSource =
-			("createdAt" in workspace ? workspace.createdAt : undefined) ??
-			("created_at" in workspace
-				? (workspace as ApiWorkspace).created_at
-				: undefined) ??
-			new Date();
-
-		const updatedAtSource =
-			("updatedAt" in workspace ? workspace.updatedAt : undefined) ??
-			("updated_at" in workspace
-				? (workspace as ApiWorkspace).updated_at
-				: undefined) ??
-			new Date();
-
-		const ownerIdSource =
-			("ownerId" in workspace ? workspace.ownerId : undefined) ??
-			("owner_id" in workspace
-				? (workspace as ApiWorkspace).owner_id
-				: undefined) ??
-			"";
-
-		const isDefaultSource =
-			("isDefault" in workspace ? workspace.isDefault : undefined) ??
-			("is_default" in workspace
-				? (workspace as ApiWorkspace).is_default
-				: undefined) ??
-			false;
+		const api = workspace as ApiWorkspace;
+		const createdAtSource = api.createdAt ?? new Date();
+		const updatedAtSource = api.updatedAt ?? new Date();
+		const ownerIdSource = api.ownerId ?? "";
+		const isDefaultSource = api.isDefault ?? false;
 
 		return {
 			id: workspace.id,
 			name: workspace.name,
 			description: workspace.description ?? null,
-			isDefault: isDefaultSource ?? false,
+			isDefault: isDefaultSource,
 			ownerId: ownerIdSource,
 			createdAt:
 				createdAtSource instanceof Date

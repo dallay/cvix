@@ -27,11 +27,7 @@ describe("workspaceLocalStorage", () => {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			expect(stored).not.toBeNull();
 
-			if (!stored) {
-				throw new Error("Preference should be persisted");
-			}
-
-			const parsed = JSON.parse(stored);
+			const parsed = JSON.parse(stored as string);
 			expect(parsed.userId).toBe(userId);
 			expect(parsed.lastSelectedWorkspaceId).toBe(workspaceId);
 			expect(typeof parsed.selectedAt).toBe("string");
@@ -51,11 +47,7 @@ describe("workspaceLocalStorage", () => {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			expect(stored).not.toBeNull();
 
-			if (!stored) {
-				throw new Error("Preference should be persisted");
-			}
-
-			const parsed = JSON.parse(stored) as {
+			const parsed = JSON.parse(stored as string) as {
 				lastSelectedWorkspaceId: string | null;
 			};
 
