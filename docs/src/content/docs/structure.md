@@ -1336,7 +1336,6 @@ description: Overview of the project structure and organization.
 │   │   │       └───index.html
 │   │   ├───pagefind/
 │   │   │   ├───fragment/
-│   │   │   │   ├───en_14ebf11.pf_fragment
 │   │   │   │   ├───en_1c85b7f.pf_fragment
 │   │   │   │   ├───en_2828fc8.pf_fragment
 │   │   │   │   ├───en_2dfab6c.pf_fragment
@@ -1344,18 +1343,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
+│   │   │   │   ├───en_9e7fbf7.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_20b9f49.pf_index
-│   │   │   │   └───en_9762b56.pf_index
+│   │   │   │   ├───en_b9a494e.pf_index
+│   │   │   │   └───en_dfe33b4.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_bc947d51c3.pf_meta
+│   │   │   ├───pagefind.en_d8e5827bd0.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind

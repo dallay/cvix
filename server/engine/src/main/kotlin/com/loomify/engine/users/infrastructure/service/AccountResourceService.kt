@@ -127,16 +127,20 @@ class AccountResourceService(
 
     /**
      * Determines the provider name from the authentication token.
-     * For now, defaults to "keycloak" but can be extended to support multiple providers.
+     * Prefers the JWT issuer claim if present, otherwise uses the OAuth2 client registration ID
+     * or falls back to the default provider name.
      */
     private fun determineProviderName(authToken: AbstractAuthenticationToken): String =
         when (authToken) {
             is OAuth2AuthenticationToken ->
                 authToken.authorizedClientRegistrationId
-            is JwtAuthenticationToken ->
-                "keycloak"
+            is JwtAuthenticationToken -> {
+                // Prefer the issuer claim if present, otherwise fall back to default
+                val issuer = authToken.token.claims["iss"] as? String
+                issuer ?: DEFAULT_PROVIDER_NAME
+            }
             else ->
-                "keycloak"
+                DEFAULT_PROVIDER_NAME
         }
 
     /**
@@ -150,5 +154,6 @@ class AccountResourceService(
 
     companion object {
         private val log = LoggerFactory.getLogger(AccountResourceService::class.java)
+        private const val DEFAULT_PROVIDER_NAME = "oidc"
     }
 }

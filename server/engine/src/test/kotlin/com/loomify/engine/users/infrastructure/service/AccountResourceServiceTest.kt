@@ -152,11 +152,11 @@ class AccountResourceServiceTest {
     fun `should get account information successfully by JwtAuthenticationToken`() {
         // Mock: federated identity exists
         coEvery {
-            federatedIdentityRepository.findByProviderNameAndExternalUserId("keycloak", keycloakUserId)
+            federatedIdentityRepository.findByProviderNameAndExternalUserId("oidc", keycloakUserId)
         } returns FederatedIdentityEntity(
             id = UUID.randomUUID(),
             userId = testUserId,
-            providerName = "keycloak",
+            providerName = "oidc",
             externalUserId = keycloakUserId,
             email = "test@localhost",
             displayName = "Test User",
@@ -179,11 +179,11 @@ class AccountResourceServiceTest {
 
         // Mock: federated identity exists
         coEvery {
-            federatedIdentityRepository.findByProviderNameAndExternalUserId("keycloak", keycloakUserId)
+            federatedIdentityRepository.findByProviderNameAndExternalUserId("oidc", keycloakUserId)
         } returns FederatedIdentityEntity(
             id = UUID.randomUUID(),
             userId = testUserId,
-            providerName = "keycloak",
+            providerName = "oidc",
             externalUserId = keycloakUserId,
             email = "test@localhost",
             displayName = "Test User",

@@ -105,9 +105,3 @@ const WorkspaceIcon = computed(() => {
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.selected {
-	font-weight: 500;
-}
-</style>
