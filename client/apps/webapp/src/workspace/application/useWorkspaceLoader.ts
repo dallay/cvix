@@ -40,7 +40,7 @@ export function useWorkspaceLoader() {
 		const storage = options?.storage ?? workspaceLocalStorage;
 		const maxRetries = options?.maxRetries ?? 3;
 
-		let lastError: Error | null = null;
+		let lastError: Error = new Error("Unknown error during workspace loading");
 
 		// Retry loop with exponential backoff
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {

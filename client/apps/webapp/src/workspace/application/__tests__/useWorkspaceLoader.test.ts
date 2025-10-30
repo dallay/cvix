@@ -164,6 +164,23 @@ describe("useWorkspaceLoader", () => {
 				}),
 			).rejects.toThrow("Network error");
 		});
+
+		it("should retry with exponential backoff", async () => {
+			const { loadWorkspaceOnLogin } = useWorkspaceLoader();
+			const mockStore = createMockStore([]);
+			let callCount = 0;
+			mockStore.loadWorkspaces = vi.fn().mockImplementation(() => {
+				callCount++;
+				if (callCount < 3) throw new Error("Network error");
+				return Promise.resolve();
+			});
+
+			await loadWorkspaceOnLogin("123e4567-e89b-42d3-a456-426614174000", {
+				store: mockStore,
+				maxRetries: 3,
+			});
+			expect(mockStore.loadWorkspaces).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	describe("switchWorkspace", () => {

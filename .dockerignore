@@ -24,7 +24,6 @@ coverage/
 
 # Docker
 Dockerfile*
-.dockerignore
 docker-compose*.yml
 
 # Environment files
