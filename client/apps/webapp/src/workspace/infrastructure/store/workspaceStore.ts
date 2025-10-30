@@ -21,6 +21,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	const lastFetchedAt = ref<Date | null>(null);
 	const lastSelectedId = ref<string | null>(null);
 	const lastSelectedAt = ref<Date | null>(null);
+	const loadedInSession = ref(false);
 
 	// Getters
 	const hasWorkspaces = computed(() => workspaces.value.length > 0);
@@ -146,6 +147,17 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		error.value = null;
 	}
 
+	/**
+	 * Resets the session state (for logout or session changes)
+	 */
+	function resetSession(): void {
+		loadedInSession.value = false;
+		currentWorkspace.value = null;
+		lastSelectedId.value = null;
+		lastSelectedAt.value = null;
+		error.value = null;
+	}
+
 	return {
 		// State
 		workspaces,
@@ -155,6 +167,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		lastFetchedAt,
 		lastSelectedId,
 		lastSelectedAt,
+		loadedInSession,
 		// Getters
 		hasWorkspaces,
 		defaultWorkspace,
@@ -163,5 +176,6 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		setCurrentWorkspace,
 		selectWorkspace,
 		clearError,
+		resetSession,
 	};
 });

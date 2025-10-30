@@ -1,13 +1,9 @@
 import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 import { useAuthStore } from "@/authentication/presentation/stores/authStore";
 import { useWorkspaceLoader } from "../../application/useWorkspaceLoader";
+import { useWorkspaceStore } from "../store/workspaceStore";
 
 const isDev = import.meta.env.DEV;
-
-/**
- * Flag to track if workspace has been loaded for the current session
- */
-let workspaceLoadedForSession = false;
 
 /**
  * Navigation guard that automatically loads workspace on first authenticated navigation
@@ -23,8 +19,10 @@ export async function workspaceGuard(
 		return;
 	}
 
+	const workspaceStore = useWorkspaceStore();
+
 	// Skip if already loaded in this session
-	if (workspaceLoadedForSession) {
+	if (workspaceStore.loadedInSession) {
 		next();
 		return;
 	}
@@ -45,7 +43,7 @@ export async function workspaceGuard(
 		const { loadWorkspaceOnLogin } = useWorkspaceLoader();
 		await loadWorkspaceOnLogin(authStore.user.id);
 
-		workspaceLoadedForSession = true;
+		workspaceStore.loadedInSession = true;
 
 		if (isDev) {
 			console.log("[Workspace Guard] Workspace loaded successfully");
@@ -67,7 +65,8 @@ export async function workspaceGuard(
  * Reset the session flag (for testing or logout)
  */
 export function resetWorkspaceGuardSession(): void {
-	workspaceLoadedForSession = false;
+	const workspaceStore = useWorkspaceStore();
+	workspaceStore.resetSession();
 	if (isDev) {
 		console.log("[Workspace Guard] Session reset");
 	}
