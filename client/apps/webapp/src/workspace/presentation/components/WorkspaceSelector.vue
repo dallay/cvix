@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { AlertCircle, Loader2 } from "lucide-vue-next";
+import {
+	AlertCircle,
+	Building2,
+	ChevronsUpDown,
+	Loader2,
+	Sparkles,
+	Users,
+} from "lucide-vue-next";
+import type { Component } from "vue";
 import { computed, ref } from "vue";
 import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useWorkspaceSelection } from "@/workspace";
-import WorkspaceSelectorItem from "./WorkspaceSelectorItem.vue";
 
 interface Props {
 	userId: string;
@@ -33,22 +40,28 @@ const {
 } = useWorkspaceSelection();
 
 // Local state
-const isOpen = ref(false);
 const isSwitching = ref(false);
 
-// Computed
-const selectedValue = computed(
-	() => currentWorkspace.value?.id ?? "placeholder",
+// Get workspace icon
+function getWorkspaceIcon(workspaceName?: string): Component {
+	if (!workspaceName) return Sparkles;
+	const name = workspaceName.toLowerCase();
+	if (name.includes("personal") || name.includes("default")) {
+		return Users;
+	}
+	if (name.includes("enterprise") || name.includes("business")) {
+		return Building2;
+	}
+	return Sparkles;
+}
+
+const currentWorkspaceIcon = computed(() =>
+	getWorkspaceIcon(currentWorkspace.value?.name),
 );
 
 // Methods
-async function handleSelect(workspaceId: unknown) {
-	if (
-		typeof workspaceId !== "string" ||
-		!workspaceId ||
-		workspaceId === "placeholder" ||
-		workspaceId === currentWorkspace.value?.id
-	) {
+async function handleWorkspaceClick(workspaceId: string) {
+	if (workspaceId === currentWorkspace.value?.id || isSwitching.value) {
 		return;
 	}
 
@@ -57,21 +70,16 @@ async function handleSelect(workspaceId: unknown) {
 	try {
 		await selectWorkspace(workspaceId, props.userId);
 		emit("workspace-selected", workspaceId);
-		isOpen.value = false;
 	} catch (err) {
 		console.error("Failed to switch workspace:", err);
 	} finally {
 		isSwitching.value = false;
 	}
 }
-
-function handleOpenChange(open: boolean) {
-	isOpen.value = open;
-}
 </script>
 
 <template>
-	<div data-testid="workspace-selector" class="w-full max-w-xs">
+	<div data-testid="workspace-selector" class="w-full">
 		<!-- Error State -->
 		<div
 			v-if="error"
@@ -99,59 +107,74 @@ function handleOpenChange(open: boolean) {
 			No workspaces available
 		</div>
 
-		<!-- Workspace Selector -->
-		<Select
-			v-else
-			:model-value="selectedValue"
-			:open="isOpen"
-			:disabled="isSwitching"
-			@update:model-value="handleSelect"
-			@update:open="handleOpenChange"
-		>
-			<SelectTrigger
-				role="combobox"
-				:aria-expanded="isOpen"
-				:aria-disabled="isSwitching"
-				:aria-label="`Select workspace. Currently selected: ${currentWorkspace?.name || 'None'}`"
-				aria-haspopup="listbox"
-				class="w-full"
-			>
-				<SelectValue>
-					<div v-if="isSwitching" class="flex items-center gap-2">
+		<DropdownMenu v-else>
+			<DropdownMenuTrigger as-child>
+				<button
+					type="button"
+					class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm outline-none ring-ring transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+					:disabled="isSwitching"
+					:aria-label="`Select workspace. Currently selected: ${currentWorkspace?.name || 'None'}`"
+				>
+					<template v-if="isSwitching">
 						<Loader2 class="h-4 w-4 animate-spin" />
 						<span>Switching...</span>
+					</template>
+					<template v-else-if="currentWorkspace">
+						<div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+							<component :is="currentWorkspaceIcon" class="size-4" />
+						</div>
+						<div class="grid flex-1 text-left text-sm leading-tight">
+							<span class="truncate font-semibold">
+								{{ currentWorkspace.name }}
+							</span>
+							<span v-if="currentWorkspace.description" class="truncate text-xs text-muted-foreground">
+								{{ currentWorkspace.description }}
+							</span>
+						</div>
+						<ChevronsUpDown class="ml-auto size-4" />
+					</template>
+					<template v-else>
+						<span class="text-muted-foreground">
+							Select workspace
+						</span>
+					</template>
+				</button>
+			</DropdownMenuTrigger>
+
+			<DropdownMenuContent
+				class="w-64 rounded-lg"
+				align="start"
+				side="right"
+				:side-offset="8"
+			>
+				<DropdownMenuLabel class="text-xs text-muted-foreground">
+					Workspaces
+				</DropdownMenuLabel>
+				<DropdownMenuItem
+					v-for="(workspace, index) in workspaces"
+					:key="workspace.id"
+					class="gap-3 p-2 cursor-pointer"
+					:class="{ 'bg-accent': workspace.id === currentWorkspace?.id }"
+					:disabled="workspace.id === currentWorkspace?.id"
+					@click="handleWorkspaceClick(workspace.id)"
+				>
+					<div class="flex size-8 items-center justify-center rounded-md bg-primary/10">
+						<component :is="getWorkspaceIcon(workspace.name)" class="size-4 shrink-0 text-primary" />
 					</div>
-					<div v-else-if="currentWorkspace" class="flex items-center gap-2">
-						<span class="truncate">{{ currentWorkspace.name }}</span>
-						<span
-							v-if="currentWorkspace.isDefault"
-							class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary shrink-0"
-						>
-							Default
+					<div class="grid flex-1 text-left text-sm leading-tight">
+						<span class="truncate font-medium">
+							{{ workspace.name }}
+						</span>
+						<span v-if="workspace.description" class="truncate text-xs text-muted-foreground">
+							{{ workspace.description }}
 						</span>
 					</div>
-					<span v-else class="text-muted-foreground">
-						Select workspace
-					</span>
-				</SelectValue>
-			</SelectTrigger>
-
-			<SelectContent role="listbox">
-				<SelectGroup>
-					<SelectItem
-						v-for="workspace in workspaces"
-						:key="workspace.id"
-						:value="workspace.id"
-						class="cursor-pointer"
-					>
-						<WorkspaceSelectorItem
-							:workspace="workspace"
-							:is-selected="workspace.id === currentWorkspace?.id"
-						/>
-					</SelectItem>
-				</SelectGroup>
-			</SelectContent>
-		</Select>
+					<DropdownMenuShortcut v-if="index < 9" class="ml-auto">
+						⌘{{ index + 1 }}
+					</DropdownMenuShortcut>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	</div>
 </template>
 

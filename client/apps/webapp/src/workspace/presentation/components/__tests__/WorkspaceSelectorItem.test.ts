@@ -80,7 +80,8 @@ describe("WorkspaceSelectorItem", () => {
 				props: { workspace: mockWorkspace, isSelected: true },
 			});
 
-			expect(wrapper.classes()).toContain("selected");
+			// Check for selected background styling
+			expect(wrapper.classes()).toContain("bg-accent/30");
 		});
 
 		it("should not apply selected styling when isSelected is false", () => {
@@ -88,7 +89,7 @@ describe("WorkspaceSelectorItem", () => {
 				props: { workspace: mockWorkspace, isSelected: false },
 			});
 
-			expect(wrapper.classes()).not.toContain("selected");
+			expect(wrapper.classes()).not.toContain("bg-accent/30");
 		});
 
 		it("should show check icon when selected", () => {
@@ -144,7 +145,8 @@ describe("WorkspaceSelectorItem", () => {
 
 			await wrapper.trigger("mouseenter");
 
-			expect(wrapper.classes()).toContain("hover:bg-accent");
+			// Check for hover styling class
+			expect(wrapper.classes()).toContain("hover:bg-accent/50");
 		});
 
 		it("should have proper visual hierarchy for name and description", () => {

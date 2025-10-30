@@ -51,3 +51,15 @@ databaseChangeLog:
               - column: { name: role, type: string }
               - column: { name: created_at, type: datetime }
               - column: { name: updated_at, type: datetime }
+        - loadData:
+            file: db/changelog/data/federated_identities_dev.csv
+            separator: ";"
+            tableName: federated_identities
+            usePreparedStatements: true
+            columns:
+              - column: { name: id, type: uuid }
+              - column: { name: user_id, type: uuid }
+              - column: { name: provider_name, type: string }
+              - column: { name: external_user_id, type: string }
+              - column: { name: email, type: string }
+              - column: { name: display_name, type: string }

@@ -21,4 +21,9 @@ interface UserR2dbcRepository :
     )
     @Modifying
     suspend fun insertIgnoreConflict(id: UUID, email: String, fullName: String)
+
+    /**
+     * Find a user by email address
+     */
+    suspend fun findByEmail(email: String): UserEntity?
 }

@@ -27,9 +27,10 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
             .exchange()
             .expectStatus().isOk
             .expectBody()
-            .jsonPath("$.username").isEqualTo("test")
-            .jsonPath("$.email").isEqualTo("test@localhost")
-            .jsonPath("$.firstname").isEqualTo("Test")
+            .jsonPath("$.id").isEqualTo("c4af4e2f-b432-4c3b-8405-cca86cd5b97b")
+            .jsonPath("$.username").isEqualTo("user")
+            .jsonPath("$.email").isEqualTo("user@loomify.com")
+            .jsonPath("$.firstname").isEqualTo("Basic")
             .jsonPath("$.lastname").isEqualTo("User")
             .jsonPath("$.authorities").isArray.jsonPath("$.authorities[0]")
             .isEqualTo(AuthoritiesConstants.USER)
@@ -44,9 +45,10 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
             .exchange()
             .expectStatus().isOk
             .expectBody()
-            .jsonPath("$.username").isEqualTo("test")
-            .jsonPath("$.email").isEqualTo("test@localhost")
-            .jsonPath("$.firstname").isEqualTo("Test")
+            .jsonPath("$.id").isEqualTo("c4af4e2f-b432-4c3b-8405-cca86cd5b97b")
+            .jsonPath("$.username").isEqualTo("user")
+            .jsonPath("$.email").isEqualTo("user@loomify.com")
+            .jsonPath("$.firstname").isEqualTo("Basic")
             .jsonPath("$.lastname").isEqualTo("User")
             .jsonPath("$.authorities").isArray.jsonPath("$.authorities[0]")
             .isEqualTo(AuthoritiesConstants.USER)
@@ -55,13 +57,15 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
     }
 
     private fun oAuth2LoginMutator(
-        username: String = "test",
-        email: String = "test@localhost",
-        firstname: String = "Test",
+        userId: String = "c4af4e2f-b432-4c3b-8405-cca86cd5b97b",
+        username: String = "user",
+        email: String = "user@loomify.com",
+        firstname: String = "Basic",
         lastname: String = "User",
         roles: List<String> = listOf(AuthoritiesConstants.USER)
     ): SecurityMockServerConfigurers.OAuth2LoginMutator =
         mockOAuth2Login().authorities(SimpleGrantedAuthority(roles.joinToString(separator = ",") { it })).attributes {
+            it["sub"] = userId  // Keycloak user ID
             it["preferred_username"] = username
             it["email"] = email
             it["given_name"] = firstname
