@@ -1,3 +1,4 @@
+import { WorkspaceId } from "@/workspace";
 import type { Workspace } from "../domain/WorkspaceEntity";
 import { determineWorkspaceToLoad } from "../domain/WorkspaceSelectionService";
 import { workspaceLocalStorage } from "../infrastructure/storage/workspaceLocalStorage";
@@ -60,6 +61,10 @@ export function useWorkspaceLoader() {
 					);
 				}
 
+				// Validate userId format before attempting load
+				if (!WorkspaceId.isValid(userId)) {
+					throw new Error(`Invalid user ID format: ${userId}`);
+				}
 				// Get last selected from local storage
 				const lastSelected = storage.getLastSelected(userId);
 				const lastSelectedId = lastSelected?.lastSelectedWorkspaceId ?? null;
