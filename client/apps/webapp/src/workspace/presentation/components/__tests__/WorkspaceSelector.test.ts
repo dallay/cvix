@@ -120,6 +120,7 @@ describe("WorkspaceSelector", () => {
 			});
 
 			// Simulate selecting a workspace by calling the handleWorkspaceClick method directly
+			// biome-ignore lint/suspicious/noExplicitAny: Testing component internal method
 			const component = wrapper.vm as any;
 			await component.handleWorkspaceClick(mockWorkspace2.id);
 
@@ -135,6 +136,7 @@ describe("WorkspaceSelector", () => {
 			});
 
 			// Simulate selecting a workspace
+			// biome-ignore lint/suspicious/noExplicitAny: Testing component internal method
 			const component = wrapper.vm as any;
 			await component.handleWorkspaceClick(mockWorkspace2.id);
 
@@ -153,9 +155,9 @@ describe("WorkspaceSelector", () => {
 
 			// Dropdown menu handles its own state internally
 			// We just test that handleWorkspaceClick works
+			// biome-ignore lint/suspicious/noExplicitAny: Testing component internal method
 			const component = wrapper.vm as any;
 			await component.handleWorkspaceClick(mockWorkspace2.id);
-
 			await flushPromises();
 
 			// Verify selection happened
@@ -278,12 +280,12 @@ describe("WorkspaceSelector", () => {
 			});
 
 			// We test that the handleWorkspaceClick method works correctly
+			// biome-ignore lint/suspicious/noExplicitAny: Testing component internal method
 			const component = wrapper.vm as any;
 			await component.handleWorkspaceClick(mockWorkspace2.id);
 
 			expect(selectWorkspaceMock).toHaveBeenCalled();
 		});
-
 		it("should close dropdown with Escape key", async () => {
 			const wrapper = mount(WorkspaceSelector, {
 				props: { userId: "user-123" },

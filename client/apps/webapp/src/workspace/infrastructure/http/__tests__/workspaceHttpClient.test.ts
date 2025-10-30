@@ -67,11 +67,13 @@ describe("WorkspaceHttpClient", () => {
 			};
 
 			// Mock the get method inherited from BaseHttpClient
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockResolvedValue(mockResponse);
 
 			const result = await client.getAllWorkspaces();
 
 			expect(result).toEqual(mockWorkspaces);
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			expect((client as any).get).toHaveBeenCalledWith("/workspace");
 		});
 
@@ -84,21 +86,22 @@ describe("WorkspaceHttpClient", () => {
 				},
 			};
 
+			// Mock the get method inherited from BaseHttpClient
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockResolvedValue(mockResponse);
 
 			const result = await client.getAllWorkspaces();
-
 			expect(result).toEqual([]);
 		});
 
 		it("should throw error when API call fails", async () => {
 			const error = new Error("Network error");
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockRejectedValue(error);
 
 			await expect(client.getAllWorkspaces()).rejects.toThrow("Network error");
 		});
 	});
-
 	describe("getWorkspace", () => {
 		it("should fetch specific workspace by ID", async () => {
 			const workspaceId = "550e8400-e29b-41d4-a716-446655440000";
@@ -116,11 +119,13 @@ describe("WorkspaceHttpClient", () => {
 				data: mockWorkspace,
 			};
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockResolvedValue(mockResponse);
 
 			const result = await client.getWorkspace(workspaceId);
 
 			expect(result).toEqual(mockWorkspace);
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			expect((client as any).get).toHaveBeenCalledWith(
 				`/workspace/${workspaceId}`,
 			);
@@ -129,6 +134,7 @@ describe("WorkspaceHttpClient", () => {
 		it("should return null when workspace is not found", async () => {
 			const workspaceId = "550e8400-e29b-41d4-a716-446655440000";
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockResolvedValue(null);
 
 			const result = await client.getWorkspace(workspaceId);
@@ -140,6 +146,7 @@ describe("WorkspaceHttpClient", () => {
 			const workspaceId = "550e8400-e29b-41d4-a716-446655440000";
 			const error = new Error("Network error");
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing internal method requires type assertion
 			vi.spyOn(client as any, "get").mockRejectedValue(error);
 
 			await expect(client.getWorkspace(workspaceId)).rejects.toThrow(

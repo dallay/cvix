@@ -1,7 +1,4 @@
-import {
-	BaseHttpClient,
-	type HttpClientConfig,
-} from "../../../shared/BaseHttpClient";
+import { BaseHttpClient } from "../../../shared/BaseHttpClient";
 import type { Workspace } from "../../domain/WorkspaceEntity";
 import type {
 	GetAllWorkspacesResponse,
@@ -33,14 +30,6 @@ export class WorkspaceHttpClient
 	extends BaseHttpClient
 	implements WorkspaceApiClient
 {
-	/**
-	 * Creates a new WorkspaceHttpClient
-	 * @param config - Optional HTTP client configuration
-	 */
-	constructor(config?: HttpClientConfig) {
-		super(config);
-	}
-
 	private normalize(workspace: WorkspacePayload): Workspace {
 		const createdAtSource =
 			("createdAt" in workspace ? workspace.createdAt : undefined) ??

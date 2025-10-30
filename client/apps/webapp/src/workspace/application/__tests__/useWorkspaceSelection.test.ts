@@ -42,7 +42,15 @@ describe("useWorkspaceSelection", () => {
 
 	const mockWorkspaces = [mockWorkspace1, mockWorkspace2];
 
-	let mockStore: any;
+	type MockStore = {
+		workspaces: Workspace[];
+		currentWorkspace: Workspace | null;
+		isLoading: boolean;
+		error: string | null;
+		selectWorkspace: ReturnType<typeof vi.fn>;
+	};
+
+	let mockStore: MockStore;
 
 	beforeEach(() => {
 		setActivePinia(createPinia());

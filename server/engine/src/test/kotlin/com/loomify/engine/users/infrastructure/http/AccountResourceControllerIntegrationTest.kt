@@ -65,7 +65,7 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
         roles: List<String> = listOf(AuthoritiesConstants.USER)
     ): SecurityMockServerConfigurers.OAuth2LoginMutator =
         mockOAuth2Login().authorities(SimpleGrantedAuthority(roles.joinToString(separator = ",") { it })).attributes {
-            it["sub"] = userId  // Keycloak user ID
+            it["sub"] = userId // Keycloak user ID
             it["preferred_username"] = username
             it["email"] = email
             it["given_name"] = firstname

@@ -5,7 +5,6 @@ import com.loomify.engine.users.application.response.UserResponse
 import com.loomify.engine.users.infrastructure.persistence.entity.FederatedIdentityEntity
 import com.loomify.engine.users.infrastructure.persistence.repository.FederatedIdentityR2dbcRepository
 import com.loomify.engine.users.infrastructure.persistence.repository.UserR2dbcRepository
-import java.util.UUID
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AbstractAuthenticationToken
@@ -34,7 +33,8 @@ class AccountResourceService(
      *
      * @param authToken The authentication token. Must be an instance of AbstractAuthenticationToken.
      * @return A Mono containing the user account information as a UserResponse object.
-     *         The UserResponse object contains the id, username, email, firstname, lastname, and authorities of the user.
+     *         The UserResponse object contains the id, username, email, firstname, lastname,
+     *         and authorities of the user.
      * @throws IllegalArgumentException if the authentication token is not an instance of OAuth2AuthenticationToken
      * or JwtAuthenticationToken.
      * @throws IllegalStateException if the user cannot be found or created in the database.
@@ -98,14 +98,15 @@ class AccountResourceService(
         if (federatedIdentity != null) {
             // Mapping exists, retrieve the user
             log.debug("Found existing federated identity for provider: $providerName, external ID: $externalUserId")
-            userRepository.findById(federatedIdentity.userId)
-                ?: throw IllegalStateException("User not found in database: ${federatedIdentity.userId}")
+            val user = userRepository.findById(federatedIdentity.userId)
+            check(user != null) { "User not found in database: ${federatedIdentity.userId}" }
+            user
         } else {
             // No mapping exists, this is a first-time login
             // Look up the user by email and create the mapping
             log.debug("No federated identity found, looking up user by email: $email")
             val user = userRepository.findByEmail(email)
-                ?: throw IllegalStateException("User not found in database for email: $email")
+            check(user != null) { "User not found in database for email: $email" }
 
             // Create the federated identity mapping
             val displayName = buildDisplayName(attributes)
@@ -128,20 +129,15 @@ class AccountResourceService(
      * Determines the provider name from the authentication token.
      * For now, defaults to "keycloak" but can be extended to support multiple providers.
      */
-    private fun determineProviderName(authToken: AbstractAuthenticationToken): String {
-        return when (authToken) {
-            is OAuth2AuthenticationToken -> {
-                // The authorizedClientRegistrationId contains the provider name
+    private fun determineProviderName(authToken: AbstractAuthenticationToken): String =
+        when (authToken) {
+            is OAuth2AuthenticationToken ->
                 authToken.authorizedClientRegistrationId
-            }
-            is JwtAuthenticationToken -> {
-                // For JWT tokens, we use the issuer to determine the provider
-                // For now, default to "keycloak"
+            is JwtAuthenticationToken ->
                 "keycloak"
-            }
-            else -> "keycloak"
+            else ->
+                "keycloak"
         }
-    }
 
     /**
      * Builds a display name from the token attributes
