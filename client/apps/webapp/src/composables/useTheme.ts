@@ -34,7 +34,7 @@ function getSystemTheme(): "light" | "dark" {
 	return "light";
 }
 
-// Global state for theme
+// Global state for theme (shared across all instances)
 const theme = ref<Theme>(getInitialTheme());
 const resolvedTheme = ref<"light" | "dark">(
 	theme.value === "system" ? getSystemTheme() : theme.value,
@@ -50,15 +50,15 @@ function applyTheme(appliedTheme: "light" | "dark") {
 	resolvedTheme.value = appliedTheme;
 }
 
-// Media query for system theme detection
+// Media query for system theme detection (singleton pattern)
 let mediaQuery: MediaQueryList | null = null;
 let mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
+let listenerRefCount = 0;
 
-// Initialize theme on first load
-if (typeof document !== "undefined") {
-	applyTheme(resolvedTheme.value);
+// Initialize media query listener once
+function initMediaQueryListener() {
+	if (typeof window === "undefined" || mediaQuery) return;
 
-	// Listen for system theme changes
 	mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 	mediaQueryListener = () => {
 		if (theme.value === "system") {
@@ -67,10 +67,25 @@ if (typeof document !== "undefined") {
 		}
 	};
 
-	// Modern API
 	if (mediaQuery.addEventListener) {
 		mediaQuery.addEventListener("change", mediaQueryListener);
 	}
+}
+
+// Cleanup media query listener when no longer needed
+function cleanupMediaQueryListener() {
+	if (mediaQuery && mediaQueryListener) {
+		if (mediaQuery.removeEventListener) {
+			mediaQuery.removeEventListener("change", mediaQueryListener);
+		}
+		mediaQuery = null;
+		mediaQueryListener = null;
+	}
+}
+
+// Initialize theme on first load
+if (typeof document !== "undefined") {
+	applyTheme(resolvedTheme.value);
 }
 
 // Watch for theme changes
@@ -101,12 +116,17 @@ export function useTheme() {
 		}
 	};
 
-	// Cleanup media query listener on unmount
+	// Register this instance and initialize media query listener if needed
+	listenerRefCount++;
+	if (listenerRefCount === 1) {
+		initMediaQueryListener();
+	}
+
+	// Cleanup: decrease ref count and remove listener only when all instances are gone
 	onUnmounted(() => {
-		if (mediaQuery && mediaQueryListener) {
-			if (mediaQuery.removeEventListener) {
-				mediaQuery.removeEventListener("change", mediaQueryListener);
-			}
+		listenerRefCount--;
+		if (listenerRefCount === 0) {
+			cleanupMediaQueryListener();
 		}
 	});
 
