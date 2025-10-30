@@ -8,6 +8,7 @@ import { workspaceHttpClient } from "../http/workspaceHttpClient";
 import { saveLastSelected } from "../storage/workspaceLocalStorage";
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+let loadPromise: Promise<void> | null = null;
 
 /**
  * Pinia store for workspace state management
@@ -35,6 +36,11 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	 * @param force - Force refetch even if cache is fresh
 	 */
 	async function loadWorkspaces(force = false): Promise<void> {
+		// If a load is already in progress, return the same promise (unless forced)
+		if (loadPromise && !force) {
+			return loadPromise;
+		}
+
 		// Check cache freshness
 		if (!force && lastFetchedAt.value) {
 			const cacheAge = Date.now() - lastFetchedAt.value.getTime();
@@ -47,22 +53,28 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		isLoading.value = true;
 		error.value = null;
 
-		try {
-			const data = await workspaceHttpClient.getAllWorkspaces();
-			workspaces.value = data;
-			lastFetchedAt.value = new Date();
-		} catch (err) {
-			// Handle error
-			const errorMessage = err instanceof Error ? err.message : "Unknown error";
-			error.value = {
-				code: WorkspaceErrorCode.NETWORK_ERROR,
-				message: errorMessage,
-				timestamp: new Date(),
-			};
-			workspaces.value = [];
-		} finally {
-			isLoading.value = false;
-		}
+		loadPromise = (async () => {
+			try {
+				const data = await workspaceHttpClient.getAllWorkspaces();
+				workspaces.value = data;
+				lastFetchedAt.value = new Date();
+			} catch (err) {
+				// Handle error
+				const errorMessage =
+					err instanceof Error ? err.message : "Unknown error";
+				error.value = {
+					code: WorkspaceErrorCode.NETWORK_ERROR,
+					message: errorMessage,
+					timestamp: new Date(),
+				};
+				workspaces.value = [];
+			} finally {
+				isLoading.value = false;
+				loadPromise = null;
+			}
+		})();
+
+		return loadPromise;
 	}
 
 	/**
