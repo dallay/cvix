@@ -48,7 +48,19 @@ export function isWorkspaceValid(
 export function findDefaultWorkspace(
 	workspaces: Workspace[],
 ): Workspace | undefined {
-	return workspaces.find((w) => w.isDefault);
+	const defaults = workspaces.filter((w) => w.isDefault);
+
+	if (defaults.length > 1) {
+		const isDev = import.meta.env.DEV;
+		if (isDev) {
+			const conflictingIds = defaults.map((w) => w.id).join(", ");
+			console.warn(
+				`[Workspace] Multiple default workspaces found (${defaults.length}): ${conflictingIds}. Using first.`,
+			);
+		}
+	}
+
+	return defaults[0];
 }
 
 /**

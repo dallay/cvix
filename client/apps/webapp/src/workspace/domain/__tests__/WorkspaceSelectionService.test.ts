@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Workspace } from "../WorkspaceEntity";
 import { WorkspaceErrorCode } from "../WorkspaceError";
 import {
@@ -136,6 +136,15 @@ describe("WorkspaceSelectionService", () => {
 		});
 
 		it("should return first default when multiple defaults exist", () => {
+			// Mock development environment and spy on console.warn
+			const originalEnv = import.meta.env.DEV;
+			const consoleWarnSpy = vi
+				.spyOn(console, "warn")
+				.mockImplementation(() => {});
+
+			// Set DEV to true to enable warnings
+			import.meta.env.DEV = true;
+
 			const workspace4: Workspace = {
 				...workspace3,
 				id: "880e8400-e29b-41d4-a716-446655440003",
@@ -151,6 +160,45 @@ describe("WorkspaceSelectionService", () => {
 			const result = findDefaultWorkspace(workspacesWithMultipleDefaults);
 
 			expect(result).toEqual(workspace2);
+			expect(consoleWarnSpy).toHaveBeenCalledWith(
+				"[Workspace] Multiple default workspaces found (2): 660e8400-e29b-41d4-a716-446655440001, 880e8400-e29b-41d4-a716-446655440003. Using first.",
+			);
+
+			// Restore original environment and spy
+			import.meta.env.DEV = originalEnv;
+			consoleWarnSpy.mockRestore();
+		});
+
+		it("should not log warning when multiple defaults exist in production", () => {
+			// Mock production environment and spy on console.warn
+			const originalEnv = import.meta.env.DEV;
+			const consoleWarnSpy = vi
+				.spyOn(console, "warn")
+				.mockImplementation(() => {});
+
+			// Set DEV to false to disable warnings
+			import.meta.env.DEV = false;
+
+			const workspace4: Workspace = {
+				...workspace3,
+				id: "880e8400-e29b-41d4-a716-446655440003",
+				isDefault: true,
+			};
+
+			const workspacesWithMultipleDefaults = [
+				workspace1,
+				workspace2,
+				workspace4,
+			];
+
+			const result = findDefaultWorkspace(workspacesWithMultipleDefaults);
+
+			expect(result).toEqual(workspace2);
+			expect(consoleWarnSpy).not.toHaveBeenCalled();
+
+			// Restore original environment and spy
+			import.meta.env.DEV = originalEnv;
+			consoleWarnSpy.mockRestore();
 		});
 	});
 
