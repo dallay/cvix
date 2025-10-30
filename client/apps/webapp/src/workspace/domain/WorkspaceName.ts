@@ -24,4 +24,11 @@ export class WorkspaceName {
 	toString(): string {
 		return this.value;
 	}
+
+	/**
+	 * Checks equality with another WorkspaceName
+	 */
+	equals(other: WorkspaceName): boolean {
+		return this.value === other.value;
+	}
 }

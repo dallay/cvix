@@ -18,8 +18,11 @@ export function determineWorkspaceToLoad(
 	}
 
 	// Priority 1: Last selected workspace (if valid)
-	if (lastSelectedId && isWorkspaceValid(lastSelectedId, workspaces)) {
-		return workspaces.find((w) => w.id === lastSelectedId) || null;
+	if (lastSelectedId) {
+		const lastSelected = workspaces.find((w) => w.id === lastSelectedId);
+		if (lastSelected) {
+			return lastSelected;
+		}
 	}
 
 	// Priority 2: Default workspace
