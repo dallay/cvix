@@ -1,10 +1,14 @@
-// @ts-nocheck - Mock types for private methods are complex, tests pass in runtime
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Workspace } from "../../domain/WorkspaceEntity";
+import type { Workspace } from "../../../domain/WorkspaceEntity";
 import { workspaceHttpClient } from "../../http/workspaceHttpClient";
 
 // Use the HTTP client as the API client for these tests
 const workspaceApiClient = workspaceHttpClient;
+
+// Type for accessing protected methods in tests
+type HttpClientWithGet = typeof workspaceApiClient & {
+	get: (url: string, config?: unknown) => Promise<unknown>;
+};
 
 describe("workspaceApiClient", () => {
 	const mockWorkspace1: Workspace = {
@@ -37,7 +41,11 @@ describe("workspaceApiClient", () => {
 			const mockGet = vi.fn().mockResolvedValue({
 				data: [mockWorkspace1, mockWorkspace2],
 			});
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			const result = await workspaceApiClient.getAllWorkspaces();
 
@@ -47,7 +55,11 @@ describe("workspaceApiClient", () => {
 
 		it("should return empty array when no workspaces exist", async () => {
 			const mockGet = vi.fn().mockResolvedValue({ data: [] });
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			const result = await workspaceApiClient.getAllWorkspaces();
 
@@ -57,7 +69,11 @@ describe("workspaceApiClient", () => {
 
 		it("should throw error when network fails", async () => {
 			const mockGet = vi.fn().mockRejectedValue(new Error("Network failure"));
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			await expect(workspaceApiClient.getAllWorkspaces()).rejects.toThrow();
 		});
@@ -74,7 +90,11 @@ describe("workspaceApiClient", () => {
 				},
 			};
 			const mockGet = vi.fn().mockRejectedValue(apiError);
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			await expect(workspaceApiClient.getAllWorkspaces()).rejects.toThrow();
 		});
@@ -88,7 +108,11 @@ describe("workspaceApiClient", () => {
 			const mockGet = vi.fn().mockResolvedValue({
 				data: [mockApiWorkspace],
 			});
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			const result = await workspaceApiClient.getAllWorkspaces();
 
@@ -105,7 +129,11 @@ describe("workspaceApiClient", () => {
 			const mockGet = vi.fn().mockResolvedValue({
 				data: mockWorkspace1,
 			});
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			const result = await workspaceApiClient.getWorkspace(mockWorkspace1.id);
 
@@ -114,7 +142,11 @@ describe("workspaceApiClient", () => {
 
 		it("should return null when workspace not found", async () => {
 			const mockGet = vi.fn().mockResolvedValue({ data: null });
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			const result = await workspaceApiClient.getWorkspace(
 				"999e8400-e29b-41d4-a716-446655440999",
@@ -125,7 +157,11 @@ describe("workspaceApiClient", () => {
 
 		it("should throw error when network fails", async () => {
 			const mockGet = vi.fn().mockRejectedValue(new Error("Network failure"));
-			vi.spyOn(workspaceApiClient, "get").mockImplementation(mockGet);
+			// Cast to access protected get method for testing
+			vi.spyOn(
+				workspaceApiClient as HttpClientWithGet,
+				"get",
+			).mockImplementation(mockGet);
 
 			await expect(
 				workspaceApiClient.getWorkspace(mockWorkspace1.id),
