@@ -1,0 +1,17 @@
+{
+  "name": "Update workspace",
+  "request": {
+    "method": "PUT",
+    "url": "{{baseUrl}}/workspace/{{workspaceId}}/update",
+    "headers": {
+      "Authorization": "Bearer {{token}}",
+      "Content-Type": "application/json",
+      "Accept": "application/vnd.api.v1+json"
+    },
+    "body": {
+      "name": "Nuevo nombre",
+      "description": "Descripción actualizada"
+    }
+  },
+  "description": "Actualiza los datos de un workspace existente. Requiere autenticación."
+}

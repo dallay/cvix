@@ -1336,6 +1336,7 @@ description: Overview of the project structure and organization.
 │   │   │       └───index.html
 │   │   ├───pagefind/
 │   │   │   ├───fragment/
+│   │   │   │   ├───en_14ebf11.pf_fragment
 │   │   │   │   ├───en_1c85b7f.pf_fragment
 │   │   │   │   ├───en_2828fc8.pf_fragment
 │   │   │   │   ├───en_2dfab6c.pf_fragment
@@ -1343,19 +1344,18 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
-│   │   │   │   ├───en_8dcdedb.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_e160bd8.pf_index
-│   │   │   │   └───en_e2929a3.pf_index
+│   │   │   │   ├───en_20b9f49.pf_index
+│   │   │   │   └───en_9762b56.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_c6d76e3c3a.pf_meta
+│   │   │   ├───pagefind.en_bc947d51c3.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
@@ -1584,36 +1584,39 @@ description: Overview of the project structure and organization.
 │   ├───package.json
 │   └───tsconfig.json
 ├───endpoints/
-│   └───SAAS TEMPLATE/
-│       ├───actuator/
-│       │   ├───Actuator Health.bru
-│       │   ├───Actuator.bru
-│       │   ├───actuator-info.bru
-│       │   └───folder.bru
-│       ├───authentication/
-│       │   ├───Account.bru
-│       │   ├───Get Session.bru
-│       │   ├───Register User.bru
-│       │   ├───User Login.bru
-│       │   ├───User Logout.bru
-│       │   └───folder.bru
-│       ├───environments/
-│       │   └───⚪ L O C A L.bru
-│       ├───health-check/
-│       │   ├───folder.bru
-│       │   └───health-check.bru
-│       ├───workspace/
-│       │   ├───Create workspace.bru
-│       │   ├───Find a workspace.bru
-│       │   ├───Get All Workspaces.bru
-│       │   ├───Update workspace.bru
-│       │   └───folder.bru
-│       ├───🔐 Keycloak/
-│       │   ├───folder.bru
-│       │   ├───openid-connect refresh token.bru
-│       │   └───openid-connect-token.bru
-│       ├───bruno.json
-│       └───collection.bru
+│   ├───SAAS TEMPLATE/
+│   │   ├───actuator/
+│   │   │   ├───Actuator Health.bru
+│   │   │   ├───Actuator.bru
+│   │   │   ├───actuator-info.bru
+│   │   │   └───folder.bru
+│   │   ├───authentication/
+│   │   │   ├───Account.bru
+│   │   │   ├───Get Session.bru
+│   │   │   ├───Register User.bru
+│   │   │   ├───User Login.bru
+│   │   │   ├───User Logout.bru
+│   │   │   └───folder.bru
+│   │   ├───environments/
+│   │   │   └───⚪ L O C A L.bru
+│   │   ├───health-check/
+│   │   │   ├───folder.bru
+│   │   │   └───health-check.bru
+│   │   ├───workspace/
+│   │   │   ├───Create workspace.bru
+│   │   │   ├───Find a workspace.bru
+│   │   │   ├───Get All Workspaces.bru
+│   │   │   ├───Update workspace.bru
+│   │   │   └───folder.bru
+│   │   ├───🔐 Keycloak/
+│   │   │   ├───folder.bru
+│   │   │   ├───openid-connect refresh token.bru
+│   │   │   └───openid-connect-token.bru
+│   │   ├───bruno.json
+│   │   └───collection.bru
+│   └───workspace/
+│       ├───Delete workspace.bru
+│       └───Update workspace.bru
 ├───gradle/
 │   ├───wrapper/
 │   │   ├───gradle-wrapper.jar

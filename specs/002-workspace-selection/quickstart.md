@@ -136,31 +136,19 @@ useWorkspaceStore(pinia)
 Add a navigation guard to automatically load the workspace after login:
 
 ```typescript
-// src/router/guards/workspaceGuard.ts
-import { NavigationGuard } from 'vue-router'
-import { useWorkspaceStore } from '@/workspace/infrastructure/store/workspaceStore'
+// The workspace feature provides a ready-made navigation guard implementation
+// at `client/apps/webapp/src/workspace/infrastructure/router/workspaceGuard.ts`.
+// Import and register it directly rather than re-implementing the logic.
 
-export const workspaceAutoLoadGuard: NavigationGuard = async (to, from) => {
-  // Skip if coming from logout or already on auth pages
-  if (to.meta.requiresAuth === false) return
-  if (from.name === null && to.name === 'login') return
-
-  const workspaceStore = useWorkspaceStore()
-
-  // Load workspaces if not already loaded
-  if (workspaceStore.workspaces.length === 0 && !workspaceStore.isLoading) {
-    await workspaceStore.loadWorkspaces()
-  }
-}
-```
-
-Register the guard in your router:
-
-```typescript
 // src/router/index.ts
-import { workspaceAutoLoadGuard } from './guards/workspaceGuard'
+import { workspaceGuard } from './guards/workspaceGuard'
 
-router.beforeEach(workspaceAutoLoadGuard)
+// Register the guard (it will load workspace on first authenticated navigation per-session)
+router.beforeEach(workspaceGuard)
+
+// Optional: reset the per-session flag when logging out or in test teardown so the
+// guard will attempt to load again on the next authenticated navigation.
+// resetWorkspaceGuardSession()
 ```
 
 ### 3. Add Workspace Selector to Layout

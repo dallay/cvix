@@ -1,5 +1,4 @@
 import { computed } from "vue";
-import { saveLastSelected } from "../infrastructure/storage/workspaceLocalStorage";
 import { useWorkspaceStore } from "../infrastructure/store/workspaceStore";
 
 /**
@@ -27,11 +26,8 @@ export function useWorkspaceSelection() {
 		workspaceId: string,
 		userId: string,
 	): Promise<void> {
-		// Call store action to select workspace
+		// Call store action to select workspace (store handles persistence)
 		await store.selectWorkspace(workspaceId, userId);
-
-		// Persist the selection to localStorage
-		saveLastSelected(userId, workspaceId);
 	}
 
 	// Computed properties for convenience

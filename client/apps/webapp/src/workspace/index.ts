@@ -6,11 +6,14 @@
 // Application layer
 export { useWorkspaceLoader } from "./application/useWorkspaceLoader";
 export { useWorkspaceSelection } from "./application/useWorkspaceSelection";
-export type { Workspace } from "./domain/WorkspaceEntity";
+
 // Domain layer
+export type { Workspace } from "./domain/WorkspaceEntity";
 export { WorkspaceId } from "./domain/WorkspaceId";
 export { WorkspaceName } from "./domain/WorkspaceName";
 export { determineWorkspaceToLoad } from "./domain/WorkspaceSelectionService";
+
+// Infrastructure layer
 export type { WorkspaceApiClient } from "./infrastructure/api/WorkspaceApiClient";
 export { workspaceHttpClient } from "./infrastructure/http/workspaceHttpClient";
 // Router guards
@@ -18,7 +21,6 @@ export {
 	resetWorkspaceGuardSession,
 	workspaceGuard,
 } from "./infrastructure/router/workspaceGuard";
-// Infrastructure layer
 export { workspaceLocalStorage } from "./infrastructure/storage/workspaceLocalStorage";
 export { useWorkspaceStore } from "./infrastructure/store/workspaceStore";
 

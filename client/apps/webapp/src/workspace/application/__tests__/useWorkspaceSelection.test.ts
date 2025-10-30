@@ -11,12 +11,10 @@ vi.mock("../../infrastructure/store/workspaceStore", () => ({
 
 // Mock the workspace storage
 vi.mock("../../infrastructure/storage/workspaceLocalStorage", () => ({
-	saveLastSelected: vi.fn(),
 	getLastSelected: vi.fn(),
 	clearLastSelected: vi.fn(),
 }));
 
-import { saveLastSelected } from "../../infrastructure/storage/workspaceLocalStorage";
 import { useWorkspaceStore } from "../../infrastructure/store/workspaceStore";
 
 describe("useWorkspaceSelection", () => {
@@ -135,19 +133,6 @@ describe("useWorkspaceSelection", () => {
 			await expect(
 				selectWorkspace(mockWorkspace1.id, "user-123"),
 			).rejects.toThrow("Selection failed");
-		});
-
-		it("should save last selected workspace to storage", async () => {
-			mockStore.selectWorkspace.mockResolvedValue(undefined);
-
-			const { selectWorkspace } = useWorkspaceSelection();
-
-			await selectWorkspace(mockWorkspace1.id, "user-123");
-
-			expect(saveLastSelected).toHaveBeenCalledWith(
-				"user-123",
-				mockWorkspace1.id,
-			);
 		});
 	});
 

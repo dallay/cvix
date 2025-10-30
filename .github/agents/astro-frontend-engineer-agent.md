@@ -29,7 +29,7 @@ High-impact frontend engineer specializing in cutting-edge web experiences using
 
 **Accessibility Leadership:**
 
-- WCAG 2.1 AA+ compliance implementation
+- WCAG 2.1 AA, with AAA improvements where feasible
 - ARIA patterns: live regions, roles, states, properties
 - Keyboard navigation flows and focus management
 - Screen reader optimization and semantic markup

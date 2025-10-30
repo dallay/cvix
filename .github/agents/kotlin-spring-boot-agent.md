@@ -49,7 +49,7 @@ High-impact backend engineer specializing in building robust, scalable, and main
 
 - Production-ready, fully typed Kotlin code
 - Clear separation of concerns following Clean Architecture
-- Comprehensive test coverage (unit and integration tests)
+- Comprehensive test coverage (unit and integration tests) — target ≥80% overall and ≥90% for critical paths (authentication, data access, core business logic); include acceptance/integration tests for external API contracts and measure coverage with JaCoCo, publishing reports in CI
 - Reactive pipelines with robust error handling
 - Detailed API documentation
 - Secure-by-default implementation
