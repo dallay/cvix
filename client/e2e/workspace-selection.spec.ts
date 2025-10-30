@@ -1,7 +1,15 @@
+import type {
+	APIRequestContext,
+	ConsoleMessage,
+	Page,
+	Route,
+} from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { getTestUser } from "./config/environment";
+import { WorkspaceTestFixtures } from "./fixtures/workspace-fixtures";
 
 test.describe("Workspace Selection Feature", () => {
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page }: { page: Page }) => {
 		// Setup: Navigate to login page
 		await page.goto("/login");
 	});
@@ -9,6 +17,8 @@ test.describe("Workspace Selection Feature", () => {
 	test.describe("Auto-load on Login (User Story 1)", () => {
 		test("should auto-load last selected workspace within 2 seconds", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate user", async () => {
 				// Login with test credentials
@@ -56,6 +66,8 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should auto-load default workspace when no last selected", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate new user with no history", async () => {
 				// Login with new user credentials (no workspace selection history)
@@ -82,15 +94,43 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should auto-load first workspace when no default exists", async ({
 			page,
+			request,
+		}: {
+			page: Page;
+			request: APIRequestContext;
 		}) => {
+			const fixtures = new WorkspaceTestFixtures(request);
+			const testUser = getTestUser("noDefault");
+			let createdWorkspaces: Array<{ id: string; isDefault: boolean }> = [];
+
 			await test.step("Setup account with non-default workspaces only", async () => {
-				// This would require test data setup with no default workspace
-				// For now, we'll verify the behavior if it occurs
+				// Create test account with only non-default workspaces
+				// This ensures deterministic test state
+				try {
+					createdWorkspaces = await fixtures.setupUserWithNonDefaultWorkspaces(
+						testUser.email,
+						testUser.password,
+						testUser.id,
+						["Alpha Workspace", "Beta Workspace"],
+					);
+
+					// Verify we have non-default workspaces
+					expect(createdWorkspaces.length).toBeGreaterThan(0);
+					for (const ws of createdWorkspaces) {
+						expect(ws.isDefault).toBe(false);
+					}
+				} catch (error) {
+					console.warn(
+						"Could not set up test fixtures. Test may fail if user doesn't exist or API is unavailable:",
+						error,
+					);
+					// Continue with test - it may still pass if data exists from previous runs
+				}
 			});
 
 			await test.step("Authenticate user", async () => {
-				await page.getByLabel("Email").fill("nodefault@example.com");
-				await page.getByLabel("Password").fill("password123");
+				await page.getByLabel("Email").fill(testUser.email);
+				await page.getByLabel("Password").fill(testUser.password);
 				await page.getByRole("button", { name: /log in/i }).click();
 
 				await expect(page).toHaveURL(/\/dashboard/);
@@ -108,13 +148,42 @@ test.describe("Workspace Selection Feature", () => {
 				);
 				await expect(defaultBadge).not.toBeVisible();
 			});
+
+			// Cleanup: Delete created workspaces
+			await test.step("Cleanup test data", async () => {
+				try {
+					await fixtures.cleanup(testUser.email, testUser.password);
+				} catch (error) {
+					console.warn("Cleanup failed:", error);
+				}
+			});
 		});
 
-		test("should show error when no workspaces available", async ({ page }) => {
+		test("should show error when no workspaces available", async ({
+			page,
+			request,
+		}: {
+			page: Page;
+			request: APIRequestContext;
+		}) => {
+			const fixtures = new WorkspaceTestFixtures(request);
+			const testUser = getTestUser("noWorkspace");
+
+			await test.step("Setup user with no workspaces", async () => {
+				try {
+					await fixtures.setupUserWithNoWorkspaces(
+						testUser.email,
+						testUser.password,
+						testUser.id,
+					);
+				} catch (error) {
+					console.warn("Could not set up test fixtures:", error);
+				}
+			});
+
 			await test.step("Authenticate user with no workspaces", async () => {
-				// This requires test data setup with user having no workspaces
-				await page.getByLabel("Email").fill("noworkspace@example.com");
-				await page.getByLabel("Password").fill("password123");
+				await page.getByLabel("Email").fill(testUser.email);
+				await page.getByLabel("Password").fill(testUser.password);
 				await page.getByRole("button", { name: /log in/i }).click();
 			});
 
@@ -123,14 +192,27 @@ test.describe("Workspace Selection Feature", () => {
 				await expect(errorMessage).toBeVisible({ timeout: 2000 });
 				await expect(errorMessage).toContainText(/no workspaces/i);
 			});
+
+			// Cleanup
+			await test.step("Cleanup test data", async () => {
+				try {
+					await fixtures.cleanup(testUser.email, testUser.password);
+				} catch (error) {
+					console.warn("Cleanup failed:", error);
+				}
+			});
 		});
 
 		test("should handle network errors gracefully during auto-load", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Simulate network failure", async () => {
 				// Intercept API call and simulate failure
-				await page.route("**/api/workspace", (route) => route.abort("failed"));
+				await page.route("**/api/workspace", (route: Route) =>
+					route.abort("failed"),
+				);
 			});
 
 			await test.step("Authenticate user", async () => {
@@ -154,6 +236,8 @@ test.describe("Workspace Selection Feature", () => {
 	test.describe("Manual Workspace Selection (User Story 2)", () => {
 		test("should switch workspace on manual selection within 3 seconds", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate user", async () => {
 				await page.getByLabel("Email").fill("test@example.com");
@@ -237,6 +321,8 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should display all available workspaces in selector", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate and navigate", async () => {
 				await page.getByLabel("Email").fill("test@example.com");
@@ -270,6 +356,8 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should show default badge in workspace selector", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate and open selector", async () => {
 				await page.getByLabel("Email").fill("test@example.com");
@@ -295,6 +383,8 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should support keyboard navigation in workspace selector", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Authenticate and open selector", async () => {
 				await page.getByLabel("Email").fill("test@example.com");
@@ -331,7 +421,11 @@ test.describe("Workspace Selection Feature", () => {
 			});
 		});
 
-		test("should close selector with Escape key", async ({ page }) => {
+		test("should close selector with Escape key", async ({
+			page,
+		}: {
+			page: Page;
+		}) => {
 			await test.step("Authenticate and open selector", async () => {
 				await page.getByLabel("Email").fill("test@example.com");
 				await page.getByLabel("Password").fill("password123");
@@ -357,11 +451,13 @@ test.describe("Workspace Selection Feature", () => {
 
 		test("should emit workspace-selected event after selection", async ({
 			page,
+		}: {
+			page: Page;
 		}) => {
 			await test.step("Setup event listener", async () => {
 				// Monitor console for event emission (in a real app with analytics)
 				const events: string[] = [];
-				page.on("console", (msg) => {
+				page.on("console", (msg: ConsoleMessage) => {
 					if (msg.text().includes("workspace-selected")) {
 						events.push(msg.text());
 					}
