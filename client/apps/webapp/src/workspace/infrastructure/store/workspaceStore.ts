@@ -68,6 +68,12 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 					timestamp: new Date(),
 				};
 				workspaces.value = [];
+				// Rethrow normalized error so callers can handle/retry
+				throw {
+					code: WorkspaceErrorCode.NETWORK_ERROR,
+					message: errorMessage,
+					timestamp: new Date(),
+				};
 			} finally {
 				isLoading.value = false;
 				loadPromise = null;

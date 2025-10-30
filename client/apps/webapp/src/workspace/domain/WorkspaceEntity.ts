@@ -49,12 +49,12 @@ export function createWorkspace(data: Workspace): Workspace {
 	}
 
 	// Trim and validate description length
+	let trimmedDescription: string | null = null;
 	if (data.description !== null) {
-		const trimmedDescription = data.description.trim();
+		trimmedDescription = data.description.trim();
 		if (trimmedDescription.length > 500) {
 			throw new Error("Workspace description must not exceed 500 characters");
 		}
-		data.description = trimmedDescription;
 	}
 
 	// Validate dates
@@ -62,7 +62,16 @@ export function createWorkspace(data: Workspace): Workspace {
 		throw new Error("updatedAt must be after or equal to createdAt");
 	}
 
-	return data;
+	// Return new object with trimmed description
+	return {
+		id: data.id,
+		name: data.name,
+		description: trimmedDescription,
+		isDefault: data.isDefault,
+		ownerId: data.ownerId,
+		createdAt: data.createdAt,
+		updatedAt: data.updatedAt,
+	};
 }
 
 /**

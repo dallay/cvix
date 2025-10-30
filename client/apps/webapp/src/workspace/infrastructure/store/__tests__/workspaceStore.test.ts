@@ -179,7 +179,9 @@ describe("workspaceStore", () => {
 				new Error("Network error"),
 			);
 
-			await store.loadWorkspaces();
+			await expect(store.loadWorkspaces()).rejects.toMatchObject({
+				code: WorkspaceErrorCode.NETWORK_ERROR,
+			});
 
 			expect(store.workspaces).toEqual([]);
 			expect(store.isLoading).toBe(false);
@@ -264,7 +266,9 @@ describe("workspaceStore", () => {
 			);
 
 			// Trigger error
-			await store.loadWorkspaces();
+			await expect(store.loadWorkspaces()).rejects.toMatchObject({
+				code: WorkspaceErrorCode.NETWORK_ERROR,
+			});
 			expect(store.error).toBeTruthy();
 
 			// Clear error

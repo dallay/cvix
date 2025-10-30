@@ -85,7 +85,7 @@ Creates multiple non-default workspaces for a test user. Automatically ensures u
 - `userId` (string): User UUID
 - `workspaceNames` (string[]): Array of workspace names to create (default: ["Workspace Alpha", "Workspace Beta"])
 
-**Returns:** `Promise<WorkspaceFixture[]>` - Array of created workspaces**Returns:** `Promise<WorkspaceFixture[]>` - Array of created workspaces
+**Returns:** `Promise<WorkspaceFixture[]>` - Array of created workspaces
 
 #### `setupUserWithDefaultWorkspace(email, password, userId, workspaceName)`
 
@@ -162,30 +162,6 @@ process.env.API_BASE_URL = 'http://localhost:8080/api/v1';
 process.env.KEYCLOAK_URL = 'http://localhost:9080/realms/loomify';
 ```
 
-#### `cleanup(email, password)`
-Deletes all workspaces for a user. Use this in `afterEach` or `afterAll` hooks to clean up test data.
-
-**Parameters:**
-- `email` (string): User email
-- `password` (string): User password
-
-**Returns:** `Promise<void>`
-
-### Configuration
-
-The fixtures use the following environment variable:
-- `API_BASE_URL`: Base URL for API calls (default: `http://localhost:8080/api/v1`)
-
-You can set this in your Playwright configuration or environment:
-
-```typescript
-// playwright.config.ts
-use: {
-  baseURL: 'http://localhost:9876',
-  // API calls will use API_BASE_URL env var or default
-}
-```
-
 ### Best Practices
 
 1. **Always clean up**: Use the `cleanup()` method in a test step or afterEach hook to prevent test pollution
@@ -197,16 +173,19 @@ use: {
 ### Troubleshooting
 
 **Authentication fails:**
+
 - Ensure the test user exists in your test database
 - Verify the API_BASE_URL is correct
 - Check that the auth endpoint matches your implementation
 
 **Workspaces not created:**
+
 - Verify the backend API is running and accessible
 - Check API endpoint paths match your backend routes
 - Review backend logs for error details
 
 **Cleanup fails:**
+
 - This is usually non-critical and logged as a warning
 - May occur if the user doesn't exist or was already cleaned up
 - Check if your backend requires special permissions for deletion

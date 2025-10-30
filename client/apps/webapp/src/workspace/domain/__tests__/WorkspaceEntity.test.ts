@@ -95,6 +95,32 @@ describe("WorkspaceEntity", () => {
 				"updatedAt must be after or equal to createdAt",
 			);
 		});
+
+		it("should trim whitespace from description", () => {
+			const workspaceData: Workspace = {
+				...validWorkspaceData,
+				description: "  A test workspace with whitespace  ",
+			};
+
+			const workspace = createWorkspace(workspaceData);
+
+			expect(workspace.description).toBe("A test workspace with whitespace");
+		});
+
+		it("should not mutate the input object", () => {
+			const originalDescription = "  A test workspace with whitespace  ";
+			const workspaceData: Workspace = {
+				...validWorkspaceData,
+				description: originalDescription,
+			};
+			const originalData = { ...workspaceData };
+
+			createWorkspace(workspaceData);
+
+			// Input object should remain unchanged
+			expect(workspaceData).toEqual(originalData);
+			expect(workspaceData.description).toBe(originalDescription);
+		});
 	});
 
 	describe("isValidWorkspace", () => {
