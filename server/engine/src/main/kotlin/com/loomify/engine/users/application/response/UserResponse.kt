@@ -8,12 +8,14 @@ import java.io.Serializable
  * @author acosta
  * @created 29/6/23
  *
+ * @property id The unique identifier (UUID) of the user.
  * @property username The username of the user.
  * @property email The email address of the user.
  * @property firstname The first name of the user, nullable.
  * @property lastname The last name of the user, nullable.
  */
 data class UserResponse(
+    val id: String,
     val username: String,
     val email: String,
     val firstname: String?,

@@ -39,6 +39,7 @@ interface TokenRefreshResponse {
 }
 
 interface UserResponse {
+	id: string;
 	username: string;
 	email: string;
 	firstname: string | null;
@@ -250,6 +251,7 @@ export class AuthHttpClient extends BaseHttpClient {
 			const response = await this.get<UserResponse>("/account");
 
 			return {
+				id: response.id,
 				username: response.username,
 				email: response.email,
 				firstName: response.firstname,

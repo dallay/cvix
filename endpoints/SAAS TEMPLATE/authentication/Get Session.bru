@@ -6,19 +6,12 @@ meta {
 
 get {
   url: {{url}}/api/auth/session
-  body: text
+  body: none
   auth: none
 }
 
 headers {
   X-XSRF-TOKEN: {{xsrf-token}}
-}
-
-body:text {
-  {
-      "username": "john.doe@loomify.com",
-      "password": "S3cr3tP@ssw0rd*123"
-  }
 }
 
 settings {

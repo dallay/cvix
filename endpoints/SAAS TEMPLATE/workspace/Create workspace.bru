@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{url}}/api/organization/{{$randomUUID}}
+  url: {{url}}/api/workspace/{{$randomUUID}}
   body: json
   auth: inherit
 }
@@ -17,7 +17,8 @@ headers {
 body:json {
   {
       "name": "Lyra Vault",
-      "userId": "efc4b2b8-08be-4020-93d5-f795762bf5c9"
+      "description": "A secure workspace for team collaboration",
+      "ownerId": "efc4b2b8-08be-4020-93d5-f795762bf5c9"
   }
 }
 

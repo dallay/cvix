@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { authRoutes } from "@/authentication/presentation/authRoutes";
 import { useAuthStore } from "@/authentication/presentation/stores/authStore";
+import { workspaceGuard } from "@/workspace/infrastructure/router/workspaceGuard";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,5 +66,9 @@ router.beforeEach(async (to, from, next) => {
 
 	next();
 });
+
+// Navigation guard for workspace loading
+// Must run AFTER authentication guard to ensure user is authenticated
+router.beforeEach(workspaceGuard);
 
 export default router;

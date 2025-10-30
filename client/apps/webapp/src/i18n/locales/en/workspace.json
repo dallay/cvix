@@ -1,0 +1,44 @@
+{
+	"workspace": {
+		"selector": {
+			"title": "Select Workspace",
+			"placeholder": "Choose a workspace",
+			"noWorkspaces": "No workspaces available",
+			"loading": "Loading workspaces...",
+			"defaultBadge": "Default",
+			"currentBadge": "Current",
+			"switchWorkspace": "Switch Workspace"
+		},
+		"loading": {
+			"autoLoad": "Loading your workspace...",
+			"switching": "Switching workspace...",
+			"fetchingList": "Fetching workspaces..."
+		},
+		"error": {
+			"loadFailed": "Failed to load workspaces",
+			"switchFailed": "Failed to switch workspace",
+			"networkError": "Network error. Please check your connection.",
+			"apiError": "Server error. Please try again later.",
+			"validationError": "Invalid workspace data.",
+			"noWorkspaces": "You don't have access to any workspaces.",
+			"workspaceNotFound": "Workspace not found.",
+			"noDefaultWorkspace": "No default workspace configured.",
+			"unauthorized": "You don't have permission to access this workspace.",
+			"retry": "Retry",
+			"contactSupport": "If the problem persists, please contact support."
+		},
+		"success": {
+			"switched": "Workspace switched successfully",
+			"loaded": "Workspace loaded"
+		},
+		"accessibility": {
+			"openSelector": "Open workspace selector",
+			"closeSelector": "Close workspace selector",
+			"selectWorkspace": "Select workspace {name}",
+			"workspaceList": "List of available workspaces",
+			"currentWorkspace": "Current workspace is {name}",
+			"loadingState": "Loading workspace information",
+			"errorState": "Error loading workspaces"
+		}
+	}
+}

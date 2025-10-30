@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { useWorkspaceStore } from "@/workspace/infrastructure/store/workspaceStore";
 import type { Session, User } from "../../domain/models/auth.model.ts";
 import type {
 	LoginFormData,
@@ -87,6 +88,9 @@ export const useAuthStore = defineStore("auth", () => {
 			user.value = null;
 			session.value = null;
 			authSessionStorage.clearSession();
+			// Reset workspace session state on logout
+			const workspaceStore = useWorkspaceStore();
+			workspaceStore.resetSession();
 			isLoading.value = false;
 		}
 	}

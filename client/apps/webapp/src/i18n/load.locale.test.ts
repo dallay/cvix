@@ -291,6 +291,48 @@ const expectedEnMessages = {
 		form: enLoginForm,
 	},
 	register: { form: { validation: enRegisterValidation } },
+	workspace: {
+		accessibility: {
+			closeSelector: "Close workspace selector",
+			currentWorkspace: "Current workspace is {name}",
+			errorState: "Error loading workspaces",
+			loadingState: "Loading workspace information",
+			openSelector: "Open workspace selector",
+			selectWorkspace: "Select workspace {name}",
+			workspaceList: "List of available workspaces",
+		},
+		error: {
+			apiError: "Server error. Please try again later.",
+			contactSupport: "If the problem persists, please contact support.",
+			loadFailed: "Failed to load workspaces",
+			networkError: "Network error. Please check your connection.",
+			noDefaultWorkspace: "No default workspace configured.",
+			noWorkspaces: "You don't have access to any workspaces.",
+			retry: "Retry",
+			switchFailed: "Failed to switch workspace",
+			unauthorized: "You don't have permission to access this workspace.",
+			validationError: "Invalid workspace data.",
+			workspaceNotFound: "Workspace not found.",
+		},
+		loading: {
+			autoLoad: "Loading your workspace...",
+			fetchingList: "Fetching workspaces...",
+			switching: "Switching workspace...",
+		},
+		selector: {
+			currentBadge: "Current",
+			defaultBadge: "Default",
+			loading: "Loading workspaces...",
+			noWorkspaces: "No workspaces available",
+			placeholder: "Choose a workspace",
+			switchWorkspace: "Switch Workspace",
+			title: "Select Workspace",
+		},
+		success: {
+			loaded: "Workspace loaded",
+			switched: "Workspace switched successfully",
+		},
+	},
 };
 
 const expectedEsMessages = {
@@ -347,6 +389,49 @@ const expectedEsMessages = {
 		form: esLoginForm,
 	},
 	register: { form: { validation: esRegisterValidation } },
+	workspace: {
+		accessibility: {
+			closeSelector: "Cerrar selector de espacios de trabajo",
+			currentWorkspace: "El espacio de trabajo actual es {name}",
+			errorState: "Error al cargar espacios de trabajo",
+			loadingState: "Cargando información del espacio de trabajo",
+			openSelector: "Abrir selector de espacios de trabajo",
+			selectWorkspace: "Seleccionar espacio de trabajo {name}",
+			workspaceList: "Lista de espacios de trabajo disponibles",
+		},
+		error: {
+			apiError: "Error del servidor. Por favor intenta más tarde.",
+			contactSupport: "Si el problema persiste, por favor contacta a soporte.",
+			loadFailed: "Error al cargar espacios de trabajo",
+			networkError: "Error de red. Por favor verifica tu conexión.",
+			noDefaultWorkspace:
+				"No hay espacio de trabajo predeterminado configurado.",
+			noWorkspaces: "No tienes acceso a ningún espacio de trabajo.",
+			retry: "Reintentar",
+			switchFailed: "Error al cambiar espacio de trabajo",
+			unauthorized: "No tienes permiso para acceder a este espacio de trabajo.",
+			validationError: "Datos de espacio de trabajo inválidos.",
+			workspaceNotFound: "Espacio de trabajo no encontrado.",
+		},
+		loading: {
+			autoLoad: "Cargando tu espacio de trabajo...",
+			fetchingList: "Obteniendo espacios de trabajo...",
+			switching: "Cambiando espacio de trabajo...",
+		},
+		selector: {
+			currentBadge: "Actual",
+			defaultBadge: "Predeterminado",
+			loading: "Cargando espacios de trabajo...",
+			noWorkspaces: "No hay espacios de trabajo disponibles",
+			placeholder: "Elige un espacio de trabajo",
+			switchWorkspace: "Cambiar Espacio de Trabajo",
+			title: "Seleccionar Espacio de Trabajo",
+		},
+		success: {
+			loaded: "Espacio de trabajo cargado",
+			switched: "Espacio de trabajo cambiado exitosamente",
+		},
+	},
 };
 
 describe("getLocaleModulesSync", () => {
