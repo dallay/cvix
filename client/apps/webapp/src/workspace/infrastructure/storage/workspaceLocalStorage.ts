@@ -35,7 +35,15 @@ export function saveLastSelected(userId: string, workspaceId: string): void {
 		selectedAt: new Date().toISOString(),
 	};
 
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
+	try {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
+	} catch (err) {
+		if (err instanceof DOMException && err.name === "QuotaExceededError") {
+			console.error("[Workspace Storage] localStorage quota exceeded");
+			// Optionally: clear old data or notify user
+		}
+		throw err;
+	}
 }
 
 /**
