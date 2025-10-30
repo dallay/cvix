@@ -51,7 +51,7 @@ The `workspaceHttpClient` extends `BaseHttpClient` and adds workspace-specific A
 The `useWorkspaceSelection` composable provides reactive workspace state and actions:
 
 ```typescript
-import { useWorkspaceSelection } from '@/features/workspace/application/composables/useWorkspaceSelection'
+import { useWorkspaceSelection } from '@/workspace/application/composables/useWorkspaceSelection'
 
 // In your component
 const {
@@ -81,7 +81,7 @@ const handleWorkspaceChange = async (workspaceId: string) => {
 If you need direct access to the store:
 
 ```typescript
-import { useWorkspaceStore } from '@/features/workspace/infrastructure/store/workspaceStore'
+import { useWorkspaceStore } from '@/workspace/infrastructure/store/workspaceStore'
 
 const workspaceStore = useWorkspaceStore()
 
@@ -100,7 +100,7 @@ The pre-built component handles all UI logic:
 
 ```vue
 <script setup lang="ts">
-import WorkspaceSelector from '@/features/workspace/presentation/components/WorkspaceSelector.vue'
+import WorkspaceSelector from '@/workspace/presentation/components/WorkspaceSelector.vue'
 
 const handleWorkspaceSelected = (workspace: Workspace) => {
   console.log('Switched to:', workspace.name)
@@ -122,7 +122,7 @@ The workspace store is automatically registered if using Pinia plugin auto-regis
 ```typescript
 // src/main.ts
 import { createPinia } from 'pinia'
-import { useWorkspaceStore } from '@/features/workspace/infrastructure/store/workspaceStore'
+import { useWorkspaceStore } from '@/workspace/infrastructure/store/workspaceStore'
 
 const pinia = createPinia()
 app.use(pinia)
@@ -138,7 +138,7 @@ Add a navigation guard to automatically load the workspace after login:
 ```typescript
 // src/router/guards/workspaceGuard.ts
 import { NavigationGuard } from 'vue-router'
-import { useWorkspaceStore } from '@/features/workspace/infrastructure/store/workspaceStore'
+import { useWorkspaceStore } from '@/workspace/infrastructure/store/workspaceStore'
 
 export const workspaceAutoLoadGuard: NavigationGuard = async (to, from) => {
   // Skip if coming from logout or already on auth pages
