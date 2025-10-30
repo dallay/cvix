@@ -25,6 +25,11 @@ export interface WorkspaceSelectionPreference {
 	selectedAt: Date | null; // Timestamp of last selection
 }
 
+function validateWorkspaceName(data: Workspace) {
+	// Validate name
+	new WorkspaceName(data.name); // Throws if invalid
+}
+
 /**
  * Creates and validates a workspace entity
  * @param data - Raw workspace data
@@ -36,18 +41,20 @@ export function createWorkspace(data: Workspace): Workspace {
 	if (!WorkspaceId.isValid(data.id)) {
 		throw new Error(`Invalid workspace ID: ${data.id}`);
 	}
-
-	// Validate name
-	new WorkspaceName(data.name); // Throws if invalid
+	validateWorkspaceName(data);
 
 	// Validate owner ID
 	if (!WorkspaceId.isValid(data.ownerId)) {
 		throw new Error(`Invalid owner ID: ${data.ownerId}`);
 	}
 
-	// Validate description length
-	if (data.description !== null && data.description.length > 500) {
-		throw new Error("Workspace description must not exceed 500 characters");
+	// Trim and validate description length
+	if (data.description !== null) {
+		const trimmedDescription = data.description.trim();
+		if (trimmedDescription.length > 500) {
+			throw new Error("Workspace description must not exceed 500 characters");
+		}
+		data.description = trimmedDescription;
 	}
 
 	// Validate dates

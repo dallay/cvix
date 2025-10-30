@@ -1337,20 +1337,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_48f2115.pf_fragment
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
-│   │   │   │   ├───en_659efc9.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
+│   │   │   │   ├───en_d9d43e1.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_8df564a.pf_index
-│   │   │   │   └───en_b638d1b.pf_index
+│   │   │   │   └───en_58c2e79.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_4f797eb22b.pf_meta
+│   │   │   ├───pagefind.en_a179f94551.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
