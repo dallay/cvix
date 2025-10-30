@@ -101,11 +101,11 @@ const getDisplayName = (currentUser: typeof user.value) => {
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownMenuItem @click="router.push('/profile')">
+        <DropdownMenuItem @click="router.push('/dashboard')">
           <PhUserLight class="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem @click="router.push('/settings')">
+        <DropdownMenuItem @click="router.push('/dashboard')">
           <PhGearLight class="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>

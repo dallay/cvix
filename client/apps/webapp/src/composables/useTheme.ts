@@ -1,14 +1,19 @@
-import { ref, watch } from "vue";
+import { onUnmounted, ref, watch } from "vue";
 
 export type Theme = "light" | "dark" | "system";
 
 const THEME_STORAGE_KEY = "theme-preference";
 
+// Type guard for Theme
+function isValidTheme(value: unknown): value is Theme {
+	return value === "light" || value === "dark" || value === "system";
+}
+
 // Get the initial theme from localStorage or default to system
 function getInitialTheme(): Theme {
 	try {
 		const stored = localStorage.getItem(THEME_STORAGE_KEY);
-		if (stored === "light" || stored === "dark" || stored === "system") {
+		if (isValidTheme(stored)) {
 			return stored;
 		}
 	} catch (error) {
@@ -45,13 +50,17 @@ function applyTheme(appliedTheme: "light" | "dark") {
 	resolvedTheme.value = appliedTheme;
 }
 
+// Media query for system theme detection
+let mediaQuery: MediaQueryList | null = null;
+let mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
+
 // Initialize theme on first load
 if (typeof document !== "undefined") {
 	applyTheme(resolvedTheme.value);
 
 	// Listen for system theme changes
-	const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-	const handleSystemThemeChange = () => {
+	mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+	mediaQueryListener = () => {
 		if (theme.value === "system") {
 			const newSystemTheme = getSystemTheme();
 			applyTheme(newSystemTheme);
@@ -60,7 +69,7 @@ if (typeof document !== "undefined") {
 
 	// Modern API
 	if (mediaQuery.addEventListener) {
-		mediaQuery.addEventListener("change", handleSystemThemeChange);
+		mediaQuery.addEventListener("change", mediaQueryListener);
 	}
 }
 
@@ -91,6 +100,15 @@ export function useTheme() {
 			setTheme("light");
 		}
 	};
+
+	// Cleanup media query listener on unmount
+	onUnmounted(() => {
+		if (mediaQuery && mediaQueryListener) {
+			if (mediaQuery.removeEventListener) {
+				mediaQuery.removeEventListener("change", mediaQueryListener);
+			}
+		}
+	});
 
 	return {
 		theme,
