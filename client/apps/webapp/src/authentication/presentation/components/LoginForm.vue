@@ -36,7 +36,6 @@ const form = useForm<LoginFormData>({
 		rememberMe: false,
 	},
 	validateOnMount: false,
-	keepValuesOnUnmount: true,
 });
 
 const onSubmit = form.handleSubmit(async (values) => {
