@@ -4,7 +4,6 @@ import { computed, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import { useAuthStore } from "@/authentication/presentation/stores/authStore.ts";
-import MainMenuNav from "@/components/MainMenuNav.vue";
 import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
 import UserNav from "@/components/UserNav.vue";
 import {
@@ -87,7 +86,6 @@ const breadcrumbs = computed(() => {
       </Breadcrumb>
     </div>
     <div class="ml-auto flex items-center space-x-4 px-4">
-      <MainMenuNav class="mx-6" />
       <LanguageSwitcher />
       <ThemeSwitcher />
       <UserNav variant="compact" />
