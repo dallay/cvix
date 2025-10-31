@@ -47,7 +47,7 @@ const handleSelectChange = () => {
       id="language-select"
       v-model="selectedLanguage"
       @change="handleSelectChange"
-      class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="px-3 py-1 border border-input rounded-md text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <option
         v-for="language in LANGUAGES"
