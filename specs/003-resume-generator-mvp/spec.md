@@ -5,11 +5,21 @@
 **Status**: Draft
 **Input**: User description: "Resume Generator MVP - Technical Specification v1.0"
 
+## Clarifications
+
+### Session 2025-10-31
+
+- Q: What is the resume output format, and should the product claim ATS optimization? → A: PDF only - Remove "ATS-optimized" claims and position as "professional print-ready resumes"
+- Q: How should a single template handle diverse industries and roles? → A: Smart content layout - Single template that adapts section emphasis based on content (skills vs experience focus)
+- Q: What are the specific field length limits and request size limits? → A: Industry standard - Names/titles: 100 chars, Descriptions: 500 chars, Skills: 50 chars, Payload: 100KB
+- Q: What date format should be used for work experience? → A: Month/Year with "Present" option, localized (English: "Jan 2020 - Present", Spanish: "Ene 2020 - Presente")
+- Q: What happens when a user exceeds the rate limit (10 requests/minute)? → A: HTTP 429 with retry timing - Clear error message with countdown/timestamp for when to retry
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Basic Resume Generation (Priority: P1)
 
-A professional user needs to create a high-quality, ATS-optimized resume without learning LaTeX syntax. They fill out a web form with their information and receive a professionally formatted PDF within seconds.
+A professional user needs to create a high-quality, professionally formatted resume without technical knowledge. They fill out a web form with their information and receive a print-ready PDF within seconds.
 
 **Why this priority**: This is the core value proposition - democratizing access to professional resume generation. Without this, there is no product.
 
@@ -84,7 +94,7 @@ When PDF generation fails due to system issues, the user receives clear informat
 **Acceptance Scenarios**:
 
 1. **Given** the PDF generation times out, **When** the error occurs, **Then** the user sees a clear message explaining the timeout and offering a "Retry" button
-2. **Given** compilation fails due to template issues, **When** the occurs, **Then** the user sees a helpful error message without technical LaTeX details
+2. **Given** compilation fails due to template issues, **When** the error occurs, **Then** the user sees a helpful error message without technical details
 3. **Given** a user clicks "Retry" after an error, **When** the retry is initiated, **Then** the form retains all previously entered data
 
 ---
@@ -94,9 +104,9 @@ When PDF generation fails due to system issues, the user receives clear informat
 - What happens when a user enters extremely long text that could break formatting (e.g., 500-character job description)?
 - How does the system handle special characters or non-ASCII characters in names (e.g., accented characters, Chinese characters)?
 - What happens if a user attempts to generate multiple resumes simultaneously from the same browser?
-- How does the system respond when Docker container resources are exhausted (all containers in use)?
-- What happens if the LaTeX compilation produces warnings but still generates a valid PDF?
-- How does the system handle users attempting to exploit LaTeX injection vulnerabilities?
+- How does the system respond when document generation resources are exhausted (all execution environments in use)?
+- What happens if the document compilation produces warnings but still generates a valid PDF?
+- How does the system handle users attempting to exploit document generation vulnerabilities through malicious input?
 
 
 ## Requirements *(mandatory)*
@@ -108,14 +118,14 @@ When PDF generation fails due to system issues, the user receives clear informat
 - **FR-001**: System MUST provide a web-based form with fields for personal information (name, email, phone, location), work experience (company, title, dates, description), education (institution, degree, dates), and skills
 - **FR-002**: System MUST validate all form inputs in real-time to ensure data integrity and prevent malicious input
 - **FR-003**: System MUST block potentially harmful user inputs that could compromise system security or document generation
-- **FR-004**: System MUST enforce reasonable field length limits to ensure proper document formatting and system performance
+- **FR-004**: System MUST enforce field length limits to ensure proper document formatting and system performance: names/titles (100 characters), descriptions (500 characters), skills (50 characters per item)
 - **FR-005**: System MUST provide clear, field-specific error messages when validation fails
 - **FR-006**: System MUST preserve form data within the current browser session to prevent data loss on navigation
 
 #### PDF Generation
 
 - **FR-007**: System MUST generate professionally formatted PDF resumes from validated user input within 8 seconds (95th percentile)
-- **FR-008**: System MUST render resumes using a template-based approach that ensures consistent, professional formatting
+- **FR-008**: System MUST render resumes using a template-based approach that ensures consistent, professional formatting with intelligent content adaptation (section ordering and emphasis based on content presence)
 - **FR-009**: System MUST compile documents in an isolated, secure environment to prevent security vulnerabilities
 - **FR-010**: System MUST enforce resource limits on document generation to ensure system stability and fair resource allocation
 - **FR-011**: System MUST automatically clean up temporary files after PDF generation or error to prevent storage issues
@@ -123,9 +133,9 @@ When PDF generation fails due to system issues, the user receives clear informat
 
 #### Security & Rate Limiting
 
-- **FR-013**: System MUST enforce rate limiting of 10 requests per minute per user to prevent abuse
+- **FR-013**: System MUST enforce rate limiting of 10 requests per minute per user to prevent abuse, returning HTTP 429 status with clear error message and retry-after timing when limit exceeded
 - **FR-014**: System MUST execute all document compilation in an isolated environment with restricted file system access
-- **FR-015**: System MUST reject requests exceeding reasonable size limits to prevent resource exhaustion
+- **FR-015**: System MUST reject requests exceeding 100KB payload size to prevent resource exhaustion
 - **FR-016**: System MUST log all compilation attempts with anonymized identifiers for security auditing
 - **FR-017**: System MUST enforce secure connections and modern encryption standards for all communications
 
@@ -136,6 +146,7 @@ When PDF generation fails due to system issues, the user receives clear informat
 - **FR-020**: System MUST provide helpful guidance and retry options when generation times out
 - **FR-021**: System MUST log unexpected errors for investigation while showing users a generic error message
 - **FR-022**: System MUST never expose internal system details, file paths, or technical implementation in error messages
+- **FR-023**: System MUST return HTTP 429 with retry-after timing (in seconds) when rate limit is exceeded, with localized error message
 
 #### Performance & Reliability
 
@@ -155,9 +166,9 @@ When PDF generation fails due to system issues, the user receives clear informat
 
 ### Key Entities
 
-- **Resume Data**: Represents the complete user-submitted information including personal details, work experiences (list), education entries (list), and skills (list). Each work experience contains company, job title, employment dates, and description. Each education entry contains institution, degree, and dates.
-- **Generation Request**: Represents a single PDF generation attempt including validated resume data, timestamp, request source (IP hash), and processing status.
-- **Generated Document**: Represents the output PDF with metadata including generation timestamp, file size, and success status.
+- **Resume Data**: Represents the complete user-submitted information including personal details, work experiences (list), education entries (list), and skills (list). Each work experience contains company, job title, employment dates (Month/Year format with "Present" option, localized), and description. Each education entry contains institution, degree, and dates (Month/Year format, localized). Output format is PDF.
+- **Generation Request**: Represents a single PDF generation attempt including validated resume data, timestamp, request source (IP hash), processing status, and user's language preference.
+- **Generated Document**: Represents the output PDF with metadata including generation timestamp, file size, success status, and language used.
 
 ## Success Criteria *(mandatory)*
 
@@ -181,11 +192,13 @@ When PDF generation fails due to system issues, the user receives clear informat
 - The MVP will use session-based processing with no long-term storage of user data for privacy
 - Users understand that generated resumes may need manual adjustments for specific job applications
 - The service will initially target English-language resumes with support for international character sets
+- The service will support Spanish language as a secondary language option for the MVP
 - Infrastructure will be hosted on reliable cloud services with appropriate redundancy
-- The default resume template will follow modern design principles and be compatible with applicant tracking systems
+- The default resume template will follow modern design principles and be optimized for professional appearance and readability
 - Users will primarily access the service from desktop browsers, with mobile as a secondary use case
 - PDF downloads will be initiated immediately upon generation
 - The service will initially serve North American and European markets
+- Users may need to convert PDFs to other formats if required by specific job application systems
 
 ## Dependencies *(include if applicable)*
 
@@ -221,11 +234,11 @@ When PDF generation fails due to system issues, the user receives clear informat
 ## Out of Scope *(include if helpful to set boundaries)*
 
 - **User Accounts**: No authentication, user accounts, or saved resume storage (session-only processing)
-- **Template Customization**: Users cannot select or customize LaTeX templates (single default template only)
+- **Template Customization**: Users cannot select or customize templates; single adaptive template that intelligently adjusts based on content
 - **Paid Features**: No payment processing, premium tiers, or monetization features
 - **Email Delivery**: PDFs are not emailed; download-only in MVP
 - **Resume Editing**: Cannot edit previously generated resumes (one-time generation only)
-- **Multi-language Support**: English interface and content only (UTF-8 characters supported in names)
+- **Multi-language Support Beyond English/Spanish**: Only English and Spanish interfaces and content in MVP
 - **Advanced Formatting**: No custom fonts, colors, or layout modifications
 - **Import from LinkedIn**: No integration with external profile sources
 - **Version History**: No tracking of multiple generations or version comparison
