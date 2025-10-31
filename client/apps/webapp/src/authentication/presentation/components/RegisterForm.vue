@@ -163,7 +163,7 @@ const onSubmit = handleSubmit(async (values) => {
         v-slot="{ componentField }"
         name="confirmPassword"
         validate-on-blur
-        :validate-on-change="false"
+        validate-on-change
         :validate-on-input="false"
       >
         <FormItem>
