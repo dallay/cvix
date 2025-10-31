@@ -74,7 +74,13 @@ const handleOAuthLogin = (provider: string) => {
 
     <form @submit="onSubmit" class="space-y-4">
       <!-- Email -->
-      <FormField v-slot="{ componentField }" name="email">
+      <FormField
+        v-slot="{ componentField }"
+        name="email"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Email</FormLabel>
           <FormControl>
@@ -91,7 +97,13 @@ const handleOAuthLogin = (provider: string) => {
       </FormField>
 
       <!-- Password -->
-      <FormField v-slot="{ componentField }" name="password">
+      <FormField
+        v-slot="{ componentField }"
+        name="password"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Password</FormLabel>
           <FormControl>

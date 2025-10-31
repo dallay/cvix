@@ -68,7 +68,13 @@ const onSubmit = handleSubmit(async (values) => {
 
     <form @submit="onSubmit" class="space-y-4">
       <!-- First Name -->
-      <FormField v-slot="{ componentField }" name="firstName">
+      <FormField
+        v-slot="{ componentField }"
+        name="firstName"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>First Name</FormLabel>
           <FormControl>
@@ -84,7 +90,13 @@ const onSubmit = handleSubmit(async (values) => {
       </FormField>
 
       <!-- Last Name -->
-      <FormField v-slot="{ componentField }" name="lastName">
+      <FormField
+        v-slot="{ componentField }"
+        name="lastName"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Last Name</FormLabel>
           <FormControl>
@@ -100,7 +112,13 @@ const onSubmit = handleSubmit(async (values) => {
       </FormField>
 
       <!-- Email -->
-      <FormField v-slot="{ componentField }" name="email">
+      <FormField
+        v-slot="{ componentField }"
+        name="email"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Email</FormLabel>
           <FormControl>
@@ -116,7 +134,13 @@ const onSubmit = handleSubmit(async (values) => {
       </FormField>
 
       <!-- Password -->
-      <FormField v-slot="{ componentField }" name="password">
+      <FormField
+        v-slot="{ componentField }"
+        name="password"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Password</FormLabel>
           <FormControl>
@@ -135,7 +159,13 @@ const onSubmit = handleSubmit(async (values) => {
       </FormField>
 
       <!-- Confirm Password -->
-      <FormField v-slot="{ componentField }" name="confirmPassword">
+      <FormField
+        v-slot="{ componentField }"
+        name="confirmPassword"
+        validate-on-blur
+        :validate-on-change="false"
+        :validate-on-input="false"
+      >
         <FormItem>
           <FormLabel>Confirm Password</FormLabel>
           <FormControl>
