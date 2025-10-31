@@ -5,45 +5,59 @@ export const features: {
 	es: UIDict;
 } = {
 	en: {
-		"features.heading": "Powerful Features for Builders",
+		"features.heading": "Why Choose Civix",
 		"features.subheading":
-			"A curated set of features commonly needed by SaaS teams: publishing, billing, analytics, and subscriber management.",
-		// Feature 1
-		"features.contentAutomation.title": "Content Automation",
-		"features.contentAutomation.description":
-			"Automate publishing workflows across all your channels with a single click.",
-		// Feature 2
-		"features.multiChannel.title": "Multi-Channel Publishing",
-		"features.multiChannel.description":
-			"Deliver newsletters, blogs, and social posts automatically from one place.",
-		// Feature 3
-		"features.analytics.title": "Real-Time Analytics",
-		"features.analytics.description":
-			"Track engagement metrics and audience growth instantly in your dashboard.",
-		// Feature 4
-		"features.subscribers.title": "Subscriber Management",
-		"features.subscribers.description":
-			"Easily manage subscriber lists, segments, and preferences in one place.",
+			"Professional resume creation made simple — LaTeX-quality output without the complexity.",
+		// Key Value Props (3 main features)
+		"features.latexQuality.title": "LaTeX-Quality Output",
+		"features.latexQuality.description":
+			"Professional typography and ATS-passing structure without needing to know LaTeX.",
+		"features.instantPDF.title": "Instant PDF Generation",
+		"features.instantPDF.description":
+			"Fast compilation and download in <10s (p95). Get your resume when you need it.",
+		"features.privacy.title": "Privacy by Design",
+		"features.privacy.description":
+			"No data storage; session-based processing. GDPR-friendly and secure.",
+		// Detailed Features
+		"features.guidedForm.title": "Guided 5-Step Form",
+		"features.guidedForm.description":
+			"15 validated fields covering experience, education, and skills with clear error explanations.",
+		"features.modernTemplate.title": "Modern Tech Template",
+		"features.modernTemplate.description":
+			"Initial design optimized for technical roles with clean, professional formatting.",
+		"features.secureExport.title": "Secure & Fast Export",
+		"features.secureExport.description":
+			"PDF generated in isolated Docker containers for maximum security and reliability.",
+		"features.mobileFirst.title": "Mobile-First Design",
+		"features.mobileFirst.description":
+			"Touch-friendly inputs and responsive design that works on any device (≥375px).",
 	},
 	es: {
-		"features.heading": "Funciones Potentes para Equipos",
+		"features.heading": "Por Qué Elegir Civix",
 		"features.subheading":
-			"Un conjunto de funciones curadas que los equipos SaaS suelen necesitar: publicación, facturación, análisis y gestión de suscriptores.",
-		// Feature 1
-		"features.contentAutomation.title": "Automatización de Contenido",
-		"features.contentAutomation.description":
-			"Automatiza flujos de trabajo de publicación en todos tus canales con un solo clic.",
-		// Feature 2
-		"features.multiChannel.title": "Publicación Multi-Canal",
-		"features.multiChannel.description":
-			"Entrega boletines, blogs y publicaciones sociales automáticamente desde un solo lugar.",
-		// Feature 3
-		"features.analytics.title": "Análisis en Tiempo Real",
-		"features.analytics.description":
-			"Sigue métricas de participación y crecimiento de audiencia al instante en tu panel.",
-		// Feature 4
-		"features.subscribers.title": "Gestión de Suscriptores",
-		"features.subscribers.description":
-			"Gestiona fácilmente listas de suscriptores, segmentos y preferencias en un solo lugar.",
+			"Creación de CVs profesionales simplificada — calidad LaTeX sin la complejidad.",
+		// Propuestas de Valor Clave (3 características principales)
+		"features.latexQuality.title": "Calidad LaTeX",
+		"features.latexQuality.description":
+			"Tipografía profesional y estructura compatible con ATS sin necesidad de conocer LaTeX.",
+		"features.instantPDF.title": "Generación Instantánea de PDF",
+		"features.instantPDF.description":
+			"Compilación y descarga rápida en <10s (p95). Obtén tu CV cuando lo necesites.",
+		"features.privacy.title": "Privacidad por Diseño",
+		"features.privacy.description":
+			"Sin almacenamiento de datos; procesamiento basado en sesión. Compatible con GDPR y seguro.",
+		// Características Detalladas
+		"features.guidedForm.title": "Formulario Guiado de 5 Pasos",
+		"features.guidedForm.description":
+			"15 campos validados que cubren experiencia, educación y habilidades con explicaciones claras de errores.",
+		"features.modernTemplate.title": "Plantilla Tech Moderna",
+		"features.modernTemplate.description":
+			"Diseño inicial optimizado para roles técnicos con formato limpio y profesional.",
+		"features.secureExport.title": "Exportación Segura y Rápida",
+		"features.secureExport.description":
+			"PDF generado en contenedores Docker aislados para máxima seguridad y confiabilidad.",
+		"features.mobileFirst.title": "Diseño Mobile-First",
+		"features.mobileFirst.description":
+			"Entradas táctiles y diseño responsivo que funciona en cualquier dispositivo (≥375px).",
 	},
 };

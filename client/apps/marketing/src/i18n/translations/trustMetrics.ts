@@ -1,0 +1,36 @@
+import type { Translations } from "../types";
+
+export const trustMetrics: Translations = {
+	en: {
+		"trustMetrics.title": "Trusted by Professionals",
+		"trustMetrics.subtitle": "Built with security, privacy, and quality in mind",
+		"trustMetrics.kpi.generated": "500+",
+		"trustMetrics.kpi.generated.label": "Resumes Generated",
+		"trustMetrics.kpi.generated.description": "Milestone 1 goal achieved",
+		"trustMetrics.kpi.errorRate": "<3%",
+		"trustMetrics.kpi.errorRate.label": "Error Rate",
+		"trustMetrics.kpi.errorRate.description": "Target performance metric",
+		"trustMetrics.badge1": "Sandboxed LaTeX",
+		"trustMetrics.badge1.description": "Secure, isolated PDF generation",
+		"trustMetrics.badge2": "GDPR-Friendly",
+		"trustMetrics.badge2.description": "Privacy-first data handling",
+		"trustMetrics.badge3": "WCAG 2.1 AA",
+		"trustMetrics.badge3.description": "Accessible to everyone",
+	},
+	es: {
+		"trustMetrics.title": "Confiado por Profesionales",
+		"trustMetrics.subtitle": "Construido con seguridad, privacidad y calidad en mente",
+		"trustMetrics.kpi.generated": "500+",
+		"trustMetrics.kpi.generated.label": "CVs Generados",
+		"trustMetrics.kpi.generated.description": "Meta del Hito 1 alcanzada",
+		"trustMetrics.kpi.errorRate": "<3%",
+		"trustMetrics.kpi.errorRate.label": "Tasa de Error",
+		"trustMetrics.kpi.errorRate.description": "Métrica de rendimiento objetivo",
+		"trustMetrics.badge1": "LaTeX Aislado",
+		"trustMetrics.badge1.description": "Generación de PDF segura y aislada",
+		"trustMetrics.badge2": "Compatible con GDPR",
+		"trustMetrics.badge2.description": "Manejo de datos con privacidad primero",
+		"trustMetrics.badge3": "WCAG 2.1 AA",
+		"trustMetrics.badge3.description": "Accesible para todos",
+	},
+};

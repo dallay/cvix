@@ -1,0 +1,87 @@
+---
+import { Icon } from "astro-icon/components";
+import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+
+const astroLocale = Astro.currentLocale;
+let langToUse: Lang;
+
+if (astroLocale && LOCALES[astroLocale as Lang]) {
+	langToUse = astroLocale as Lang;
+} else {
+	langToUse = DEFAULT_LOCALE;
+}
+const t = useTranslations(langToUse);
+
+const steps = [
+	{
+		number: "01",
+		icon: "tabler:forms",
+		title: t('howItWorks.step1.title'),
+		description: t('howItWorks.step1.description'),
+	},
+	{
+		number: "02",
+		icon: "tabler:template",
+		title: t('howItWorks.step2.title'),
+		description: t('howItWorks.step2.description'),
+	},
+	{
+		number: "03",
+		icon: "tabler:download",
+		title: t('howItWorks.step3.title'),
+		description: t('howItWorks.step3.description'),
+	},
+];
+---
+<section class="bg-gray-50 dark:bg-gray-800 py-16 sm:py-20 lg:py-24">
+  <div class="px-4 mx-auto max-w-screen-xl">
+    <div class="max-w-screen-md mx-auto mb-12 text-center lg:mb-16">
+      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+        {t('howItWorks.title')}
+      </h2>
+      <p class="text-gray-500 sm:text-xl dark:text-gray-400">
+        {t('howItWorks.subtitle')}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+      {steps.map((step, index) => (
+        <div class="relative flex flex-col items-center text-center">
+          {/* Step Number */}
+          <div class="mb-4 text-6xl font-bold text-gray-200 dark:text-gray-700">
+            {step.number}
+          </div>
+          
+          {/* Icon */}
+          <div class="flex items-center justify-center w-16 h-16 mb-6 bg-primary-100 dark:bg-primary-900 rounded-full">
+            <Icon name={step.icon} class="w-8 h-8 text-primary-600 dark:text-primary-400" />
+          </div>
+
+          {/* Content */}
+          <h3 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+            {step.title}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            {step.description}
+          </p>
+
+          {/* Connector Arrow (hidden on mobile, shown on md+, not on last item) */}
+          {index < steps.length - 1 && (
+            <Icon 
+              name="tabler:arrow-right" 
+              class="hidden md:block absolute top-20 -right-6 lg:-right-8 w-12 h-12 text-gray-300 dark:text-gray-600" 
+            />
+          )}
+        </div>
+      ))}
+    </div>
+
+    {/* Microcopy */}
+    <div class="mt-12 text-center">
+      <p class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700">
+        <Icon name="tabler:check" class="w-4 h-4 mr-2 text-green-500" />
+        {t('howItWorks.microcopy')}
+      </p>
+    </div>
+  </div>
+</section>
