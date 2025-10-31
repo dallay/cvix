@@ -52,6 +52,26 @@ export const authRoutes: RouteRecordRaw[] = [
 			// roles: ["ROLE_USER", "ROLE_ADMIN"],
 		},
 	},
+	{
+		path: "/profile",
+		name: "Profile",
+		component: () =>
+			import("@/authentication/presentation/pages/ProfilePage.vue"),
+		meta: {
+			requiresAuth: true,
+			title: "Profile",
+		},
+	},
+	{
+		path: "/settings",
+		name: "Settings",
+		component: () =>
+			import("@/authentication/presentation/pages/SettingsPage.vue"),
+		meta: {
+			requiresAuth: true,
+			title: "Settings",
+		},
+	},
 	// Example of an admin-only route
 	// {
 	// 	path: "/admin",

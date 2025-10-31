@@ -28,6 +28,47 @@
 - Prefer composing functionality with slots over complex props.
 - Ensure all interactive components are accessible (a11y).
 
+## Form Validation (Vee-Validate)
+
+- Use **Vee-Validate** with Zod schemas for all form validation.
+- **Validation Strategy**: Use manual validation on blur for optimal UX:
+  - Do NOT use `validate-on-blur`, `validate-on-change`, or `validate-on-input` props on FormField
+  - Instead, call `validateField()` manually in the `@blur` event of the input
+  - Set `validateOnMount: false` in the form configuration
+  - This ensures validation only happens when the user leaves a field, not while typing
+
+Example:
+
+```vue
+<script setup lang="ts">
+const { handleSubmit, validateField } = useForm<FormData>({
+  validationSchema: toTypedSchema(schema),
+  validateOnMount: false,
+});
+</script>
+
+<template>
+  <FormField
+    v-slot="{ componentField }"
+    name="email"
+  >
+    <FormItem>
+      <FormLabel>Email</FormLabel>
+      <FormControl>
+        <Input
+          type="email"
+          v-bind="componentField"
+          @blur="validateField('email')"
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  </FormField>
+</template>
+```
+
+This ensures users aren't frustrated by validation errors appearing while they're still typing, and prevents vee-validate from switching to "aggressive" mode after the first validation.
+
 ## Internationalization (i18n)
 
 - Use `vue-i18n` for all user-facing text.

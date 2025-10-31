@@ -9,7 +9,7 @@ const navigationItems = computed(() => getNavigationItems());
 </script>
 
 <template>
-  <SidebarProvider class="bg-muted/30">
+  <SidebarProvider class="bg-background">
     <AppSidebar :items="navigationItems" />
     <SidebarInset class="bg-background">
       <AppHeader />
