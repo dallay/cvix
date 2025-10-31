@@ -1,0 +1,94 @@
+---
+import { Icon } from "astro-icon/components";
+import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+
+const astroLocale = Astro.currentLocale;
+let langToUse: Lang;
+
+if (astroLocale && LOCALES[astroLocale as Lang]) {
+	langToUse = astroLocale as Lang;
+} else {
+	langToUse = DEFAULT_LOCALE;
+}
+const t = useTranslations(langToUse);
+
+const kpis = [
+	{
+		value: t('trustMetrics.kpi.generated'),
+		label: t('trustMetrics.kpi.generated.label'),
+		description: t('trustMetrics.kpi.generated.description'),
+		icon: "tabler:users",
+	},
+	{
+		value: t('trustMetrics.kpi.errorRate'),
+		label: t('trustMetrics.kpi.errorRate.label'),
+		description: t('trustMetrics.kpi.errorRate.description'),
+		icon: "tabler:chart-line",
+	},
+];
+
+const badges = [
+	{
+		title: t('trustMetrics.badge1'),
+		description: t('trustMetrics.badge1.description'),
+		icon: "tabler:container",
+	},
+	{
+		title: t('trustMetrics.badge2'),
+		description: t('trustMetrics.badge2.description'),
+		icon: "tabler:shield-check",
+	},
+	{
+		title: t('trustMetrics.badge3'),
+		description: t('trustMetrics.badge3.description'),
+		icon: "tabler:accessible",
+	},
+];
+---
+<section class="bg-white dark:bg-gray-900 py-16 sm:py-20 lg:py-24">
+  <div class="px-4 mx-auto max-w-screen-xl">
+    <div class="max-w-screen-md mx-auto mb-12 text-center lg:mb-16">
+      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+        {t('trustMetrics.title')}
+      </h2>
+      <p class="text-gray-500 sm:text-xl dark:text-gray-400">
+        {t('trustMetrics.subtitle')}
+      </p>
+    </div>
+
+    {/* KPI Callouts */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
+      {kpis.map((kpi) => (
+        <div class="flex flex-col items-center text-center p-8 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-2xl border border-primary-200 dark:border-primary-800">
+          <Icon name={kpi.icon} class="w-12 h-12 mb-4 text-primary-600 dark:text-primary-400" />
+          <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+            {kpi.value}
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+            {kpi.label}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            {kpi.description}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    {/* Security Badges */}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      {badges.map((badge) => (
+        <div class="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
+          <div class="flex items-center justify-center w-12 h-12 mb-4 bg-white dark:bg-gray-900 rounded-full border-2 border-primary-500">
+            <Icon name={badge.icon} class="w-6 h-6 text-primary-600 dark:text-primary-400" />
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            {badge.title}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            {badge.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
