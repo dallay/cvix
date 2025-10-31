@@ -96,7 +96,8 @@ description: Overview of the project structure and organization.
 │   │   ├───01_TYPESCRIPT_CONVENTIONS.md
 │   │   ├───02_VUE_CONVENTIONS.md
 │   │   ├───03_ASTRO_CONVENTIONS.md
-│   │   └───04_HTML_CSS_CONVENTIONS.md
+│   │   ├───04_HTML_CSS_CONVENTIONS.md
+│   │   └───05_DESIGN_SYSTEM.md
 │   ├───03_TESTING/
 │   │   ├───01_TESTING_STRATEGY.md
 │   │   ├───02_PLAYWRIGHT_GUIDELINES.md
@@ -604,6 +605,8 @@ description: Overview of the project structure and organization.
 │   │       │   │   │   └───storage/
 │   │       │   │   │       └───SessionStorage.ts
 │   │       │   │   ├───presentation/
+│   │       │   │   │   ├───__tests__/
+│   │       │   │   │   │   └───authRoutes.spec.ts
 │   │       │   │   │   ├───components/
 │   │       │   │   │   │   ├───ForgotPassword.vue
 │   │       │   │   │   │   ├───LoginForm.vue
@@ -616,7 +619,9 @@ description: Overview of the project structure and organization.
 │   │       │   │   │   │   ├───DashboardPage.vue
 │   │       │   │   │   │   ├───ForgotPasswordPage.vue
 │   │       │   │   │   │   ├───LoginPage.vue
+│   │       │   │   │   │   ├───ProfilePage.vue
 │   │       │   │   │   │   ├───RegisterPage.vue
+│   │       │   │   │   │   ├───SettingsPage.vue
 │   │       │   │   │   │   └───UnauthorizedPage.vue
 │   │       │   │   │   ├───stores/
 │   │       │   │   │   │   └───authStore.ts
@@ -1137,6 +1142,7 @@ description: Overview of the project structure and organization.
 │   │       ├───components.d.ts
 │   │       ├───components.json
 │   │       ├───env.d.ts
+│   │       ├───icons.d.ts
 │   │       ├───index.html
 │   │       ├───package.json
 │   │       ├───playwright.config.ts
@@ -1343,20 +1349,20 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_48f2115.pf_fragment
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
-│   │   │   │   ├───en_67cf7c3.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
+│   │   │   │   ├───en_d3a3441.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_6269451.pf_index
-│   │   │   │   └───en_c969e1a.pf_index
+│   │   │   │   ├───en_4ddfffd.pf_index
+│   │   │   │   └───en_d27cf4d.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_56527aab11.pf_meta
+│   │   │   ├───pagefind.en_75e01a13c7.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind

@@ -27,7 +27,7 @@ const authStore = useAuthStore();
 const isSubmitting = ref(false);
 const submitError = ref<string | null>(null);
 
-const { handleSubmit, errors } = useForm<RegisterFormData>({
+const { handleSubmit, errors, validateField } = useForm<RegisterFormData>({
 	validationSchema: toTypedSchema(registerSchema),
 	initialValues: {
 		firstName: "",
@@ -37,6 +37,7 @@ const { handleSubmit, errors } = useForm<RegisterFormData>({
 		confirmPassword: "",
 		acceptTerms: false,
 	},
+	validateOnMount: false,
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -71,9 +72,6 @@ const onSubmit = handleSubmit(async (values) => {
       <FormField
         v-slot="{ componentField }"
         name="firstName"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>First Name</FormLabel>
@@ -83,6 +81,7 @@ const onSubmit = handleSubmit(async (values) => {
               placeholder="John"
               v-bind="componentField"
               :disabled="isSubmitting"
+              @blur="validateField('firstName')"
             />
           </FormControl>
           <FormMessage />
@@ -93,9 +92,6 @@ const onSubmit = handleSubmit(async (values) => {
       <FormField
         v-slot="{ componentField }"
         name="lastName"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Last Name</FormLabel>
@@ -105,6 +101,7 @@ const onSubmit = handleSubmit(async (values) => {
               placeholder="Doe"
               v-bind="componentField"
               :disabled="isSubmitting"
+              @blur="validateField('lastName')"
             />
           </FormControl>
           <FormMessage />
@@ -115,9 +112,6 @@ const onSubmit = handleSubmit(async (values) => {
       <FormField
         v-slot="{ componentField }"
         name="email"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Email</FormLabel>
@@ -127,6 +121,7 @@ const onSubmit = handleSubmit(async (values) => {
               placeholder="john.doe@example.com"
               v-bind="componentField"
               :disabled="isSubmitting"
+              @blur="validateField('email')"
             />
           </FormControl>
           <FormMessage />
@@ -137,9 +132,6 @@ const onSubmit = handleSubmit(async (values) => {
       <FormField
         v-slot="{ componentField }"
         name="password"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Password</FormLabel>
@@ -149,6 +141,7 @@ const onSubmit = handleSubmit(async (values) => {
               placeholder="••••••••"
               v-bind="componentField"
               :disabled="isSubmitting"
+              @blur="validateField('password')"
             />
           </FormControl>
           <FormDescription>
@@ -162,9 +155,6 @@ const onSubmit = handleSubmit(async (values) => {
       <FormField
         v-slot="{ componentField }"
         name="confirmPassword"
-        validate-on-blur
-        validate-on-change
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Confirm Password</FormLabel>
@@ -174,6 +164,7 @@ const onSubmit = handleSubmit(async (values) => {
               placeholder="••••••••"
               v-bind="componentField"
               :disabled="isSubmitting"
+              @blur="validateField('confirmPassword')"
             />
           </FormControl>
           <FormMessage />

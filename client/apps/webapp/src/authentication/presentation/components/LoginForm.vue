@@ -35,6 +35,8 @@ const form = useForm<LoginFormData>({
 		password: "",
 		rememberMe: false,
 	},
+	validateOnMount: false,
+	keepValuesOnUnmount: true,
 });
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -77,9 +79,6 @@ const handleOAuthLogin = (provider: string) => {
       <FormField
         v-slot="{ componentField }"
         name="email"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Email</FormLabel>
@@ -90,6 +89,7 @@ const handleOAuthLogin = (provider: string) => {
               v-bind="componentField"
               :disabled="isSubmitting"
               autocomplete="email"
+              @blur="form.validateField('email')"
             />
           </FormControl>
           <FormMessage />
@@ -100,9 +100,6 @@ const handleOAuthLogin = (provider: string) => {
       <FormField
         v-slot="{ componentField }"
         name="password"
-        validate-on-blur
-        :validate-on-change="false"
-        :validate-on-input="false"
       >
         <FormItem>
           <FormLabel>Password</FormLabel>
@@ -113,6 +110,7 @@ const handleOAuthLogin = (provider: string) => {
               v-bind="componentField"
               :disabled="isSubmitting"
               autocomplete="current-password"
+              @blur="form.validateField('password')"
             />
           </FormControl>
           <FormMessage />
