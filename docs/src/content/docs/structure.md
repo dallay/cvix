@@ -1350,19 +1350,19 @@ description: Overview of the project structure and organization.
 │   │   │   │   ├───en_4bad50d.pf_fragment
 │   │   │   │   ├───en_59ce966.pf_fragment
 │   │   │   │   ├───en_687d6dd.pf_fragment
-│   │   │   │   ├───en_d3a3441.pf_fragment
+│   │   │   │   ├───en_745b6c2.pf_fragment
 │   │   │   │   ├───en_df297fd.pf_fragment
 │   │   │   │   └───en_ff819c4.pf_fragment
 │   │   │   ├───index/
-│   │   │   │   ├───en_4ddfffd.pf_index
-│   │   │   │   └───en_d27cf4d.pf_index
+│   │   │   │   ├───en_e7e4098.pf_index
+│   │   │   │   └───en_ff99dd2.pf_index
 │   │   │   ├───pagefind-entry.json
 │   │   │   ├───pagefind-highlight.js
 │   │   │   ├───pagefind-modular-ui.css
 │   │   │   ├───pagefind-modular-ui.js
 │   │   │   ├───pagefind-ui.css
 │   │   │   ├───pagefind-ui.js
-│   │   │   ├───pagefind.en_75e01a13c7.pf_meta
+│   │   │   ├───pagefind.en_432aa939fd.pf_meta
 │   │   │   ├───pagefind.js
 │   │   │   ├───wasm.en.pagefind
 │   │   │   └───wasm.unknown.pagefind
@@ -1375,178 +1375,8 @@ description: Overview of the project structure and organization.
 │   │   ├───favicon.svg
 │   │   └───index.html
 │   ├───node_modules/
-│   │   ├───.astro/
-│   │   │   ├───assets/
-│   │   │   │   └───pet.wCTaw7an_1sBNLL.webp
-│   │   │   └───data-store.json
 │   │   ├───.bin/
-│   │   │   ├───astro
-│   │   │   ├───jiti
-│   │   │   ├───rollup
-│   │   │   ├───terser
-│   │   │   ├───tsc
-│   │   │   ├───tsserver
-│   │   │   ├───tsx
-│   │   │   ├───vite
-│   │   │   └───yaml
-│   │   ├───.vite/
-│   │   │   └───deps/
-│   │   │       ├───_metadata.json
-│   │   │       ├───architecture-U656AL7Q-OMWK4C5O.js
-│   │   │       ├───architecture-U656AL7Q-OMWK4C5O.js.map
-│   │   │       ├───architectureDiagram-VXUJARFQ-CDZEXHYC.js
-│   │   │       ├───architectureDiagram-VXUJARFQ-CDZEXHYC.js.map
-│   │   │       ├───astro___aria-query.js
-│   │   │       ├───astro___aria-query.js.map
-│   │   │       ├───astro___axobject-query.js
-│   │   │       ├───astro___axobject-query.js.map
-│   │   │       ├───astro___cssesc.js
-│   │   │       ├───astro___cssesc.js.map
-│   │   │       ├───blockDiagram-VD42YOAC-GC344ETX.js
-│   │   │       ├───blockDiagram-VD42YOAC-GC344ETX.js.map
-│   │   │       ├───c4Diagram-YG6GDRKO-XFU6GKOX.js
-│   │   │       ├───c4Diagram-YG6GDRKO-XFU6GKOX.js.map
-│   │   │       ├───chunk-56NT4ZJK.js
-│   │   │       ├───chunk-56NT4ZJK.js.map
-│   │   │       ├───chunk-63FWM5VJ.js
-│   │   │       ├───chunk-63FWM5VJ.js.map
-│   │   │       ├───chunk-7GPIQIU6.js
-│   │   │       ├───chunk-7GPIQIU6.js.map
-│   │   │       ├───chunk-7HZNVUUD.js
-│   │   │       ├───chunk-7HZNVUUD.js.map
-│   │   │       ├───chunk-7LIDQVYB.js
-│   │   │       ├───chunk-7LIDQVYB.js.map
-│   │   │       ├───chunk-7RC75WBK.js
-│   │   │       ├───chunk-7RC75WBK.js.map
-│   │   │       ├───chunk-7V6UJG72.js
-│   │   │       ├───chunk-7V6UJG72.js.map
-│   │   │       ├───chunk-7XB46K6O.js
-│   │   │       ├───chunk-7XB46K6O.js.map
-│   │   │       ├───chunk-A3Z25STY.js
-│   │   │       ├───chunk-A3Z25STY.js.map
-│   │   │       ├───chunk-AI7WAGIP.js
-│   │   │       ├───chunk-AI7WAGIP.js.map
-│   │   │       ├───chunk-C3M4YSMS.js
-│   │   │       ├───chunk-C3M4YSMS.js.map
-│   │   │       ├───chunk-DNKXOCJF.js
-│   │   │       ├───chunk-DNKXOCJF.js.map
-│   │   │       ├───chunk-E7LDWVKX.js
-│   │   │       ├───chunk-E7LDWVKX.js.map
-│   │   │       ├───chunk-EFH6Y4WS.js
-│   │   │       ├───chunk-EFH6Y4WS.js.map
-│   │   │       ├───chunk-EJXXWSL5.js
-│   │   │       ├───chunk-EJXXWSL5.js.map
-│   │   │       ├───chunk-FDBJFBLO.js
-│   │   │       ├───chunk-FDBJFBLO.js.map
-│   │   │       ├───chunk-G5KNGBU2.js
-│   │   │       ├───chunk-G5KNGBU2.js.map
-│   │   │       ├───chunk-GRU7Q4GQ.js
-│   │   │       ├───chunk-GRU7Q4GQ.js.map
-│   │   │       ├───chunk-HAS6ZWJG.js
-│   │   │       ├───chunk-HAS6ZWJG.js.map
-│   │   │       ├───chunk-IGRYQ64R.js
-│   │   │       ├───chunk-IGRYQ64R.js.map
-│   │   │       ├───chunk-JF6REJ7U.js
-│   │   │       ├───chunk-JF6REJ7U.js.map
-│   │   │       ├───chunk-KA2NKCBU.js
-│   │   │       ├───chunk-KA2NKCBU.js.map
-│   │   │       ├───chunk-KXEXYQQC.js
-│   │   │       ├───chunk-KXEXYQQC.js.map
-│   │   │       ├───chunk-MDC4R5CQ.js
-│   │   │       ├───chunk-MDC4R5CQ.js.map
-│   │   │       ├───chunk-MVXLCYPA.js
-│   │   │       ├───chunk-MVXLCYPA.js.map
-│   │   │       ├───chunk-NA7G2BLS.js
-│   │   │       ├───chunk-NA7G2BLS.js.map
-│   │   │       ├───chunk-S5NAVRAS.js
-│   │   │       ├───chunk-S5NAVRAS.js.map
-│   │   │       ├───chunk-SYTKZSRP.js
-│   │   │       ├───chunk-SYTKZSRP.js.map
-│   │   │       ├───chunk-TAIDJLLN.js
-│   │   │       ├───chunk-TAIDJLLN.js.map
-│   │   │       ├───chunk-VYOL5PGP.js
-│   │   │       ├───chunk-VYOL5PGP.js.map
-│   │   │       ├───chunk-W4UY2HIW.js
-│   │   │       ├───chunk-W4UY2HIW.js.map
-│   │   │       ├───chunk-WNXR22NM.js
-│   │   │       ├───chunk-WNXR22NM.js.map
-│   │   │       ├───chunk-WVFJY66W.js
-│   │   │       ├───chunk-WVFJY66W.js.map
-│   │   │       ├───chunk-XWC5K4AA.js
-│   │   │       ├───chunk-XWC5K4AA.js.map
-│   │   │       ├───chunk-Y63M2V46.js
-│   │   │       ├───chunk-Y63M2V46.js.map
-│   │   │       ├───chunk-YQLRWVZU.js
-│   │   │       ├───chunk-YQLRWVZU.js.map
-│   │   │       ├───chunk-ZVUD2IVZ.js
-│   │   │       ├───chunk-ZVUD2IVZ.js.map
-│   │   │       ├───chunk-ZXANNNOA.js
-│   │   │       ├───chunk-ZXANNNOA.js.map
-│   │   │       ├───classDiagram-2ON5EDUG-VEQD75ZS.js
-│   │   │       ├───classDiagram-2ON5EDUG-VEQD75ZS.js.map
-│   │   │       ├───classDiagram-v2-WZHVMYZB-KWGBUHNP.js
-│   │   │       ├───classDiagram-v2-WZHVMYZB-KWGBUHNP.js.map
-│   │   │       ├───cose-bilkent-S5V4N54A-S6XSWJB4.js
-│   │   │       ├───cose-bilkent-S5V4N54A-S6XSWJB4.js.map
-│   │   │       ├───dagre-6UL2VRFP-4VLODMKY.js
-│   │   │       ├───dagre-6UL2VRFP-4VLODMKY.js.map
-│   │   │       ├───diagram-PSM6KHXK-SALNFODF.js
-│   │   │       ├───diagram-PSM6KHXK-SALNFODF.js.map
-│   │   │       ├───diagram-QEK2KX5R-4HWRAVAO.js
-│   │   │       ├───diagram-QEK2KX5R-4HWRAVAO.js.map
-│   │   │       ├───diagram-S2PKOQOG-JEC677OL.js
-│   │   │       ├───diagram-S2PKOQOG-JEC677OL.js.map
-│   │   │       ├───erDiagram-Q2GNP2WA-EDVJMUYK.js
-│   │   │       ├───erDiagram-Q2GNP2WA-EDVJMUYK.js.map
-│   │   │       ├───flowDiagram-NV44I4VS-WFFDRVFF.js
-│   │   │       ├───flowDiagram-NV44I4VS-WFFDRVFF.js.map
-│   │   │       ├───ganttDiagram-LVOFAZNH-JLB2YN4Y.js
-│   │   │       ├───ganttDiagram-LVOFAZNH-JLB2YN4Y.js.map
-│   │   │       ├───gitGraph-F6HP7TQM-XNMAYSQD.js
-│   │   │       ├───gitGraph-F6HP7TQM-XNMAYSQD.js.map
-│   │   │       ├───gitGraphDiagram-NY62KEGX-G5N5GJ4X.js
-│   │   │       ├───gitGraphDiagram-NY62KEGX-G5N5GJ4X.js.map
-│   │   │       ├───info-NVLQJR56-BMGMW5MS.js
-│   │   │       ├───info-NVLQJR56-BMGMW5MS.js.map
-│   │   │       ├───infoDiagram-ER5ION4S-UQKNMVGV.js
-│   │   │       ├───infoDiagram-ER5ION4S-UQKNMVGV.js.map
-│   │   │       ├───journeyDiagram-XKPGCS4Q-QF6KWBNB.js
-│   │   │       ├───journeyDiagram-XKPGCS4Q-QF6KWBNB.js.map
-│   │   │       ├───kanban-definition-3W4ZIXB7-FSHDWEAQ.js
-│   │   │       ├───kanban-definition-3W4ZIXB7-FSHDWEAQ.js.map
-│   │   │       ├───katex-H3EPPHGJ.js
-│   │   │       ├───katex-H3EPPHGJ.js.map
-│   │   │       ├───mermaid.js
-│   │   │       ├───mermaid.js.map
-│   │   │       ├───mindmap-definition-VGOIOE7T-E2JSK5HM.js
-│   │   │       ├───mindmap-definition-VGOIOE7T-E2JSK5HM.js.map
-│   │   │       ├───package.json
-│   │   │       ├───packet-BFZMPI3H-NG77EMM3.js
-│   │   │       ├───packet-BFZMPI3H-NG77EMM3.js.map
-│   │   │       ├───pie-7BOR55EZ-IFPTU5T2.js
-│   │   │       ├───pie-7BOR55EZ-IFPTU5T2.js.map
-│   │   │       ├───pieDiagram-ADFJNKIX-TRXDAA3K.js
-│   │   │       ├───pieDiagram-ADFJNKIX-TRXDAA3K.js.map
-│   │   │       ├───quadrantDiagram-AYHSOK5B-BOV375PN.js
-│   │   │       ├───quadrantDiagram-AYHSOK5B-BOV375PN.js.map
-│   │   │       ├───radar-NHE76QYJ-WYBS2XCM.js
-│   │   │       ├───radar-NHE76QYJ-WYBS2XCM.js.map
-│   │   │       ├───requirementDiagram-UZGBJVZJ-2CR6D25Y.js
-│   │   │       ├───requirementDiagram-UZGBJVZJ-2CR6D25Y.js.map
-│   │   │       ├───sankeyDiagram-TZEHDZUN-CJM5QMYP.js
-│   │   │       ├───sankeyDiagram-TZEHDZUN-CJM5QMYP.js.map
-│   │   │       ├───sequenceDiagram-WL72ISMW-A3S2GQCP.js
-│   │   │       ├───sequenceDiagram-WL72ISMW-A3S2GQCP.js.map
-│   │   │       ├───stateDiagram-FKZM4ZOC-OEBBQAI2.js
-│   │   │       ├───stateDiagram-FKZM4ZOC-OEBBQAI2.js.map
-│   │   │       ├───stateDiagram-v2-4FDKWEC3-MJ4KLGAU.js
-│   │   │       ├───stateDiagram-v2-4FDKWEC3-MJ4KLGAU.js.map
-│   │   │       ├───timeline-definition-IT6M3QCI-3L4ZGHZO.js
-│   │   │       ├───timeline-definition-IT6M3QCI-3L4ZGHZO.js.map
-│   │   │       ├───treemap-KMMF4GRG-N3Z3KSNO.js
-│   │   │       ├───treemap-KMMF4GRG-N3Z3KSNO.js.map
-│   │   │       ├───xychartDiagram-PRI3JC2R-6GIWDQHY.js
-│   │   │       └───xychartDiagram-PRI3JC2R-6GIWDQHY.js.map
+│   │   │   └───astro
 │   │   └───@astrojs/
 │   ├───public/
 │   │   └───favicon.svg
@@ -1591,39 +1421,37 @@ description: Overview of the project structure and organization.
 │   ├───package.json
 │   └───tsconfig.json
 ├───endpoints/
-│   ├───SAAS TEMPLATE/
-│   │   ├───actuator/
-│   │   │   ├───Actuator Health.bru
-│   │   │   ├───Actuator.bru
-│   │   │   ├───actuator-info.bru
-│   │   │   └───folder.bru
-│   │   ├───authentication/
-│   │   │   ├───Account.bru
-│   │   │   ├───Get Session.bru
-│   │   │   ├───Register User.bru
-│   │   │   ├───User Login.bru
-│   │   │   ├───User Logout.bru
-│   │   │   └───folder.bru
-│   │   ├───environments/
-│   │   │   └───⚪ L O C A L.bru
-│   │   ├───health-check/
-│   │   │   ├───folder.bru
-│   │   │   └───health-check.bru
-│   │   ├───workspace/
-│   │   │   ├───Create workspace.bru
-│   │   │   ├───Find a workspace.bru
-│   │   │   ├───Get All Workspaces.bru
-│   │   │   ├───Update workspace.bru
-│   │   │   └───folder.bru
-│   │   ├───🔐 Keycloak/
-│   │   │   ├───folder.bru
-│   │   │   ├───openid-connect refresh token.bru
-│   │   │   └───openid-connect-token.bru
-│   │   ├───bruno.json
-│   │   └───collection.bru
-│   └───workspace/
-│       ├───Delete workspace.bru
-│       └───Update workspace.bru
+│   └───cvix/
+│       ├───actuator/
+│       │   ├───Actuator Health.bru
+│       │   ├───Actuator.bru
+│       │   ├───actuator-info.bru
+│       │   └───folder.bru
+│       ├───authentication/
+│       │   ├───Account.bru
+│       │   ├───Get Session.bru
+│       │   ├───Register User.bru
+│       │   ├───User Login.bru
+│       │   ├───User Logout.bru
+│       │   └───folder.bru
+│       ├───environments/
+│       │   └───⚪ L O C A L.bru
+│       ├───health-check/
+│       │   ├───folder.bru
+│       │   └───health-check.bru
+│       ├───workspace/
+│       │   ├───Create workspace.bru
+│       │   ├───Delete workspace.bru
+│       │   ├───Find a workspace.bru
+│       │   ├───Get All Workspaces.bru
+│       │   ├───Update workspace.bru
+│       │   └───folder.bru
+│       ├───🔐 Keycloak/
+│       │   ├───folder.bru
+│       │   ├───openid-connect refresh token.bru
+│       │   └───openid-connect-token.bru
+│       ├───bruno.json
+│       └───collection.bru
 ├───gradle/
 │   ├───wrapper/
 │   │   ├───gradle-wrapper.jar
@@ -2364,17 +2192,21 @@ description: Overview of the project structure and organization.
 │   │   ├───research.md
 │   │   ├───spec.md
 │   │   └───tasks.md
-│   └───002-workspace-selection/
+│   ├───002-workspace-selection/
+│   │   ├───checklists/
+│   │   │   └───requirements.md
+│   │   ├───contracts/
+│   │   │   └───workspace-api.yaml
+│   │   ├───data-model.md
+│   │   ├───plan.md
+│   │   ├───quickstart.md
+│   │   ├───research.md
+│   │   ├───spec.md
+│   │   └───tasks.md
+│   └───003-resume-generator-mvp/
 │       ├───checklists/
 │       │   └───requirements.md
-│       ├───contracts/
-│       │   └───workspace-api.yaml
-│       ├───data-model.md
-│       ├───plan.md
-│       ├───quickstart.md
-│       ├───research.md
-│       ├───spec.md
-│       └───tasks.md
+│       └───spec.md
 ├───.dockerignore
 ├───.editorconfig
 ├───.env.example
