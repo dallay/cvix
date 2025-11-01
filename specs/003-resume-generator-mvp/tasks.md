@@ -47,7 +47,7 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T011 [P] Create reusable Email value object in shared common library (or reuse existing from `com.loomify.common.domain.vo.email`)
+- [ ] T011 [P] Use reusable Email value object in shared common library (`com.loomify.common.domain.vo.email`)
 - [ ] T012 [P] Create domain exception hierarchy in `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
 - [ ] T013 [P] Define PdfGeneratorPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/PdfGeneratorPort.kt`
 - [ ] T014 [P] Define TemplateRendererPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/TemplateRendererPort.kt`
