@@ -21,7 +21,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 - PDF Generation: TeX Live (pdflatex) in Docker
 - Containerization: Docker + Alpine Linux
 
-**Storage**: Session-based (no persistent storage), temporary file cleanup after generation
+**Storage**: Session-based (no persistent storage of PDFs; stream only), temporary file cleanup after generation or failure
 
 **Testing**: Backend: JUnit 5 + Kotest + Testcontainers + MockK, Frontend: Vitest + Testing Library Vue, E2E: Playwright
 
@@ -32,7 +32,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 **Performance Goals**:
 
 - PDF generation: <8 seconds (p95)
-- API latency: <500ms (p95) excluding PDF generation
+- API latency: <200ms (p95) excluding PDF generation
 - Support 50 concurrent users without degradation
 
 **Constraints**:
@@ -107,7 +107,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 
 **Backend Performance**:
 
-- ✅ p95 response time: <500ms for API endpoints (LaTeX compilation offloaded to async Docker job)
+- ✅ p95 response time: <200ms for API endpoints (LaTeX compilation offloaded to async Docker job)
 - ✅ Rate limiting: 10 req/min/user prevents resource exhaustion
 - ✅ Stateless design: Horizontal scaling ready
 - ⚠️ **NOTE**: PDF generation (<8s per spec) exceeds p99 target (<500ms) but is justified by LaTeX compilation overhead
@@ -276,43 +276,28 @@ server/engine/src/test/kotlin/com/loomify/resume/
 
 ```text
 client/apps/webapp/src/
-├── features/
-│   └── resume/
-│       ├── components/
-│       │   ├── ResumeForm.vue          # Main form component
-│       │   ├── PersonalInfoSection.vue # Form section
-│       │   ├── WorkExperienceSection.vue
-│       │   ├── EducationSection.vue
-│       │   ├── SkillsSection.vue
-│       │   ├── LanguagesSection.vue
-│       │   ├── ProjectsSection.vue
-│       │   └── ResumePreview.vue       # PDF preview modal
-│       ├── composables/
-│       │   ├── useResumeGeneration.ts  # API calls
-│       │   └── useResumeValidation.ts  # Form validation logic
-│       ├── stores/
-│       │   └── resumeStore.ts          # Pinia store
-│       ├── types/
-│       │   └── resume.ts               # TypeScript types (JSON Resume schema)
-│       ├── schemas/
-│       │   └── resumeSchema.ts         # Zod validation schema
-│       └── pages/
-│           ├── ResumeGeneratorPage.vue # Main page
-│           └── ResumeListPage.vue      # Future: list of generated resumes
-├── locales/
-│   ├── en.json                         # English translations
-│   └── es.json                         # Spanish translations
-└── api/
-    └── resume.ts                       # API client (axios)
-
-client/apps/webapp/src/__tests__/
-└── features/
-    └── resume/
-        ├── ResumeForm.spec.ts          # Component unit tests
-        └── useResumeGeneration.spec.ts # Composable unit tests
-
-client/e2e/
-└── resume-generation.spec.ts           # E2E tests (Playwright)
+├── resume/
+│   ├── components/
+│   │   ├── ResumeForm.vue          # Main form component
+│   │   ├── PersonalInfoSection.vue # Form section
+│   │   ├── WorkExperienceSection.vue
+│   │   ├── EducationSection.vue
+│   │   ├── SkillsSection.vue
+│   │   ├── LanguagesSection.vue
+│   │   ├── ProjectsSection.vue
+│   │   └── ResumePreview.vue       # PDF preview modal
+│   ├── composables/
+│   │   ├── useResumeGeneration.ts  # API calls
+│   │   └── useResumeValidation.ts  # Form validation logic
+│   ├── stores/
+│   │   └── resumeStore.ts          # Pinia store
+│   ├── types/
+│   │   └── resume.ts               # TypeScript types (JSON Resume schema)
+│   ├── schemas/
+│   │   └── resumeSchema.ts         # Zod validation schema
+│   └── pages/
+│       ├── ResumeGeneratorPage.vue # Main page
+│       └── ResumeListPage.vue      # Future: list of generated resumes
 ```
 
 **Infrastructure**:
