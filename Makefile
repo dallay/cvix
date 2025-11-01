@@ -98,15 +98,15 @@ dev:
 
 # Runs the landing page in development mode.
 dev-landing:
-	@$(PNPM) dev:landing
+	@$(PNPM) $(CLIENT_LANDING_FILTER) dev
 
 # Runs the web application in development mode.
 dev-web:
-	@$(PNPM) dev:web
+	@$(PNPM) $(CLIENT_WEBAPP_FILTER) dev
 
 # Runs the documentation in development mode.
 dev-docs:
-	@$(PNPM) dev:docs
+	@$(PNPM) $(CLIENT_DOCS_FILTER) dev
 
 # ------------------------------------------------------------------------------------
 # BUILD
@@ -118,19 +118,19 @@ build:
 
 # Builds the landing page.
 build-landing:
-	@$(PNPM) build:landing
+	@$(PNPM) $(CLIENT_LANDING_FILTER) build
 
 # Previews the landing page.
 preview-landing:
-	@$(PNPM) preview:landing
+	@$(PNPM) $(CLIENT_LANDING_FILTER) preview
 
 # Builds the web application.
 build-web:
-	@$(PNPM) build:web
+	@$(PNPM) $(CLIENT_WEBAPP_FILTER) build
 
 # Builds the documentation.
 build-docs:
-	@$(PNPM) build:docs
+	@$(PNPM) $(CLIENT_DOCS_FILTER) build
 
 # ------------------------------------------------------------------------------------
 # TESTING & LINTING
