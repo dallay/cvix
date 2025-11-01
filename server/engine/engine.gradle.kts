@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm").version(libs.versions.kotlin)
     kotlin("plugin.spring").version(libs.versions.kotlin)
     alias(libs.plugins.gradle.git.properties)
-    id("org.asciidoctor.jvm.convert") version "4.0.4"
+    id("org.asciidoctor.jvm.convert") version "4.0.5"
 }
 
 group = "com.loomify"
