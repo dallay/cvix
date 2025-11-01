@@ -170,17 +170,6 @@ jobs:
           name: frontend-artifacts
           path: frontend-artifacts
 
-      - name: Cache Gradle
-        # Pinned to v4 commit hash for security
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/settings.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Run tests
         run: |
           cd backend
