@@ -1,0 +1,107 @@
+{
+	"resume": {
+		"title": "Generador de Currículums",
+		"subtitle": "Crea un currículum profesional en minutos",
+		"generate": "Generar PDF",
+		"generating": "Generando...",
+		"preview": "Vista Previa",
+		"download": "Descargar PDF",
+		"clearForm": "Limpiar Formulario",
+		"saveProgress": "Guardar Progreso",
+		"sections": {
+			"personalInfo": "Información Personal",
+			"workExperience": "Experiencia Laboral",
+			"education": "Educación",
+			"skills": "Habilidades",
+			"languages": "Idiomas",
+			"projects": "Proyectos"
+		},
+		"fields": {
+			"name": "Nombre Completo",
+			"label": "Título Profesional",
+			"email": "Correo Electrónico",
+			"phone": "Teléfono",
+			"url": "Sitio Web",
+			"summary": "Resumen Profesional",
+			"company": "Empresa",
+			"position": "Cargo",
+			"startDate": "Fecha de Inicio",
+			"endDate": "Fecha de Fin",
+			"current": "Actualmente trabajo aquí",
+			"location": "Ubicación",
+			"highlights": "Logros",
+			"institution": "Institución",
+			"area": "Campo de Estudio",
+			"studyType": "Tipo de Título",
+			"score": "Promedio",
+			"categoryName": "Categoría",
+			"skillLevel": "Nivel",
+			"keywords": "Habilidades",
+			"language": "Idioma",
+			"fluency": "Fluidez",
+			"projectName": "Nombre del Proyecto",
+			"description": "Descripción",
+			"entity": "Organización"
+		},
+		"placeholders": {
+			"name": "María García",
+			"label": "Ingeniera de Software",
+			"email": "maria.garcia@ejemplo.com",
+			"phone": "+34 612 345 678",
+			"url": "https://mariagarcia.com",
+			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
+			"company": "Corporación ACME",
+			"position": "Desarrolladora Senior",
+			"location": "Barcelona, España",
+			"highlight": "Lideré equipo de 5 desarrolladores para entregar proyecto 2 semanas antes de lo planeado",
+			"institution": "Universidad Politécnica de Madrid",
+			"area": "Ingeniería Informática",
+			"studyType": "Licenciatura",
+			"score": "8.5",
+			"categoryName": "Lenguajes de Programación",
+			"skill": "JavaScript, TypeScript, Python",
+			"language": "Español",
+			"fluency": "Nativo",
+			"projectName": "Plataforma de Comercio Electrónico",
+			"description": "Construí una plataforma moderna de comercio electrónico usando React y Node.js"
+		},
+		"buttons": {
+			"add": "Agregar",
+			"remove": "Eliminar",
+			"addExperience": "Agregar Experiencia",
+			"addEducation": "Agregar Educación",
+			"addSkillCategory": "Agregar Categoría de Habilidades",
+			"addLanguage": "Agregar Idioma",
+			"addProject": "Agregar Proyecto",
+			"addHighlight": "Agregar Logro"
+		},
+		"validation": {
+			"required": "Este campo es obligatorio",
+			"email": "Debe ser una dirección de correo electrónico válida",
+			"url": "Debe ser una URL válida",
+			"date": "Debe ser una fecha válida (AAAA-MM-DD)",
+			"dateRange": "La fecha de fin debe ser posterior a la fecha de inicio",
+			"maxLength": "La longitud máxima es de {{max}} caracteres",
+			"minContent": "El currículum debe tener al menos uno de: experiencia laboral, educación o habilidades",
+			"minSkills": "Se requiere al menos una habilidad"
+		},
+		"errors": {
+			"invalidData": "Datos de currículum no válidos. Por favor, verifica todos los campos.",
+			"templateRendering": "Error al renderizar la plantilla de currículum.",
+			"pdfGeneration": "Error al generar el PDF. Por favor, inténtalo de nuevo.",
+			"pdfTimeout": "La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
+			"rateLimit": "Demasiadas solicitudes. Por favor, espera {{seconds}} segundos antes de volver a intentar.",
+			"maliciousContent": "El contenido contiene caracteres potencialmente inseguros.",
+			"unknown": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
+		},
+		"success": {
+			"generated": "¡Currículum generado exitosamente!",
+			"downloaded": "¡Currículum descargado exitosamente!"
+		},
+		"loading": {
+			"rendering": "Renderizando plantilla...",
+			"compiling": "Compilando PDF...",
+			"downloading": "Preparando descarga..."
+		}
+	}
+}

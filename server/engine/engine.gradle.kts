@@ -63,6 +63,9 @@ dependencies {
     implementation(libs.bundles.kotlin.jvm)
     implementation(libs.commons.text)
     implementation(libs.bucket4j.core)
+    implementation(libs.stringtemplate4)
+    implementation(libs.docker.java.core)
+    implementation(libs.docker.java.transport.httpclient5)
 
     implementation(libs.spring.dotenv)
     implementation(libs.sendgrid)
@@ -93,6 +96,7 @@ dependencies {
     testImplementation("org.testcontainers:r2dbc")
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
+    testImplementation(libs.bundles.kotest)
     testImplementation("com.tngtech.archunit:archunit:1.3.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

@@ -28,16 +28,16 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create domain package structure in `server/engine/src/main/kotlin/com/loomify/resume/domain/`
-- [ ] T002 Create application package structure in `server/engine/src/main/kotlin/com/loomify/resume/application/`
-- [ ] T003 Create infrastructure package structure in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/`
-- [ ] T004 [P] Create test directory structure in `server/engine/src/test/kotlin/com/loomify/resume/`
-- [ ] T005 [P] Create frontend feature structure in `client/apps/webapp/src/resume/`
-- [ ] T006 [P] Add StringTemplate 4 dependency to `server/engine/build.gradle.kts`
-- [ ] T007 [P] Pull TeX Live Docker image and verify availability (see quickstart.md)
-- [ ] T008 [P] Create LaTeX template resources directory in `server/engine/src/main/resources/templates/resume/`
-- [ ] T009 [P] Create i18n messages directory in `server/engine/src/main/resources/messages/`
-- [ ] T010 [P] Create example JSON payloads directory in `specs/003-resume-generator-mvp/examples/`
+- [X] T001 Create domain package structure in `server/engine/src/main/kotlin/com/loomify/resume/domain/`
+- [X] T002 Create application package structure in `server/engine/src/main/kotlin/com/loomify/resume/application/`
+- [X] T003 Create infrastructure package structure in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/`
+- [X] T004 [P] Create test directory structure in `server/engine/src/test/kotlin/com/loomify/resume/`
+- [X] T005 [P] Create frontend feature structure in `client/apps/webapp/src/resume/`
+- [X] T006 [P] Add StringTemplate 4 dependency to `server/engine/build.gradle.kts`
+- [X] T007 [P] Pull TeX Live Docker image and verify availability (see quickstart.md)
+- [X] T008 [P] Create LaTeX template resources directory in `server/engine/src/main/resources/templates/resume/`
+- [X] T009 [P] Create i18n messages directory in `server/engine/src/main/resources/messages/`
+- [X] T010 [P] Create example JSON payloads directory in `specs/003-resume-generator-mvp/examples/`
 
 ---
 
@@ -47,23 +47,23 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T011 [P] Use reusable Email value object in shared common library (`com.loomify.common.domain.vo.email`)
-- [ ] T012 [P] Create domain exception hierarchy in `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
-- [ ] T013 [P] Define PdfGeneratorPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/PdfGeneratorPort.kt`
-- [ ] T014 [P] Define TemplateRendererPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/TemplateRendererPort.kt`
-- [ ] T015 [P] Create Docker configuration class in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerConfiguration.kt`
-- [ ] T016 [P] Create StringTemplate configuration in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/StringTemplateConfiguration.kt`
-- [ ] T017 [P] Create GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/GlobalExceptionHandler.kt`
-- [ ] T018 [P] Create ErrorResponse DTO in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/ErrorResponse.kt`
-- [ ] T019 Create base LaTeX template structure (English) in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
-- [ ] T020 Create base LaTeX template structure (Spanish) in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
-- [ ] T021 [P] Create English i18n messages in `server/engine/src/main/resources/messages/messages.properties`
-- [ ] T022 [P] Create Spanish i18n messages in `server/engine/src/main/resources/messages/messages_es.properties`
-- [ ] T023 [P] Create TypeScript types for JSON Resume schema in `client/apps/webapp/src/resume/types/resume.ts`
-- [ ] T024 [P] Create Zod validation schema in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
-- [ ] T025 [P] Add English translations in `client/apps/webapp/src/locales/en/{feature_name}.json`
-- [ ] T026 [P] Add Spanish translations in `client/apps/webapp/src/locales/es/{feature_name}.json`
-- [ ] T027A [P] Configure Bucket4j dependencies in `server/engine/build.gradle.kts` (reuse from auth module per plan.md)
+- [X] T011 [P] Use reusable Email value object in shared common library (`com.loomify.common.domain.vo.email`)
+- [X] T012 [P] Create domain exception hierarchy in `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
+- [X] T013 [P] Define PdfGeneratorPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/PdfGeneratorPort.kt`
+- [X] T014 [P] Define TemplateRendererPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/TemplateRendererPort.kt`
+- [X] T015 [P] Create Docker configuration class in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerConfiguration.kt`
+- [X] T016 [P] Create StringTemplate configuration in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/StringTemplateConfiguration.kt`
+- [X] T017 [P] Create GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/GlobalExceptionHandler.kt`
+- [X] T018 [P] Create ErrorResponse DTO in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/ErrorResponse.kt`
+- [X] T019 Create base LaTeX template structure (English) in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
+- [X] T020 Create base LaTeX template structure (Spanish) in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
+- [X] T021 [P] Create English i18n messages in `server/engine/src/main/resources/messages/messages.properties`
+- [X] T022 [P] Create Spanish i18n messages in `server/engine/src/main/resources/messages/messages_es.properties`
+- [X] T023 [P] Create TypeScript types for JSON Resume schema in `client/apps/webapp/src/resume/types/resume.ts`
+- [X] T024 [P] Create Zod validation schema in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
+- [X] T025 [P] Add English translations in `client/apps/webapp/src/i18n/locales/en/resume.json`
+- [X] T026 [P] Add Spanish translations in `client/apps/webapp/src/i18n/locales/es/resume.json`
+- [X] T027A [P] Configure Bucket4j dependencies in `server/engine/engine.gradle.kts` (reuse from auth module per plan.md)
 - [ ] T027B [P] Implement @RateLimiting annotation pattern on resume endpoints (10 requests/minute per spec.md) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
