@@ -361,7 +361,7 @@ endpoints/cvix/
 2. **JSON Resume Schema**: Kotlin domain entities map cleanly; use Spring Validation + Zod for validation
 3. **Docker Orchestration**: Docker Java Library with semaphore-based throttling (10 concurrent containers)
 4. **LaTeX i18n**: Separate templates per language (`resume-template-en.tex`, `resume-template-es.tex`)
-5. **Rate Limiting**: Resilience4j RateLimiter for MVP, migrate to Redis-backed Bucket4j for production
+5. **Rate Limiting**: **Reuse existing Bucket4j infrastructure** from auth module (consistency, production-ready with Redis backend)
 
 ### Phase 1: Design (Complete ✅)
 

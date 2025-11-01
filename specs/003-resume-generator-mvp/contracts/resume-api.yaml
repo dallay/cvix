@@ -597,6 +597,7 @@ components:
             errors:
               type: array
               description: Detailed field-level validation errors (for 400 responses)
+              maxItems: 50
               items:
                 type: object
                 required:

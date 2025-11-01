@@ -1,6 +1,6 @@
 # Research: Resume Generator MVP
 
-*Generated: 2025-01-XX*
+*Generated: 2025-11-01*
 *Feature Spec: `specs/003-resume-generator-mvp/spec.md`*
 
 ## Overview
