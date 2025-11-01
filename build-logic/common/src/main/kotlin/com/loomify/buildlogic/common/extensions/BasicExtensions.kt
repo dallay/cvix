@@ -12,7 +12,6 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.jvm.toolchain.JvmVendorSpec
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -58,22 +57,22 @@ fun ExtensionContainer.commonExtensions() {
     configure<JavaPluginExtension> {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // Don't specify vendor to allow using any available JDK
         }
     }
 
     configure<KotlinProjectExtension> {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // Don't specify vendor to allow using any available JDK
         }
     }
 }
 
 fun TaskContainer.commonTasks() {
     withType<JavaCompile>().configureEach {
-        sourceCompatibility = AppConfiguration.jvmTargetStr
-        targetCompatibility = AppConfiguration.jvmTargetStr
+        sourceCompatibility = "24" // Match Kotlin JVM target
+        targetCompatibility = "24" // Match Kotlin JVM target
     }
     withType<KotlinCompile>().configureEach {
         compilerOptions.configureKotlin()

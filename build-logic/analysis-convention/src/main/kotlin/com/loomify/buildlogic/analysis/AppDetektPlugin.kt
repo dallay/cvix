@@ -1,6 +1,5 @@
 package com.loomify.buildlogic.analysis
 
-import com.loomify.buildlogic.common.AppConfiguration
 import com.loomify.buildlogic.common.ConventionPlugin
 import com.loomify.buildlogic.common.extensions.catalogLib
 import com.loomify.buildlogic.common.extensions.detekt
@@ -21,7 +20,7 @@ internal class AppDetektPlugin : ConventionPlugin {
             ignoreFailures = false
             autoCorrect = true
             buildUponDefaultConfig = true
-            jvmTarget = AppConfiguration.jvmTargetStr
+            jvmTarget = "21" // Detekt doesn't support JVM 24/25 yet, max is 21
             setSource(
                 fileTree(projectDir).matching {
                     include("**/*.kt", "**/*.kts")
