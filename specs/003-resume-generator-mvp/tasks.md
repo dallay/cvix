@@ -61,8 +61,8 @@
 - [ ] T022 [P] Create Spanish i18n messages in `server/engine/src/main/resources/messages/messages_es.properties`
 - [ ] T023 [P] Create TypeScript types for JSON Resume schema in `client/apps/webapp/src/resume/types/resume.ts`
 - [ ] T024 [P] Create Zod validation schema in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
-- [ ] T025 [P] Add English translations in `client/apps/webapp/src/locales/en.json`
-- [ ] T026 [P] Add Spanish translations in `client/apps/webapp/src/locales/es.json`
+- [ ] T025 [P] Add English translations in `client/apps/webapp/src/locales/en/{feature_name}.json`
+- [ ] T026 [P] Add Spanish translations in `client/apps/webapp/src/locales/es/{feature_name}.json`
 - [ ] T027A [P] Configure Bucket4j dependencies in `server/engine/build.gradle.kts` (reuse from auth module per plan.md)
 - [ ] T027B [P] Implement @RateLimiting annotation pattern on resume endpoints (10 requests/minute per spec.md) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
 
