@@ -1675,10 +1675,8 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   ├───classpath-snapshot/
-│       │   │   │   │   └───shrunk-classpath-snapshot.bin
-│       │   │   │   └───local-state/
-│       │   │   │       └───build-history.bin
+│       │   │   │   └───classpath-snapshot/
+│       │   │   │       └───shrunk-classpath-snapshot.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -1695,7 +1693,6 @@ description: Overview of the project structure and organization.
 │       │   │           └───build-history.bin
 │       │   ├───kover/
 │       │   │   ├───bin-reports/
-│       │   │   │   ├───coverage-error.log
 │       │   │   │   └───test.ic
 │       │   │   ├───.artifact
 │       │   │   ├───jvm.artifact
@@ -2073,10 +2070,8 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   │   │   └───lookups/
 │   │   │   │   │   │   │       └───...
 │   │   │   │   │   │   └───last-build.bin
-│   │   │   │   │   ├───classpath-snapshot/
-│   │   │   │   │   │   └───shrunk-classpath-snapshot.bin
-│   │   │   │   │   └───local-state/
-│   │   │   │   │       └───build-history.bin
+│   │   │   │   │   └───classpath-snapshot/
+│   │   │   │   │       └───shrunk-classpath-snapshot.bin
 │   │   │   │   └───compileTestKotlin/
 │   │   │   │       ├───cacheable/
 │   │   │   │       │   ├───caches-jvm/
@@ -2087,10 +2082,8 @@ description: Overview of the project structure and organization.
 │   │   │   │       │   │   └───lookups/
 │   │   │   │       │   │       └───...
 │   │   │   │       │   └───last-build.bin
-│   │   │   │       ├───classpath-snapshot/
-│   │   │   │       │   └───shrunk-classpath-snapshot.bin
-│   │   │   │       └───local-state/
-│   │   │   │           └───build-history.bin
+│   │   │   │       └───classpath-snapshot/
+│   │   │   │           └───shrunk-classpath-snapshot.bin
 │   │   │   ├───kover/
 │   │   │   │   ├───bin-reports/
 │   │   │   │   │   └───test.ic
@@ -2223,10 +2216,8 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   ├───classpath-snapshot/
-│       │   │   │   │   └───shrunk-classpath-snapshot.bin
-│       │   │   │   └───local-state/
-│       │   │   │       └───build-history.bin
+│       │   │   │   └───classpath-snapshot/
+│       │   │   │       └───shrunk-classpath-snapshot.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -2237,13 +2228,10 @@ description: Overview of the project structure and organization.
 │       │   │       │   │   └───lookups/
 │       │   │       │   │       └───...
 │       │   │       │   └───last-build.bin
-│       │   │       ├───classpath-snapshot/
-│       │   │       │   └───shrunk-classpath-snapshot.bin
-│       │   │       └───local-state/
-│       │   │           └───build-history.bin
+│       │   │       └───classpath-snapshot/
+│       │   │           └───shrunk-classpath-snapshot.bin
 │       │   ├───kover/
 │       │   │   ├───bin-reports/
-│       │   │   │   ├───coverage-error.log
 │       │   │   │   └───test.ic
 │       │   │   ├───.artifact
 │       │   │   ├───jvm.artifact

@@ -3,7 +3,8 @@ import type { Translations } from "../types";
 export const trustMetrics: Translations = {
 	en: {
 		"trustMetrics.title": "Trusted by Professionals",
-		"trustMetrics.subtitle": "Built with security, privacy, and quality in mind",
+		"trustMetrics.subtitle":
+			"Built with security, privacy, and quality in mind",
 		"trustMetrics.kpi.generated": "500+",
 		"trustMetrics.kpi.generated.label": "Resumes Generated",
 		"trustMetrics.kpi.generated.description": "Milestone 1 goal achieved",
@@ -19,7 +20,8 @@ export const trustMetrics: Translations = {
 	},
 	es: {
 		"trustMetrics.title": "Confiado por Profesionales",
-		"trustMetrics.subtitle": "Construido con seguridad, privacidad y calidad en mente",
+		"trustMetrics.subtitle":
+			"Construido con seguridad, privacidad y calidad en mente",
 		"trustMetrics.kpi.generated": "500+",
 		"trustMetrics.kpi.generated.label": "CVs Generados",
 		"trustMetrics.kpi.generated.description": "Meta del Hito 1 alcanzada",

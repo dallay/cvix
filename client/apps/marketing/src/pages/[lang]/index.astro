@@ -21,20 +21,20 @@ export const getStaticPaths = () =>
 const structuredData = {
 	"@context": "https://schema.org",
 	"@type": "SoftwareApplication",
-	"name": "Civix",
-	"applicationCategory": "BusinessApplication",
-	"description": t('home.description'),
-	"operatingSystem": "Web Browser",
-	"offers": {
+	name: "Civix",
+	applicationCategory: "BusinessApplication",
+	description: t("home.description"),
+	operatingSystem: "Web Browser",
+	offers: {
 		"@type": "Offer",
-		"price": "0",
-		"priceCurrency": "USD"
+		price: "0",
+		priceCurrency: "USD",
 	},
-	"aggregateRating": {
+	aggregateRating: {
 		"@type": "AggregateRating",
-		"ratingValue": "4.8",
-		"ratingCount": "500"
-	}
+		ratingValue: "4.8",
+		ratingCount: "500",
+	},
 };
 ---
 

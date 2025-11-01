@@ -3,7 +3,8 @@ import type { Translations } from "../types";
 export const howItWorks: Translations = {
 	en: {
 		"howItWorks.title": "How It Works",
-		"howItWorks.subtitle": "Create your professional resume in three simple steps",
+		"howItWorks.subtitle":
+			"Create your professional resume in three simple steps",
 		"howItWorks.step1.title": "Fill the Guided Form",
 		"howItWorks.step1.description":
 			"Complete our intuitive 5-step form with your professional information. Clear validations and human-readable error explanations guide you every step of the way.",
@@ -13,7 +14,8 @@ export const howItWorks: Translations = {
 		"howItWorks.step3.title": "Download Your PDF",
 		"howItWorks.step3.description":
 			"Get your LaTeX-quality resume instantly. Download your professional PDF in seconds, ready to send to employers.",
-		"howItWorks.microcopy": "Clear validations and human-readable error explanations",
+		"howItWorks.microcopy":
+			"Clear validations and human-readable error explanations",
 	},
 	es: {
 		"howItWorks.title": "Cómo Funciona",
@@ -27,6 +29,7 @@ export const howItWorks: Translations = {
 		"howItWorks.step3.title": "Descarga tu PDF",
 		"howItWorks.step3.description":
 			"Obtén tu CV con calidad LaTeX al instante. Descarga tu PDF profesional en segundos, listo para enviar a empleadores.",
-		"howItWorks.microcopy": "Validaciones claras y explicaciones de errores legibles",
+		"howItWorks.microcopy":
+			"Validaciones claras y explicaciones de errores legibles",
 	},
 };
