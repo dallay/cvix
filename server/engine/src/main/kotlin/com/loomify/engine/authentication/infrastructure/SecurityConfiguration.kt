@@ -279,6 +279,7 @@ class SecurityConfiguration(
      */
     @Bean
     @Generated(reason = "Only called with a valid client registration repository")
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ReactiveClientRegistrationRepository::class)
     fun jwtDecoder(
         clientRegistrationRepository: ReactiveClientRegistrationRepository
     ): ReactiveJwtDecoder {

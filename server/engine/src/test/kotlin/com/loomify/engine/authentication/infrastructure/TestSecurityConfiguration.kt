@@ -8,8 +8,11 @@ import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository
 import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
@@ -31,6 +34,11 @@ class TestSecurityConfiguration {
     fun clientRegistrationRepository(
         clientRegistration: ClientRegistration
     ): ReactiveClientRegistrationRepository = InMemoryReactiveClientRegistrationRepository(clientRegistration)
+
+    @Bean
+    fun nonReactiveClientRegistrationRepository(
+        clientRegistration: ClientRegistration
+    ): ClientRegistrationRepository = InMemoryClientRegistrationRepository(clientRegistration)
 
     private fun clientRegistrationBuilder(): ClientRegistration.Builder {
         val metadata: MutableMap<String, Any> = HashMap()
@@ -55,6 +63,12 @@ class TestSecurityConfiguration {
 
     @Bean
     fun jwtDecoder(): ReactiveJwtDecoder = mock(ReactiveJwtDecoder::class.java)
+
+    @Bean
+    fun authorizedClientRepository(): ServerOAuth2AuthorizedClientRepository =
+        AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(
+            mock(org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService::class.java),
+        )
 
     @Suppress("MaxLineLength", "ParameterListWrapping")
     @Bean

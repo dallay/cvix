@@ -13,6 +13,9 @@ spring:
     main:
         banner-mode: off
         allow-bean-definition-overriding: true
+    autoconfigure:
+        exclude:
+            - org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
     security:
         oauth2:
             client:
@@ -21,9 +24,16 @@ spring:
                         client-secret: web_app
                         client-id: web_app
                         scope: openid,profile,email
+                        authorization-grant-type: authorization_code
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
                 provider:
                     oidc:
                         issuer-uri: ${application.security.oauth2.issuer-uri}
+                        authorization-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/auth
+                        token-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/token
+                        user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo
+                        jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
+                        user-name-attribute: preferred_username
     ssl:
       bundle:
         pem:
