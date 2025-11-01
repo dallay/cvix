@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
       - name: Dependency Review
         # Pinned to v4 commit hash for security
-        uses: actions/dependency-review-action@da24556b548a50705dd671f47852072ea4c105d9 # v4
+        uses: actions/dependency-review-action@45529485b5eb76184ced07362d2331fd9d26f03f # v4
         with:
           # You can specify configuration options here, e.g.:
           # fail-on-severity: critical
