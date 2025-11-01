@@ -25,12 +25,12 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/yacosta738/saas-template.git",
+		"url": "https://github.com/dallay/cvix.git",
 		"directory": "client/packages/tsconfig",
 		"branch": "main"
 	},
 	"bugs": {
-		"url": "https://github.com/yacosta738/saas-template/issues"
+		"url": "https://github.com/dallay/cvix/issues"
 	},
 	"scripts": {
 		"test": "sh -c \"echo 'No test specified'\""

@@ -127,7 +127,7 @@ data class Workspace(
             val trimmedName = name.trim()
             require(trimmedName.isNotEmpty()) { "Workspace name cannot be blank" }
             require(trimmedName.length <= NAME_MAX_LENGTH) {
-                "Workspace name must be at most ${NAME_MAX_LENGTH} characters long"
+                "Workspace name must be at most $NAME_MAX_LENGTH characters long"
             }
             val workspaceId = WorkspaceId(id.toString())
             val owner = UserId(ownerId.toString())

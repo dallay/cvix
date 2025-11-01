@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security – Report a vulnerability
-    url: https://github.com/yacosta738/saas-template/security/advisories/new
+    url: https://github.com/dallay/cvix/security/advisories/new
     about: Please do not open a public issue. Use GitHub Security Advisories to report vulnerabilities.
   - name: Discussions
-    url: https://github.com/yacosta738/saas-template/discussions
+    url: https://github.com/dallay/cvix/discussions
     about: Use discussions for Q&A and general feedback.

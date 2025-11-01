@@ -33,7 +33,7 @@ export default defineConfig({
 				{
 					icon: "github",
 					label: "GitHub",
-					href: "https://github.com/yacosta738/saas-template",
+					href: "https://github.com/dallay/cvix",
 				},
 				{
 					icon: "linkedin",
