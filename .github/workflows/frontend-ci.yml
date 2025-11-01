@@ -87,8 +87,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
@@ -102,12 +100,9 @@ jobs:
         run: pnpm test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
-        if: secrets.CODECOV_TOKEN != ''
+        uses: ./.github/actions/codecov
         with:
-          files: ./coverage/lcov.info # Adjust path if necessary, common for JS projects
-          # flags: frontend # Optional
-          # name: codecov-frontend # Optional
-          # fail_ci_if_error: true # Optional
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: frontend
+          name: codecov-frontend

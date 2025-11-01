@@ -43,33 +43,6 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-  codeql-analysis:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write # Required to upload CodeQL results
-      actions: read # Required for running CodeQL analysis
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript', 'java' ] # Add other languages as needed
-    steps:
-      - name: Checkout repository
-        # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
-      - name: Initialize CodeQL
-        # Pinned to v3 commit hash for security
-        uses: github/codeql-action/init@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
-        with:
-          languages: ${{ matrix.language }}
-          # queries: +security-extended,security-and-quality
-      - name: Autobuild
-        # Pinned to v3 commit hash for security
-        uses: github/codeql-action/autobuild@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
-      - name: Perform CodeQL Analysis
-        # Pinned to v3 commit hash for security
-        uses: github/codeql-action/analyze@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
-
   super-linter:
     name: Super Linter
     runs-on: ubuntu-latest

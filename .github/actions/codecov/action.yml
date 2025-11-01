@@ -1,0 +1,37 @@
+name: 'Upload Coverage to Codecov'
+description: 'Uploads code coverage reports to Codecov if token is available'
+
+inputs:
+  codecov-token:
+    description: 'Codecov token for uploading coverage reports'
+    required: false
+  files:
+    description: 'Comma-separated list of coverage files to upload'
+    required: true
+  flags:
+    description: 'Flag to identify coverage type (e.g., frontend, backend)'
+    required: false
+    default: ''
+  name:
+    description: 'Custom name for the upload'
+    required: false
+    default: ''
+  fail-ci-if-error:
+    description: 'Fail CI if Codecov upload fails'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Upload coverage to Codecov
+      # Pinned to v4 commit hash for security
+      uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+      if: inputs.codecov-token != ''
+      with:
+        files: ${{ inputs.files }}
+        flags: ${{ inputs.flags }}
+        name: ${{ inputs.name }}
+        fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
+      env:
+        CODECOV_TOKEN: ${{ inputs.codecov-token }}
