@@ -58,7 +58,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
                         ReportGenerator.Format.JUNIT.toString(),
                         ReportGenerator.Format.XML.toString(),
                         ReportGenerator.Format.SARIF.toString(),
-                    )
+                    ),
                 )
                 suppressionFile.set("${rootProject.rootDir}/config/owasp/owasp-suppression.xml")
 
@@ -78,7 +78,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
                 scanConfigurations.set(
                     configurations.names
                         .filter { validConfigurations.contains(it) }
-                        .toList()
+                        .toList(),
                 )
                 outputDirectory.set(layout.buildDirectory.dir("reports/owasp").get())
             }
