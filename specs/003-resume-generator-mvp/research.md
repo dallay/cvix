@@ -463,7 +463,7 @@ Create language-specific template variables:
 
 - Babel package: CTAN `babel`
 - datetime2 package: CTAN `datetime2`
-- Spanish LaTeX guide: <https://www.texnia.com/archive/babel.pdf>
+- Spanish LaTeX guide: <https://www.overleaf.com/learn/latex/International_language_support>
 
 ---
 
@@ -479,42 +479,56 @@ Create language-specific template variables:
 
 **Findings**:
 
-**Spring WebFlux Rate Limiting Libraries**:
+**Existing Implementation**:
 
-1. **Bucket4j** (<https://bucket4j.com/>)
-   - Token bucket algorithm
-   - Supports Redis/Hazelcast backends (distributed rate limiting)
-   - Spring WebFlux integration available
+The project already has **Bucket4j** implemented in the authentication module (`com.loomify.engine.ratelimit`). This is the **recommended approach** to maintain consistency across the codebase.
 
-2. **Resilience4j** (already in project)
-   - Rate limiter module available
-   - Simpler than Bucket4j but less feature-rich
-   - Good for MVP (in-memory rate limiting)
+**Bucket4j Architecture** (already in use):
 
-**Recommendation**: Use **Resilience4j RateLimiter** for MVP (simple, already a dependency).
+```text
+domain/port/
+└── RateLimiterPort.kt              # Domain port (interface)
 
-**Implementation Pattern**:
+infrastructure/
+├── Bucket4jRateLimiter.kt          # Adapter implementing RateLimiterPort
+├── PricingPlan.kt                  # Rate limit tier configuration
+├── PricingPlanService.kt           # Per-user bucket management
+└── config/
+    └── BucketConfigurationStrategy.kt  # Bucket4j configuration builder
+```
+
+**Key Features Already Available**:
+
+- ✅ Token bucket algorithm (Bucket4j v8 API)
+- ✅ Per-user rate limiting with in-memory cache
+- ✅ Pricing plan tiers (FREE, BASIC, PROFESSIONAL)
+- ✅ Ready for Redis/Hazelcast backends (distributed rate limiting)
+- ✅ Reactive support (works with Spring WebFlux)
+
+**Implementation Pattern for Resume Generator**:
+
+Reuse the existing `RateLimiterPort` and `Bucket4jRateLimiter`:
 
 ```kotlin
-// Configuration
+// Resume-specific rate limit configuration
 @Configuration
-class RateLimiterConfig {
+class ResumeRateLimitConfig {
+
     @Bean
-    fun resumeGenerationRateLimiter(): RateLimiter {
-        return RateLimiter.of("resume-generation", RateLimiterConfig.custom()
-            .limitForPeriod(10)               // 10 requests
-            .limitRefreshPeriod(Duration.ofMinutes(1))  // per minute
-            .timeoutDuration(Duration.ZERO)   // Immediate rejection if limit exceeded
-            .build()
+    fun resumeGenerationRateLimit(): RateLimitProperties {
+        return RateLimitProperties(
+            capacity = 10,              // 10 requests
+            refillTokens = 10,          // Refill 10 tokens
+            refillPeriod = Duration.ofMinutes(1)  // Every minute
         )
     }
 }
 
-// Controller with rate limiting
+// Controller with rate limiting (leveraging existing infrastructure)
 @RestController
 @RequestMapping("/api/v1/resumes")
 class ResumeController(
-    private val rateLimiter: RateLimiter,
+    private val rateLimiter: RateLimiterPort,  // Injected from existing infra
     private val generateResumeHandler: GenerateResumeCommandHandler
 ) {
 
@@ -524,57 +538,72 @@ class ResumeController(
         @AuthenticationPrincipal user: JwtAuthenticationToken
     ): ResponseEntity<ByteArray> {
 
-        // Rate limit per user
         val userId = user.name // JWT subject
-        val userRateLimiter = rateLimiter.decorateSuspendFunction {
-            generateResumeHandler.handle(GenerateResumeCommand(request, userId))
-        }
 
-        return try {
-            val pdfBytes = userRateLimiter()
-            ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header("Content-Disposition", "attachment; filename=resume.pdf")
-                .body(pdfBytes)
+        // Check rate limit using existing port
+        val rateLimitResult = rateLimiter.checkLimit(userId)
 
-        } catch (e: RequestNotPermitted) {
-            // Rate limit exceeded
-            val retryAfter = rateLimiter.metrics.availablePermissions
-                .let { if (it == 0) 60 else 0 } // Wait 60s if no permits available
-
-            ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .header("Retry-After", retryAfter.toString())
+        if (!rateLimitResult.allowed) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", rateLimitResult.retryAfterSeconds.toString())
+                .header("X-RateLimit-Limit", "10")
+                .header("X-RateLimit-Remaining", "0")
+                .header("X-RateLimit-Reset", rateLimitResult.resetTimestamp.toString())
                 .body(null)
         }
+
+        // Generate PDF
+        val pdfBytes = generateResumeHandler.handle(
+            GenerateResumeCommand(request, userId)
+        )
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header("Content-Disposition", "attachment; filename=resume.pdf")
+            .body(pdfBytes)
     }
 }
 ```
 
-**Per-User Rate Limiting** (distributed scenario):
+**Per-User Rate Limiting** (already supported):
 
-For production with multiple instances, use **Redis-backed Bucket4j**:
+The existing `PricingPlanService` maintains an in-memory cache of Bucket4j buckets, one per unique user ID:
 
 ```kotlin
-@Configuration
-class DistributedRateLimiterConfig(
-    private val redisTemplate: ReactiveRedisTemplate<String, String>
-) {
-    @Bean
-    fun rateLimiterRegistry(): RateLimiterRegistry {
-        return RateLimiterRegistry.custom()
-            .addRegistry("redis", RateLimiterRegistry.of(
-                RateLimiterConfig.custom()
-                    .limitForPeriod(10)
-                    .limitRefreshPeriod(Duration.ofMinutes(1))
-                    .build()
-            ))
-            .build()
-    }
+// From existing PricingPlanService.kt
+private val cache: MutableMap<String, Bucket> = ConcurrentHashMap()
 
-    fun getRateLimiter(userId: String): RateLimiter {
-        return rateLimiterRegistry.rateLimiter("user:$userId")
+fun resolveBucket(apiKey: String): Bucket {
+    return cache.computeIfAbsent(apiKey) { key ->
+        val plan = resolvePricingPlan(key)
+        createNewBucket(plan)
     }
 }
+```
+
+**For Production** (distributed scenario):
+
+The existing implementation is ready for Redis backend. Update configuration:
+
+```yaml
+# application.yml
+spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1 hour
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: buckets
+      url: /api/.*
+      rate-limits:
+        - cache-key: "user-#{principal.name}"
+          bandwidths:
+            - capacity: 10
+              time: 1
+              unit: minutes
 ```
 
 **HTTP 429 Response Format**:
@@ -590,6 +619,8 @@ class DistributedRateLimiterConfig(
 ```
 
 **Localized Error Messages**:
+
+Reuse existing Spring i18n infrastructure:
 
 ```kotlin
 // MessageSource configuration (Spring i18n)
@@ -626,9 +657,18 @@ class GlobalExceptionHandler(private val messageSource: MessageSource) {
 @WebFluxTest(ResumeController::class)
 class RateLimitingTest {
 
+    @MockkBean
+    private lateinit var rateLimiter: RateLimiterPort
+
     @Test
     fun `should return 429 after 10 requests in 1 minute`() = runBlocking {
-        repeat(10) {
+        // Mock rate limiter to allow first 10 requests
+        repeat(10) { count ->
+            coEvery { rateLimiter.checkLimit(any()) } returns RateLimitResult(
+                allowed = true,
+                remainingTokens = 10 - count - 1
+            )
+
             webTestClient.post()
                 .uri("/api/v1/resumes")
                 .bodyValue(validResumeRequest)
@@ -637,22 +677,59 @@ class RateLimitingTest {
         }
 
         // 11th request should be rate limited
+        coEvery { rateLimiter.checkLimit(any()) } returns RateLimitResult(
+            allowed = false,
+            remainingTokens = 0,
+            retryAfterSeconds = 60
+        )
+
         webTestClient.post()
             .uri("/api/v1/resumes")
             .bodyValue(validResumeRequest)
             .exchange()
             .expectStatus().isEqualTo(429)
             .expectHeader().exists("Retry-After")
+            .expectHeader().valueEquals("Retry-After", "60")
     }
 }
 ```
 
-**Recommendation**: Start with in-memory Resilience4j for MVP, migrate to Redis-backed Bucket4j when deploying to production cluster.
+**Integration with Existing Infrastructure**:
+
+1. **Reuse `RateLimiterPort`**: The domain port is already defined and tested
+2. **Extend `PricingPlanService`**: Add resume generation limits to existing pricing tiers:
+
+   ```kotlin
+   // Add to existing PricingPlan.kt
+   enum class PricingPlan {
+       FREE(
+           apiLimit = 20,
+           resumeGenerationLimit = 10  // NEW: 10 resumes per minute
+       ),
+       BASIC(
+           apiLimit = 100,
+           resumeGenerationLimit = 50  // NEW: 50 resumes per minute
+       ),
+       PROFESSIONAL(
+           apiLimit = 1000,
+           resumeGenerationLimit = 200  // NEW: 200 resumes per minute
+       )
+   }
+   ```
+
+3. **Inject existing adapter**: No new implementation needed
+
+**Recommendation**:
+
+- ✅ **Use existing Bucket4j infrastructure** (consistency across codebase)
+- ✅ Add resume-specific rate limits to existing `PricingPlan` tiers
+- ✅ Reuse `RateLimiterPort` and `Bucket4jRateLimiter` adapter
+- ✅ Production-ready: Already configured for Redis backend
 
 **References**:
 
-- Resilience4j: <https://resilience4j.readme.io/docs/ratelimiter>
-- Bucket4j: <https://bucket4j.com/>
+- Bucket4j documentation: <https://bucket4j.com/>
+- Existing implementation: `server/engine/src/main/kotlin/com/loomify/engine/ratelimit/`
 - RFC 6585 (HTTP 429): <https://tools.ietf.org/html/rfc6585#section-4>
 
 ---
@@ -665,7 +742,7 @@ All 5 research tasks completed. Key findings:
 2. ✅ JSON Resume schema: Kotlin domain entities map cleanly to schema, validate with Spring Validation + Zod
 3. ✅ Docker orchestration: Use Docker Java Library with semaphore-based throttling (10 concurrent containers)
 4. ✅ LaTeX i18n: Separate templates per language (MVP), `babel` package for proper Spanish support
-5. ✅ Rate limiting: Resilience4j RateLimiter (MVP), migrate to Redis-backed Bucket4j for production
+5. ✅ Rate limiting: **Reuse existing Bucket4j infrastructure** from auth module (consistency, production-ready with Redis backend)
 
 **Unresolved Questions** (defer to Phase 1):
 

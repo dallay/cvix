@@ -197,12 +197,12 @@ cd client/apps/webapp
 # Start Vite dev server
 pnpm dev
 
-# Dev server starts on http://localhost:5173
+# Dev server starts on http://localhost:9876
 ```
 
 **Verify frontend is running**:
 
-- Open browser: <http://localhost:5173>
+- Open browser: <http://localhost:9876>
 - You should see the Loomify dashboard
 - Navigate to "Resume Generator" (or `/resumes/new`)
 
@@ -407,7 +407,7 @@ ls -la /var/run/docker.sock
 
 **Error**: `Access-Control-Allow-Origin missing`
 
-**Solution**: Backend CORS is configured for `http://localhost:5173`. Verify:
+**Solution**: Backend CORS is configured for `http://localhost:9876`. Verify:
 
 1. Backend is running on `localhost:8080`
 2. Frontend is running on `localhost:5173`
@@ -501,7 +501,7 @@ docker stats --no-stream
 ## Support
 
 - **Slack**: `#resume-generator` channel
-- **Documentation**: <http://localhost:3000> (Starlight docs site)
+- **Documentation**: <http://localhost:4321> (Starlight docs site)
 - **Issue Tracker**: GitHub Issues with `feature/resume-generator` label
 
 Happy coding! 🚀
