@@ -1675,8 +1675,10 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   └───classpath-snapshot/
-│       │   │   │       └───shrunk-classpath-snapshot.bin
+│       │   │   │   ├───classpath-snapshot/
+│       │   │   │   │   └───shrunk-classpath-snapshot.bin
+│       │   │   │   └───local-state/
+│       │   │   │       └───build-history.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -2367,7 +2369,8 @@ description: Overview of the project structure and organization.
 │       ├───plan.md
 │       ├───quickstart.md
 │       ├───research.md
-│       └───spec.md
+│       ├───spec.md
+│       └───tasks.md
 ├───.dockerignore
 ├───.editorconfig
 ├───.env.example

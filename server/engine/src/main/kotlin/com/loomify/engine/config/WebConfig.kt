@@ -16,7 +16,7 @@ import org.springframework.web.reactive.function.server.router
 
 @Configuration
 @EnableWebFlux
-open class WebConfig(val applicationSecurityProperties: ApplicationSecurityProperties) : WebFluxConfigurer {
+class WebConfig(val applicationSecurityProperties: ApplicationSecurityProperties) : WebFluxConfigurer {
 
     /**
      * Adds resource handlers to the given registry.
@@ -55,7 +55,7 @@ open class WebConfig(val applicationSecurityProperties: ApplicationSecurityPrope
      *         and returns the specified HTML resource as the response.
      */
     @Bean
-    open fun indexRouter(@Value("classpath:/static/index.html") html: Resource): RouterFunction<ServerResponse> {
+    fun indexRouter(@Value("classpath:/static/index.html") html: Resource): RouterFunction<ServerResponse> {
         return router {
             GET("/") {
                 ok().contentType(MediaType.TEXT_HTML).bodyValue(html)
