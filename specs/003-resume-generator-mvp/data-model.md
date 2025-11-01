@@ -195,6 +195,8 @@ package com.loomify.resume.domain.model
 
 import java.time.LocalDate
 import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /**
  * Work experience entry.
@@ -280,6 +282,8 @@ value class Highlight(val value: String) {
 package com.loomify.resume.domain.model
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /**
  * Education entry.

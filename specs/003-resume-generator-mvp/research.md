@@ -219,10 +219,10 @@ data class WorkExperience(
 
 **Questions**:
 
-- How to spawn/kill Docker containers from Spring Boot application?
-- How to enforce resource limits programmatically?
-- How to handle concurrent requests (50 users)?
-- How to clean up failed containers?
+- What's the best way to spawn/kill Docker containers from Spring Boot?
+- How do we enforce resource limits programmatically?
+- For concurrent requests (50 users), what's the strategy?
+- How are failed containers cleaned up?
 
 **Findings**:
 
@@ -457,7 +457,7 @@ Create language-specific template variables:
 - No custom font setup needed for MVP
 - If custom fonts required: `fontspec` package with XeLaTeX (heavier than pdfLaTeX)
 
-**Recommendation**: Use **Option A (separate templates)** for MVP, migrate to Option B if supporting 5+ languages in future.
+**Recommendation**: Use **Option A (separate templates)** for MVP, migrate to Option B if supporting 5+ languages in the future.
 
 **References**:
 
@@ -473,9 +473,9 @@ Create language-specific template variables:
 
 **Questions**:
 
-- How to implement rate limiting in reactive Spring Boot?
-- How to track per-user request counts?
-- How to set `Retry-After` header?
+- What's the best approach for implementing rate limiting in reactive Spring Boot?
+- How do we track per-user request counts effectively?
+- What's the strategy for setting the `Retry-After` header?
 
 **Findings**:
 
