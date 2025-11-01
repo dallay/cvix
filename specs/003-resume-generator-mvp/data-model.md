@@ -233,8 +233,8 @@ data class WorkExperience(
      * Formats work period for display in LaTeX template.
      * Example: "Jan 2020 - Present" (English), "Ene 2020 - Presente" (Spanish)
      */
-    fun formatPeriod(locale: java.util.Locale): String {
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("MMM yyyy", locale)
+    fun formatPeriod(locale: Locale): String {
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy", locale)
         val startStr = startDate.format(formatter)
         val endStr = endDate?.format(formatter) ?: when (locale.language) {
             "es" -> "Presente"
@@ -307,8 +307,8 @@ data class Education(
     /**
      * Formats education period for display in LaTeX template.
      */
-    fun formatPeriod(locale: java.util.Locale): String {
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("MMM yyyy", locale)
+    fun formatPeriod(locale: Locale): String {
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy", locale)
         val startStr = startDate.format(formatter)
         val endStr = endDate?.format(formatter) ?: when (locale.language) {
             "es" -> "En Curso"
