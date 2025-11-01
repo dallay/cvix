@@ -51,32 +51,36 @@ internal class AppOwaspPlugin : ConventionPlugin {
 
         with(extensions) {
             configure<DependencyCheckExtension> {
-                failBuildOnCVSS = FAIL_BUILDS_ON_CVSS
-                formats = listOf(
-                    ReportGenerator.Format.HTML.toString(),
-                    ReportGenerator.Format.JUNIT.toString(),
-                    ReportGenerator.Format.XML.toString(),
-                    ReportGenerator.Format.SARIF.toString(),
+                failBuildOnCVSS.set(FAIL_BUILDS_ON_CVSS)
+                formats.set(
+                    listOf(
+                        ReportGenerator.Format.HTML.toString(),
+                        ReportGenerator.Format.JUNIT.toString(),
+                        ReportGenerator.Format.XML.toString(),
+                        ReportGenerator.Format.SARIF.toString(),
+                    )
                 )
-                suppressionFile = "${rootProject.rootDir}/config/owasp/owasp-suppression.xml"
+                suppressionFile.set("${rootProject.rootDir}/config/owasp/owasp-suppression.xml")
 
                 setEnvironmentVariables()
 
                 // Configure the data directory to store the NVD data and the H2 database
                 data {
-                    directory = layout.buildDirectory.dir("dependency-check-data").get().asFile.absolutePath
+                    directory.set(layout.buildDirectory.dir("dependency-check-data").get().asFile.absolutePath)
                 }
 
                 // Enable auto-update of the NVD database
-                autoUpdate = AUTO_UPDATE
+                autoUpdate.set(AUTO_UPDATE)
 
                 // remove plugin dependencies, for configs see
                 // https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_plugin_and_dependency_management
                 val validConfigurations = listOf("compileClasspath", "runtimeClasspath", "default")
-                scanConfigurations = configurations.names
-                    .filter { validConfigurations.contains(it) }
-                    .toList()
-                outputDirectory = layout.buildDirectory.dir("reports/owasp").get().asFile.absolutePath
+                scanConfigurations.set(
+                    configurations.names
+                        .filter { validConfigurations.contains(it) }
+                        .toList()
+                )
+                outputDirectory.set(layout.buildDirectory.dir("reports/owasp").get())
             }
         }
     }
@@ -85,7 +89,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
         val apiKeyValue = System.getenv("NVD_API_KEY")
         if (apiKeyValue != null) {
             nvd {
-                apiKey = apiKeyValue
+                apiKey.set(apiKeyValue)
             }
             println(" ✅  [NVD_API_KEY] was successfully loaded from the environment.")
         } else {
@@ -94,7 +98,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
         val delayValue = System.getenv("NVD_API_DELAY")
         if (delayValue != null) {
             nvd {
-                delay = delayValue.toInt()
+                delay.set(delayValue.toInt())
             }
             println(" ✅  [NVD_API_DELAY] was successfully loaded from the environment.")
         } else {
