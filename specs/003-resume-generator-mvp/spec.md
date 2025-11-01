@@ -155,17 +155,17 @@ When PDF generation fails due to system issues, the user receives clear informat
 
 #### Performance & Reliability
 
-- **FR-023**: System MUST handle 50 concurrent users without performance degradation during MVP phase
-- **FR-024**: System MUST maintain 99.5% uptime as measured by external monitoring
-- **FR-025**: System MUST respond to API requests within 500ms (95th percentile) excluding document generation time
-- **FR-026**: System MUST maintain error rate below 3% of all generation attempts
+- **FR-024**: System MUST handle 50 concurrent users without performance degradation during MVP phase
+- **FR-025**: System MUST maintain 99.5% uptime as measured by external monitoring
+- **FR-026**: System MUST respond to API requests within 200ms (95th percentile) excluding document generation time
+- **FR-027**: System MUST maintain error rate below 3% of all generation attempts
 
 #### User Interface
 
-- **FR-027**: System MUST provide a responsive interface that works on mobile devices and small screens
-- **FR-028**: System MUST meet web accessibility standards including proper form labels, keyboard navigation, and screen reader support
-- **FR-029**: System MUST provide visual feedback during PDF generation to inform users of progress
-- **FR-030**: System MUST support all modern web browsers released in the past 2 years
+- **FR-028**: System MUST provide a responsive interface that works on mobile devices and small screens
+- **FR-029**: System MUST meet web accessibility standards including proper form labels, keyboard navigation, and screen reader support
+- **FR-030**: System MUST provide visual feedback during PDF generation to inform users of progress
+- **FR-031**: System MUST support all modern web browsers released in the past 2 years
 
 
 

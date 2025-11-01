@@ -51,7 +51,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
 
         with(extensions) {
             configure<DependencyCheckExtension> {
-                FAIL_BUILDS_ON_CVSS.also { failBuildOnCVSS = it }
+                failBuildOnCVSS = FAIL_BUILDS_ON_CVSS
                 formats = listOf(
                     ReportGenerator.Format.HTML.toString(),
                     ReportGenerator.Format.JUNIT.toString(),
@@ -63,8 +63,9 @@ internal class AppOwaspPlugin : ConventionPlugin {
                 setEnvironmentVariables()
 
                 // Configure the data directory to store the NVD data and the H2 database
-                data.directory =
-                    layout.buildDirectory.dir("dependency-check-data").get().asFile.absolutePath
+                data {
+                    directory = layout.buildDirectory.dir("dependency-check-data").get().asFile.absolutePath
+                }
 
                 // Enable auto-update of the NVD database
                 autoUpdate = AUTO_UPDATE
@@ -81,16 +82,20 @@ internal class AppOwaspPlugin : ConventionPlugin {
     }
 
     private fun DependencyCheckExtension.setEnvironmentVariables() {
-        val apiKey = System.getenv("NVD_API_KEY")
-        if (apiKey != null) {
-            nvd?.apiKey = apiKey
+        val apiKeyValue = System.getenv("NVD_API_KEY")
+        if (apiKeyValue != null) {
+            nvd {
+                apiKey = apiKeyValue
+            }
             println(" ✅  [NVD_API_KEY] was successfully loaded from the environment.")
         } else {
             println(" ⚠️  [NVD_API_KEY] was not found in the environment. Please set it to avoid rate limiting.")
         }
-        val delay = System.getenv("NVD_API_DELAY")
-        if (delay != null) {
-            nvd?.delay = delay.toInt()
+        val delayValue = System.getenv("NVD_API_DELAY")
+        if (delayValue != null) {
+            nvd {
+                delay = delayValue.toInt()
+            }
             println(" ✅  [NVD_API_DELAY] was successfully loaded from the environment.")
         } else {
             println(" ⚠️  [NVD_API_DELAY] was not found in the environment. Defaulting to 1000ms.")

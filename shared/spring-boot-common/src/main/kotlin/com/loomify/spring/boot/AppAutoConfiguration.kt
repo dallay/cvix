@@ -7,12 +7,12 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
-open class AppAutoConfiguration {
+class AppAutoConfiguration {
     @Bean
-    open fun appSpringBeanProvider(applicationContext: ApplicationContext): AppSpringBeanProvider =
+    fun appSpringBeanProvider(applicationContext: ApplicationContext): AppSpringBeanProvider =
         AppSpringBeanProvider(applicationContext)
 
     @Bean
-    open fun mediator(appSpringBeanProvider: AppSpringBeanProvider): Mediator =
+    fun mediator(appSpringBeanProvider: AppSpringBeanProvider): Mediator =
         MediatorBuilder(appSpringBeanProvider).build()
 }

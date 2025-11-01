@@ -18,11 +18,11 @@
 	"packageManager": "pnpm@10.19.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/yacosta738/saas-template.git",
+		"url": "https://github.com/dallay/cvix.git",
 		"branch": "main"
 	},
 	"bugs": {
-		"url": "https://github.com/yacosta738/saas-template/issues"
+		"url": "https://github.com/dallay/cvix/issues"
 	},
 	"workspaces": {
 		"packages": [

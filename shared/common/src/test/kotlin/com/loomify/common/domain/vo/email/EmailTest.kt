@@ -67,4 +67,19 @@ internal class EmailTest {
         assertNotEquals(email1, email2)
         assertNotEquals(email1.hashCode(), email2.hashCode())
     }
+
+    @Test
+    fun `should throw exception for emails with invalid dots`() {
+        val invalidEmails = listOf(
+            ".user@example.com", // Leading dot
+            "user.@example.com", // Trailing dot
+            "user..name@example.com", // Consecutive dots
+        )
+
+        invalidEmails.forEach {
+            assertThrows(EmailNotValidException::class.java) {
+                Email(it)
+            }
+        }
+    }
 }

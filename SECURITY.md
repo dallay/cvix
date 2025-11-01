@@ -5,7 +5,7 @@ Thank you for helping keep loomify secure.
 ## Reporting a vulnerability
 
 - Do not open a public issue.
-- Use GitHub Security Advisories: https://github.com/yacosta738/saas-template/security/advisories/new
+- Use GitHub Security Advisories: https://github.com/dallay/cvix/security/advisories/new
 - Include reproduction steps, impact scope, and affected versions.
 
 We will respond as soon as possible and coordinate responsible disclosure.

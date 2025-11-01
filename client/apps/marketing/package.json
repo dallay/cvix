@@ -12,12 +12,12 @@
 	"packageManager": "pnpm@10.13.1",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/yacosta738/saas-template.git",
+		"url": "https://github.com/dallay/cvix.git",
 		"directory": "client/apps/marketing",
 		"branch": "main"
 	},
 	"bugs": {
-		"url": "https://github.com/yacosta738/saas-template/issues"
+		"url": "https://github.com/dallay/cvix/issues"
 	},
 	"keywords": [
 		"loomify",

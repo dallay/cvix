@@ -56,9 +56,10 @@ class CustomClaimConverter(
         userMono
             .subscribe(
                 { user ->
-                    Mono.justOrEmpty(appendCustomClaim(convertedClaims, user)).defaultIfEmpty(convertedClaims)
+                    // appendCustomClaim mutates convertedClaims; call directly instead of creating an unused Mono
+                    appendCustomClaim(convertedClaims, user)
                 },
-                { error -> log.error("Error getting user information: {}", error) },
+                { error -> log.error("Error getting user information", error) },
             )
         return convertedClaims
     }

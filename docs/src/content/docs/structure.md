@@ -1675,8 +1675,10 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   └───classpath-snapshot/
-│       │   │   │       └───shrunk-classpath-snapshot.bin
+│       │   │   │   ├───classpath-snapshot/
+│       │   │   │   │   └───shrunk-classpath-snapshot.bin
+│       │   │   │   └───local-state/
+│       │   │   │       └───build-history.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -1694,15 +1696,10 @@ description: Overview of the project structure and organization.
 │       │   ├───kover/
 │       │   │   ├───bin-reports/
 │       │   │   │   └───test.ic
-│       │   │   ├───.artifact
-│       │   │   ├───jvm.artifact
 │       │   │   └───kover-jvm-agent-0.8.3.jar
 │       │   ├───libs/
-│       │   │   ├───engine-0.0.1-SNAPSHOT-plain.jar
-│       │   │   └───engine-0.0.1-SNAPSHOT.jar
+│       │   │   └───engine-0.0.1-SNAPSHOT-plain.jar
 │       │   ├───reports/
-│       │   │   ├───kover/
-│       │   │   │   └───verify.err
 │       │   │   └───tests/
 │       │   │       └───test/
 │       │   │           ├───classes/
@@ -1974,17 +1971,11 @@ description: Overview of the project structure and organization.
 │       │   │       ├───TEST-com.loomify.engine.workspace.infrastructure.http.UpdateWorkspaceControllerTest.xml
 │       │   │       ├───TEST-com.loomify.engine.workspace.infrastructure.persistence.WorkspaceStoreR2DbcRepositoryTest.xml
 │       │   │       └───TEST-com.loomify.engine.workspace.infrastructure.persistence.mapper.WorkspaceMemberMapperTest.xml
-│       │   ├───tmp/
-│       │   │   ├───bootJar/
-│       │   │   │   └───MANIFEST.MF
-│       │   │   ├───jar/
-│       │   │   │   └───MANIFEST.MF
-│       │   │   ├───koverCachedVerify/
-│       │   │   │   ├───agg-ic.ic
-│       │   │   │   └───agg-smap.smap
-│       │   │   └───test/
-│       │   │       └───kover-agent.args
-│       │   └───resolvedMainClassName
+│       │   └───tmp/
+│       │       ├───jar/
+│       │       │   └───MANIFEST.MF
+│       │       └───test/
+│       │           └───kover-agent.args
 │       ├───src/
 │       │   ├───main/
 │       │   │   ├───kotlin/
@@ -2070,8 +2061,10 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   │   │   └───lookups/
 │   │   │   │   │   │   │       └───...
 │   │   │   │   │   │   └───last-build.bin
-│   │   │   │   │   └───classpath-snapshot/
-│   │   │   │   │       └───shrunk-classpath-snapshot.bin
+│   │   │   │   │   ├───classpath-snapshot/
+│   │   │   │   │   │   └───shrunk-classpath-snapshot.bin
+│   │   │   │   │   └───local-state/
+│   │   │   │   │       └───build-history.bin
 │   │   │   │   └───compileTestKotlin/
 │   │   │   │       ├───cacheable/
 │   │   │   │       │   ├───caches-jvm/
@@ -2082,19 +2075,17 @@ description: Overview of the project structure and organization.
 │   │   │   │       │   │   └───lookups/
 │   │   │   │       │   │       └───...
 │   │   │   │       │   └───last-build.bin
-│   │   │   │       └───classpath-snapshot/
-│   │   │   │           └───shrunk-classpath-snapshot.bin
+│   │   │   │       ├───classpath-snapshot/
+│   │   │   │       │   └───shrunk-classpath-snapshot.bin
+│   │   │   │       └───local-state/
+│   │   │   │           └───build-history.bin
 │   │   │   ├───kover/
 │   │   │   │   ├───bin-reports/
 │   │   │   │   │   └───test.ic
-│   │   │   │   ├───.artifact
-│   │   │   │   ├───jvm.artifact
 │   │   │   │   └───kover-jvm-agent-0.8.3.jar
 │   │   │   ├───libs/
 │   │   │   │   └───common-1.15.1.jar
 │   │   │   ├───reports/
-│   │   │   │   ├───kover/
-│   │   │   │   │   └───verify.err
 │   │   │   │   └───tests/
 │   │   │   │       └───test/
 │   │   │   │           ├───classes/
@@ -2170,9 +2161,6 @@ description: Overview of the project structure and organization.
 │   │   │   └───tmp/
 │   │   │       ├───jar/
 │   │   │       │   └───MANIFEST.MF
-│   │   │       ├───koverCachedVerify/
-│   │   │       │   ├───agg-ic.ic
-│   │   │       │   └───agg-smap.smap
 │   │   │       └───test/
 │   │   │           └───kover-agent.args
 │   │   ├───src/
@@ -2216,8 +2204,10 @@ description: Overview of the project structure and organization.
 │       │   │   │   │   │   └───lookups/
 │       │   │   │   │   │       └───...
 │       │   │   │   │   └───last-build.bin
-│       │   │   │   └───classpath-snapshot/
-│       │   │   │       └───shrunk-classpath-snapshot.bin
+│       │   │   │   ├───classpath-snapshot/
+│       │   │   │   │   └───shrunk-classpath-snapshot.bin
+│       │   │   │   └───local-state/
+│       │   │   │       └───build-history.bin
 │       │   │   └───compileTestKotlin/
 │       │   │       ├───cacheable/
 │       │   │       │   ├───caches-jvm/
@@ -2228,19 +2218,17 @@ description: Overview of the project structure and organization.
 │       │   │       │   │   └───lookups/
 │       │   │       │   │       └───...
 │       │   │       │   └───last-build.bin
-│       │   │       └───classpath-snapshot/
-│       │   │           └───shrunk-classpath-snapshot.bin
+│       │   │       ├───classpath-snapshot/
+│       │   │       │   └───shrunk-classpath-snapshot.bin
+│       │   │       └───local-state/
+│       │   │           └───build-history.bin
 │       │   ├───kover/
 │       │   │   ├───bin-reports/
 │       │   │   │   └───test.ic
-│       │   │   ├───.artifact
-│       │   │   ├───jvm.artifact
 │       │   │   └───kover-jvm-agent-0.8.3.jar
 │       │   ├───libs/
 │       │   │   └───spring-boot-common-1.15.1.jar
 │       │   ├───reports/
-│       │   │   ├───kover/
-│       │   │   │   └───verify.err
 │       │   │   └───tests/
 │       │   │       └───test/
 │       │   │           ├───classes/
@@ -2300,9 +2288,6 @@ description: Overview of the project structure and organization.
 │       │   └───tmp/
 │       │       ├───jar/
 │       │       │   └───MANIFEST.MF
-│       │       ├───koverCachedVerify/
-│       │       │   ├───agg-ic.ic
-│       │       │   └───agg-smap.smap
 │       │       └───test/
 │       │           └───kover-agent.args
 │       ├───src/
@@ -2367,7 +2352,8 @@ description: Overview of the project structure and organization.
 │       ├───plan.md
 │       ├───quickstart.md
 │       ├───research.md
-│       └───spec.md
+│       ├───spec.md
+│       └───tasks.md
 ├───.dockerignore
 ├───.editorconfig
 ├───.env.example

@@ -10,7 +10,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.register
 
-internal class AppDetektPlugin : com.loomify.buildlogic.common.ConventionPlugin {
+internal class AppDetektPlugin : ConventionPlugin {
     override fun Project.configure() {
         apply(plugin = "io.gitlab.arturbosch.detekt")
 

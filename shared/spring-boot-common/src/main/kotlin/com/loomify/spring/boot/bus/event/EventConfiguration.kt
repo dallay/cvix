@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration
  */
 @Suppress("UNCHECKED_CAST")
 @Configuration
-open class EventConfiguration(
+class EventConfiguration(
     private val applicationContext: ApplicationContext
 ) {
     /**
