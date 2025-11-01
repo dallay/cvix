@@ -15,7 +15,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 
 **Primary Dependencies**:
 
-- Backend: Spring Boot 3.3.4+, Spring WebFlux, Spring Security OAuth2, R2DBC
+- Backend: Spring Boot 3.5.7, Spring WebFlux, Spring Security OAuth2, R2DBC
 - Frontend: Vue.js 3.5+, Vite 7+, Pinia 3+, Vue I18n, TailwindCSS 4+
 - Template Engine: StringTemplate 4 or FreeMarker
 - PDF Generation: TeX Live (pdflatex) in Docker
@@ -142,7 +142,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 
 **Approved Stack**:
 
-- ✅ Backend: Kotlin 2.0.20+, Spring Boot 3.3.4+, Spring WebFlux
+- ✅ Backend: Kotlin 2.0.20+, Spring Boot 3.5.7, Spring WebFlux
 - ✅ Frontend: Vue.js 3.5.17+, TypeScript 5.x, Vite 7.0.4+, Shadcn-Vue
 - ✅ Testing: JUnit 5, Kotest, Testcontainers, MockK, Vitest, Playwright
 - ✅ Containerization: Docker + Docker Compose
