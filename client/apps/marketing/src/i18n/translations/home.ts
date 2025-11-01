@@ -38,6 +38,7 @@ export const home: {
 		"hero.email.button": "Solicitar acceso",
 		"hero.email.success": "Gracias — te contactaremos con los próximos pasos.",
 		"hero.email.error": "Por favor ingresa una dirección de correo válida.",
-		"hero.mockup.alt": "Vista previa de la interfaz del constructor de CVs Civix",
+		"hero.mockup.alt":
+			"Vista previa de la interfaz del constructor de CVs Civix",
 	},
 };

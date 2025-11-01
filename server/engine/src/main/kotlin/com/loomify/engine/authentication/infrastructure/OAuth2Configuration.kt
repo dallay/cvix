@@ -30,6 +30,7 @@ class OAuth2Configuration {
      * @return An instance of ReactiveOAuth2AuthorizedClientManager.
      */
     @Bean
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ReactiveClientRegistrationRepository::class)
     fun authorizedClientManager(
         clientRegistrationRepository: ReactiveClientRegistrationRepository,
         authorizedClientRepository: ServerOAuth2AuthorizedClientRepository

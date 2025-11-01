@@ -46,6 +46,7 @@ internal class SpaCsrfTokenRequestHandlerTest {
     @Test
     fun `should resolve CsrfToken value from header`() {
         every { csrfToken.headerName } returns "X-CSRF-TOKEN"
+        every { csrfToken.parameterName } returns "_csrf"
         every { exchange.request.headers.getFirst("X-CSRF-TOKEN") } returns "header-token"
 
         val result = handler.resolveCsrfTokenValue(exchange, csrfToken).block()
@@ -57,6 +58,7 @@ internal class SpaCsrfTokenRequestHandlerTest {
     @Test
     fun `should delegate resolveCsrfTokenValue when header is not present`() {
         every { csrfToken.headerName } returns "X-CSRF-TOKEN"
+        every { csrfToken.parameterName } returns "_csrf"
 
         val result = handler.resolveCsrfTokenValue(exchange, csrfToken).block()
 
