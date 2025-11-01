@@ -7,6 +7,10 @@
 
 ## Clarifications
 
+### Session 2025-11-01
+
+- Q: Should we reuse existing shared value objects (Email, Name) from `com.loomify.common.domain.vo`? → A: Reuse Email only - The shared Email VO provides RFC-compliant validation (320 char limit). The resume-specific name field renamed to `FullName` to avoid confusion, as JSON Resume uses unstructured single string (e.g., "John Doe") while shared Name VO expects structured firstName + lastName for user profiles.
+
 ### Session 2025-10-31
 
 - Q: What is the resume output format, and should the product claim ATS optimization? → A: PDF only - Remove "ATS-optimized" claims and position as "professional print-ready resumes"

@@ -92,19 +92,24 @@ data class ContentMetrics(
 ```kotlin
 package com.loomify.resume.domain.model
 
+import com.loomify.common.domain.vo.email.Email  // Reused from shared library
+
 /**
  * Personal information value object.
  *
  * Validation rules:
- * - name: Required, max 100 chars (FR-004)
+ * - fullName: Required, max 100 chars (FR-004)
  * - label (job title): Optional, max 100 chars (FR-004)
- * - email: Required, valid email format (FR-003)
+ * - email: Required, valid email format (FR-003) - reuses shared Email VO
  * - summary: Optional, max 500 chars (FR-004)
+ *
+ * Note: FullName is resume-specific (unstructured single string per JSON Resume schema).
+ * The shared Name VO (firstName + lastName) has different semantics for user profiles.
  */
 data class PersonalInfo(
-    val name: Name,
+    val fullName: FullName,
     val label: JobTitle?,
-    val email: Email,
+    val email: Email,  // Reused from com.loomify.common.domain.vo.email
     val phone: PhoneNumber?,
     val url: Url?,
     val summary: Summary?,
@@ -114,11 +119,15 @@ data class PersonalInfo(
 
 // Value objects for type safety and validation
 
+/**
+ * Full name as single unstructured string (JSON Resume "name" field).
+ * Different from shared Name VO which uses structured firstName + lastName.
+ */
 @JvmInline
-value class Name(val value: String) {
+value class FullName(val value: String) {
     init {
-        require(value.isNotBlank()) { "Name cannot be blank" }
-        require(value.length <= 100) { "Name cannot exceed 100 characters" }
+        require(value.isNotBlank()) { "Full name cannot be blank" }
+        require(value.length <= 100) { "Full name cannot exceed 100 characters" }
     }
 }
 
@@ -127,17 +136,6 @@ value class JobTitle(val value: String) {
     init {
         require(value.isNotBlank()) { "Job title cannot be blank" }
         require(value.length <= 100) { "Job title cannot exceed 100 characters" }
-    }
-}
-
-@JvmInline
-value class Email(val value: String) {
-    init {
-        require(value.matches(EMAIL_REGEX)) { "Invalid email format" }
-    }
-
-    companion object {
-        private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
     }
 }
 
@@ -180,8 +178,8 @@ data class SocialProfile(
 
 **Business Rules**:
 
-- BR-003: Name and email are mandatory (JSON Resume spec)
-- BR-004: Email must be valid format (RFC 5322 simplified)
+- BR-003: Full name and email are mandatory (JSON Resume spec)
+- BR-004: Email validation reuses shared `com.loomify.common.domain.vo.email.Email` (RFC-compliant, 320 char limit)
 - BR-005: URLs must be valid HTTP/HTTPS format
 
 ---
@@ -644,30 +642,30 @@ class TemplateRenderingException(message: String, cause: Throwable? = null) : Re
 
 ## Validation Rules Summary
 
-| Rule ID | Entity                | Field       | Constraint                                            |
-| ------- | --------------------- | ----------- | ----------------------------------------------------- |
-| VR-001  | PersonalInfo          | name        | Required, max 100 chars                               |
-| VR-002  | PersonalInfo          | email       | Required, valid email format                          |
-| VR-003  | PersonalInfo          | label       | Optional, max 100 chars                               |
-| VR-004  | PersonalInfo          | summary     | Optional, max 500 chars                               |
-| VR-005  | WorkExperience        | company     | Required, max 100 chars                               |
-| VR-006  | WorkExperience        | position    | Required, max 100 chars                               |
-| VR-007  | WorkExperience        | summary     | Optional, max 500 chars                               |
-| VR-008  | WorkExperience        | startDate   | Required, must be <= endDate                          |
-| VR-009  | WorkExperience        | endDate     | Optional (null = "Present"), must be >= startDate     |
-| VR-010  | Education             | institution | Required, max 100 chars                               |
-| VR-011  | Education             | area        | Required, max 100 chars                               |
-| VR-012  | Education             | studyType   | Required, max 100 chars                               |
-| VR-013  | Education             | startDate   | Required, must be <= endDate                          |
-| VR-014  | Education             | endDate     | Optional (null = "In Progress"), must be >= startDate |
-| VR-015  | SkillCategory         | name        | Required, max 100 chars                               |
-| VR-016  | SkillCategory         | keywords    | At least 1 required, each max 50 chars                |
-| VR-017  | Project               | name        | Required, max 100 chars                               |
-| VR-018  | Project               | description | Required, max 500 chars                               |
-| VR-019  | ResumeData            | aggregate   | Must have at least one of: work, education, or skills |
-| VR-020  | GenerateResumeCommand | locale      | Must be 'en' or 'es'                                  |
-| VR-021  | GenerateResumeCommand | userId      | Required (non-blank string)                           |
-| VR-022  | GeneratedDocument     | pdfBytes    | Non-empty, <5MB                                       |
+| Rule ID | Entity                | Field       | Constraint                                                      |
+| ------- | --------------------- | ----------- | --------------------------------------------------------------- |
+| VR-001  | PersonalInfo          | fullName    | Required, max 100 chars                                         |
+| VR-002  | PersonalInfo          | email       | Required, reuses shared Email VO (RFC-compliant, max 320 chars) |
+| VR-003  | PersonalInfo          | label       | Optional, max 100 chars                                         |
+| VR-004  | PersonalInfo          | summary     | Optional, max 500 chars                                         |
+| VR-005  | WorkExperience        | company     | Required, max 100 chars                                         |
+| VR-006  | WorkExperience        | position    | Required, max 100 chars                                         |
+| VR-007  | WorkExperience        | summary     | Optional, max 500 chars                                         |
+| VR-008  | WorkExperience        | startDate   | Required, must be <= endDate                                    |
+| VR-009  | WorkExperience        | endDate     | Optional (null = "Present"), must be >= startDate               |
+| VR-010  | Education             | institution | Required, max 100 chars                                         |
+| VR-011  | Education             | area        | Required, max 100 chars                                         |
+| VR-012  | Education             | studyType   | Required, max 100 chars                                         |
+| VR-013  | Education             | startDate   | Required, must be <= endDate                                    |
+| VR-014  | Education             | endDate     | Optional (null = "In Progress"), must be >= startDate           |
+| VR-015  | SkillCategory         | name        | Required, max 100 chars                                         |
+| VR-016  | SkillCategory         | keywords    | At least 1 required, each max 50 chars                          |
+| VR-017  | Project               | name        | Required, max 100 chars                                         |
+| VR-018  | Project               | description | Required, max 500 chars                                         |
+| VR-019  | ResumeData            | aggregate   | Must have at least one of: work, education, or skills           |
+| VR-020  | GenerateResumeCommand | locale      | Must be 'en' or 'es'                                            |
+| VR-021  | GenerateResumeCommand | userId      | Required (non-blank string)                                     |
+| VR-022  | GeneratedDocument     | pdfBytes    | Non-empty, <5MB                                                 |
 
 ---
 
