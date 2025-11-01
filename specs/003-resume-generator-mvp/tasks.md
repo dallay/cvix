@@ -295,11 +295,17 @@
 - PDF generation: 8 seconds (per spec.md Section 5.2)
 - API endpoints: 200ms (standard per architecture conventions)
 
-- [ ] T128 [P] Add Spring Boot Actuator health endpoint for resume service in `server/engine/src/main/resources/application.yml`
-- [ ] T129 [P] Add Docker availability check to health endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerHealthIndicator.kt`
-- [ ] T130 [P] Add Prometheus metrics for PDF generation (count, duration, errors) using Micrometer - target: 8s in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
-- [ ] T131 [P] Add metrics for Docker container lifecycle events in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [ ] T132 [P] Add correlation IDs to all log statements in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [ ] T126 [P] Add Spring Boot Actuator health endpoint for resume service in `server/engine/src/main/resources/application.yml`
+- [ ] T127 [P] Add Docker availability check to health endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerHealthIndicator.kt`
+- [ ] T128 [P] Add Prometheus metrics for PDF generation (count, duration, errors) using Micrometer - target: 8s in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
+- [ ] T129 [P] Add metrics for Docker container lifecycle events in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [ ] T130 [P] Add correlation IDs to all log statements in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [ ] T131 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
+- [ ] T132 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
+- [ ] T133 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
+- [ ] T134 Update main README.md with resume generator feature documentation in `README.md`
+- [ ] T135 [P] Verify Docker adapter enforces 10s timeout in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt` and ensure timeout errors are surfaced to metrics/logs
+- [ ] T136 [P] Create Prometheus alerting rules and Grafana alerts for PDF generation SLA violations (warn at >8s, critical at >=10s) and tie alerts to metrics/logs for escalation
 
 ---
 
@@ -307,16 +313,16 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T133 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
-- [ ] T134 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
-- [ ] T135 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
-- [ ] T136 Update main README.md with resume generator feature documentation in `README.md`
-- [ ] T137 Create Bruno API collection for resume endpoint in `endpoints/cvix/resume/generate-resume.bru`
-- [ ] T138 [P] Add example requests to Bruno collection using example JSON payloads in `endpoints/cvix/resume/examples/`
-- [ ] T139 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`
-- [ ] T140 Run Biome and fix any violations in `client/apps/webapp/src/resume/`
-- [ ] T141 Validate quickstart.md by following all setup steps in `specs/003-resume-generator-mvp/quickstart.md`
-- [ ] T142 Test with all three example payloads (software-engineer, project-manager, minimal) and verify PDF output quality
+- [ ] T139 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
+- [ ] T140 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
+- [ ] T141 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
+- [ ] T142 Update main README.md with resume generator feature documentation in `README.md`
+- [ ] T143 [P] Verify Docker adapter enforces 10s timeout in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt` and ensure timeout errors are surfaced to metrics/logs
+- [ ] T144 [P] Create Prometheus alerting rules and Grafana alerts for PDF generation SLA violations (warn at >8s, critical at >=10s) and tie alerts to metrics/logs for escalation
+- [ ] T145 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`
+- [ ] T146 Run Biome and fix any violations in `client/apps/webapp/src/resume/`
+- [ ] T147 Validate quickstart.md by following all setup steps in `specs/003-resume-generator-mvp/quickstart.md`
+- [ ] T148 Test with all three example payloads (software-engineer, project-manager, minimal) and verify PDF output quality
 
 ---
 
@@ -385,12 +391,12 @@
 
 ```bash
 # Launch all value objects together:
-Task: "Create FullName value object in PersonalInfo.kt" [T028]
-Task: "Create JobTitle value object in PersonalInfo.kt" [T029]
-Task: "Create PhoneNumber value object in PersonalInfo.kt" [T030]
-Task: "Create Url value object in PersonalInfo.kt" [T031]
-Task: "Create Summary value object in PersonalInfo.kt" [T032]
-Task: "Create Location and SocialProfile in PersonalInfo.kt" [T033]
+Task: "Create FullName value object in PersonalInfo.kt" [T040]
+Task: "Create JobTitle value object in PersonalInfo.kt" [T041]
+Task: "Create PhoneNumber value object in PersonalInfo.kt" [T042]
+Task: "Create Url value object in PersonalInfo.kt" [T043]
+Task: "Create Summary value object in PersonalInfo.kt" [T044]
+Task: "Create Location and SocialProfile in PersonalInfo.kt" [T045]
 
 # Launch all form section components together:
 Task: "Create PersonalInfoSection.vue component" [T069]
@@ -459,13 +465,13 @@ With multiple developers:
 - **User Story Breakdown**:
   - Setup & Foundational: 28 tasks (T001-T027B, includes split T027A/T027B)
   - User Story 1 (P1): 58 tasks (T028-T085) - includes TDD tests (T028-T039) BEFORE implementation
-  - User Story 2 (P1): 8 tasks (T086-T093)
-  - User Story 3 (P2): 7 tasks (T094-T100)
-  - User Story 4 (P2): 6 tasks (T101-T106)
-  - User Story 5 (P3): 6 tasks (T107-T112)
-  - Rate Limiting: 5 tasks (T113-T117)
-  - Monitoring: 5 tasks (T118-T122)
-  - Polish: 10 tasks (T123-T132)
+  - User Story 2 (P1): 13 tasks (T086-T098)
+  - User Story 3 (P2): 7 tasks (T099-T105)
+  - User Story 4 (P2): 6 tasks (T106-T111)
+  - User Story 5 (P3): 9 tasks (T112-T120)
+  - Rate Limiting: 5 tasks (T121-T125)
+  - Monitoring: 5 tasks (T128-T132)
+  - Polish: 10 tasks (T133-T142)
   - E2E Testing: 3 tasks (T143-T145)
 
 - **TDD Compliance**: ✅ Tests (T028-T039) are now positioned BEFORE implementation in Phase 3, per Constitution Principle II
