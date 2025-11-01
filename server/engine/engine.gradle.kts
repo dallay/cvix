@@ -9,11 +9,7 @@ plugins {
 group = "com.loomify"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
+// Removed explicit toolchain configuration - using convention from app.spring.boot.convention
 
 configurations {
     compileOnly {
