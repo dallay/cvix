@@ -164,8 +164,10 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   │   ├───Footer.astro
 │   │   │   │   │   │   ├───Header.astro
 │   │   │   │   │   │   ├───Hero.astro
+│   │   │   │   │   │   ├───HowItWorks.astro
 │   │   │   │   │   │   ├───LatestArticles.astro
-│   │   │   │   │   │   └───Pricing.astro
+│   │   │   │   │   │   ├───Pricing.astro
+│   │   │   │   │   │   └───TrustMetrics.astro
 │   │   │   │   │   ├───ui/
 │   │   │   │   │   │   ├───accordion/
 │   │   │   │   │   │   │   ├───Accordion.vue
@@ -451,12 +453,14 @@ description: Overview of the project structure and organization.
 │   │   │   │   │   │   ├───footer.ts
 │   │   │   │   │   │   ├───header.ts
 │   │   │   │   │   │   ├───home.ts
+│   │   │   │   │   │   ├───howItWorks.ts
 │   │   │   │   │   │   ├───pricing.ts
 │   │   │   │   │   │   ├───privacyPolicy.ts
 │   │   │   │   │   │   ├───products.ts
 │   │   │   │   │   │   ├───support.ts
 │   │   │   │   │   │   ├───termsOfUse.ts
-│   │   │   │   │   │   └───theme.ts
+│   │   │   │   │   │   ├───theme.ts
+│   │   │   │   │   │   └───trustMetrics.ts
 │   │   │   │   │   ├───i18n.ts
 │   │   │   │   │   ├───index.ts
 │   │   │   │   │   ├───locales.ts
@@ -2384,6 +2388,7 @@ description: Overview of the project structure and organization.
 ├───.gitleaks.toml
 ├───.gitmessage
 ├───.nvmrc
+├───.push-marker
 ├───CHANGELOG.md
 ├───CODE_OF_CONDUCT.md
 ├───CONTRIBUTING.md
