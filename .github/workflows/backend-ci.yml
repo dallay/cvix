@@ -92,15 +92,12 @@ jobs:
             **/build/test-results/**/*.xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
-        if: secrets.CODECOV_TOKEN != ''
+        uses: ./.github/actions/codecov
         with:
-          files: ./server/engine/build/reports/kover/report.xml # Updated path for Kover
-          # flags: backend # Optional: add flags to distinguish reports
-          # name: codecov-backend # Optional: name for the report
-          # fail_ci_if_error: true # Optional: fail CI if Codecov upload fails
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./server/engine/build/reports/kover/report.xml
+          flags: backend
+          name: codecov-backend
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
