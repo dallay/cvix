@@ -44,10 +44,10 @@ jobs:
           config_file: ".yamllint.yml"
 
       - name: Lint GitHub Actions
-        uses: reviewdog/action-actionlint@v3 # use released tag instead of commit SHA to avoid missing-tarball errors
+        uses: reviewdog/action-actionlint@v1.68.0 # use released tag instead of commit SHA to avoid missing-tarball errors
         with:
           reporter: github-pr-review
-          fail_on_error: true
+          fail_level: error
 
       - name: Lint Shell scripts
         uses: reviewdog/action-shellcheck@f627b974d3005f993dc36f46d2cdf2684be18e5c # v1.9.0
