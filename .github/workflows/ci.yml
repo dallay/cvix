@@ -44,7 +44,7 @@ jobs:
           config_file: ".yamllint.yml"
 
       - name: Lint GitHub Actions
-        uses: reviewdog/action-actionlint@653009603c7431e5a6244502534f7b9f5847350a # v1
+        uses: reviewdog/action-actionlint@v1 # use released tag instead of commit SHA to avoid missing-tarball errors
         with:
           reporter: github-pr-review
           fail_on_error: true
