@@ -1,0 +1,19 @@
+# Reglas para yamllint
+# https://yamllint.readthedocs.io/en/stable/rules.html
+
+extends: default
+
+rules:
+  # Deshabilitar la regla de longitud de línea
+  line-length: disable
+  # Permitir sangría de 2 espacios (común en GitHub Actions)
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+  # No requerir espacios en llaves vacías
+  empty-braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+  # Permitir comentarios que comienzan sin espacio
+  comments:
+    require-starting-space: false
