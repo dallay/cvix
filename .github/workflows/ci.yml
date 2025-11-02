@@ -86,6 +86,7 @@ jobs:
       - name: Dependency Review
         # Pinned to v4 commit hash for security
         uses: actions/dependency-review-action@45529485b5eb76184ced07362d2331fd9d26f03f # v4
+        continue-on-error: true # Allow workflow to continue if dependency graph or GitHub Advanced Security is not enabled
         with:
           # You can specify configuration options here, e.g.:
           # fail-on-severity: critical
