@@ -27,40 +27,53 @@ permissions:
   security-events: write # Required for CodeQL to upload results
 
 jobs:
-  changed-meta:
-    name: Detect meta/config changes
+  lint-meta:
+    name: Lint Meta-Files
     runs-on: ubuntu-latest
-    outputs:
-      meta: ${{ steps.filter.outputs.meta }}
-      always_scan: ${{ steps.vars.outputs.always_scan }}
+    permissions:
+      contents: read
+      pull-requests: write # For reviewdog to post comments
     steps:
       - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Lint YAML files
+        uses: ibiqlik/action-yamllint@257634352669a73349706707b3c131b15a5c1a4c # v3
         with:
-          fetch-depth: 0
-      - name: Set baseline scan flag
-        id: vars
-        shell: bash
+          file_or_dir: "."
+          config_file: ".yamllint.yml"
+
+      - name: Lint GitHub Actions
+        uses: reviewdog/action-actionlint@653009603c7431e5a6244502534f7b9f5847350a # v1
+        with:
+          reporter: github-pr-review
+          fail_on_error: true
+
+      - name: Lint Shell scripts
+        uses: reviewdog/action-shellcheck@f627b974d3005f993dc36f46d2cdf2684be18e5c # v1.9.0
+        with:
+          reporter: github-pr-review
+          fail_on_error: true
+          path: "scripts/"
+          pattern: "*.sh"
+
+      - name: Lint Dockerfiles
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: "Dockerfile"
+          recursive: true
+          config: ".hadolint.yaml"
+          output-file: "/dev/stdout"
+          format: "tty"
+          failure-threshold: "error"
+          ignore: "DL3008,DL4006" # Example: ignore rules, customize as needed
+
+      - name: Lint JSON files
         run: |
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "always_scan=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "always_scan=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Filter changed paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            meta:
-              - '.github/**'
-              - 'infra/**'
-              - 'scripts/**'
-              - '**/*.yml'
-              - '**/*.yaml'
-              - '**/*.json'
-              - 'Dockerfile'
-              - 'Dockerfile.*'
+          find . -type f -name "*.json" -not -path "*/node_modules/*" -not -path "*/dist/*" -not -path "*/build/*" \
+            -exec jq . {} \; > /dev/null
+        shell: bash
+
   labeler:
     name: Label PRs
     runs-on: ubuntu-latest
@@ -69,57 +82,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        # Pinned to v4 commit hash for security
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Run Labeler
-        # Pinned to v5 commit hash for security
-        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
+        uses: actions/labeler@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yaml
-
-  super-linter:
-    name: Super Linter
-    runs-on: ubuntu-latest
-    needs: [changed-meta]
-    if: needs.changed-meta.outputs.always_scan == 'true' || needs.changed-meta.outputs.meta == 'true'
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      packages: read
-      statuses: write # Required to report status checks
-    steps:
-      - name: Checkout repository
-        # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
-        with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
-          fetch-depth: 0
-      - name: Lint Code Base
-        # Pinned to v5 commit hash for security
-        uses: github/super-linter@45fc0d88288beee4701c62761281edfee85655d7 # v5
-        env:
-          # Only lint changed files on PRs to speed up runs; lint full repo only on push to main
-          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Skip files ignored by .gitignore to reduce work
-          IGNORE_GITIGNORED_FILES: true
-          # Exclude heavy/generated paths (build artifacts, dist, caches, node_modules, coverage, reports)
-          FILTER_REGEX_EXCLUDE: >-
-            (^build/|/build/|^dist/|/dist/|^coverage/|/coverage/|^node_modules/|/node_modules/|^client/.*/dist/|^server/.*/build/|^docs/.*/dist/|^build-logic/.*/build/|^.*/reports/)
-          # We already lint Kotlin and JS/TS with Detekt and Biome in dedicated jobs; disable here to avoid duplication
-          VALIDATE_KOTLIN: false
-          VALIDATE_JAVASCRIPT_ES: false
-          VALIDATE_TYPESCRIPT_ES: false
-          VALIDATE_MARKDOWN: false # handled by dedicated markdown job
-          # Keep lightweight, fast checks enabled by default (YAML/JSON/GitHub Actions/Shell/Dockerfile)
-          # Example if you want to force-enable some:
-          # VALIDATE_YAML: true
-          # VALIDATE_JSON: true
-          # VALIDATE_GITHUB_ACTIONS: true
-          # VALIDATE_SHELL_SH: true
-          # VALIDATE_DOCKERFILE_HADOLINT: true
 
   dependency-review:
     name: Dependency Review
