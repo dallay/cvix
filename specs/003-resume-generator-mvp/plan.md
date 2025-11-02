@@ -74,7 +74,7 @@ Build a web-based resume generator that converts user-submitted form data into p
 ### III. Code Quality ✅ PASS
 
 - **Backend**: Kotlin 2.0.20+, will follow `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md` (4 spaces, `val` over `var`, sealed classes for result types)
-- **Frontend**: TypeScript strict mode, Biome for linting, Vue 3 Composition API with `<script setup lang="ts">`
+- **Frontend**: TypeScript strict mode, Biome for linting, Vue 3 Composition API with `<script setup lang="ts"> </script>`
 - **Naming**: PascalCase classes, camelCase functions, UPPER_SNAKE_CASE constants
 - **Documentation**: OpenAPI spec for REST endpoint, KDoc for domain models
 - **Linting gates**: Detekt (backend), Biome (frontend) with zero violations before merge

@@ -35,7 +35,7 @@ Build a production-ready authentication system enabling users to register, login
 **Frontend:**
 
 - **Language/Version**: TypeScript 5.x with Vue 3.5.17+
-- **Framework**: Vue 3 Composition API with `<script setup lang="ts">`
+- **Framework**: Vue 3 Composition API with `<script setup lang="ts"> </script>`
 - **Architecture Pattern**: Feature-driven screaming architecture (bounded contexts)
 - **Primary Dependencies**:
   - Pinia 3.0.3+ (state management)

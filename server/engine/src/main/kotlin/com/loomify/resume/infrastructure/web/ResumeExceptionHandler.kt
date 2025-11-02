@@ -27,10 +27,10 @@ import reactor.core.publisher.Mono
  * - PdfGenerationTimeoutException → HTTP 504 Gateway Timeout
  * - Rate limit exceeded → HTTP 429 Too Many Requests (handled by Bucket4j filter)
  */
-@RestControllerAdvice
-class GlobalExceptionHandler {
+@RestControllerAdvice("com.loomify.resume")
+class ResumeExceptionHandler {
 
-    private val logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+    private val logger = LoggerFactory.getLogger(ResumeExceptionHandler::class.java)
 
     /**
      * Handle validation errors from Spring Validation (@Valid)

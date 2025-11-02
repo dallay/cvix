@@ -82,24 +82,24 @@
 
 #### Unit Tests (Backend) - Write FIRST, verify they FAIL
 
-- [ ] T028 [P] [US1] Unit test for ResumeData validation logic (must have work/education/skills) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/ResumeDataTest.kt`
-- [ ] T029 [P] [US1] Unit test for WorkExperience date validation (endDate >= startDate) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/WorkExperienceTest.kt`
-- [ ] T030 [P] [US1] Unit test for Education date validation in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/EducationTest.kt`
-- [ ] T031 [P] [US1] Unit test for PersonalInfo value object validations (name, email) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/PersonalInfoTest.kt`
-- [ ] T032 [P] [US1] Unit test for SkillCategory validation (must have keywords) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/SkillCategoryTest.kt`
-- [ ] T033 [P] [US1] Unit test for GenerateResumeCommandHandler orchestration logic in `server/engine/src/test/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandlerTest.kt`
+- [X] T028 [P] [US1] Unit test for ResumeData validation logic (must have work/education/skills) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/ResumeDataTest.kt`
+- [X] T029 [P] [US1] Unit test for WorkExperience date validation (endDate >= startDate) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/WorkExperienceTest.kt`
+- [X] T030 [P] [US1] Unit test for Education date validation in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/EducationTest.kt`
+- [X] T031 [P] [US1] Unit test for PersonalInfo value object validations (name, email) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/PersonalInfoTest.kt`
+- [X] T032 [P] [US1] Unit test for SkillCategory validation (must have keywords) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/SkillCategoryTest.kt`
+- [X] T033 [P] [US1] Unit test for GenerateResumeCommandHandler orchestration logic in `server/engine/src/test/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandlerTest.kt`
 
 #### Integration Tests (Backend) - Write FIRST, verify they FAIL
 
-- [ ] T034 [P] [US1] Integration test for ResumeController POST /api/resumes endpoint (@WebFluxTest) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
-- [ ] T035 [P] [US1] Integration test for DockerPdfGeneratorAdapter with Testcontainers in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
-- [ ] T036 [P] [US1] Integration test for LatexTemplateRenderer with sample data in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
+- [X] T034 [P] [US1] Integration test for ResumeController POST /api/resumes endpoint (@WebFluxTest) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
+- [X] T035 [P] [US1] Integration test for DockerPdfGeneratorAdapter with Testcontainers in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
+- [X] T036 [P] [US1] Integration test for LatexTemplateRenderer with sample data in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
 
 #### Component Tests (Frontend) - Write FIRST, verify they FAIL
 
-- [ ] T037 [P] [US1] Component test for ResumeForm.vue (form validation, submission) in `client/apps/webapp/src/__tests__/resume/ResumeForm.spec.ts`
-- [ ] T038 [P] [US1] Composable test for useResumeGeneration (API calls, error handling) in `client/apps/webapp/src/__tests__/resume/useResumeGeneration.spec.ts`
-- [ ] T039 [P] [US1] Component test for PersonalInfoSection.vue in `client/apps/webapp/src/__tests__/resume/PersonalInfoSection.spec.ts`
+- [X] T037 [P] [US1] Component test for ResumeForm.vue (form validation, submission) in `client/apps/webapp/src/resume/__tests__/ResumeForm.spec.ts`
+- [X] T038 [P] [US1] Composable test for useResumeGeneration (API calls, error handling) in `client/apps/webapp/src/resume/__tests__/useResumeGeneration.spec.ts`
+- [X] T039 [P] [US1] Component test for PersonalInfoSection.vue in `client/apps/webapp/src/resume/__tests__/PersonalInfoSection.spec.ts`
 
 **Checkpoint**: All tests written and FAILING. Now proceed with implementation to make them pass.
 
@@ -162,16 +162,16 @@
 
 #### Frontend (Form UI)
 
-- [ ] T069 [P] [US1] Create PersonalInfoSection.vue component in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
-- [ ] T070 [P] [US1] Create WorkExperienceSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/WorkExperienceSection.vue`
-- [ ] T071 [P] [US1] Create EducationSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/EducationSection.vue`
-- [ ] T072 [P] [US1] Create SkillsSection.vue component (with dynamic add/remove categories) in `client/apps/webapp/src/resume/components/SkillsSection.vue`
+- [X] T069 [P] [US1] Create PersonalInfoSection.vue component in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
+- [X] T070 [P] [US1] Create WorkExperienceSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/WorkExperienceSection.vue`
+- [X] T071 [P] [US1] Create EducationSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/EducationSection.vue`
+- [X] T072 [P] [US1] Create SkillsSection.vue component (with dynamic add/remove categories) in `client/apps/webapp/src/resume/components/SkillsSection.vue`
 - [ ] T073 [P] [US1] Create LanguagesSection.vue component (optional section) in `client/apps/webapp/src/resume/components/LanguagesSection.vue`
 - [ ] T074 [P] [US1] Create ProjectsSection.vue component (optional section) in `client/apps/webapp/src/resume/components/ProjectsSection.vue`
-- [ ] T075 [US1] Create ResumeForm.vue main component integrating all sections (depends on T069-T074) in `client/apps/webapp/src/resume/components/ResumeForm.vue`
+- [X] T075 [US1] Create ResumeForm.vue main component integrating all sections (depends on T069-T074) in `client/apps/webapp/src/resume/components/ResumeForm.vue`
 - [ ] T076 [US1] Implement session-based form data persistence using sessionStorage in `client/apps/webapp/src/resume/composables/useResumeSession.ts`
-- [ ] T077 [US1] Create useResumeGeneration composable with API call logic in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
-- [ ] T078 [US1] Create Pinia store for resume state management in `client/apps/webapp/src/resume/stores/resumeStore.ts`
+- [X] T077 [US1] Create useResumeGeneration composable with API call logic in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
+- [X] T078 [US1] Create Pinia store for resume state management in `client/apps/webapp/src/resume/stores/resumeStore.ts`
 - [ ] T079 [US1] Create API client for resume endpoint in `client/apps/webapp/src/api/resume.ts`
 - [ ] T080 [US1] Create ResumeGeneratorPage.vue main page (depends on T075, T077-T079) in `client/apps/webapp/src/resume/pages/ResumeGeneratorPage.vue`
 - [ ] T081 [US1] Add route for resume generator page to Vue Router in `client/apps/webapp/src/router/index.ts`
