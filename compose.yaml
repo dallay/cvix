@@ -26,7 +26,6 @@ services:
       file: ./infra/greenmail/greenmail-compose.yml
     networks:
       - backend
-      - frontend
 
   # Uncomment to use MailDev instead of GreenMail
   # maildev:

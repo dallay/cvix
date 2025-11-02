@@ -27,7 +27,7 @@ spring:
           oidc:
             client-secret: ${application.security.oauth2.client-secret}
             client-id: ${application.security.oauth2.client-id}
-            scope: openid, profile, email, offline_access # last one for refresh tokens
+            scope: openid, profile, email, offline_access  # last one for refresh tokens
         provider:
           oidc:
             issuer-uri: ${application.security.oauth2.issuer-uri}

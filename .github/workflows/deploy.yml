@@ -4,369 +4,141 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy to'
+        description: "Environment to deploy to"
         type: choice
         options:
           - development
           - staging
           - production
-        default: 'development'
+        default: "development"
         required: true
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-      - '.github/workflows/backend-ci.yml'
-      - '.github/workflows/frontend-ci.yml'
-      - '.github/workflows/monorepo-ci.yml'
-    tags:
-      - 'v*'
+      tag:
+        description: "Image tag to deploy (e.g., v1.0.0)"
+        type: string
+        required: true
 
 concurrency:
-  group: deploy-${{ github.ref_name }}-${{ inputs.environment || 'development' }}
+  group: deploy-${{ github.ref_name }}-${{ github.event.inputs.environment }}
   cancel-in-progress: false
-
-# Workflow-level environment variables can be defined here if needed
-# env:
-#   EXAMPLE_VAR: 'example-value'
 
 permissions:
   contents: read
-  packages: write
-  security-events: write # For uploading SARIF results
+  id-token: write   # Required for OIDC authentication with AWS
 
 jobs:
-  determine-environment:
-    name: Determine Environment
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-    steps:
-      - id: set-env
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
-          else
-            echo "environment=development" >> $GITHUB_OUTPUT
-          fi
-
-  build-backend:
-    name: Build Backend
-    needs: determine-environment
-    runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.environment }}
-    outputs:
-      image-full-name: ${{ steps.build-backend.outputs.image-full-name }}
-      image-tags: ${{ steps.build-backend.outputs.image-tags }}
-
-    steps:
-      - name: Checkout repository
-        # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
-
-      - name: Build and push backend Docker image
-        id: build-backend
-        uses: ./.github/actions/docker/backend/action.yml
-        with:
-          image-name: backend
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          gradle-args: "-Pversion=${{ github.ref_name == 'main' && 'latest' || github.ref_name }} -Penv=${{ needs.determine-environment.outputs.environment }}"
-          module-path: server:engine
-          deliver: 'true'
-
-      - name: Log build results
-        run: |
-          echo "✅ Backend build completed successfully"
-          echo "📦 Image: ${{ steps.build-backend.outputs.image-full-name }}"
-          echo "🏷️ Tags: ${{ steps.build-backend.outputs.image-tags }}"
-
-  build-frontend-web:
-    name: Build Frontend Web App
-    needs: determine-environment
-    runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.environment }}
-    outputs:
-      image-full-name: ${{ steps.build-frontend-web.outputs.image-full-name }}
-      image-tags: ${{ steps.build-frontend-web.outputs.image-tags }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
-
-      - name: Set environment-specific configuration
-        id: env-config
-        run: |
-          # Set default values
-          API_URL=""
-          NODE_ENV="${{ needs.determine-environment.outputs.environment }}"
-
-          # Override with environment-specific values
-          if [ "${{ needs.determine-environment.outputs.environment }}" == "development" ]; then
-            API_URL="${{ vars.DEV_API_URL || vars.API_URL || '' }}"
-            echo "Using development configuration"
-          elif [ "${{ needs.determine-environment.outputs.environment }}" == "staging" ]; then
-            API_URL="${{ vars.STAGING_API_URL || vars.API_URL || '' }}"
-            echo "Using staging configuration"
-          elif [ "${{ needs.determine-environment.outputs.environment }}" == "production" ]; then
-            API_URL="${{ vars.PROD_API_URL || vars.API_URL || '' }}"
-            echo "Using production configuration"
-          fi
-
-          # Set outputs for use in next steps
-          echo "api-url=$API_URL" >> $GITHUB_OUTPUT
-          echo "node-env=$NODE_ENV" >> $GITHUB_OUTPUT
-
-          echo "📋 Environment configuration:"
-          echo "  Environment: ${{ needs.determine-environment.outputs.environment }}"
-          echo "  API URL: $API_URL"
-          echo "  Node ENV: $NODE_ENV"
-
-      - name: Build and push frontend web app Docker image
-        id: build-frontend-web
-        uses: ./.github/actions/docker/frontend-web/action.yml
-        with:
-          image-name: frontend-web
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          build-env: ${{ steps.env-config.outputs.node-env }}
-          api-url: ${{ steps.env-config.outputs.api-url }}
-          deliver: 'true'
-          docker-username: ${{ secrets.DOCKER_USERNAME || '' }}
-          docker-password: ${{ secrets.DOCKER_PASSWORD || '' }}
-
-      - name: Log build results
-        run: |
-          echo "✅ Frontend web app build completed successfully"
-          echo "📦 Image: ${{ steps.build-frontend-web.outputs.image-full-name }}"
-          echo "🏷️ Tags: ${{ steps.build-frontend-web.outputs.image-tags }}"
-
-  build-frontend-landing:
-    name: Build Frontend Landing Page
-    needs: determine-environment
-    runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.environment }}
-    outputs:
-      image-full-name: ${{ steps.build-frontend-landing.outputs.image-full-name }}
-      image-tags: ${{ steps.build-frontend-landing.outputs.image-tags }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
-
-      - name: Set environment-specific configuration
-        id: env-config
-        run: |
-          # Set default values
-          BASE_URL=""
-          NODE_ENV="${{ needs.determine-environment.outputs.environment }}"
-
-          # Override with environment-specific values
-          if [ "${{ needs.determine-environment.outputs.environment }}" == "development" ]; then
-            BASE_URL="${{ vars.DEV_LANDING_BASE_URL || vars.LANDING_BASE_URL || '' }}"
-            echo "Using development configuration"
-          elif [ "${{ needs.determine-environment.outputs.environment }}" == "staging" ]; then
-            BASE_URL="${{ vars.STAGING_LANDING_BASE_URL || vars.LANDING_BASE_URL || '' }}"
-            echo "Using staging configuration"
-          elif [ "${{ needs.determine-environment.outputs.environment }}" == "production" ]; then
-            BASE_URL="${{ vars.PROD_LANDING_BASE_URL || vars.LANDING_BASE_URL || '' }}"
-            echo "Using production configuration"
-          fi
-
-          # Set outputs for use in next steps
-          echo "base-url=$BASE_URL" >> $GITHUB_OUTPUT
-          echo "node-env=$NODE_ENV" >> $GITHUB_OUTPUT
-
-          echo "📋 Environment configuration:"
-          echo "  Environment: ${{ needs.determine-environment.outputs.environment }}"
-          echo "  Base URL: $BASE_URL"
-          echo "  Node ENV: $NODE_ENV"
-
-      - name: Build and push frontend landing page Docker image
-        id: build-frontend-landing
-        uses: ./.github/actions/docker/frontend-landing/action.yml
-        with:
-          image-name: frontend-landing
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          build-env: ${{ steps.env-config.outputs.node-env }}
-          base-url: ${{ steps.env-config.outputs.base-url }}
-          deliver: 'true'
-          docker-username: ${{ secrets.DOCKER_USERNAME || '' }}
-          docker-password: ${{ secrets.DOCKER_PASSWORD || '' }}
-
-      - name: Log build results
-        run: |
-          echo "✅ Frontend landing page build completed successfully"
-          echo "📦 Image: ${{ steps.build-frontend-landing.outputs.image-full-name }}"
-          echo "🏷️ Tags: ${{ steps.build-frontend-landing.outputs.image-tags }}"
-
   deploy:
-    name: Deploy
-    needs: [determine-environment, build-backend, build-frontend-web, build-frontend-landing]
+    name: Deploy to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.environment }}
-    # Add timeout to ensure deployment doesn't hang indefinitely
-    timeout-minutes: 15
-
+    environment:
+      name: ${{ github.event.inputs.environment }}
+      url: https://${{ github.event.inputs.environment }}.loomify.com
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955    # v4
 
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4.0.1
-
-      - name: Set Kubernetes context
-        uses: azure/k8s-set-context@212a19233d93f03eceaac31ae5a1d1acf650b6ef # v4.0.1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a41607377d332191f92661f174033210ad7    # v4
         with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-          context: ${{ needs.determine-environment.outputs.environment }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-deploy-role
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Prepare deployment images
-        id: prepare-images
-        run: |
-          # Get backend image from build output
-          BACKEND_IMAGE="${{ needs.build-backend.outputs.image-full-name }}"
-          # Fallback to old method if output is not available
-          if [ -z "$BACKEND_IMAGE" ]; then
-            BACKEND_IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)
-            BACKEND_IMAGE="ghcr.io/${{ github.repository }}/backend:sha-$BACKEND_IMAGE_TAG"
-            echo "⚠️ Using fallback backend image tag: $BACKEND_IMAGE"
-          else
-            echo "✅ Using backend image from build output: $BACKEND_IMAGE"
-          fi
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@062f4456476976009c2842e28f676ff916764366    # v2
 
-          # Get frontend web app image from build output
-          FRONTEND_WEB_IMAGE="${{ needs.build-frontend-web.outputs.image-full-name }}"
-          # Fallback to old method if output is not available
-          if [ -z "$FRONTEND_WEB_IMAGE" ]; then
-            FRONTEND_WEB_IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)
-            FRONTEND_WEB_IMAGE="ghcr.io/${{ github.repository }}/frontend-web:sha-$FRONTEND_WEB_IMAGE_TAG"
-            echo "⚠️ Using fallback frontend web image tag: $FRONTEND_WEB_IMAGE"
-          else
-            echo "✅ Using frontend web image from build output: $FRONTEND_WEB_IMAGE"
-          fi
+      - name: Deploy Backend
+        uses: ./.github/actions/docker/backend
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          image-tag: ${{ github.event.inputs.tag }}
+          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+            # Pass secrets for backend configuration
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          OAUTH2_SERVER_URL: ${{ secrets.OAUTH2_SERVER_URL }}
+          REALM: ${{ secrets.REALM }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          ADMIN_CLIENT_ID: ${{ secrets.ADMIN_CLIENT_ID }}
+          ADMIN_REALM: ${{ secrets.ADMIN_REALM }}
+          ADMIN_REALM_USERNAME: ${{ secrets.ADMIN_REALM_USERNAME }}
+          ADMIN_REALM_PASSWORD: ${{ secrets.ADMIN_REALM_PASSWORD }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          HOSTNAME: ${{ secrets.HOSTNAME }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
-          # Get frontend landing page image from build output
-          FRONTEND_LANDING_IMAGE="${{ needs.build-frontend-landing.outputs.image-full-name }}"
-          # Fallback to old method if output is not available
-          if [ -z "$FRONTEND_LANDING_IMAGE" ]; then
-            FRONTEND_LANDING_IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)
-            FRONTEND_LANDING_IMAGE="ghcr.io/${{ github.repository }}/frontend-landing:sha-$FRONTEND_LANDING_IMAGE_TAG"
-            echo "⚠️ Using fallback frontend landing image tag: $FRONTEND_LANDING_IMAGE"
-          else
-            echo "✅ Using frontend landing image from build output: $FRONTEND_LANDING_IMAGE"
-          fi
+      - name: Deploy Frontend Web App
+        uses: ./.github/actions/docker/frontend-web
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          image-tag: ${{ github.event.inputs.tag }}
+          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+            # Pass secrets for frontend configuration
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_KEYCLOAK_URL: ${{ secrets.VITE_KEYCLOAK_URL }}
+          VITE_KEYCLOAK_REALM: ${{ secrets.VITE_KEYCLOAK_REALM }}
+          VITE_KEYCLOAK_CLIENT_ID: ${{ secrets.VITE_KEYCLOAK_CLIENT_ID }}
+          VITE_KEYCLOAK_REDIRECT_URI: ${{ secrets.VITE_KEYCLOAK_REDIRECT_URI }}
+          VITE_KEYCLOAK_SCOPE: ${{ secrets.VITE_KEYCLOAK_SCOPE }}
+          VITE_KEYCLOAK_RESPONSE_MODE: ${{ secrets.VITE_KEYCLOAK_RESPONSE_MODE }}
+          VITE_KEYCLOAK_RESPONSE_TYPE: ${{ secrets.VITE_KEYCLOAK_RESPONSE_TYPE }}
+          VITE_KEYCLOAK_POST_LOGOUT_REDIRECT_URI: ${{ secrets.VITE_KEYCLOAK_POST_LOGOUT_REDIRECT_URI }}
+          VITE_KEYCLOAK_REFRESH_TOKEN_INTERVAL: ${{ secrets.VITE_KEYCLOAK_REFRESH_TOKEN_INTERVAL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_SENTRY_ENVIRONMENT: ${{ github.event.inputs.environment }}
+          VITE_SENTRY_RELEASE: ${{ github.event.inputs.tag }}
 
-          # Set outputs for use in next steps
-          echo "backend-image=$BACKEND_IMAGE" >> $GITHUB_OUTPUT
-          echo "frontend-web-image=$FRONTEND_WEB_IMAGE" >> $GITHUB_OUTPUT
-          echo "frontend-landing-image=$FRONTEND_LANDING_IMAGE" >> $GITHUB_OUTPUT
+      - name: Deploy Frontend Landing Page
+        uses: ./.github/actions/docker/frontend-landing
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          image-tag: ${{ github.event.inputs.tag }}
+          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+            # Pass secrets for frontend configuration
+          PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL }}
+          PUBLIC_KEYCLOAK_URL: ${{ secrets.PUBLIC_KEYCLOAK_URL }}
+          PUBLIC_KEYCLOAK_REALM: ${{ secrets.PUBLIC_KEYCLOAK_REALM }}
+          PUBLIC_KEYCLOAK_CLIENT_ID: ${{ secrets.PUBLIC_KEYCLOAK_CLIENT_ID }}
+          PUBLIC_KEYCLOAK_REDIRECT_URI: ${{ secrets.PUBLIC_KEYCLOAK_REDIRECT_URI }}
+          PUBLIC_KEYCLOAK_SCOPE: ${{ secrets.PUBLIC_KEYCLOAK_SCOPE }}
+          PUBLIC_KEYCLOAK_RESPONSE_MODE: ${{ secrets.PUBLIC_KEYCLOAK_RESPONSE_MODE }}
+          PUBLIC_KEYCLOAK_RESPONSE_TYPE: ${{ secrets.PUBLIC_KEYCLOAK_RESPONSE_TYPE }}
+          PUBLIC_KEYCLOAK_POST_LOGOUT_REDIRECT_URI: ${{ secrets.PUBLIC_KEYCLOAK_POST_LOGOUT_REDIRECT_URI }}
+          PUBLIC_KEYCLOAK_REFRESH_TOKEN_INTERVAL: ${{ secrets.PUBLIC_KEYCLOAK_REFRESH_TOKEN_INTERVAL }}
+          PUBLIC_SENTRY_DSN: ${{ secrets.PUBLIC_SENTRY_DSN }}
+          PUBLIC_SENTRY_ENVIRONMENT: ${{ github.event.inputs.environment }}
+          PUBLIC_SENTRY_RELEASE: ${{ github.event.inputs.tag }}
 
-          echo "🔄 Prepared images for deployment:"
-          echo "  Backend: $BACKEND_IMAGE"
-          echo "  Frontend Web: $FRONTEND_WEB_IMAGE"
-          echo "  Frontend Landing: $FRONTEND_LANDING_IMAGE"
+      - name: Run Security Scan
+        uses: ./.github/actions/docker/security-scan
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          image-tag: ${{ github.event.inputs.tag }}
+          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
-      - name: Update Kubernetes manifests
-        id: update-manifests
-        run: |
-          # Get image references from previous step
-          BACKEND_IMAGE="${{ steps.prepare-images.outputs.backend-image }}"
-          FRONTEND_WEB_IMAGE="${{ steps.prepare-images.outputs.frontend-web-image }}"
-          FRONTEND_LANDING_IMAGE="${{ steps.prepare-images.outputs.frontend-landing-image }}"
+      - name: Post-deployment Smoke Tests
+        run: echo "Running smoke tests..."
+          # Add actual smoke tests here, e.g., curl to health endpoints
 
-          ENVIRONMENT="${{ needs.determine-environment.outputs.environment }}"
-          MANIFESTS_DIR="./infra/kubernetes/$ENVIRONMENT"
+      - name: Notify on Success
+        if: success()
+        run: echo "Deployment to ${{ github.event.inputs.environment }} successful!"
 
-          # Check if Kubernetes manifests directory exists
-          if [ ! -d "$MANIFESTS_DIR" ]; then
-            echo "⚠️ Kubernetes manifests directory not found: $MANIFESTS_DIR"
-            echo "⚠️ Skipping Kubernetes deployment"
-            echo "manifests-found=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "manifests-found=true" >> $GITHUB_OUTPUT
-
-          # Replace image tags in Kubernetes manifests
-          if [ -f "$MANIFESTS_DIR/backend-deployment.yaml" ]; then
-            sed -i "s|image: ghcr.io/${{ github.repository }}/backend:.*|image: $BACKEND_IMAGE|g" "$MANIFESTS_DIR/backend-deployment.yaml"
-            echo "✅ Updated backend deployment manifest"
-          else
-            echo "⚠️ Backend deployment manifest not found"
-          fi
-
-          # Check if we're using the old frontend deployment or separate deployments
-          if [ -f "$MANIFESTS_DIR/frontend-deployment.yaml" ]; then
-            # For backward compatibility - update the single frontend deployment
-            sed -i "s|image: ghcr.io/${{ github.repository }}/frontend:.*|image: $FRONTEND_WEB_IMAGE|g" "$MANIFESTS_DIR/frontend-deployment.yaml"
-            echo "ℹ️ Updated single frontend deployment for backward compatibility"
-          fi
-
-          # Check for separate frontend web deployment
-          if [ -f "$MANIFESTS_DIR/frontend-web-deployment.yaml" ]; then
-            sed -i "s|image: ghcr.io/${{ github.repository }}/frontend-web:.*|image: $FRONTEND_WEB_IMAGE|g" "$MANIFESTS_DIR/frontend-web-deployment.yaml"
-            echo "✅ Updated frontend web deployment manifest"
-          fi
-
-          # Check for separate frontend landing deployment
-          if [ -f "$MANIFESTS_DIR/frontend-landing-deployment.yaml" ]; then
-            sed -i "s|image: ghcr.io/${{ github.repository }}/frontend-landing:.*|image: $FRONTEND_LANDING_IMAGE|g" "$MANIFESTS_DIR/frontend-landing-deployment.yaml"
-            echo "✅ Updated frontend landing deployment manifest"
-          fi
-
-          echo "✅ Kubernetes manifests updated successfully"
-
-      - name: Deploy to Kubernetes
-        if: steps.update-manifests.outputs.manifests-found == 'true'
-        run: |
-          ENVIRONMENT="${{ needs.determine-environment.outputs.environment }}"
-          MANIFESTS_DIR="./infra/kubernetes/$ENVIRONMENT"
-
-          # Apply Kubernetes manifests
-          echo "🚀 Applying Kubernetes manifests from $MANIFESTS_DIR"
-          kubectl apply -f "$MANIFESTS_DIR/"
-
-          # Create an array to store deployment names
-          declare -a DEPLOYMENTS=()
-
-          # Check for backend deployment
-          if kubectl get deployment/backend -n $ENVIRONMENT &>/dev/null; then
-            DEPLOYMENTS+=("backend")
-          fi
-
-          # Check for frontend deployments (both legacy and new)
-          if kubectl get deployment/frontend -n $ENVIRONMENT &>/dev/null; then
-            DEPLOYMENTS+=("frontend")
-          fi
-
-          if kubectl get deployment/frontend-web -n $ENVIRONMENT &>/dev/null; then
-            DEPLOYMENTS+=("frontend-web")
-          fi
-
-          if kubectl get deployment/frontend-landing -n $ENVIRONMENT &>/dev/null; then
-            DEPLOYMENTS+=("frontend-landing")
-          fi
-
-          # Wait for all deployments to be ready
-          for DEPLOYMENT in "${DEPLOYMENTS[@]}"; do
-            echo "⏳ Waiting for $DEPLOYMENT deployment to be ready"
-            kubectl rollout status deployment/$DEPLOYMENT -n $ENVIRONMENT
-
-            if [ $? -eq 0 ]; then
-              echo "✅ $DEPLOYMENT deployment is ready"
-            else
-              echo "❌ $DEPLOYMENT deployment failed to become ready"
-              exit 1
-            fi
-          done
-
-          echo "✅ All deployments are ready"
-
-          # Get service information if available
-          echo "📊 Service information:"
-          kubectl get services -n $ENVIRONMENT
-
-          echo "✅ Deployment completed successfully"
+      - name: Notify on Failure
+        if: failure()
+        run: echo "Deployment to ${{ github.event.inputs.environment }} failed!"

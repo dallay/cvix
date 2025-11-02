@@ -17,7 +17,7 @@ on:
         required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -115,11 +115,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read # To read dependency files
-      # issues: write # If you want to create issues for vulnerabilities (optional)
-      # pull-requests: write # If you want to comment on PRs (optional)
+      # issues: write   # If you want to create issues for vulnerabilities (optional)
+      # pull-requests: write   # If you want to comment on PRs (optional)
     steps:
-      - name: Checkout repository
-        # Pinned to v4 commit hash for security
+      - name:
+          Checkout repository
+          # Pinned to v4 commit hash for security
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
@@ -130,7 +131,7 @@ jobs:
           # Optional: specify suppression file if you have one
           # suppressionPath: 'config/owasp/owasp-suppression.xml'
           # Optional: fail the build if vulnerabilities are found
-        # Optional: Upload the report as an artifact
+          # Optional: Upload the report as an artifact
       - name: Upload OWASP Dependency Check Report
         if: always() # Ensure report is uploaded even if previous steps fail
         # Pinned to v4 commit hash for security
@@ -159,8 +160,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        # Pinned to v4 commit hash for security
+      - name:
+          Checkout repository
+          # Pinned to v4 commit hash for security
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
       - name: Setup Java
@@ -174,15 +176,17 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Download backend artifacts
-        # Pinned to v4 commit hash for security
+      - name:
+          Download backend artifacts
+          # Pinned to v4 commit hash for security
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: backend-artifacts
           path: backend-artifacts
 
-      - name: Download frontend artifacts
-        # Pinned to v4 commit hash for security
+      - name:
+          Download frontend artifacts
+          # Pinned to v4 commit hash for security
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: frontend-artifacts
@@ -198,8 +202,9 @@ jobs:
           mkdir -p test-report
           cp backend/build/reports/tests/test/* test-report/ || true
 
-      - name: Upload test report
-        # Pinned to v4 commit hash for security
+      - name:
+          Upload test report
+          # Pinned to v4 commit hash for security
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-report

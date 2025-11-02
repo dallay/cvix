@@ -16,8 +16,8 @@ slug:
   sanitize_replacement: '-'
 
 
-media_folder: "client/apps/marketing/src/assets/images" # Location where files will be stored in the repo
-public_folder: "client/apps/marketing/src/assets/images" # The src attribute for uploaded media
+media_folder: "client/apps/marketing/src/assets/images"  # Location where files will be stored in the repo
+public_folder: "client/apps/marketing/src/assets/images"  # The src attribute for uploaded media
 
 i18n:
   structure: 'multiple_folders'

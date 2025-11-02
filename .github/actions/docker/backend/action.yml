@@ -48,7 +48,7 @@ runs:
   steps:
     - name: Set up JDK
       # Pinned to v4 commit hash for security
-      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4
       with:
         java-version: ${{ inputs.java-version }}
         distribution: "temurin"
@@ -68,7 +68,7 @@ runs:
     - name: Login to GitHub Container Registry
       if: ${{ inputs.deliver == 'true' }}
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       id: ghcr-login
       continue-on-error: true
       with:
@@ -91,7 +91,7 @@ runs:
     - name: Login to Docker Hub
       if: ${{ inputs.deliver == 'true' && inputs.docker-username != '' && inputs.docker-password != '' }}
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       id: dockerhub-login
       continue-on-error: true
       with:
@@ -112,12 +112,12 @@ runs:
 
     - name: Set up Docker Buildx
       # Pinned to v3 commit hash for security
-      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435  # v3
 
     - name: Extract metadata for Docker
       id: meta
       # Pinned to v5 commit hash for security
-      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f  # v5
       with:
         images: |
           ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
@@ -274,7 +274,7 @@ runs:
     - name: Upload build logs
       if: ${{ always() }}
       # Pinned to v4 commit hash for security
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       with:
         name: ${{ inputs.image-name }}-build-logs
         path: /tmp/docker-build-logs/

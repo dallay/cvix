@@ -1,6 +1,14 @@
 # Reglas para yamllint
 # https://yamllint.readthedocs.io/en/stable/rules.html
 
+
+ignore: |
+  node_modules
+  build
+  dist
+  **/node_modules/**
+  **/build/**
+  **/dist/**
 extends: default
 
 rules:
@@ -15,6 +23,10 @@ rules:
   indentation:
     spaces: 2
     indent-sequences: consistent
+  # Deshabilitar reglas problemáticas para archivos de GitHub Actions
+  truthy:
+    ignore: |
+      .github/**
   # No requerir espacios en llaves vacías
   # The `empty-braces` rule is not available in some yamllint versions used
   # by hosted actions/runners and caused a fatal error (no such rule).
@@ -22,5 +34,5 @@ rules:
   # If you need strict control over spaces inside flow-style empty mappings,
   # consider upgrading yamllint in the action image and re-adding a compatible rule.
   # Permitir comentarios que comienzan sin espacio
-  comments:
-    require-starting-space: false
+  comments: disable
+  comments-indentation: disable

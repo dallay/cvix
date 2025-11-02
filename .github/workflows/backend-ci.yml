@@ -38,27 +38,27 @@ permissions:
 
 jobs:
   lint:
-    name: Lint with Detekt # Renamed
+    name: Lint with Detekt    # Renamed
     runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
-      pull-requests: read # Or 'write' if reviewdog needs to create PR review comments directly
+      pull-requests: read    # Or 'write' if reviewdog needs to create PR review comments directly
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955    # v4
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Install reviewdog
         run: |
-          curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0  # Using a specific version
+          curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0    # Using a specific version
       - name: Run Detekt and Reviewdog
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Running Detekt..."
-          # Run detektAll. The task generates reports in build/reports/detekt/
-          # We use || true so que el workflow continúe a la reviewdog step incluso si detekt encuentra issues.
+            # Run detektAll. The task generates reports in build/reports/detekt/
+            # We use || true so que el workflow continúe a la reviewdog step incluso si detekt encuentra issues.
           ./gradlew detektAll --no-daemon --stacktrace || true
 
           echo "Running Reviewdog on Detekt results..."
@@ -71,7 +71,7 @@ jobs:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955    # v4
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Build with Gradle
@@ -79,7 +79,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@3a74b2957438d0b6e2e61d67b05318aa25c9e6c6 # v2.20.0
+        uses: EnricoMi/publish-unit-test-result-action@3a74b2957438d0b6e2e61d67b05318aa25c9e6c6    # v2.20.0
         if: always()
         with:
           files: |
@@ -92,7 +92,7 @@ jobs:
           flags: backend
           name: codecov-backend
       - name: Upload build artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02    # v4
         with:
           name: backend-artifacts
           path: |
