@@ -23,7 +23,7 @@ concurrency:
 
 permissions:
   contents: read
-  id-token: write   # Required for OIDC authentication with AWS
+  id-token: write # Required for OIDC authentication with AWS
 
 jobs:
   deploy:
@@ -34,17 +34,17 @@ jobs:
       url: https://${{ github.event.inputs.environment }}.loomify.com
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955    # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a41607377d332191f92661f174033210ad7    # v4
+        uses: aws-actions/configure-aws-credentials@e3dd6a41607377d332191f92661f174033210ad7 # v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-deploy-role
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@062f4456476976009c2842e28f676ff916764366    # v2
+        uses: aws-actions/amazon-ecr-login@062f4456476976009c2842e28f676ff916764366 # v2
 
       - name: Deploy Backend
         uses: ./.github/actions/docker/backend
@@ -53,7 +53,8 @@ jobs:
           image-tag: ${{ github.event.inputs.tag }}
           ecr-registry: ${{ steps.login-ecr.outputs.registry }}
           aws-region: ${{ secrets.AWS_REGION }}
-          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws-account-id:
+            ${{ secrets.AWS_ACCOUNT_ID }}
             # Pass secrets for backend configuration
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -82,7 +83,8 @@ jobs:
           image-tag: ${{ github.event.inputs.tag }}
           ecr-registry: ${{ steps.login-ecr.outputs.registry }}
           aws-region: ${{ secrets.AWS_REGION }}
-          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+          aws-account-id:
+            ${{ secrets.AWS_ACCOUNT_ID }}
             # Pass secrets for frontend configuration
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_KEYCLOAK_URL: ${{ secrets.VITE_KEYCLOAK_URL }}
@@ -101,12 +103,11 @@ jobs:
       - name: Deploy Frontend Landing Page
         uses: ./.github/actions/docker/frontend-landing
         with:
-          environment: ${{ github.event.inputs.environment }}
-          image-tag: ${{ github.event.inputs.tag }}
-          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
-            # Pass secrets for frontend configuration
+          base-url: ${{ secrets.BASE_URL }}
+          build-env: production
+          context: ./frontend
+          deliver: true
+          docker: true
           PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL }}
           PUBLIC_KEYCLOAK_URL: ${{ secrets.PUBLIC_KEYCLOAK_URL }}
           PUBLIC_KEYCLOAK_REALM: ${{ secrets.PUBLIC_KEYCLOAK_REALM }}
@@ -124,15 +125,13 @@ jobs:
       - name: Run Security Scan
         uses: ./.github/actions/docker/security-scan
         with:
-          environment: ${{ github.event.inputs.environment }}
-          image-tag: ${{ github.event.inputs.tag }}
-          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          category: <replace-with-category>
+          image-ref: <replace-with-image-ref>
+          report-name: <replace-with-report-name>
 
       - name: Post-deployment Smoke Tests
-        run: echo "Running smoke tests..."
+        run:
+          echo "Running smoke tests..."
           # Add actual smoke tests here, e.g., curl to health endpoints
 
       - name: Notify on Success
