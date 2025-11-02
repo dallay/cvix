@@ -16,4 +16,3 @@ H -->|Axios Response| J["Pinia Store<br/>Update State"]
 J -->|Redirect| K["Login Page"]
 I -->|Axios Error| L["Show Error"]
 ```
-

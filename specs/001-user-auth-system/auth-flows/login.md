@@ -17,7 +17,6 @@ J -->|Redirect| K["Dashboard"]
 I -->|Axios Error| L["Show Error"]
 ```
 
-
 ```mermaid
 sequenceDiagram
     participant Browser
@@ -37,4 +36,3 @@ sequenceDiagram
     Backend (8080)-->>Vite (9876): 200 OK ✅
     Vite (9876)-->>Browser: Success
 ```
-

@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to run tests against'
+        description: "Environment to run tests against"
         type: choice
         options:
           - development
           - staging
-        default: 'development'
+        default: "development"
         required: true
 
 concurrency:
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Run Labeler
         # Pinned to v5 commit hash for security
         uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
@@ -62,7 +62,7 @@ jobs:
         # Pinned to v5 commit hash for security
         uses: github/super-linter@45fc0d88288beee4701c62761281edfee85655d7 # v5
         env:
-          VALIDATE_ALL_CODEBASE: true  # Lint entire codebase
+          VALIDATE_ALL_CODEBASE: true # Lint entire codebase
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Configure specific linters if necessary, for example:
@@ -82,7 +82,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Dependency Review
         # Pinned to v4 commit hash for security
         uses: actions/dependency-review-action@45529485b5eb76184ced07362d2331fd9d26f03f # v4
@@ -104,13 +104,13 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
-          project: 'Loomify-monorepo'
-          path: '.'
-          format: 'HTML' # You can choose other formats like XML, JSON, CSV
+          project: "Loomify-monorepo"
+          path: "."
+          format: "HTML" # You can choose other formats like XML, JSON, CSV
           # Optional: specify suppression file if you have one
           # suppressionPath: 'config/owasp/owasp-suppression.xml'
           # Optional: fail the build if vulnerabilities are found
@@ -145,18 +145,18 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
       - name: Setup Java
         uses: ./.github/actions/setup/java
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Download backend artifacts
         # Pinned to v4 commit hash for security
@@ -194,7 +194,7 @@ jobs:
     name: Markdown lint (docs)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@451cad2cde7304d9c243aaaf2e894d74b428c4be
         with:

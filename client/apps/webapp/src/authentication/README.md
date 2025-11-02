@@ -185,7 +185,7 @@ await authStore.login({
 
 Cuando el usuario intenta acceder a una ruta protegida:
 
-```
+```text
 1. Navigation guard verifica si requiresAuth: true
 2. Si no está autenticado, llama a authStore.checkAuth()
 3. Si checkAuth() falla, redirige a /login?redirect=/dashboard
@@ -196,7 +196,7 @@ Cuando el usuario intenta acceder a una ruta protegida:
 
 Si una ruta tiene `meta.roles`:
 
-```
+```text
 1. Navigation guard verifica si el usuario tiene al menos uno de los roles requeridos
 2. Si NO tiene el rol, redirige a /unauthorized?from=/admin
 3. Si tiene el rol, permite el acceso
@@ -208,7 +208,7 @@ Si una ruta tiene `meta.roles`:
 
 Si el usuario intenta acceder a una ruta protegida sin estar autenticado:
 
-```
+```text
 1. Usuario va a /dashboard (sin estar autenticado)
 2. Guard redirige a /login?redirect=/dashboard
 3. Usuario hace login
@@ -219,7 +219,7 @@ Si el usuario intenta acceder a una ruta protegida sin estar autenticado:
 
 Si un usuario autenticado intenta acceder a rutas de invitado (login, register):
 
-```
+```text
 1. Usuario autenticado va a /login
 2. Guard detecta requiresGuest: true
 3. Lee el query param "redirect" o usa "/dashboard" por defecto

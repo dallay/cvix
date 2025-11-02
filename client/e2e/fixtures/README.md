@@ -57,6 +57,7 @@ Check if the backend API is accessible before running tests.
 **Returns:** `Promise<boolean>` - True if API is available
 
 **Example:**
+
 ```typescript
 const isAvailable = await fixtures.checkApiAvailability();
 if (!isAvailable) {
@@ -69,6 +70,7 @@ if (!isAvailable) {
 Ensures a test user exists in the system. Creates the user if they don't exist, or verifies authentication if they do.
 
 **Parameters:**
+
 - `email` (string): User email
 - `password` (string): User password
 - `userId` (string, optional): User UUID
@@ -80,6 +82,7 @@ Ensures a test user exists in the system. Creates the user if they don't exist, 
 Creates multiple non-default workspaces for a test user. Automatically ensures user exists and cleans up existing workspaces first.
 
 **Parameters:**
+
 - `email` (string): User email for authentication
 - `password` (string): User password
 - `userId` (string): User UUID
@@ -136,10 +139,10 @@ const testUser = getTestUser("noDefault"); // or "default", "noWorkspace", "newU
 
 ### Available Test Users
 
-- **`default`**: User with a default workspace (test@example.com)
-- **`noDefault`**: User with only non-default workspaces (nodefault@example.com)
-- **`noWorkspace`**: User with no workspaces (noworkspace@example.com)
-- **`newUser`**: New user with no history (newuser@example.com)
+- **`default`**: User with a default workspace (<test@example.com>)
+- **`noDefault`**: User with only non-default workspaces (<nodefault@example.com>)
+- **`noWorkspace`**: User with no workspaces (<noworkspace@example.com>)
+- **`newUser`**: New user with no history (<newuser@example.com>)
 
 ### Environment Variables
 

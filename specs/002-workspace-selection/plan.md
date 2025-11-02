@@ -49,6 +49,7 @@ Implement frontend workspace selection functionality that automatically loads th
 - **Dependency Flow**: Composables depend on domain services, infrastructure adapters implement interfaces defined by composables
 
 **Justification**: While Hexagonal Architecture is primarily a backend pattern, we adapt its principles:
+
 - Business logic (workspace selection rules) separated from framework code
 - Storage and API access abstracted behind interfaces
 - Vue components only interact through composables, not directly with stores or API
@@ -302,5 +303,3 @@ Each task will include:
 - Acceptance criteria
 - File paths and dependencies
 - Estimated complexity
-
-

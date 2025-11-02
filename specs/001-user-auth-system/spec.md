@@ -3,7 +3,13 @@
 **Feature Branch**: `001-user-auth-system`
 **Created**: October 20, 2025
 **Status**: Draft
-**Input**: User description: "Build a secure authentication system that enables users to login, register, and manage their session state. Users can authenticate via email/password credentials or federated identity providers. The system must seamlessly handle token lifecycle management, redirect users to protected resources post-authentication, and provide graceful session recovery mechanisms. Registration captures essential user data with validation feedback, while logout cleanly terminates sessions and revokes tokens. The frontend consumes Keycloak endpoints for all auth operations and maintains real-time user context across the application."
+**Input**: User description:
+
+> Build a secure authentication system that enables users to login, register, and manage their session state. Users can authenticate via email/password credentials or federated identity providers.
+>
+> The system must seamlessly handle token lifecycle management, redirect users to protected resources post-authentication, and provide graceful session recovery mechanisms. Registration captures essential user data with validation feedback, while logout cleanly terminates sessions and revokes tokens.
+>
+> The frontend consumes Keycloak endpoints for all auth operations and maintains real-time user context across the application.
 
 ## User Scenarios & Testing *(mandatory)*
 

@@ -1,0 +1,8 @@
+.github/copilot-instructions.md
+.github/prompts/*speckit*
+.specify/*
+CLAUDE.md
+GEMINI.md
+node_modules/
+dist/
+build/

@@ -267,7 +267,7 @@ collections:
     folder: client/apps/marketing/src/data/faq
     create: true
     slug: '{{question}}'
-    extension: md
+    extension: json
     i18n: true
     fields:
       - name: 'question'
@@ -279,6 +279,6 @@ collections:
         label: 'Publish Date'
         i18n: 'duplicate'
       - name: 'body'
-        widget: 'markdown'
+        widget: 'text'
         label: 'Body'
         i18n: true

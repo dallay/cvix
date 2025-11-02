@@ -12,4 +12,3 @@ D -->|Axios Response| F["Pinia Store<br/>Clear State"]
 F -->|Redirect| G["Login Page"]
 E -->|Axios Error| H["Show Error"]
 ```
-
