@@ -27,6 +27,40 @@ permissions:
   security-events: write # Required for CodeQL to upload results
 
 jobs:
+  changed-meta:
+    name: Detect meta/config changes
+    runs-on: ubuntu-latest
+    outputs:
+      meta: ${{ steps.filter.outputs.meta }}
+      always_scan: ${{ steps.vars.outputs.always_scan }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        with:
+          fetch-depth: 0
+      - name: Set baseline scan flag
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "always_scan=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "always_scan=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            meta:
+              - '.github/**'
+              - 'infra/**'
+              - 'scripts/**'
+              - '**/*.yml'
+              - '**/*.yaml'
+              - '**/*.json'
+              - 'Dockerfile'
+              - 'Dockerfile.*'
   labeler:
     name: Label PRs
     runs-on: ubuntu-latest
@@ -47,6 +81,9 @@ jobs:
   super-linter:
     name: Super Linter
     runs-on: ubuntu-latest
+    needs: [changed-meta]
+    if: needs.changed-meta.outputs.always_scan == 'true' || needs.changed-meta.outputs.meta == 'true'
+    timeout-minutes: 15
     permissions:
       contents: read
       packages: read
@@ -62,16 +99,27 @@ jobs:
         # Pinned to v5 commit hash for security
         uses: github/super-linter@45fc0d88288beee4701c62761281edfee85655d7 # v5
         env:
-          VALIDATE_ALL_CODEBASE: true # Lint entire codebase
+          # Only lint changed files on PRs to speed up runs; lint full repo only on push to main
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Configure specific linters if necessary, for example:
-          # VALIDATE_JAVASCRIPT_ES: true
-          # VALIDATE_KOTLIN: true
+          # Skip files ignored by .gitignore to reduce work
+          IGNORE_GITIGNORED_FILES: true
+          # Exclude heavy/generated paths (build artifacts, dist, caches, node_modules, coverage, reports)
+          FILTER_REGEX_EXCLUDE: >-
+            (^build/|/build/|^dist/|/dist/|^coverage/|/coverage/|^node_modules/|/node_modules/|^client/.*/dist/|^server/.*/build/|^docs/.*/dist/|^build-logic/.*/build/|^.*/reports/)
+          # We already lint Kotlin and JS/TS with Detekt and Biome in dedicated jobs; disable here to avoid duplication
+          VALIDATE_KOTLIN: false
+          VALIDATE_JAVASCRIPT_ES: false
+          VALIDATE_TYPESCRIPT_ES: false
+          VALIDATE_MARKDOWN: false # handled by dedicated markdown job
+          # Keep lightweight, fast checks enabled by default (YAML/JSON/GitHub Actions/Shell/Dockerfile)
+          # Example if you want to force-enable some:
           # VALIDATE_YAML: true
-          # VALIDATE_MARKDOWN: true
           # VALIDATE_JSON: true
-          # VALIDATE_GITLEAKS: true
+          # VALIDATE_GITHUB_ACTIONS: true
+          # VALIDATE_SHELL_SH: true
+          # VALIDATE_DOCKERFILE_HADOLINT: true
 
   dependency-review:
     name: Dependency Review
