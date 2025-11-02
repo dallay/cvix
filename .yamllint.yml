@@ -6,6 +6,11 @@ extends: default
 rules:
   # Deshabilitar la regla de longitud de línea
   line-length: disable
+  # No exigir el marcador de inicio de documento ("---") en todos los YAMLs
+  # Muchas plantillas y archivos de configuración en repositorios no incluyen
+  # explícitamente '---' y esto genera ruido en yamllint en CI. Desactivamos
+  # la regla para reducir falsos positivos.
+  document-start: disable
   # Permitir sangría de 2 espacios (común en GitHub Actions)
   indentation:
     spaces: 2
