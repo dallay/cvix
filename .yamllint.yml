@@ -11,9 +11,11 @@ rules:
     spaces: 2
     indent-sequences: consistent
   # No requerir espacios en llaves vacías
-  empty-braces:
-    min-spaces-inside: 0
-    max-spaces-inside: 0
+  # The `empty-braces` rule is not available in some yamllint versions used
+  # by hosted actions/runners and caused a fatal error (no such rule).
+  # Removed for compatibility; default behavior is acceptable for this repo.
+  # If you need strict control over spaces inside flow-style empty mappings,
+  # consider upgrading yamllint in the action image and re-adding a compatible rule.
   # Permitir comentarios que comienzan sin espacio
   comments:
     require-starting-space: false
