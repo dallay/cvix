@@ -198,6 +198,15 @@ jobs:
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@451cad2cde7304d9c243aaaf2e894d74b428c4be
         with:
-          globs: |
-            **/*.md
-            **/*.mdx
+            globs: |
+              **/*.md
+              **/*.mdx
+              !.github/copilot-instructions.md
+              !.github/prompts/*speckit*
+              !.specify/*
+              !CLAUDE.md
+              !GEMINI.md
+              !node_modules/**
+              !dist/**
+              !build/**
+            config: .markdownlint.json
