@@ -62,36 +62,37 @@ make test-all
 
 This project uses a `Makefile` to streamline common development tasks. Below is a list of the main commands (28 targets) and what they actually invoke in the repository:
 
-| Command                | Description                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------ |
-| `make install`         | Install JavaScript workspace dependencies (`pnpm install`).                    |
-| `make update-deps`     | Update JS dependencies to their latest versions via pnpm scripts.              |
-| `make prepare`         | Prepare the development environment (runs `pnpm prepare`).                     |
-| `make ruler-check`     | Check the project's architecture rules (`pnpm ruler:check`).                   |
-| `make ruler-apply`     | Apply the project's architecture rules (`pnpm ruler:apply`).                   |
-| `make dev`             | Run the landing page in development mode (root `pnpm dev` / landing only).     |
-| `make dev-landing`     | Run only the landing page dev server (`pnpm --filter @loomify/marketing dev`). |
-| `make dev-web`         | Run only the webapp dev server (`pnpm --filter @loomify/webapp dev`).          |
-| `make dev-docs`        | Run only the documentation dev server (`pnpm --filter @loomify/docs dev`).     |
-| `make build`           | Build the landing page and backend (`pnpm build`, then `make backend-build`).  |
-| `make build-landing`   | Build only the landing page (`pnpm --filter @loomify/marketing build`).        |
-| `make preview-landing` | Preview the landing page (`pnpm --filter @loomify/marketing preview`).         |
-| `make build-web`       | Build only the web application (`pnpm --filter @loomify/webapp build`).        |
-| `make build-docs`      | Build only the documentation site (`pnpm --filter @loomify/docs build`).       |
-| `make test`            | Run frontend tests (root `pnpm test`) — commonly configured to run UI tests.   |
-| `make test-ui`         | Run UI tests (`pnpm test:ui`).                                                 |
-| `make test-coverage`   | Run all tests with coverage reporting (`pnpm test:coverage`).                  |
-| `make lint`            | Run normal Biome lint (`pnpm lint`).                                           |
-| `make lint-strict`     | Run Biome lint in strict mode (`pnpm lint:strict`).                            |
-| `make check`           | Run project checks (`pnpm check`).                                             |
-| `make clean`           | Clean JS build artifacts (`pnpm clean`).                                       |
-| `make backend-build`   | Build the backend service (`./gradlew build`).                                 |
-| `make backend-run`     | Run the backend application (`./gradlew bootRun`).                             |
-| `make backend-test`    | Run backend tests (`./gradlew test`).                                          |
-| `make backend-clean`   | Clean backend build artifacts (`./gradlew clean`).                             |
-| `make start`           | Start configured PNPM start script for apps (`pnpm start`).                    |
-| `make test-all`        | Run all tests for all applications (`pnpm test:all`).                          |
-| `make precommit`       | Run pre-commit checks (`pnpm precommit`).                                      |
+| Command                        | Description                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `make install`                 | Install JavaScript workspace dependencies (`pnpm install`).                    |
+| `make update-deps`             | Update JS dependencies to their latest versions via pnpm scripts.              |
+| `make prepare`                 | Prepare the development environment (runs `pnpm prepare`).                     |
+| `make ruler-check`             | Check the project's architecture rules (`pnpm ruler:check`).                   |
+| `make ruler-apply`             | Apply the project's architecture rules (`pnpm ruler:apply`).                   |
+| `make dev`                     | Run the landing page in development mode (root `pnpm dev` / landing only).     |
+| `make dev-landing`             | Run only the landing page dev server (`pnpm --filter @loomify/marketing dev`). |
+| `make dev-web`                 | Run only the webapp dev server (`pnpm --filter @loomify/webapp dev`).          |
+| `make dev-docs`                | Run only the documentation dev server (`pnpm --filter @loomify/docs dev`).     |
+| `make build`                   | Build the landing page and backend (`pnpm build`, then `make backend-build`).  |
+| `make build-landing`           | Build only the landing page (`pnpm --filter @loomify/marketing build`).        |
+| `make preview-landing`         | Preview the landing page (`pnpm --filter @loomify/marketing preview`).         |
+| `make build-web`               | Build only the web application (`pnpm --filter @loomify/webapp build`).        |
+| `make build-docs`              | Build only the documentation site (`pnpm --filter @loomify/docs build`).       |
+| `make test`                    | Run frontend tests (root `pnpm test`) — commonly configured to run UI tests.   |
+| `make test-ui`                 | Run UI tests (`pnpm test:ui`).                                                 |
+| `make test-coverage`           | Run all tests with coverage reporting (`pnpm test:coverage`).                  |
+| `make lint`                    | Run normal Biome lint (`pnpm lint`).                                           |
+| `make lint-strict`             | Run Biome lint in strict mode (`pnpm lint:strict`).                            |
+| `make check`                   | Run project checks (`pnpm check`).                                             |
+| `make clean`                   | Clean JS build artifacts (`pnpm clean`).                                       |
+| `make backend-build`           | Build the backend service (`./gradlew build`).                                 |
+| `make backend-run`             | Run the backend application (`./gradlew bootRun`).                             |
+| `make backend-test`            | Run backend tests (`./gradlew test`).                                          |
+| `make backend-clean`           | Clean backend build artifacts (`./gradlew clean`).                             |
+| `make cleanup-test-containers` | Clean up Testcontainers left running after tests.                              |
+| `make start`                   | Start configured PNPM start script for apps (`pnpm start`).                    |
+| `make test-all`                | Run all tests for all applications (`pnpm test:all`).                          |
+| `make precommit`               | Run pre-commit checks (`pnpm precommit`).                                      |
 
 ## Project structure (high level)
 
@@ -102,6 +103,40 @@ See these folders at the repository root:
 - `shared/` — shared Kotlin libraries
 - `infra/` — docker compose and helper scripts
 - `specs/` — feature specifications and planning documents
+
+## Development Guidelines
+
+### Testing with Testcontainers
+
+The backend integration tests use [Testcontainers](https://testcontainers.com/) to spin up real PostgreSQL, Keycloak, and GreenMail containers.
+
+**Local Development Setup:**
+
+For faster test execution during development, you can enable container reuse by creating/editing `~/.testcontainers.properties`:
+
+```properties
+testcontainers.reuse.enable=true
+```
+
+With this setting, containers will persist between test runs, speeding up subsequent executions significantly.
+
+**Managing Test Containers:**
+
+When using container reuse, test containers may remain running after tests complete. To clean them up:
+
+```bash
+# Clean up all test containers
+make cleanup-test-containers
+
+# Or manually
+docker rm -f keycloak-tests greenmail-tests
+```
+
+**Important Notes:**
+
+- Container reuse is disabled in the code to ensure clean CI/CD builds
+- The local `~/.testcontainers.properties` config only affects your development environment
+- CI pipelines will always start fresh containers for each test run
 
 ## Features
 

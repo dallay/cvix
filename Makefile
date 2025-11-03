@@ -158,6 +158,10 @@ backend-test:
 backend-clean:
 	@./gradlew clean
 
+# Cleans up test containers left running from Testcontainers.
+cleanup-test-containers:
+	@./scripts/cleanup-test-containers.sh
+
 # ------------------------------------------------------------------------------------
 # APPLICATION LIFECYCLE
 # ------------------------------------------------------------------------------------
@@ -178,4 +182,4 @@ precommit:
 all: install build test backend-test lint check
 	@echo "All targets built successfully"
 
-.PHONY: all help install update-deps prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check clean backend-build backend-run backend-test backend-clean start test-all precommit
+.PHONY: all help install update-deps prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit

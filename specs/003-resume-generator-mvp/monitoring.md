@@ -15,15 +15,18 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **Objective**: 95th percentile API response time ≤ 200ms (excluding PDF generation)
 
 **Measurement**:
+
 - Metric: `resume_api_latency_seconds`
 - Query: `histogram_quantile(0.95, rate(resume_api_latency_seconds_bucket[5m]))`
 
 **Thresholds**:
+
 - ✅ **Green**: p95 ≤ 200ms
 - ⚠️ **Warning**: p95 > 200ms (alert after 5 minutes)
 - 🚨 **Critical**: p95 > 250ms (alert after 2 minutes)
 
 **What to Check**:
+
 1. Check Spring Boot Actuator health endpoint: `/actuator/health`
 2. Review application logs for slow database queries
 3. Check Keycloak response times (OAuth2 validation)
@@ -31,6 +34,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 5. Review rate limiter configuration
 
 **Remediation**:
+
 - Scale horizontally by adding more application instances
 - Review and optimize database queries
 - Increase connection pool sizes if needed
@@ -43,15 +47,18 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **Objective**: 95th percentile PDF generation time < 8 seconds
 
 **Measurement**:
+
 - Metric: `resume_pdf_generation_duration_seconds`
 - Query: `histogram_quantile(0.95, rate(resume_pdf_generation_duration_seconds_bucket[5m]))`
 
 **Thresholds**:
+
 - ✅ **Green**: p95 < 8s
 - ⚠️ **Warning**: p95 ≥ 8s (alert after 5 minutes)
 - 🚨 **Critical**: p95 ≥ 10s (approaching timeout, alert after 2 minutes)
 
 **What to Check**:
+
 1. Check Docker daemon health: `/actuator/health` (look for `docker` component)
 2. Monitor Docker container pool utilization
 3. Review LaTeX compilation errors
@@ -59,6 +66,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 5. Verify TeX Live Docker image is cached locally
 
 **Remediation**:
+
 - Increase `docker.pdf.maxConcurrentContainers` if pool is saturated
 - Pre-pull TeX Live image to avoid pull delays: `docker pull texlive/texlive:latest-minimal`
 - Increase Docker resource limits (memory/CPU) if host has capacity
@@ -72,15 +80,18 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **Objective**: Error rate < 3% of total requests
 
 **Measurement**:
+
 - Metric: `resume_error_rate` (derived gauge)
 - Query: `rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m])`
 
 **Thresholds**:
+
 - ✅ **Green**: Error rate < 3%
 - ⚠️ **Warning**: Error rate ≥ 3% (alert after 5 minutes)
 - 🚨 **Critical**: Error rate ≥ 5% (alert after 2 minutes)
 
 **What to Check**:
+
 1. Review error type breakdown (validation, LaTeX, timeout, Docker, rate limit)
 2. Check application logs for stack traces
 3. Monitor Docker container failure rate
@@ -88,6 +99,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 5. Check for infrastructure issues (disk space, network)
 
 **Remediation by Error Type**:
+
 - **Validation errors** (400): Check frontend validation, update schemas
 - **LaTeX errors** (422): Review LaTeX templates, check for injection
 - **Timeout errors** (504): See PDF Generation SLO remediation
@@ -101,16 +113,19 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **Objective**: 99.5% uptime (no more than 3.65 hours downtime per month)
 
 **Measurement**:
+
 - External synthetic monitoring probe (e.g., UptimeRobot, Pingdom, or DataDog Synthetics)
 - Probe endpoint: `https://api.cvix.com/health` or `/actuator/health/readiness`
 - Probe frequency: Every 60 seconds
 - Probe locations: Multiple geographic regions
 
 **Thresholds**:
+
 - ✅ **Green**: Health check returns 200 OK
 - 🚨 **Critical**: Health check fails for 2 consecutive probes (120s)
 
 **What to Check**:
+
 1. Check application status: `kubectl get pods` or Docker container status
 2. Review load balancer health checks
 3. Check database connectivity (R2DBC pool)
@@ -119,6 +134,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 6. Review infrastructure metrics (CPU, memory, disk)
 
 **Remediation**:
+
 - Restart application if unresponsive
 - Check database connection pool exhaustion
 - Verify Keycloak is reachable
@@ -182,6 +198,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **URL**: `/actuator/health`
 
 **Response** (UP):
+
 ```json
 {
   "status": "UP",
@@ -209,6 +226,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 ```
 
 **Response** (DOWN):
+
 ```json
 {
   "status": "DOWN",
@@ -292,6 +310,7 @@ All alerting rules are defined in `/infra/prometheus/resume-generator-alerts.yml
 **Check Frequency**: 60 seconds
 
 **Probe Locations**: Configure at least 3 geographic locations:
+
 - North America (US East)
 - Europe (Frankfurt or London)
 - Asia Pacific (Singapore or Tokyo)
@@ -301,6 +320,7 @@ All alerting rules are defined in `/infra/prometheus/resume-generator-alerts.yml
 **Alert Threshold**: 2 consecutive failures (120 seconds downtime)
 
 **Notification Channels**:
+
 - PagerDuty (for critical incidents)
 - Slack #alerts channel
 - Email to on-call engineer

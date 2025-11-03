@@ -30,6 +30,7 @@ Available commands:
   backend-run              Run the backend.
   backend-test             Run the backend tests.
   backend-clean            Clean the backend.
+  cleanup-test-containers  Clean up test containers left running from Testcontainers.
   start                    Start all applications.
   test-all                 Run all tests for all applications.
   precommit                Run the pre-commit checks.
