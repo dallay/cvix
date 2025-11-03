@@ -178,6 +178,7 @@ const mockMessages = {
 					skills: "Skills",
 					languages: "Languages",
 					projects: "Projects",
+					noEntries: "No entries yet",
 				},
 				fields: {
 					name: "Full Name",
@@ -208,6 +209,7 @@ const mockMessages = {
 					projectName: "Project Name",
 					description: "Description",
 					entity: "Organization",
+					skills: "Skills",
 				},
 				placeholders: {
 					name: "Jane Doe",
@@ -233,6 +235,7 @@ const mockMessages = {
 					projectName: "E-commerce Platform",
 					description:
 						"Built a modern e-commerce platform using React and Node.js",
+					addSkill: "Add a skill keyword",
 				},
 				buttons: {
 					add: "Add",
