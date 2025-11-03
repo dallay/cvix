@@ -48,22 +48,27 @@ object TestcontainersManager {
      */
     val postgresContainer: PostgreSQLContainer<*> by lazy {
         log.info("Starting PostgreSQL container...")
-        PostgreSQLContainer(DockerImageName.parse("postgres:16.9-alpine"))
-            .apply {
-                withNetwork(network)
-                withNetworkAliases("postgres")
-                withReuse(true)
-                withLabel("testcontainers.reuse.enable", "true")
-                // Optimize PostgreSQL for test performance
-                withCommand(
-                    "postgres",
-                    "-c", "fsync=off",
-                    "-c", "synchronous_commit=off",
-                    "-c", "full_page_writes=off"
-                )
-                start()
-                log.info("PostgreSQL container started successfully: {}", jdbcUrl)
-            }
+        try {
+            PostgreSQLContainer(DockerImageName.parse("postgres:16.9-alpine"))
+                .apply {
+                    withNetwork(network)
+                    withNetworkAliases("postgres")
+                    withReuse(true)
+                    withLabel("testcontainers.reuse.enable", "true")
+                    // Optimize PostgreSQL for test performance
+                    withCommand(
+                        "postgres",
+                        "-c", "fsync=off",
+                        "-c", "synchronous_commit=off",
+                        "-c", "full_page_writes=off"
+                    )
+                    start()
+                    log.info("PostgreSQL container started successfully: {}", jdbcUrl)
+                }
+        } catch (e: Exception) {
+            log.error("Failed to start PostgreSQL container", e)
+            throw IllegalStateException("Could not start PostgreSQL container: ${e.message}", e)
+        }
     }
 
     /**
@@ -73,20 +78,25 @@ object TestcontainersManager {
      */
     val keycloakContainer: KeycloakContainer by lazy {
         log.info("Starting Keycloak container...")
-        KeycloakContainer("keycloak/keycloak:25.0")
-            .apply {
-                withRealmImportFile("keycloak/demo-realm-test.json")
-                withAdminUsername(ADMIN_USER)
-                withAdminPassword(ADMIN_PASSWORD)
-                withNetwork(network)
-                withNetworkAliases("keycloak")
-                withReuse(true)
-                withLabel("testcontainers.reuse.enable", "true")
-                withStartupTimeout(Duration.ofMinutes(5))
-                
-                start()
-                log.info("Keycloak container started successfully: {}", authServerUrl)
-            }
+        try {
+            KeycloakContainer("keycloak/keycloak:25.0")
+                .apply {
+                    withRealmImportFile("keycloak/demo-realm-test.json")
+                    withAdminUsername(ADMIN_USER)
+                    withAdminPassword(ADMIN_PASSWORD)
+                    withNetwork(network)
+                    withNetworkAliases("keycloak")
+                    withReuse(true)
+                    withLabel("testcontainers.reuse.enable", "true")
+                    withStartupTimeout(Duration.ofMinutes(5))
+                    
+                    start()
+                    log.info("Keycloak container started successfully: {}", authServerUrl)
+                }
+        } catch (e: Exception) {
+            log.error("Failed to start Keycloak container", e)
+            throw IllegalStateException("Could not start Keycloak container: ${e.message}", e)
+        }
     }
 
     /**
@@ -95,24 +105,29 @@ object TestcontainersManager {
      */
     val greenMailContainer: GenericContainer<*> by lazy {
         log.info("Starting GreenMail container...")
-        GenericContainer(DockerImageName.parse("greenmail/standalone:2.0.0"))
-            .apply {
-                withEnv(
-                    "GREENMAIL_OPTS",
-                    "-Dgreenmail.setup.test.smtp -Dgreenmail.hostname=0.0.0.0"
-                )
-                withNetwork(network)
-                withNetworkAliases("greenmail")
-                withExposedPorts(*ports)
-                withReuse(true)
-                withLabel("testcontainers.reuse.enable", "true")
-                waitingFor(
-                    Wait.forLogMessage(".*Starting GreenMail standalone.*", 1)
-                        .withStartupTimeout(Duration.ofMinutes(2))
-                )
-                start()
-                log.info("GreenMail container started successfully on port: {}", firstMappedPort)
-            }
+        try {
+            GenericContainer(DockerImageName.parse("greenmail/standalone:2.0.0"))
+                .apply {
+                    withEnv(
+                        "GREENMAIL_OPTS",
+                        "-Dgreenmail.setup.test.smtp -Dgreenmail.hostname=0.0.0.0"
+                    )
+                    withNetwork(network)
+                    withNetworkAliases("greenmail")
+                    withExposedPorts(*ports)
+                    withReuse(true)
+                    withLabel("testcontainers.reuse.enable", "true")
+                    waitingFor(
+                        Wait.forLogMessage(".*Starting GreenMail standalone.*", 1)
+                            .withStartupTimeout(Duration.ofMinutes(2))
+                    )
+                    start()
+                    log.info("GreenMail container started successfully on port: {}", firstMappedPort)
+                }
+        } catch (e: Exception) {
+            log.error("Failed to start GreenMail container", e)
+            throw IllegalStateException("Could not start GreenMail container: ${e.message}", e)
+        }
     }
 
     /**
@@ -157,11 +172,17 @@ object TestcontainersManager {
      */
     fun startAll() {
         log.info("Ensuring all test containers are started...")
-        // Access lazy properties to trigger initialization
-        postgresContainer
-        keycloakContainer
-        greenMailContainer
-        log.info("All test containers are ready!")
+        try {
+            // Access lazy properties to trigger initialization
+            // Each property has its own error handling, but we catch any unexpected errors here
+            postgresContainer
+            keycloakContainer
+            greenMailContainer
+            log.info("All test containers are ready!")
+        } catch (e: Exception) {
+            log.error("Failed to start test containers", e)
+            throw IllegalStateException("Could not initialize test containers: ${e.message}", e)
+        }
     }
 
     private fun removeLastSlash(url: String): String {
