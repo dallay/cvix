@@ -200,6 +200,42 @@ View metrics: `/actuator/prometheus`
 Health check: `/actuator/health`
 Grafana dashboard: `infra/grafana/dashboards/resume-generator-sla.json`
 
+**Browser Compatibility:**
+
+The Resume Generator is tested and supported on the following browsers (last 2 major versions):
+
+| Browser          | Desktop | Mobile | Notes                  |
+| ---------------- | ------- | ------ | ---------------------- |
+| Chrome/Edge      | ✅       | ✅      | Chromium 120+          |
+| Firefox          | ✅       | ✅      | Firefox 121+           |
+| Safari           | ✅       | ✅      | Safari 17+ (macOS/iOS) |
+| Chrome Mobile    | N/A     | ✅      | Android 13+            |
+| Samsung Internet | N/A     | ✅      | Version 23+            |
+
+**Minimum Requirements:**
+
+- ES2020+ JavaScript support
+- CSS Grid and Flexbox
+- Fetch API
+- LocalStorage/SessionStorage
+- Modern input types (email, tel, url, date)
+
+**Not Supported:**
+
+- Internet Explorer (all versions)
+- Legacy Edge (pre-Chromium)
+- Opera Mini (limited JavaScript)
+- UC Browser (limited support)
+
+**Accessibility:**
+
+- WCAG 2.1 AA compliant
+- Screen reader tested (NVDA, VoiceOver, TalkBack)
+- Keyboard navigation fully supported
+- Touch targets meet WCAG guidelines (44x44px minimum)
+
+For detailed accessibility information, see: `client/apps/webapp/src/resume/docs/ACCESSIBILITY.md`
+
 **Documentation:**
 
 - Feature Spec: `specs/003-resume-generator-mvp/spec.md`

@@ -156,14 +156,16 @@ class SecurityConfiguration(
                 }
             }
             .headers { headers ->
-                headers.contentSecurityPolicy(applicationSecurityProperties.contentSecurityPolicy)
+                headers.contentSecurityPolicy { csp ->
+                    csp.policyDirectives(applicationSecurityProperties.contentSecurityPolicy)
+                }
                 headers.referrerPolicy { referrerPolicy ->
                     referrerPolicy.policy(
                         ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
                     )
                 }
                 headers.permissionsPolicy { permissions -> permissions.policy(POLICY) }
-                headers.contentTypeOptions()
+                headers.contentTypeOptions { }
                 headers.frameOptions { frame ->
                     frame.mode(XFrameOptionsServerHttpHeadersWriter.Mode.DENY)
                 }
