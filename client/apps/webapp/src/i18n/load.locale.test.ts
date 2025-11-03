@@ -485,7 +485,7 @@ const mockMessages = {
 					pdfTimeout:
 						"La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
 					rateLimit:
-						"Demasiadas solicitudes. Por favor, espera {{seconds}} segundos antes de volver a intentar.",
+						"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 					rate_limit_exceeded:
 						"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 					pdf_generation_timeout:
