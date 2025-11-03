@@ -9,9 +9,7 @@ import { useResumeGeneration } from "@/resume/composables/useResumeGeneration";
 import { useResumeSession } from "@/resume/composables/useResumeSession";
 import { useResumeStore } from "@/resume/stores/resumeStore";
 import EducationSection from "./EducationSection.vue";
-import LanguagesSection from "./LanguagesSection.vue";
 import PersonalInfoSection from "./PersonalInfoSection.vue";
-import ProjectsSection from "./ProjectsSection.vue";
 import SkillsSection from "./SkillsSection.vue";
 import WorkExperienceSection from "./WorkExperienceSection.vue";
 
