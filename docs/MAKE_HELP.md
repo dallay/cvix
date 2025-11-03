@@ -33,4 +33,3 @@ Available commands:
   precommit                Run the pre-commit checks.
 
 For a detailed explanation of each command, refer to the project's README.md.
-
