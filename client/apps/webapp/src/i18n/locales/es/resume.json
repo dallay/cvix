@@ -4,7 +4,7 @@
 		"subtitle": "Crea un currículum profesional en minutos",
 		"generate": "Generar PDF",
 		"generating": "Generando...",
-		"preview": "Vista Previa",
+		"previewButton": "Vista Previa",
 		"download": "Descargar PDF",
 		"clearForm": "Limpiar Formulario",
 		"saveProgress": "Guardar Progreso",
@@ -18,10 +18,13 @@
 		},
 		"fields": {
 			"name": "Nombre Completo",
+			"fullName": "Nombre Completo",
 			"label": "Título Profesional",
 			"email": "Correo Electrónico",
 			"phone": "Teléfono",
 			"url": "Sitio Web",
+			"linkedin": "LinkedIn",
+			"github": "GitHub",
 			"summary": "Resumen Profesional",
 			"company": "Empresa",
 			"position": "Cargo",
@@ -86,22 +89,50 @@
 			"minSkills": "Se requiere al menos una habilidad"
 		},
 		"errors": {
+			"title": "Error",
+			"retry": "Reintentar",
+			"retryIn": "Reintentar en {seconds}s",
+			"dismiss": "Descartar",
 			"invalidData": "Datos de currículum no válidos. Por favor, verifica todos los campos.",
 			"templateRendering": "Error al renderizar la plantilla de currículum.",
 			"pdfGeneration": "Error al generar el PDF. Por favor, inténtalo de nuevo.",
 			"pdfTimeout": "La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
 			"rateLimit": "Demasiadas solicitudes. Por favor, espera {{seconds}} segundos antes de volver a intentar.",
+			"rate_limit_exceeded": "Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
+			"pdf_generation_timeout": "La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
+			"pdf_generation_error": "Error al generar el PDF. Por favor, inténtalo de nuevo.",
+			"template_rendering_error": "Error al renderizar la plantilla. Por favor, verifica tus datos.",
 			"maliciousContent": "El contenido contiene caracteres potencialmente inseguros.",
+			"malicious_content": "El contenido contiene caracteres potencialmente inseguros.",
+			"validation_error": "Por favor, corrige los errores en el formulario.",
+			"invalid_resume_data": "Los datos del currículum no son válidos. Por favor, verifica los campos requeridos.",
 			"unknown": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
 		},
 		"success": {
 			"generated": "¡Currículum generado exitosamente!",
 			"downloaded": "¡Currículum descargado exitosamente!"
 		},
+		"form": {
+			"generate": "Generar Currículum"
+		},
 		"loading": {
+			"generating": "Generando tu currículum...",
+			"please_wait": "Esto tomará solo un momento",
 			"rendering": "Renderizando plantilla...",
 			"compiling": "Compilando PDF...",
 			"downloading": "Preparando descarga..."
+		},
+		"preview": {
+			"name_placeholder": "Tu Nombre",
+			"present": "Presente",
+			"work_experience": "Experiencia Laboral",
+			"education": "Educación",
+			"skills": "Habilidades",
+			"languages": "Idiomas",
+			"projects": "Proyectos",
+			"gpa": "Promedio",
+			"empty_state": "Comienza a llenar el formulario para ver la vista previa de tu currículum",
+			"hide": "Ocultar Vista Previa"
 		}
 	}
 }

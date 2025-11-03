@@ -4,7 +4,7 @@
 		"subtitle": "Create a professional resume in minutes",
 		"generate": "Generate PDF",
 		"generating": "Generating...",
-		"preview": "Preview",
+		"previewButton": "Preview",
 		"download": "Download PDF",
 		"clearForm": "Clear Form",
 		"saveProgress": "Save Progress",
@@ -18,10 +18,13 @@
 		},
 		"fields": {
 			"name": "Full Name",
+			"fullName": "Full Name",
 			"label": "Job Title",
 			"email": "Email",
 			"phone": "Phone",
 			"url": "Website",
+			"linkedin": "LinkedIn",
+			"github": "GitHub",
 			"summary": "Professional Summary",
 			"company": "Company",
 			"position": "Position",
@@ -86,22 +89,50 @@
 			"minSkills": "At least one skill is required"
 		},
 		"errors": {
+			"title": "Error",
+			"retry": "Try Again",
+			"retryIn": "Try again in {seconds}s",
+			"dismiss": "Dismiss",
 			"invalidData": "Invalid resume data. Please check all fields.",
 			"templateRendering": "Failed to render resume template.",
 			"pdfGeneration": "Failed to generate PDF. Please try again.",
 			"pdfTimeout": "PDF generation took too long. Please try again with simpler content.",
 			"rateLimit": "Too many requests. Please wait {{seconds}} seconds before trying again.",
+			"rate_limit_exceeded": "Too many requests. Please wait {seconds} seconds before trying again.",
+			"pdf_generation_timeout": "PDF generation took too long. Please try again with simpler content.",
+			"pdf_generation_error": "Failed to generate PDF. Please try again.",
+			"template_rendering_error": "Failed to render resume template. Please check your data.",
 			"maliciousContent": "Content contains potentially unsafe characters.",
+			"malicious_content": "Content contains potentially unsafe characters.",
+			"validation_error": "Please correct the errors in the form.",
+			"invalid_resume_data": "Resume data is invalid. Please check required fields.",
 			"unknown": "An unexpected error occurred. Please try again later."
 		},
 		"success": {
 			"generated": "Resume generated successfully!",
 			"downloaded": "Resume downloaded successfully!"
 		},
+		"form": {
+			"generate": "Generate Resume"
+		},
 		"loading": {
+			"generating": "Generating your resume...",
+			"please_wait": "This will take just a moment",
 			"rendering": "Rendering template...",
 			"compiling": "Compiling PDF...",
 			"downloading": "Preparing download..."
+		},
+		"preview": {
+			"name_placeholder": "Your Name",
+			"present": "Present",
+			"work_experience": "Work Experience",
+			"education": "Education",
+			"skills": "Skills",
+			"languages": "Languages",
+			"projects": "Projects",
+			"gpa": "GPA",
+			"empty_state": "Start filling out the form to see your resume preview",
+			"hide": "Hide Preview"
 		}
 	}
 }

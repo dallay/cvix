@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { Loader2 } from "lucide-vue-next";
+import { computed, toRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useResumeGeneration } from "@/resume/composables/useResumeGeneration";
+import { useResumeSession } from "@/resume/composables/useResumeSession";
 import { useResumeStore } from "@/resume/stores/resumeStore";
 import EducationSection from "./EducationSection.vue";
+import LanguagesSection from "./LanguagesSection.vue";
 import PersonalInfoSection from "./PersonalInfoSection.vue";
+import ProjectsSection from "./ProjectsSection.vue";
 import SkillsSection from "./SkillsSection.vue";
 import WorkExperienceSection from "./WorkExperienceSection.vue";
 
@@ -19,6 +24,11 @@ const {
 	progress,
 } = useResumeGeneration();
 
+// Session persistence - auto-saves form data
+// Use toRef to get reactive ref from store property
+const resumeRef = toRef(() => store.resume);
+const { clearSession } = useResumeSession(resumeRef);
+
 const contentError = computed(() =>
 	store.hasContent ? null : t("resume.validation.content_required"),
 );
@@ -28,7 +38,12 @@ async function handleSubmit() {
 		return;
 	}
 
-	await generateResume(store.resume, locale.value);
+	const success = await generateResume(store.resume, locale.value);
+
+	// Clear session storage on successful generation
+	if (success) {
+		clearSession();
+	}
 }
 </script>
 
@@ -42,10 +57,21 @@ async function handleSubmit() {
       <AlertDescription>{{ generationError.message }}</AlertDescription>
     </Alert>
 
-    <div v-if="isGenerating" data-testid="loading-indicator" class="flex items-center gap-2">
-      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-      <span>{{ t('resume.loading.generating') }}</span>
-      <span class="text-muted-foreground">{{ progress }}%</span>
+    <!-- Enhanced loading indicator with progress bar -->
+    <div
+      v-if="isGenerating"
+      data-testid="loading-indicator"
+      class="rounded-lg border bg-card p-6 space-y-4"
+    >
+      <div class="flex items-center gap-3">
+        <Loader2 class="h-5 w-5 animate-spin text-primary" />
+        <div class="flex-1">
+          <p class="text-sm font-medium">{{ t('resume.loading.generating') }}</p>
+          <p class="text-xs text-muted-foreground">{{ t('resume.loading.please_wait') }}</p>
+        </div>
+        <span class="text-sm font-semibold text-primary">{{ progress }}%</span>
+      </div>
+      <Progress :model-value="progress" class="h-2" />
     </div>
 
     <PersonalInfoSection />
@@ -59,8 +85,10 @@ async function handleSubmit() {
         type="submit"
         :disabled="isGenerating"
         size="lg"
+        class="min-w-40"
       >
-        {{ t('resume.form.generate') }}
+        <Loader2 v-if="isGenerating" class="mr-2 h-4 w-4 animate-spin" />
+        {{ isGenerating ? t('resume.loading.generating') : t('resume.form.generate') }}
       </Button>
     </div>
   </form>

@@ -12,9 +12,20 @@ export type Resume = {
 	projects?: Project[];
 };
 
+// Alias for compatibility with component props
+export type ResumeData = {
+	personalInfo?: PersonalInfo;
+	workExperience?: WorkExperience[];
+	education?: Education[];
+	skills?: SkillCategory[];
+	languages?: Language[];
+	projects?: Project[];
+};
+
 export type PersonalInfo = {
 	name: string;
 	label?: string; // Job title
+	title?: string; // Alias for label (for compatibility)
 	email: string;
 	phone?: string;
 	url?: string; // Personal website
@@ -59,7 +70,8 @@ export type Education = {
 };
 
 export type SkillCategory = {
-	name: string; // Category name (e.g., "Programming Languages", "Frameworks")
+	category: string; // Category name (e.g., "Programming Languages", "Frameworks")
+	name?: string; // Alias for category
 	level?: string; // Proficiency level (e.g., "Beginner", "Intermediate", "Advanced", "Expert")
 	keywords: string[]; // Individual skills (e.g., ["JavaScript", "TypeScript"])
 };

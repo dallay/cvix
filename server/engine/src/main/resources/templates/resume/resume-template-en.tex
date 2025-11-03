@@ -7,8 +7,12 @@
 % Character encoding
 \usepackage[utf8]{inputenc}
 
-% Adjust page margins
-\usepackage[scale=0.85]{geometry}
+% Adjust page margins - adaptive based on content
+$if(hasProjects)$
+\usepackage[scale=0.80]{geometry} % More content, tighter margins
+$else$
+\usepackage[scale=0.85]{geometry} % Standard margins
+$endif$
 
 % Conditional logic for adaptive layout
 \usepackage{ifthen}
@@ -26,13 +30,13 @@ $if(basics.location)$\address{$basics.location.city$}{$basics.location.countryCo
 
 \makecvtitle
 
-% Summary
+% Summary (always first if present)
 $if(basics.summary)$
 \section{Summary}
 $basics.summary$
 $endif$
 
-% Work Experience
+% Adaptive section ordering: Work experience before education for experienced professionals
 $if(work)$
 \section{Work Experience}
 $work:{experience|

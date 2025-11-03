@@ -1,5 +1,6 @@
 package com.loomify.resume.infrastructure.web.dto
 
+import com.loomify.resume.infrastructure.validation.ValidResumeContent
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -7,7 +8,9 @@ import jakarta.validation.constraints.Size
 
 /**
  * DTO for resume generation request.
+ * Per FR-001: Must have at least one of work, education, or skills.
  */
+@ValidResumeContent
 data class GenerateResumeRequest(
     @field:Valid
     val personalInfo: PersonalInfoDto,

@@ -36,6 +36,7 @@ describe("useResumeGeneration", () => {
 		skills: [
 			{
 				name: "Programming",
+				category: "Programming",
 				keywords: ["Kotlin", "Java"],
 			},
 		],

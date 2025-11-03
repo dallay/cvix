@@ -55,7 +55,12 @@ data class RateLimitProperties(
     /**
      * Configuration for business endpoints rate limiting.
      */
-    val business: BusinessRateLimitConfig = BusinessRateLimitConfig()
+    val business: BusinessRateLimitConfig = BusinessRateLimitConfig(),
+
+    /**
+     * Configuration for resume generation endpoints rate limiting.
+     */
+    val resume: ResumeRateLimitConfig = ResumeRateLimitConfig()
 ) {
 
     /**
@@ -133,6 +138,34 @@ data class RateLimitProperties(
                 refillTokens = 100,
                 refillDuration = Duration.ofHours(1),
             ),
+        )
+    )
+
+    /**
+     * Configuration for resume generation endpoint rate limiting.
+     * Enforces a fixed rate limit of 10 requests per minute per user.
+     */
+    data class ResumeRateLimitConfig(
+        /**
+         * Whether resume rate limiting is enabled.
+         */
+        val enabled: Boolean = true,
+
+        /**
+         * List of endpoints that should be rate limited as resume endpoints.
+         */
+        val endpoints: List<String> = listOf(
+            "/api/resumes",
+        ),
+
+        /**
+         * Rate limit configuration: 10 requests per minute per user.
+         */
+        val limit: BandwidthLimit = BandwidthLimit(
+            name = "resume-per-minute",
+            capacity = 10,
+            refillTokens = 10,
+            refillDuration = Duration.ofMinutes(1),
         )
     )
 

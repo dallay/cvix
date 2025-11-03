@@ -1,0 +1,173 @@
+{
+	"basics": {
+		"name": "Jane Doe",
+		"label": "Senior Software Engineer",
+		"email": "jane.doe@example.com",
+		"phone": "+1 (555) 123-4567",
+		"url": "https://janedoe.com",
+		"summary": "Experienced software engineer with 8+ years of expertise in building scalable web applications. Specialized in full-stack development with a strong focus on cloud architecture and microservices. Proven track record of leading teams and delivering high-quality software solutions.",
+		"location": {
+			"city": "San Francisco",
+			"countryCode": "US",
+			"region": "California"
+		},
+		"profiles": [
+			{
+				"network": "LinkedIn",
+				"username": "janedoe",
+				"url": "https://linkedin.com/in/janedoe"
+			},
+			{
+				"network": "GitHub",
+				"username": "janedoe",
+				"url": "https://github.com/janedoe"
+			}
+		]
+	},
+	"work": [
+		{
+			"company": "Tech Corp",
+			"position": "Senior Software Engineer",
+			"startDate": "2020-01-15",
+			"endDate": null,
+			"location": "San Francisco, CA",
+			"summary": "Lead engineer for cloud infrastructure team, managing 5 developers",
+			"highlights": [
+				"Led migration of monolithic application to microservices architecture, reducing deployment time by 60%",
+				"Implemented CI/CD pipeline using GitHub Actions and AWS, improving delivery frequency from monthly to daily releases",
+				"Mentored 3 junior developers, resulting in 2 promotions within 18 months",
+				"Reduced infrastructure costs by 40% through optimization of AWS resources and implementation of auto-scaling"
+			],
+			"url": "https://techcorp.com"
+		},
+		{
+			"company": "StartupXYZ",
+			"position": "Full Stack Developer",
+			"startDate": "2017-06-01",
+			"endDate": "2019-12-31",
+			"location": "Remote",
+			"summary": "Core team member responsible for building the main product from scratch",
+			"highlights": [
+				"Built RESTful API serving 100K+ daily active users with 99.9% uptime",
+				"Developed responsive web application using Vue.js and TypeScript",
+				"Implemented real-time features using WebSockets and Redis pub/sub",
+				"Established testing practices achieving 85% code coverage"
+			],
+			"url": "https://startupxyz.com"
+		},
+		{
+			"company": "Innovation Labs",
+			"position": "Software Developer",
+			"startDate": "2015-08-15",
+			"endDate": "2017-05-31",
+			"location": "New York, NY",
+			"summary": "Junior developer working on enterprise web applications",
+			"highlights": [
+				"Developed features for customer portal using Angular and Spring Boot",
+				"Collaborated with QA team to implement automated testing suite",
+				"Participated in Agile ceremonies and contributed to sprint planning"
+			],
+			"url": "https://innovationlabs.com"
+		}
+	],
+	"education": [
+		{
+			"institution": "Stanford University",
+			"area": "Computer Science",
+			"studyType": "Master of Science",
+			"startDate": "2013-09-01",
+			"endDate": "2015-06-15",
+			"score": "3.9",
+			"courses": [
+				"Distributed Systems",
+				"Machine Learning",
+				"Advanced Algorithms"
+			]
+		},
+		{
+			"institution": "University of California, Berkeley",
+			"area": "Computer Science",
+			"studyType": "Bachelor of Science",
+			"startDate": "2009-09-01",
+			"endDate": "2013-05-20",
+			"score": "3.7",
+			"courses": ["Data Structures", "Operating Systems", "Database Systems"]
+		}
+	],
+	"skills": [
+		{
+			"name": "Programming Languages",
+			"level": "Expert",
+			"keywords": ["JavaScript", "TypeScript", "Python", "Java", "Kotlin", "Go"]
+		},
+		{
+			"name": "Frontend Development",
+			"level": "Expert",
+			"keywords": [
+				"Vue.js",
+				"React",
+				"HTML5",
+				"CSS3",
+				"TailwindCSS",
+				"Vite",
+				"Webpack"
+			]
+		},
+		{
+			"name": "Backend Development",
+			"level": "Expert",
+			"keywords": [
+				"Spring Boot",
+				"Node.js",
+				"Express",
+				"GraphQL",
+				"REST APIs",
+				"Microservices"
+			]
+		},
+		{
+			"name": "Cloud & DevOps",
+			"level": "Advanced",
+			"keywords": [
+				"AWS",
+				"Docker",
+				"Kubernetes",
+				"Terraform",
+				"GitHub Actions",
+				"CI/CD"
+			]
+		},
+		{
+			"name": "Databases",
+			"level": "Advanced",
+			"keywords": ["PostgreSQL", "MongoDB", "Redis", "Elasticsearch"]
+		}
+	],
+	"languages": [
+		{
+			"language": "English",
+			"fluency": "Native"
+		},
+		{
+			"language": "Spanish",
+			"fluency": "Intermediate"
+		}
+	],
+	"projects": [
+		{
+			"name": "Open Source Monitoring Tool",
+			"description": "Built a distributed monitoring system for microservices using Go and React. The tool provides real-time metrics, alerting, and performance visualization.",
+			"startDate": "2022-01-01",
+			"endDate": "2023-06-30",
+			"url": "https://github.com/janedoe/monitoring-tool",
+			"entity": "Personal Project",
+			"type": "Open Source",
+			"highlights": [
+				"5000+ GitHub stars",
+				"Used by 200+ companies in production"
+			],
+			"keywords": ["Go", "React", "Docker", "Prometheus"],
+			"roles": ["Creator", "Maintainer"]
+		}
+	]
+}

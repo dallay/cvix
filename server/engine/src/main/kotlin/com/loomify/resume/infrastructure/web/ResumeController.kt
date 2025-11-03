@@ -1,5 +1,6 @@
 package com.loomify.resume.infrastructure.web
 
+import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.handler.GenerateResumeCommandHandler
 import com.loomify.resume.domain.model.CompanyName
@@ -40,13 +41,16 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
+private const val MAX_BYTES_SUPPORTED = 100 * 1024
+
 /**
  * REST controller for resume generation endpoints.
  */
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class ResumeController(
-    private val generateResumeCommandHandler: GenerateResumeCommandHandler
+    private val generateResumeCommandHandler: GenerateResumeCommandHandler,
+    private val applicationSecurityProperties: ApplicationSecurityProperties
 ) {
 
     @Operation(summary = "Generate a PDF resume from resume data")
@@ -67,6 +71,24 @@ class ResumeController(
         @Valid @Validated @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<ByteArray>> {
+        // Validate payload size (FR-015: reject requests exceeding 100KB)
+        val contentLength = exchange.request.headers.contentLength
+        if (contentLength > MAX_BYTES_SUPPORTED) { // 100KB in bytes
+            return Mono.error(
+                IllegalArgumentException(
+                    "Request payload too large: $contentLength bytes. Maximum allowed: 102400 bytes (100KB)",
+                ),
+            )
+        }
+
+        // Validate API-Version header (optional but recommended)
+        val apiVersion = exchange.request.headers.getFirst("API-Version")
+        if (apiVersion != null && apiVersion != "v1" && apiVersion != "1") {
+            return Mono.error(
+                IllegalArgumentException("Unsupported API version: $apiVersion. Supported versions: v1"),
+            )
+        }
+
         // Extract locale from Accept-Language header
         val locale = exchange.request.headers.acceptLanguage
             .firstOrNull()?.range?.lowercase() ?: "en"
@@ -77,15 +99,36 @@ class ResumeController(
         // Create command
         val command = GenerateResumeCommand(resumeData, locale)
 
+        // Track generation time
+        val startTime = System.currentTimeMillis()
+
         // Execute command and return PDF
         return generateResumeCommandHandler.handle(command)
             .map { inputStream ->
                 val pdfBytes = inputStream.readBytes()
+                val generationTimeMs = System.currentTimeMillis() - startTime
+
                 ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(pdfBytes.size.toLong())
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"resume.pdf\"")
+                    .header("X-Generation-Time-Ms", generationTimeMs.toString())
+                    .header(CONTENT_SECURITY_POLICY_HEADER, applicationSecurityProperties.contentSecurityPolicy)
+                    .header(X_CONTENT_TYPE_OPTIONS_HEADER, X_CONTENT_TYPE_OPTIONS_VALUE)
+                    .header(X_FRAME_OPTIONS_HEADER, X_FRAME_OPTIONS_VALUE)
+                    .header(REFERRER_POLICY_HEADER, REFERRER_POLICY_VALUE)
                     .body(pdfBytes)
             }
+    }
+
+    companion object {
+        private const val CONTENT_SECURITY_POLICY_HEADER = "Content-Security-Policy"
+        private const val X_CONTENT_TYPE_OPTIONS_HEADER = "X-Content-Type-Options"
+        private const val X_FRAME_OPTIONS_HEADER = "X-Frame-Options"
+        private const val REFERRER_POLICY_HEADER = "Referrer-Policy"
+        private const val X_CONTENT_TYPE_OPTIONS_VALUE = "nosniff"
+        private const val X_FRAME_OPTIONS_VALUE = "DENY"
+        private const val REFERRER_POLICY_VALUE = "strict-origin-when-cross-origin"
     }
 }
 

@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import type {
+	ApiError,
 	Education,
 	Resume,
+	ResumeData,
 	SkillCategory,
 	WorkExperience,
 } from "@/resume/types/resume";
@@ -27,7 +29,7 @@ export const useResumeStore = defineStore("resume", () => {
 	});
 
 	const isGenerating = ref(false);
-	const generationError = ref<string | null>(null);
+	const generationError = ref<ApiError | null>(null);
 
 	// Getters
 	const isValid = computed(() => {
@@ -46,6 +48,16 @@ export const useResumeStore = defineStore("resume", () => {
 			(resume.value.skills && resume.value.skills.length > 0)
 		);
 	});
+
+	// Transform Resume to ResumeData format for preview component
+	const resumeData = computed<ResumeData>(() => ({
+		personalInfo: resume.value.basics,
+		workExperience: resume.value.work,
+		education: resume.value.education,
+		skills: resume.value.skills,
+		languages: resume.value.languages,
+		projects: resume.value.projects,
+	}));
 
 	// Actions
 	function updatePersonalInfo(info: Resume["basics"]) {
@@ -106,7 +118,7 @@ export const useResumeStore = defineStore("resume", () => {
 			resume.value.skills = [];
 		}
 		const newEntry: SkillCategory = {
-			name: "",
+			category: "",
 			keywords: [],
 		};
 		resume.value.skills.push(newEntry);
@@ -138,7 +150,7 @@ export const useResumeStore = defineStore("resume", () => {
 		isGenerating.value = value;
 	}
 
-	function setGenerationError(error: string | null) {
+	function setGenerationError(error: ApiError | null) {
 		generationError.value = error;
 	}
 
@@ -151,6 +163,7 @@ export const useResumeStore = defineStore("resume", () => {
 		// Getters
 		isValid,
 		hasContent,
+		resumeData,
 
 		// Actions
 		updatePersonalInfo,

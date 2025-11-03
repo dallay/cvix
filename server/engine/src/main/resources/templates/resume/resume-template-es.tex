@@ -8,8 +8,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 
-% Ajustar márgenes de página
-\usepackage[scale=0.85]{geometry}
+% Ajustar márgenes de página - adaptativo según contenido
+$if(hasProjects)$
+\usepackage[scale=0.80]{geometry} % Más contenido, márgenes más ajustados
+$else$
+\usepackage[scale=0.85]{geometry} % Márgenes estándar
+$endif$
 
 % Lógica condicional para diseño adaptativo
 \usepackage{ifthen}
@@ -27,13 +31,13 @@ $if(basics.location)$\address{$basics.location.city$}{$basics.location.countryCo
 
 \makecvtitle
 
-% Resumen
+% Resumen (siempre primero si está presente)
 $if(basics.summary)$
 \section{Resumen}
 $basics.summary$
 $endif$
 
-% Experiencia Laboral
+% Ordenación adaptativa de secciones: Experiencia laboral antes que educación para profesionales con experiencia
 $if(work)$
 \section{Experiencia Laboral}
 $work:{experience|

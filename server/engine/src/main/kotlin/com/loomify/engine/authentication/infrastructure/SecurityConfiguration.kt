@@ -40,6 +40,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
 import org.springframework.security.web.server.csrf.CsrfServerLogoutHandler
 import org.springframework.security.web.server.header.ReferrerPolicyServerHttpHeadersWriter
+import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter
 import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
@@ -47,6 +48,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.reactive.CorsConfigurationSource
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.server.WebFilter
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 
@@ -153,17 +155,18 @@ class SecurityConfiguration(
                     it.request.headers.containsKey("X-Forwarded-Proto")
                 }
             }
-            .headers {
-                    headers ->
-                headers.contentSecurityPolicy { applicationSecurityProperties.contentSecurityPolicy }
-                headers.referrerPolicy {
-                        referrerPolicy ->
+            .headers { headers ->
+                headers.contentSecurityPolicy(applicationSecurityProperties.contentSecurityPolicy)
+                headers.referrerPolicy { referrerPolicy ->
                     referrerPolicy.policy(
                         ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
                     )
                 }
-
                 headers.permissionsPolicy { permissions -> permissions.policy(POLICY) }
+                headers.contentTypeOptions()
+                headers.frameOptions { frame ->
+                    frame.mode(XFrameOptionsServerHttpHeadersWriter.Mode.DENY)
+                }
             }
             .authorizeExchange {
                     auth ->
@@ -319,7 +322,36 @@ class SecurityConfiguration(
         }
     }
 
+    @Bean
+    fun strictTransportSecurityWebFilter(): WebFilter {
+        if (!applicationSecurityProperties.headers.hstsEnabled) {
+            return WebFilter { exchange, chain -> chain.filter(exchange) }
+        }
+
+        val directives = buildString {
+            append("max-age=")
+            append(applicationSecurityProperties.headers.hstsMaxAge)
+            if (applicationSecurityProperties.headers.hstsIncludeSubdomains) {
+                append("; includeSubDomains")
+            }
+            if (applicationSecurityProperties.headers.hstsPreload) {
+                append("; preload")
+            }
+        }
+
+        return WebFilter { exchange, chain ->
+            val forwardedProto = exchange.request.headers.getFirst(X_FORWARDED_PROTO)?.lowercase()
+            val secure = exchange.request.sslInfo != null || forwardedProto == "https"
+            if (secure) {
+                exchange.response.headers.set(STRICT_TRANSPORT_SECURITY_HEADER, directives)
+            }
+            chain.filter(exchange)
+        }
+    }
+
     companion object {
         private const val TIMEOUT = 2000
+        private const val STRICT_TRANSPORT_SECURITY_HEADER = "Strict-Transport-Security"
+        private const val X_FORWARDED_PROTO = "X-Forwarded-Proto"
     }
 }

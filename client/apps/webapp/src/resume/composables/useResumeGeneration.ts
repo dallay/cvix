@@ -14,8 +14,12 @@ export function useResumeGeneration() {
 	 * Generates a PDF resume from resume data.
 	 * @param resume Resume data
 	 * @param locale Language locale (en/es)
+	 * @returns Promise that resolves to true on success, false on failure
 	 */
-	async function generateResume(resume: Resume, locale = "en"): Promise<void> {
+	async function generateResume(
+		resume: Resume,
+		locale = "en",
+	): Promise<boolean> {
 		isGenerating.value = true;
 		error.value = null;
 		progress.value = 0;
@@ -49,7 +53,7 @@ export function useResumeGeneration() {
 					message: "An unknown error occurred",
 					timestamp: new Date().toISOString(),
 				};
-				return;
+				return false;
 			}
 
 			progress.value = 75;
@@ -63,6 +67,7 @@ export function useResumeGeneration() {
 			downloadPdf(blob, `resume-${new Date().toISOString().split("T")[0]}.pdf`);
 
 			progress.value = 100;
+			return true;
 		} catch (err) {
 			// Handle network errors
 			error.value = {
@@ -71,6 +76,7 @@ export function useResumeGeneration() {
 				message: err instanceof Error ? err.message : "Network error occurred",
 				timestamp: new Date().toISOString(),
 			};
+			return false;
 		} finally {
 			isGenerating.value = false;
 		}

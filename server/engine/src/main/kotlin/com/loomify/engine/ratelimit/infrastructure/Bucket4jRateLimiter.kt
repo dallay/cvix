@@ -24,7 +24,12 @@ enum class RateLimitStrategy {
     /**
      * Business strategy: uses pricing plan-based limits for API usage quotas.
      */
-    BUSINESS
+    BUSINESS,
+
+    /**
+     * Resume strategy: uses fixed rate limit for resume generation endpoints (10 req/min per user).
+     */
+    RESUME
 }
 
 /**
@@ -94,6 +99,11 @@ class Bucket4jRateLimiter(
                     pricingPlan.name,
                 )
                 configurationStrategy.createBusinessBucketConfiguration(pricingPlan.name.lowercase())
+            }
+
+            RateLimitStrategy.RESUME -> {
+                logger.debug("Creating RESUME bucket for identifier: {}", identifier)
+                configurationStrategy.createResumeBucketConfiguration()
             }
         }
 

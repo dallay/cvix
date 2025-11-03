@@ -1,6 +1,7 @@
 package com.loomify.resume.infrastructure.web
 
 import com.loomify.UnitTest
+import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.handler.GenerateResumeCommandHandler
 import io.mockk.coEvery
@@ -25,7 +26,8 @@ import reactor.core.publisher.Mono
 class ResumeControllerTest {
 
     private val handler = mockk<GenerateResumeCommandHandler>()
-    private val controller = ResumeController(handler)
+    private val securityProperties = ApplicationSecurityProperties()
+    private val controller = ResumeController(handler, securityProperties)
     private lateinit var webTestClient: WebTestClient
 
     private val pdfBytes = "fake-pdf-content".toByteArray()
@@ -87,6 +89,10 @@ class ResumeControllerTest {
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentType(MediaType.APPLICATION_PDF)
+            .expectHeader().valueEquals("Content-Security-Policy", securityProperties.contentSecurityPolicy)
+            .expectHeader().valueEquals("X-Content-Type-Options", "nosniff")
+            .expectHeader().valueEquals("X-Frame-Options", "DENY")
+            .expectHeader().valueEquals("Referrer-Policy", "strict-origin-when-cross-origin")
     }
 
     @Test

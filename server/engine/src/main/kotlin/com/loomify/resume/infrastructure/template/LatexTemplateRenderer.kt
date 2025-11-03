@@ -98,6 +98,10 @@ class LatexTemplateRenderer(
     }
 
     private fun populateTemplate(template: org.stringtemplate.v4.ST, resumeData: ResumeData, locale: String) {
+        // Add content presence flags for adaptive layout
+        template.add("hasProjects", resumeData.projects.isNotEmpty())
+        template.add("hasLanguages", resumeData.languages.isNotEmpty())
+
         addPersonalInfo(template, resumeData.basics)
         addWorkExperience(template, resumeData.work, locale)
         addEducation(template, resumeData.education, locale)

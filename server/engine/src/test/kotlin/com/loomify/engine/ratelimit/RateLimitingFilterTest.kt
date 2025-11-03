@@ -50,9 +50,13 @@ class RateLimitingFilterTest {
 
         // Default mocks
         every { configurationStrategy.isAuthRateLimitEnabled() } returns true
+        every { configurationStrategy.isResumeRateLimitEnabled() } returns true
         every {
             configurationStrategy.getAuthEndpoints()
         } returns listOf("/api/auth/login", "/api/auth/register")
+        every {
+            configurationStrategy.getResumeEndpoints()
+        } returns listOf("/api/resumes")
         every { chain.filter(any()) } returns Mono.empty()
     }
 
