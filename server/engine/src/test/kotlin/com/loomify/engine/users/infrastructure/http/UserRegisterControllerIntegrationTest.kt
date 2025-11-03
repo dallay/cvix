@@ -28,7 +28,6 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
     }
 
     /**

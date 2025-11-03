@@ -23,7 +23,6 @@ internal class KeycloakRefreshTokenManagerRepositoryIntegrationTest : Infrastruc
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
     }
 
     @Test

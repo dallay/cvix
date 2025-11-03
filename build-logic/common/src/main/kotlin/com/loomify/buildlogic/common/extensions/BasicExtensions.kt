@@ -58,14 +58,14 @@ fun ExtensionContainer.commonExtensions() {
     configure<JavaPluginExtension> {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // vendor.set(JvmVendorSpec.AZUL) // Temporarily commented to allow any vendor
         }
     }
 
     configure<KotlinProjectExtension> {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // vendor.set(JvmVendorSpec.AZUL) // Temporarily commented to allow any vendor
         }
     }
 }

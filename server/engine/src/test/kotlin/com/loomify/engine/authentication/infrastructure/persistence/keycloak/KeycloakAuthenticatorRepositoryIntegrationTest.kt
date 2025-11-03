@@ -37,7 +37,6 @@ class KeycloakAuthenticatorRepositoryIntegrationTest : InfrastructureTestContain
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
     }
 
     @Test

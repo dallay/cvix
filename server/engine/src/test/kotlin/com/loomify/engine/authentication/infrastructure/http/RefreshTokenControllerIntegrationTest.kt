@@ -28,7 +28,6 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
         accessToken = webTestClient
             .mutateWith(csrf())
             .post()

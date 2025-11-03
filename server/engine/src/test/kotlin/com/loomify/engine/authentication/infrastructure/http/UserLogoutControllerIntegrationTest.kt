@@ -21,7 +21,6 @@ internal class UserLogoutControllerIntegrationTest : ControllerIntegrationTest()
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        startInfrastructure()
         val returnResult = webTestClient
             .mutateWith(csrf())
             .post()

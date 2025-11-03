@@ -2,7 +2,6 @@ package com.loomify.engine.authentication.infrastructure.http
 
 import com.loomify.engine.config.InfrastructureTestContainers
 import io.kotest.assertions.print.print
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -28,11 +27,6 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
-
-    @BeforeEach
-    fun setUp() {
-        startInfrastructure()
-    }
 
     @Test
     fun `should not authenticate a user without csrf token`() {

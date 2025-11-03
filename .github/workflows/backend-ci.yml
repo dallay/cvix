@@ -74,6 +74,14 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955    # v4
       - name: Setup Java
         uses: ./.github/actions/setup/java
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349    # v3
+      - name: Setup Testcontainers for reuse
+        run: |
+          mkdir -p ~/.testcontainers
+          echo "testcontainers.reuse.enable=true" > ~/.testcontainers/.testcontainers.properties
+          echo "testcontainers.ryuk.disabled=false" >> ~/.testcontainers/.testcontainers.properties
+          cat ~/.testcontainers/.testcontainers.properties
       - name: Build with Gradle
         run: ./gradlew build -x test
       - name: Run tests

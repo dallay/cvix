@@ -20,7 +20,6 @@ internal class SessionControllerIntegrationTest : ControllerIntegrationTest() {
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        startInfrastructure()
         accessToken = getAccessToken()
     }
 

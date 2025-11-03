@@ -110,8 +110,35 @@ kotlin {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
 }
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    
+    // Optimize test execution
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+    
+    // Configure test execution
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = false
+        showCauses = true
+        showStackTraces = true
+    }
+    
+    // JVM arguments for test performance
+    jvmArgs(
+        "-Xmx2g",
+        "-XX:+UseParallelGC"
+    )
+    
+    // Ensure consistent test execution
+    systemProperty("junit.jupiter.execution.parallel.enabled", "false")
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "same_thread")
+    systemProperty("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
+    
+    // Testcontainers configuration
+    systemProperty("testcontainers.reuse.enable", System.getProperty("testcontainers.reuse.enable", "true"))
 }
 
 tasks.asciidoctor {

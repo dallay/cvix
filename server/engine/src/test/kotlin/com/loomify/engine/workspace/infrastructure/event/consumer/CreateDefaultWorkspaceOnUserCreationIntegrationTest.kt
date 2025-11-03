@@ -32,7 +32,6 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
     }
 
     @Test

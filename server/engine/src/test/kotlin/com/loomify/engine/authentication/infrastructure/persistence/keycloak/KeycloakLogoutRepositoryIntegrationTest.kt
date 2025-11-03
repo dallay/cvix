@@ -20,7 +20,6 @@ internal class KeycloakLogoutRepositoryIntegrationTest : InfrastructureTestConta
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
     }
 
     @Test
