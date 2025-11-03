@@ -2,12 +2,11 @@
 title: Rate-Limiting Configuration Guide
 ---
 
-# Rate-Limiting Configuration Guide
-
 This document explains how to configure and extend the Bucket4j-based rate limiting using properties.
 
 ## Overview
 
+```yaml
 The rate limiting system supports two different strategies:
 
 1. **AUTH Strategy**: For authentication endpoints, using strict time-based limits (per-minute, per-hour) to prevent brute-force attacks.
@@ -144,6 +143,7 @@ fun resolvePlanFromApiKey(apiKey: String): PricingPlan {
 You can use Spring profiles to have different limits in development vs production:
 
 **application-dev.yml:**
+
 ```yaml
 application:
   rate-limit:
@@ -156,6 +156,7 @@ application:
 ```
 
 **application-prod.yml:**
+
 ```yaml
 application:
   rate-limit:
@@ -250,7 +251,7 @@ environment:
 
 ### Execution Flow
 
-```
+```text
 Request → RateLimitingFilter → RateLimitingService → Bucket4jRateLimiter
                 ↓                                              ↓
          Identify IP                            Use BucketConfigurationStrategy
@@ -327,4 +328,3 @@ If you see errors related to `BucketConfigurationStrategy` or `RateLimitProperti
 - [Bucket4j Documentation](https://github.com/bucket4j/bucket4j)
 - [Spring Boot Configuration Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config)
 - [OWASP Rate-Limiting](https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks)
-

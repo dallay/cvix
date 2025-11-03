@@ -309,7 +309,7 @@ curl -X POST http://localhost:8080/api/v1/auth/token/refresh \
 
 The frontend uses **Pinia** for state management. The `authStore` is located at:
 
-```
+```text
 client/apps/webapp/src/authentication/infrastructure/store/authStore.ts
 ```
 

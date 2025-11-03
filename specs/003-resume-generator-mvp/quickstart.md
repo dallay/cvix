@@ -505,4 +505,3 @@ docker stats --no-stream
 - **Issue Tracker**: GitHub Issues with `feature/resume-generator` label
 
 Happy coding! 🚀
-

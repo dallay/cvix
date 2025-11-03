@@ -76,11 +76,11 @@ erDiagram
 
 ## 1. User Entity
 
-### Description
+### User: Description
 
 Represents a person with an account in the system. Users can authenticate via email/password credentials or federated identity providers. Each user has a profile, authentication status, and role assignments.
 
-### Properties
+### User: Properties
 
 | Property        | Type          | Constraints                 | Description                                              |
 | --------------- | ------------- | --------------------------- | -------------------------------------------------------- |
@@ -94,7 +94,7 @@ Represents a person with an account in the system. Users can authenticate via em
 | `updatedAt`     | Timestamp     | NOT NULL, default NOW()     | Last profile update timestamp (UTC)                      |
 | `lastLoginAt`   | Timestamp     | NULLABLE                    | Last successful authentication timestamp (UTC)           |
 
-### Enumerations
+### User: Enumerations
 
 **AccountStatus**:
 
@@ -103,7 +103,7 @@ Represents a person with an account in the system. Users can authenticate via em
 - `SUSPENDED`: Account suspended due to security concerns
 - `PENDING_VERIFICATION`: Email verification pending (future enhancement)
 
-### Validation Rules
+### User: Validation Rules
 
 - **FR-001, FR-002**: Email must be valid format (RFC 5322) and unique
 - **FR-004**: Cannot register with existing email address
@@ -113,7 +113,7 @@ Represents a person with an account in the system. Users can authenticate via em
 
 ### State Transitions
 
-```
+```text
 [NEW] -> PENDING_VERIFICATION -> ACTIVE
                                    ↓
                                 DISABLED
@@ -127,13 +127,13 @@ Represents a person with an account in the system. Users can authenticate via em
 - **DISABLED → ACTIVE**: User or admin reactivates account
 - **SUSPENDED → ACTIVE**: Admin reviews and reactivates account
 
-### Relationships
+### User: Relationships
 
 - **One-to-Many** with Session: A user can have multiple active sessions
 - **One-to-Many** with AuthEvent: A user generates multiple authentication events
 - **One-to-Many** with FederatedIdentity: A user can link multiple identity providers
 
-### Example (JSON representation)
+### User: Example (JSON representation)
 
 ```json
 {
@@ -153,11 +153,11 @@ Represents a person with an account in the system. Users can authenticate via em
 
 ## 2. Session Entity
 
-### Description
+### Session: Description
 
 Represents an active user session associated with a specific device and browser. Sessions contain access/refresh tokens (hashed), device metadata, location information, and activity timestamps. Users can view and manage their sessions through the session management panel.
 
-### Properties
+### Session: Properties
 
 | Property           | Type          | Constraints                   | Description                               |
 | ------------------ | ------------- | ----------------------------- | ----------------------------------------- |
@@ -178,7 +178,7 @@ Represents an active user session associated with a specific device and browser.
 | `sessionType`      | SessionType   | NOT NULL, default STANDARD    | Session type enum                         |
 | `status`           | SessionStatus | NOT NULL, default ACTIVE      | Session status enum                       |
 
-### Enumerations
+### Session: Enumerations
 
 **DeviceType**:
 
@@ -198,7 +198,7 @@ Represents an active user session associated with a specific device and browser.
 - `EXPIRED`: Session expired naturally
 - `REVOKED`: Session terminated by user (logout or session management)
 
-### Validation Rules
+### Session: Validation Rules
 
 - **FR-010**: Tokens must be hashed (SHA-256) before storage, never plaintext
 - **FR-014, FR-015**: Logout must revoke session and clear tokens
@@ -208,30 +208,30 @@ Represents an active user session associated with a specific device and browser.
 - Refresh token hash length exactly 64 characters (SHA-256 hex)
 - IP address must be valid IPv4 or IPv6 format
 
-### State Transitions
+### Session: State Transitions
 
-```
+```text
 [NEW] -> ACTIVE -> EXPIRED
-           ↓
-        REVOKED
+     ↓
+  REVOKED
 ```
 
 - **NEW → ACTIVE**: Session created after successful authentication
 - **ACTIVE → EXPIRED**: Session reaches `expiresAt` timestamp
 - **ACTIVE → REVOKED**: User logs out or terminates session via session management
 
-### Relationships
+### Session: Relationships
 
 - **Many-to-One** with User: Multiple sessions belong to one user
 - **One-to-Many** with AuthEvent: A session generates multiple authentication events
 
-### Row-Level Security (RLS)
+### Session: Row-Level Security (RLS)
 
 - **Policy**: Users can only query their own sessions (`session.userId = current_user_id`)
 - **Enforcement**: PostgreSQL RLS policy at database level
 - **Security**: Defense in depth against application-level filtering bugs
 
-### Example (JSON representation)
+### Session: Example (JSON representation)
 
 ```json
 {
@@ -258,11 +258,11 @@ Represents an active user session associated with a specific device and browser.
 
 ## 3. AuthEvent Entity
 
-### Description
+### AuthEvent: Description
 
 Represents a security-relevant authentication operation for auditing and monitoring. Events are immutable records of authentication attempts, successes, failures, logouts, token operations, and session terminations. Used for security analysis, anomaly detection, and compliance reporting.
 
-### Properties
+### AuthEvent: Properties
 
 | Property        | Type         | Constraints                      | Description                                        |
 | --------------- | ------------ | -------------------------------- | -------------------------------------------------- |
@@ -277,7 +277,7 @@ Represents a security-relevant authentication operation for auditing and monitor
 | `outcome`       | EventOutcome | NOT NULL                         | Event outcome enum (success/failure)               |
 | `failureReason` | String       | NULLABLE, max 500 chars          | Human-readable failure reason (for failed events)  |
 
-### Enumerations
+### AuthEvent: Enumerations
 
 **EventType**:
 
@@ -299,7 +299,7 @@ Represents a security-relevant authentication operation for auditing and monitor
 - `SUCCESS`: Event completed successfully
 - `FAILURE`: Event failed
 
-### Validation Rules
+### AuthEvent: Validation Rules
 
 - **FR-029**: All authentication events must be logged
 - **FR-030**: Rate limiting violations must generate events
@@ -308,19 +308,19 @@ Represents a security-relevant authentication operation for auditing and monitor
 - `userId` null for events before user creation (e.g., failed registration)
 - Retention period: minimum 90 days (Assumption 14)
 
-### Relationships
+### AuthEvent: Relationships
 
 - **Many-to-One** with User: Multiple events belong to one user
 - **Many-to-One** with Session: Multiple events reference one session
 
-### Indexes
+### AuthEvent: Indexes
 
 - Composite index on `(userId, occurredAt DESC)` for user activity timeline
 - Index on `eventType` for event type filtering
 - Index on `occurredAt` for time-range queries
 - Index on `outcome` for failure analysis
 
-### Example (JSON representation)
+### AuthEvent: Example (JSON representation)
 
 ```json
 {
@@ -341,11 +341,11 @@ Represents a security-relevant authentication operation for auditing and monitor
 
 ## 4. FederatedIdentity Entity
 
-### Description
+### FederatedIdentity: Description
 
 Represents a link between a user account and an external OAuth/OIDC identity provider (Google, Microsoft, GitHub, etc.). Enables federated authentication and account linking. Multiple providers can be linked to a single user account.
 
-### Properties
+### FederatedIdentity: Properties
 
 | Property         | Type         | Constraints               | Description                                    |
 | ---------------- | ------------ | ------------------------- | ---------------------------------------------- |
@@ -358,7 +358,7 @@ Represents a link between a user account and an external OAuth/OIDC identity pro
 | `linkedAt`       | Timestamp    | NOT NULL, default NOW()   | Timestamp when link was created (UTC)          |
 | `lastAuthAt`     | Timestamp    | NOT NULL, updated on auth | Last authentication via this provider (UTC)    |
 
-### Enumerations
+### FederatedIdentity: Enumerations
 
 **ProviderName**:
 
@@ -367,7 +367,7 @@ Represents a link between a user account and an external OAuth/OIDC identity pro
 - `GITHUB`: GitHub OAuth2
 - `CUSTOM`: Custom OIDC provider (future extension)
 
-### Validation Rules
+### FederatedIdentity: Validation Rules
 
 - **FR-006, FR-024**: Support OAuth2/OIDC federated providers
 - **FR-025**: Link federated accounts to existing users via email matching
@@ -375,7 +375,7 @@ Represents a link between a user account and an external OAuth/OIDC identity pro
 - Composite unique constraint on `(providerName, externalUserId)` - provider IDs are unique
 - External user ID format validated per provider (e.g., Google sub is numeric string)
 
-### Account Linking Logic
+### FederatedIdentity: Account Linking Logic
 
 1. User authenticates via federated provider
 2. System retrieves `email` from provider
@@ -383,16 +383,16 @@ Represents a link between a user account and an external OAuth/OIDC identity pro
 4. If no match: Create new user account with federated identity
 5. Store provider profile data for display and audit
 
-### Relationships
+### FederatedIdentity: Relationships
 
 - **Many-to-One** with User: Multiple federated identities can link to one user
 
-### Indexes
+### FederatedIdentity: Indexes
 
 - Composite unique index on `(userId, providerName)` to prevent duplicate links
 - Composite unique index on `(providerName, externalUserId)` to ensure provider ID uniqueness
 
-### Example (JSON representation)
+### FederatedIdentity: Example (JSON representation)
 
 ```json
 {

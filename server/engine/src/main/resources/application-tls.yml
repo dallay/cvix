@@ -22,7 +22,7 @@ server:
       - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
     enabled-protocols: TLSv1.2
   http2:
-   enabled: true
+    enabled: true
 spring:
   ssl:
     bundle:
@@ -35,4 +35,3 @@ spring:
             location: ${SSL_KEYSTORE_LOCATION:classpath:tls/server.p12}
             password: ${SSL_KEYSTORE_PASSWORD:S3cr3tP@ssw0rd*123}
             type: "PKCS12"
-

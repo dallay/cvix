@@ -69,4 +69,3 @@ application:
           capacity: 50000
           refill-tokens: 50000
           refill-duration: 1h
-

@@ -5,16 +5,19 @@ This directory contains the infrastructure configuration for the loomify applica
 ## Services
 
 ### PostgreSQL Database
+
 - **Location**: `postgresql/`
 - **Port**: 5432
 - **Configuration**: Database initialization scripts and Docker Compose setup
 
 ### Keycloak Authentication
+
 - **Location**: `keycloak/`
 - **Port**: 9080 (HTTP), 9443 (HTTPS)
 - **Configuration**: Realm configuration and themes
 
 ### GreenMail Email Testing
+
 - **Location**: `greenmail/`
 - **Ports**:
   - 3025 (SMTP)
@@ -27,6 +30,7 @@ This directory contains the infrastructure configuration for the loomify applica
 - **Configuration**: Test email server for development and testing
 
 ### SSL Certificates
+
 - **Location**: `ssl/`
 - **Configuration**: Local SSL certificates for HTTPS development
 
@@ -37,6 +41,7 @@ This repository contains a script to generate SSL certificates and keystores usi
 ## Prerequisites
 
 Ensure the following tools are installed on your system:
+
 - [mkcert](https://github.com/FiloSottile/mkcert)
 - [openssl](https://www.openssl.org/)
 - `keytool` (comes with JDK)
@@ -44,6 +49,7 @@ Ensure the following tools are installed on your system:
 ## Script Usage
 
 The script will:
+
 1. Create an SSL directory.
 2. Generate a private key and certificate using `mkcert`.
 3. Convert the generated PEM files into a PKCS12 keystore.
@@ -92,7 +98,9 @@ Or in Windows:
 ```shell
 set SSL_KEYSTORE_PASSWORD=mysecurepassword
 ```
+
 ### Generated Files
+
 The script will generate the following files in the ssl directory:
 
 - `key.pem`: Private key

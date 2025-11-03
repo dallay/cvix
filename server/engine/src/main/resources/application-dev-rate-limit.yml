@@ -47,4 +47,3 @@ application:
           capacity: 10000
           refill-tokens: 10000
           refill-duration: 1h
-

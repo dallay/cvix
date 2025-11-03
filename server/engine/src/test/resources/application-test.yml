@@ -10,47 +10,47 @@ logging:
     org.springframework.security.oauth2.client: DEBUG
     com.loomify: DEBUG
 spring:
-    main:
-        banner-mode: off
-        allow-bean-definition-overriding: true
-    autoconfigure:
-        exclude:
-            - org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
-    security:
-        oauth2:
-            client:
-                registration:
-                    oidc:
-                        client-secret: web_app
-                        client-id: web_app
-                        scope: openid,profile,email
-                        authorization-grant-type: authorization_code
-                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-                provider:
-                    oidc:
-                        issuer-uri: ${application.security.oauth2.issuer-uri}
-                        authorization-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/auth
-                        token-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/token
-                        user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo
-                        jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
-                        user-name-attribute: preferred_username
-    ssl:
-      bundle:
-        pem:
-          keycloak:
-            reload-on-update: true
-            truststore:
-              certificate: "classpath:ssl/cert.pem"
-        jks:
-          web-server:
-            key:
-              alias: "server"
-              password: "testing"
-            keystore:
-              location: "classpath:ssl/keystore.p12"
-              password: "testing"
-              type: "PKCS12"
+  main:
+    banner-mode: false
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-secret: web_app
+            client-id: web_app
+            scope: openid,profile,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          oidc:
+            issuer-uri: ${application.security.oauth2.issuer-uri}
+            authorization-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/auth
+            token-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/token
+            user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo
+            jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+  ssl:
+    bundle:
+      pem:
+        keycloak:
+          reload-on-update: true
+          truststore:
+            certificate: "classpath:ssl/cert.pem"
+      jks:
+        web-server:
+          key:
+            alias: "server"
+            password: "testing"
+          keystore:
+            location: "classpath:ssl/keystore.p12"
+            password: "testing"
+            type: "PKCS12"
 testing:
   security:
-      username: "john.doe@loomify.com"
-      password: "S3cr3tP@ssw0rd*123"
+    username: "john.doe@loomify.com"
+  password: "S3cr3tP@ssw0rd*123"

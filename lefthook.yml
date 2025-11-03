@@ -3,8 +3,6 @@
 
 pre-commit:
   commands:
-    generate_structure_docs:
-      run: ./scripts/generate-structure-docs.sh
     biome:
       run: pnpm run lint
     git-update:

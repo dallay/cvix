@@ -80,10 +80,11 @@ const pricing = defineCollection({
 });
 
 const faq = defineCollection({
-	loader: glob({ pattern: "**/[^_]*.md", base: "./src/data/faq" }),
+	loader: glob({ pattern: "**/[^_]*.json", base: "./src/data/faq" }),
 	schema: z.object({
 		question: z.string(),
 		date: z.coerce.date(),
+		body: z.string(),
 	}),
 });
 

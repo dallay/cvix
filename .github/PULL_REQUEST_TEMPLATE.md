@@ -1,4 +1,7 @@
+# Pull Request Template
+
 ## Description
+
 Describe the change and why it's needed. Reference the issue using "Closes #123".
 
 - Change type (check all that apply):
@@ -8,14 +11,17 @@ Describe the change and why it's needed. Reference the issue using "Closes #123"
   - [ ] chore (infra/ci)
 
 ### Screenshots / Evidence
+
 If there are visual changes, add screenshots. For APIs, include request/response examples if applicable.
 
 ### Breaking changes or migrations?
+
 - [ ] Yes (describe)
 - [ ] No
 
 ### Merge checklist
-- [ ] PR linked to an issue ("Closes #…") 
+
+- [ ] PR linked to an issue ("Closes #…")
 - [ ] Commits follow Conventional Commits
 - [ ] Tests written and passing (backend and/or frontend)
 - [ ] Builds passing (Gradle and pnpm)
