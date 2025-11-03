@@ -181,10 +181,13 @@ const mockMessages = {
 				},
 				fields: {
 					name: "Full Name",
+					fullName: "Full Name",
 					label: "Job Title",
 					email: "Email",
 					phone: "Phone",
 					url: "Website",
+					linkedin: "LinkedIn",
+					github: "GitHub",
 					summary: "Professional Summary",
 					company: "Company",
 					position: "Position",
