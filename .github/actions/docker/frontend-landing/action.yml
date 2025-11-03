@@ -52,12 +52,12 @@ runs:
 
     - name: Set up Docker Buildx
       # Pinned to v3 commit hash for security
-      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435  # v3
 
     - name: Login to GitHub Container Registry
       id: ghcr-login
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       continue-on-error: true
       with:
         registry: ghcr.io
@@ -84,7 +84,7 @@ runs:
       id: dockerhub-login
       if: inputs.docker-username != '' && inputs.docker-password != ''
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       continue-on-error: true
       with:
         username: ${{ inputs.docker-username }}
@@ -109,7 +109,7 @@ runs:
     - name: Extract metadata for Docker
       id: meta
       # Pinned to v5 commit hash for security
-      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f  # v5
       with:
         images: |
           ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
@@ -240,17 +240,15 @@ runs:
           CMD ["nginx", "-g", "daemon off;"]
           EOF
 
-                    echo "✅ Dockerfile created at $DOCKERFILE_PATH"
-                  else
-                    echo "✅ Using existing Dockerfile at $DOCKERFILE_PATH"
-                  fi
-
-
+        echo "✅ Dockerfile created at $DOCKERFILE_PATH"
+        else
+          echo "✅ Using existing Dockerfile at $DOCKERFILE_PATH"
+        fi
 
     - name: Build and push Docker image
       id: build
       # Pinned to v5 commit hash for security
-      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25  # v5
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
@@ -305,34 +303,39 @@ runs:
         fi
 
         # Check for common Astro errors in the logs
-        if grep -q "ERR_PNPM" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+        if grep -q "ERR_PNPM" $GITHUB_STEP_SUMMARY 2>/dev/null;
+        then
           echo "⚠️ pnpm dependency resolution error detected"
           echo "  - Check pnpm-lock.yaml for inconsistencies"
           echo "  - Verify package.json dependencies"
           echo "  - Try clearing pnpm cache and rebuilding"
         fi
 
-        if grep -q "TypeScript error" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+        if grep -q "TypeScript error" $GITHUB_STEP_SUMMARY 2>/dev/null;
+        then
           echo "⚠️ TypeScript compilation error detected"
           echo "  - Check for type errors in your code"
           echo "  - Verify tsconfig.json configuration"
           echo "  - Ensure all required type definitions are installed"
         fi
 
-        if grep -q "Astro error" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+        if grep -q "Astro error" $GITHUB_STEP_SUMMARY 2>/dev/null;
+        then
           echo "⚠️ Astro build error detected"
           echo "  - Check astro.config.mjs for configuration issues"
           echo "  - Verify Astro component syntax"
           echo "  - Check for compatibility issues with Astro plugins"
         fi
 
-        if grep -q "ENOSPC" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+        if grep -q "ENOSPC" $GITHUB_STEP_SUMMARY 2>/dev/null;
+        then
           echo "⚠️ Disk space issue detected"
           echo "  - Free up disk space on the runner"
           echo "  - Consider optimizing build to use less disk space"
         fi
 
-        if grep -q "network timeout" $GITHUB_STEP_SUMMARY 2>/dev/null; then
+        if grep -q "network timeout" $GITHUB_STEP_SUMMARY 2>/dev/null;
+        then
           echo "⚠️ Network timeout detected"
           echo "  - Check network connectivity"
           echo "  - Consider increasing timeout values"
@@ -340,7 +343,8 @@ runs:
         fi
 
         # Check Docker daemon status
-        if ! docker info &>/dev/null; then
+        if ! docker info &>/dev/null;
+        then
           echo "⚠️ Docker daemon issue detected"
           echo "  - Docker daemon may not be running"
           echo "  - Check Docker service status"
@@ -391,10 +395,11 @@ runs:
         echo "  Build environment: ${{ inputs.build-env }}"
 
         # Get image details if available
-        if docker inspect "$FIRST_TAG" &>/dev/null; then
+        if docker inspect "$FIRST_TAG" &>/dev/null;
+        then
           echo "  Image ID: $(docker inspect --format='{{.Id}}' "$FIRST_TAG" | cut -d':' -f2 | cut -c1-12)"
           echo "  Created: $(docker inspect --format='{{.Created}}' "$FIRST_TAG")"
-          echo "  Size: $(docker inspect --format='{{.Size}}' "$FIRST_TAG" | numfmt --to=iec-i --suffix=B --format="%.2f")"
+          echo "  Size: $(docker inspect --format='{{.Size}}' "$FIRST_TAG" | numfmt --to=iec-i --suffix=B --format=\"%.2f\")"
           echo "  Architecture: $(docker inspect --format='{{.Architecture}}' "$FIRST_TAG")"
           echo "  OS: $(docker inspect --format='{{.Os}}' "$FIRST_TAG")"
         fi
@@ -437,14 +442,14 @@ runs:
 
           # Check registry connectivity
           echo "  Registry connectivity:"
-          if curl -s -o /dev/null -w "%{http_code}" https://ghcr.io/v2/ 2>/dev/null | grep -q "200\|401"; then
+          if curl -s -o /dev/null -w "%{{http_code}}" https://ghcr.io/v2/ 2>/dev/null | grep -q "200\|401"; then
             echo "    GHCR: ✅ Available"
           else
             echo "    GHCR: ⚠️ Connectivity issues"
           fi
 
           if [ -n "${{ inputs.docker-username }}" ]; then
-            if curl -s -o /dev/null -w "%{http_code}" https://registry.hub.docker.com/v2/ 2>/dev/null | grep -q "200\|401"; then
+            if curl -s -o /dev/null -w "%{{http_code}}" https://registry.hub.docker.com/v2/ 2>/dev/null | grep -q "200\|401"; then
               echo "    Docker Hub: ✅ Available"
             else
               echo "    Docker Hub: ⚠️ Connectivity issues"

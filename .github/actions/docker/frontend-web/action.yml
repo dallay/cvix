@@ -52,12 +52,12 @@ runs:
 
     - name: Set up Docker Buildx
       # Pinned to v3 commit hash for security
-      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435  # v3
 
     - name: Login to GitHub Container Registry
       id: ghcr-login
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       continue-on-error: true
       with:
         registry: ghcr.io
@@ -84,7 +84,7 @@ runs:
       id: dockerhub-login
       if: inputs.docker-username != '' && inputs.docker-password != ''
       # Pinned to v3 commit hash for security
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
       continue-on-error: true
       with:
         username: ${{ inputs.docker-username }}
@@ -109,7 +109,7 @@ runs:
     - name: Extract metadata for Docker
       id: meta
       # Pinned to v5 commit hash for security
-      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f  # v5
       with:
         images: |
           ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
@@ -160,7 +160,7 @@ runs:
     - name: Build and push Docker image
       id: build
       # Pinned to v5 commit hash for security
-      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25  # v5
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
@@ -285,7 +285,7 @@ runs:
     - name: Upload build logs as artifact
       if: always() && failure() && steps.build.outcome == 'failure'
       # Pinned to v4 commit hash for security
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       continue-on-error: true
       with:
         name: ${{ inputs.image-name }}-build-logs

@@ -1,5 +1,3 @@
-
-
 databaseChangeLog:
   - changeSet:
       id: 008-enable-rls-workspaces

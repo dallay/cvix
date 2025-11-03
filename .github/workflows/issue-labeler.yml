@@ -16,4 +16,4 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/issue-labeler-config.yml
-          enable-versioned-regex: false # or true, depending on your needs
+          enable-versioned-regex: false    # or true, depending on your needs

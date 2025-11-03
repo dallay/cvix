@@ -8,4 +8,4 @@ We adopt the Contributor Covenant v2.1.
 
 To report issues, contact maintainers via GitHub (issues/discussions) or as indicated in SECURITY.md.
 
-Full text: https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
+Full text: <https://www.contributor-covenant.org/version/2/1/code_of_conduct.html>

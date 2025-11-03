@@ -33,7 +33,7 @@ runs:
   steps:
     - name: Run Trivy vulnerability scanner
       id: trivy-scan
-      uses: aquasecurity/trivy-action@b2933f565dbc598b29947660e66259e3c7bc8561 #0.20.0
+      uses: aquasecurity/trivy-action@b2933f565dbc598b29947660e66259e3c7bc8561  #0.20.0
       continue-on-error: true
       with:
         image-ref: ${{ inputs.image-ref }}
@@ -89,7 +89,7 @@ runs:
 
             # Extract top 5 vulnerabilities for quick reference
             echo "📋 Top vulnerabilities (up to 5):" | tee -a $SCAN_LOG
-            grep -A 2 "\"level\": \"error\"" "${{ inputs.report-name }}.sarif" | grep "\"text\"" | head -5 | sed 's/.*"text": "\(.*\)".*/  - \1/' | tee -a $SCAN_LOG
+            grep -A 2 "\"level\": \"error\"" "${{ inputs.report-name }}.sarif" | grep "\"text\"" | head -5 | sed 's/.*\"text\": \"\(.*\)\".*/  - \1/' | tee -a $SCAN_LOG
           else
             echo "result=error" >> $GITHUB_OUTPUT
             echo "sarif-file=${{ inputs.report-name }}.sarif" >> $GITHUB_OUTPUT
@@ -112,7 +112,7 @@ runs:
     - name: Upload Trivy scan results to GitHub Security tab
       if: always() && steps.scan-status.outputs.sarif-file != ''
       # Pinned to v3 commit hash for security
-      uses: github/codeql-action/upload-sarif@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
+      uses: github/codeql-action/upload-sarif@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a  # v3
       continue-on-error: true
       with:
         sarif_file: ${{ steps.scan-status.outputs.sarif-file }}
@@ -121,7 +121,7 @@ runs:
     - name: Upload scan results as artifact
       if: always() && (steps.scan-status.outputs.sarif-file != '' || steps.scan-status.outputs.scan-log != '')
       # Pinned to v4 commit hash for security
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       continue-on-error: true
       with:
         name: ${{ inputs.report-name }}-scan-results

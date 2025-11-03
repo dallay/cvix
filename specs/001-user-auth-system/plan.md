@@ -7,7 +7,13 @@
 
 ## Summary
 
-Build a production-ready authentication system enabling users to register, login, manage sessions, and authenticate via email/password or federated identity providers (Google, Microsoft, GitHub). The system integrates with Keycloak for OIDC/OAuth2 flows, implements automatic token refresh with transparent UX, supports multi-device session management with granular control, and maintains real-time user context across the application. The frontend uses Vue 3 with feature-driven screaming architecture, Pinia stores for state, and shadcn-vue components. The backend uses Spring Boot with WebFlux for reactive processing, R2DBC for non-blocking database access, and Spring Security with OAuth2 Resource Server integration. All authentication operations delegate to Keycloak; the application orchestrates UX flows, validation, error handling, and session semantics.
+Build a production-ready authentication system enabling users to register, login, manage sessions, and authenticate via email/password or federated identity providers (Google, Microsoft, GitHub).
+
+The system integrates with Keycloak for OIDC/OAuth2 flows, implements automatic token refresh with transparent UX, supports multi-device session management with granular control, and maintains real-time user context across the application.
+
+The frontend uses Vue 3 with feature-driven screaming architecture, Pinia stores for state, and shadcn-vue components. The backend uses Spring Boot with WebFlux for reactive processing, R2DBC for non-blocking database access, and Spring Security with OAuth2 Resource Server integration.
+
+All authentication operations delegate to Keycloak; the application orchestrates UX flows, validation, error handling, and session semantics.
 
 ## Technical Context
 
@@ -57,7 +63,7 @@ Build a production-ready authentication system enabling users to register, login
 
 **Feature Structure (Frontend):**
 
-```
+```text
 client/apps/webapp/src/authentication/
 ├── domain/              # Pure TypeScript domain models, zero framework deps
 │   ├── models/          # User, Session, AuthEvent entities
@@ -80,7 +86,7 @@ client/apps/webapp/src/authentication/
 
 **Backend Structure (implementada):**
 
-```
+```text
 server/engine/src/main/kotlin/com/loomify/engine/authentication/
 ├── domain/
 │   ├── AccessToken.kt

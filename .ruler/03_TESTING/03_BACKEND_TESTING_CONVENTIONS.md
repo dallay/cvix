@@ -5,9 +5,9 @@
 ## General Principles
 
 - **Arrange-Act-Assert (AAA)**: Structure your tests clearly following the AAA pattern.
-  1.  **Arrange**: Set up the test objects, mocks, and data.
-  2.  **Act**: Invoke the method or code under test.
-  3.  **Assert**: Verify the outcome is as expected.
+  1. **Arrange**: Set up the test objects, mocks, and data.
+  2. **Act**: Invoke the method or code under test.
+  3. **Assert**: Verify the outcome is as expected.
 - **Readability**: Tests should be clear, concise, and easy to understand. They serve as living documentation for your code's behavior.
 - **Isolation**: Unit tests must be completely isolated from external systems like databases or message queues. Integration tests should be isolated from other tests.
 

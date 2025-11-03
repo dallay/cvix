@@ -35,7 +35,7 @@ J -->|Redirect| K["Login Page"]
 I -->|Axios Error| L["Show Error"]
 ```
 
-### Implementation Analysis
+### Login Flow: Implementation Analysis
 
 ✅ **COMPLIANT** - The implementation correctly follows the registration flow:
 
@@ -59,7 +59,7 @@ I -->|Axios Error| L["Show Error"]
      - 409 Conflict → UserAlreadyExistsError
      - 403 Forbidden → AuthenticationError (CSRF failure)
 
-### Issues Found & Fixed
+### Login Flow: Issues Found & Fixed
 
 1. ❌ **Auto-login after registration**:
    - **Before**: Automatically logged in user after registration
@@ -99,7 +99,7 @@ J -->|Redirect| K["Dashboard"]
 I -->|Axios Error| L["Show Error"]
 ```
 
-### Implementation Analysis
+### Logout Flow: Implementation Analysis
 
 ✅ **COMPLIANT** - The implementation correctly follows the login flow:
 
@@ -184,6 +184,7 @@ The logout implementation is fully compliant with the flow diagram and API contr
 ### Problem: Duplicated Axios Logic
 
 **Before**: Each HTTP client would need to:
+
 - Configure Axios instance with same settings
 - Implement CSRF token initialization
 - Handle common errors
