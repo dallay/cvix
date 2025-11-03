@@ -1,6 +1,5 @@
 server:
   forward-headers-strategy: framework
-  use-forward-headers: true
   shutdown: graceful
 
 application:
