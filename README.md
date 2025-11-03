@@ -101,6 +101,79 @@ See these folders at the repository root:
 - `server/` — Kotlin/Spring Boot services
 - `shared/` — shared Kotlin libraries
 - `infra/` — docker compose and helper scripts
+- `specs/` — feature specifications and planning documents
+
+## Features
+
+### Resume Generator MVP
+
+A professional resume generation system that converts user-submitted form data into beautifully formatted PDF resumes.
+
+**Key Capabilities:**
+
+- 📝 **Web-Based Form**: Intuitive Vue.js form for entering resume data (personal info, work experience, education, skills)
+- 🎨 **Professional LaTeX Templates**: Adaptive templates that adjust layout based on your experience level
+- 🌐 **Bilingual Support**: Generate resumes in English or Spanish
+- 📱 **Mobile-Friendly**: Responsive design works on desktop and mobile browsers
+- ⚡ **Fast Generation**: PDF ready in under 8 seconds (p95)
+- 🔒 **Secure**: LaTeX injection protection, Docker container isolation, and rate limiting
+- ♿ **Accessible**: WCAG 2.1 AA compliant forms and controls
+
+**Tech Stack:**
+
+- Frontend: Vue 3 + TypeScript, Vee-Validate + Zod, Tailwind CSS
+- Backend: Spring Boot (Kotlin), WebFlux (reactive)
+- PDF Engine: LaTeX (TeX Live) running in isolated Docker containers
+- Template Engine: StringTemplate 4
+
+**Getting Started:**
+
+Prerequisites: Docker daemon must be running and TeX Live image available.
+
+```bash
+# Pull TeX Live Docker image (one-time setup)
+docker pull texlive/texlive:latest-minimal
+
+# Start the backend (includes resume API)
+make backend-run
+
+# Start the frontend
+make dev-web
+
+# Navigate to http://localhost:5173/resume
+```
+
+**API Endpoint:**
+
+```bash
+POST /api/resumes
+Content-Type: application/json
+Authorization: Bearer <jwt-token>
+Accept-Language: en
+
+# See specs/003-resume-generator-mvp/examples/ for sample payloads
+```
+
+**Monitoring & SLOs:**
+
+- API Latency: p95 ≤ 200ms (excluding PDF generation)
+- PDF Generation: p95 < 8 seconds
+- Error Rate: < 3%
+- Uptime: 99.5%
+
+View metrics: `/actuator/prometheus`
+Health check: `/actuator/health`
+Grafana dashboard: `infra/grafana/dashboards/resume-generator-sla.json`
+
+**Documentation:**
+
+- Feature Spec: `specs/003-resume-generator-mvp/spec.md`
+- Implementation Plan: `specs/003-resume-generator-mvp/plan.md`
+- Quickstart Guide: `specs/003-resume-generator-mvp/quickstart.md`
+- API Contract: `specs/003-resume-generator-mvp/contracts/resume-api.yaml`
+- Monitoring Guide: `specs/003-resume-generator-mvp/monitoring.md`
+
+---
 
 ## Contributing
 

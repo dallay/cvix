@@ -151,6 +151,15 @@ management:
           - logfile
           - loggers
           - threaddump
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+  health:
+    docker:
+      enabled: true
   info:
     git:
       mode: full

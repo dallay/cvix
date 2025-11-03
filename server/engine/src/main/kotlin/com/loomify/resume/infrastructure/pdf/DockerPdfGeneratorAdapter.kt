@@ -9,6 +9,9 @@ import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import com.loomify.resume.domain.port.PdfGeneratorPort
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Timer
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -29,13 +32,57 @@ import reactor.core.scheduler.Schedulers
 @Component
 class DockerPdfGeneratorAdapter(
     private val dockerClient: DockerClient,
-    private val properties: DockerPdfGeneratorProperties
+    private val properties: DockerPdfGeneratorProperties,
+    private val meterRegistry: MeterRegistry,
 ) : PdfGeneratorPort {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     // Semaphore to limit concurrent container executions
     private val concurrencySemaphore = Semaphore(properties.maxConcurrentContainers)
+
+    // Metrics
+    private val containerCreatedCounter: Counter = meterRegistry.counter(
+        "docker.container.created",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerStartedCounter: Counter = meterRegistry.counter(
+        "docker.container.started",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerCompletedCounter: Counter = meterRegistry.counter(
+        "docker.container.completed",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerFailedCounter: Counter = meterRegistry.counter(
+        "docker.container.failed",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerTimeoutCounter: Counter = meterRegistry.counter(
+        "docker.container.timeout",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerCleanupCounter: Counter = meterRegistry.counter(
+        "docker.container.cleanup",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerExecutionTimer: Timer = meterRegistry.timer(
+        "docker.container.execution.duration",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+
+    init {
+        // Register gauge for concurrent container usage
+        meterRegistry.gauge(
+            "docker.container.concurrent.active",
+            this,
+        ) { properties.maxConcurrentContainers - concurrencySemaphore.availablePermits().toDouble() }
+
+        meterRegistry.gauge(
+            "docker.container.concurrent.available",
+            this,
+        ) { concurrencySemaphore.availablePermits().toDouble() }
+    }
 
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
         return Mono.fromCallable<InputStream> {
@@ -195,6 +242,8 @@ class DockerPdfGeneratorAdapter(
             .withAttachStdout(true)
             .withAttachStderr(true)
             .exec()
+
+        containerCreatedCounter.increment()
         logger.debug("Created Docker container: ${response.id}")
         return response.id
     }
@@ -202,20 +251,54 @@ class DockerPdfGeneratorAdapter(
     private fun waitForContainer(containerId: String): Long {
         val startTime = System.currentTimeMillis()
         val timeoutMillis = properties.timeoutSeconds * SECOND
-        while (true) {
-            val elapsed = System.currentTimeMillis() - startTime
-            if (elapsed > timeoutMillis) {
-                throw PdfGenerationTimeoutException(
-                    "Container execution timed out after ${properties.timeoutSeconds} seconds",
-                )
+
+        containerStartedCounter.increment()
+
+        try {
+            while (true) {
+                val elapsed = System.currentTimeMillis() - startTime
+                checkTimeout(elapsed, timeoutMillis)
+
+                val info = dockerClient.inspectContainerCmd(containerId).exec()
+                val state = info.state
+
+                if (state.running == false) {
+                    return handleContainerExit(state.exitCodeLong ?: -1L, elapsed)
+                }
+
+                Thread.sleep(POLL_INTERVAL_MS) // Poll every 100ms
             }
-            val info = dockerClient.inspectContainerCmd(containerId).exec()
-            val state = info.state
-            if (state.running == false) {
-                return state.exitCodeLong ?: -1L
-            }
-            Thread.sleep(POLL_INTERVAL_MS) // Poll every 100ms
+        } catch (e: PdfGenerationTimeoutException) {
+            // Re-throw timeout exceptions after tracking
+            throw e
+        } catch (e: com.github.dockerjava.api.exception.DockerException) {
+            containerFailedCounter.increment()
+            throw e
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            containerFailedCounter.increment()
+            throw e
         }
+    }
+
+    private fun checkTimeout(elapsed: Long, timeoutMillis: Long) {
+        if (elapsed > timeoutMillis) {
+            containerTimeoutCounter.increment()
+            throw PdfGenerationTimeoutException(
+                "Container execution timed out after ${properties.timeoutSeconds} seconds",
+            )
+        }
+    }
+
+    private fun handleContainerExit(exitCode: Long, elapsed: Long): Long {
+        if (exitCode == 0L) {
+            containerCompletedCounter.increment()
+            // Record execution time
+            containerExecutionTimer.record(elapsed, TimeUnit.MILLISECONDS)
+        } else {
+            containerFailedCounter.increment()
+        }
+        return exitCode
     }
 
     private fun getContainerLogs(containerId: String): String {
@@ -264,6 +347,7 @@ class DockerPdfGeneratorAdapter(
                 dockerClient.removeContainerCmd(containerId)
                     .withForce(true)
                     .exec()
+                containerCleanupCounter.increment()
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
                 logger.debug("Failed to remove container: $containerId", de)
             }
@@ -278,6 +362,8 @@ class DockerPdfGeneratorAdapter(
     }
 
     companion object {
+        private const val METRICS_COMPONENT = "pdf-generator"
+        private const val METRICS_TAG = "component"
         private const val WORK_DIR = "/work"
         private const val LATEX_FILE = "resume.tex"
         private const val PDF_FILE = "resume.pdf"

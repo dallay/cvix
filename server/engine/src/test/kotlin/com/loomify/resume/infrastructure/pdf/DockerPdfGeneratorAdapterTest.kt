@@ -16,6 +16,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.*
 import java.io.ByteArrayInputStream
 import java.nio.file.Files
@@ -35,6 +36,7 @@ class DockerPdfGeneratorAdapterTest {
 
     private lateinit var dockerClient: DockerClient
     private lateinit var properties: DockerPdfGeneratorProperties
+    private lateinit var meterRegistry: SimpleMeterRegistry
     private lateinit var adapter: DockerPdfGeneratorAdapter
 
     private val latexSource = """\documentclass{article}\begin{document}Hello World\end{document}"""
@@ -52,7 +54,8 @@ class DockerPdfGeneratorAdapterTest {
             memoryLimitMb = 512,
             cpuQuota = 0.5,
         )
-        adapter = DockerPdfGeneratorAdapter(dockerClient, properties)
+        meterRegistry = SimpleMeterRegistry()
+        adapter = DockerPdfGeneratorAdapter(dockerClient, properties, meterRegistry)
     }
 
     @AfterEach
@@ -184,7 +187,7 @@ class DockerPdfGeneratorAdapterTest {
             memoryLimitMb = 512,
             cpuQuota = 0.5,
         )
-        adapter = DockerPdfGeneratorAdapter(dockerClient, properties)
+        adapter = DockerPdfGeneratorAdapter(dockerClient, properties, meterRegistry)
 
         val workspace = tempDir.resolve("docker-timeout")
         Files.createDirectory(workspace)

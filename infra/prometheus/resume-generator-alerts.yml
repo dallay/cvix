@@ -1,0 +1,155 @@
+# Prometheus Alerting Rules for Resume Generator MVP
+# These rules define SLO violations and operational alerts
+
+groups:
+  - name: resume_generator_slo
+    interval: 30s
+    rules:
+      # API Latency SLO: p95 ≤ 200ms (warning), ≤ 250ms (critical)
+      - alert: ResumeApiLatencyHigh
+        expr: |
+          histogram_quantile(0.95, rate(resume_api_latency_seconds_bucket[5m])) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+          slo: api-latency
+        annotations:
+          summary: "Resume API p95 latency exceeds 200ms"
+          description: "The p95 latency for resume API endpoints is {{ $value }}s (target: ≤0.2s)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-api-latency"
+
+      - alert: ResumeApiLatencyCritical
+        expr: |
+          histogram_quantile(0.95, rate(resume_api_latency_seconds_bucket[5m])) > 0.25
+        for: 2m
+        labels:
+          severity: critical
+          component: resume-generator
+          slo: api-latency
+        annotations:
+          summary: "Resume API p95 latency critically high"
+          description: "The p95 latency for resume API endpoints is {{ $value }}s (critical: >0.25s)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-api-latency"
+
+      # PDF Generation SLO: <8s (warning), ≥10s (critical/timeout)
+      - alert: ResumePdfGenerationSlow
+        expr: |
+          histogram_quantile(0.95, rate(resume_pdf_generation_duration_seconds_bucket[5m])) > 8
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+          slo: pdf-generation
+        annotations:
+          summary: "Resume PDF generation exceeds 8s target"
+          description: "The p95 PDF generation time is {{ $value }}s (target: <8s)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-pdf-generation"
+
+      - alert: ResumePdfGenerationTimeout
+        expr: |
+          histogram_quantile(0.95, rate(resume_pdf_generation_duration_seconds_bucket[5m])) >= 10
+        for: 2m
+        labels:
+          severity: critical
+          component: resume-generator
+          slo: pdf-generation
+        annotations:
+          summary: "Resume PDF generation approaching timeout"
+          description: "The p95 PDF generation time is {{ $value }}s (timeout: 10s)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-pdf-generation"
+
+      # Error Rate SLO: <3% (warning), <5% (critical)
+      - alert: ResumeErrorRateHigh
+        expr: |
+          rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m]) > 0.03
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+          slo: error-rate
+        annotations:
+          summary: "Resume generation error rate exceeds 3%"
+          description: "The error rate is {{ $value | humanizePercentage }} (target: <3%)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-error-rate"
+
+      - alert: ResumeErrorRateCritical
+        expr: |
+          rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: resume-generator
+          slo: error-rate
+        annotations:
+          summary: "Resume generation error rate critically high"
+          description: "The error rate is {{ $value | humanizePercentage }} (critical: >5%)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/resume-error-rate"
+
+  - name: resume_generator_operational
+    interval: 30s
+    rules:
+      # Docker container pool saturation
+      - alert: ResumeDockerPoolSaturated
+        expr: |
+          docker_container_concurrent_active / (docker_container_concurrent_active + docker_container_concurrent_available) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+        annotations:
+          summary: "Docker container pool nearing saturation"
+          description: "Container pool is {{ $value | humanizePercentage }} full (threshold: 80%)"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/docker-pool-saturation"
+
+      # Docker health check failure
+      - alert: ResumeDockerHealthFailed
+        expr: |
+          up{job="resume-api", health_component="docker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: resume-generator
+        annotations:
+          summary: "Docker daemon health check failing"
+          description: "Docker daemon is not responding to health checks"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/docker-health"
+
+      # High container failure rate
+      - alert: ResumeDockerContainerFailureHigh
+        expr: |
+          rate(docker_container_failed_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+        annotations:
+          summary: "High Docker container failure rate"
+          description: "Container failures: {{ $value }} per second"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/docker-container-failures"
+
+      # Container timeout spike
+      - alert: ResumeDockerTimeoutSpike
+        expr: |
+          rate(docker_container_timeout_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+        annotations:
+          summary: "Docker container timeouts detected"
+          description: "Container timeouts: {{ $value }} per second"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/docker-timeouts"
+
+      # LaTeX compilation errors
+      - alert: ResumeLatexErrorsHigh
+        expr: |
+          rate(resume_errors_latex_total[5m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: resume-generator
+        annotations:
+          summary: "High LaTeX compilation error rate"
+          description: "LaTeX errors: {{ $value }} per second"
+          runbook_url: "https://github.com/dallay/cvix/wiki/runbooks/latex-errors"

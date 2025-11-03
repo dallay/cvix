@@ -304,16 +304,16 @@
 - PDF generation: 8 seconds (per spec.md Section 5.2)
 - API endpoints: 200ms p95 (per Constitution VI)
 
-- [ ] T126 [P] Add Spring Boot Actuator health endpoint for resume service in `server/engine/src/main/resources/application.yml`
-- [ ] T127 [P] Add Docker availability check to health endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerHealthIndicator.kt`
+- [X] T126 [P] Add Spring Boot Actuator health endpoint for resume service in `server/engine/src/main/resources/application.yml`
+- [X] T127 [P] Add Docker availability check to health endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerHealthIndicator.kt`
 - [X] T128 [P] Add Prometheus metrics for PDF generation (count, duration, errors) using Micrometer - target: 8s in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
-- [ ] T129 [P] Add metrics for Docker container lifecycle events in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T129 [P] Add metrics for Docker container lifecycle events in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
 - [X] T130 [P] Add correlation IDs to all log statements in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [ ] T131 [P] Add Micrometer SLO metric for API p95 latency ≤200ms (excluding PDF step); create Prometheus alert at 200ms warn/250ms critical
-- [ ] T132 [P] Expose error-rate metric (failures/total) with Prometheus counter; create alert when error rate >3%
-- [ ] T139 [P] Add external uptime monitoring probe for 99.5% uptime SLO; document operator runbook for incidents
-- [ ] T140 [P] Create Prometheus alerting rules and Grafana dashboard for PDF generation SLA (warn at >8s, critical at >=10s)
-- [ ] T141 [P] Add metrics for concurrent request queueing and Docker container pool utilization
+- [X] T131 [P] Add Micrometer SLO metric for API p95 latency ≤200ms (excluding PDF step); create Prometheus alert at 200ms warn/250ms critical
+- [X] T132 [P] Expose error-rate metric (failures/total) with Prometheus counter; create alert when error rate >3%
+- [X] T139 [P] Add external uptime monitoring probe for 99.5% uptime SLO; document operator runbook for incidents
+- [X] T140 [P] Create Prometheus alerting rules and Grafana dashboard for PDF generation SLA (warn at >8s, critical at >=10s)
+- [X] T141 [P] Add metrics for concurrent request queueing and Docker container pool utilization
 
 ---
 
@@ -325,12 +325,12 @@
 - [ ] T143 [P] Add integration tests to verify semantic labels, keyboard focus order, ARIA roles, and screen reader text in `client/apps/webapp/src/__tests__/features/resume/`
 - [ ] T144 [P] Document supported browsers (past 2 years) and add browser compatibility matrix to README
 - [ ] T145 [P] Add test to verify double-submit debounce/throttle (frontend) and concurrent request handling (backend)
-- [ ] T146 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
-- [ ] T147 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
-- [ ] T148 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
-- [ ] T149 Update main README.md with resume generator feature documentation in `README.md`
-- [ ] T150 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`
-- [ ] T151 Run Biome and fix any violations in `client/apps/webapp/src/resume/`
+- [X] T146 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
+- [X] T147 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
+- [X] T148 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
+- [X] T149 Update main README.md with resume generator feature documentation in `README.md`
+- [X] T150 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`
+- [X] T151 Run Biome and fix any violations in `client/apps/webapp/src/resume/`
 - [ ] T152 Validate quickstart.md by following all setup steps in `specs/003-resume-generator-mvp/quickstart.md`
 - [ ] T153 Test with all three example payloads (software-engineer, project-manager, minimal) and verify PDF output quality
 
