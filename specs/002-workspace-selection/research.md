@@ -47,13 +47,14 @@ class WorkspaceHttpClient extends BaseHttpClient {
 ```
 
 **Implementation Note**: The workspace feature reuses the existing `BaseHttpClient` class from `client/apps/webapp/src/shared/BaseHttpClient.ts`. This provides:
+
 - Automatic Bearer token injection (no manual Authorization header management)
 - CSRF token handling with automatic retry on 403 errors
 - Standardized error response parsing (`ApiErrorResponse` interface)
 - Request/response interceptors for logging and monitoring
 - Axios instance configuration (timeout: 10s, withCredentials, content-type)
 
-### Alternatives Considered
+### Alternatives Considered (API Integration)
 
 - **GraphQL**: Rejected - REST API already implemented and sufficient
 - **WebSocket**: Rejected - Real-time updates not required for workspace selection
@@ -96,7 +97,7 @@ interface WorkspaceState {
 - `loadLastSelected()`: Load last selected workspace from local storage
 - `clearWorkspaceState()`: Reset state on logout
 
-### Alternatives Considered
+### Alternatives Considered (State Management)
 
 - **Vue provide/inject**: Rejected - Not sufficient for complex state management
 - **Composable-only state**: Rejected - Loses state on component unmount
@@ -134,7 +135,7 @@ const STORAGE_KEYS = {
 - No auth tokens stored in local storage (handled by auth system)
 - Validate stored workspace ID before using (check UUID format)
 
-### Alternatives Considered
+### Alternatives Considered (Persistence)
 
 - **Session Storage**: Rejected - Lost on browser close, bad UX
 - **IndexedDB**: Rejected - Overkill for single key-value pair
@@ -175,7 +176,7 @@ Examples:
 - Error: "Failed to load workspaces. [Retry]"
 - Warning: "Your last workspace is unavailable. Loaded default workspace."
 
-### Alternatives Considered
+### Alternatives Considered (Loading & Error Handling)
 
 - **Modal Dialogs for Errors**: Rejected - Too intrusive, blocks user flow
 - **Inline Error Messages**: Rejected - Easy to miss, no action buttons
@@ -207,7 +208,7 @@ WorkspaceSelector (Container)
 - **Props**: For presentational components (data, callbacks)
 - **Composables**: For container components (business logic, state management)
 
-### Alternatives Considered
+### Alternatives Considered (Component Architecture)
 
 - **Single Monolithic Component**: Rejected - Hard to test, poor reusability
 - **Renderless Components**: Rejected - Adds complexity without clear benefit
@@ -244,7 +245,7 @@ router.beforeEach(async (to, from, next) => {
 });
 ```
 
-### Alternatives Considered
+### Alternatives Considered (Auto-Load on Login)
 
 - **App.vue onMounted**: Rejected - Runs too late, flicker on load
 - **Middleware Pattern**: Rejected - Vue Router guards are the standard
@@ -272,7 +273,7 @@ router.beforeEach(async (to, from, next) => {
 - Debounce workspace switch action (300ms) to prevent rapid switches
 - Cancel in-flight API requests on new workspace selection
 
-### Alternatives Considered
+### Alternatives Considered (Caching)
 
 - **Aggressive Caching (1 hour)**: Rejected - Stale data risk
 - **No Caching**: Rejected - Unnecessary API calls on every component mount
@@ -304,7 +305,7 @@ router.beforeEach(async (to, from, next) => {
 - Return focus to trigger on close
 - Announce workspace changes to screen readers
 
-### Alternatives Considered
+### Alternatives Considered (Accessibility)
 
 - **Custom Accessible Component**: Rejected - Shadcn-Vue already WCAG AA compliant
 - **ARIA Landmarks Only**: Rejected - Insufficient for complex interactions
@@ -331,7 +332,7 @@ workspace.fallback = "Your last workspace is unavailable. Using default."
 - Test with `dir="rtl"` attribute
 - Mirror icons where appropriate (dropdown arrows, etc.)
 
-### Alternatives Considered
+### Alternatives Considered (Internationalization)
 
 - **Hardcoded English Strings**: Rejected - Not compliant with UX principle V
 - **Backend-Provided Translations**: Rejected - Frontend i18n is standard
@@ -368,7 +369,7 @@ workspace.fallback = "Your last workspace is unavailable. Using default."
 - Playwright for E2E tests
 - Faker.js for test data generation
 
-### Alternatives Considered
+### Alternatives Considered (Testing & Tooling)
 
 - **Cypress Instead of Playwright**: Rejected - Playwright is faster and already in use
 - **Jest Instead of Vitest**: Rejected - Vitest is faster and Vite-native

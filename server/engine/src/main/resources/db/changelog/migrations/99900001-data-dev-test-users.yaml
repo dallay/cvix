@@ -14,52 +14,52 @@ databaseChangeLog:
             tableName: users
             usePreparedStatements: true
             columns:
-              - column: { name: id, type: uuid }
-              - column: { name: email, type: string }
-              - column: { name: full_name, type: string }
+              - column: {name: id, type: uuid}
+              - column: {name: email, type: string}
+              - column: {name: full_name, type: string}
         - loadData:
             file: db/changelog/data/user_authority_dev.csv
             separator: ";"
             tableName: user_authority
             usePreparedStatements: true
             columns:
-              - column: { name: user_id, type: uuid }
-              - column: { name: authority_name, type: string }
+              - column: {name: user_id, type: uuid}
+              - column: {name: authority_name, type: string}
         - loadData:
             file: db/changelog/data/workspaces_dev.csv
             separator: ";"
             tableName: workspaces
             usePreparedStatements: true
             columns:
-              - column: { name: id, type: uuid }
-              - column: { name: name, type: string }
-              - column: { name: description, type: string }
-              - column: { name: owner_id, type: uuid }
-              - column: { name: created_by, type: string }
-              - column: { name: created_at, type: datetime }
-              - column: { name: updated_by, type: string }
-              - column: { name: updated_at, type: datetime }
-              - column: { name: is_default, type: boolean }
+              - column: {name: id, type: uuid}
+              - column: {name: name, type: string}
+              - column: {name: description, type: string}
+              - column: {name: owner_id, type: uuid}
+              - column: {name: created_by, type: string}
+              - column: {name: created_at, type: datetime}
+              - column: {name: updated_by, type: string}
+              - column: {name: updated_at, type: datetime}
+              - column: {name: is_default, type: boolean}
         - loadData:
             file: db/changelog/data/workspace_members_dev.csv
             separator: ";"
             tableName: workspace_members
             usePreparedStatements: false
             columns:
-              - column: { name: workspace_id, type: uuid }
-              - column: { name: user_id, type: uuid }
-              - column: { name: role, type: string }
-              - column: { name: created_at, type: datetime }
-              - column: { name: updated_at, type: datetime }
+              - column: {name: workspace_id, type: uuid}
+              - column: {name: user_id, type: uuid}
+              - column: {name: role, type: string}
+              - column: {name: created_at, type: datetime}
+              - column: {name: updated_at, type: datetime}
         - loadData:
             file: db/changelog/data/federated_identities_dev.csv
             separator: ";"
             tableName: federated_identities
             usePreparedStatements: true
             columns:
-              - column: { name: id, type: uuid }
-              - column: { name: user_id, type: uuid }
-              - column: { name: provider_name, type: string }
-              - column: { name: external_user_id, type: string }
-              - column: { name: email, type: string }
-              - column: { name: display_name, type: string }
+              - column: {name: id, type: uuid}
+              - column: {name: user_id, type: uuid}
+              - column: {name: provider_name, type: string}
+              - column: {name: external_user_id, type: string}
+              - column: {name: email, type: string}
+              - column: {name: display_name, type: string}

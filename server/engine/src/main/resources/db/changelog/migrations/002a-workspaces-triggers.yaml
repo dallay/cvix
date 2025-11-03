@@ -1,5 +1,3 @@
-
-
 databaseChangeLog:
   - changeSet:
       id: 005-create-update-timestamp-function

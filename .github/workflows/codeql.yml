@@ -2,9 +2,11 @@ name: CodeQL
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
   schedule:
     - cron: "0 3 * * 1"
 
@@ -19,9 +21,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'java-kotlin', 'javascript-typescript' ]
+        language: [java-kotlin, javascript-typescript]
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: github/codeql-action/init@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
         with:
           languages: ${{ matrix.language }}
@@ -29,18 +31,16 @@ jobs:
         if: matrix.language == 'java-kotlin'
         uses: ./.github/actions/setup/java
         with:
-          java-version: '21'
-          distribution: 'temurin'
-
+          java-version: "21"
+          distribution: "temurin"
       - name: Build Gradle project
         if: matrix.language == 'java-kotlin'
         run: ./gradlew build -x test --stacktrace
-
       - name: Setup Node.js and pnpm
         if: matrix.language == 'javascript-typescript'
         uses: ./.github/actions/setup/node
-
       - name: Build PNPM project
         if: matrix.language == 'javascript-typescript'
         run: pnpm run build
-      - uses: github/codeql-action/analyze@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@5d5cd550d3e189c569da8f16ea8de2d821c9bf7a # v3

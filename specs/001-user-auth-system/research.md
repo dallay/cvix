@@ -12,17 +12,20 @@ This document consolidates research findings for implementing a production-ready
 ### Decision: Authorization Code Flow with PKCE
 
 **Rationale**:
+
 - Most secure OAuth2/OIDC flow for SPAs (Single Page Applications)
 - PKCE (Proof Key for Code Exchange) protects against authorization code interception
 - Recommended by OAuth 2.0 for Browser-Based Apps RFC (RFC 8252)
 - Keycloak 26.0+ fully supports this flow
 
 **Alternatives Considered**:
+
 - **Implicit Flow**: Deprecated in OAuth 2.1, tokens exposed in browser history
 - **Client Credentials Flow**: Unsuitable for browser apps (requires client secret)
 - **Resource Owner Password Credentials**: Bypasses OAuth security benefits, deprecated
 
 **Implementation Details**:
+
 - Frontend initiates authorization request with code_challenge (SHA-256 hash of code_verifier)
 - User redirects to Keycloak login page
 - After authentication, Keycloak redirects back with authorization code
@@ -30,8 +33,9 @@ This document consolidates research findings for implementing a production-ready
 - Backend validates tokens and sets HTTP-only cookies
 
 **References**:
-- Keycloak Documentation: https://www.keycloak.org/guides.html#securing-apps
-- OAuth 2.0 for Browser-Based Apps: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps
+
+- Keycloak Documentation: <https://www.keycloak.org/guides.html#securing-apps>
+- OAuth 2.0 for Browser-Based Apps: <https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps>
 
 ---
 
@@ -40,6 +44,7 @@ This document consolidates research findings for implementing a production-ready
 ### Decision: HTTP-Only Secure Cookies (Primary) + Optional Memory Cache
 
 **Rationale**:
+
 - HTTP-only cookies prevent XSS attacks (JavaScript cannot access tokens)
 - Secure flag ensures transmission only over HTTPS
 - SameSite=Strict prevents CSRF attacks
@@ -47,11 +52,13 @@ This document consolidates research findings for implementing a production-ready
 - Optional in-memory cache improves performance without security risk
 
 **Alternatives Considered**:
+
 - **localStorage**: Vulnerable to XSS attacks, exposes tokens to any JavaScript
 - **sessionStorage**: Same XSS vulnerability as localStorage
 - **IndexedDB**: Overkill for simple token storage, still accessible to JavaScript
 
 **Implementation Details**:
+
 ```typescript
 // Backend sets cookie after token exchange
 response.addCookie(
@@ -69,13 +76,15 @@ axiosInstance.get('/api/protected', { withCredentials: true })
 ```
 
 **Security Considerations**:
+
 - Refresh token in separate HTTP-only cookie with longer expiration (30 days for "Remember Me")
 - CSRF protection via Keycloak CSRF tokens in request headers
 - Cookie domain restricted to application domain
 
 **References**:
-- OWASP: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html
-- Web Security Academy: https://portswigger.net/web-security/csrf/tokens
+
+- OWASP: <https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html>
+- Web Security Academy: <https://portswigger.net/web-security/csrf/tokens>
 
 ---
 
@@ -84,6 +93,7 @@ axiosInstance.get('/api/protected', { withCredentials: true })
 ### Decision: Axios Interceptor with 5-Minute Pre-Expiration Polling
 
 **Rationale**:
+
 - Proactive refresh maintains seamless UX (no auth interruptions)
 - 5-minute threshold provides buffer for network latency
 - Interceptor pattern centralizes token logic
@@ -91,6 +101,7 @@ axiosInstance.get('/api/protected', { withCredentials: true })
 - User unaware of token lifecycle management
 
 **Alternatives Considered**:
+
 - **On-Demand Refresh (401 Response)**: Reactive, causes brief auth failures
 - **Background Worker**: Adds complexity, still needs response handler for immediate 401s
 - **Short-Lived Tokens Only**: Forces frequent re-authentication, poor UX
@@ -151,14 +162,16 @@ axiosInstance.interceptors.response.use(
 ```
 
 **Error Handling**:
+
 - Max 3 retry attempts for transient network failures
 - Exponential backoff between retries (1s, 2s, 4s)
 - Silent failure with redirect to login after all retries exhausted
 - User-visible notification only if refresh fails during active interaction
 
 **References**:
-- Axios Interceptors: https://axios-http.com/docs/interceptors
-- JWT Best Practices: https://datatracker.ietf.org/doc/html/rfc8725
+
+- Axios Interceptors: <https://axios-http.com/docs/interceptors>
+- JWT Best Practices: <https://datatracker.ietf.org/doc/html/rfc8725>
 
 ---
 
@@ -167,6 +180,7 @@ axiosInstance.interceptors.response.use(
 ### Decision: Database-Backed Sessions with Device Fingerprinting
 
 **Rationale**:
+
 - Persistent storage enables cross-device session visibility
 - Device/browser/location metadata enhances security awareness
 - Granular control (terminate specific sessions vs. all sessions)
@@ -174,6 +188,7 @@ axiosInstance.interceptors.response.use(
 - Scales horizontally (stateless application servers)
 
 **Alternatives Considered**:
+
 - **In-Memory Sessions**: Lost on server restart, no multi-device visibility
 - **JWT-Only (Stateless)**: Cannot revoke individual sessions, no device tracking
 - **Redis Sessions**: Adds infrastructure dependency, eventual consistency issues
@@ -211,6 +226,7 @@ interface SessionRepository {
 ```
 
 **Security Considerations**:
+
 - Store hashed tokens (SHA-256) in database, not plaintext
 - Row-Level Security (RLS) ensures users only see their own sessions
 - IP geolocation via MaxMind GeoLite2 (city-level accuracy, privacy-preserving)
@@ -218,9 +234,10 @@ interface SessionRepository {
 - Automatic session expiration cleanup via scheduled task
 
 **References**:
-- Device Detection: https://github.com/browscap/browscap
-- IP Geolocation: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
-- PostgreSQL RLS: https://www.postgresql.org/docs/current/ddl-rowsecurity.html
+
+- Device Detection: <https://github.com/browscap/browscap>
+- IP Geolocation: <https://dev.maxmind.com/geoip/geolite2-free-geolocation-data>
+- PostgreSQL RLS: <https://www.postgresql.org/docs/current/ddl-rowsecurity.html>
 
 ---
 
@@ -229,6 +246,7 @@ interface SessionRepository {
 ### Decision: Sliding Window with Redis or PostgreSQL Counter
 
 **Rationale**:
+
 - Prevents brute force attacks on authentication endpoints
 - Sliding window more accurate than fixed window
 - 5 attempts per email per 15 minutes (spec requirement)
@@ -236,6 +254,7 @@ interface SessionRepository {
 - Compatible with horizontal scaling
 
 **Alternatives Considered**:
+
 - **Fixed Window**: Less accurate, allows burst at window boundaries
 - **Token Bucket**: More complex, overkill for auth rate limiting
 - **In-Memory Counter**: Not shared across application instances
@@ -285,12 +304,14 @@ data class RateLimitEntry(
 ```
 
 **User Experience**:
+
 - Clear error message showing remaining time until retry
 - Progressive delay: 0s (attempts 1-3), 5s (attempt 4), 15s (attempt 5+)
 - CAPTCHA challenge after 3 failed attempts (optional enhancement)
 
 **References**:
-- OWASP Rate-Limiting: https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html
+
+- OWASP Rate-Limiting: <https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html>
 
 ---
 
@@ -299,6 +320,7 @@ data class RateLimitEntry(
 ### Decision: Keycloak Identity Brokering with Account Linking
 
 **Rationale**:
+
 - Keycloak handles OAuth2/OIDC flows for all providers
 - Unified user model across local and federated accounts
 - Automatic account linking via email matching
@@ -306,6 +328,7 @@ data class RateLimitEntry(
 - Easy to add new providers (GitHub, Google, Microsoft, etc.)
 
 **Alternatives Considered**:
+
 - **Direct Provider Integration**: Duplicates OAuth logic, harder to maintain
 - **Third-Party Service (Auth0)**: Vendor lock-in, additional cost
 - **Custom OAuth Library**: Reinventing the wheel, security risk
@@ -352,6 +375,7 @@ class FederatedAuthController(
 ```
 
 **Account Linking Logic**:
+
 1. User authenticates via federated provider
 2. Check if email matches existing account
 3. If match found: Link federated identity to existing account
@@ -359,8 +383,9 @@ class FederatedAuthController(
 5. Store provider details (provider name, external user ID, profile data)
 
 **References**:
-- Keycloak Identity Brokering: https://www.keycloak.org/docs/latest/server_admin/#_identity_broker
-- Account Linking: https://www.keycloak.org/docs/latest/server_admin/#_account_linking
+
+- Keycloak Identity Brokering: <https://www.keycloak.org/docs/latest/server_admin/#_identity_broker>
+- Account Linking: <https://www.keycloak.org/docs/latest/server_admin/#_account_linking>
 
 ---
 
@@ -369,6 +394,7 @@ class FederatedAuthController(
 ### Decision: Pinia Store with Vue Composition API Reactivity
 
 **Rationale**:
+
 - Pinia provides reactive state management
 - Composition API enables fine-grained reactivity
 - State changes propagate automatically via Vue's reactivity system
@@ -376,6 +402,7 @@ class FederatedAuthController(
 - Meets <500ms propagation requirement
 
 **Alternatives Considered**:
+
 - **EventBus**: Global pollution, hard to debug, deprecated pattern
 - **Vuex**: More verbose, Pinia is official recommendation for Vue 3
 - **Manual State Management**: Error-prone, inconsistent
@@ -447,13 +474,15 @@ export function useAuth() {
 ```
 
 **Reactivity Guarantees**:
+
 - Vue's reactivity system ensures UI updates within ~16ms (one frame)
 - Combined with network latency, total propagation well under 500ms requirement
 - Optimistic updates for immediate feedback, reconcile with server response
 
 **References**:
-- Pinia Documentation: https://pinia.vuejs.org/
-- Vue Reactivity: https://vuejs.org/guide/extras/reactivity-in-depth.html
+
+- Pinia Documentation: <https://pinia.vuejs.org/>
+- Vue Reactivity: <https://vuejs.org/guide/extras/reactivity-in-depth.html>
 
 ---
 
@@ -462,6 +491,7 @@ export function useAuth() {
 ### Decision: Keycloak Handles Hashing (Argon2id), Application Validates Complexity
 
 **Rationale**:
+
 - Argon2id is OWASP recommended (winner of Password Hashing Competition 2015)
 - Keycloak 26.0+ uses Argon2id by default with secure parameters
 - Application enforces complexity requirements at registration
@@ -469,6 +499,7 @@ export function useAuth() {
 - Validates against HIBP (Have I Been Pwned) compromised password database
 
 **Alternatives Considered**:
+
 - **bcrypt**: Older, less memory-hard, still acceptable
 - **scrypt**: Less widely adopted, fewer security audits
 - **PBKDF2**: Faster to compute, more vulnerable to GPU attacks
@@ -537,15 +568,17 @@ export function usePasswordStrength(password: Ref<string>) {
 ```
 
 **Keycloak Configuration**:
+
 - Password policy: Minimum 12 characters, require uppercase, lowercase, digits, special chars
 - Argon2id parameters: 64MB memory, 3 iterations, parallelism=4
 - Password history: Prevent reuse of last 5 passwords
 - Expiration: Force password change every 90 days (configurable)
 
 **References**:
-- OWASP Password Storage: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-- Argon2: https://www.rfc-editor.org/rfc/rfc9106.html
-- NIST Guidelines: https://pages.nist.gov/800-63-3/sp800-63b.html
+
+- OWASP Password Storage: <https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html>
+- Argon2: <https://www.rfc-editor.org/rfc/rfc9106.html>
+- NIST Guidelines: <https://pages.nist.gov/800-63-3/sp800-63b.html>
 
 ---
 
@@ -554,6 +587,7 @@ export function usePasswordStrength(password: Ref<string>) {
 ### Decision: Keycloak CSRF Tokens + SameSite Cookies (Defense in Depth)
 
 **Rationale**:
+
 - Double Submit Cookie pattern with Keycloak-generated CSRF tokens
 - SameSite=Strict prevents cross-origin cookie transmission
 - Defense in depth: Both mechanisms must fail for successful CSRF attack
@@ -561,6 +595,7 @@ export function usePasswordStrength(password: Ref<string>) {
 - Minimal application code required
 
 **Alternatives Considered**:
+
 - **SameSite Only**: Incomplete coverage (older browsers, cross-site scenarios)
 - **Synchronizer Token Only**: Requires custom token generation and storage
 - **Origin Header Validation**: Insufficient alone, easily bypassed
@@ -611,14 +646,16 @@ function getCookie(name: string): string | null {
 ```
 
 **Security Guarantees**:
+
 - CSRF token rotates on each authenticated request
 - Token validation on all state-changing operations (POST, PUT, DELETE, PATCH)
 - SameSite=Strict blocks cross-origin requests entirely
 - Combined protection exceeds OWASP recommendations
 
 **References**:
-- OWASP CSRF Prevention: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
-- Spring Security CSRF: https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
+
+- OWASP CSRF Prevention: <https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html>
+- Spring Security CSRF: <https://docs.spring.io/spring-security/reference/features/exploits/csrf.html>
 
 ---
 
@@ -627,6 +664,7 @@ function getCookie(name: string): string | null {
 ### Decision: PostgreSQL with UUID Keys and RLS Policies
 
 **Rationale**:
+
 - UUID v4 prevents ID enumeration attacks
 - Row-Level Security (RLS) enforces tenant isolation at database level
 - Defense in depth: Application bugs cannot bypass RLS
@@ -634,6 +672,7 @@ function getCookie(name: string): string | null {
 - Liquibase migrations for reproducible schema changes
 
 **Alternatives Considered**:
+
 - **Auto-Increment IDs**: Predictable, enables enumeration attacks
 - **Application-Level Filtering**: Vulnerable to bugs, not defense in depth
 - **Separate Schemas per Tenant**: Over-engineered for user-level isolation
@@ -697,14 +736,16 @@ COMMIT;
 ```
 
 **Migration Strategy**:
+
 - Liquibase changelogs for all schema changes
 - Versioned migrations in `src/main/resources/db/changelog/changes/`
 - Rollback scripts for each migration
 - Test migrations on staging before production
 
 **References**:
-- PostgreSQL RLS: https://www.postgresql.org/docs/current/ddl-rowsecurity.html
-- Liquibase Best Practices: https://docs.liquibase.com/concepts/bestpractices.html
+
+- PostgreSQL RLS: <https://www.postgresql.org/docs/current/ddl-rowsecurity.html>
+- Liquibase Best Practices: <https://docs.liquibase.com/concepts/bestpractices.html>
 
 ---
 

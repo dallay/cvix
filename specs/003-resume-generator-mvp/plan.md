@@ -7,7 +7,11 @@
 
 ## Summary
 
-Build a web-based resume generator that converts user-submitted form data into professionally formatted PDF resumes. The system uses a smart, adaptive LaTeX template following the JSON Resume schema standard to support diverse professional backgrounds. Users fill out a Vue.js-based form, the Spring Boot backend validates and processes the data through a secure LaTeX compilation pipeline in isolated Docker containers, and streams the generated PDF directly to the user. The MVP supports English and Spanish localization with intelligent content layout that adapts section emphasis based on user input.
+Build a web-based resume generator that converts user-submitted form data into professionally formatted PDF resumes. The system uses a smart, adaptive LaTeX template following the JSON Resume schema standard to support diverse professional backgrounds.
+
+Users fill out a Vue.js-based form; the Spring Boot backend validates and processes the data through a secure LaTeX compilation pipeline running in isolated Docker containers, and streams the generated PDF directly to the user.
+
+The MVP supports English and Spanish localization with intelligent content layout that adapts section emphasis based on user input.
 
 ## Technical Context
 
@@ -174,15 +178,13 @@ Build a web-based resume generator that converts user-submitted form data into p
 - ✅ Architecture Gate: Domain layer pure Kotlin, HTTP in infrastructure, repository interfaces
 - ✅ Documentation Gate: OpenAPI spec, README updated with TeX Live setup
 
-### Summary
+### Constitution Check: Summary
 
-**✅ PASSES Constitution Check** with documented exceptions:
+**✅ PASSES Constitution Check** with documented exceptions (see Complexity Tracking for details):
 
-1. Docker execution of user input (mitigated with isolation, timeouts, resource limits)
-2. PDF generation latency (8s) exceeds p99 target (justified by LaTeX compilation)
-3. New technologies (TeX Live, StringTemplate/FreeMarker, JSON Resume schema)
-
-All exceptions are justified and documented in Complexity Tracking below.
+- Docker execution of user input (mitigated with isolation, timeouts, resource limits)
+- PDF generation latency (8s) exceeds p99 target (justified by LaTeX compilation)
+- New technologies (TeX Live, StringTemplate/FreeMarker, JSON Resume schema)
 
 ## Project Structure
 
@@ -325,12 +327,27 @@ endpoints/cvix/
 
 ## Complexity Tracking
 
-| Violation                                                   | Why Needed                                                                                                                                                                                   | Simpler Alternative Rejected Because                                                                                                                                                                                                                                                                                                                                           |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Docker execution of user input** (Security)               | PDF generation requires LaTeX compilation (`pdflatex`) on user-provided resume data. LaTeX is the only viable option for print-quality typesetting with professional typography.             | **HTML-to-PDF libraries** (wkhtmltopdf, Puppeteer): Lack fine-grained typography control (kerning, ligatures, hyphenation). Cannot match LaTeX's mathematical typesetting and professional layout algorithms. **Server-side LaTeX** (without Docker): Exposes host system to potential code injection via LaTeX malicious packages. Docker provides mandatory isolation layer. |
-| **PDF generation latency (8s)** (Performance)               | LaTeX compilation involves: (1) Parsing template, (2) Typesetting algorithms (line breaking, page layout), (3) Font rendering, (4) PDF generation. Industry benchmarks: 5-10s for A4 resume. | **Pre-rendered templates**: Cannot adapt to variable content length (skills-heavy vs experience-heavy). Spec requires "smart content adaptation" (FR-008). **Async background jobs**: Considered but rejected for MVP; adds complexity (job queue, polling UI). Users expect immediate feedback (<10s tolerance per UX research).                                              |
-| **TeX Live + StringTemplate/FreeMarker** (New Technologies) | **TeX Live**: De facto standard for academic/technical documents (100MB Alpine image). **StringTemplate/FreeMarker**: Mature template engines with LaTeX-safe escaping.                      | **Custom template engine**: Reinventing the wheel; would take weeks to implement LaTeX escaping rules correctly. **Markdown-to-PDF**: Cannot achieve professional print quality required by spec. **Cloud PDF services** (DocRaptor, PDFShift): Vendor lock-in, costs scale linearly with usage, data privacy concerns.                                                        |
-| **Docker container orchestration** (Infrastructure)         | Need strategy for: (1) Container lifecycle management, (2) Resource limits enforcement (512MB/0.5 CPU), (3) Timeout handling (10s), (4) Concurrent request queueing (50 users).              | **Direct pdflatex execution**: Security risk (no isolation). **Shared long-lived container**: Stateful (violates horizontal scaling); risk of resource exhaustion. **Kubernetes Jobs**: Over-engineered for MVP (50 concurrent users); adds operational complexity. Decision deferred to Phase 1 research.                                                                     |
+Below are the main complexity/risk items identified, rationale, and rejected simpler alternatives.
+
+### Docker execution of user input (Security)
+
+- Why needed: PDF generation requires LaTeX compilation (`pdflatex`) on user-provided resume data. LaTeX is the only viable option for print-quality typesetting with professional typography.
+- Simpler alternatives rejected: HTML-to-PDF libraries (wkhtmltopdf, Puppeteer) lack fine-grained typography control (kerning, ligatures, hyphenation). Server-side LaTeX without Docker exposes the host to LaTeX injection risks; Docker provides required isolation.
+
+### PDF generation latency (Performance)
+
+- Why needed: LaTeX compilation involves parsing, typesetting algorithms (line breaking, page layout), font rendering and PDF generation; industry benchmarks show 5–10s for an A4 resume.
+- Simpler alternatives rejected: Pre-rendered templates cannot adapt to variable content length. Async background jobs add complexity (job queue, polling) and were deferred for MVP; users expect immediate feedback within ~10s.
+
+### TeX Live + StringTemplate/FreeMarker (New Technologies)
+
+- Why needed: TeX Live is the de-facto standard for high-quality typesetting. StringTemplate/FreeMarker are mature template engines that support LaTeX-safe escaping.
+- Simpler alternatives rejected: Custom template engines would be time-consuming and error-prone; Markdown-to-PDF cannot reach the required print quality; cloud PDF services introduce vendor lock-in and privacy concerns.
+
+### Docker container orchestration (Infrastructure)
+
+- Why needed: The system needs a strategy for container lifecycle management, resource limit enforcement (512MB/0.5 CPU), timeout handling (10s), and concurrent request queueing for expected load.
+- Simpler alternatives rejected: Direct execution of `pdflatex` is a security risk; shared long-lived containers are stateful and can exhaust resources; Kubernetes Jobs are over-engineered for MVP and were deferred to Phase 1.
 
 ---
 

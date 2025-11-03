@@ -14,13 +14,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+    - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061  # v4
       with:
         run_install: false
     #        version: 10.13.1
     - name: Setup Node.js
       # Pinned to v4 commit hash for security
-      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
@@ -37,7 +37,7 @@ runs:
       run: |
         echo "YEAR_MONTH=$(/bin/date -u "+%Y%m")" >> $GITHUB_OUTPUT
 
-    - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+    - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4
       name: Setup pnpm cache
       with:
         path: ${{ steps.pnpm-config.outputs.STORE_PATH }}
@@ -58,7 +58,7 @@ runs:
       run: pnpm install --frozen-lockfile --prefer-offline --ignore-scripts
       env:
         # Other environment variables
-        HUSKY: "0" # By default do not run HUSKY install
+        HUSKY: "0"  # By default do not run HUSKY install
 
     - name: Verify installation
       shell: bash

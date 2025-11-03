@@ -113,7 +113,6 @@ When PDF generation fails due to system issues, the user receives clear informat
 - What happens if the document compilation produces warnings but still generates a valid PDF?
 - How does the system handle users attempting to exploit document generation vulnerabilities through malicious input?
 
-
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -166,8 +165,6 @@ When PDF generation fails due to system issues, the user receives clear informat
 - **FR-029**: System MUST meet web accessibility standards including proper form labels, keyboard navigation, and screen reader support
 - **FR-030**: System MUST provide visual feedback during PDF generation to inform users of progress
 - **FR-031**: System MUST support all modern web browsers released in the past 2 years
-
-
 
 ### Key Entities
 
@@ -234,8 +231,6 @@ When PDF generation fails due to system issues, the user receives clear informat
 - Must comply with existing organizational security practices and industry standards
 - Must integrate with existing infrastructure and deployment processes
 
-
-
 ## Out of Scope *(include if helpful to set boundaries)*
 
 - **User Accounts**: No authentication, user accounts, or saved resume storage (session-only processing)
@@ -254,5 +249,3 @@ When PDF generation fails due to system issues, the user receives clear informat
 - **Cover Letter Generation**: Resumes only; no cover letters or other document types
 - **Batch Processing**: One resume at a time; no bulk generation
 - **API Access**: No public API or programmatic access
-
-

@@ -56,7 +56,7 @@ A production-ready authentication system has been implemented following **Hexago
 
 ### 📁 Project Structure
 
-```
+```text
 Frontend (Hexagonal Architecture):
 client/apps/webapp/src/authentication/
 ├── domain/
@@ -104,6 +104,7 @@ server/engine/src/main/kotlin/com/loomify/engine/
 ## Technology Stack
 
 ### Frontend
+
 - Vue 3.5.17 (Composition API with `<script setup>`)
 - TypeScript (strict mode)
 - Pinia 3.0.3 (state management)
@@ -114,6 +115,7 @@ server/engine/src/main/kotlin/com/loomify/engine/
 - Vite 7.0.4 (build tool)
 
 ### Backend
+
 - Kotlin 2.0.20
 - Spring Boot 3.3.4 (WebFlux - reactive)
 - Spring Security (OAuth2 Resource Server)
@@ -125,9 +127,9 @@ server/engine/src/main/kotlin/com/loomify/engine/
 
 | Method | Endpoint                           | Description               | Status         |
 | ------ | ---------------------------------- | ------------------------- | -------------- |
-| POST   | `/api/auth/register`                    | Register new user         | ✅ Implemented  |
-| POST   | `/api/auth/login`                       | Login with email/password | ✅ Implemented  |
-| POST   | `/api/auth/logout`                      | Logout current user       | ✅ Implemented  |
+| POST   | `/api/auth/register`               | Register new user         | ✅ Implemented  |
+| POST   | `/api/auth/login`                  | Login with email/password | ✅ Implemented  |
+| POST   | `/api/auth/logout`                 | Logout current user       | ✅ Implemented  |
 | POST   | `/api/auth/refresh`                | Refresh access token      | ✅ Backend only |
 | GET    | `/api/auth/user`                   | Get current user          | ✅ Implemented  |
 | GET    | `/oauth2/authorization/{provider}` | Initiate OAuth            | ✅ Backend only |
@@ -135,6 +137,7 @@ server/engine/src/main/kotlin/com/loomify/engine/
 ## Security Features
 
 ✅ **Implemented**:
+
 - HTTP-only secure cookies for tokens
 - CSRF protection enabled
 - Password strength requirements (8+ chars, uppercase, lowercase, number, special char)
@@ -144,6 +147,7 @@ server/engine/src/main/kotlin/com/loomify/engine/
 - Session expiration handling
 
 ⚠️ **Pending**:
+
 - Rate limiting on authentication endpoints
 - Account lockout after failed attempts
 - Audit logging for security events
@@ -161,6 +165,7 @@ docker compose up -d
 ```
 
 This starts:
+
 - PostgreSQL on port 5432
 - Keycloak on port 9080
 - GreenMail on port 3025
@@ -197,18 +202,21 @@ Frontend runs on: <http://localhost:9876>
 ## Remaining Tasks
 
 ### High Priority
+
 1. **Token Refresh Interceptor**: Automatic token refresh on 401 errors
 2. **Integration Testing**: End-to-end flow testing
 
 ### Medium Priority
-3. **Session Persistence**: Remember session across page reloads
-4. **E2E Tests**: Playwright tests for complete flows
+
+1. **Session Persistence**: Remember session across page reloads
+2. **E2E Tests**: Playwright tests for complete flows
 
 ### Low Priority
-5. **OAuth Configuration**: Complete Keycloak OAuth provider setup
-6. **Email Verification**: Send verification emails after registration
-7. **Password Reset**: Forgot password flow
-8. **Rate-Limiting**: Prevent brute force attacks
+
+1. **OAuth Configuration**: Complete Keycloak OAuth provider setup
+2. **Email Verification**: Send verification emails after registration
+3. **Password Reset**: Forgot password flow
+4. **Rate-Limiting**: Prevent brute force attacks
 
 ## Testing Commands
 

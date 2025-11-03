@@ -33,4 +33,3 @@
 - name: "area:infra"
   color: "fef2c0"
   description: "Infrastructure or deployment related changes"
-
