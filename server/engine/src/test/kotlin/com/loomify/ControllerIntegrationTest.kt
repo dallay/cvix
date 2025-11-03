@@ -40,11 +40,32 @@ abstract class ControllerIntegrationTest : InfrastructureTestContainers() {
         username: String = testUsername,
         password: String = testPassword
     ): JwtAuthenticationToken {
-        val token = getAccessToken(testUsername, testPassword)?.token ?: "token"
+        // Retry token acquisition to handle timing issues
+        var retries = 3
+        var token: String? = null
+        
+        while (retries > 0 && token == null) {
+            try {
+                token = getAccessToken(username, password)?.token
+                if (token == null) {
+                    Thread.sleep(1000) // Wait 1 second before retry
+                    retries--
+                }
+            } catch (e: Exception) {
+                if (retries > 1) {
+                    Thread.sleep(1000)
+                    retries--
+                } else {
+                    throw e
+                }
+            }
+        }
+        
+        val finalToken = token ?: "token"
 
         // Corrected type inference for JwtDecoder
         val jwtDecoder: NimbusJwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri) as NimbusJwtDecoder
-        val jwt = jwtDecoder.decode(token)
+        val jwt = jwtDecoder.decode(finalToken)
 
         // Corrected type inference for emptyList
         val authorities = (jwt.getClaimAsStringList("roles") ?: emptyList<String>())
