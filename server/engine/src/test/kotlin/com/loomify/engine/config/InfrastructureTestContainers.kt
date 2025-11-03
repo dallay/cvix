@@ -15,7 +15,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import org.testcontainers.junit.jupiter.Testcontainers
 
 /**
  * Base class for integration tests requiring external infrastructure (PostgreSQL, Keycloak, GreenMail).
@@ -28,7 +27,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
  * 
  * @see TestcontainersManager
  */
-@Testcontainers
 @IntegrationTest
 abstract class InfrastructureTestContainers {
     @Value("\${testing.security.username}")
