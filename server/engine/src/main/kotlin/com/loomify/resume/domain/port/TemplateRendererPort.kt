@@ -16,7 +16,7 @@ interface TemplateRendererPort {
      * @param resumeData The validated resume data to render
      * @param locale The locale for template selection (e.g., "en", "es")
      * @return Complete LaTeX document source ready for compilation
-     * @throws TemplateRenderingException if rendering fails
+     * @throws com.loomify.resume.domain.exception.TemplateRenderingException if rendering fails
      */
     fun render(resumeData: ResumeData, locale: String): String
 }

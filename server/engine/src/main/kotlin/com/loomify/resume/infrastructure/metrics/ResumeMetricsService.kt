@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 @Suppress("TooManyFunctions") // Justified: Each function tracks a specific metric type
 class ResumeMetricsService(
-    private val meterRegistry: MeterRegistry,
+    meterRegistry: MeterRegistry,
 ) {
 
     // API latency timer (excludes PDF generation time)

@@ -21,8 +21,8 @@ interface PdfGeneratorPort {
      * @param latexSource The complete LaTeX document source (including preamble)
      * @param locale The locale for language-specific formatting (e.g., "en", "es")
      * @return Reactive stream of PDF bytes
-     * @throws PdfGenerationException if generation fails
-     * @throws PdfGenerationTimeoutException if generation exceeds timeout
+     * @throws com.loomify.resume.domain.exception.PdfGenerationException if generation fails
+     * @throws com.loomify.resume.domain.exception.PdfGenerationTimeoutException if generation exceeds timeout
      */
     fun generatePdf(latexSource: String, locale: String): Mono<InputStream>
 }

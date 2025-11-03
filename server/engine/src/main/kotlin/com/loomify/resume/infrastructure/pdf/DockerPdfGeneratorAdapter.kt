@@ -33,7 +33,7 @@ import reactor.core.scheduler.Schedulers
 class DockerPdfGeneratorAdapter(
     private val dockerClient: DockerClient,
     private val properties: DockerPdfGeneratorProperties,
-    private val meterRegistry: MeterRegistry,
+    meterRegistry: MeterRegistry,
 ) : PdfGeneratorPort {
 
     private val logger = LoggerFactory.getLogger(javaClass)
