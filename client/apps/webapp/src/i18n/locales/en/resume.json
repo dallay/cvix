@@ -14,7 +14,8 @@
 			"education": "Education",
 			"skills": "Skills",
 			"languages": "Languages",
-			"projects": "Projects"
+			"projects": "Projects",
+			"noEntries": "No entries yet"
 		},
 		"fields": {
 			"name": "Full Name",
@@ -44,7 +45,8 @@
 			"fluency": "Fluency",
 			"projectName": "Project Name",
 			"description": "Description",
-			"entity": "Organization"
+			"entity": "Organization",
+			"skills": "Skills"
 		},
 		"placeholders": {
 			"name": "Jane Doe",
@@ -66,7 +68,8 @@
 			"language": "English",
 			"fluency": "Native",
 			"projectName": "E-commerce Platform",
-			"description": "Built a modern e-commerce platform using React and Node.js"
+			"description": "Built a modern e-commerce platform using React and Node.js",
+			"addSkill": "Add a skill"
 		},
 		"buttons": {
 			"add": "Add",

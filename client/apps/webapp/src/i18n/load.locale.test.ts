@@ -420,6 +420,7 @@ const mockMessages = {
 					categoryName: "Categoría",
 					skillLevel: "Nivel",
 					keywords: "Habilidades",
+					skills: "Habilidades",
 					language: "Idioma",
 					fluency: "Fluidez",
 					projectName: "Nombre del Proyecto",
@@ -445,6 +446,7 @@ const mockMessages = {
 					score: "8.5",
 					categoryName: "Lenguajes de Programación",
 					skill: "JavaScript, TypeScript, Python",
+					addSkill: "Agregar una habilidad",
 					language: "Español",
 					fluency: "Nativo",
 					projectName: "Plataforma de Comercio Electrónico",
@@ -614,6 +616,7 @@ const expectedEnMessages = {
 			skills: "Skills",
 			languages: "Languages",
 			projects: "Projects",
+			noEntries: "No entries yet",
 		},
 		fields: {
 			name: "Full Name",
@@ -639,6 +642,7 @@ const expectedEnMessages = {
 			categoryName: "Category",
 			skillLevel: "Proficiency",
 			keywords: "Skills",
+			skills: "Skills",
 			language: "Language",
 			fluency: "Fluency",
 			projectName: "Project Name",
@@ -664,6 +668,7 @@ const expectedEnMessages = {
 			score: "3.8",
 			categoryName: "Programming Languages",
 			skill: "JavaScript, TypeScript, Python",
+			addSkill: "Add a skill",
 			language: "English",
 			fluency: "Native",
 			projectName: "E-commerce Platform",
@@ -946,7 +951,7 @@ const expectedEsMessages = {
 			pdfTimeout:
 				"La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
 			rateLimit:
-				"Demasiadas solicitudes. Por favor, espera {{seconds}} segundos antes de volver a intentar.",
+				"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 			rate_limit_exceeded:
 				"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 			pdf_generation_timeout:

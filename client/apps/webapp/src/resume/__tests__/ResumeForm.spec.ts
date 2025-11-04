@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { nextTick } from "vue";
+import { nextTick, ref } from "vue";
 import ResumeForm from "../components/ResumeForm.vue";
 import { useResumeStore } from "../stores/resumeStore";
 
@@ -14,12 +14,17 @@ vi.mock("vue-i18n", () => ({
 }));
 
 // Mock the composables
+const mockIsGenerating = ref(false);
+const mockError = ref(null);
+const mockProgress = ref(0);
+const mockGenerate = vi.fn();
+
 vi.mock("../composables/useResumeGeneration", () => ({
 	useResumeGeneration: () => ({
-		generateResume: vi.fn(),
-		isGenerating: false,
-		error: null,
-		progress: 0,
+		generateResume: mockGenerate,
+		isGenerating: mockIsGenerating,
+		error: mockError,
+		progress: mockProgress,
 	}),
 }));
 
@@ -224,23 +229,42 @@ describe("ResumeForm", () => {
 	});
 
 	it("should disable submit button while generating", async () => {
-		mount(ResumeForm, {
-			global: {
-				plugins: [pinia],
-			},
-		});
+		const pinia = createPinia();
+		// enable generating state on the shared mock refs
+		mockIsGenerating.value = true;
+		mockError.value = null;
+		mockProgress.value = 50;
 
-		// Since isGenerating is mocked to false, this just verifies the component renders
+		const wrapper = mount(ResumeForm, {
+			global: { plugins: [pinia] },
+		});
+		await nextTick();
+		const submitButton = wrapper.find('[data-testid="submit-button"]');
+		expect(submitButton.attributes("disabled")).toBeDefined();
+
+		// reset mock state
+		mockIsGenerating.value = false;
+		mockProgress.value = 0;
+		mockGenerate.mockReset();
 	});
 
 	it("should show loading state while generating", async () => {
-		mount(ResumeForm, {
-			global: {
-				plugins: [pinia],
-			},
-		});
+		const pinia = createPinia();
+		mockIsGenerating.value = true;
+		mockError.value = null;
+		mockProgress.value = 50;
 
-		// isGenerating is false in the mock, so this just verifies the component renders
+		const wrapper = mount(ResumeForm, {
+			global: { plugins: [pinia] },
+		});
+		await nextTick();
+		// Check for loading indicator or text
+		expect(wrapper.text()).toMatch(/generating|loading/i);
+
+		// reset mock state
+		mockIsGenerating.value = false;
+		mockProgress.value = 0;
+		mockGenerate.mockReset();
 	});
 
 	it.skip("should show error message when generation fails", async () => {
