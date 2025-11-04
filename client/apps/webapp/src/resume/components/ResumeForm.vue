@@ -53,7 +53,7 @@ async function handleSubmit() {
     </Alert>
 
     <Alert v-if="generationError" data-testid="generation-error" variant="destructive">
-      <AlertDescription>{{ generationError.message }}</AlertDescription>
+      <AlertDescription>{{ generationError.detail || generationError.title || 'An error occurred' }}</AlertDescription>
     </Alert>
 
     <!-- Enhanced loading indicator with progress bar -->

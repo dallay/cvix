@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { ApiError, Resume } from "../types/resume";
+import type { ProblemDetail, Resume } from "../types/resume";
 
 /**
  * Composable for resume generation functionality.
@@ -7,7 +7,7 @@ import type { ApiError, Resume } from "../types/resume";
  */
 export function useResumeGeneration() {
 	const isGenerating = ref(false);
-	const error = ref<ApiError | null>(null);
+	const error = ref<ProblemDetail | null>(null);
 	const progress = ref(0);
 
 	/**
@@ -45,17 +45,20 @@ export function useResumeGeneration() {
 			progress.value = 50;
 
 			if (!response.ok) {
-				// Handle error response
-				const errorData = await response.json();
-				error.value = errorData.error || {
+				// Handle error response (RFC 7807 Problem Details)
+				const problemDetail = await response.json();
+				error.value = {
 					status: response.status,
-					code: "unknown_error",
-					message: "An unknown error occurred",
-					timestamp: new Date().toISOString(),
+					detail: problemDetail.detail || "An error occurred",
+					title: problemDetail.title,
+					type: problemDetail.type,
+					timestamp: problemDetail.timestamp || new Date().toISOString(),
+					errorCategory: problemDetail.errorCategory,
+					fieldErrors: problemDetail.fieldErrors,
+					...problemDetail, // Include any additional properties
 				};
 				return false;
 			}
-
 			progress.value = 75;
 
 			// Get PDF blob
@@ -72,17 +75,16 @@ export function useResumeGeneration() {
 			// Handle network errors
 			error.value = {
 				status: 0,
-				code: "network_error",
-				message: err instanceof Error ? err.message : "Network error occurred",
+				title: "Network Error",
+				detail: err instanceof Error ? err.message : "Network error occurred",
 				timestamp: new Date().toISOString(),
+				errorCategory: "NETWORK_ERROR",
 			};
 			return false;
 		} finally {
 			isGenerating.value = false;
 		}
-	}
-
-	/**
+	} /**
 	 * Downloads a blob as a PDF file.
 	 */
 	function downloadPdf(blob: Blob, filename: string): void {

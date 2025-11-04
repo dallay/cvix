@@ -113,7 +113,7 @@ class ResumeControllerTest {
             )
             .exchange()
             .expectStatus().isBadRequest
-            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectHeader().contentType(MediaType.APPLICATION_PROBLEM_JSON)
     }
 
     @Test

@@ -5,20 +5,19 @@ import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import com.loomify.resume.domain.exception.TemplateRenderingException
-import com.loomify.resume.infrastructure.web.dto.ErrorResponse
-import com.loomify.resume.infrastructure.web.dto.FieldError
+import java.net.URI
+import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Mono
 
 /**
  * Global exception handler for resume generation endpoints.
- * Translates domain exceptions to HTTP responses with standardized error format.
+ * Translates domain exceptions to HTTP responses with standardized ProblemDetail format.
  *
  * Error mappings per plan.md:
  * - InvalidResumeDataException → HTTP 400 Bad Request
@@ -38,26 +37,24 @@ class ResumeExceptionHandler {
     @ExceptionHandler(WebExchangeBindException::class)
     fun handleValidationException(
         ex: WebExchangeBindException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val fieldErrors = ex.fieldErrors.map { error ->
-            FieldError(
-                field = error.field,
-                message = error.defaultMessage ?: "Invalid value",
-                rejectedValue = error.rejectedValue,
-            )
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val fieldErrors = ex.fieldErrors.associate { error ->
+            error.field to (error.defaultMessage ?: "Invalid value")
         }
 
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            code = "validation_error",
-            message = "Request validation failed. Please check field errors.",
-            path = exchange.request.path.value(),
-            errors = fieldErrors,
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            "Request validation failed. Please check field errors.",
         )
+        problemDetail.title = "Validation Error"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/validation-error")
+        problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty("fieldErrors", fieldErrors)
 
         logger.warn("Validation error: {} fields failed", fieldErrors.size)
-        return Mono.just(ResponseEntity.badRequest().body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -66,17 +63,19 @@ class ResumeExceptionHandler {
     @ExceptionHandler(InvalidResumeDataException::class)
     fun handleInvalidResumeDataException(
         ex: InvalidResumeDataException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            code = "invalid_resume_data",
-            message = ex.message ?: "Resume data validation failed",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            ex.message ?: "Resume data validation failed",
         )
+        problemDetail.title = "Invalid Resume Data"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/invalid-data")
+        problemDetail.setProperty(ERROR_CATEGORY, "INVALID_RESUME_DATA")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.warn("Invalid resume data: {}", ex.message)
-        return Mono.just(ResponseEntity.badRequest().body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -85,17 +84,19 @@ class ResumeExceptionHandler {
     @ExceptionHandler(TemplateRenderingException::class)
     fun handleTemplateRenderingException(
         ex: TemplateRenderingException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.UNPROCESSABLE_ENTITY.value(),
-            code = "template_rendering_error",
-            message = "Failed to render resume template. Please check your data.",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            "Failed to render resume template. Please check your data.",
         )
+        problemDetail.title = "Template Rendering Error"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/template-error")
+        problemDetail.setProperty(ERROR_CATEGORY, "TEMPLATE_RENDERING")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.error("Template rendering failed: {}", ex.message, ex)
-        return Mono.just(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -104,17 +105,19 @@ class ResumeExceptionHandler {
     @ExceptionHandler(PdfGenerationException::class)
     fun handlePdfGenerationException(
         ex: PdfGenerationException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            code = "pdf_generation_error",
-            message = "Failed to generate PDF. Please try again later.",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Failed to generate PDF. Please try again later.",
         )
+        problemDetail.title = "PDF Generation Error"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/pdf-generation-error")
+        problemDetail.setProperty(ERROR_CATEGORY, "PDF_GENERATION")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.error("PDF generation failed: {}", ex.message, ex)
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -123,17 +126,19 @@ class ResumeExceptionHandler {
     @ExceptionHandler(PdfGenerationTimeoutException::class)
     fun handlePdfGenerationTimeoutException(
         ex: PdfGenerationTimeoutException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.GATEWAY_TIMEOUT.value(),
-            code = "pdf_generation_timeout",
-            message = "PDF generation took too long. Please try again with simpler content.",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.GATEWAY_TIMEOUT,
+            "PDF generation took too long. Please try again with simpler content.",
         )
+        problemDetail.title = "PDF Generation Timeout"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/pdf-timeout")
+        problemDetail.setProperty(ERROR_CATEGORY, "PDF_TIMEOUT")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.warn("PDF generation timeout: {}", ex.message)
-        return Mono.just(ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -142,17 +147,19 @@ class ResumeExceptionHandler {
     @ExceptionHandler(LaTeXInjectionException::class)
     fun handleLaTeXInjectionException(
         ex: LaTeXInjectionException,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            code = "malicious_content",
-            message = "Content contains potentially unsafe characters.",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            "Content contains potentially unsafe characters.",
         )
+        problemDetail.title = "Malicious Content Detected"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/malicious-content")
+        problemDetail.setProperty(ERROR_CATEGORY, "SECURITY_VIOLATION")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.error("LaTeX injection attempt detected: {}", ex.message)
-        return Mono.just(ResponseEntity.badRequest().body(errorResponse))
+        return problemDetail
     }
 
     /**
@@ -161,16 +168,24 @@ class ResumeExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleGenericException(
         ex: Exception,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ErrorResponse>> {
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            code = "internal_error",
-            message = "An unexpected error occurred. Please try again later.",
-            path = exchange.request.path.value(),
+        @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "An unexpected error occurred. Please try again later.",
         )
+        problemDetail.title = "Internal Server Error"
+        problemDetail.type = URI.create("$ERROR_PAGE/resume/internal-error")
+        problemDetail.setProperty(ERROR_CATEGORY, "INTERNAL_ERROR")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
 
         logger.error("Unexpected error: {}", ex.message, ex)
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse))
+        return problemDetail
+    }
+
+    companion object {
+        private const val ERROR_PAGE = "https://loomify.com/errors"
+        private const val TIMESTAMP = "timestamp"
+        private const val ERROR_CATEGORY = "errorCategory"
     }
 }

@@ -146,16 +146,15 @@ describe("useResumeGeneration", () => {
 			ok: false,
 			status: 400,
 			json: async () => ({
-				error: {
-					code: "invalid_request",
-					message: "Invalid resume data",
-					errors: [
-						{
-							field: "email",
-							message: "Invalid email format",
-						},
-					],
+				type: "https://loomify.com/errors/resume/validation-error",
+				title: "Validation Error",
+				status: 400,
+				detail: "Request validation failed. Please check field errors.",
+				errorCategory: "VALIDATION",
+				fieldErrors: {
+					email: "Invalid email format",
 				},
+				timestamp: "2024-01-01T00:00:00Z",
 			}),
 		});
 
@@ -164,15 +163,14 @@ describe("useResumeGeneration", () => {
 
 		await generateResume(resume, "en");
 
-		expect(error.value).toEqual({
-			code: "invalid_request",
-			message: "Invalid resume data",
-			errors: [
-				{
-					field: "email",
-					message: "Invalid email format",
-				},
-			],
+		expect(error.value).toMatchObject({
+			status: 400,
+			title: "Validation Error",
+			detail: "Request validation failed. Please check field errors.",
+			errorCategory: "VALIDATION",
+			fieldErrors: {
+				email: "Invalid email format",
+			},
 		});
 	});
 
@@ -181,11 +179,13 @@ describe("useResumeGeneration", () => {
 			ok: false,
 			status: 422,
 			json: async () => ({
-				error: {
-					code: "invalid_resume_data",
-					message:
-						"Resume must have at least one of work experience, education, or skills",
-				},
+				type: "https://loomify.com/errors/resume/invalid-data",
+				title: "Invalid Resume Data",
+				status: 422,
+				detail:
+					"Resume must have at least one of work experience, education, or skills",
+				errorCategory: "INVALID_RESUME_DATA",
+				timestamp: "2024-01-01T00:00:00Z",
 			}),
 		});
 
@@ -194,7 +194,8 @@ describe("useResumeGeneration", () => {
 
 		await generateResume(resume, "en");
 
-		expect(error.value?.code).toBe("invalid_resume_data");
+		expect(error.value?.errorCategory).toBe("INVALID_RESUME_DATA");
+		expect(error.value?.status).toBe(422);
 	});
 
 	it("should handle 429 rate limit error", async () => {
@@ -202,10 +203,13 @@ describe("useResumeGeneration", () => {
 			ok: false,
 			status: 429,
 			json: async () => ({
-				error: {
-					code: "rate_limit_exceeded",
-					message: "Too many requests. Please try again later.",
-				},
+				type: "https://loomify.com/errors/rate-limit",
+				title: "Rate Limit Exceeded",
+				status: 429,
+				detail: "Too many requests. Please try again later.",
+				errorCategory: "RATE_LIMIT",
+				retryAfterSeconds: 60,
+				timestamp: "2024-01-01T00:00:00Z",
 			}),
 		});
 
@@ -214,7 +218,8 @@ describe("useResumeGeneration", () => {
 
 		await generateResume(resume, "en");
 
-		expect(error.value?.code).toBe("rate_limit_exceeded");
+		expect(error.value?.errorCategory).toBe("RATE_LIMIT");
+		expect(error.value?.retryAfterSeconds).toBe(60);
 	});
 
 	it("should handle 500 server error", async () => {
@@ -222,10 +227,12 @@ describe("useResumeGeneration", () => {
 			ok: false,
 			status: 500,
 			json: async () => ({
-				error: {
-					code: "internal_server_error",
-					message: "An unexpected error occurred",
-				},
+				type: "https://loomify.com/errors/resume/internal-error",
+				title: "Internal Server Error",
+				status: 500,
+				detail: "An unexpected error occurred. Please try again later.",
+				errorCategory: "INTERNAL_ERROR",
+				timestamp: "2024-01-01T00:00:00Z",
 			}),
 		});
 
@@ -234,7 +241,8 @@ describe("useResumeGeneration", () => {
 
 		await generateResume(resume, "en");
 
-		expect(error.value?.code).toBe("internal_server_error");
+		expect(error.value?.errorCategory).toBe("INTERNAL_ERROR");
+		expect(error.value?.status).toBe(500);
 	});
 
 	it("should handle 504 timeout error", async () => {
@@ -242,10 +250,13 @@ describe("useResumeGeneration", () => {
 			ok: false,
 			status: 504,
 			json: async () => ({
-				error: {
-					code: "pdf_generation_timeout",
-					message: "PDF generation timed out",
-				},
+				type: "https://loomify.com/errors/resume/pdf-timeout",
+				title: "PDF Generation Timeout",
+				status: 504,
+				detail:
+					"PDF generation took too long. Please try again with simpler content.",
+				errorCategory: "PDF_TIMEOUT",
+				timestamp: "2024-01-01T00:00:00Z",
 			}),
 		});
 
@@ -254,7 +265,8 @@ describe("useResumeGeneration", () => {
 
 		await generateResume(resume, "en");
 
-		expect(error.value?.code).toBe("pdf_generation_timeout");
+		expect(error.value?.errorCategory).toBe("PDF_TIMEOUT");
+		expect(error.value?.status).toBe(504);
 	});
 
 	it("should handle network error", async () => {
@@ -266,7 +278,8 @@ describe("useResumeGeneration", () => {
 		await generateResume(resume, "en");
 
 		expect(error.value).toBeTruthy();
-		expect(error.value?.message).toContain("Network error");
+		expect(error.value?.detail).toContain("Network error");
+		expect(error.value?.errorCategory).toBe("NETWORK_ERROR");
 	});
 
 	it("should download PDF when generation succeeds", async () => {

@@ -106,19 +106,34 @@ export type GenerateResumeRequest = {
 export type ResumeGenerationState = {
 	isGenerating: boolean;
 	progress?: number; // 0-100
-	error?: ApiError;
+	error?: ProblemDetail;
 };
 
-export type ApiError = {
-	status: number;
-	code: string;
-	message: string;
-	timestamp: string;
-	path?: string;
-	errors?: FieldError[];
-	retryAfterSeconds?: number;
+/**
+ * RFC 7807 Problem Details for HTTP APIs
+ * Standard format for API error responses
+ */
+export type ProblemDetail = {
+	type?: string; // URI reference identifying the problem type
+	title?: string; // Short, human-readable summary
+	status: number; // HTTP status code
+	detail?: string; // Human-readable explanation
+	instance?: string; // URI reference identifying the specific occurrence
+	timestamp?: string; // When the error occurred
+	errorCategory?: string; // Category of the error (e.g., "VALIDATION", "INTERNAL_ERROR")
+	fieldErrors?: Record<string, string>; // Field-level validation errors
+	retryAfterSeconds?: number; // For rate limiting errors
+	[key: string]: unknown; // Allow additional properties
 };
 
+/**
+ * @deprecated Use ProblemDetail instead
+ */
+export type ApiError = ProblemDetail;
+
+/**
+ * @deprecated Use ProblemDetail.fieldErrors instead
+ */
 export type FieldError = {
 	field: string;
 	message: string;
