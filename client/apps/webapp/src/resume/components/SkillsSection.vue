@@ -49,7 +49,7 @@ function removeKeyword(categoryIndex: number, keywordIndex: number) {
       <h2 class="text-2xl font-semibold">{{ t('resume.sections.skills') }}</h2>
       <Button data-testid="add-skill-category" type="button" variant="outline" size="sm" @click="store.addSkillCategory()">
         <Plus class="h-4 w-4 mr-2" />
-        {{ t('resume.actions.add') }}
+  {{ t('resume.buttons.add') }}
       </Button>
     </div>
 
