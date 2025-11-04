@@ -40,11 +40,10 @@ const removeLanguage = (index: number) => {
 const updateLanguage = (
 	index: number,
 	field: keyof Language,
-	value: string | number,
+	value: string,
 ) => {
 	const updated = [...localLanguages.value];
-	const stringValue = String(value);
-	updated[index] = { ...updated[index], [field]: stringValue } as Language;
+	updated[index] = { ...updated[index], [field]: value } as Language;
 	localLanguages.value = updated;
 };
 </script>
@@ -89,7 +88,7 @@ const updateLanguage = (
                 :id="`language-${index}`"
                 :model-value="lang.language"
                 :placeholder="t('resume.placeholders.language')"
-                @update:model-value="(value) => updateLanguage(index, 'language', value)"
+                @update:model-value="(value: string | number) => updateLanguage(index, 'language', String(value))"
                 data-testid="language-input"
               />
             </div>
@@ -102,7 +101,7 @@ const updateLanguage = (
                 :id="`fluency-${index}`"
                 :model-value="lang.fluency"
                 :placeholder="t('resume.placeholders.fluency')"
-                @update:model-value="(value) => updateLanguage(index, 'fluency', value)"
+                @update:model-value="(value: string | number) => updateLanguage(index, 'fluency', String(value))"
                 data-testid="fluency-input"
               />
             </div>
