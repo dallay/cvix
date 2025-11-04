@@ -41,14 +41,9 @@ const removeProject = (index: number) => {
 	localProjects.value = localProjects.value.filter((_, i) => i !== index);
 };
 
-const updateProject = (
-	index: number,
-	field: keyof Project,
-	value: string | number,
-) => {
+const updateProject = (index: number, field: keyof Project, value: string) => {
 	const updated = [...localProjects.value];
-	const stringValue = String(value);
-	updated[index] = { ...updated[index], [field]: stringValue } as Project;
+	updated[index] = { ...updated[index], [field]: value } as Project;
 	localProjects.value = updated;
 };
 </script>
