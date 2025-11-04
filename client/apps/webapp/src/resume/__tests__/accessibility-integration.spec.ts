@@ -13,6 +13,12 @@ import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
 import ResumeForm from "../components/ResumeForm.vue";
 
+const pinia = createPinia();
+const i18n = createI18n({
+	locale: "en",
+	messages: {},
+});
+
 describe("Accessibility Integration - Semantic HTML and ARIA", () => {
 	describe("Semantic Labels", () => {
 		it("should document required form labels", () => {
@@ -80,12 +86,14 @@ describe("Accessibility Integration - Semantic HTML and ARIA", () => {
 		});
 
 		it("should not use positive tabindex values", () => {
-			// Rule: No tabindex > 0 (maintains natural tab order)
-			const invalidTabIndex = [1, 2, 3, 4, 5]; // These should NOT be used
+			// Mount ResumeForm and verify no elements have tabindex > 0
+			const wrapper = mount(ResumeForm, { global: { plugins: [pinia, i18n] } });
+			const elementsWithTabindex = wrapper.findAll("[tabindex]");
 
-			// All components should use tabindex="0" or "-1" only
-			expect(invalidTabIndex).not.toContain(0);
-			expect(invalidTabIndex).not.toContain(-1);
+			elementsWithTabindex.forEach((el) => {
+				const tabindex = Number.parseInt(el.attributes("tabindex") || "0");
+				expect(tabindex).toBeLessThanOrEqual(0);
+			});
 		});
 	});
 
