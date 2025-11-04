@@ -35,7 +35,13 @@ function updateProfile(network: string, url: string) {
 
 	let updatedProfiles: typeof profiles;
 	if (url) {
-		const profile = { network, username: "", url };
+		const existingProfile = existing >= 0 ? profiles[existing] : undefined;
+		const profile = {
+			...existingProfile,
+			network,
+			url,
+			username: existingProfile?.username ?? "",
+		};
 		if (existing >= 0) {
 			updatedProfiles = [...profiles];
 			updatedProfiles[existing] = profile;
