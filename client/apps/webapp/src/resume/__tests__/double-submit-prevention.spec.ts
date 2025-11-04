@@ -200,11 +200,15 @@ describe("Double Submit Prevention", () => {
 		});
 
 		it("should enforce rate limiting on backend", () => {
+			vi.useFakeTimers();
+			const startTime = Date.now();
+			vi.setSystemTime(startTime);
+
 			const RATE_LIMIT = 10; // requests per minute
 			const requestTimestamps: number[] = [];
-			const now = Date.now();
 
 			const isRateLimited = () => {
+				const now = Date.now();
 				const oneMinuteAgo = now - 60000;
 				const recentRequests = requestTimestamps.filter(
 					(ts) => ts > oneMinuteAgo,
@@ -216,16 +220,19 @@ describe("Double Submit Prevention", () => {
 				if (isRateLimited()) {
 					throw new Error("Rate limit exceeded");
 				}
-				requestTimestamps.push(now);
+				requestTimestamps.push(Date.now());
 			};
 
 			// Make requests up to the limit
 			for (let i = 0; i < RATE_LIMIT; i++) {
+				vi.advanceTimersByTime(100); // Simulate 100ms between requests
 				expect(() => makeRequest()).not.toThrow();
 			}
 
 			// Next request should be rate limited
 			expect(() => makeRequest()).toThrow("Rate limit exceeded");
+
+			vi.useRealTimers();
 		});
 
 		it("should return 429 status for rate-limited requests", () => {
