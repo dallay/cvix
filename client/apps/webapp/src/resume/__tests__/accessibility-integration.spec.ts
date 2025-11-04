@@ -91,7 +91,7 @@ describe("Accessibility Integration - Semantic HTML and ARIA", () => {
 			const elementsWithTabindex = wrapper.findAll("[tabindex]");
 
 			elementsWithTabindex.forEach((el) => {
-				const tabindex = Number.parseInt(el.attributes("tabindex") || "0");
+				const tabindex = Number.parseInt(el.attributes("tabindex") || "0", 10);
 				expect(tabindex).toBeLessThanOrEqual(0);
 			});
 		});

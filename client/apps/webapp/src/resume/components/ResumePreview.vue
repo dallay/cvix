@@ -2,14 +2,14 @@
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Card, CardContent } from "@/components/ui/card";
-
 import type { ResumeData } from "../types/resume";
+import { formatPeriod as formatPeriodUtil } from "./utils/formatPeriod";
 
 const props = defineProps<{
 	data: ResumeData;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // Debounce updates to avoid flicker while the form is changing rapidly.
 const debouncedData = ref<ResumeData>(props.data);
@@ -36,23 +36,12 @@ onBeforeUnmount(() => {
 });
 
 const formatPeriod = (startDate?: string, endDate?: string) => {
-	if (!startDate) return "";
-
-	const start = new Date(startDate).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "short",
-	});
-
-	if (!endDate) {
-		return `${start} - ${t("resume.preview.present")}`;
-	}
-
-	const end = new Date(endDate).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "short",
-	});
-
-	return `${start} - ${end}`;
+	return formatPeriodUtil(
+		startDate,
+		endDate,
+		locale.value,
+		t("resume.preview.present"),
+	);
 };
 
 const hasPersonalInfo = computed(() => {
