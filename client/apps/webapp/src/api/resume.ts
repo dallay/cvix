@@ -19,14 +19,22 @@ export const resumeApi = {
 				"Content-Type": "application/vnd.api.v1+json",
 				"Accept-Language": locale,
 			},
+			credentials: "include",
 			body: JSON.stringify(resumeData),
 		});
 
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({
-				error: { message: "Unknown error occurred" },
-			}));
-			throw new Error(error.error?.message || `HTTP ${response.status}`);
+			const problem = (await response.json().catch(() => null)) as {
+				detail?: string;
+				title?: string;
+				error?: { message?: string };
+			} | null;
+			const detail =
+				problem?.detail ??
+				problem?.title ??
+				problem?.error?.message ??
+				`HTTP ${response.status}`;
+			throw new Error(detail);
 		}
 
 		return response.blob();
