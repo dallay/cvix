@@ -24,6 +24,14 @@ const githubUrl = computed(
 );
 
 function updateField(field: string, value: string | { address: string }) {
+	if (field === "location" && typeof value === "object") {
+		const currentLocation = store.resume.basics.location ?? {};
+		store.updatePersonalInfo({
+			...store.resume.basics,
+			location: { ...currentLocation, ...value },
+		});
+		return;
+	}
 	store.updatePersonalInfo({ ...store.resume.basics, [field]: value });
 }
 
