@@ -62,8 +62,8 @@ function updateProfile(network: string, url: string) {
 </script>
 
 <template>
-  <section data-testid="personal-info-section" class="space-y-4">
-    <h2 class="text-2xl font-semibold">{{ t('resume.sections.personalInfo') }}</h2>
+  <section data-testid="personal-info-section" aria-labelledby="personal-info-heading" class="space-y-4">
+    <h2 id="personal-info-heading" class="text-2xl font-semibold">{{ t('resume.sections.personalInfo') }}</h2>
 
     <div>
       <Label data-testid="fullname-label" for="name">

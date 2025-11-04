@@ -5,7 +5,13 @@
  * @see T143 - Add accessibility integration tests
  */
 
+import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
+import "vitest-axe/extend-expect";
+import { createPinia } from "pinia";
+import { createI18n } from "vue-i18n";
+import ResumeForm from "../components/ResumeForm.vue";
 
 describe("Accessibility Integration - Semantic HTML and ARIA", () => {
 	describe("Semantic Labels", () => {
@@ -248,5 +254,68 @@ describe("Accessibility Integration - Semantic HTML and ARIA", () => {
 			// Information should not be conveyed by color alone
 			expect(colorIndependentIndicators.length).toBe(5);
 		});
+	});
+});
+
+// Executable accessibility checks using vitest-axe
+describe("Accessibility Integration - Automated Checks", () => {
+	it("should have no accessibility violations", async () => {
+		const i18n = createI18n({
+			legacy: false,
+			locale: "en",
+			messages: { en: {} },
+		});
+		const wrapper = mount(ResumeForm, {
+			global: { plugins: [createPinia(), i18n] },
+		});
+
+		const results = await axe(wrapper.element);
+
+		// Log violations for debugging
+		if (results.violations.length > 0) {
+			console.log("Accessibility violations found:");
+			results.violations.forEach((violation) => {
+				console.log(`\nRule: ${violation.id}`);
+				console.log(`Impact: ${violation.impact}`);
+				console.log(`Description: ${violation.description}`);
+				console.log(`Help: ${violation.help}`);
+				console.log(
+					"Nodes:",
+					violation.nodes.map((n) => ({
+						html: n.html,
+						target: n.target,
+						failureSummary: n.failureSummary,
+					})),
+				);
+			});
+		}
+
+		// Assert no violations were reported by axe
+		expect(results.violations).toHaveLength(0);
+
+		wrapper.unmount();
+	});
+
+	it("should have proper ARIA labels on icon buttons", async () => {
+		const i18n = createI18n({
+			legacy: false,
+			locale: "en",
+			messages: { en: {} },
+		});
+		const wrapper = mount(ResumeForm, {
+			global: { plugins: [createPinia(), i18n] },
+		});
+
+		const iconButtons = wrapper.findAll(
+			'button[aria-label], [role="button"][aria-label]',
+		);
+		expect(iconButtons.length).toBeGreaterThan(0);
+
+		for (const btn of iconButtons) {
+			const label = btn.attributes("aria-label");
+			expect(label).toBeTruthy();
+		}
+
+		wrapper.unmount();
 	});
 });

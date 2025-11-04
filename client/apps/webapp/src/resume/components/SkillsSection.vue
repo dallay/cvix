@@ -44,9 +44,9 @@ function removeKeyword(categoryIndex: number, keywordIndex: number) {
 </script>
 
 <template>
-  <section data-testid="skills-section" class="space-y-6">
+  <section data-testid="skills-section" aria-labelledby="skills-heading" class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-semibold">{{ t('resume.sections.skills') }}</h2>
+      <h2 id="skills-heading" class="text-2xl font-semibold">{{ t('resume.sections.skills') }}</h2>
       <Button data-testid="add-skill-category" type="button" variant="outline" size="sm" @click="store.addSkillCategory()">
         <Plus class="h-4 w-4 mr-2" />
   {{ t('resume.buttons.add') }}
@@ -64,6 +64,7 @@ function removeKeyword(categoryIndex: number, keywordIndex: number) {
         variant="ghost"
         size="sm"
         class="absolute top-2 right-2"
+        :aria-label="t('resume.actions.removeSkillCategory')"
         @click="store.removeSkillCategory(index)"
       >
         <Trash2 class="h-4 w-4" />
@@ -95,6 +96,7 @@ function removeKeyword(categoryIndex: number, keywordIndex: number) {
               :data-testid="`remove-keyword-${index}-${keywordIndex}`"
               type="button"
               class="hover:bg-destructive/10 rounded-full p-0.5"
+              :aria-label="t('resume.actions.removeSkill', { skill: keyword })"
               @click="removeKeyword(index, keywordIndex)"
             >
               <X class="h-3 w-3" />
@@ -110,7 +112,13 @@ function removeKeyword(categoryIndex: number, keywordIndex: number) {
             :placeholder="t('resume.placeholders.addSkill')"
             @keyup.enter="addKeyword(index)"
           />
-          <Button type="button" variant="outline" size="sm" @click="addKeyword(index)">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            :aria-label="t('resume.actions.addSkill')"
+            @click="addKeyword(index)"
+          >
             <Plus class="h-4 w-4" />
           </Button>
         </div>

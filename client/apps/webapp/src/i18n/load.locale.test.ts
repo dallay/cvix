@@ -235,7 +235,7 @@ const mockMessages = {
 					projectName: "E-commerce Platform",
 					description:
 						"Built a modern e-commerce platform using React and Node.js",
-					addSkill: "Add a skill keyword",
+					addSkill: "Add a skill",
 				},
 				buttons: {
 					add: "Add",
@@ -253,7 +253,7 @@ const mockMessages = {
 					url: "Must be a valid URL",
 					date: "Must be a valid date (YYYY-MM-DD)",
 					dateRange: "End date must be after start date",
-					maxLength: "Maximum length is {{max}} characters",
+					maxLength: "Maximum length is {max} characters",
 					minContent:
 						"Resume must have at least one of: work experience, education, or skills",
 					minSkills: "At least one skill is required",
@@ -269,7 +269,7 @@ const mockMessages = {
 					pdfTimeout:
 						"PDF generation took too long. Please try again with simpler content.",
 					rateLimit:
-						"Too many requests. Please wait {{seconds}} seconds before trying again.",
+						"Too many requests. Please wait {seconds} seconds before trying again.",
 					rate_limit_exceeded:
 						"Too many requests. Please wait {seconds} seconds before trying again.",
 					pdf_generation_timeout:
@@ -469,7 +469,7 @@ const mockMessages = {
 					url: "Debe ser una URL válida",
 					date: "Debe ser una fecha válida (AAAA-MM-DD)",
 					dateRange: "La fecha de fin debe ser posterior a la fecha de inicio",
-					maxLength: "La longitud máxima es de {{max}} caracteres",
+					maxLength: "La longitud máxima es de {max} caracteres",
 					minContent:
 						"El currículum debe tener al menos uno de: experiencia laboral, educación o habilidades",
 					minSkills: "Se requiere al menos una habilidad",
@@ -479,15 +479,6 @@ const mockMessages = {
 					retry: "Reintentar",
 					retryIn: "Reintentar en {seconds}s",
 					dismiss: "Descartar",
-					invalidData:
-						"Datos de currículum no válidos. Por favor, verifica todos los campos.",
-					templateRendering: "Error al renderizar la plantilla de currículum.",
-					pdfGeneration:
-						"Error al generar el PDF. Por favor, inténtalo de nuevo.",
-					pdfTimeout:
-						"La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
-					rateLimit:
-						"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 					rate_limit_exceeded:
 						"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 					pdf_generation_timeout:
@@ -496,8 +487,6 @@ const mockMessages = {
 						"Error al generar el PDF. Por favor, inténtalo de nuevo.",
 					template_rendering_error:
 						"Error al renderizar la plantilla. Por favor, verifica tus datos.",
-					maliciousContent:
-						"El contenido contiene caracteres potencialmente inseguros.",
 					malicious_content:
 						"El contenido contiene caracteres potencialmente inseguros.",
 					validation_error: "Por favor, corrige los errores en el formulario.",
@@ -684,16 +673,26 @@ const expectedEnMessages = {
 			addProject: "Add Project",
 			addHighlight: "Add Achievement",
 		},
+		actions: {
+			add: "Add",
+			removeWorkExperience: "Remove work experience",
+			removeEducation: "Remove education entry",
+			removeSkillCategory: "Remove skill category",
+			removeSkill: "Remove {skill}",
+			addSkill: "Add skill",
+		},
 		validation: {
 			required: "This field is required",
 			email: "Must be a valid email address",
 			url: "Must be a valid URL",
 			date: "Must be a valid date (YYYY-MM-DD)",
 			dateRange: "End date must be after start date",
-			maxLength: "Maximum length is {{max}} characters",
+			maxLength: "Maximum length is {max} characters",
 			minContent:
 				"Resume must have at least one of: work experience, education, or skills",
 			minSkills: "At least one skill is required",
+			content_required:
+				"Please add at least one section (work experience, education, or skills) to generate your resume",
 		},
 		errors: {
 			title: "Error",
@@ -706,7 +705,7 @@ const expectedEnMessages = {
 			pdfTimeout:
 				"PDF generation took too long. Please try again with simpler content.",
 			rateLimit:
-				"Too many requests. Please wait {{seconds}} seconds before trying again.",
+				"Too many requests. Please wait {seconds} seconds before trying again.",
 			rate_limit_exceeded:
 				"Too many requests. Please wait {seconds} seconds before trying again.",
 			pdf_generation_timeout:
@@ -886,6 +885,7 @@ const expectedEsMessages = {
 			score: "Promedio",
 			categoryName: "Categoría",
 			skillLevel: "Nivel",
+			skills: "Habilidades",
 			keywords: "Habilidades",
 			language: "Idioma",
 			fluency: "Fluidez",
@@ -928,30 +928,32 @@ const expectedEsMessages = {
 			addProject: "Agregar Proyecto",
 			addHighlight: "Agregar Logro",
 		},
+		actions: {
+			add: "Agregar",
+			removeWorkExperience: "Eliminar experiencia laboral",
+			removeEducation: "Eliminar entrada de educación",
+			removeSkillCategory: "Eliminar categoría de habilidades",
+			removeSkill: "Eliminar {skill}",
+			addSkill: "Agregar habilidad",
+		},
 		validation: {
 			required: "Este campo es obligatorio",
 			email: "Debe ser una dirección de correo electrónico válida",
 			url: "Debe ser una URL válida",
 			date: "Debe ser una fecha válida (AAAA-MM-DD)",
 			dateRange: "La fecha de fin debe ser posterior a la fecha de inicio",
-			maxLength: "La longitud máxima es de {{max}} caracteres",
+			maxLength: "La longitud máxima es de {max} caracteres",
 			minContent:
 				"El currículum debe tener al menos uno de: experiencia laboral, educación o habilidades",
 			minSkills: "Se requiere al menos una habilidad",
+			content_required:
+				"Por favor, agrega al menos una sección (experiencia laboral, educación o habilidades) para generar tu currículum",
 		},
 		errors: {
 			title: "Error",
 			retry: "Reintentar",
 			retryIn: "Reintentar en {seconds}s",
 			dismiss: "Descartar",
-			invalidData:
-				"Datos de currículum no válidos. Por favor, verifica todos los campos.",
-			templateRendering: "Error al renderizar la plantilla de currículum.",
-			pdfGeneration: "Error al generar el PDF. Por favor, inténtalo de nuevo.",
-			pdfTimeout:
-				"La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
-			rateLimit:
-				"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 			rate_limit_exceeded:
 				"Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
 			pdf_generation_timeout:
@@ -960,8 +962,6 @@ const expectedEsMessages = {
 				"Error al generar el PDF. Por favor, inténtalo de nuevo.",
 			template_rendering_error:
 				"Error al renderizar la plantilla. Por favor, verifica tus datos.",
-			maliciousContent:
-				"El contenido contiene caracteres potencialmente inseguros.",
 			malicious_content:
 				"El contenido contiene caracteres potencialmente inseguros.",
 			validation_error: "Por favor, corrige los errores en el formulario.",

@@ -24,9 +24,9 @@ function updateEntry(
 </script>
 
 <template>
-  <section data-testid="work-experience-section" class="space-y-6">
+  <section data-testid="work-experience-section" aria-labelledby="work-experience-heading" class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-semibold">{{ t('resume.sections.workExperience') }}</h2>
+      <h2 id="work-experience-heading" class="text-2xl font-semibold">{{ t('resume.sections.workExperience') }}</h2>
       <Button data-testid="add-work-experience" type="button" variant="outline" size="sm" @click="store.addWorkExperience()">
         <Plus class="h-4 w-4 mr-2" />
         {{ t('resume.actions.add') }}
@@ -44,6 +44,7 @@ function updateEntry(
         variant="ghost"
         size="sm"
         class="absolute top-2 right-2"
+        :aria-label="t('resume.actions.removeWorkExperience')"
         @click="store.removeWorkExperience(index)"
       >
         <Trash2 class="h-4 w-4" />

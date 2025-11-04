@@ -81,15 +81,24 @@
 			"addProject": "Add Project",
 			"addHighlight": "Add Achievement"
 		},
+		"actions": {
+			"add": "Add",
+			"removeWorkExperience": "Remove work experience",
+			"removeEducation": "Remove education entry",
+			"removeSkillCategory": "Remove skill category",
+			"removeSkill": "Remove {skill}",
+			"addSkill": "Add skill"
+		},
 		"validation": {
 			"required": "This field is required",
 			"email": "Must be a valid email address",
 			"url": "Must be a valid URL",
 			"date": "Must be a valid date (YYYY-MM-DD)",
 			"dateRange": "End date must be after start date",
-			"maxLength": "Maximum length is {{max}} characters",
+			"maxLength": "Maximum length is {max} characters",
 			"minContent": "Resume must have at least one of: work experience, education, or skills",
-			"minSkills": "At least one skill is required"
+			"minSkills": "At least one skill is required",
+			"content_required": "Please add at least one section (work experience, education, or skills) to generate your resume"
 		},
 		"errors": {
 			"title": "Error",
@@ -100,7 +109,7 @@
 			"templateRendering": "Failed to render resume template.",
 			"pdfGeneration": "Failed to generate PDF. Please try again.",
 			"pdfTimeout": "PDF generation took too long. Please try again with simpler content.",
-			"rateLimit": "Too many requests. Please wait {{seconds}} seconds before trying again.",
+			"rateLimit": "Too many requests. Please wait {seconds} seconds before trying again.",
 			"rate_limit_exceeded": "Too many requests. Please wait {seconds} seconds before trying again.",
 			"pdf_generation_timeout": "PDF generation took too long. Please try again with simpler content.",
 			"pdf_generation_error": "Failed to generate PDF. Please try again.",

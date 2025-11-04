@@ -19,9 +19,9 @@ function updateEntry(index: number, field: keyof Education, value: string) {
 </script>
 
 <template>
-  <section data-testid="education-section" class="space-y-6">
+  <section data-testid="education-section" aria-labelledby="education-heading" class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-semibold">{{ t('resume.sections.education') }}</h2>
+      <h2 id="education-heading" class="text-2xl font-semibold">{{ t('resume.sections.education') }}</h2>
       <Button data-testid="add-education" type="button" variant="outline" size="sm" @click="store.addEducation()">
         <Plus class="h-4 w-4 mr-2" />
         {{ t('resume.actions.add') }}
@@ -39,6 +39,7 @@ function updateEntry(index: number, field: keyof Education, value: string) {
         variant="ghost"
         size="sm"
         class="absolute top-2 right-2"
+        :aria-label="t('resume.actions.removeEducation')"
         @click="store.removeEducation(index)"
       >
         <Trash2 class="h-4 w-4" />
