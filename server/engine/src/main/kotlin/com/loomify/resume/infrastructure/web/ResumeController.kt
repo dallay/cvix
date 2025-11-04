@@ -81,14 +81,6 @@ class ResumeController(
             )
         }
 
-        // Validate API-Version header (optional but recommended)
-        val apiVersion = exchange.request.headers.getFirst("API-Version")
-        if (apiVersion != null && apiVersion != "v1" && apiVersion != "1") {
-            return Mono.error(
-                IllegalArgumentException("Unsupported API version: $apiVersion. Supported versions: v1"),
-            )
-        }
-
         // Extract locale from Accept-Language header
         val locale = exchange.request.headers.acceptLanguage
             .firstOrNull()?.range?.lowercase() ?: "en"

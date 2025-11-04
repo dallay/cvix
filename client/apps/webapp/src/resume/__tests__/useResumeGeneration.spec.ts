@@ -72,7 +72,7 @@ describe("useResumeGeneration", () => {
 			expect.objectContaining({
 				method: "POST",
 				headers: expect.objectContaining({
-					"Content-Type": "application/json",
+					"Content-Type": "application/vnd.api.v1+json",
 					"Accept-Language": "en",
 				}),
 				body: JSON.stringify(resume),

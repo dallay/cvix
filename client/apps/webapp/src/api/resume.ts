@@ -18,7 +18,6 @@ export const resumeApi = {
 			headers: {
 				"Content-Type": "application/vnd.api.v1+json",
 				"Accept-Language": locale,
-				"API-Version": "1.0",
 			},
 			body: JSON.stringify(resumeData),
 		});

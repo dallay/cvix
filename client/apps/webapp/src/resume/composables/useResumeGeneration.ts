@@ -29,7 +29,7 @@ export function useResumeGeneration() {
 			const authToken = localStorage.getItem("auth_token");
 
 			const headers: Record<string, string> = {
-				"Content-Type": "application/json",
+				"Content-Type": "application/vnd.api.v1+json",
 				"Accept-Language": locale,
 			};
 
