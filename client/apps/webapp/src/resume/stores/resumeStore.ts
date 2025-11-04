@@ -3,6 +3,8 @@ import { computed, ref } from "vue";
 import type {
 	ApiError,
 	Education,
+	Language,
+	Project,
 	Resume,
 	ResumeData,
 	SkillCategory,
@@ -136,6 +138,55 @@ export const useResumeStore = defineStore("resume", () => {
 		}
 	}
 
+	function addLanguage() {
+		if (!resume.value.languages) {
+			resume.value.languages = [];
+		}
+		const newEntry: Language = {
+			language: "",
+			fluency: "",
+		};
+		resume.value.languages.push(newEntry);
+	}
+
+	function removeLanguage(index: number) {
+		if (resume.value.languages) {
+			resume.value.languages.splice(index, 1);
+		}
+	}
+
+	function updateLanguage(index: number, data: Language) {
+		if (resume.value.languages?.[index]) {
+			resume.value.languages[index] = data;
+		}
+	}
+
+	function addProject() {
+		if (!resume.value.projects) {
+			resume.value.projects = [];
+		}
+		const newEntry: Project = {
+			name: "",
+			description: "",
+			url: "",
+			startDate: "",
+			endDate: "",
+		};
+		resume.value.projects.push(newEntry);
+	}
+
+	function removeProject(index: number) {
+		if (resume.value.projects) {
+			resume.value.projects.splice(index, 1);
+		}
+	}
+
+	function updateProject(index: number, data: Project) {
+		if (resume.value.projects?.[index]) {
+			resume.value.projects[index] = data;
+		}
+	}
+
 	function resetResume() {
 		resume.value = {
 			basics: {
@@ -176,6 +227,12 @@ export const useResumeStore = defineStore("resume", () => {
 		addSkillCategory,
 		removeSkillCategory,
 		updateSkillCategory,
+		addLanguage,
+		removeLanguage,
+		updateLanguage,
+		addProject,
+		removeProject,
+		updateProject,
 		resetResume,
 		setGenerating,
 		setGenerationError,

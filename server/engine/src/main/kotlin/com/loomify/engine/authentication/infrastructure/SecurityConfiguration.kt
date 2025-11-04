@@ -8,6 +8,7 @@ import com.loomify.engine.authentication.infrastructure.filter.JwtCookieOrHeader
 import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -284,7 +285,7 @@ class SecurityConfiguration(
      */
     @Bean
     @Generated(reason = "Only called with a valid client registration repository")
-    @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ReactiveClientRegistrationRepository::class)
+    @ConditionalOnProperty("spring.security.oauth2.client.provider.oidc.issuer-uri")
     fun jwtDecoder(
         clientRegistrationRepository: ReactiveClientRegistrationRepository
     ): ReactiveJwtDecoder {

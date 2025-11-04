@@ -129,3 +129,6 @@ checksums.txt
 gitleaks_*.tar.gz
 gitleaks_*.tar.gz.sha256
 actionlint
+
+
+test-results/
