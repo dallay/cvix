@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Loader2 } from "lucide-vue-next";
-import { computed, toRef } from "vue";
+import { storeToRefs } from "pinia";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const {
 
 // Session persistence - auto-saves form data
 // Use toRef to get reactive ref from store property
-const resumeRef = toRef(() => store.resume);
+const { resume: resumeRef } = storeToRefs(store);
 const { clearSession } = useResumeSession(resumeRef);
 
 const contentError = computed(() =>
