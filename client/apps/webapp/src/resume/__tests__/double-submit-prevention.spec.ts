@@ -102,17 +102,21 @@ describe("Double Submit Prevention", () => {
 	});
 
 	describe("Frontend - Debounce Implementation", () => {
-		it("should debounce function calls", () => {
-			vi.useFakeTimers();
-			let callCount = 0;
-
-			const debounce = (fn: () => void, delay: number) => {
+		function createDebounce() {
+			return (fn: () => void, delay: number) => {
 				let timeoutId: ReturnType<typeof setTimeout> | null = null;
 				return () => {
 					if (timeoutId) clearTimeout(timeoutId);
 					timeoutId = setTimeout(fn, delay);
 				};
 			};
+		}
+
+		const debounce = createDebounce();
+
+		it("should debounce function calls", () => {
+			vi.useFakeTimers();
+			let callCount = 0;
 
 			const debouncedFn = debounce(() => {
 				callCount++;
@@ -138,14 +142,6 @@ describe("Double Submit Prevention", () => {
 		it("should reset debounce timer on subsequent calls", () => {
 			vi.useFakeTimers();
 			let callCount = 0;
-
-			const debounce = (fn: () => void, delay: number) => {
-				let timeoutId: ReturnType<typeof setTimeout> | null = null;
-				return () => {
-					if (timeoutId) clearTimeout(timeoutId);
-					timeoutId = setTimeout(fn, delay);
-				};
-			};
 
 			const debouncedFn = debounce(() => {
 				callCount++;
