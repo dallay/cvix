@@ -73,11 +73,7 @@ data class WorkExperience(
      * @param locale "en" for English, "es" for Spanish
      */
     fun formatPeriod(locale: String = "en"): String {
-        val end = if (endDate != null) {
-            endDate
-        } else {
-            if (locale == "es") "Presente" else "Present"
-        }
+        val end = endDate ?: if (locale == "es") "Presente" else "Present"
         return "$startDate -- $end"
     }
     companion object {
