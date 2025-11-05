@@ -59,7 +59,6 @@ class ResumeMetricsService(
 
     private val requestFailureCounter: Counter = Counter.builder("resume.requests.failure")
         .description("Failed resume generation requests")
-        .tag("type", "all")
         .register(meterRegistry)
 
     // Error type counters
@@ -92,6 +91,14 @@ class ResumeMetricsService(
             val total = requestTotalCounter.count()
             val failures = requestFailureCounter.count()
             if (total > 0) failures / total else 0.0
+        }
+
+        // Register initialized gauge to indicate if requests have been recorded
+        meterRegistry.gauge(
+            "resume.error.rate.initialized",
+            this,
+        ) {
+            if (requestTotalCounter.count() > 0) 1.0 else 0.0
         }
     }
 
