@@ -37,7 +37,7 @@ class PdfGenerationException(
  * Thrown when PDF generation times out (>10 seconds per spec).
  */
 class PdfGenerationTimeoutException(
-    message: String = "PDF generation exceeded timeout limit",
+    message: String = "PDF generation exceeded timeout limit (10 seconds)",
     cause: Throwable? = null
 ) : ResumeGenerationException(message, cause)
 
