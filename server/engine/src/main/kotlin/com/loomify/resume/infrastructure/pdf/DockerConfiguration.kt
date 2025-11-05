@@ -11,10 +11,6 @@ import org.springframework.context.annotation.Configuration
 
 private const val MAX_CONNECTIONS = 100
 
-private const val CONNECTION_TIMEOUT = 30
-
-private const val RESPONSE_TIMEOUT = 15
-
 /**
  * Docker configuration for PDF generation.
  * Configures Docker client and resource limits per security requirements.
@@ -24,7 +20,7 @@ private const val RESPONSE_TIMEOUT = 15
 class DockerConfiguration {
 
     @Bean
-    fun dockerClient(): DockerClient {
+    fun dockerClient(properties: DockerPdfGeneratorProperties): DockerClient {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
             .build()
 
@@ -32,8 +28,8 @@ class DockerConfiguration {
             .dockerHost(config.dockerHost)
             .sslConfig(config.sslConfig)
             .maxConnections(MAX_CONNECTIONS)
-            .connectionTimeout(Duration.ofSeconds(CONNECTION_TIMEOUT.toLong()))
-            .responseTimeout(Duration.ofSeconds(RESPONSE_TIMEOUT.toLong()))
+            .connectionTimeout(Duration.ofSeconds(properties.timeoutSeconds))
+            .responseTimeout(Duration.ofSeconds(properties.timeoutSeconds))
             .build()
 
         return DockerClientImpl.getInstance(config, httpClient)
