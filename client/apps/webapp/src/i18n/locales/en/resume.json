@@ -110,14 +110,8 @@
 			"pdfGeneration": "Failed to generate PDF. Please try again.",
 			"pdfTimeout": "PDF generation took too long. Please try again with simpler content.",
 			"rateLimit": "Too many requests. Please wait {seconds} seconds before trying again.",
-			"rate_limit_exceeded": "Too many requests. Please wait {seconds} seconds before trying again.",
-			"pdf_generation_timeout": "PDF generation took too long. Please try again with simpler content.",
-			"pdf_generation_error": "Failed to generate PDF. Please try again.",
-			"template_rendering_error": "Failed to render resume template. Please check your data.",
 			"maliciousContent": "Content contains potentially unsafe characters.",
-			"malicious_content": "Content contains potentially unsafe characters.",
-			"validation_error": "Please correct the errors in the form.",
-			"invalid_resume_data": "Resume data is invalid. Please check required fields.",
+			"validationError": "Please correct the errors in the form.",
 			"unknown": "An unexpected error occurred. Please try again later."
 		},
 		"success": {
