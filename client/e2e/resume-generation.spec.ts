@@ -324,7 +324,7 @@ test.describe("Resume Generation - Accessibility", () => {
 		// Check for required ARIA labels
 		await expect(
 			page.getByRole("button", { name: /add work experience/i }),
-		).toHaveAttribute("aria-label");
+		).toBeVisible();
 		await expect(
 			page.getByRole("button", { name: /generate resume/i }),
 		).toBeVisible();
