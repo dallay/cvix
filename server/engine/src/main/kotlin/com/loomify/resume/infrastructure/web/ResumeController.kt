@@ -85,9 +85,16 @@ class ResumeController(
 
         // Extract locale from Accept-Language header
         val locale = try {
-            com.loomify.resume.application.command.Locale.from(
-                exchange.request.headers.acceptLanguage.firstOrNull()?.range?.lowercase() ?: "en",
-            )
+            // Use only the primary language subtag (e.g., "en" from "en-US") to match template names
+            val languageCode = exchange.request.headers.acceptLanguage
+                .firstOrNull()
+                ?.range
+                ?.split("-")
+                ?.first()
+                ?.lowercase()
+                ?: "en"
+
+            com.loomify.resume.application.command.Locale.from(languageCode)
         } catch (e: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported locale", e)
         }
