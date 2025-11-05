@@ -1,3 +1,4 @@
+import { deepmerge } from "@loomify/utilities";
 import type { Ref } from "vue";
 import { onMounted, onUnmounted, watch } from "vue";
 import type { Resume } from "../types/resume";
@@ -39,7 +40,13 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 			if (!savedData) {
 				return null;
 			}
-			return JSON.parse(savedData) as Resume;
+			const parsed = JSON.parse(savedData);
+			// Basic validation to ensure it has the required structure
+			if (!parsed || typeof parsed !== "object" || !parsed.basics) {
+				console.warn("Invalid resume data in session storage");
+				return null;
+			}
+			return parsed as Resume;
 		} catch (error) {
 			console.warn("Failed to load resume data from session:", error);
 			return null;
@@ -75,11 +82,8 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 	onMounted(() => {
 		const savedData = loadFromSession();
 		if (savedData) {
-			// Merge saved data with current data to preserve any defaults
-			resumeData.value = {
-				...resumeData.value,
-				...savedData,
-			};
+			// Deep merge to preserve nested structures
+			resumeData.value = deepmerge.all([resumeData.value, savedData]) as Resume;
 		}
 	});
 
