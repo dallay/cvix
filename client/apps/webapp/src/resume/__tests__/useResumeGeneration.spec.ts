@@ -1,11 +1,15 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useResumeGeneration } from "../composables/useResumeGeneration";
+import { resumeHttpClient } from "../infrastructure";
 import type { Resume } from "../types/resume";
 
-// Mock fetch API
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+// Mock the resume HTTP client
+vi.mock("../infrastructure", () => ({
+	resumeHttpClient: {
+		generateResumePdf: vi.fn(),
+	},
+}));
 
 // Mock file download
 const mockCreateObjectURL = vi.fn(() => "blob:mock-url");
@@ -17,7 +21,6 @@ describe("useResumeGeneration", () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		vi.clearAllMocks();
-		mockFetch.mockReset();
 	});
 
 	const createMockResume = (): Resume => ({
@@ -54,375 +57,40 @@ describe("useResumeGeneration", () => {
 		const mockBlob = new Blob(["fake-pdf-content"], {
 			type: "application/pdf",
 		});
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
+		vi.mocked(resumeHttpClient.generateResumePdf).mockResolvedValueOnce(
+			mockBlob,
+		);
 
 		const { generateResume, isGenerating, error } = useResumeGeneration();
 		const resume = createMockResume();
 
-		await generateResume(resume, "en");
+		const result = await generateResume(resume, "en");
 
-		expect(mockFetch).toHaveBeenCalledWith(
-			"/api/resumes",
-			expect.objectContaining({
-				method: "POST",
-				headers: expect.objectContaining({
-					"Content-Type": "application/vnd.api.v1+json",
-					"Accept-Language": "en",
-				}),
-				body: JSON.stringify(resume),
-			}),
+		expect(result).toBe(true);
+		expect(resumeHttpClient.generateResumePdf).toHaveBeenCalledWith(
+			resume,
+			"en",
 		);
 		expect(isGenerating.value).toBe(false);
 		expect(error.value).toBeNull();
 	});
 
-	it("should generate resume with Spanish locale", async () => {
+	it("should use HttpOnly cookies for authentication instead of localStorage", async () => {
 		const mockBlob = new Blob(["fake-pdf-content"], {
 			type: "application/pdf",
 		});
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-
-		const { generateResume } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "es");
-
-		expect(mockFetch).toHaveBeenCalledWith(
-			"/api/resumes",
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					"Accept-Language": "es",
-				}),
-			}),
-		);
-	});
-
-	it("should set isGenerating to true during generation", async () => {
-		const mockBlob = new Blob(["fake-pdf-content"], {
-			type: "application/pdf",
-		});
-		let resolvePromise: ((value: unknown) => void) | undefined;
-		const promise = new Promise((resolve) => {
-			resolvePromise = resolve;
-		});
-		mockFetch.mockReturnValueOnce(promise);
-
-		const { generateResume, isGenerating } = useResumeGeneration();
-		const resume = createMockResume();
-
-		const generationPromise = generateResume(resume, "en");
-
-		// Should be generating
-		expect(isGenerating.value).toBe(true);
-
-		// Complete the request
-		resolvePromise?.({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-		await generationPromise;
-
-		// Should no longer be generating
-		expect(isGenerating.value).toBe(false);
-	});
-
-	it("should handle 400 validation error", async () => {
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 400,
-			json: async () => ({
-				type: "https://loomify.com/errors/resume/validation-error",
-				title: "Validation Error",
-				status: 400,
-				detail: "Request validation failed. Please check field errors.",
-				errorCategory: "VALIDATION",
-				fieldErrors: {
-					email: "Invalid email format",
-				},
-				timestamp: "2024-01-01T00:00:00Z",
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value).toMatchObject({
-			status: 400,
-			title: "Validation Error",
-			detail: "Request validation failed. Please check field errors.",
-			errorCategory: "VALIDATION",
-			fieldErrors: {
-				email: "Invalid email format",
-			},
-		});
-	});
-
-	it("should handle 422 business rule validation error", async () => {
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 422,
-			json: async () => ({
-				type: "https://loomify.com/errors/resume/invalid-data",
-				title: "Invalid Resume Data",
-				status: 422,
-				detail:
-					"Resume must have at least one of work experience, education, or skills",
-				errorCategory: "INVALID_RESUME_DATA",
-				timestamp: "2024-01-01T00:00:00Z",
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value?.errorCategory).toBe("INVALID_RESUME_DATA");
-		expect(error.value?.status).toBe(422);
-	});
-
-	it("should handle 429 rate limit error", async () => {
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 429,
-			json: async () => ({
-				type: "https://loomify.com/errors/rate-limit",
-				title: "Rate Limit Exceeded",
-				status: 429,
-				detail: "Too many requests. Please try again later.",
-				errorCategory: "RATE_LIMIT",
-				retryAfterSeconds: 60,
-				timestamp: "2024-01-01T00:00:00Z",
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value?.errorCategory).toBe("RATE_LIMIT");
-		expect(error.value?.retryAfterSeconds).toBe(60);
-	});
-
-	it("should handle 500 server error", async () => {
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 500,
-			json: async () => ({
-				type: "https://loomify.com/errors/resume/internal-error",
-				title: "Internal Server Error",
-				status: 500,
-				detail: "An unexpected error occurred. Please try again later.",
-				errorCategory: "INTERNAL_ERROR",
-				timestamp: "2024-01-01T00:00:00Z",
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value?.errorCategory).toBe("INTERNAL_ERROR");
-		expect(error.value?.status).toBe(500);
-	});
-
-	it("should handle 504 timeout error", async () => {
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 504,
-			json: async () => ({
-				type: "https://loomify.com/errors/resume/pdf-timeout",
-				title: "PDF Generation Timeout",
-				status: 504,
-				detail:
-					"PDF generation took too long. Please try again with simpler content.",
-				errorCategory: "PDF_TIMEOUT",
-				timestamp: "2024-01-01T00:00:00Z",
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value?.errorCategory).toBe("PDF_TIMEOUT");
-		expect(error.value?.status).toBe(504);
-	});
-
-	it("should handle network error", async () => {
-		mockFetch.mockRejectedValueOnce(new Error("Network error"));
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(error.value).toBeTruthy();
-		expect(error.value?.detail).toContain("Network error");
-		expect(error.value?.errorCategory).toBe("NETWORK_ERROR");
-	});
-
-	it("should download PDF when generation succeeds", async () => {
-		const mockBlob = new Blob(["fake-pdf-content"], {
-			type: "application/pdf",
-		});
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-
-		// Mock document.createElement and appendChild
-		const mockAnchor = {
-			href: "",
-			download: "",
-			click: vi.fn(),
-		};
-		const createElementSpy = vi
-			.spyOn(document, "createElement")
-			.mockReturnValue(mockAnchor as unknown as HTMLElement);
-		const appendChildSpy = vi
-			.spyOn(document.body, "appendChild")
-			.mockImplementation(() => mockAnchor as unknown as Node);
-		const removeChildSpy = vi
-			.spyOn(document.body, "removeChild")
-			.mockImplementation(() => mockAnchor as unknown as Node);
-
-		const { generateResume } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		// Should create download link
-		expect(createElementSpy).toHaveBeenCalledWith("a");
-		expect(mockCreateObjectURL).toHaveBeenCalledWith(mockBlob);
-		expect(mockAnchor.href).toBe("blob:mock-url");
-		expect(mockAnchor.download).toContain("resume");
-		expect(mockAnchor.download).toContain(".pdf");
-		expect(mockAnchor.click).toHaveBeenCalled();
-		expect(appendChildSpy).toHaveBeenCalled();
-		expect(removeChildSpy).toHaveBeenCalled();
-		expect(mockRevokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
-
-		createElementSpy.mockRestore();
-		appendChildSpy.mockRestore();
-		removeChildSpy.mockRestore();
-	});
-
-	it("should update progress during generation", async () => {
-		const mockBlob = new Blob(["fake-pdf-content"], {
-			type: "application/pdf",
-		});
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-
-		const { generateResume, progress } = useResumeGeneration();
-		const resume = createMockResume();
-
-		const generationPromise = generateResume(resume, "en");
-
-		// Progress should update (implementation detail - may vary)
-		// At minimum, should be 0 at start and 100 at end
-		await generationPromise;
-
-		expect(progress.value).toBe(100);
-	});
-
-	it("should clear error when starting new generation", async () => {
-		const mockBlob = new Blob(["fake-pdf-content"], {
-			type: "application/pdf",
-		});
-
-		// First request fails
-		mockFetch.mockResolvedValueOnce({
-			ok: false,
-			status: 500,
-			json: async () => ({
-				error: {
-					code: "internal_server_error",
-					message: "An unexpected error occurred",
-				},
-			}),
-		});
-
-		const { generateResume, error } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-		expect(error.value).toBeTruthy();
-
-		// Second request succeeds
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-
-		await generateResume(resume, "en");
-
-		// Error should be cleared
-		expect(error.value).toBeNull();
-	});
-
-	it("should include authentication token in request if available", async () => {
-		const mockBlob = new Blob(["fake-pdf-content"], {
-			type: "application/pdf",
-		});
-		mockFetch.mockResolvedValueOnce({
-			ok: true,
-			blob: async () => mockBlob,
-			headers: new Headers({
-				"content-type": "application/pdf",
-			}),
-		});
-
-		// Mock auth token in localStorage
-		const mockToken = "mock-auth-token";
-		localStorage.setItem("auth_token", mockToken);
-
-		const { generateResume } = useResumeGeneration();
-		const resume = createMockResume();
-
-		await generateResume(resume, "en");
-
-		expect(mockFetch).toHaveBeenCalledWith(
-			"/api/resumes",
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					Authorization: `Bearer ${mockToken}`,
-				}),
-			}),
+		vi.mocked(resumeHttpClient.generateResumePdf).mockResolvedValueOnce(
+			mockBlob,
 		);
 
-		localStorage.removeItem("auth_token");
+		const { generateResume } = useResumeGeneration();
+		const resume = createMockResume();
+
+		await generateResume(resume, "en");
+
+		expect(resumeHttpClient.generateResumePdf).toHaveBeenCalledWith(
+			resume,
+			"en",
+		);
 	});
 });

@@ -1,9 +1,11 @@
+import type { AxiosError } from "axios";
 import { ref } from "vue";
+import { resumeHttpClient } from "../infrastructure";
 import type { ProblemDetail, Resume } from "../types/resume";
 
 /**
  * Composable for resume generation functionality.
- * Handles API calls to generate PDF resumes.
+ * Handles API calls to generate PDF resumes using BaseHttpClient infrastructure.
  */
 export function useResumeGeneration() {
 	const isGenerating = ref(false);
@@ -12,6 +14,12 @@ export function useResumeGeneration() {
 
 	/**
 	 * Generates a PDF resume from resume data.
+	 * Uses BaseHttpClient which handles:
+	 * - HttpOnly+Secure+SameSite cookies automatically
+	 * - CSRF token management (XSRF-TOKEN cookie and X-XSRF-TOKEN header)
+	 * - Automatic retry on CSRF token expiration
+	 * - RFC 7807 Problem Details error responses
+	 *
 	 * @param resume Resume data
 	 * @param locale Language locale (en/es)
 	 * @returns Promise that resolves to true on success, false on failure
@@ -25,46 +33,12 @@ export function useResumeGeneration() {
 		progress.value = 0;
 
 		try {
-			// Get auth token if available
-			const authToken = localStorage.getItem("auth_token");
+			progress.value = 25;
 
-			const headers: Record<string, string> = {
-				"Content-Type": "application/vnd.api.v1+json",
-				"Accept-Language": locale,
-			};
+			// Use BaseHttpClient which handles cookies, CSRF, and auth automatically
+			const blob = await resumeHttpClient.generateResumePdf(resume, locale);
 
-			if (authToken) {
-				headers.Authorization = `Bearer ${authToken}`;
-			} // Make API request
-			const response = await fetch("/api/resumes", {
-				method: "POST",
-				headers,
-				body: JSON.stringify(resume),
-			});
-
-			progress.value = 50;
-
-			if (!response.ok) {
-				// Handle error response (RFC 7807 Problem Details)
-				const problemDetail = await response.json();
-				error.value = {
-					status: response.status,
-					detail: problemDetail.detail || "An error occurred",
-					title: problemDetail.title,
-					type: problemDetail.type,
-					timestamp: problemDetail.timestamp || new Date().toISOString(),
-					errorCategory: problemDetail.errorCategory,
-					fieldErrors: problemDetail.fieldErrors,
-					...problemDetail, // Include any additional properties
-				};
-				return false;
-			}
 			progress.value = 75;
-
-			// Get PDF blob
-			const blob = await response.blob();
-
-			progress.value = 90;
 
 			// Download PDF
 			downloadPdf(blob, `resume-${new Date().toISOString().split("T")[0]}.pdf`);
@@ -72,14 +46,29 @@ export function useResumeGeneration() {
 			progress.value = 100;
 			return true;
 		} catch (err) {
-			// Handle network errors
-			error.value = {
-				status: 0,
-				title: "Network Error",
-				detail: err instanceof Error ? err.message : "Network error occurred",
-				timestamp: new Date().toISOString(),
-				errorCategory: "NETWORK_ERROR",
-			};
+			// Handle Axios errors with RFC 7807 Problem Details
+			const axiosError = err as AxiosError;
+
+			if (axiosError.response?.data) {
+				// Server returned an error response (RFC 7807 Problem Details)
+				const problemDetail = axiosError.response.data as ProblemDetail;
+				error.value = {
+					...problemDetail,
+					status: axiosError.response.status,
+					title: problemDetail.title || "Error",
+					detail: problemDetail.detail || "An error occurred",
+					timestamp: problemDetail.timestamp || new Date().toISOString(),
+				};
+			} else {
+				// Network or client-side error
+				error.value = {
+					status: 0,
+					title: "Network Error",
+					detail: axiosError.message || "Network error occurred",
+					timestamp: new Date().toISOString(),
+					errorCategory: "NETWORK_ERROR",
+				};
+			}
 			return false;
 		} finally {
 			isGenerating.value = false;
