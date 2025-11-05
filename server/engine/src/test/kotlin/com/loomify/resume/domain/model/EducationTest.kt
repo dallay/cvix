@@ -4,6 +4,7 @@ import com.loomify.UnitTest
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import java.util.Locale
 import org.junit.jupiter.api.Test
 
 /**
@@ -74,7 +75,7 @@ class EducationTest {
         )
 
         // Act
-        val period = education.formatPeriod("en")
+        val period = education.formatPeriod(Locale.ENGLISH)
 
         // Assert
         period shouldBe "2015-09-01 -- 2019-05-31"
@@ -94,7 +95,7 @@ class EducationTest {
         )
 
         // Act
-        val period = education.formatPeriod("en")
+        val period = education.formatPeriod(Locale.ENGLISH)
 
         // Assert
         period shouldBe "2020-09-01 -- Present"
@@ -114,7 +115,7 @@ class EducationTest {
         )
 
         // Act
-        val period = education.formatPeriod("es")
+        val period = education.formatPeriod(Locale.forLanguageTag("es"))
 
         // Assert
         period shouldBe "2020-09-01 -- Presente"

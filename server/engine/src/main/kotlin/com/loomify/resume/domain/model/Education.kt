@@ -1,6 +1,8 @@
 package com.loomify.resume.domain.model
 
 import java.time.LocalDate
+import java.util.Locale
+import java.util.ResourceBundle
 
 /**
  * InstitutionName value object with validation.
@@ -78,10 +80,12 @@ data class Education(
     /**
      * Formats the study period for display.
      * Format: "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present"
-     * @param locale "en" for English, "es" for Spanish
+     * @param locale Locale object for language-specific formatting
      */
-    fun formatPeriod(locale: String = "en"): String {
-        val end = endDate ?: if (locale == "es") "Presente" else "Present"
+    fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
+        val resourceBundle = ResourceBundle.getBundle("messages.messages", locale)
+        val presentLabel = resourceBundle.getString("present")
+        val end = endDate ?: presentLabel
         return "$startDate -- $end"
     }
 }

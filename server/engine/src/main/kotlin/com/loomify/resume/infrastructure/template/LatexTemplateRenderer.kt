@@ -10,6 +10,7 @@ import com.loomify.resume.domain.model.ResumeData
 import com.loomify.resume.domain.model.SkillCategory
 import com.loomify.resume.domain.model.WorkExperience
 import com.loomify.resume.domain.port.TemplateRendererPort
+import java.util.Locale
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.stringtemplate.v4.STGroupDir
@@ -148,7 +149,7 @@ class LatexTemplateRenderer(
                 mapOf(
                     "institution" to escapeLatex(edu.institution.value),
                     "degree" to escapeLatex(edu.studyType.value),
-                    "period" to escapeLatex(edu.formatPeriod(locale)),
+                    "period" to escapeLatex(edu.formatPeriod(Locale.forLanguageTag(locale))),
                     "area" to escapeLatex(edu.area.value),
                     "score" to (edu.score?.let { escapeLatex(it) } ?: ""),
                 )
