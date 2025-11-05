@@ -62,7 +62,11 @@ groups:
       # Error Rate SLO: <3% (warning), <5% (critical)
       - alert: ResumeErrorRateHigh
         expr: |
-          rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m]) > 0.03
+          (
+            sum(rate(resume_requests_failure_total[5m]))
+            /
+            sum(rate(resume_requests_total[5m]))
+          ) > 0.03
         for: 5m
         labels:
           severity: warning
@@ -75,7 +79,11 @@ groups:
 
       - alert: ResumeErrorRateCritical
         expr: |
-          rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m]) > 0.05
+          (
+            sum(rate(resume_requests_failure_total[5m]))
+            /
+            sum(rate(resume_requests_total[5m]))
+          ) > 0.05
         for: 2m
         labels:
           severity: critical
