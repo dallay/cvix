@@ -39,21 +39,31 @@ class ResumeExceptionHandler {
         ex: WebExchangeBindException,
         @Suppress("UNUSED_PARAMETER") exchange: ServerWebExchange
     ): ProblemDetail {
-        val fieldErrors = ex.fieldErrors.associate { error ->
-            error.field to (error.defaultMessage ?: "Invalid value")
+        val fieldErrors = ex.fieldErrors.map { error ->
+            mapOf(
+                "field" to error.field,
+                "message" to (error.defaultMessage ?: "Invalid value"),
+            )
+        }
+
+        val globalErrors = ex.bindingResult.globalErrors.map { error ->
+            error.defaultMessage ?: "Validation failed"
         }
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
-            "Request validation failed. Please check field errors.",
+            "Request validation failed. Please check field and global errors.",
         )
         problemDetail.title = "Validation Error"
         problemDetail.type = URI.create("$ERROR_PAGE/resume/validation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
         problemDetail.setProperty("fieldErrors", fieldErrors)
+        if (globalErrors.isNotEmpty()) {
+            problemDetail.setProperty("errors", globalErrors)
+        }
 
-        logger.warn("Validation error: {} fields failed", fieldErrors.size)
+        logger.warn("Validation error: {} fields failed, {} global errors", fieldErrors.size, globalErrors.size)
         return problemDetail
     }
 

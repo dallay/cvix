@@ -83,6 +83,8 @@ class GenerateResumeCommandHandlerTest {
         StepVerifier.create(result)
             .assertNext { inputStream ->
                 inputStream shouldNotBe null
+                inputStream.readAllBytes() shouldBe pdfBytes
+                inputStream.close()
             }
             .verifyComplete()
 

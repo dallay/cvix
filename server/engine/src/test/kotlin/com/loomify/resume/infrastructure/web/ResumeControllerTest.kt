@@ -24,13 +24,69 @@ import reactor.core.publisher.Mono
  */
 @UnitTest
 class ResumeControllerTest {
-
     private val handler = mockk<GenerateResumeCommandHandler>()
     private val securityProperties = ApplicationSecurityProperties()
     private val controller = ResumeController(handler, securityProperties)
     private lateinit var webTestClient: WebTestClient
-
     private val pdfBytes = "fake-pdf-content".toByteArray()
+
+    @Test
+    fun `should return 400 when project startDate is not ISO format`() {
+        webTestClient.post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "email" to "john.doe@example.com",
+                        "phone" to "+1234567890",
+                    ),
+                    "projects" to listOf(
+                        mapOf(
+                            "name" to "Test Project",
+                            "description" to "desc",
+                            "startDate" to "2020/01/01", // invalid format
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectHeader().contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .expectBody()
+            .jsonPath("$.fieldErrors[?(@.field=='projects[0].startDate')].message")
+            .isEqualTo("startDate must be ISO yyyy-MM-dd")
+    }
+
+    @Test
+    fun `should return 400 when project endDate is not ISO format`() {
+        webTestClient.post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "email" to "john.doe@example.com",
+                        "phone" to "+1234567890",
+                    ),
+                    "projects" to listOf(
+                        mapOf(
+                            "name" to "Test Project",
+                            "description" to "desc",
+                            "endDate" to "2020/06/01", // invalid format
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectHeader().contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .expectBody()
+            .jsonPath("$.fieldErrors[?(@.field=='projects[0].endDate')].message")
+            .isEqualTo("endDate must be ISO yyyy-MM-dd")
+    }
 
     @BeforeEach
     fun setUp() {
@@ -42,7 +98,9 @@ class ResumeControllerTest {
             .mutateWith(csrf())
 
         // Mock handler to return PDF bytes
-        coEvery { handler.handle(any<GenerateResumeCommand>()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
+        coEvery { handler.handle(any<GenerateResumeCommand>()) } returns Mono.just(
+            ByteArrayInputStream(pdfBytes),
+        )
     }
 
     @Test
@@ -89,7 +147,8 @@ class ResumeControllerTest {
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentType(MediaType.APPLICATION_PDF)
-            .expectHeader().valueEquals("Content-Security-Policy", securityProperties.contentSecurityPolicy)
+            .expectHeader()
+            .valueEquals("Content-Security-Policy", securityProperties.contentSecurityPolicy)
             .expectHeader().valueEquals("X-Content-Type-Options", "nosniff")
             .expectHeader().valueEquals("X-Frame-Options", "DENY")
             .expectHeader().valueEquals("Referrer-Policy", "strict-origin-when-cross-origin")
@@ -174,6 +233,33 @@ class ResumeControllerTest {
                         mapOf(
                             "name" to "Lenguajes",
                             "keywords" to listOf("Kotlin", "Java"),
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_PDF)
+    }
+
+    @Test
+    fun `should use primary language subtag when Accept-Language has region`() {
+        // Act & Assert
+        webTestClient.post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Accept-Language", "en-US")
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "email" to "john.doe@example.com",
+                        "phone" to "+1234567890",
+                    ),
+                    "skills" to listOf(
+                        mapOf(
+                            "name" to "Programming",
+                            "keywords" to listOf("Kotlin"),
                         ),
                     ),
                 ),

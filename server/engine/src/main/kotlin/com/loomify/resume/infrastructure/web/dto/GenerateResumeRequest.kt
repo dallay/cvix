@@ -4,6 +4,7 @@ import com.loomify.resume.infrastructure.validation.ValidResumeContent
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 /**
@@ -150,6 +151,15 @@ data class ProjectDto(
 
     val url: String? = null,
 
+    @field:Pattern(
+        regexp = """^\d{4}-\d{2}-\d{2}$""",
+        message = "startDate must be ISO yyyy-MM-dd",
+    )
     val startDate: String? = null, // ISO date format: YYYY-MM-DD
+
+    @field:Pattern(
+        regexp = """^\d{4}-\d{2}-\d{2}$""",
+        message = "endDate must be ISO yyyy-MM-dd",
+    )
     val endDate: String? = null // ISO date format: YYYY-MM-DD
 )
