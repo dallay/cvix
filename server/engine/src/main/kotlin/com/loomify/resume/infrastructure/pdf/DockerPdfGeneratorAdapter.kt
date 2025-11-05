@@ -85,110 +85,118 @@ class DockerPdfGeneratorAdapter(
     }
 
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
-        return Mono.fromCallable<InputStream> {
-            // Acquire semaphore permit (blocks if max concurrent containers reached)
-            val acquired = concurrencySemaphore.tryAcquire(
-                properties.timeoutSeconds + SEMAPHORE_TIMEOUT_BUFFER,
-                TimeUnit.SECONDS,
-            )
-
-            if (!acquired) {
-                val msg = "Failed to acquire container slot: maximum concurrent containers " +
-                    "(${properties.maxConcurrentContainers}) reached"
-                throw PdfGenerationException(msg)
-            }
-
-            val usedPermits = properties.maxConcurrentContainers -
-                concurrencySemaphore.availablePermits()
-            logger.debug(
-                "Acquired container slot ($usedPermits/${properties.maxConcurrentContainers} in use)",
-            )
-
-            try {
-                // Security check: Validate LaTeX source
-                validateLatexSource(latexSource)
-
-                logger.debug("Starting PDF generation for locale: $locale")
-
-                // Create temporary directory for LaTeX compilation
-                val tempDir = Files.createTempDirectory("resume-pdf-")
-
-                try {
-                    // Write LaTeX source to file
-                    val latexFile = tempDir.resolve(LATEX_FILE)
-                    Files.writeString(latexFile, latexSource)
-
-                    // Pull Docker image if not present (async, first time only)
-                    ensureDockerImage()
-
-                    // Create and run Docker container
-                    val containerId = createContainer(tempDir)
-
-                    try {
-                        // Start container
-                        dockerClient.startContainerCmd(containerId).exec()
-
-                        // Wait for container to complete with timeout
-                        val exitCode = waitForContainer(containerId)
-
-                        if (exitCode != 0L) {
-                            val logs = getContainerLogs(containerId)
-                            val errMsg = "LaTeX compilation failed with exit code $exitCode. " +
-                                "Logs: $logs"
-                            throw PdfGenerationException(errMsg)
-                        }
-
-                        // Read generated PDF
-                        val pdfFile = tempDir.resolve(PDF_FILE)
-                        if (!Files.exists(pdfFile)) {
-                            throw PdfGenerationException("PDF file was not generated")
-                        }
-
-                        val pdfBytes = Files.readAllBytes(pdfFile)
-                        logger.debug("Successfully generated PDF (${pdfBytes.size} bytes)")
-
-                        ByteArrayInputStream(pdfBytes)
-                    } finally {
-                        // Cleanup: Remove container
-                        cleanupContainer(containerId)
-                    }
-                } finally {
-                    // Cleanup: Delete temporary directory
-                    tempDir.toFile().deleteRecursively()
-                }
-            } finally {
-                // Release semaphore permit
-                concurrencySemaphore.release()
-                val inUse = properties.maxConcurrentContainers -
-                    concurrencySemaphore.availablePermits()
-                logger.debug(
-                    "Released container slot ($inUse/${properties.maxConcurrentContainers} in use)",
-                )
-            }
-        }
+        return Mono.fromCallable { acquireAndRunPdfGeneration(latexSource, locale) }
             .subscribeOn(Schedulers.boundedElastic())
             .timeout(Duration.ofSeconds(properties.timeoutSeconds + TIMEOUT_BUFFER_SECONDS))
-            .onErrorMap { error ->
-                when {
-                    error is PdfGenerationTimeoutException -> error
-                    error is PdfGenerationException -> error
-                    error is LaTeXInjectionException -> error
-                    error is java.util.concurrent.TimeoutException ->
-                        PdfGenerationTimeoutException(
-                            "PDF generation timed out after ${properties.timeoutSeconds} seconds",
-                            error,
-                        )
-                    error.message?.contains("timeout", ignoreCase = true) == true ->
-                        PdfGenerationTimeoutException(
-                            "PDF generation timed out after ${properties.timeoutSeconds} seconds",
-                            error,
-                        )
-                    else -> {
-                        val msg = "Failed to generate PDF: ${error.message}"
-                        PdfGenerationException(msg, error)
-                    }
+            .onErrorMap(this::mapPdfGenerationError)
+    }
+
+    private fun acquireAndRunPdfGeneration(latexSource: String, locale: String): InputStream {
+        // Acquire semaphore permit (blocks if max concurrent containers reached)
+        val acquired = concurrencySemaphore.tryAcquire(
+            properties.timeoutSeconds + SEMAPHORE_TIMEOUT_BUFFER,
+            TimeUnit.SECONDS,
+        )
+
+        if (!acquired) {
+            val msg = "Failed to acquire container slot: maximum concurrent containers " +
+                "(${properties.maxConcurrentContainers}) reached"
+            throw PdfGenerationException(msg)
+        }
+
+        val usedPermits = properties.maxConcurrentContainers -
+            concurrencySemaphore.availablePermits()
+        logger.debug(
+            "Acquired container slot ($usedPermits/${properties.maxConcurrentContainers} in use)",
+        )
+
+        try {
+            return generatePdfInContainer(latexSource, locale)
+        } finally {
+            // Release semaphore permit
+            concurrencySemaphore.release()
+            val inUse = properties.maxConcurrentContainers -
+                concurrencySemaphore.availablePermits()
+            logger.debug(
+                "Released container slot ($inUse/${properties.maxConcurrentContainers} in use)",
+            )
+        }
+    }
+
+    private fun generatePdfInContainer(latexSource: String, locale: String): InputStream {
+        // Security check: Validate LaTeX source
+        validateLatexSource(latexSource)
+
+        logger.debug("Starting PDF generation for locale: $locale")
+
+        // Create temporary directory for LaTeX compilation
+        val tempDir = Files.createTempDirectory("resume-pdf-")
+
+        try {
+            // Write LaTeX source to file
+            val latexFile = tempDir.resolve(LATEX_FILE)
+            Files.writeString(latexFile, latexSource)
+
+            // Pull Docker image if not present (async, first time only)
+            ensureDockerImage()
+
+            // Create and run Docker container
+            val containerId = createContainer(tempDir)
+
+            try {
+                // Start container
+                dockerClient.startContainerCmd(containerId).exec()
+
+                // Wait for container to complete with timeout
+                val exitCode = waitForContainer(containerId)
+
+                if (exitCode != 0L) {
+                    val logs = getContainerLogs(containerId)
+                    val errMsg = "LaTeX compilation failed with exit code $exitCode. " +
+                        "Logs: $logs"
+                    throw PdfGenerationException(errMsg)
                 }
+
+                // Read generated PDF
+                val pdfFile = tempDir.resolve(PDF_FILE)
+                if (!Files.exists(pdfFile)) {
+                    throw PdfGenerationException("PDF file was not generated")
+                }
+
+                val pdfBytes = Files.readAllBytes(pdfFile)
+                logger.debug("Successfully generated PDF (${pdfBytes.size} bytes)")
+
+                return ByteArrayInputStream(pdfBytes)
+            } finally {
+                // Cleanup: Remove container
+                cleanupContainer(containerId)
             }
+        } finally {
+            // Cleanup: Delete temporary directory
+            tempDir.toFile().deleteRecursively()
+        }
+    }
+
+    private fun mapPdfGenerationError(error: Throwable): Throwable {
+        return when {
+            error is PdfGenerationTimeoutException -> error
+            error is PdfGenerationException -> error
+            error is LaTeXInjectionException -> error
+            error is java.util.concurrent.TimeoutException ->
+                PdfGenerationTimeoutException(
+                    "PDF generation timed out after ${properties.timeoutSeconds} seconds",
+                    error,
+                )
+            error.message?.contains("timeout", ignoreCase = true) == true ->
+                PdfGenerationTimeoutException(
+                    "PDF generation timed out after ${properties.timeoutSeconds} seconds",
+                    error,
+                )
+            else -> {
+                val msg = "Failed to generate PDF: ${error.message}"
+                PdfGenerationException(msg, error)
+            }
+        }
     }
 
     private fun validateLatexSource(latexSource: String) {
