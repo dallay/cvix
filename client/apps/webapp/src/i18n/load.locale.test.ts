@@ -204,12 +204,12 @@ const mockMessages = {
 					categoryName: "Category",
 					skillLevel: "Proficiency",
 					keywords: "Skills",
+					skills: "Skills",
 					language: "Language",
 					fluency: "Fluency",
 					projectName: "Project Name",
 					description: "Description",
 					entity: "Organization",
-					skills: "Skills",
 				},
 				placeholders: {
 					name: "Jane Doe",
@@ -230,11 +230,6 @@ const mockMessages = {
 					score: "3.8",
 					categoryName: "Programming Languages",
 					skill: "JavaScript, TypeScript, Python",
-					language: "English",
-					fluency: "Native",
-					projectName: "E-commerce Platform",
-					description:
-						"Built a modern e-commerce platform using React and Node.js",
 					addSkill: "Add a skill",
 				},
 				buttons: {
@@ -270,18 +265,8 @@ const mockMessages = {
 						"PDF generation took too long. Please try again with simpler content.",
 					rateLimit:
 						"Too many requests. Please wait {seconds} seconds before trying again.",
-					rate_limit_exceeded:
-						"Too many requests. Please wait {seconds} seconds before trying again.",
-					pdf_generation_timeout:
-						"PDF generation took too long. Please try again with simpler content.",
-					pdf_generation_error: "Failed to generate PDF. Please try again.",
-					template_rendering_error:
-						"Failed to render resume template. Please check your data.",
 					maliciousContent: "Content contains potentially unsafe characters.",
-					malicious_content: "Content contains potentially unsafe characters.",
-					validation_error: "Please correct the errors in the form.",
-					invalid_resume_data:
-						"Resume data is invalid. Please check required fields.",
+					validationError: "Please correct the errors in the form.",
 					unknown: "An unexpected error occurred. Please try again later.",
 				},
 				success: {
@@ -658,10 +643,6 @@ const expectedEnMessages = {
 			categoryName: "Programming Languages",
 			skill: "JavaScript, TypeScript, Python",
 			addSkill: "Add a skill",
-			language: "English",
-			fluency: "Native",
-			projectName: "E-commerce Platform",
-			description: "Built a modern e-commerce platform using React and Node.js",
 		},
 		buttons: {
 			add: "Add",
@@ -706,18 +687,8 @@ const expectedEnMessages = {
 				"PDF generation took too long. Please try again with simpler content.",
 			rateLimit:
 				"Too many requests. Please wait {seconds} seconds before trying again.",
-			rate_limit_exceeded:
-				"Too many requests. Please wait {seconds} seconds before trying again.",
-			pdf_generation_timeout:
-				"PDF generation took too long. Please try again with simpler content.",
-			pdf_generation_error: "Failed to generate PDF. Please try again.",
-			template_rendering_error:
-				"Failed to render resume template. Please check your data.",
 			maliciousContent: "Content contains potentially unsafe characters.",
-			malicious_content: "Content contains potentially unsafe characters.",
-			validation_error: "Please correct the errors in the form.",
-			invalid_resume_data:
-				"Resume data is invalid. Please check required fields.",
+			validationError: "Please correct the errors in the form.",
 			unknown: "An unexpected error occurred. Please try again later.",
 		},
 		success: {

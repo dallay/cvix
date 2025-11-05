@@ -15,20 +15,10 @@ import { useResumeStore } from "../stores/resumeStore";
 
 const { t } = useI18n();
 const resumeStore = useResumeStore();
-const isGenerating = ref(false);
 const showPreview = ref(true);
 
 // Get resume data from store (already transformed to ResumeData format)
 const resumeData = computed(() => resumeStore.resumeData);
-
-const handleGenerate = async () => {
-	isGenerating.value = true;
-	try {
-		// The form component handles the actual generation
-	} finally {
-		isGenerating.value = false;
-	}
-};
 
 const togglePreview = () => {
 	showPreview.value = !showPreview.value;
@@ -95,7 +85,7 @@ const togglePreview = () => {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<ResumeForm @generate="handleGenerate" />
+					<ResumeForm />
 				</CardContent>
 			</Card>
 
