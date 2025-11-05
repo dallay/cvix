@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import type {
-	ApiError,
 	Education,
 	Language,
 	Project,
@@ -11,6 +10,7 @@ import type {
 	WorkExperience,
 } from "@/resume/types/resume";
 import { resumeSchema } from "@/resume/validation/resumeSchema";
+import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
 export const useResumeStore = defineStore("resume", () => {
 	// State
@@ -31,7 +31,7 @@ export const useResumeStore = defineStore("resume", () => {
 	});
 
 	const isGenerating = ref(false);
-	const generationError = ref<ApiError | null>(null);
+	const generationError = ref<ProblemDetail | null>(null);
 
 	// Getters
 	const isValid = computed(() => {
@@ -201,7 +201,7 @@ export const useResumeStore = defineStore("resume", () => {
 		isGenerating.value = value;
 	}
 
-	function setGenerationError(error: ApiError | null) {
+	function setGenerationError(error: ProblemDetail | null) {
 		generationError.value = error;
 	}
 
