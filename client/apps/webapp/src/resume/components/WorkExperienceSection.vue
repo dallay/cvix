@@ -17,7 +17,11 @@ function updateEntry(
 	value: string,
 ) {
 	if (store.resume.work?.[index]) {
-		const updated = { ...store.resume.work[index], [field]: value };
+		const normalizedValue =
+			(field === "startDate" || field === "endDate") && value === ""
+				? null
+				: value;
+		const updated = { ...store.resume.work[index], [field]: normalizedValue };
 		store.updateWorkExperience(index, updated);
 	}
 }
