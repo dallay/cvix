@@ -80,7 +80,13 @@ data class ApplicationSecurityProperties(
         val hstsMaxAge: Long = 31_536_000, // 365 days
         val hstsIncludeSubdomains: Boolean = true,
         val hstsPreload: Boolean = false
-    )
+    ) {
+        init {
+            if (hstsEnabled) {
+                require(hstsMaxAge > 0) { "HSTS max-age must be positive when HSTS is enabled" }
+            }
+        }
+    }
 
     companion object {
         @Suppress("MaxLineLength")
