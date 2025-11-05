@@ -2,6 +2,7 @@ package com.loomify.resume.application.handler
 
 import com.loomify.UnitTest
 import com.loomify.resume.application.command.GenerateResumeCommand
+import com.loomify.resume.application.command.Locale
 import com.loomify.resume.domain.model.CompanyName
 import com.loomify.resume.domain.model.FullName
 import com.loomify.resume.domain.model.JobTitle
@@ -40,12 +41,12 @@ class GenerateResumeCommandHandlerTest {
     fun `should generate PDF successfully with English locale`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData, "en")
+        val command = GenerateResumeCommand(resumeData, Locale.EN) // Use Locale.EN instead of "en"
         val latexSource = "\\documentclass{article}..."
         val pdfBytes = "PDF content".toByteArray()
 
-        coEvery { templateRenderer.render(resumeData, "en") } returns latexSource
-        coEvery { pdfGenerator.generatePdf(latexSource, "en") } returns
+        coEvery { templateRenderer.render(resumeData, Locale.EN.code) } returns latexSource
+        coEvery { pdfGenerator.generatePdf(latexSource, Locale.EN.code) } returns
             Mono.just(ByteArrayInputStream(pdfBytes))
 
         // Act
@@ -59,20 +60,20 @@ class GenerateResumeCommandHandlerTest {
             }
             .verifyComplete()
 
-        coVerify(exactly = 1) { templateRenderer.render(resumeData, "en") }
-        coVerify(exactly = 1) { pdfGenerator.generatePdf(latexSource, "en") }
+        coVerify(exactly = 1) { templateRenderer.render(resumeData, Locale.EN.code) }
+        coVerify(exactly = 1) { pdfGenerator.generatePdf(latexSource, Locale.EN.code) }
     }
 
     @Test
     fun `should generate PDF successfully with Spanish locale`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData, "es")
+        val command = GenerateResumeCommand(resumeData, Locale.ES) // Use Locale.ES instead of "es"
         val latexSource = "\\documentclass{article}..."
         val pdfBytes = "PDF content".toByteArray()
 
-        coEvery { templateRenderer.render(resumeData, "es") } returns latexSource
-        coEvery { pdfGenerator.generatePdf(latexSource, "es") } returns
+        coEvery { templateRenderer.render(resumeData, Locale.ES.code) } returns latexSource
+        coEvery { pdfGenerator.generatePdf(latexSource, Locale.ES.code) } returns
             Mono.just(ByteArrayInputStream(pdfBytes))
 
         // Act
@@ -85,20 +86,20 @@ class GenerateResumeCommandHandlerTest {
             }
             .verifyComplete()
 
-        coVerify(exactly = 1) { templateRenderer.render(resumeData, "es") }
-        coVerify(exactly = 1) { pdfGenerator.generatePdf(latexSource, "es") }
+        coVerify(exactly = 1) { templateRenderer.render(resumeData, Locale.ES.code) }
+        coVerify(exactly = 1) { pdfGenerator.generatePdf(latexSource, Locale.ES.code) }
     }
 
     @Test
     fun `should default to English locale when not specified`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData) // Uses default "en" locale
+        val command = GenerateResumeCommand(resumeData, Locale.EN) // Default to Locale.EN
         val latexSource = "\\documentclass{article}..."
         val pdfBytes = "PDF content".toByteArray()
 
-        coEvery { templateRenderer.render(resumeData, "en") } returns latexSource
-        coEvery { pdfGenerator.generatePdf(latexSource, "en") } returns
+        coEvery { templateRenderer.render(resumeData, Locale.EN.code) } returns latexSource
+        coEvery { pdfGenerator.generatePdf(latexSource, Locale.EN.code) } returns
             Mono.just(ByteArrayInputStream(pdfBytes))
 
         // Act
@@ -109,14 +110,14 @@ class GenerateResumeCommandHandlerTest {
             .expectNextCount(1)
             .verifyComplete()
 
-        coVerify(exactly = 1) { templateRenderer.render(resumeData, "en") }
+        coVerify(exactly = 1) { templateRenderer.render(resumeData, Locale.EN.code) }
     }
 
     @Test
     fun `should propagate template rendering errors`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData, "en")
+        val command = GenerateResumeCommand(resumeData, Locale.EN)
 
         coEvery { templateRenderer.render(any(), any()) } throws
             RuntimeException("Template rendering failed")
@@ -134,11 +135,11 @@ class GenerateResumeCommandHandlerTest {
     fun `should propagate PDF generation errors`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData, "en")
+        val command = GenerateResumeCommand(resumeData, Locale.EN)
         val latexSource = "\\documentclass{article}..."
 
-        coEvery { templateRenderer.render(resumeData, "en") } returns latexSource
-        coEvery { pdfGenerator.generatePdf(latexSource, "en") } returns
+        coEvery { templateRenderer.render(resumeData, Locale.EN.code) } returns latexSource
+        coEvery { pdfGenerator.generatePdf(latexSource, Locale.EN.code) } returns
             Mono.error(RuntimeException("PDF generation failed"))
 
         // Act

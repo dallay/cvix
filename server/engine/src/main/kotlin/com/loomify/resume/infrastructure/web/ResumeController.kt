@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import java.time.LocalDate
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
@@ -82,8 +84,13 @@ class ResumeController(
         }
 
         // Extract locale from Accept-Language header
-        val locale = exchange.request.headers.acceptLanguage
-            .firstOrNull()?.range?.lowercase() ?: "en"
+        val locale = try {
+            com.loomify.resume.application.command.Locale.from(
+                exchange.request.headers.acceptLanguage.firstOrNull()?.range?.lowercase() ?: "en",
+            )
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported locale", e)
+        }
 
         // Convert DTO to domain model
         val resumeData = request.toDomain()

@@ -1,6 +1,7 @@
 package com.loomify.resume.application.handler
 
 import com.loomify.resume.application.command.GenerateResumeCommand
+import com.loomify.resume.application.command.Locale
 import com.loomify.resume.domain.port.PdfGeneratorPort
 import com.loomify.resume.domain.port.TemplateRendererPort
 import java.io.InputStream
@@ -26,29 +27,33 @@ class GenerateResumeCommandHandler(
      * @return A Mono emitting the PDF as an InputStream
      */
     fun handle(command: GenerateResumeCommand): Mono<InputStream> {
-        val locale = command.locale.ifBlank { "en" }
+        val locale = try {
+            com.loomify.resume.application.command.Locale.from(command.locale.code)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Unsupported locale: ${command.locale}", e)
+        }
+
         val requestId = UUID.randomUUID().toString()
         val startTime = System.currentTimeMillis()
 
         logger.info(
             "Resume generation started - requestId={}, locale={}, hasWork={}, hasEducation={}, hasSkills={}",
             requestId,
-            locale,
+            locale.code,
             command.resumeData.work.isNotEmpty(),
             command.resumeData.education.isNotEmpty(),
             command.resumeData.skills.isNotEmpty(),
         )
 
-        return Mono.fromCallable {
+        return Mono.defer {
             // Step 1: Render LaTeX template with resume data
             logger.debug("Rendering template - requestId={}", requestId)
-            templateRenderer.render(command.resumeData, locale)
+            val latexSource = templateRenderer.render(command.resumeData, locale.code)
+
+            // Step 2: Generate PDF from LaTeX source
+            logger.debug("Generating PDF - requestId={}", requestId)
+            pdfGenerator.generatePdf(latexSource, locale.code) // Directly return the Mono<InputStream>
         }
-            .flatMap { latexSource ->
-                // Step 2: Generate PDF from LaTeX source using Docker
-                logger.debug("Generating PDF - requestId={}, latexSize={} bytes", requestId, latexSource.length)
-                pdfGenerator.generatePdf(latexSource, locale)
-            }
             .doOnSuccess {
                 val duration = System.currentTimeMillis() - startTime
                 logger.info(
