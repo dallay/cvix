@@ -40,13 +40,23 @@ const personalInfoSchema = z.object({
 	profiles: z.array(socialProfileSchema).optional(),
 });
 
+// Define ISO date validation
+const isoDate = z
+	.string()
+	.regex(
+		/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+		"Date must be in YYYY-MM-DD format",
+	);
+
+const optionalIsoDate = isoDate.optional().or(z.literal(""));
+
 // Work Experience schema
 const workExperienceSchema = z
 	.object({
 		company: z.string().min(1, "Company is required").max(100),
 		position: z.string().min(1, "Position is required").max(100),
-		startDate: z.string().min(1, "Start date is required"),
-		endDate: z.string().optional(),
+		startDate: isoDate,
+		endDate: optionalIsoDate,
 		location: z.string().optional(),
 		summary: z.string().optional(),
 		highlights: z.array(z.string()).optional(),
@@ -71,8 +81,8 @@ const educationSchema = z
 		institution: z.string().min(1, "Institution is required").max(100),
 		area: z.string().min(1, "Field of study is required").max(100),
 		studyType: z.string().min(1, "Degree type is required").max(50),
-		startDate: z.string().min(1, "Start date is required"),
-		endDate: z.string().optional(),
+		startDate: isoDate,
+		endDate: optionalIsoDate,
 		score: z.string().optional(),
 		courses: z.array(z.string()).optional(),
 	})
@@ -109,8 +119,8 @@ const projectSchema = z
 	.object({
 		name: z.string().min(1, "Project name is required").max(100),
 		description: z.string().optional(),
-		startDate: z.string().optional(),
-		endDate: z.string().optional(),
+		startDate: optionalIsoDate,
+		endDate: optionalIsoDate,
 		url: z.string().url().optional().or(z.literal("")),
 		highlights: z.array(z.string()).optional(),
 		keywords: z.array(z.string()).optional(),
