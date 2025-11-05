@@ -48,7 +48,7 @@ class DockerPdfGeneratorAdapterTest {
     fun setUp() {
         dockerClient = mockk(relaxed = true)
         properties = DockerPdfGeneratorProperties(
-            image = "texlive/texlive:latest-minimal",
+            image = "texlive/texlive:TL2024-minimal", // Updated to match the specific version
             maxConcurrentContainers = 10,
             timeoutSeconds = 10,
             memoryLimitMb = 512,
