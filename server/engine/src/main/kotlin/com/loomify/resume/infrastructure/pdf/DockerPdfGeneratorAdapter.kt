@@ -173,6 +173,11 @@ class DockerPdfGeneratorAdapter(
                     error is PdfGenerationTimeoutException -> error
                     error is PdfGenerationException -> error
                     error is LaTeXInjectionException -> error
+                    error is java.util.concurrent.TimeoutException ->
+                        PdfGenerationTimeoutException(
+                            "PDF generation timed out after ${properties.timeoutSeconds} seconds",
+                            error,
+                        )
                     error.message?.contains("timeout", ignoreCase = true) == true ->
                         PdfGenerationTimeoutException(
                             "PDF generation timed out after ${properties.timeoutSeconds} seconds",
