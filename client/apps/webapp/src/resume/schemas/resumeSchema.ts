@@ -11,7 +11,24 @@ import { z } from "zod";
 // Date validation helper (YYYY-MM-DD format)
 const isoDateString = z
 	.string()
-	.regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format");
+	.regex(/^\d{4}-\d{2}-\d{2}$/, "Must be in YYYY-MM-DD format")
+	.refine((val) => {
+		const parts = val.split("-").map(Number);
+		if (
+			parts.length !== 3 ||
+			parts.some((part) => part === undefined || Number.isNaN(part))
+		)
+			return false;
+		const [year, month, day] = parts;
+		if (year === undefined || month === undefined || day === undefined)
+			return false;
+		const date = new Date(year, month - 1, day);
+		return (
+			date.getFullYear() === year &&
+			date.getMonth() === month - 1 &&
+			date.getDate() === day
+		);
+	}, "Must be a valid date");
 
 // Location schema
 export const locationSchema = z.object({
