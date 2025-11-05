@@ -200,22 +200,61 @@ class DockerPdfGeneratorAdapter(
     }
 
     private fun validateLatexSource(latexSource: String) {
-        // Check for potentially malicious commands
-        val dangerousPatterns = listOf(
-            """\\input{""",
-            """\\include{""",
-            """\\write""",
-            """\\openin""",
-            """\\openout""",
-        )
-
-        dangerousPatterns.forEach { pattern ->
-            if (latexSource.contains(pattern, ignoreCase = true)) {
-                throw LaTeXInjectionException(
-                    "Potentially malicious LaTeX command detected in source",
-                )
-            }
+        val normalized = normalizeLatexSource(latexSource)
+        if (containsDeniedPrimitives(normalized)) {
+            throw LaTeXInjectionException(
+                "Potentially malicious LaTeX command detected in source",
+            )
         }
+        if (containsInputOrInclude(normalized)) {
+            throw LaTeXInjectionException(
+                "Potentially malicious LaTeX command detected in source",
+            )
+        }
+    }
+
+    private fun normalizeLatexSource(latexSource: String): String {
+        val withoutComments = latexSource.replace(Regex("(?m)%.*$"), "")
+        return withoutComments.replace(Regex("\\s+"), " ").lowercase()
+    }
+
+    private fun containsDeniedPrimitives(source: String): Boolean {
+        val simpleDeny = listOf(
+            "\\write18", "\\immediate\\write", "\\openin", "\\openout", "\\read",
+            "\\catcode", "\\def", "\\let", "\\csname", "\\expandafter",
+        )
+        return simpleDeny.any { it in source }
+    }
+
+    private fun containsInputOrInclude(source: String) =
+        hasCommandArg(source, "input") || hasCommandArg(source, "include")
+
+    private fun hasCommandArg(source: String, cmd: String): Boolean {
+        var idx = 0
+        val cmdPattern = "\\$cmd"
+        while (idx < source.length) {
+            idx = source.indexOf(cmdPattern, idx)
+            if (idx == -1) break
+            val after = idx + cmdPattern.length
+            if (after >= source.length) {
+                return true
+            }
+            if (isCommandArgMatch(source, after)) {
+                return true
+            }
+            idx = after
+        }
+        return false
+    }
+
+    private fun isCommandArgMatch(source: String, after: Int): Boolean {
+        val next = source[after]
+        if (!next.isLetter()) {
+            var j = after
+            while (j < source.length && source[j].isWhitespace()) j++
+            return j >= source.length || source[j] == '{' || true
+        }
+        return false
     }
 
     private fun ensureDockerImage() {

@@ -10,6 +10,7 @@ import com.github.dockerjava.api.command.RemoveContainerCmd
 import com.github.dockerjava.api.command.StartContainerCmd
 import com.github.dockerjava.api.command.StopContainerCmd
 import com.loomify.UnitTest
+import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import io.kotest.assertions.throwables.shouldThrow
@@ -272,6 +273,29 @@ class DockerPdfGeneratorAdapterTest {
         return inspectContainerCmd
     }
 
-    // Note: Injection detection tests are skipped as they require complex Mono/reactive setup
-    // The validateLatexSource method is tested indirectly through integration tests
+    // The validateLatexSource method can also be exercised via generatePdf; it rejects before Docker calls.
+
+    @Test
+    fun `should reject latex with write18`() {
+        val malicious = """\\documentclass{article}\\begin{document}Hi\\write18{ls}\\end{document}"""
+        shouldThrow<LaTeXInjectionException> {
+            adapter.generatePdf(malicious, "en").block()
+        }
+    }
+
+    @Test
+    fun `should reject latex with input without braces`() {
+        val malicious = """\\documentclass{article}\\begin{document}\\input file.tex\\end{document}"""
+        shouldThrow<LaTeXInjectionException> {
+            adapter.generatePdf(malicious, "en").block()
+        }
+    }
+
+    @Test
+    fun `should reject latex with catcode manipulation`() {
+        val malicious = """\\documentclass{article}\\begin{document}\\catcode`\\%=12 Text\\end{document}"""
+        shouldThrow<LaTeXInjectionException> {
+            adapter.generatePdf(malicious, "en").block()
+        }
+    }
 }

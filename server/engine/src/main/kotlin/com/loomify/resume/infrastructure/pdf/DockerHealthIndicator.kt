@@ -39,7 +39,8 @@ class DockerHealthIndicator(
             // Log successful health check with key Docker info and configured properties.
             // This helps operators observe normal Docker status in logs (debug level).
             logger.debug(
-                "Docker health check passed: version={}, apiVersion={}, os={}, arch={}, image={}, timeoutSeconds={}, maxConcurrent={}",
+                "Docker health check passed: version={}, apiVersion={}, os={}, arch={}, image={}, " +
+                    "timeoutSeconds={}, maxConcurrent={}",
                 version.version ?: UNKNOWN,
                 version.apiVersion ?: UNKNOWN,
                 version.operatingSystem ?: UNKNOWN,
