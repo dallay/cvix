@@ -8,6 +8,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
+import { createI18n } from "vue-i18n";
 import EducationSection from "../components/EducationSection.vue";
 import LanguagesSection from "../components/LanguagesSection.vue";
 import PersonalInfoSection from "../components/PersonalInfoSection.vue";
@@ -17,20 +18,69 @@ import ResumePreview from "../components/ResumePreview.vue";
 import SkillsSection from "../components/SkillsSection.vue";
 import WorkExperienceSection from "../components/WorkExperienceSection.vue";
 
+// Mock i18n setup
+const i18n = createI18n({
+	legacy: false,
+	locale: "en",
+	messages: {
+		en: {
+			resume: {
+				sections: {
+					personalInfo: "Personal Information",
+					workExperience: "Work Experience",
+					education: "Education",
+					skills: "Skills",
+					projects: "Projects",
+					languages: "Languages",
+				},
+				placeholders: {
+					fullName: "Full Name",
+					summary: "Summary",
+				},
+				fields: {
+					fullName: "Full Name",
+					email: "Email",
+					phone: "Phone",
+					location: "Location",
+					linkedin: "LinkedIn",
+					github: "GitHub",
+					website: "Website",
+					summary: "Summary",
+					company: "Company",
+					position: "Position",
+					startDate: "Start Date",
+					endDate: "End Date",
+				},
+				actions: {
+					add: "Add",
+					removeWorkExperience: "Remove Work Experience",
+				},
+				form: {
+					generate: "Generate Resume",
+				},
+			},
+		},
+	},
+});
+
+// Update global configuration for tests
+const globalConfig = {
+	plugins: [i18n],
+	stubs: {
+		PersonalInfoSection: true,
+		WorkExperienceSection: true,
+		EducationSection: true,
+		SkillsSection: true,
+		LanguagesSection: true,
+		ProjectsSection: true,
+	},
+};
+
 describe("Accessibility - WCAG AA Compliance", () => {
 	describe("ResumeForm", () => {
 		it("should have no accessibility violations", async () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			const results = await axe(wrapper.element as HTMLElement);
@@ -39,16 +89,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 
 		it("should have proper heading hierarchy", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			const headings = wrapper.element.querySelectorAll(
@@ -68,16 +109,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 
 		it("should have accessible form controls", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			// All inputs, textareas, and selects should have associated labels
@@ -233,16 +265,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 	describe("Keyboard Navigation", () => {
 		it("should have proper tab order in form", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			// Check that interactive elements have proper tabindex
@@ -262,16 +285,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 
 		it("should allow focus on all interactive elements", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			// All buttons and inputs should be focusable
@@ -294,16 +308,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 	describe("ARIA Attributes", () => {
 		it("should have valid ARIA roles", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			const elementsWithRoles = wrapper.element.querySelectorAll("[role]");
@@ -388,16 +393,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 
 		it("should have proper aria-required on required fields", () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			const requiredInputs = wrapper.element.querySelectorAll("[required]");
@@ -415,16 +411,7 @@ describe("Accessibility - WCAG AA Compliance", () => {
 	describe("Color Contrast", () => {
 		it("should have sufficient color contrast for text", async () => {
 			const wrapper = mount(ResumeForm, {
-				global: {
-					stubs: {
-						PersonalInfoSection: true,
-						WorkExperienceSection: true,
-						EducationSection: true,
-						SkillsSection: true,
-						LanguagesSection: true,
-						ProjectsSection: true,
-					},
-				},
+				global: globalConfig,
 			});
 
 			// axe will check color contrast as part of WCAG AA compliance
