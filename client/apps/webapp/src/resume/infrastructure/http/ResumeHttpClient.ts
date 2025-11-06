@@ -1,4 +1,3 @@
-import type { AxiosError } from "axios";
 import { BaseHttpClient } from "@/shared/BaseHttpClient";
 import type { Resume } from "../../types/resume";
 
@@ -14,18 +13,13 @@ export class ResumeHttpClient extends BaseHttpClient {
 	 * @returns Promise with the PDF blob
 	 */
 	async generateResumePdf(resume: Resume, locale = "en"): Promise<Blob> {
-		try {
-			const response = await this.client.post<Blob>("/resumes", resume, {
-				headers: {
-					"Accept-Language": locale,
-				},
-				responseType: "blob",
-			});
-			return response.data;
-		} catch (error) {
-			// Re-throw with proper typing
-			throw error as AxiosError;
-		}
+		const response = await this.client.post<Blob>("/resumes", resume, {
+			headers: {
+				"Accept-Language": locale,
+			},
+			responseType: "blob",
+		});
+		return response.data;
 	}
 }
 
