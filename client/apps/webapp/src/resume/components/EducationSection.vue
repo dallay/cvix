@@ -12,7 +12,14 @@ const store = useResumeStore();
 
 function updateEntry(index: number, field: keyof Education, value: string) {
 	if (store.resume.education?.[index]) {
-		const updated = { ...store.resume.education[index], [field]: value };
+		const normalizedValue =
+			(field === "startDate" || field === "endDate") && value === ""
+				? null
+				: value;
+		const updated = {
+			...store.resume.education[index],
+			[field]: normalizedValue,
+		};
 		store.updateEducation(index, updated);
 	}
 }
