@@ -11,6 +11,14 @@ const router = createRouter({
 			path: "/",
 			redirect: "/dashboard",
 		},
+		{
+			path: "/resume",
+			name: "ResumeGenerator",
+			component: () => import("@/resume/pages/ResumeGeneratorPage.vue"),
+			meta: {
+				requiresAuth: true,
+			},
+		},
 	],
 });
 

@@ -15,7 +15,7 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
 	},
-	"packageManager": "pnpm@10.19.0",
+	"packageManager": "pnpm@10.20.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dallay/cvix.git",
@@ -67,6 +67,7 @@
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"@eslint/json": "^0.13.2",
+		"@playwright/test": "^1.56.1",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^24.9.1",
 		"@vitest/ui": "^4.0.4",

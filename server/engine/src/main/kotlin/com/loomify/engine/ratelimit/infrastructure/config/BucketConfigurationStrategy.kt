@@ -61,6 +61,26 @@ class BucketConfigurationStrategy(
     }
 
     /**
+     * Creates a bucket configuration for resume generation endpoints.
+     * Applies a fixed rate limit of 10 requests per minute per user.
+     *
+     * @return A [BucketConfiguration] with the resume endpoint limit.
+     */
+    fun createResumeBucketConfiguration(): BucketConfiguration {
+        val limit = properties.resume.limit
+
+        logger.debug(
+            "Creating resume bucket configuration - capacity={}, refill={} tokens per {}",
+            limit.capacity, limit.refillTokens, limit.refillDuration,
+        )
+
+        val bandwidth = createBandwidth(limit)
+        return BucketConfiguration.builder()
+            .addLimit(bandwidth)
+            .build()
+    }
+
+    /**
      * Creates a Bandwidth from a BandwidthLimit configuration using Bucket4j v8 API.
      *
      * @param limit The bandwidth limit configuration.
@@ -83,6 +103,16 @@ class BucketConfigurationStrategy(
      * Checks if authentication rate limiting is enabled.
      */
     fun isAuthRateLimitEnabled(): Boolean = properties.enabled && properties.auth.enabled
+
+    /**
+     * Gets the list of resume endpoints that should be rate limited.
+     */
+    fun getResumeEndpoints(): List<String> = properties.resume.endpoints
+
+    /**
+     * Checks if resume rate limiting is enabled.
+     */
+    fun isResumeRateLimitEnabled(): Boolean = properties.enabled && properties.resume.enabled
 
     /**
      * Checks if business rate limiting is enabled.

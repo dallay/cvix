@@ -1,0 +1,377 @@
+{
+	"dashboard": {
+		"title": "Resume Generator - SLA & Performance Monitoring",
+		"tags": ["resume", "sla", "performance"],
+		"timezone": "browser",
+		"schemaVersion": 30,
+		"version": 1,
+		"refresh": "30s",
+		"panels": [
+			{
+				"id": 1,
+				"title": "API Latency SLO (p95 ≤ 200ms)",
+				"type": "graph",
+				"gridPos": {
+					"x": 0,
+					"y": 0,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "histogram_quantile(0.95, rate(resume_api_latency_seconds_bucket[5m])) * 1000",
+						"legendFormat": "p95 latency (ms)",
+						"refId": "A"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "ms",
+						"thresholds": {
+							"mode": "absolute",
+							"steps": [
+								{
+									"value": null,
+									"color": "green"
+								},
+								{
+									"value": 200,
+									"color": "yellow"
+								},
+								{
+									"value": 250,
+									"color": "red"
+								}
+							]
+						}
+					}
+				},
+				"options": {
+					"alertThreshold": true
+				}
+			},
+			{
+				"id": 2,
+				"title": "PDF Generation Duration SLO (<8s)",
+				"type": "graph",
+				"gridPos": {
+					"x": 12,
+					"y": 0,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "histogram_quantile(0.95, rate(resume_pdf_generation_duration_seconds_bucket[5m]))",
+						"legendFormat": "p95 duration (s)",
+						"refId": "A"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "s",
+						"thresholds": {
+							"mode": "absolute",
+							"steps": [
+								{
+									"value": null,
+									"color": "green"
+								},
+								{
+									"value": 8,
+									"color": "yellow"
+								},
+								{
+									"value": 10,
+									"color": "red"
+								}
+							]
+						}
+					}
+				}
+			},
+			{
+				"id": 3,
+				"title": "Error Rate SLO (<3%)",
+				"type": "stat",
+				"gridPos": {
+					"x": 0,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "(rate(resume_requests_failure_total[5m]) / rate(resume_requests_total[5m])) * 100",
+						"refId": "A"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "percent",
+						"thresholds": {
+							"mode": "absolute",
+							"steps": [
+								{
+									"value": null,
+									"color": "green"
+								},
+								{
+									"value": 3,
+									"color": "yellow"
+								},
+								{
+									"value": 5,
+									"color": "red"
+								}
+							]
+						}
+					}
+				}
+			},
+			{
+				"id": 4,
+				"title": "Request Rate",
+				"type": "stat",
+				"gridPos": {
+					"x": 6,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "rate(resume_requests_total[5m]) * 60",
+						"legendFormat": "req/min",
+						"refId": "A"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "reqpm"
+					}
+				}
+			},
+			{
+				"id": 5,
+				"title": "Docker Container Pool Utilization",
+				"type": "gauge",
+				"gridPos": {
+					"x": 12,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "docker_container_concurrent_active / (docker_container_concurrent_active + docker_container_concurrent_available) * 100",
+						"refId": "A"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "percent",
+						"thresholds": {
+							"mode": "absolute",
+							"steps": [
+								{
+									"value": null,
+									"color": "green"
+								},
+								{
+									"value": 60,
+									"color": "yellow"
+								},
+								{
+									"value": 80,
+									"color": "red"
+								}
+							]
+						},
+						"max": 100
+					}
+				}
+			},
+			{
+				"id": 6,
+				"title": "Success vs Failure Requests",
+				"type": "graph",
+				"gridPos": {
+					"x": 18,
+					"y": 8,
+					"w": 6,
+					"h": 4
+				},
+				"targets": [
+					{
+						"expr": "rate(resume_requests_success_total[5m])",
+						"legendFormat": "Success",
+						"refId": "A"
+					},
+					{
+						"expr": "rate(resume_requests_failure_total[5m])",
+						"legendFormat": "Failure",
+						"refId": "B"
+					}
+				]
+			},
+			{
+				"id": 7,
+				"title": "Error Types Breakdown",
+				"type": "piechart",
+				"gridPos": {
+					"x": 0,
+					"y": 12,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "sum(rate(resume_errors_validation_total[5m]))",
+						"legendFormat": "Validation",
+						"refId": "A"
+					},
+					{
+						"expr": "sum(rate(resume_errors_latex_total[5m]))",
+						"legendFormat": "LaTeX",
+						"refId": "B"
+					},
+					{
+						"expr": "sum(rate(resume_errors_timeout_total[5m]))",
+						"legendFormat": "Timeout",
+						"refId": "C"
+					},
+					{
+						"expr": "sum(rate(resume_errors_docker_total[5m]))",
+						"legendFormat": "Docker",
+						"refId": "D"
+					},
+					{
+						"expr": "sum(rate(resume_errors_ratelimit_total[5m]))",
+						"legendFormat": "Rate Limit",
+						"refId": "E"
+					}
+				]
+			},
+			{
+				"id": 8,
+				"title": "Docker Container Lifecycle Events",
+				"type": "graph",
+				"gridPos": {
+					"x": 12,
+					"y": 12,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "rate(docker_container_created_total[5m])",
+						"legendFormat": "Created",
+						"refId": "A"
+					},
+					{
+						"expr": "rate(docker_container_started_total[5m])",
+						"legendFormat": "Started",
+						"refId": "B"
+					},
+					{
+						"expr": "rate(docker_container_completed_total[5m])",
+						"legendFormat": "Completed",
+						"refId": "C"
+					},
+					{
+						"expr": "rate(docker_container_failed_total[5m])",
+						"legendFormat": "Failed",
+						"refId": "D"
+					},
+					{
+						"expr": "rate(docker_container_timeout_total[5m])",
+						"legendFormat": "Timeout",
+						"refId": "E"
+					},
+					{
+						"expr": "rate(docker_container_cleanup_total[5m])",
+						"legendFormat": "Cleanup",
+						"refId": "F"
+					}
+				]
+			},
+			{
+				"id": 9,
+				"title": "API Latency Percentiles",
+				"type": "graph",
+				"gridPos": {
+					"x": 0,
+					"y": 20,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "histogram_quantile(0.50, rate(resume_api_latency_seconds_bucket[5m])) * 1000",
+						"legendFormat": "p50",
+						"refId": "A"
+					},
+					{
+						"expr": "histogram_quantile(0.75, rate(resume_api_latency_seconds_bucket[5m])) * 1000",
+						"legendFormat": "p75",
+						"refId": "B"
+					},
+					{
+						"expr": "histogram_quantile(0.95, rate(resume_api_latency_seconds_bucket[5m])) * 1000",
+						"legendFormat": "p95",
+						"refId": "C"
+					},
+					{
+						"expr": "histogram_quantile(0.99, rate(resume_api_latency_seconds_bucket[5m])) * 1000",
+						"legendFormat": "p99",
+						"refId": "D"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "ms"
+					}
+				}
+			},
+			{
+				"id": 10,
+				"title": "PDF Generation Duration Percentiles",
+				"type": "graph",
+				"gridPos": {
+					"x": 12,
+					"y": 20,
+					"w": 12,
+					"h": 8
+				},
+				"targets": [
+					{
+						"expr": "histogram_quantile(0.50, rate(resume_pdf_generation_duration_seconds_bucket[5m]))",
+						"legendFormat": "p50",
+						"refId": "A"
+					},
+					{
+						"expr": "histogram_quantile(0.75, rate(resume_pdf_generation_duration_seconds_bucket[5m]))",
+						"legendFormat": "p75",
+						"refId": "B"
+					},
+					{
+						"expr": "histogram_quantile(0.95, rate(resume_pdf_generation_duration_seconds_bucket[5m]))",
+						"legendFormat": "p95",
+						"refId": "C"
+					},
+					{
+						"expr": "histogram_quantile(0.99, rate(resume_pdf_generation_duration_seconds_bucket[5m]))",
+						"legendFormat": "p99",
+						"refId": "D"
+					}
+				],
+				"fieldConfig": {
+					"defaults": {
+						"unit": "s"
+					}
+				}
+			}
+		]
+	}
+}

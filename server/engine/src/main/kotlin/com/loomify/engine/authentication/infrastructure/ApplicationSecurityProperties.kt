@@ -49,7 +49,8 @@ data class ApplicationSecurityProperties(
     val oauth2: OAuth2 = OAuth2(),
     val cors: CorsProperties = CorsProperties(),
     val contentSecurityPolicy: String = CONTENT_SECURITY_POLICY,
-    val domain: String = ""
+    val domain: String = "",
+    val headers: Headers = Headers()
 ) {
     data class OAuth2(
         val baseUrl: String = "",
@@ -73,6 +74,19 @@ data class ApplicationSecurityProperties(
         val allowCredentials: Boolean = false,
         val maxAge: Long = 0
     )
+
+    data class Headers(
+        val hstsEnabled: Boolean = false,
+        val hstsMaxAge: Long = 31_536_000, // 365 days
+        val hstsIncludeSubdomains: Boolean = true,
+        val hstsPreload: Boolean = false
+    ) {
+        init {
+            if (hstsEnabled) {
+                require(hstsMaxAge > 0) { "HSTS max-age must be positive when HSTS is enabled" }
+            }
+        }
+    }
 
     companion object {
         @Suppress("MaxLineLength")

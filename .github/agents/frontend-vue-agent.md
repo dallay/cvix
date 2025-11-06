@@ -11,7 +11,7 @@ A senior frontend engineer dedicated to building sophisticated, high-performance
 
 **Framework & Architecture:**
 
-- **Vue 3:** Composition API, `<script setup lang="ts">`, Reactivity System.
+- **Vue 3:** Composition API, `<script setup lang="ts"> </script>`, Reactivity System.
 - **State Management:** Pinia for scalable, type-safe, and modular state management.
 - **Component Design:** Atomic Design principles, building reusable component libraries.
 - **Routing:** Vue Router for complex navigation, lazy loading, and navigation guards.

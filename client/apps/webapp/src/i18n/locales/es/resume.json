@@ -1,0 +1,142 @@
+{
+	"resume": {
+		"title": "Generador de Currículums",
+		"subtitle": "Crea un currículum profesional en minutos",
+		"generate": "Generar PDF",
+		"generating": "Generando...",
+		"previewButton": "Vista Previa",
+		"download": "Descargar PDF",
+		"clearForm": "Limpiar Formulario",
+		"saveProgress": "Guardar Progreso",
+		"sections": {
+			"personalInfo": "Información Personal",
+			"workExperience": "Experiencia Laboral",
+			"education": "Educación",
+			"skills": "Habilidades",
+			"languages": "Idiomas",
+			"projects": "Proyectos"
+		},
+		"fields": {
+			"name": "Nombre Completo",
+			"fullName": "Nombre Completo",
+			"label": "Título Profesional",
+			"email": "Correo Electrónico",
+			"phone": "Teléfono",
+			"url": "Sitio Web",
+			"linkedin": "LinkedIn",
+			"github": "GitHub",
+			"summary": "Resumen Profesional",
+			"company": "Empresa",
+			"position": "Cargo",
+			"startDate": "Fecha de Inicio",
+			"endDate": "Fecha de Fin",
+			"current": "Actualmente trabajo aquí",
+			"location": "Ubicación",
+			"highlights": "Logros",
+			"institution": "Institución",
+			"area": "Campo de Estudio",
+			"studyType": "Tipo de Título",
+			"score": "Promedio",
+			"categoryName": "Categoría",
+			"skillLevel": "Nivel",
+			"skills": "Habilidades",
+			"keywords": "Habilidades",
+			"language": "Idioma",
+			"fluency": "Fluidez",
+			"projectName": "Nombre del Proyecto",
+			"description": "Descripción",
+			"entity": "Organización"
+		},
+		"placeholders": {
+			"name": "María García",
+			"label": "Ingeniera de Software",
+			"email": "maria.garcia@ejemplo.com",
+			"phone": "+34 612 345 678",
+			"url": "https://mariagarcia.com",
+			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
+			"company": "Corporación ACME",
+			"position": "Desarrolladora Senior",
+			"location": "Barcelona, España",
+			"highlight": "Lideré equipo de 5 desarrolladores para entregar proyecto 2 semanas antes de lo planeado",
+			"institution": "Universidad Politécnica de Madrid",
+			"area": "Ingeniería Informática",
+			"studyType": "Licenciatura",
+			"score": "8.5",
+			"categoryName": "Lenguajes de Programación",
+			"skill": "JavaScript, TypeScript, Python",
+			"language": "Español",
+			"fluency": "Nativo",
+			"projectName": "Plataforma de Comercio Electrónico",
+			"description": "Construí una plataforma moderna de comercio electrónico usando React y Node.js"
+		},
+		"buttons": {
+			"add": "Agregar",
+			"remove": "Eliminar",
+			"addExperience": "Agregar Experiencia",
+			"addEducation": "Agregar Educación",
+			"addSkillCategory": "Agregar Categoría de Habilidades",
+			"addLanguage": "Agregar Idioma",
+			"addProject": "Agregar Proyecto",
+			"addHighlight": "Agregar Logro"
+		},
+		"actions": {
+			"add": "Agregar",
+			"removeWorkExperience": "Eliminar experiencia laboral",
+			"removeEducation": "Eliminar entrada de educación",
+			"removeSkillCategory": "Eliminar categoría de habilidades",
+			"removeSkill": "Eliminar {skill}",
+			"addSkill": "Agregar habilidad"
+		},
+		"validation": {
+			"required": "Este campo es obligatorio",
+			"email": "Debe ser una dirección de correo electrónico válida",
+			"url": "Debe ser una URL válida",
+			"date": "Debe ser una fecha válida (AAAA-MM-DD)",
+			"dateRange": "La fecha de fin debe ser posterior a la fecha de inicio",
+			"maxLength": "La longitud máxima es de {max} caracteres",
+			"minContent": "El currículum debe tener al menos uno de: experiencia laboral, educación o habilidades",
+			"minSkills": "Se requiere al menos una habilidad",
+			"content_required": "Por favor, agrega al menos una sección (experiencia laboral, educación o habilidades) para generar tu currículum"
+		},
+		"errors": {
+			"title": "Error",
+			"retry": "Reintentar",
+			"retryIn": "Reintentar en {seconds}s",
+			"dismiss": "Descartar",
+			"rate_limit_exceeded": "Demasiadas solicitudes. Por favor, espera {seconds} segundos antes de volver a intentar.",
+			"pdf_generation_timeout": "La generación del PDF excedió el tiempo límite. Por favor, intenta de nuevo con contenido más simple.",
+			"pdf_generation_error": "Error al generar el PDF. Por favor, inténtalo de nuevo.",
+			"template_rendering_error": "Error al renderizar la plantilla. Por favor, verifica tus datos.",
+			"malicious_content": "El contenido contiene caracteres potencialmente inseguros.",
+			"validation_error": "Por favor, corrige los errores en el formulario.",
+			"invalid_resume_data": "Los datos del currículum no son válidos. Por favor, verifica los campos requeridos.",
+			"unknown": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
+		},
+		"success": {
+			"generated": "¡Currículum generado exitosamente!",
+			"downloaded": "¡Currículum descargado exitosamente!"
+		},
+		"form": {
+			"generate": "Generar Currículum"
+		},
+		"loading": {
+			"generating": "Generando tu currículum...",
+			"please_wait": "Esto tomará solo un momento",
+			"rendering": "Renderizando plantilla...",
+			"compiling": "Compilando PDF...",
+			"downloading": "Preparando descarga..."
+		},
+		"preview": {
+			"name_placeholder": "Tu Nombre",
+			"present": "Presente",
+			"work_experience": "Experiencia Laboral",
+			"education": "Educación",
+			"skills": "Habilidades",
+			"languages": "Idiomas",
+			"projects": "Proyectos",
+			"gpa": "Promedio",
+			"empty_state": "Comienza a llenar el formulario para ver la vista previa de tu currículum",
+			"hide": "Ocultar Vista Previa"
+		}
+	}
+}

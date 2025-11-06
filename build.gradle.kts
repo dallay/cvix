@@ -40,6 +40,9 @@ eclipse {
 }
 
 tasks.withType<Test>().configureEach {
+    useJUnitPlatform {
+        includeTags("unit")
+    }
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 }
 

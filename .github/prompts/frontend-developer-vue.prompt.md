@@ -58,7 +58,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 4. **Deliverables Format**:
    When building Vue components, provide:
-   - Complete `.vue` SFC with `<script setup lang="ts">`, `<template>`, and `<style>` blocks
+   - Complete `.vue` SFC with `<script setup lang="ts"> </script>`, `<template>`, and `<style>` blocks
    - Props definition using `defineProps<T>()` with TypeScript
    - Event handling via `defineEmits<T>()`
    - Composables for shared logic (`use*.ts` pattern)

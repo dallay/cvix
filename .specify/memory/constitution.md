@@ -114,7 +114,7 @@ Last Updated: 2025-10-28
 - Use 2 spaces for indentation and always use semicolons
 - TypeScript `strict` mode MUST be enabled in all `tsconfig.json` files
 - STRICTLY AVOID `any` - use `unknown` with type guards or proper types instead
-- Use `<script setup lang="ts">` for ALL Vue components
+- Use `<script setup lang="ts"> </script>` for ALL Vue components
 - Prefer `type` over `interface` for object shapes (unless declaration merging needed)
 - Use absolute imports with `@/` alias (configured in `tsconfig.json`)
 - Prefer named exports over default exports
@@ -267,7 +267,7 @@ Last Updated: 2025-10-28
 **Component Best Practices:**
 
 - Name components using `PascalCase` (e.g., `UserProfileCard.vue`)
-- Use `<script setup lang="ts">` syntax for ALL components
+- Use `<script setup lang="ts"> </script>` syntax for ALL components
 - Define props with `defineProps<T>()` and provide defaults with `withDefaults()`
 - Explicitly declare emitted events with `defineEmits<T>()`
 - Co-locate styles in `<style scoped>` blocks

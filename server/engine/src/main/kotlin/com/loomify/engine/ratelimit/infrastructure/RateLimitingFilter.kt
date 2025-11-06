@@ -40,14 +40,15 @@ class RateLimitingFilter(
         val path = exchange.request.path.pathWithinApplication().value()
         logger.debug("Rate limit filter invoked for path: {}", path)
 
-        if (shouldSkipRateLimiting(exchange, path)) {
+        val strategy = determineRateLimitStrategy(path)
+        if (strategy == null || shouldSkipRateLimiting(exchange, strategy)) {
             return chain.filter(exchange)
         }
 
         val identifier = getIdentifier(exchange)
-        logger.debug("Resolved identifier: {} for path: {}", identifier, path)
+        logger.debug("Resolved identifier: {} for path: {} with strategy: {}", identifier, path, strategy)
 
-        return rateLimitingService.consumeToken(identifier, path, RateLimitStrategy.AUTH)
+        return rateLimitingService.consumeToken(identifier, path, strategy)
             .flatMap { result ->
                 when (result) {
                     is RateLimitResult.Allowed -> {
@@ -57,38 +58,51 @@ class RateLimitingFilter(
                     }
                     is RateLimitResult.Denied -> {
                         logger.warn("Rate limit exceeded for identifier {} on path {}", identifier, path)
-                        sendRateLimitResponse(exchange, result, path)
+                        sendRateLimitResponse(exchange, result, path, strategy)
                     }
                 }
             }
     }
 
-    private fun shouldSkipRateLimiting(exchange: ServerWebExchange, path: String): Boolean {
+    private fun determineRateLimitStrategy(path: String): RateLimitStrategy? {
+        return when {
+            isAuthenticationEndpoint(path) -> RateLimitStrategy.AUTH
+            isResumeEndpoint(path) -> RateLimitStrategy.RESUME
+            else -> null
+        }
+    }
+
+    private fun shouldSkipRateLimiting(
+        exchange: ServerWebExchange,
+        strategy: RateLimitStrategy
+    ): Boolean {
         val alreadyProcessed = exchange.attributes.putIfAbsent(RATE_LIMIT_PROCESSED_KEY, true) != null
         if (alreadyProcessed) {
             logger.debug("Request already processed by rate limiter, skipping")
             return true
         }
 
-        val isAuthEndpoint = isAuthenticationEndpoint(path)
-        val isRateLimitEnabled = configurationStrategy.isAuthRateLimitEnabled()
-
-        return when {
-            !isAuthEndpoint -> {
-                logger.debug("Path {} is not an authentication endpoint, skipping rate limit", path)
-                true
-            }
-            !isRateLimitEnabled -> {
-                logger.debug("Authentication rate limiting is disabled, skipping")
-                true
-            }
+        val isRateLimitEnabled = when (strategy) {
+            RateLimitStrategy.AUTH -> configurationStrategy.isAuthRateLimitEnabled()
+            RateLimitStrategy.RESUME -> configurationStrategy.isResumeRateLimitEnabled()
             else -> false
         }
+
+        if (!isRateLimitEnabled) {
+            logger.debug("Rate limiting is disabled for strategy {}, skipping", strategy)
+            return true
+        }
+        return false
     }
 
     private fun isAuthenticationEndpoint(path: String): Boolean {
         val authEndpoints = configurationStrategy.getAuthEndpoints()
         return authEndpoints.any { path.contains(it) }
+    }
+
+    private fun isResumeEndpoint(path: String): Boolean {
+        val resumeEndpoints = configurationStrategy.getResumeEndpoints()
+        return resumeEndpoints.any { path.contains(it) }
     }
 
     private fun getIdentifier(exchange: ServerWebExchange): String {
@@ -110,7 +124,8 @@ class RateLimitingFilter(
     private fun sendRateLimitResponse(
         exchange: ServerWebExchange,
         result: RateLimitResult.Denied,
-        path: String
+        path: String,
+        strategy: RateLimitStrategy
     ): Mono<Void> {
         val response = exchange.response
         response.statusCode = HttpStatus.TOO_MANY_REQUESTS
@@ -119,10 +134,16 @@ class RateLimitingFilter(
         val retryAfterSeconds = result.retryAfter.seconds
         response.headers.set("X-Rate-Limit-Retry-After-Seconds", retryAfterSeconds.toString())
 
+        val message = when (strategy) {
+            RateLimitStrategy.AUTH -> "Too many authentication attempts. Please try again later."
+            RateLimitStrategy.RESUME -> "Rate limit exceeded for resume generation. Please try again later."
+            else -> "Rate limit exceeded. Please try again later."
+        }
+
         val errorResponse = mapOf(
             "error" to mapOf(
                 "code" to "RATE_LIMIT_EXCEEDED",
-                "message" to "Too many authentication attempts. Please try again later.",
+                "message" to message,
                 "timestamp" to Instant.now().toString(),
                 "retryAfter" to retryAfterSeconds,
                 "path" to path,

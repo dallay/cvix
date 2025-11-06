@@ -18,7 +18,23 @@ export interface HttpClientConfig {
 }
 
 /**
- * Generic error response structure
+ * RFC 7807 Problem Details for HTTP APIs
+ * Standard format for API error responses
+ */
+export interface ProblemDetail {
+	type?: string; // URI reference identifying the problem type
+	title?: string; // Short, human-readable summary
+	status: number; // HTTP status code
+	detail?: string; // Human-readable explanation
+	instance?: string; // URI reference identifying the specific occurrence
+	timestamp?: string; // When the error occurred
+	errorCategory?: string; // Category of the error
+	fieldErrors?: Record<string, string>; // Field-level validation errors
+	[key: string]: unknown; // Allow additional properties
+}
+
+/**
+ * @deprecated Use ProblemDetail instead
  */
 export interface ApiErrorResponse {
 	message?: string;
@@ -161,12 +177,27 @@ export class BaseHttpClient {
 
 	/**
 	 * Extract error data from Axios error response
+	 * @deprecated Use getProblemDetail instead
 	 */
 	protected getErrorData(error: AxiosError): ApiErrorResponse {
 		if (!error.response?.data) {
 			return {};
 		}
 		return error.response.data as ApiErrorResponse;
+	}
+
+	/**
+	 * Extract RFC 7807 Problem Details from Axios error response
+	 */
+	protected getProblemDetail(error: AxiosError): ProblemDetail {
+		if (!error.response?.data) {
+			return {
+				status: error.response?.status || 0,
+				title: "Network Error",
+				detail: error.message,
+			};
+		}
+		return error.response.data as ProblemDetail;
 	}
 
 	/**

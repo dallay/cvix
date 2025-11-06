@@ -16,7 +16,9 @@ import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
+import reactor.core.publisher.Mono
 
 private const val ERROR_PAGE = "https://loomify.com/errors"
 
@@ -115,6 +117,45 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         problemDetail.setProperty(TIMESTAMP, Instant.now())
         return problemDetail
     }
+
+    /**
+     * Handles validation exceptions from @Valid/@Validated annotations.
+     * Overrides the base class method to return field-specific error messages.
+     *
+     * @param ex The WebExchangeBindException containing validation errors.
+     * @param headers The HTTP headers.
+     * @param status The HTTP status.
+     * @param exchange The server web exchange.
+     * @return A Mono with a ResponseEntity containing the ProblemDetail with field errors.
+     */
+    override fun handleWebExchangeBindException(
+        ex: WebExchangeBindException,
+        headers: org.springframework.http.HttpHeaders,
+        status: org.springframework.http.HttpStatusCode,
+        exchange: org.springframework.web.server.ServerWebExchange,
+    ): Mono<org.springframework.http.ResponseEntity<Any>> {
+        val fieldErrors = ex.bindingResult.fieldErrors.associate { error ->
+            error.field to (error.defaultMessage ?: "Invalid value")
+        }
+        val globalErrors = ex.bindingResult.globalErrors.map { error ->
+            error.defaultMessage ?: "Validation failed"
+        }
+
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            globalErrors.firstOrNull() ?: "Validation failed",
+        )
+        problemDetail.title = "Validation Error"
+        problemDetail.type = URI.create("$ERROR_PAGE/validation-error")
+        problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty("fieldErrors", fieldErrors)
+        if (globalErrors.isNotEmpty()) {
+            problemDetail.setProperty("errors", globalErrors)
+        }
+        return Mono.just(org.springframework.http.ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ProblemDetail {

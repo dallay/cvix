@@ -1,0 +1,11 @@
+server:
+  forward-headers-strategy: framework
+  shutdown: graceful
+
+application:
+  security:
+    headers:
+      hsts-enabled: true
+      hsts-max-age: 31536000
+      hsts-include-subdomains: true
+      hsts-preload: false

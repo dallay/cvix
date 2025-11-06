@@ -38,11 +38,11 @@ const structuredData = {
 };
 ---
 
-<Layout 
-	title={t('home.title')} 
+<Layout
+	title={t('home.title')}
 	description={t('home.description')}
 >
-	<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 	<Hero />
 	<Feature />
 	<HowItWorks />

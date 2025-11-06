@@ -21,6 +21,8 @@ apacheCommon = "1.12.0"
 jackson = "2.18.0"
 springSecurity = "6.5.6"
 bucket4j = "8.1.0"
+stringtemplate = "4.3.4"
+docker-java = "3.6.0"
 
 [libraries]
 # Gradle Plugins
@@ -77,6 +79,9 @@ kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
 bucket4j-core = { module = "com.bucket4j:bucket4j-core", version.ref = "bucket4j" }
+stringtemplate4 = { module = "org.antlr:ST4", version.ref = "stringtemplate" }
+docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
+docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
 
 
 # Testing
