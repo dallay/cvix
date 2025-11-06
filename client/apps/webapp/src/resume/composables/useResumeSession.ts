@@ -1,24 +1,23 @@
-import { deepmerge } from "@loomify/utilities";
+import { watchDebounced } from "@vueuse/core";
 import type { Ref } from "vue";
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted } from "vue";
 import type { Resume } from "../types/resume";
 import { resumeSchema } from "../validation/resumeSchema";
 
 const SESSION_STORAGE_KEY = "resume_form_data";
-const AUTO_SAVE_DEBOUNCE_MS = 1000;
+const AUTO_SAVE_DEBOUNCE_MS = 300;
 
 /**
  * Composable for persisting resume form data to sessionStorage
  *
  * Features:
- * - Auto-saves form data on changes (debounced)
+ * - Auto-saves form data on changes (debounced to 300ms for better performance)
  * - Restores data on page load
  * - Clears data on successful generation
  * - Data persists only within the current browser session
+ * - Optimized for performance with efficient watching and minimal overhead
  */
 export function useResumeSession(resumeData: Ref<Resume>) {
-	let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-
 	/**
 	 * Save resume data to sessionStorage
 	 */
@@ -52,13 +51,13 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 				return null;
 			}
 			// Patch: Map skills to include 'category' property for compatibility
-			let resume: Resume = validated.data as Resume;
+			const resume: Resume = validated.data as Resume;
 			if (resume.skills) {
 				type SkillInput = Omit<
 					import("../types/resume").SkillCategory,
 					"category"
 				> & { category?: string; name?: string };
-				resume = {
+				return {
 					...resume,
 					skills: resume.skills.map(
 						(s: SkillInput): import("../types/resume").SkillCategory => ({
@@ -87,48 +86,36 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 	};
 
 	/**
-	 * Debounced save handler
-	 */
-	const debouncedSave = () => {
-		if (saveTimeout) {
-			clearTimeout(saveTimeout);
-		}
-		saveTimeout = setTimeout(() => {
-			saveToSession();
-		}, AUTO_SAVE_DEBOUNCE_MS);
-	};
-
-	/**
 	 * Restore data on component mount
 	 */
 	onMounted(() => {
 		const savedData = loadFromSession();
 		if (savedData) {
-			// Deep merge to preserve nested structures
-			resumeData.value = deepmerge.all([resumeData.value, savedData]) as Resume;
+			// Direct assignment is more performant than deep merge
+			// The store is already initialized with default values,
+			// so we can safely replace with validated saved data
+			resumeData.value = savedData;
 		}
 	});
 
 	/**
-	 * Watch for changes and auto-save
+	 * Watch for changes and auto-save with optimized debouncing
+	 * Using watchDebounced from VueUse for better performance
+	 * - flush: 'post' ensures updates happen after DOM updates
+	 * - deep: true watches nested properties
+	 * - debounce: 300ms provides good balance between responsiveness and performance
 	 */
-	const stopWatching = watch(
+	watchDebounced(
 		resumeData,
 		() => {
-			debouncedSave();
+			saveToSession();
 		},
-		{ deep: true },
+		{
+			debounce: AUTO_SAVE_DEBOUNCE_MS,
+			deep: true,
+			flush: "post",
+		},
 	);
-
-	/**
-	 * Clean up on unmount
-	 */
-	onUnmounted(() => {
-		if (saveTimeout) {
-			clearTimeout(saveTimeout);
-		}
-		stopWatching();
-	});
 
 	return {
 		saveToSession,
