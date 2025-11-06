@@ -22,7 +22,7 @@ enum class Locale(val code: String) {
 
     companion object {
         fun from(code: String): Locale {
-            return values().find { it.code == code }
+            return entries.find { it.code == code }
                 ?: throw IllegalArgumentException("Unsupported locale: $code")
         }
     }
