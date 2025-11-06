@@ -1,7 +1,7 @@
 import { watchDebounced } from "@vueuse/core";
 import type { Ref } from "vue";
 import { onMounted } from "vue";
-import type { Resume } from "../types/resume";
+import type { Resume, SkillCategory } from "../types/resume";
 import { resumeSchema } from "../validation/resumeSchema";
 
 const SESSION_STORAGE_KEY = "resume_form_data";
@@ -53,14 +53,14 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 			// Patch: Map skills to include 'category' property for compatibility
 			const resume: Resume = validated.data as Resume;
 			if (resume.skills) {
-				type SkillInput = Omit<
-					import("../types/resume").SkillCategory,
-					"category"
-				> & { category?: string; name?: string };
+				type SkillInput = Omit<SkillCategory, "category"> & {
+					category?: string;
+					name?: string;
+				};
 				return {
 					...resume,
 					skills: resume.skills.map(
-						(s: SkillInput): import("../types/resume").SkillCategory => ({
+						(s: SkillInput): SkillCategory => ({
 							...s,
 							category: s.category || s.name || "",
 						}),
@@ -104,6 +104,7 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 	 * - flush: 'post' ensures updates happen after DOM updates
 	 * - deep: true watches nested properties
 	 * - debounce: 300ms provides good balance between responsiveness and performance
+	 * - Automatic cleanup: Vue 3's reactivity system stops the watcher when component unmounts
 	 */
 	watchDebounced(
 		resumeData,
