@@ -35,10 +35,10 @@ jobs:
       pull-requests: write # For reviewdog to post comments
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
 
       - name: Lint YAML files
-        uses: ibiqlik/action-yamllint@ae1abb2821b567e96742aa776f7b62c9b6a26bc8 #v3
+        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c #v3
         with:
           file_or_dir: "."
           config_file: ".yamllint.yml"
@@ -50,7 +50,7 @@ jobs:
           fail_level: error
 
       - name: Lint Shell scripts
-        uses: reviewdog/action-shellcheck@f627b974d3005f993dc36f46d2cdf2684be18e5c # v1.9.0
+        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
         with:
           reporter: github-pr-review
           fail_on_error: true
@@ -82,9 +82,9 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
       - name: Run Labeler
-        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9   # v5
+        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b   # v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yaml
@@ -98,7 +98,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
       - name: Dependency Review
         # Pinned to v4 commit hash for security
         uses: actions/dependency-review-action@45529485b5eb76184ced07362d2331fd9d26f03f # v4
@@ -121,7 +121,7 @@ jobs:
       - name:
           Checkout repository
           # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
@@ -135,7 +135,7 @@ jobs:
       - name: Upload OWASP Dependency Check Report
         if: always() # Ensure report is uploaded even if previous steps fail
         # Pinned to v4 commit hash for security
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
         with:
           name: owasp-dependency-check-report
           path: reports/dependency-check-report.html # Default path for HTML report
@@ -159,9 +159,9 @@ jobs:
     name: Markdown lint (docs)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@451cad2cde7304d9c243aaaf2e894d74b428c4be
+        uses: DavidAnson/markdownlint-cli2-action@29b4789128417bf7fb32869380e9f0a08c651f13
         with:
           globs: |
             **/*.md
