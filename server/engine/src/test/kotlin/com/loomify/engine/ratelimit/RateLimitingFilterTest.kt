@@ -7,6 +7,7 @@ import com.loomify.engine.ratelimit.infrastructure.RateLimitStrategy
 import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import com.loomify.engine.ratelimit.infrastructure.config.BucketConfigurationStrategy
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.*
 import java.time.Duration
 import org.junit.jupiter.api.AfterEach
@@ -475,5 +476,9 @@ class RateLimitingFilterTest {
 
         exchange.response.statusCode shouldBe HttpStatus.TOO_MANY_REQUESTS
         exchange.response.headers["X-Rate-Limit-Retry-After-Seconds"]?.get(0) shouldBe "300"
+
+        // Verify response body contains resume-specific error message
+        val responseBody = exchange.response.bodyAsString.block()
+        responseBody shouldContain "Rate limit exceeded for resume generation. Please try again later."
     }
 }
