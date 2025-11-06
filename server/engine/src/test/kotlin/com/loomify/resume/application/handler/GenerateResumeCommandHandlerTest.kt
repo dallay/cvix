@@ -96,7 +96,7 @@ class GenerateResumeCommandHandlerTest {
     fun `should default to English locale when not specified`() {
         // Arrange
         val resumeData = createValidResumeData()
-        val command = GenerateResumeCommand(resumeData, Locale.EN) // Default to Locale.EN
+        val command = GenerateResumeCommand(resumeData) // Exercise default locale
         val latexSource = "\\documentclass{article}..."
         val pdfBytes = "PDF content".toByteArray()
 
