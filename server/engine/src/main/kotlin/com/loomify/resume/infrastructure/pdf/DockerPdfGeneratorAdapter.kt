@@ -281,7 +281,7 @@ class DockerPdfGeneratorAdapter(
         val hostConfig = HostConfig.newHostConfig()
             .withBinds(Bind(tempDir.toString(), Volume(WORK_DIR)))
             .withReadonlyRootfs(true) // Security: read-only filesystem
-            .withMemory(properties.memoryLimitMb.toLong() * MB * MB) // Memory limit
+            .withMemory(properties.memoryLimitMb * MB * MB) // Memory limit
             .withCpuQuota((properties.cpuQuota * CPU_QUOTA_UNIT).toLong()) // CPU limit
             .withCpuPeriod(CPU_QUOTA_UNIT)
             .withNetworkMode("none") // Security: no network access

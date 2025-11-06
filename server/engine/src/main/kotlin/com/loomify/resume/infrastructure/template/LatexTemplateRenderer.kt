@@ -221,6 +221,11 @@ class LatexTemplateRenderer(
             "\\def",
             "\\let",
             "\\expandafter",
+            "\\catcode",
+            "\\read",
+            "\\csname",
+            "\\newcommand",
+            "\\makeatletter",
         )
     }
 }
