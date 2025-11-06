@@ -2,6 +2,7 @@ package com.loomify.resume.domain.model
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 /**
  * CompanyName value object with validation.
@@ -70,10 +71,11 @@ data class WorkExperience(
     /**
      * Formats the employment period for display.
      * Format: "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present"
-     * @param locale "en" for English, "es" for Spanish
+     * @param locale Locale object for language-specific formatting
      */
-    fun formatPeriod(locale: String = "en"): String {
-        val end = endDate ?: if (locale == "es") "Presente" else "Present"
+    fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
+        val presentLabel = if (locale.language == "es") "Presente" else "Present"
+        val end = endDate ?: presentLabel
         return "$startDate -- $end"
     }
     companion object {

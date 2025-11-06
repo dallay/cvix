@@ -134,7 +134,7 @@ class LatexTemplateRenderer(
                 mapOf(
                     "company" to escapeLatex(work.company.value),
                     "position" to escapeLatex(work.position.value),
-                    "period" to escapeLatex(work.formatPeriod(locale)),
+                    "period" to escapeLatex(work.formatPeriod(Locale.forLanguageTag(locale))),
                     "location" to (work.location?.let { escapeLatex(it) } ?: ""),
                     "description" to (work.summary?.let { escapeLatex(it) } ?: ""),
                 )

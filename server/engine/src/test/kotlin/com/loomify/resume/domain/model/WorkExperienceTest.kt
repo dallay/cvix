@@ -6,6 +6,7 @@ import io.kotest.matchers.doubles.shouldBeWithinPercentageOf
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDate
+import java.util.Locale
 import org.junit.jupiter.api.Test
 
 /**
@@ -122,7 +123,7 @@ class WorkExperienceTest {
         )
 
         // Act
-        val period = workExperience.formatPeriod("en")
+        val period = workExperience.formatPeriod(Locale.ENGLISH)
 
         // Assert
         period shouldBe "2020-01-01 -- 2023-12-31"
@@ -143,7 +144,7 @@ class WorkExperienceTest {
         )
 
         // Act
-        val period = workExperience.formatPeriod("en")
+        val period = workExperience.formatPeriod(Locale.ENGLISH)
 
         // Assert
         period shouldBe "2020-01-01 -- Present"
@@ -164,7 +165,7 @@ class WorkExperienceTest {
         )
 
         // Act
-        val period = workExperience.formatPeriod("es")
+        val period = workExperience.formatPeriod(Locale("es"))
 
         // Assert
         period shouldBe "2020-01-01 -- Presente"
