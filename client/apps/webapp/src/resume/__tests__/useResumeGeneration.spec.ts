@@ -93,4 +93,29 @@ describe("useResumeGeneration", () => {
 			"en",
 		);
 	});
+	it("should handle generation errors correctly", async () => {
+		const mockError = {
+			response: {
+				status: 429,
+				data: {
+					title: "Rate Limit Exceeded",
+					detail: "Too many requests",
+					status: 429,
+				},
+			},
+		};
+		vi.mocked(resumeHttpClient.generateResumePdf).mockRejectedValueOnce(
+			mockError,
+		);
+
+		const { generateResume, isGenerating, error } = useResumeGeneration();
+		const resume = createMockResume();
+
+		const result = await generateResume(resume, "en");
+
+		expect(result).toBe(false);
+		expect(isGenerating.value).toBe(false);
+		expect(error.value).not.toBeNull();
+		expect(error.value?.status).toBe(429);
+	});
 });
