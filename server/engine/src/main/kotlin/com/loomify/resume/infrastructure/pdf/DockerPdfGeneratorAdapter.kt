@@ -281,7 +281,7 @@ class DockerPdfGeneratorAdapter(
         val hostConfig = HostConfig.newHostConfig()
             .withBinds(Bind(tempDir.toString(), Volume(WORK_DIR)))
             .withReadonlyRootfs(true) // Security: read-only filesystem
-            .withMemory(properties.memoryLimitMb * MB * MB) // Memory limit
+            .withMemory(properties.memoryLimitMb.toLong() * MB * MB) // Memory limit
             .withCpuQuota((properties.cpuQuota * CPU_QUOTA_UNIT).toLong()) // CPU limit
             .withCpuPeriod(CPU_QUOTA_UNIT)
             .withNetworkMode("none") // Security: no network access
@@ -419,7 +419,7 @@ class DockerPdfGeneratorAdapter(
         private const val WORK_DIR = "/work"
         private const val LATEX_FILE = "resume.tex"
         private const val PDF_FILE = "resume.pdf"
-        private const val MB = 1_024
+        private const val MB = 1_024L
         private const val CPU_QUOTA_UNIT = 100_000L
         private const val SECOND = 1_000
         private const val POLL_INTERVAL_MS = 100L
