@@ -37,6 +37,17 @@ export const resumeApi = {
 			throw new Error(detail);
 		}
 
+		// Validate Content-Type
+		const contentType = response.headers.get("content-type");
+		if (
+			!contentType ||
+			!contentType.toLowerCase().includes("application/pdf")
+		) {
+			throw new Error(
+				`Expected PDF but received ${contentType ?? "<none>"} (HTTP ${response.status})`,
+			);
+		}
+
 		return response.blob();
 	},
 };

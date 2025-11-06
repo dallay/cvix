@@ -130,13 +130,11 @@ gitleaks_*.tar.gz
 gitleaks_*.tar.gz.sha256
 actionlint
 
-
 test-results/
 
 # LaTeX build artifacts
 *.aux
 *.fdb_latexmk
 *.fls
-*.log
 *.out
 *.synctex.gz
