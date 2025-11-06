@@ -4,12 +4,12 @@ import { formatPeriod } from "../utils/formatPeriod";
 describe("formatPeriod", () => {
 	it("handles invalid date format gracefully", () => {
 		const result = formatPeriod("invalid-date");
-		expect(result).toBe("Invalid Date - Present"); // Current behavior
+		expect(result).toBe(""); // Should return empty string for invalid input
 	});
 
 	it("handles malformed ISO dates", () => {
 		const result = formatPeriod("2025-13-45");
-		expect(result).toBe("Invalid Date - Present"); // Current behavior
+		expect(result).toBe(""); // Should return empty string for invalid input
 	});
 	it("formats a period with start and end dates in the default locale", () => {
 		const startDate = "2025-01-01";

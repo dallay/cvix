@@ -22,23 +22,36 @@ export const formatPeriod = (
 		return "";
 	}
 
+	// Validate if the dates are valid ISO dates
+	const start = new Date(startDate);
+	if (Number.isNaN(start.getTime())) {
+		console.warn("formatPeriod: Invalid start date value.");
+		return "";
+	}
+
 	const currentLocale =
 		locale ||
 		(typeof navigator !== "undefined" ? navigator.language : undefined) ||
 		"en-US";
-	const start = new Date(startDate).toLocaleDateString(currentLocale, {
+	const formattedStart = start.toLocaleDateString(currentLocale, {
 		year: "numeric",
 		month: "short",
 	});
 
 	if (!endDate) {
-		return `${start} - ${presentText}`;
+		return `${formattedStart} - ${presentText}`;
 	}
 
-	const end = new Date(endDate).toLocaleDateString(currentLocale, {
+	const end = new Date(endDate);
+	if (Number.isNaN(end.getTime())) {
+		console.warn("formatPeriod: Invalid end date value.");
+		return "";
+	}
+
+	const formattedEnd = end.toLocaleDateString(currentLocale, {
 		year: "numeric",
 		month: "short",
 	});
 
-	return `${start} - ${end}`;
+	return `${formattedStart} - ${formattedEnd}`;
 };
