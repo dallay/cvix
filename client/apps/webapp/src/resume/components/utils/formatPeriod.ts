@@ -15,7 +15,10 @@ export const formatPeriod = (
 ): string => {
 	if (!startDate) return "";
 
-	const currentLocale = locale || navigator.language || "en-US";
+	const currentLocale =
+		locale ||
+		(typeof navigator !== "undefined" ? navigator.language : undefined) ||
+		"en-US";
 	const start = new Date(startDate).toLocaleDateString(currentLocale, {
 		year: "numeric",
 		month: "short",

@@ -1,4 +1,17 @@
 <script setup lang="ts">
+// Format location for display (handles string or object)
+const formattedLocation = computed(() => {
+	const loc = debouncedData.value.personalInfo?.location;
+	if (!loc) return null;
+	if (typeof loc === "string") return loc;
+	if (typeof loc === "object") {
+		// JSON Resume: { city, region, countryCode, ... }
+		const { city, region, countryCode } = loc;
+		return [city, region, countryCode].filter(Boolean).join(", ");
+	}
+	return null;
+});
+
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Card, CardContent } from "@/components/ui/card";
@@ -95,9 +108,9 @@ const linkedInProfile = computed(() => {
 					<p v-if="debouncedData.personalInfo?.phone">
 						{{ debouncedData.personalInfo.phone }}
 					</p>
-					<p v-if="debouncedData.personalInfo?.location">
-						{{ debouncedData.personalInfo.location }}
-					</p>
+														<p v-if="formattedLocation">
+															{{ formattedLocation }}
+														</p>
 					<p v-if="linkedInProfile">
 						<a
 							:href="linkedInProfile"
