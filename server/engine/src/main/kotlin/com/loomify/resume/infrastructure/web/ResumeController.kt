@@ -195,7 +195,7 @@ private fun GenerateResumeRequest.toDomain(): ResumeData {
         languages = languages?.map { lang ->
             Language(
                 language = lang.language,
-                fluency = lang.fluency,
+                fluency = com.loomify.resume.domain.model.FluencyLevel.valueOf(lang.fluency),
             )
         } ?: emptyList(),
         projects = projects?.map { project ->

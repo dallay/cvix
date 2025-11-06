@@ -175,7 +175,7 @@ class LatexTemplateRenderer(
             val mapped = langList.map { lang ->
                 mapOf(
                     "language" to escapeLatex(lang.language),
-                    "fluency" to (lang.fluency?.let { escapeLatex(it) } ?: ""),
+                    "fluency" to escapeLatex(lang.fluency.toString()),
                 )
             }
             template.add("languages", mapped)
@@ -187,7 +187,7 @@ class LatexTemplateRenderer(
             val mapped = projectList.map { project ->
                 mapOf(
                     "name" to escapeLatex(project.name),
-                    "description" to (project.description?.let { escapeLatex(it) } ?: ""),
+                    "description" to escapeLatex(project.description),
                     "url" to (project.url?.let { escapeLatex(it) } ?: ""),
                 )
             }

@@ -48,11 +48,3 @@ data class ContentMetrics(
     val experienceYears: Double,
     val educationEntries: Int,
 )
-
-// Adding FluencyLevel enum for type safety
-enum class FluencyLevel {
-    NATIVE,
-    FLUENT,
-    INTERMEDIATE,
-    BEGINNER
-}
