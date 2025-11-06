@@ -99,3 +99,29 @@ jobs:
             server/engine/build/libs/*.jar
             server/engine/build/reports/
           retention-days: 7
+
+  build-and-push-docker:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, lint]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: ./gradlew bootBuildImage --imageName=ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }}
