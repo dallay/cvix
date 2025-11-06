@@ -15,6 +15,13 @@ export const formatPeriod = (
 ): string => {
 	if (!startDate) return "";
 
+	// Validate date format (YYYY-MM-DD)
+	const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+	if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
+		console.warn("formatPeriod: Invalid date format. Expected YYYY-MM-DD");
+		return "";
+	}
+
 	const currentLocale =
 		locale ||
 		(typeof navigator !== "undefined" ? navigator.language : undefined) ||

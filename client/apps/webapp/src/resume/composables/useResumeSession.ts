@@ -2,6 +2,7 @@ import { deepmerge } from "@loomify/utilities";
 import type { Ref } from "vue";
 import { onMounted, onUnmounted, watch } from "vue";
 import type { Resume } from "../types/resume";
+import { resumeSchema } from "../validation/resumeSchema";
 
 const SESSION_STORAGE_KEY = "resume_form_data";
 const AUTO_SAVE_DEBOUNCE_MS = 1000;
@@ -41,12 +42,33 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 				return null;
 			}
 			const parsed = JSON.parse(savedData);
-			// Basic validation to ensure it has the required structure
-			if (!parsed || typeof parsed !== "object" || !parsed.basics) {
-				console.warn("Invalid resume data in session storage");
+			// Zod schema validation
+			const validated = resumeSchema.safeParse(parsed);
+			if (!validated.success) {
+				console.warn(
+					"Invalid resume data in session, ignoring:",
+					validated.error,
+				);
 				return null;
 			}
-			return parsed as Resume;
+			// Patch: Map skills to include 'category' property for compatibility
+			let resume: Resume = validated.data as Resume;
+			if (resume.skills) {
+				type SkillInput = Omit<
+					import("../types/resume").SkillCategory,
+					"category"
+				> & { category?: string; name?: string };
+				resume = {
+					...resume,
+					skills: resume.skills.map(
+						(s: SkillInput): import("../types/resume").SkillCategory => ({
+							...s,
+							category: s.category || s.name || "",
+						}),
+					),
+				};
+			}
+			return resume;
 		} catch (error) {
 			console.warn("Failed to load resume data from session:", error);
 			return null;
