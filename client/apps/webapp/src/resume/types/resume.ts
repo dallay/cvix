@@ -99,7 +99,7 @@ export type Project = {
  */
 
 export type GenerateResumeRequest = {
-	resumeData: Resume;
+	resumeData: ResumeData;
 	locale?: string; // "en" or "es"
 };
 
