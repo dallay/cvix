@@ -21,23 +21,32 @@ vi.mock("astro:i18n", () => ({
 }));
 
 // Mock sessionStorage and localStorage for Node.js environment
-global.sessionStorage = {
-	getItem: vi.fn(),
-	setItem: vi.fn(),
-	removeItem: vi.fn(),
-	clear: vi.fn(),
-	key: vi.fn(),
-	length: 0,
+
+const createMockStorage = (): Storage => {
+	const store = new Map<string, string>();
+	return {
+		getItem: vi.fn((key: string) => store.get(key) ?? null),
+		setItem: vi.fn((key: string, value: string) => {
+			store.set(key, value);
+		}),
+		removeItem: vi.fn((key: string) => {
+			store.delete(key);
+		}),
+		clear: vi.fn(() => {
+			store.clear();
+		}),
+		key: vi.fn((index: number) => {
+			const keys = Array.from(store.keys());
+			return keys[index] ?? null;
+		}),
+		get length() {
+			return store.size;
+		},
+	} as Storage;
 };
 
-global.localStorage = {
-	getItem: vi.fn(),
-	setItem: vi.fn(),
-	removeItem: vi.fn(),
-	clear: vi.fn(),
-	key: vi.fn(),
-	length: 0,
-};
+global.sessionStorage = createMockStorage();
+global.localStorage = createMockStorage();
 
 // Refined mock for window object
 global.window = Object.create(global);
