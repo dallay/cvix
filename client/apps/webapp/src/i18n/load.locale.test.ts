@@ -242,6 +242,14 @@ const mockMessages = {
 					addProject: "Add Project",
 					addHighlight: "Add Achievement",
 				},
+				actions: {
+					add: "Add",
+					removeWorkExperience: "Remove work experience",
+					removeEducation: "Remove education entry",
+					removeSkillCategory: "Remove skill category",
+					removeSkill: "Remove {skill}",
+					addSkill: "Add skill",
+				},
 				validation: {
 					required: "This field is required",
 					email: "Must be a valid email address",
