@@ -6,6 +6,9 @@ FROM node:22-alpine AS build
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
 
+# Install git
+RUN apk add --no-cache git
+
 # Set working directory
 WORKDIR /app
 
