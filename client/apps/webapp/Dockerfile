@@ -20,7 +20,7 @@ COPY client/packages/utilities/package.json ./client/packages/utilities/
 COPY client/apps/webapp/package.json ./client/apps/webapp/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN LEFTHOOK_SKIP=1 pnpm install --frozen-lockfile
 
 # Copy source code
 COPY client/config ./client/config/
