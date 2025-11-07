@@ -12,28 +12,53 @@ import type {
 import { resumeSchema } from "@/resume/validation/resumeSchema";
 import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
-export const useResumeStore = defineStore("resume", () => {
-	// State
-	const resume = ref<Resume>({
-		basics: {
-			name: "",
-			email: "",
-		},
-		work: [
-			{
-				company: "",
-				position: "",
-				startDate: "",
-			},
-		],
-		education: [],
-		skills: [],
-	});
+const INITIAL_WORK_ITEM: WorkExperience = {
+	company: "",
+	position: "",
+	startDate: "",
+};
 
+const INITIAL_EDUCATION_ITEM: Education = {
+	institution: "",
+	area: "",
+	studyType: "",
+	startDate: "",
+};
+
+const INITIAL_SKILL_ITEM: SkillCategory = {
+	category: "",
+	keywords: [],
+};
+
+const INITIAL_LANGUAGE_ITEM: Language = {
+	language: "",
+	fluency: "",
+};
+
+const INITIAL_PROJECT_ITEM: Project = {
+	name: "",
+	description: "",
+	url: "",
+	startDate: "",
+	endDate: "",
+};
+
+const getInitialResumeState = (): Resume => ({
+	basics: {
+		name: "",
+		email: "",
+	},
+	work: [{ ...INITIAL_WORK_ITEM }],
+	education: [],
+	skills: [],
+});
+
+export const useResumeStore = defineStore("resume", () => {
+	const resume = ref<Resume>(getInitialResumeState());
 	const isGenerating = ref(false);
 	const generationError = ref<ProblemDetail | null>(null);
 
-	// Getters
+	// Computed
 	const isValid = computed(() => {
 		try {
 			resumeSchema.parse(resume.value);
@@ -43,15 +68,15 @@ export const useResumeStore = defineStore("resume", () => {
 		}
 	});
 
-	const hasContent = computed(() => {
-		return (
-			(resume.value.work && resume.value.work.length > 0) ||
-			(resume.value.education && resume.value.education.length > 0) ||
-			(resume.value.skills && resume.value.skills.length > 0)
-		);
-	});
+	const hasContent = computed(
+		() =>
+			!!(
+				resume.value.work?.length ||
+				resume.value.education?.length ||
+				resume.value.skills?.length
+			),
+	);
 
-	// Transform Resume to ResumeData format for preview component
 	const resumeData = computed<ResumeData>(() => ({
 		personalInfo: resume.value.basics,
 		workExperience: resume.value.work,
@@ -61,162 +86,95 @@ export const useResumeStore = defineStore("resume", () => {
 		projects: resume.value.projects,
 	}));
 
-	// Actions
-	function updatePersonalInfo(info: Resume["basics"]) {
-		resume.value.basics = info;
-	}
-
-	function addWorkExperience() {
-		if (!resume.value.work) {
-			resume.value.work = [];
-		}
-		const newEntry: WorkExperience = {
-			company: "",
-			position: "",
-			startDate: "",
+	// Generic CRUD operations factory
+	const createArrayOperations = <T>(key: keyof Resume) => {
+		const getArray = (): T[] => {
+			const value = resume.value[key];
+			return (Array.isArray(value) ? value : []) as T[];
 		};
-		resume.value.work.push(newEntry);
-	}
 
-	function removeWorkExperience(index: number) {
-		if (resume.value.work) {
-			resume.value.work.splice(index, 1);
-		}
-	}
-
-	function updateWorkExperience(index: number, data: WorkExperience) {
-		if (resume.value.work?.[index]) {
-			resume.value.work[index] = data;
-		}
-	}
-
-	function addEducation() {
-		if (!resume.value.education) {
-			resume.value.education = [];
-		}
-		const newEntry: Education = {
-			institution: "",
-			area: "",
-			studyType: "",
-			startDate: "",
-		};
-		resume.value.education.push(newEntry);
-	}
-
-	function removeEducation(index: number) {
-		if (resume.value.education) {
-			resume.value.education.splice(index, 1);
-		}
-	}
-
-	function updateEducation(index: number, data: Education) {
-		if (resume.value.education?.[index]) {
-			resume.value.education[index] = data;
-		}
-	}
-
-	function addSkillCategory() {
-		if (!resume.value.skills) {
-			resume.value.skills = [];
-		}
-		const newEntry: SkillCategory = {
-			category: "",
-			keywords: [],
-		};
-		resume.value.skills.push(newEntry);
-	}
-
-	function removeSkillCategory(index: number) {
-		if (resume.value.skills) {
-			resume.value.skills.splice(index, 1);
-		}
-	}
-
-	function updateSkillCategory(index: number, data: SkillCategory) {
-		if (resume.value.skills?.[index]) {
-			resume.value.skills[index] = data;
-		}
-	}
-
-	function addLanguage() {
-		if (!resume.value.languages) {
-			resume.value.languages = [];
-		}
-		const newEntry: Language = {
-			language: "",
-			fluency: "",
-		};
-		resume.value.languages.push(newEntry);
-	}
-
-	function removeLanguage(index: number) {
-		if (resume.value.languages) {
-			resume.value.languages.splice(index, 1);
-		}
-	}
-
-	function updateLanguage(index: number, data: Language) {
-		if (resume.value.languages?.[index]) {
-			resume.value.languages[index] = data;
-		}
-	}
-
-	function addProject() {
-		if (!resume.value.projects) {
-			resume.value.projects = [];
-		}
-		const newEntry: Project = {
-			name: "",
-			description: "",
-			url: "",
-			startDate: "",
-			endDate: "",
-		};
-		resume.value.projects.push(newEntry);
-	}
-
-	function removeProject(index: number) {
-		if (resume.value.projects) {
-			resume.value.projects.splice(index, 1);
-		}
-	}
-
-	function updateProject(index: number, data: Project) {
-		if (resume.value.projects?.[index]) {
-			resume.value.projects[index] = data;
-		}
-	}
-
-	function resetResume() {
-		resume.value = {
-			basics: {
-				name: "",
-				email: "",
+		return {
+			add: (item: T) => {
+				const current = getArray();
+				resume.value = {
+					...resume.value,
+					[key]: [...current, item],
+				};
+			},
+			remove: (index: number) => {
+				const current = getArray();
+				resume.value = {
+					...resume.value,
+					[key]: current.filter((_, i) => i !== index),
+				};
+			},
+			update: (index: number, data: T) => {
+				const current = getArray();
+				if (current[index]) {
+					resume.value = {
+						...resume.value,
+						[key]: current.map((item, i) => (i === index ? data : item)),
+					};
+				}
 			},
 		};
+	};
+
+	// Work Experience
+	const workOps = createArrayOperations<WorkExperience>("work");
+	const addWorkExperience = () => workOps.add({ ...INITIAL_WORK_ITEM });
+	const removeWorkExperience = workOps.remove;
+	const updateWorkExperience = workOps.update;
+
+	// Education
+	const educationOps = createArrayOperations<Education>("education");
+	const addEducation = () => educationOps.add({ ...INITIAL_EDUCATION_ITEM });
+	const removeEducation = educationOps.remove;
+	const updateEducation = educationOps.update;
+
+	// Skills
+	const skillOps = createArrayOperations<SkillCategory>("skills");
+	const addSkillCategory = () => skillOps.add({ ...INITIAL_SKILL_ITEM });
+	const removeSkillCategory = skillOps.remove;
+	const updateSkillCategory = skillOps.update;
+
+	// Languages
+	const languageOps = createArrayOperations<Language>("languages");
+	const addLanguage = () => languageOps.add({ ...INITIAL_LANGUAGE_ITEM });
+	const removeLanguage = languageOps.remove;
+	const updateLanguage = languageOps.update;
+
+	// Projects
+	const projectOps = createArrayOperations<Project>("projects");
+	const addProject = () => projectOps.add({ ...INITIAL_PROJECT_ITEM });
+	const removeProject = projectOps.remove;
+	const updateProject = projectOps.update;
+
+	// Core actions
+	const updatePersonalInfo = (info: Resume["basics"]) => {
+		resume.value.basics = info;
+	};
+
+	const resetResume = () => {
+		resume.value = getInitialResumeState();
 		generationError.value = null;
-	}
+	};
 
-	function setGenerating(value: boolean) {
+	const setGenerating = (value: boolean) => {
 		isGenerating.value = value;
-	}
+	};
 
-	function setGenerationError(error: ProblemDetail | null) {
+	const setGenerationError = (error: ProblemDetail | null) => {
 		generationError.value = error;
-	}
+	};
 
 	return {
-		// State
 		resume,
 		isGenerating,
 		generationError,
-
-		// Getters
 		isValid,
 		hasContent,
 		resumeData,
-
-		// Actions
 		updatePersonalInfo,
 		addWorkExperience,
 		removeWorkExperience,

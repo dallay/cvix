@@ -117,7 +117,8 @@
 			"downloaded": "¡Currículum descargado exitosamente!"
 		},
 		"form": {
-			"generate": "Generar Currículum"
+			"generate": "Generar Currículum",
+			"save_draft": "Guardar Borrador"
 		},
 		"loading": {
 			"generating": "Generando tu currículum...",

@@ -1,21 +1,18 @@
-import { watchDebounced } from "@vueuse/core";
 import type { Ref } from "vue";
 import { onMounted } from "vue";
 import type { Resume, SkillCategory } from "../types/resume";
 import { resumeSchema } from "../validation/resumeSchema";
 
 const SESSION_STORAGE_KEY = "resume_form_data";
-const AUTO_SAVE_DEBOUNCE_MS = 300;
 
 /**
  * Composable for persisting resume form data to sessionStorage
  *
  * Features:
- * - Auto-saves form data on changes (debounced to 300ms for better performance)
+ * - Manual save: Only saves when explicitly called
  * - Restores data on page load
  * - Clears data on successful generation
  * - Data persists only within the current browser session
- * - Optimized for performance with efficient watching and minimal overhead
  */
 export function useResumeSession(resumeData: Ref<Resume>) {
 	/**
@@ -97,26 +94,6 @@ export function useResumeSession(resumeData: Ref<Resume>) {
 			resumeData.value = savedData;
 		}
 	});
-
-	/**
-	 * Watch for changes and auto-save with optimized debouncing
-	 * Using watchDebounced from VueUse for better performance
-	 * - flush: 'post' ensures updates happen after DOM updates
-	 * - deep: true watches nested properties
-	 * - debounce: 300ms provides good balance between responsiveness and performance
-	 * - Automatic cleanup: Vue 3's reactivity system stops the watcher when component unmounts
-	 */
-	watchDebounced(
-		resumeData,
-		() => {
-			saveToSession();
-		},
-		{
-			debounce: AUTO_SAVE_DEBOUNCE_MS,
-			deep: true,
-			flush: "post",
-		},
-	);
 
 	return {
 		saveToSession,

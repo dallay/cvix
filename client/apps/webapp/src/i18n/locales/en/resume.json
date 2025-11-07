@@ -115,7 +115,8 @@
 			"downloaded": "Resume downloaded successfully!"
 		},
 		"form": {
-			"generate": "Generate Resume"
+			"generate": "Generate Resume",
+			"save_draft": "Save Draft"
 		},
 		"loading": {
 			"generating": "Generating your resume...",
