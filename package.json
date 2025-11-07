@@ -35,7 +35,7 @@
 	"scripts": {
 		"update-deps": "pnpm update -i -r --latest",
 		"preinstall": "npx only-allow pnpm",
-		"prepare": "pnpm exec lefthook install && pnpm run ruler:apply",
+		"prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
 		"ruler:check": "ruler check",
 		"ruler:apply": "ruler apply",
 		"dev": "pnpm --recursive --parallel run dev",

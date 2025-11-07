@@ -59,6 +59,7 @@ runs:
       env:
         # Other environment variables
         HUSKY: "0"  # By default do not run HUSKY install
+        LEFTHOOK_SKIP: "1"  # Skip lefthook install in CI
 
     - name: Verify installation
       shell: bash
