@@ -10,15 +10,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-// Define the Work type
-export interface Work {
-	company: string;
-	position: string;
-	startDate: string;
-	endDate?: string;
-	highlights: string[];
-}
+import type { Work } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();
 
@@ -67,7 +59,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
       <div>
         <FieldLabel>{{ t('resume.sections.workExperience') }}</FieldLabel>
         <FieldDescription>
-          {{ t('resume.descriptions.workExperience') }}
+          {{ t('resume.actions.descriptions.workExperience') }}
         </FieldDescription>
       </div>
       <Button
@@ -89,7 +81,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
       >
         <div class="flex items-center justify-between">
           <h4 class="text-sm font-medium">
-            {{ t('resume.labels.workExperience', { number: workIndex + 1 }) }}
+            {{ t('resume.actions.labels.workExperience', { number: workIndex + 1 }) }}
           </h4>
           <Button
             type="button"
@@ -198,7 +190,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
       class="text-center py-8 border border-dashed border-border rounded-lg bg-muted/50"
     >
       <p class="text-sm text-muted-foreground">
-        {{ t('resume.empty.workExperience') }}
+        {{ t('resume.actions.empty.workExperience') }}
       </p>
       <Button
         type="button"

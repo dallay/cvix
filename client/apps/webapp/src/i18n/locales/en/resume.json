@@ -11,6 +11,7 @@
 		"sections": {
 			"personalInfo": "Personal Information",
 			"workExperience": "Work Experience",
+			"volunteer": "Volunteer Experience",
 			"education": "Education",
 			"skills": "Skills",
 			"languages": "Languages",
@@ -38,6 +39,9 @@
 			"username": "Username",
 			"profileUrl": "Profile URL",
 			"companyUrl": "Company Website",
+			"organization": "Organization",
+			"organizationUrl": "Organization Website",
+			"currentVolunteer": "I currently volunteer here",
 			"location": {
 				"address": "Street Address",
 				"postalCode": "Postal Code",
@@ -72,6 +76,11 @@
 			"username": "janedoe",
 			"profileUrl": "https://linkedin.com/in/janedoe",
 			"companyUrl": "https://company.com",
+			"organization": "Red Cross, Habitat for Humanity, etc.",
+			"organizationUrl": "https://organization.org",
+			"volunteerPosition": "Volunteer Coordinator",
+			"volunteerSummary": "Organized fundraising events and coordinated volunteer activities...",
+			"volunteerHighlight": "Raised $10,000 for community programs",
 			"workSummary": "Led development of core platform features and mentored junior developers...",
 			"summary": "Experienced software engineer with a passion for building scalable web applications...",
 			"company": "ACME Corporation",
@@ -100,85 +109,84 @@
 			"addSkillCategory": "Add Skill Category",
 			"addLanguage": "Add Language",
 			"addProject": "Add Project",
-			"addHighlight": "Add Achievement"
+			"addHighlight": "Add Achievement",
+			"addVolunteer": "Add Volunteer Experience"
 		},
 		"actions": {
 			"add": "Add",
 			"addProfile": "Add Profile",
 			"addFirstProfile": "Add your first profile",
-			"addWorkExperience": "Add Work Experience",
 			"addFirstWorkExperience": "Add your first work experience",
+			"addFirstVolunteer": "Add your first volunteer experience",
 			"removeWorkExperience": "Remove work experience",
-			"removeEducation": "Remove education entry",
-			"removeSkillCategory": "Remove skill category",
-			"addHighlight": "Add Highlight",
-			"removeSkill": "Remove {skill}",
-			"addSkill": "Add skill"
-		},
-		"descriptions": {
-			"profiles": "Add your social media and professional network profiles",
-			"workExperience": "Add your professional work history and achievements"
-		},
-		"labels": {
-			"profile": "Profile {number}",
-			"workExperience": "Work Experience {number}"
-		},
-		"empty": {
-			"profiles": "No profiles added yet. Click the button above to add your first profile.",
-			"workExperience": "No work experience added yet. Click the button above to add your first position.",
-			"highlights": "No highlights added yet. Click the button above to add achievements."
-		},
-		"validation": {
-			"required": "This field is required",
-			"email": "Must be a valid email address",
-			"url": "Must be a valid URL",
-			"date": "Must be a valid date (YYYY-MM-DD)",
-			"dateRange": "End date must be after start date",
-			"maxLength": "Maximum length is {max} characters",
-			"minContent": "Resume must have at least one of: work experience, education, or skills",
-			"minSkills": "At least one skill is required",
-			"content_required": "Please add at least one section (work experience, education, or skills) to generate your resume"
-		},
-		"errors": {
-			"title": "Error",
-			"retry": "Try Again",
-			"retryIn": "Try again in {seconds}s",
-			"dismiss": "Dismiss",
-			"invalidData": "Invalid resume data. Please check all fields.",
-			"templateRendering": "Failed to render resume template.",
-			"pdfGeneration": "Failed to generate PDF. Please try again.",
-			"pdfTimeout": "PDF generation took too long. Please try again with simpler content.",
-			"rateLimit": "Too many requests. Please wait {seconds} seconds before trying again.",
-			"maliciousContent": "Content contains potentially unsafe characters.",
-			"validationError": "Please correct the errors in the form.",
-			"unknown": "An unexpected error occurred. Please try again later."
-		},
-		"success": {
-			"generated": "Resume generated successfully!",
-			"downloaded": "Resume downloaded successfully!"
-		},
-		"form": {
-			"generate": "Generate Resume",
-			"save_draft": "Save Draft"
-		},
-		"loading": {
-			"generating": "Generating your resume...",
-			"please_wait": "This will take just a moment",
-			"rendering": "Rendering template...",
-			"compiling": "Compiling PDF...",
-			"downloading": "Preparing download..."
-		},
-		"preview": {
-			"name_placeholder": "Your Name",
-			"present": "Present",
-			"work_experience": "Work Experience",
-			"education": "Education",
-			"skills": "Skills",
-			"languages": "Languages",
-			"projects": "Projects",
-			"gpa": "GPA",
-			"empty_state": "Start filling out the form to see your resume preview",
-			"hide": "Hide Preview"
+			"descriptions": {
+				"profiles": "Add your social media and professional network profiles",
+				"workExperience": "Add your professional work history and achievements",
+				"volunteer": "Add your volunteer work and community contributions"
+			},
+			"labels": {
+				"profile": "Profile {number}",
+				"workExperience": "Work Experience {number}",
+				"volunteer": "Volunteer Experience {number}"
+			},
+			"empty": {
+				"profiles": "No profiles added yet. Click the button above to add your first profile.",
+				"workExperience": "No work experience added yet. Click the button above to add your first position.",
+				"volunteer": "No volunteer experience added yet. Click the button above to add your first volunteer position.",
+				"highlights": "No highlights added yet. Click the button above to add achievements."
+			},
+			"validation": {
+				"required": "This field is required",
+				"email": "Must be a valid email address",
+				"url": "Must be a valid URL",
+				"date": "Must be a valid date (YYYY-MM-DD)",
+				"dateRange": "End date must be after start date",
+				"maxLength": "Maximum length is {max} characters",
+				"minContent": "Resume must have at least one of: work experience, education, or skills",
+				"minSkills": "At least one skill is required",
+				"content_required": "Please add at least one section (work experience, education, or skills) to generate your resume"
+			},
+			"errors": {
+				"title": "Error",
+				"retry": "Try Again",
+				"retryIn": "Try again in {seconds}s",
+				"dismiss": "Dismiss",
+				"invalidData": "Invalid resume data. Please check all fields.",
+				"templateRendering": "Failed to render resume template.",
+				"pdfGeneration": "Failed to generate PDF. Please try again.",
+				"pdfTimeout": "PDF generation took too long. Please try again with simpler content.",
+				"rateLimit": "Too many requests. Please wait {seconds} seconds before trying again.",
+				"maliciousContent": "Content contains potentially unsafe characters.",
+				"validationError": "Please correct the errors in the form.",
+				"unknown": "An unexpected error occurred. Please try again later."
+			},
+			"success": {
+				"generated": "Resume generated successfully!",
+				"downloaded": "Resume downloaded successfully!"
+			},
+			"form": {
+				"generate": "Generate Resume",
+				"save_draft": "Save Draft"
+			},
+			"loading": {
+				"generating": "Generating your resume...",
+				"please_wait": "This will take just a moment",
+				"rendering": "Rendering template...",
+				"compiling": "Compiling PDF...",
+				"downloading": "Preparing download..."
+			},
+			"preview": {
+				"name_placeholder": "Your Name",
+				"present": "Present",
+				"work_experience": "Work Experience",
+				"education": "Education",
+				"skills": "Skills",
+				"languages": "Languages",
+				"projects": "Projects",
+				"gpa": "GPA",
+				"empty_state": "Start filling out the form to see your resume preview",
+				"hide": "Hide Preview"
+			}
 		}
 	}
 }

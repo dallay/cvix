@@ -39,7 +39,7 @@ const hasProfiles = computed(() => profiles.value.length > 0);
       <div>
         <FieldLabel>{{ t('resume.fields.profiles') }}</FieldLabel>
         <FieldDescription>
-          {{ t('resume.descriptions.profiles') }}
+          {{ t('resume.actions.descriptions.profiles') }}
         </FieldDescription>
       </div>
       <Button
@@ -64,7 +64,7 @@ const hasProfiles = computed(() => profiles.value.length > 0);
       >
         <div class="flex items-center justify-between">
           <h4 class="text-sm font-medium">
-            {{ t('resume.labels.profile', { number: index + 1 }) }}
+            {{ t('resume.actions.labels.profile', { number: index + 1 }) }}
           </h4>
           <Button
             type="button"
@@ -124,7 +124,7 @@ const hasProfiles = computed(() => profiles.value.length > 0);
       class="text-center py-8 border border-dashed border-border rounded-lg bg-muted/50"
     >
       <p class="text-sm text-muted-foreground">
-        {{ t('resume.empty.profiles') }}
+        {{ t('resume.actions.empty.profiles') }}
       </p>
       <Button
         type="button"

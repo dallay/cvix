@@ -11,6 +11,7 @@
 		"sections": {
 			"personalInfo": "Información Personal",
 			"workExperience": "Experiencia Laboral",
+			"volunteer": "Experiencia de Voluntariado",
 			"education": "Educación",
 			"skills": "Habilidades",
 			"languages": "Idiomas",
@@ -37,6 +38,9 @@
 			"username": "Usuario",
 			"profileUrl": "URL del Perfil",
 			"companyUrl": "Sitio Web de la Empresa",
+			"organization": "Organización",
+			"organizationUrl": "Sitio Web de la Organización",
+			"currentVolunteer": "Actualmente hago voluntariado aquí",
 			"location": {
 				"address": "Dirección",
 				"postalCode": "Código Postal",
@@ -71,6 +75,11 @@
 			"username": "mariagarcia",
 			"profileUrl": "https://linkedin.com/in/mariagarcia",
 			"companyUrl": "https://empresa.com",
+			"organization": "Cruz Roja, Hábitat para la Humanidad, etc.",
+			"organizationUrl": "https://organizacion.org",
+			"volunteerPosition": "Coordinador de Voluntarios",
+			"volunteerSummary": "Organicé eventos de recaudación de fondos y coordiné actividades de voluntariado...",
+			"volunteerHighlight": "Recaudé $10,000 para programas comunitarios",
 			"workSummary": "Lideré el desarrollo de características clave de la plataforma y mentoré a desarrolladores junior...",
 			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
 			"company": "Corporación ACME",
@@ -102,7 +111,8 @@
 			"addSkillCategory": "Agregar Categoría de Habilidades",
 			"addLanguage": "Agregar Idioma",
 			"addProject": "Agregar Proyecto",
-			"addHighlight": "Agregar Logro"
+			"addHighlight": "Agregar Logro",
+			"addVolunteer": "Agregar Experiencia de Voluntariado"
 		},
 		"actions": {
 			"add": "Agregar",
@@ -110,6 +120,7 @@
 			"addFirstProfile": "Agrega tu primer perfil",
 			"addWorkExperience": "Agregar Experiencia Laboral",
 			"addFirstWorkExperience": "Agrega tu primera experiencia laboral",
+			"addFirstVolunteer": "Agrega tu primera experiencia de voluntariado",
 			"removeWorkExperience": "Eliminar experiencia laboral",
 			"removeEducation": "Eliminar entrada de educación",
 			"removeSkillCategory": "Eliminar categoría de habilidades",
@@ -119,15 +130,18 @@
 		},
 		"descriptions": {
 			"profiles": "Agrega tus perfiles de redes sociales y redes profesionales",
-			"workExperience": "Agrega tu historial de trabajo profesional y logros"
+			"workExperience": "Agrega tu historial de trabajo profesional y logros",
+			"volunteer": "Agrega tu trabajo voluntario y contribuciones a la comunidad"
 		},
 		"labels": {
 			"profile": "Perfil {number}",
-			"workExperience": "Experiencia Laboral {number}"
+			"workExperience": "Experiencia Laboral {number}",
+			"volunteer": "Experiencia de Voluntariado {number}"
 		},
 		"empty": {
 			"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil.",
 			"workExperience": "No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto.",
+			"volunteer": "No se ha agregado experiencia de voluntariado aún. Haz clic en el botón de arriba para agregar tu primera posición voluntaria.",
 			"highlights": "No se han agregado logros aún. Haz clic en el botón de arriba para agregar logros."
 		},
 		"validation": {
