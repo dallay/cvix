@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import type { Workspace } from "../../domain/WorkspaceEntity.ts";
-import type { WorkspaceError } from "../../domain/WorkspaceError.ts";
-import { WorkspaceErrorCode } from "../../domain/WorkspaceError.ts";
-import { WorkspaceId } from "../../domain/WorkspaceId.ts";
-import { workspaceHttpClient } from "../http/workspaceHttpClient.ts";
-import { saveLastSelected } from "../storage/workspaceLocalStorage.ts";
+import type { Workspace } from "@/core/workspace";
+import { WorkspaceId, workspaceHttpClient } from "@/core/workspace";
+import type { WorkspaceError } from "@/core/workspace/domain";
+import { WorkspaceErrorCode } from "@/core/workspace/domain";
+import { saveLastSelected } from "@/core/workspace/infrastructure";
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 let loadPromise: Promise<void> | null = null;
