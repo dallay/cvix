@@ -18,7 +18,6 @@ import type { Component } from "vue";
 import { computed, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-import { useAuthStore } from "@/authentication/presentation/stores/authStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,8 +42,9 @@ import {
 	SidebarMenuSubItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
+import { WorkspaceSelector } from "@/core/workspace";
 import type { NavigationItem } from "@/shared/config/navigation";
-import { WorkspaceSelector } from "@/workspace";
 
 interface Props {
 	items: NavigationItem[];

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { authRoutes } from "@/authentication/presentation/authRoutes";
-import { useAuthStore } from "@/authentication/presentation/stores/authStore";
-import { workspaceGuard } from "@/workspace/infrastructure/router/workspaceGuard";
+import { authRoutes } from "@/core/authentication/presentation/authRoutes";
+import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
+import { workspaceGuard } from "@/core/workspace/infrastructure/router/workspaceGuard";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +14,18 @@ const router = createRouter({
 		{
 			path: "/resume",
 			name: "ResumeGenerator",
-			component: () => import("@/resume/pages/ResumeGeneratorPage.vue"),
+			component: () =>
+				import(
+					"@/core/resume/infrastructure/presentation/pages/ResumeGeneratorPage.vue"
+				),
+			meta: {
+				requiresAuth: true,
+			},
+		},
+		{
+			path: "/resume/v1",
+			name: "ResumeGeneratorV1",
+			component: () => import("@/core/resume-v1/pages/ResumeGeneratorPage.vue"),
 			meta: {
 				requiresAuth: true,
 			},

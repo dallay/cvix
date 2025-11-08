@@ -59,7 +59,7 @@
 - [X] T020 Create base LaTeX template structure (Spanish) in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
 - [X] T021 [P] Create English i18n messages in `server/engine/src/main/resources/messages/messages.properties`
 - [X] T022 [P] Create Spanish i18n messages in `server/engine/src/main/resources/messages/messages_es.properties`
-- [X] T023 [P] Create TypeScript types for JSON Resume schema in `client/apps/webapp/src/resume/types/resume.ts`
+- [X] T023 [P] Create TypeScript types for JSON Resume schema in `client/apps/webapp/src/resume/types/Resume.ts`
 - [X] T024 [P] Create Zod validation schema in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
 - [X] T025 [P] Add English translations in `client/apps/webapp/src/i18n/locales/en/resume.json`
 - [X] T026 [P] Add Spanish translations in `client/apps/webapp/src/i18n/locales/es/resume.json`
@@ -175,7 +175,7 @@
 - [X] T076 [US1] Implement session-based form data persistence using sessionStorage in `client/apps/webapp/src/resume/composables/useResumeSession.ts`
 - [X] T077 [US1] Create useResumeGeneration composable with API call logic in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
 - [X] T078 [US1] Create Pinia store for resume state management in `client/apps/webapp/src/resume/stores/resumeStore.ts`
-- [X] T079 [US1] Create API client for resume endpoint in `client/apps/webapp/src/api/resume.ts`
+- [X] T079 [US1] Create API client for resume endpoint in `client/apps/webapp/src/api/Resume.ts`
 - [X] T080 [US1] Create ResumeGeneratorPage.vue main page (depends on T075, T077-T079) in `client/apps/webapp/src/resume/pages/ResumeGeneratorPage.vue`
 - [X] T081 [US1] Add route for resume generator page to Vue Router in `client/apps/webapp/src/router/index.ts`
 - [X] T082 [US1] Add loading spinner/progress indicator during PDF generation in `client/apps/webapp/src/resume/components/ResumeForm.vue`
@@ -326,7 +326,7 @@
 - [X] T144 [P] Document supported browsers (past 2 years) and add browser compatibility matrix to README
 - [X] T145 [P] Add test to verify double-submit debounce/throttle (frontend) and concurrent request handling (backend)
 - [X] T146 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
-- [X] T147 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/resume.ts`
+- [X] T147 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/Resume.ts`
 - [X] T148 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
 - [X] T149 Update main README.md with resume generator feature documentation in `README.md`
 - [X] T150 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`

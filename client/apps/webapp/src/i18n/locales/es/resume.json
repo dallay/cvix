@@ -20,6 +20,7 @@
 			"name": "Nombre Completo",
 			"fullName": "Nombre Completo",
 			"label": "Título Profesional",
+			"image": "Foto de Perfil",
 			"email": "Correo Electrónico",
 			"phone": "Teléfono",
 			"url": "Sitio Web",
@@ -31,7 +32,17 @@
 			"startDate": "Fecha de Inicio",
 			"endDate": "Fecha de Fin",
 			"current": "Actualmente trabajo aquí",
-			"location": "Ubicación",
+			"profiles": "Perfiles Sociales",
+			"network": "Red Social",
+			"username": "Usuario",
+			"profileUrl": "URL del Perfil",
+			"location": {
+				"address": "Dirección",
+				"postalCode": "Código Postal",
+				"city": "Ciudad",
+				"countryCode": "Código del País",
+				"region": "Provincia/Región"
+			},
 			"highlights": "Logros",
 			"institution": "Institución",
 			"area": "Campo de Estudio",
@@ -50,13 +61,24 @@
 		"placeholders": {
 			"name": "María García",
 			"label": "Ingeniera de Software",
+			"image": "https://example.com/profile.jpg",
+			"imageHint": "Sube un retrato profesional",
 			"email": "maria.garcia@ejemplo.com",
 			"phone": "+34 612 345 678",
 			"url": "https://mariagarcia.com",
+			"network": "LinkedIn, GitHub, Twitter, etc.",
+			"username": "mariagarcia",
+			"profileUrl": "https://linkedin.com/in/mariagarcia",
 			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
 			"company": "Corporación ACME",
 			"position": "Desarrolladora Senior",
-			"location": "Barcelona, España",
+			"location": {
+				"address": "123 Calle Principal",
+				"postalCode": "94105",
+				"city": "San Francisco",
+				"countryCode": "US",
+				"region": "California"
+			},
 			"highlight": "Lideré equipo de 5 desarrolladores para entregar proyecto 2 semanas antes de lo planeado",
 			"institution": "Universidad Politécnica de Madrid",
 			"area": "Ingeniería Informática",
@@ -81,11 +103,22 @@
 		},
 		"actions": {
 			"add": "Agregar",
+			"addProfile": "Agregar Perfil",
+			"addFirstProfile": "Agrega tu primer perfil",
 			"removeWorkExperience": "Eliminar experiencia laboral",
 			"removeEducation": "Eliminar entrada de educación",
 			"removeSkillCategory": "Eliminar categoría de habilidades",
 			"removeSkill": "Eliminar {skill}",
 			"addSkill": "Agregar habilidad"
+		},
+		"descriptions": {
+			"profiles": "Agrega tus perfiles de redes sociales y redes profesionales"
+		},
+		"labels": {
+			"profile": "Perfil {number}"
+		},
+		"empty": {
+			"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil."
 		},
 		"validation": {
 			"required": "Este campo es obligatorio",

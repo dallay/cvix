@@ -1,4 +1,4 @@
-import type { Resume } from "@/resume/types/resume";
+import type { Resume } from "@/core/resume-v1/types/resume";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 

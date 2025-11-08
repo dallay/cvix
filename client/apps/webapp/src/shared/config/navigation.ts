@@ -15,12 +15,12 @@ const navigationItems: NavigationItem[] = [
 		to: "/dashboard",
 	},
 	{
-		label: "Analytics",
+		label: "Resumes",
 		icon: "analytics",
-		to: "/dashboard?view=analytics",
+		to: "/resumes",
 		children: [
-			{ label: "Overview", icon: "analytics", to: "/dashboard?view=analytics" },
-			{ label: "Funnels", to: "/dashboard?view=funnels" },
+			{ label: "Resume v1", icon: "analytics", to: "/resume/v1" },
+			{ label: "Resume", to: "/resume" },
 			{ label: "Reports", to: "/dashboard?view=reports" },
 		],
 	},

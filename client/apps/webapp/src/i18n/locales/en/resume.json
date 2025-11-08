@@ -21,6 +21,7 @@
 			"name": "Full Name",
 			"fullName": "Full Name",
 			"label": "Job Title",
+			"image": "Profile Picture",
 			"email": "Email",
 			"phone": "Phone",
 			"url": "Website",
@@ -32,7 +33,17 @@
 			"startDate": "Start Date",
 			"endDate": "End Date",
 			"current": "I currently work here",
-			"location": "Location",
+			"profiles": "Social Profiles",
+			"network": "Network",
+			"username": "Username",
+			"profileUrl": "Profile URL",
+			"location": {
+				"address": "Street Address",
+				"postalCode": "Postal Code",
+				"city": "City",
+				"countryCode": "Country Code",
+				"region": "State/Region"
+			},
 			"highlights": "Achievements",
 			"institution": "Institution",
 			"area": "Field of Study",
@@ -51,13 +62,24 @@
 		"placeholders": {
 			"name": "Jane Doe",
 			"label": "Software Engineer",
+			"image": "https://example.com/profile.jpg",
+			"imageHint": "Upload a professional headshot",
 			"email": "jane.doe@example.com",
 			"phone": "+1 (555) 123-4567",
 			"url": "https://janedoe.com",
+			"network": "LinkedIn, GitHub, Twitter, etc.",
+			"username": "janedoe",
+			"profileUrl": "https://linkedin.com/in/janedoe",
 			"summary": "Experienced software engineer with a passion for building scalable web applications...",
 			"company": "ACME Corporation",
 			"position": "Senior Developer",
-			"location": "San Francisco, CA",
+			"location": {
+				"address": "123 Main St",
+				"postalCode": "94105",
+				"city": "San Francisco",
+				"countryCode": "US",
+				"region": "California"
+			},
 			"highlight": "Led team of 5 developers to deliver project 2 weeks ahead of schedule",
 			"institution": "Stanford University",
 			"area": "Computer Science",
@@ -79,11 +101,22 @@
 		},
 		"actions": {
 			"add": "Add",
+			"addProfile": "Add Profile",
+			"addFirstProfile": "Add your first profile",
 			"removeWorkExperience": "Remove work experience",
 			"removeEducation": "Remove education entry",
 			"removeSkillCategory": "Remove skill category",
 			"removeSkill": "Remove {skill}",
 			"addSkill": "Add skill"
+		},
+		"descriptions": {
+			"profiles": "Add your social media and professional network profiles"
+		},
+		"labels": {
+			"profile": "Profile {number}"
+		},
+		"empty": {
+			"profiles": "No profiles added yet. Click the button above to add your first profile."
 		},
 		"validation": {
 			"required": "This field is required",

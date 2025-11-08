@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-import { useAuthStore } from "@/authentication/presentation/stores/authStore.ts";
 import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
 import UserNav from "@/components/UserNav.vue";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuthStore } from "@/core/authentication/presentation/stores/authStore.ts";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 const router = useRouter();
