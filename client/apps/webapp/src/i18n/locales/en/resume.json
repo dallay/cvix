@@ -37,6 +37,7 @@
 			"network": "Network",
 			"username": "Username",
 			"profileUrl": "Profile URL",
+			"companyUrl": "Company Website",
 			"location": {
 				"address": "Street Address",
 				"postalCode": "Postal Code",
@@ -70,6 +71,8 @@
 			"network": "LinkedIn, GitHub, Twitter, etc.",
 			"username": "janedoe",
 			"profileUrl": "https://linkedin.com/in/janedoe",
+			"companyUrl": "https://company.com",
+			"workSummary": "Led development of core platform features and mentored junior developers...",
 			"summary": "Experienced software engineer with a passion for building scalable web applications...",
 			"company": "ACME Corporation",
 			"position": "Senior Developer",
@@ -103,20 +106,27 @@
 			"add": "Add",
 			"addProfile": "Add Profile",
 			"addFirstProfile": "Add your first profile",
+			"addWorkExperience": "Add Work Experience",
+			"addFirstWorkExperience": "Add your first work experience",
 			"removeWorkExperience": "Remove work experience",
 			"removeEducation": "Remove education entry",
 			"removeSkillCategory": "Remove skill category",
+			"addHighlight": "Add Highlight",
 			"removeSkill": "Remove {skill}",
 			"addSkill": "Add skill"
 		},
 		"descriptions": {
-			"profiles": "Add your social media and professional network profiles"
+			"profiles": "Add your social media and professional network profiles",
+			"workExperience": "Add your professional work history and achievements"
 		},
 		"labels": {
-			"profile": "Profile {number}"
+			"profile": "Profile {number}",
+			"workExperience": "Work Experience {number}"
 		},
 		"empty": {
-			"profiles": "No profiles added yet. Click the button above to add your first profile."
+			"profiles": "No profiles added yet. Click the button above to add your first profile.",
+			"workExperience": "No work experience added yet. Click the button above to add your first position.",
+			"highlights": "No highlights added yet. Click the button above to add achievements."
 		},
 		"validation": {
 			"required": "This field is required",

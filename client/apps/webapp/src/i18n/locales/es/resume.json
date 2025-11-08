@@ -36,6 +36,7 @@
 			"network": "Red Social",
 			"username": "Usuario",
 			"profileUrl": "URL del Perfil",
+			"companyUrl": "Sitio Web de la Empresa",
 			"location": {
 				"address": "Dirección",
 				"postalCode": "Código Postal",
@@ -69,6 +70,8 @@
 			"network": "LinkedIn, GitHub, Twitter, etc.",
 			"username": "mariagarcia",
 			"profileUrl": "https://linkedin.com/in/mariagarcia",
+			"companyUrl": "https://empresa.com",
+			"workSummary": "Lideré el desarrollo de características clave de la plataforma y mentoré a desarrolladores junior...",
 			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
 			"company": "Corporación ACME",
 			"position": "Desarrolladora Senior",
@@ -105,20 +108,27 @@
 			"add": "Agregar",
 			"addProfile": "Agregar Perfil",
 			"addFirstProfile": "Agrega tu primer perfil",
+			"addWorkExperience": "Agregar Experiencia Laboral",
+			"addFirstWorkExperience": "Agrega tu primera experiencia laboral",
 			"removeWorkExperience": "Eliminar experiencia laboral",
 			"removeEducation": "Eliminar entrada de educación",
 			"removeSkillCategory": "Eliminar categoría de habilidades",
+			"addHighlight": "Agregar Logro",
 			"removeSkill": "Eliminar {skill}",
 			"addSkill": "Agregar habilidad"
 		},
 		"descriptions": {
-			"profiles": "Agrega tus perfiles de redes sociales y redes profesionales"
+			"profiles": "Agrega tus perfiles de redes sociales y redes profesionales",
+			"workExperience": "Agrega tu historial de trabajo profesional y logros"
 		},
 		"labels": {
-			"profile": "Perfil {number}"
+			"profile": "Perfil {number}",
+			"workExperience": "Experiencia Laboral {number}"
 		},
 		"empty": {
-			"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil."
+			"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil.",
+			"workExperience": "No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto.",
+			"highlights": "No se han agregado logros aún. Haz clic en el botón de arriba para agregar logros."
 		},
 		"validation": {
 			"required": "Este campo es obligatorio",
