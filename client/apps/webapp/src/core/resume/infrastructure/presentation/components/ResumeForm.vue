@@ -7,8 +7,14 @@ import {
 	FieldSeparator,
 	FieldSet,
 } from "@/components/ui/field";
-import type { Profile, Volunteer, Work } from "@/core/resume/domain/Resume.ts";
+import type {
+	Education,
+	Profile,
+	Volunteer,
+	Work,
+} from "@/core/resume/domain/Resume.ts";
 import BasicsSection from "@/core/resume/infrastructure/presentation/components/BasicsSection.vue";
+import EducationSection from "@/core/resume/infrastructure/presentation/components/EducationSection.vue";
 import VolunteerSection from "@/core/resume/infrastructure/presentation/components/VolunteerSection.vue";
 import WorkExperienceSection from "@/core/resume/infrastructure/presentation/components/WorkExperienceSection.vue";
 import ProfilesField from "./ProfilesField.vue";
@@ -16,6 +22,7 @@ import ProfilesField from "./ProfilesField.vue";
 const profiles = ref<Profile[]>([]);
 const workExperiences = ref<Work[]>([]);
 const volunteers = ref<Volunteer[]>([]);
+const education = ref<Education[]>([]);
 </script>
 
 <template>
@@ -31,6 +38,8 @@ const volunteers = ref<Volunteer[]>([]);
         <WorkExperienceSection v-model="workExperiences" />
         <FieldSeparator />
         <VolunteerSection v-model="volunteers" />
+        <FieldSeparator />
+        <EducationSection v-model="education" />
         <FieldSeparator />
         <Field orientation="horizontal">
           <Button type="submit">

@@ -54,6 +54,7 @@
 			"area": "Field of Study",
 			"studyType": "Degree Type",
 			"score": "GPA",
+			"courses": "Relevant Courses",
 			"categoryName": "Category",
 			"skillLevel": "Proficiency",
 			"keywords": "Skills",
@@ -97,6 +98,7 @@
 			"area": "Computer Science",
 			"studyType": "Bachelor of Science",
 			"score": "3.8",
+			"course": "Advanced Algorithms",
 			"categoryName": "Programming Languages",
 			"skill": "JavaScript, TypeScript, Python",
 			"addSkill": "Add a skill"
@@ -110,7 +112,8 @@
 			"addLanguage": "Add Language",
 			"addProject": "Add Project",
 			"addHighlight": "Add Achievement",
-			"addVolunteer": "Add Volunteer Experience"
+			"addVolunteer": "Add Volunteer Experience",
+			"addCourse": "Add Course"
 		},
 		"actions": {
 			"add": "Add",
@@ -118,22 +121,27 @@
 			"addFirstProfile": "Add your first profile",
 			"addFirstWorkExperience": "Add your first work experience",
 			"addFirstVolunteer": "Add your first volunteer experience",
+			"addFirstEducation": "Add your first education entry",
 			"removeWorkExperience": "Remove work experience",
 			"descriptions": {
 				"profiles": "Add your social media and professional network profiles",
 				"workExperience": "Add your professional work history and achievements",
-				"volunteer": "Add your volunteer work and community contributions"
+				"volunteer": "Add your volunteer work and community contributions",
+				"education": "Add your academic background and relevant coursework"
 			},
 			"labels": {
 				"profile": "Profile {number}",
 				"workExperience": "Work Experience {number}",
-				"volunteer": "Volunteer Experience {number}"
+				"volunteer": "Volunteer Experience {number}",
+				"education": "Education {number}"
 			},
 			"empty": {
 				"profiles": "No profiles added yet. Click the button above to add your first profile.",
 				"workExperience": "No work experience added yet. Click the button above to add your first position.",
 				"volunteer": "No volunteer experience added yet. Click the button above to add your first volunteer position.",
-				"highlights": "No highlights added yet. Click the button above to add achievements."
+				"highlights": "No highlights added yet. Click the button above to add achievements.",
+				"education": "No education entries added yet. Click the button above to add your first degree or certification.",
+				"courses": "No courses added yet. Click the button above to add relevant coursework."
 			},
 			"validation": {
 				"required": "This field is required",
