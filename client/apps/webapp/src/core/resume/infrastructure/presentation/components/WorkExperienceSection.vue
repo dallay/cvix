@@ -20,10 +20,12 @@ const workExperiences = defineModel<Work[]>({
 
 const addWorkExperience = () => {
 	workExperiences.value.push({
-		company: "",
+		name: "",
 		position: "",
+		url: "",
 		startDate: "",
 		endDate: "",
+		summary: "",
 		highlights: [],
 	});
 };
@@ -33,14 +35,29 @@ const removeWorkExperience = (index: number) => {
 };
 
 const addHighlight = (workIndex: number) => {
-	if (workExperiences.value[workIndex]?.highlights) {
-		workExperiences.value[workIndex].highlights.push("");
+	const work = workExperiences.value[workIndex];
+	if (work) {
+		work.highlights = [...work.highlights, ""];
 	}
 };
 
 const removeHighlight = (workIndex: number, highlightIndex: number) => {
-	if (workExperiences.value[workIndex]?.highlights) {
-		workExperiences.value[workIndex].highlights.splice(highlightIndex, 1);
+	const work = workExperiences.value[workIndex];
+	if (work) {
+		work.highlights = work.highlights.filter((_, i) => i !== highlightIndex);
+	}
+};
+
+const updateHighlight = (
+	workIndex: number,
+	highlightIndex: number,
+	value: string | number,
+) => {
+	const work = workExperiences.value[workIndex];
+	if (work && typeof value === "string") {
+		const newHighlights = [...work.highlights];
+		newHighlights[highlightIndex] = value;
+		work.highlights = newHighlights;
 	}
 };
 
@@ -95,15 +112,16 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
 
         <FieldGroup>
           <Field>
-            <FieldLabel :for="`work-company-${workIndex}`">
+            <FieldLabel :for="`work-name-${workIndex}`">
               {{ t('resume.fields.company') }}
             </FieldLabel>
             <Input
-              :id="`work-company-${workIndex}`"
-              v-model="work.company"
+              :id="`work-name-${workIndex}`"
+              v-model="work.name"
               type="text"
               :placeholder="t('resume.placeholders.company')"
-              :data-testid="`work-company-${workIndex}`"
+              :data-testid="`work-name-${workIndex}`"
+              required
             />
           </Field>
 
@@ -158,10 +176,11 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
           >
             <Input
               :id="`work-highlight-${workIndex}-${highlightIndex}`"
-              v-model="work.highlights[highlightIndex]"
+              :model-value="highlight"
               type="text"
               :placeholder="t('resume.placeholders.highlight')"
               :data-testid="`work-highlight-${workIndex}-${highlightIndex}`"
+              @update:model-value="updateHighlight(workIndex, highlightIndex, $event)"
             />
             <Button
               type="button"
