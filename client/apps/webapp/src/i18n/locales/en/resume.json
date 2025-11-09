@@ -313,7 +313,20 @@
 			"projects": "Projects",
 			"gpa": "GPA",
 			"empty_state": "Start filling out the form to see your resume preview",
-			"hide": "Hide Preview"
+			"hide": "Hide Preview",
+			"sections": {
+				"summary": "Summary",
+				"experience": "Work Experience",
+				"education": "Education",
+				"skills": "Skills",
+				"projects": "Projects",
+				"languages": "Languages",
+				"volunteer": "Volunteer Experience",
+				"certificates": "Certificates & Licenses",
+				"awards": "Awards & Honors"
+			},
+			"score": "GPA",
+			"courses": "Relevant Courses"
 		}
 	}
 }

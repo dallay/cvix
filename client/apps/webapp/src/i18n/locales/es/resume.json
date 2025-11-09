@@ -313,7 +313,20 @@
 			"projects": "Proyectos",
 			"gpa": "Promedio",
 			"empty_state": "Comienza a llenar el formulario para ver la vista previa de tu currículum",
-			"hide": "Ocultar Vista Previa"
+			"hide": "Ocultar Vista Previa",
+			"sections": {
+				"summary": "Resumen",
+				"experience": "Experiencia Laboral",
+				"education": "Educación",
+				"skills": "Habilidades",
+				"projects": "Proyectos",
+				"languages": "Idiomas",
+				"volunteer": "Experiencia de Voluntariado",
+				"certificates": "Certificados y Licencias",
+				"awards": "Premios y Reconocimientos"
+			},
+			"score": "Promedio",
+			"courses": "Cursos Relevantes"
 		}
 	}
 }

@@ -10,10 +10,15 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import ResumeForm from "@/core/resume/infrastructure/presentation/components/ResumeForm.vue";
+import ResumePreview from "@/core/resume/infrastructure/presentation/components/ResumePreview.vue";
+import { useResumeForm } from "@/core/resume/infrastructure/presentation/composables/useResumeForm";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const { t } = useI18n();
 const showPreview = ref(true);
+
+// Get the resume data from the form composable
+const { resume } = useResumeForm();
 
 const togglePreview = () => {
 	showPreview.value = !showPreview.value;
@@ -98,8 +103,7 @@ const togglePreview = () => {
           </CardHeader>
           <CardContent class="p-0">
             <div class="max-h-[calc(100vh-16rem)] overflow-y-auto">
-<!--              <ResumePreview :data="resumeData"/>-->
-              Resume Preview will be here
+              <ResumePreview :data="resume"/>
             </div>
           </CardContent>
         </Card>
