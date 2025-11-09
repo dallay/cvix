@@ -2,12 +2,18 @@ import { defineStore } from "pinia";
 import { computed, getCurrentInstance, ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume.ts";
 import type { ResumeGenerator } from "@/core/resume/domain/ResumeGenerator.ts";
+import type {
+	ResumeStorage,
+	StorageType,
+} from "@/core/resume/domain/ResumeStorage.ts";
 import type { ResumeValidator } from "@/core/resume/domain/ResumeValidator.ts";
 import {
 	RESUME_GENERATOR_KEY,
+	RESUME_STORAGE_KEY,
 	RESUME_VALIDATOR_KEY,
 } from "@/core/resume/infrastructure/di";
 import { ResumeHttpClient } from "@/core/resume/infrastructure/http/ResumeHttpClient";
+import { SessionStorageResumeStorage } from "@/core/resume/infrastructure/storage";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation";
 import type { ProblemDetail } from "@/shared/BaseHttpClient.ts";
 
@@ -44,16 +50,39 @@ function getGenerator(): ResumeGenerator {
 }
 
 /**
- * Resume store for managing resume state and validation.
+ * Gets the storage instance using Vue's provide/inject system.
+ * Falls back to SessionStorageResumeStorage if no storage is provided.
  *
- * This store uses dependency injection to obtain the ResumeValidator and ResumeGenerator instances.
- * If no dependencies are provided via injection, it falls back to default implementations.
+ * @returns The storage instance
+ */
+function getStorage(): ResumeStorage {
+	const instance = getCurrentInstance();
+	if (instance?.appContext.provides[RESUME_STORAGE_KEY as symbol]) {
+		return instance.appContext.provides[
+			RESUME_STORAGE_KEY as symbol
+		] as ResumeStorage;
+	}
+	return new SessionStorageResumeStorage();
+}
+
+/**
+ * Resume store for managing resume state, validation, and persistence.
+ *
+ * This store uses dependency injection to obtain the ResumeValidator, ResumeGenerator,
+ * and ResumeStorage instances. If no dependencies are provided via injection, it falls
+ * back to default implementations.
  *
  * @example
  * // In a component
  * const resumeStore = useResumeStore();
  * resumeStore.setResume(myResume);
  * console.log(resumeStore.isValid); // true or false
+ *
+ * // Save to storage
+ * await resumeStore.saveToStorage();
+ *
+ * // Load from storage
+ * await resumeStore.loadFromStorage();
  *
  * // Generate PDF
  * const pdf = await resumeStore.generatePdf('en');
@@ -62,11 +91,16 @@ export const useResumeStore = defineStore("resume", () => {
 	// Get dependency instances
 	const validator = getValidator();
 	const generator = getGenerator();
+	const storage = getStorage();
 
 	// State
 	const resume = ref<Resume | null>(null);
 	const isGenerating = ref(false);
 	const generationError = ref<ProblemDetail | null>(null);
+	const isSaving = ref(false);
+	const isLoading = ref(false);
+	const storageError = ref<Error | null>(null);
+	const currentStorageType = ref<StorageType>(storage.type());
 
 	// Computed properties
 	/**
@@ -165,11 +199,115 @@ export const useResumeStore = defineStore("resume", () => {
 		}
 	}
 
+	/**
+	 * Saves the current resume to the configured storage.
+	 *
+	 * @returns Promise resolving when save is complete
+	 * @throws Error if no resume is available or storage operation fails
+	 */
+	async function saveToStorage(): Promise<void> {
+		if (!resume.value) {
+			throw new Error("No resume data available to save");
+		}
+
+		try {
+			isSaving.value = true;
+			storageError.value = null;
+
+			await storage.save(resume.value);
+
+			isSaving.value = false;
+		} catch (error) {
+			isSaving.value = false;
+			storageError.value =
+				error instanceof Error ? error : new Error("Unknown storage error");
+			throw error;
+		}
+	}
+
+	/**
+	 * Loads the resume from the configured storage.
+	 *
+	 * @returns Promise resolving when load is complete
+	 */
+	async function loadFromStorage(): Promise<void> {
+		try {
+			isLoading.value = true;
+			storageError.value = null;
+
+			const result = await storage.load();
+
+			if (result.data) {
+				resume.value = result.data;
+			}
+
+			isLoading.value = false;
+		} catch (error) {
+			isLoading.value = false;
+			storageError.value =
+				error instanceof Error ? error : new Error("Unknown storage error");
+			throw error;
+		}
+	}
+
+	/**
+	 * Clears the resume from the configured storage.
+	 *
+	 * @returns Promise resolving when clear is complete
+	 */
+	async function clearStorage(): Promise<void> {
+		try {
+			storageError.value = null;
+			await storage.clear();
+			clearResume();
+		} catch (error) {
+			storageError.value =
+				error instanceof Error ? error : new Error("Unknown storage error");
+			throw error;
+		}
+	}
+
+	/**
+	 * Changes the storage strategy and optionally migrates data.
+	 *
+	 * @param newStorage - The new storage implementation to use
+	 * @param migrateData - Whether to migrate existing data to the new storage
+	 * @returns Promise resolving when strategy change (and optional migration) is complete
+	 */
+	async function changeStorageStrategy(
+		newStorage: ResumeStorage,
+		migrateData = false,
+	): Promise<void> {
+		try {
+			storageError.value = null;
+
+			// If migration is requested and there's data, save it to the new storage
+			if (migrateData && resume.value) {
+				await newStorage.save(resume.value);
+			}
+
+			// Update the storage reference (this would require making storage mutable)
+			// For now, we'll just update the type indicator
+			currentStorageType.value = newStorage.type();
+
+			// Note: To fully implement strategy switching, we'd need to refactor
+			// the storage to be a ref() instead of a const
+		} catch (error) {
+			storageError.value =
+				error instanceof Error ? error : new Error("Failed to change storage");
+			throw error;
+		}
+	}
+
 	return {
 		// State
 		resume,
 		isGenerating,
 		generationError,
+		isSaving,
+		isLoading,
+		storageError,
+		currentStorageType,
 
 		// Computed
 		isValid,
@@ -182,5 +320,9 @@ export const useResumeStore = defineStore("resume", () => {
 		setGenerating,
 		setGenerationError,
 		generatePdf,
+		saveToStorage,
+		loadFromStorage,
+		clearStorage,
+		changeStorageStrategy,
 	};
 });

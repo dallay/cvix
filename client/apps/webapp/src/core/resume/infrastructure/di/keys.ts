@@ -1,5 +1,6 @@
 import type { InjectionKey } from "vue";
 import type { ResumeGenerator } from "@/core/resume/domain/ResumeGenerator.ts";
+import type { ResumeStorage } from "@/core/resume/domain/ResumeStorage.ts";
 import type { ResumeValidator } from "@/core/resume/domain/ResumeValidator.ts";
 
 /**
@@ -31,3 +32,18 @@ export const RESUME_VALIDATOR_KEY: InjectionKey<ResumeValidator> =
  */
 export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
 	Symbol("ResumeGenerator");
+
+/**
+ * Injection key for the Resume Storage.
+ * Used to provide/inject the storage instance across the application.
+ *
+ * @example
+ * // In main.ts or app setup
+ * app.provide(RESUME_STORAGE_KEY, new SessionStorageResumeStorage());
+ *
+ * @example
+ * // In a component or composable
+ * const storage = inject(RESUME_STORAGE_KEY);
+ */
+export const RESUME_STORAGE_KEY: InjectionKey<ResumeStorage> =
+	Symbol("ResumeStorage");
