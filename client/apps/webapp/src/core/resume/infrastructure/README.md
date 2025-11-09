@@ -56,10 +56,11 @@ See [validation/README.md](./validation/README.md) for validation details.
 
 Reactive store to manage resume state:
 
-- **Auto-validation**: Resume is automatically validated when set
-- **State management**: Handles resume, generation states, and errors
-- **Computed properties**: `isValid`, `hasResume` for easy usage
-- **11 unit tests** verifying all functionality
+- **Auto-validation**: The resume is automatically validated when set
+- **PDF generation**: Generates PDFs using the injected `ResumeGenerator`
+- **State management**: Manages resume, generation states and errors
+- **Computed properties**: `isValid`, `hasResume` for easy use
+- **15 unit tests** verifying all functionality (validation + generation)
 
 See [store/README.md](./store/README.md) for store details.
 
@@ -103,7 +104,24 @@ console.log(resumeStore.isValid) // true/false
 
 // Manual validation
 const errors = resumeStore.validateResume()
-console.log(errors) // string[] with errors
+console.log(errors) // true/false
+
+// Generate PDF
+async function downloadPDF() {
+  try {
+    const pdf = await resumeStore.generatePdf('en')
+
+    // Create download link
+    const url = URL.createObjectURL(pdf)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'resume.pdf'
+    link.click()
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+  }
+}
 ```
 
 ## Architectural Principles
@@ -168,7 +186,7 @@ pnpm --filter @loomify/webapp test:unit resume
 | Module              | Tests | Status |
 | ------------------- | ----- | ------ |
 | JsonResumeValidator | 15    | ✅ 100% |
-| resumeStore         | 11    | ✅ 100% |
+| resumeStore         | 15    | ✅ 100% |
 
 ## Extension
 

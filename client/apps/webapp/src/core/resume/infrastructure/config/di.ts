@@ -1,5 +1,9 @@
 import type { App } from "vue";
-import { RESUME_VALIDATOR_KEY } from "@/core/resume/infrastructure/di";
+import {
+	RESUME_GENERATOR_KEY,
+	RESUME_VALIDATOR_KEY,
+} from "@/core/resume/infrastructure/di";
+import { ResumeHttpClient } from "@/core/resume/infrastructure/http/ResumeHttpClient";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation";
 
 /**
@@ -18,4 +22,7 @@ import { JsonResumeValidator } from "@/core/resume/infrastructure/validation";
 export function setupResumeDI(app: App): void {
 	// Register the JSON Resume Validator
 	app.provide(RESUME_VALIDATOR_KEY, new JsonResumeValidator());
+
+	// Register the Resume Generator (HTTP Client)
+	app.provide(RESUME_GENERATOR_KEY, new ResumeHttpClient());
 }

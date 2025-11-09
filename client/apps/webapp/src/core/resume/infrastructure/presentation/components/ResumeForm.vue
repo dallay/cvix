@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Field,
@@ -7,20 +8,6 @@ import {
 	FieldSeparator,
 	FieldSet,
 } from "@/components/ui/field";
-import type {
-	Award,
-	Certificate,
-	Education,
-	Interest,
-	Language,
-	Profile,
-	Project,
-	Publication,
-	Reference,
-	Skill,
-	Volunteer,
-	Work,
-} from "@/core/resume/domain/Resume.ts";
 import AwardSection from "@/core/resume/infrastructure/presentation/components/AwardSection.vue";
 import BasicsSection from "@/core/resume/infrastructure/presentation/components/BasicsSection.vue";
 import CertificateSection from "@/core/resume/infrastructure/presentation/components/CertificateSection.vue";
@@ -33,30 +20,104 @@ import ReferenceSection from "@/core/resume/infrastructure/presentation/componen
 import SkillSection from "@/core/resume/infrastructure/presentation/components/SkillSection.vue";
 import VolunteerSection from "@/core/resume/infrastructure/presentation/components/VolunteerSection.vue";
 import WorkExperienceSection from "@/core/resume/infrastructure/presentation/components/WorkExperienceSection.vue";
+import { useResumeForm } from "@/core/resume/infrastructure/presentation/composables/useResumeForm";
 import ProfilesField from "./ProfilesField.vue";
 
-const profiles = ref<Profile[]>([]);
-const workExperiences = ref<Work[]>([]);
-const volunteers = ref<Volunteer[]>([]);
-const education = ref<Education[]>([]);
-const awards = ref<Award[]>([]);
-const certificates = ref<Certificate[]>([]);
-const publications = ref<Publication[]>([]);
-const skills = ref<Skill[]>([]);
-const languages = ref<Language[]>([]);
-const interests = ref<Interest[]>([]);
-const references = ref<Reference[]>([]);
-const projects = ref<Project[]>([]);
+const {
+	basics,
+	workExperiences,
+	volunteers,
+	education,
+	awards,
+	certificates,
+	publications,
+	skills,
+	languages,
+	interests,
+	references,
+	projects,
+	isValid,
+	isGenerating,
+	generationError,
+	submitResume,
+	generatePdf,
+	clearForm,
+} = useResumeForm();
+
+const isSubmitting = ref(false);
+
+/**
+ * Handles form submission
+ */
+async function handleSubmit(event: Event) {
+	event.preventDefault();
+	isSubmitting.value = true;
+	try {
+		const valid = submitResume();
+		if (!valid) {
+			toast.error("Validation Error", {
+				description:
+					"Please check all required fields and ensure they are valid.",
+			});
+			return;
+		}
+		toast.success("Success", {
+			description: "Resume saved successfully!",
+		});
+	} catch (error) {
+		toast.error("Error", {
+			description: "Failed to save resume. Please try again.",
+		});
+	} finally {
+		isSubmitting.value = false;
+	}
+}
+
+/**
+ * Handles PDF generation
+ */
+async function handleGeneratePdf() {
+	try {
+		const pdfBlob = await generatePdf("en");
+		const url = URL.createObjectURL(pdfBlob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = "resume.pdf";
+		link.click();
+		URL.revokeObjectURL(url);
+		toast.success("PDF Generated", {
+			description: "Your resume has been generated successfully!",
+		});
+	} catch (error) {
+		toast.error("Generation Failed", {
+			description:
+				generationError.value?.detail ||
+				"Failed to generate PDF. Please try again.",
+		});
+	}
+}
+
+/**
+ * Handles form cancellation/reset
+ */
+function handleCancel() {
+	if (confirm("Are you sure you want to clear all form data?")) {
+		clearForm();
+		toast.success("Form Cleared", {
+			description: "All form data has been reset.",
+		});
+	}
+}
 </script>
 
 <template>
   <div class="w-full">
-    <form>
+    <form @submit="handleSubmit">
       <FieldGroup>
         <BasicsSection />
         <FieldSeparator />
         <FieldSet>
-          <ProfilesField v-model="profiles" />
+          <ProfilesField v-model="basics.profiles" />
         </FieldSet>
         <FieldSeparator />
         <WorkExperienceSection v-model="workExperiences" />
@@ -82,10 +143,22 @@ const projects = ref<Project[]>([]);
         <ProjectSection v-model="projects" />
         <FieldSeparator />
         <Field orientation="horizontal">
-          <Button type="submit">
-            Submit
+          <Button type="submit" :disabled="isSubmitting || isGenerating">
+            {{ isSubmitting ? "Saving..." : "Submit" }}
           </Button>
-          <Button variant="outline" type="button">
+          <Button
+            variant="outline"
+            type="button"
+            :disabled="!isValid || isGenerating"
+            @click="handleGeneratePdf"
+          >
+            {{ isGenerating ? "Generating..." : "Generate PDF" }}
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            @click="handleCancel"
+          >
             Cancel
           </Button>
         </Field>

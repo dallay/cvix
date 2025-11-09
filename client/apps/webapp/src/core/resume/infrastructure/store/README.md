@@ -6,7 +6,7 @@ This document explains how dependency injection is implemented and used in the R
 
 The store uses the **Dependency Injection** (DI) pattern through Vue's `provide/inject` system to decouple the validator implementation from the store logic.
 
-### Advantages of this approach:
+### Advantages of this approach
 
 1. **Testability**: Easy to mock the validator in tests
 2. **Flexibility**: You can change the validator implementation without modifying the store
@@ -15,7 +15,7 @@ The store uses the **Dependency Injection** (DI) pattern through Vue's `provide/
 
 ## File Structure
 
-```
+```text
 infrastructure/
 ├── di/
 │   ├── keys.ts          # Injection keys
@@ -86,6 +86,7 @@ export default {
 ### Actions
 
 #### `setResume(newResume: Resume): void`
+
 Sets a new resume and validates it automatically.
 
 ```typescript
@@ -95,6 +96,7 @@ console.log(resumeStore.isValid); // Automatic validation
 ```
 
 #### `clearResume(): void`
+
 Clears the current resume and errors.
 
 ```typescript
@@ -103,6 +105,7 @@ console.log(resumeStore.hasResume); // false
 ```
 
 #### `validateResume(): boolean`
+
 Explicitly validates the current resume.
 
 ```typescript
@@ -113,6 +116,7 @@ if (!isValid) {
 ```
 
 #### `setGenerating(generating: boolean): void`
+
 Sets the generation state.
 
 ```typescript
@@ -122,6 +126,7 @@ resumeStore.setGenerating(false);
 ```
 
 #### `setGenerationError(error: ProblemDetail | null): void`
+
 Sets a generation error.
 
 ```typescript
@@ -134,6 +139,64 @@ try {
     status: 500,
     detail: error.message
   });
+}
+```
+
+#### `generatePdf(locale?: string): Promise<Blob>`
+
+Generates a PDF from the current resume data.
+
+**Important**: This method uses the injected `ResumeGenerator` instance.
+
+```typescript
+async function downloadResume() {
+  try {
+    const pdfBlob = await resumeStore.generatePdf('en');
+
+    // Create download link
+    const url = URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'resume.pdf';
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to generate PDF:', error);
+
+    // Check if there's a detailed error
+    if (resumeStore.generationError) {
+      console.error('Error details:', resumeStore.generationError);
+    }
+  }
+}
+```
+
+**State Management during PDF generation:**
+
+- Sets `isGenerating = true` at the start
+- Clears any previous `generationError`
+- Sets `isGenerating = false` when done
+- Stores error in `generationError` if generation fails
+
+**Error Handling:**
+
+```typescript
+const resumeStore = useResumeStore();
+
+// Check if there's a resume before generating
+if (!resumeStore.hasResume) {
+  console.error('No resume available');
+  return;
+}
+
+try {
+  const pdf = await resumeStore.generatePdf('es');
+  // ... handle pdf ...
+} catch (error) {
+  // Error is automatically stored in resumeStore.generationError
+  if (resumeStore.generationError) {
+    alert(resumeStore.generationError.title);
+  }
 }
 ```
 
@@ -232,24 +295,27 @@ This ensures the store always works, even if DI configuration is forgotten.
 To add more dependencies to the resume module:
 
 1. Create new keys in `di/keys.ts`:
-```typescript
-export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
-  Symbol('ResumeGenerator');
-```
+
+    ```typescript
+    export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
+    Symbol('ResumeGenerator');
+    ```
 
 2. Register them in `config/di.ts`:
-```typescript
-export function setupResumeDI(app: App): void {
-  app.provide(RESUME_VALIDATOR_KEY, new JsonResumeValidator());
-  app.provide(RESUME_GENERATOR_KEY, new AiResumeGenerator());
-}
-```
+
+    ```typescript
+    export function setupResumeDI(app: App): void {
+    app.provide(RESUME_VALIDATOR_KEY, new JsonResumeValidator());
+    app.provide(RESUME_GENERATOR_KEY, new AiResumeGenerator());
+    }
+    ```
 
 3. Inject them in the store:
-```typescript
-const validator = inject(RESUME_VALIDATOR_KEY) ?? new JsonResumeValidator();
-const generator = inject(RESUME_GENERATOR_KEY) ?? new DefaultGenerator();
-```
+
+    ```typescript
+    const validator = inject(RESUME_VALIDATOR_KEY) ?? new JsonResumeValidator();
+    const generator = inject(RESUME_GENERATOR_KEY) ?? new DefaultGenerator();
+    ```
 
 ## Best Practices
 
