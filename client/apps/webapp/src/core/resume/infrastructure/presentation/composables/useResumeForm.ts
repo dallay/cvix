@@ -118,6 +118,14 @@ export function useResumeForm() {
 	}
 
 	/**
+	 * Saves the current resume to the configured storage.
+	 * @returns Promise resolving when save is complete
+	 */
+	async function saveToStorage(): Promise<void> {
+		return resumeStore.saveToStorage();
+	}
+
+	/**
 	 * Generates a PDF from the current resume data.
 	 * @param locale - Optional locale for PDF generation (e.g., 'en', 'es')
 	 * @returns Promise with the PDF blob
@@ -213,6 +221,7 @@ export function useResumeForm() {
 
 		// Actions
 		submitResume,
+		saveToStorage,
 		generatePdf,
 		clearForm,
 		loadResume,

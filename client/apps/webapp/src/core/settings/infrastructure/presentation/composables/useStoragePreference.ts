@@ -1,6 +1,6 @@
 import { computed } from "vue";
-import type { StorageType } from "@/core/resume/domain/ResumeStorage";
-import { useSettingsStore } from "../../infrastructure/store";
+import type { StorageType } from "@/core/resume/domain/ResumeStorage.ts";
+import { useSettingsStore } from "@/core/settings";
 
 /**
  * Composable for managing storage preference in the UI.
@@ -40,7 +40,7 @@ export function useStoragePreference() {
 	const storagePreference = computed<StorageType>({
 		get: () => settingsStore.storagePreference as StorageType,
 		set: (value) => {
-			settingsStore.updateStoragePreference(value);
+			settingsStore.updateStoragePreference(value).then((r) => r);
 		},
 	});
 

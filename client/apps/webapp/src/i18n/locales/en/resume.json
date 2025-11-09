@@ -262,7 +262,39 @@
 		},
 		"form": {
 			"generate": "Generate Resume",
-			"save_draft": "Save Draft"
+			"save_draft": "Save Draft",
+			"submit": "Submit",
+			"saving": "Saving...",
+			"cancel": "Cancel",
+			"generatePdf": "Generate PDF",
+			"generating": "Generating...",
+			"confirmClear": "Are you sure you want to clear all form data?"
+		},
+		"toast": {
+			"validationError": {
+				"title": "Validation Error",
+				"description": "Please check all required fields and ensure they are valid."
+			},
+			"saveSuccess": {
+				"title": "Success",
+				"description": "Resume saved successfully!"
+			},
+			"saveError": {
+				"title": "Error",
+				"description": "Failed to save resume. Please try again."
+			},
+			"pdfSuccess": {
+				"title": "PDF Generated",
+				"description": "Your resume has been generated successfully!"
+			},
+			"pdfError": {
+				"title": "Generation Failed",
+				"description": "Failed to generate PDF. Please try again."
+			},
+			"formCleared": {
+				"title": "Form Cleared",
+				"description": "All form data has been reset."
+			}
 		},
 		"loading": {
 			"generating": "Generating your resume...",

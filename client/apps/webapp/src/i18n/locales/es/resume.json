@@ -262,7 +262,39 @@
 		},
 		"form": {
 			"generate": "Generar Currículum",
-			"save_draft": "Guardar Borrador"
+			"save_draft": "Guardar Borrador",
+			"submit": "Enviar",
+			"saving": "Guardando...",
+			"cancel": "Cancelar",
+			"generatePdf": "Generar PDF",
+			"generating": "Generando...",
+			"confirmClear": "¿Estás seguro de que quieres borrar todos los datos del formulario?"
+		},
+		"toast": {
+			"validationError": {
+				"title": "Error de Validación",
+				"description": "Por favor, verifica todos los campos requeridos y asegúrate de que sean válidos."
+			},
+			"saveSuccess": {
+				"title": "Éxito",
+				"description": "¡Currículum guardado exitosamente!"
+			},
+			"saveError": {
+				"title": "Error",
+				"description": "Error al guardar el currículum. Por favor, inténtalo de nuevo."
+			},
+			"pdfSuccess": {
+				"title": "PDF Generado",
+				"description": "¡Tu currículum ha sido generado exitosamente!"
+			},
+			"pdfError": {
+				"title": "Generación Fallida",
+				"description": "Error al generar el PDF. Por favor, inténtalo de nuevo."
+			},
+			"formCleared": {
+				"title": "Formulario Limpiado",
+				"description": "Todos los datos del formulario han sido reiniciados."
+			}
 		},
 		"loading": {
 			"generating": "Generando tu currículum...",

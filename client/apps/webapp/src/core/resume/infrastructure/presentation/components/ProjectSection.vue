@@ -183,7 +183,7 @@ const hasProjects = computed(() => projects.value.length > 0);
 							</Field>
 						</div>
 
-						<Field class="flex items-center space-x-2">
+						<div class="flex items-center gap-2">
 							<Checkbox
 								:id="`project-current-${projectIndex}`"
 								:checked="isCurrent(project)"
@@ -191,11 +191,11 @@ const hasProjects = computed(() => projects.value.length > 0);
 							/>
 							<FieldLabel
 								:for="`project-current-${projectIndex}`"
-								class="mb-0! cursor-pointer"
+								class="mb-0! cursor-pointer font-normal"
 							>
 								{{ t('resume.fields.currentProject') }}
 							</FieldLabel>
-						</Field>
+						</div>
 
 						<Field>
 							<FieldLabel :for="`project-description-${projectIndex}`">

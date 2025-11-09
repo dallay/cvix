@@ -19,7 +19,7 @@ import {
 	type StorageMetadata,
 } from "@/core/resume/infrastructure/storage";
 import { useResumeStore } from "@/core/resume/infrastructure/store/resumeStore";
-import { useStoragePreference } from "@/core/settings/presentation/composables";
+import { useStoragePreference } from "@/core/settings/infrastructure/presentation/composables";
 
 const resumeStore = useResumeStore();
 const {
@@ -62,7 +62,7 @@ async function applyStorageChange() {
 		await resumeStore.changeStorageStrategy(newStorage, shouldMigrate);
 
 		// Update the preference
-		setStoragePreference(selectedStorage.value);
+		await setStoragePreference(selectedStorage.value);
 
 		migrationSuccess.value = true;
 

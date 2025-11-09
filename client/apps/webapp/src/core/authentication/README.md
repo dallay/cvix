@@ -23,7 +23,7 @@ Los roles vienen desde el backend (Keycloak):
 
 ### Configuración Básica
 
-En `authRoutes.ts`, define los meta campos para cada ruta:
+En `index.ts`, define los meta campos para cada ruta:
 
 ```typescript
 {

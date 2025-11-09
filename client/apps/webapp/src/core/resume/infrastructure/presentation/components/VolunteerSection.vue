@@ -199,7 +199,7 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 							</Field>
 						</div>
 
-						<Field class="flex items-center space-x-2">
+						<div class="flex items-center gap-2">
 							<Checkbox
 								:id="`volunteer-current-${volunteerIndex}`"
 								:checked="isCurrent(volunteer)"
@@ -207,11 +207,11 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 							/>
 							<FieldLabel
 								:for="`volunteer-current-${volunteerIndex}`"
-								class="mb-0! cursor-pointer"
+								class="mb-0! cursor-pointer font-normal"
 							>
 								{{ t('resume.fields.currentVolunteer') }}
 							</FieldLabel>
-						</Field>
+						</div>
 
 						<Field>
 							<FieldLabel :for="`volunteer-summary-${volunteerIndex}`">

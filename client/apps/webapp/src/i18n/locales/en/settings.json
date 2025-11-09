@@ -1,0 +1,13 @@
+{
+	"settings.title": "Settings",
+	"settings.description": "Manage your application preferences and settings",
+	"settings.tabs.storage": "Storage",
+	"settings.tabs.general": "General",
+	"settings.tabs.privacy": "Privacy",
+	"settings.general.title": "General Settings",
+	"settings.general.description": "Configure general application preferences",
+	"settings.general.comingSoon": "General settings coming soon...",
+	"settings.privacy.title": "Privacy Settings",
+	"settings.privacy.description": "Manage your privacy and data preferences",
+	"settings.privacy.comingSoon": "Privacy settings coming soon..."
+}

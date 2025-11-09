@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { authRoutes } from "@/core/authentication/presentation/authRoutes";
+import { authRoutes } from "@/core/authentication/presentation/router";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
+import { resumeRoutes } from "@/core/resume/infrastructure/router";
+import { settingRoutes } from "@/core/settings/infrastructure/presentation/router";
 import { workspaceGuard } from "@/core/workspace/infrastructure/router/workspaceGuard";
 
 const router = createRouter({
@@ -11,25 +13,8 @@ const router = createRouter({
 			path: "/",
 			redirect: "/dashboard",
 		},
-		{
-			path: "/resume",
-			name: "ResumeGenerator",
-			component: () =>
-				import(
-					"@/core/resume/infrastructure/presentation/pages/ResumeGeneratorPage.vue"
-				),
-			meta: {
-				requiresAuth: true,
-			},
-		},
-		{
-			path: "/settings",
-			name: "Settings",
-			component: () => import("@/pages/SettingsPage.vue"),
-			meta: {
-				requiresAuth: true,
-			},
-		},
+		...resumeRoutes,
+		...settingRoutes,
 	],
 });
 
@@ -70,7 +55,7 @@ router.beforeEach(async (to, from, next) => {
 			? to.meta.roles
 			: [to.meta.roles];
 		const hasRequiredRole = requiredRoles.some((role) =>
-			authStore.hasRole(role as string),
+			authStore.hasRole(role),
 		);
 
 		if (!hasRequiredRole) {

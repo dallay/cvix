@@ -1,0 +1,13 @@
+{
+	"settings.title": "Configuración",
+	"settings.description": "Administra las preferencias y ajustes de la aplicación",
+	"settings.tabs.storage": "Almacenamiento",
+	"settings.tabs.general": "General",
+	"settings.tabs.privacy": "Privacidad",
+	"settings.general.title": "Ajustes generales",
+	"settings.general.description": "Configura las preferencias generales de la aplicación",
+	"settings.general.comingSoon": "Ajustes generales próximamente...",
+	"settings.privacy.title": "Ajustes de privacidad",
+	"settings.privacy.description": "Gestiona tus preferencias de privacidad y datos",
+	"settings.privacy.comingSoon": "Ajustes de privacidad próximamente..."
+}

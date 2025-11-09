@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,8 @@ import WorkExperienceSection from "@/core/resume/infrastructure/presentation/com
 import { useResumeForm } from "@/core/resume/infrastructure/presentation/composables/useResumeForm";
 import ProfilesField from "./ProfilesField.vue";
 
+const { t } = useI18n();
+
 const {
 	basics,
 	workExperiences,
@@ -42,6 +45,7 @@ const {
 	submitResume,
 	generatePdf,
 	clearForm,
+	saveToStorage,
 } = useResumeForm();
 
 const isSubmitting = ref(false);
@@ -55,20 +59,24 @@ async function handleSubmit(event: Event) {
 	try {
 		const valid = submitResume();
 		if (!valid) {
-			toast.error("Validation Error", {
-				description:
-					"Please check all required fields and ensure they are valid.",
+			toast.error(t("resume.toast.validationError.title"), {
+				description: t("resume.toast.validationError.description"),
 			});
+			isSubmitting.value = false;
 			return;
 		}
-		toast.success("Success", {
-			description: "Resume saved successfully!",
+
+		// Save to storage after validation
+		await saveToStorage();
+
+		toast.success(t("resume.toast.saveSuccess.title"), {
+			description: t("resume.toast.saveSuccess.description"),
 		});
+		isSubmitting.value = false;
 	} catch (error) {
-		toast.error("Error", {
-			description: "Failed to save resume. Please try again.",
+		toast.error(t("resume.toast.saveError.title"), {
+			description: t("resume.toast.saveError.description"),
 		});
-	} finally {
 		isSubmitting.value = false;
 	}
 }
@@ -85,14 +93,13 @@ async function handleGeneratePdf() {
 		link.download = "resume.pdf";
 		link.click();
 		URL.revokeObjectURL(url);
-		toast.success("PDF Generated", {
-			description: "Your resume has been generated successfully!",
+		toast.success(t("resume.toast.pdfSuccess.title"), {
+			description: t("resume.toast.pdfSuccess.description"),
 		});
 	} catch (error) {
-		toast.error("Generation Failed", {
+		toast.error(t("resume.toast.pdfError.title"), {
 			description:
-				generationError.value?.detail ||
-				"Failed to generate PDF. Please try again.",
+				generationError.value?.detail || t("resume.toast.pdfError.description"),
 		});
 	}
 }
@@ -101,10 +108,10 @@ async function handleGeneratePdf() {
  * Handles form cancellation/reset
  */
 function handleCancel() {
-	if (confirm("Are you sure you want to clear all form data?")) {
+	if (confirm(t("resume.form.confirmClear"))) {
 		clearForm();
-		toast.success("Form Cleared", {
-			description: "All form data has been reset.",
+		toast.success(t("resume.toast.formCleared.title"), {
+			description: t("resume.toast.formCleared.description"),
 		});
 	}
 }
@@ -144,7 +151,7 @@ function handleCancel() {
         <FieldSeparator />
         <Field orientation="horizontal">
           <Button type="submit" :disabled="isSubmitting || isGenerating">
-            {{ isSubmitting ? "Saving..." : "Submit" }}
+            {{ isSubmitting ? t("resume.form.saving") : t("resume.form.submit") }}
           </Button>
           <Button
             variant="outline"
@@ -152,14 +159,14 @@ function handleCancel() {
             :disabled="!isValid || isGenerating"
             @click="handleGeneratePdf"
           >
-            {{ isGenerating ? "Generating..." : "Generate PDF" }}
+            {{ isGenerating ? t("resume.form.generating") : t("resume.form.generatePdf") }}
           </Button>
           <Button
             variant="outline"
             type="button"
             @click="handleCancel"
           >
-            Cancel
+            {{ t("resume.form.cancel") }}
           </Button>
         </Field>
       </FieldGroup>

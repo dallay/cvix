@@ -22,17 +22,17 @@ const currentSection = computed(() => {
   <DashboardLayout>
 	<div class="container mx-auto max-w-4xl py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold">Settings</h1>
+      <h1 class="text-3xl font-bold">{{$t('settings.title')}}</h1>
       <p class="text-muted-foreground mt-2">
-        Manage your application preferences and settings
+        {{$t('settings.description')}}
       </p>
     </div>
 
     <Tabs :model-value="currentSection">
       <TabsList class="grid w-full grid-cols-3">
-        <TabsTrigger value="storage">Storage</TabsTrigger>
-        <TabsTrigger value="general">General</TabsTrigger>
-        <TabsTrigger value="privacy">Privacy</TabsTrigger>
+        <TabsTrigger value="storage">{{$t('settings.tabs.storage')}}</TabsTrigger>
+        <TabsTrigger value="general">{{$t('settings.tabs.general')}}</TabsTrigger>
+        <TabsTrigger value="privacy">{{$t('settings.tabs.privacy')}}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="storage" class="mt-6">
@@ -42,14 +42,14 @@ const currentSection = computed(() => {
       <TabsContent value="general" class="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>General Settings</CardTitle>
+            <CardTitle>{{$t('settings.general.title')}}</CardTitle>
             <CardDescription>
-              Configure general application preferences
+              {{$t('settings.general.description')}}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p class="text-muted-foreground">
-              General settings coming soon...
+              {{$t('settings.general.comingSoon')}}
             </p>
           </CardContent>
         </Card>
@@ -58,14 +58,14 @@ const currentSection = computed(() => {
       <TabsContent value="privacy" class="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Privacy Settings</CardTitle>
+            <CardTitle>{{$t('settings.privacy.title')}}</CardTitle>
             <CardDescription>
-              Manage your privacy and data preferences
+              {{$t('settings.privacy.description')}}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p class="text-muted-foreground">
-              Privacy settings coming soon...
+              {{$t('settings.privacy.comingSoon')}}
             </p>
           </CardContent>
         </Card>

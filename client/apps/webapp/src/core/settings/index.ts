@@ -30,4 +30,7 @@ export {
 } from "./infrastructure";
 
 // Presentation layer
-export { StorageSelector, useStoragePreference } from "./presentation";
+export {
+	StorageSelector,
+	useStoragePreference,
+} from "./infrastructure/presentation";

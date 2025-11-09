@@ -66,7 +66,7 @@
 | ---------------------------------------------------------- | ------- | ------------- | ---------- |
 | `src/authentication/infrastructure/http/AuthHttpClient.ts` | 4%      | 212           | **HIGH**   |
 | `src/authentication/domain/errors/auth.errors.ts`          | 0%      | 76            | **HIGH**   |
-| `src/authentication/presentation/authRoutes.ts`            | 12.5%   | 61            | **HIGH**   |
+| `src/authentication/presentation/index.ts`            | 12.5%   | 61            | **HIGH**   |
 | `src/authentication/presentation/stores/authStore.ts`      | 36.92%  | 82            | **HIGH**   |
 | `src/shared/BaseHttpClient.ts`                             | 11.53%  | 182           | **HIGH**   |
 | `src/workspace/infrastructure/router/workspaceGuard.ts`    | 3.57%   | 54            | **MEDIUM** |
@@ -92,7 +92,7 @@
 1. **Priority 1 (High)**: Add integration tests for authentication flow
    - Test `AuthHttpClient` (212 lines uncovered)
    - Test `authStore` complete state management (82 lines)
-   - Test `authRoutes` navigation guards (61 lines)
+   - Test `index` navigation guards (61 lines)
    - Test error handling in `auth.errors.ts` (76 lines)
    - Add `BaseHttpClient` tests (182 lines)
 
