@@ -91,16 +91,17 @@ export const useResumeStore = defineStore("resume", () => {
 	// Get dependency instances
 	const validator = getValidator();
 	const generator = getGenerator();
-	const storage = getStorage();
+	const initialStorage = getStorage();
 
-	// State
+	// State - make storage mutable to allow strategy switching
+	const currentStorage = ref<ResumeStorage>(initialStorage);
 	const resume = ref<Resume | null>(null);
 	const isGenerating = ref(false);
 	const generationError = ref<ProblemDetail | null>(null);
 	const isSaving = ref(false);
 	const isLoading = ref(false);
 	const storageError = ref<Error | null>(null);
-	const currentStorageType = ref<StorageType>(storage.type());
+	const currentStorageType = ref<StorageType>(initialStorage.type());
 
 	// Computed properties
 	/**
@@ -214,7 +215,7 @@ export const useResumeStore = defineStore("resume", () => {
 			isSaving.value = true;
 			storageError.value = null;
 
-			await storage.save(resume.value);
+			await currentStorage.value.save(resume.value);
 
 			isSaving.value = false;
 		} catch (error) {
@@ -235,7 +236,7 @@ export const useResumeStore = defineStore("resume", () => {
 			isLoading.value = true;
 			storageError.value = null;
 
-			const result = await storage.load();
+			const result = await currentStorage.value.load();
 
 			if (result.data) {
 				resume.value = result.data;
@@ -258,7 +259,7 @@ export const useResumeStore = defineStore("resume", () => {
 	async function clearStorage(): Promise<void> {
 		try {
 			storageError.value = null;
-			await storage.clear();
+			await currentStorage.value.clear();
 			clearResume();
 		} catch (error) {
 			storageError.value =
@@ -286,12 +287,9 @@ export const useResumeStore = defineStore("resume", () => {
 				await newStorage.save(resume.value);
 			}
 
-			// Update the storage reference (this would require making storage mutable)
-			// For now, we'll just update the type indicator
+			// Update the storage reference to use the new strategy
+			currentStorage.value = newStorage;
 			currentStorageType.value = newStorage.type();
-
-			// Note: To fully implement strategy switching, we'd need to refactor
-			// the storage to be a ref() instead of a const
 		} catch (error) {
 			storageError.value =
 				error instanceof Error ? error : new Error("Failed to change storage");

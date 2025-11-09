@@ -280,6 +280,7 @@ declare module 'vue' {
     StepperSeparator: typeof import('./src/components/ui/stepper/StepperSeparator.vue')['default']
     StepperTitle: typeof import('./src/components/ui/stepper/StepperTitle.vue')['default']
     StepperTrigger: typeof import('./src/components/ui/stepper/StepperTrigger.vue')['default']
+    StorageSelector: typeof import('./src/components/StorageSelector.vue')['default']
     Switch: typeof import('./src/components/ui/switch/Switch.vue')['default']
     Table: typeof import('./src/components/ui/table/Table.vue')['default']
     TableBody: typeof import('./src/components/ui/table/TableBody.vue')['default']
