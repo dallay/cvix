@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import type { Basics } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();
+
+const basics = defineModel<Basics>({ required: true });
 </script>
 
 <template>
@@ -27,6 +30,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="full-name"
+            v-model="basics.name"
             data-testid="fullname-input"
             type="text"
             :placeholder="t('resume.placeholders.name')"
@@ -40,6 +44,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="label-short-description"
+            v-model="basics.label"
             data-testid="label-short-description-input"
             type="text"
             :placeholder="t('resume.placeholders.label')"
@@ -53,9 +58,9 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="profile-picture"
+            v-model="basics.image"
             data-testid="profile-picture-input"
-            type="file"
-            accept="image/*"
+            type="text"
             :placeholder="t('resume.placeholders.image')"
             required
         />
@@ -69,6 +74,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="email"
+            v-model="basics.email"
             data-testid="email-input"
             type="email"
             :placeholder="t('resume.placeholders.email')"
@@ -81,6 +87,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="phone"
+            v-model="basics.phone"
             data-testid="phone-input"
             type="tel"
             :placeholder="t('resume.placeholders.phone')"
@@ -92,6 +99,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Input
             id="url"
+            v-model="basics.url"
             data-testid="url-input"
             type="url"
             :placeholder="t('resume.placeholders.url')"
@@ -104,6 +112,7 @@ const { t } = useI18n();
         </FieldLabel>
         <Textarea
             id="summary"
+            v-model="basics.summary"
             :placeholder="t('resume.placeholders.summary')"
             :rows="4"
         />
@@ -114,32 +123,57 @@ const { t } = useI18n();
             <FieldLabel for="street">
               {{ t('resume.fields.location.address') }}
             </FieldLabel>
-            <Input id="street" type="text" :placeholder="t('resume.placeholders.location.address')" />
+            <Input
+              id="street"
+              v-model="basics.location.address"
+              type="text"
+              :placeholder="t('resume.placeholders.location.address')"
+            />
           </Field>
           <div class="grid grid-cols-2 gap-4">
             <Field>
               <FieldLabel for="city">
                 {{ t('resume.fields.location.city') }}
               </FieldLabel>
-              <Input id="city" type="text" :placeholder="t('resume.placeholders.location.city')" />
+              <Input
+                id="city"
+                v-model="basics.location.city"
+                type="text"
+                :placeholder="t('resume.placeholders.location.city')"
+              />
             </Field>
             <Field>
               <FieldLabel for="zip">
                 {{ t('resume.fields.location.postalCode') }}
               </FieldLabel>
-              <Input id="zip" type="text" :placeholder="t('resume.placeholders.location.postalCode')"  />
+              <Input
+                id="zip"
+                v-model="basics.location.postalCode"
+                type="text"
+                :placeholder="t('resume.placeholders.location.postalCode')"
+              />
             </Field>
             <Field>
               <FieldLabel for="countryCode">
                 {{ t('resume.fields.location.countryCode') }}
               </FieldLabel>
-              <Input id="countryCode" type="text" :placeholder="t('resume.placeholders.location.countryCode')"  />
+              <Input
+                id="countryCode"
+                v-model="basics.location.countryCode"
+                type="text"
+                :placeholder="t('resume.placeholders.location.countryCode')"
+              />
             </Field>
             <Field>
               <FieldLabel for="region">
                 {{ t('resume.fields.location.region') }}
               </FieldLabel>
-              <Input id="region" type="text" :placeholder="t('resume.placeholders.location.region')"  />
+              <Input
+                id="region"
+                v-model="basics.location.region"
+                type="text"
+                :placeholder="t('resume.placeholders.location.region')"
+              />
             </Field>
           </div>
         </FieldGroup>

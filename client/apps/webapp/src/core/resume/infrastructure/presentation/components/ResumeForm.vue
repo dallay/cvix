@@ -121,7 +121,7 @@ function handleCancel() {
   <div class="w-full">
     <form @submit="handleSubmit">
       <FieldGroup>
-        <BasicsSection />
+        <BasicsSection v-model="basics" />
         <FieldSeparator />
         <FieldSet>
           <ProfilesField v-model="basics.profiles" />

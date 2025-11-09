@@ -1,4 +1,4 @@
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import type {
 	Award,
 	Basics,
@@ -45,6 +45,9 @@ interface MutableBasics extends Omit<Basics, "profiles"> {
  */
 export function useResumeForm() {
 	const resumeStore = useResumeStore();
+
+	// Flag para evitar que el watch sobrescriba datos durante la carga inicial
+	const isInitializing = ref(true);
 
 	// Form state - cada sección del resume
 	const basics = ref<MutableBasics>({
@@ -94,15 +97,21 @@ export function useResumeForm() {
 	}));
 
 	// Validación automática cuando cambia el resume
+	// Solo sincronizar después de la carga inicial
 	watch(
 		resume,
 		(newResume) => {
-			resumeStore.setResume(newResume);
+			console.log(
+				"[useResumeForm] Watch triggered, isInitializing:",
+				isInitializing.value,
+			);
+			if (!isInitializing.value) {
+				console.log("[useResumeForm] Syncing resume to store");
+				resumeStore.setResume(newResume);
+			}
 		},
 		{ deep: true },
-	);
-
-	// Estados del store
+	); // Estados del store
 	const isValid = computed(() => resumeStore.isValid);
 	const hasResume = computed(() => resumeStore.hasResume);
 	const isGenerating = computed(() => resumeStore.isGenerating);
@@ -190,13 +199,28 @@ export function useResumeForm() {
 		interests.value = [...(resumeData.interests || [])];
 		references.value = [...(resumeData.references || [])];
 		projects.value = [...(resumeData.projects || [])];
-	}
-
-	// Si el store ya tiene un resume, cargarlo
-	if (resumeStore.resume) {
-		loadResume(resumeStore.resume);
-	}
-
+	} // Initialize: load from storage on mount
+	onMounted(async () => {
+		try {
+			console.log("[useResumeForm] Loading from storage...");
+			await resumeStore.loadFromStorage();
+			console.log("[useResumeForm] Resume from store:", resumeStore.resume);
+			if (resumeStore.resume) {
+				console.log("[useResumeForm] Loading resume into form...");
+				loadResume(resumeStore.resume);
+				// Esperar dos ticks: uno para que Vue procese los cambios, otro para que los componentes se actualicen
+				await nextTick();
+				await nextTick();
+				console.log("[useResumeForm] Resume loaded. Basics:", basics.value);
+			}
+		} catch (error) {
+			console.error("Failed to load resume from storage:", error);
+		} finally {
+			// Permitir que el watch sincronice cambios después de la carga inicial
+			console.log("[useResumeForm] Initialization complete, enabling watch");
+			isInitializing.value = false;
+		}
+	});
 	return {
 		// Form fields
 		basics,

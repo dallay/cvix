@@ -236,10 +236,18 @@ export const useResumeStore = defineStore("resume", () => {
 			isLoading.value = true;
 			storageError.value = null;
 
+			console.log(
+				"[resumeStore] Loading from storage:",
+				currentStorage.value.type(),
+			);
 			const result = await currentStorage.value.load();
+			console.log("[resumeStore] Load result:", result);
 
 			if (result.data) {
 				resume.value = result.data;
+				console.log("[resumeStore] Resume set to:", resume.value);
+			} else {
+				console.log("[resumeStore] No data found in storage");
 			}
 
 			isLoading.value = false;
@@ -247,6 +255,7 @@ export const useResumeStore = defineStore("resume", () => {
 			isLoading.value = false;
 			storageError.value =
 				error instanceof Error ? error : new Error("Unknown storage error");
+			console.error("[resumeStore] Error loading from storage:", error);
 			throw error;
 		}
 	}
