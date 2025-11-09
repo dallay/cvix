@@ -22,14 +22,6 @@ const router = createRouter({
 				requiresAuth: true,
 			},
 		},
-		{
-			path: "/resume/v1",
-			name: "ResumeGeneratorV1",
-			component: () => import("@/core/resume-v1/pages/ResumeGeneratorPage.vue"),
-			meta: {
-				requiresAuth: true,
-			},
-		},
 	],
 });
 

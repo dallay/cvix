@@ -19,7 +19,6 @@ const navigationItems: NavigationItem[] = [
 		icon: "analytics",
 		to: "/resumes",
 		children: [
-			{ label: "Resume v1", icon: "analytics", to: "/resume/v1" },
 			{ label: "Resume", to: "/resume" },
 			{ label: "Reports", to: "/dashboard?view=reports" },
 		],
