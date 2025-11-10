@@ -271,4 +271,123 @@ class ResumeControllerTest {
             .expectStatus().isOk
             .expectHeader().contentType(MediaType.APPLICATION_PDF)
     }
+
+    @Test
+    fun `should accept resume with new JSON Resume Schema sections`() {
+        // Mock the handler
+        coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
+
+        webTestClient.mutateWith(csrf()).post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "label" to "Software Engineer",
+                        "image" to "https://example.com/photo.jpg",
+                        "email" to "john@example.com",
+                        "phone" to "+1234567890",
+                    ),
+                    "skills" to listOf(
+                        mapOf(
+                            "name" to "Programming",
+                            "level" to "Expert",
+                            "keywords" to listOf("Kotlin", "Java"),
+                        ),
+                    ),
+                    "volunteer" to listOf(
+                        mapOf(
+                            "organization" to "Code.org",
+                            "position" to "Volunteer Teacher",
+                            "summary" to "Teaching programming to kids",
+                        ),
+                    ),
+                    "awards" to listOf(
+                        mapOf(
+                            "title" to "Best Developer",
+                            "date" to "2024-01-01",
+                            "awarder" to "Tech Company",
+                        ),
+                    ),
+                    "certificates" to listOf(
+                        mapOf(
+                            "name" to "AWS Certified",
+                            "date" to "2024-01-01",
+                            "issuer" to "Amazon",
+                        ),
+                    ),
+                    "publications" to listOf(
+                        mapOf(
+                            "name" to "Clean Code Principles",
+                            "publisher" to "Tech Blog",
+                        ),
+                    ),
+                    "interests" to listOf(
+                        mapOf(
+                            "name" to "Open Source",
+                            "keywords" to listOf("Kotlin", "Spring Boot"),
+                        ),
+                    ),
+                    "references" to listOf(
+                        mapOf(
+                            "name" to "Jane Smith",
+                            "reference" to "John is an excellent developer",
+                        ),
+                    ),
+                    "projects" to listOf(
+                        mapOf(
+                            "name" to "My Project",
+                            "description" to "A great project",
+                            "highlights" to listOf("Feature 1", "Feature 2"),
+                            "keywords" to listOf("Kotlin", "Spring"),
+                            "roles" to listOf("Developer", "Architect"),
+                            "entity" to "My Company",
+                            "type" to "application",
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_PDF)
+    }
+
+    @Test
+    fun `should accept resume with free-form language fluency`() {
+        // Mock the handler
+        coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
+
+        webTestClient.mutateWith(csrf()).post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "email" to "john@example.com",
+                        "phone" to "+1234567890",
+                    ),
+                    "skills" to listOf(
+                        mapOf(
+                            "name" to "Programming",
+                            "keywords" to listOf("Kotlin"),
+                        ),
+                    ),
+                    "languages" to listOf(
+                        mapOf(
+                            "language" to "English",
+                            "fluency" to "Native speaker",
+                        ),
+                        mapOf(
+                            "language" to "Spanish",
+                            "fluency" to "Professional working proficiency",
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_PDF)
+    }
 }
