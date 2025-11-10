@@ -84,7 +84,6 @@ const hasProjects = computed(() => projects.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.projects') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.projects') }}
 		</FieldDescription>

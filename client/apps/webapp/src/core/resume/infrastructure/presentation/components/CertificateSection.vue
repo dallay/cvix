@@ -38,7 +38,6 @@ const hasCertificates = computed(() => certificates.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.certificates') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.certificates') }}
 		</FieldDescription>

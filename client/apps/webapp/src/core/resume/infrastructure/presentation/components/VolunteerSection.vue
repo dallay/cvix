@@ -86,7 +86,6 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.volunteer') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.volunteer') }}
 		</FieldDescription>

@@ -69,7 +69,6 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.education') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.education') }}
 		</FieldDescription>

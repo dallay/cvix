@@ -37,7 +37,6 @@ const hasReferences = computed(() => references.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.references') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.references') }}
 		</FieldDescription>
