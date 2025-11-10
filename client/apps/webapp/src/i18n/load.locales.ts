@@ -1,5 +1,29 @@
+import type {
+	LocaleMessage,
+	LocaleMessageObject,
+	LocaleMessageValue,
+} from "./types";
+
+// Utility function to flatten nested objects into a flat key structure
+function flattenKeys(
+	obj: Record<string, LocaleMessageValue>,
+	parentKey = "",
+	result: Record<string, LocaleMessageValue> = {},
+): Record<string, LocaleMessageValue> {
+	for (const [key, value] of Object.entries(obj)) {
+		const newKey = parentKey ? `${parentKey}.${key}` : key;
+		if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+			// Preserve top-level keys by merging the original object
+			result[key] = value;
+			flattenKeys(value as LocaleMessageObject, newKey, result);
+		} else {
+			result[newKey] = value;
+		}
+	}
+	return result;
+}
+
 import { deepmerge } from "@loomify/utilities";
-import type { LocaleMessage } from "./types";
 
 /**
  * In-memory cache for merged locale message objects.
@@ -22,6 +46,15 @@ function isValidLocaleModule(
 }
 
 /**
+ * Flattens nested keys in a locale message object.
+ * @param messages - The array of locale message objects to flatten.
+ * @returns The array of flattened locale message objects.
+ */
+function flattenLocaleMessages(messages: LocaleMessage[]): LocaleMessage[] {
+	return messages.map((message) => flattenKeys(message));
+}
+
+/**
  * Loads and merges all JSON message files for a given locale.
  * Uses lazy loading for better performance and caching to avoid redundant operations.
  *
@@ -34,12 +67,15 @@ export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 	if (cached) return cached;
 
 	try {
-		// Use dynamic imports for lazy loading
+		// Use dynamic imports for lazy loading - load all locale files
 		const modulePromises = [
 			import(`./locales/${locale}/global.json`),
 			import(`./locales/${locale}/error.json`),
 			import(`./locales/${locale}/login.json`),
 			import(`./locales/${locale}/register.json`),
+			import(`./locales/${locale}/resume.json`),
+			import(`./locales/${locale}/settings.json`),
+			import(`./locales/${locale}/workspace.json`),
 		];
 
 		const modules = await Promise.all(modulePromises);
@@ -47,14 +83,16 @@ export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 			.filter(isValidLocaleModule)
 			.map((module) => module.default);
 
-		if (messages.length === 0) {
+		const flattenedMessages = flattenLocaleMessages(messages);
+
+		if (flattenedMessages.length === 0) {
 			console.warn(`No locale files found for locale: ${locale}`);
 			const emptyResult: LocaleMessage = {};
 			localeCache.set(locale, emptyResult);
 			return emptyResult;
 		}
 
-		const result = deepmerge.all(messages) as LocaleMessage;
+		const result = deepmerge.all(flattenedMessages) as LocaleMessage;
 		localeCache.set(locale, result);
 		return result;
 	} catch (error) {
@@ -85,14 +123,16 @@ export function getLocaleModulesSync(locale: string): LocaleMessage {
 		}
 	}
 
-	if (messages.length === 0) {
+	const flattenedMessages = flattenLocaleMessages(messages);
+
+	if (flattenedMessages.length === 0) {
 		console.warn(`No locale files found for locale: ${locale}`);
 		const emptyResult: LocaleMessage = {};
 		localeCache.set(locale, emptyResult);
 		return emptyResult;
 	}
 
-	const result = deepmerge.all(messages) as LocaleMessage;
+	const result = deepmerge.all(flattenedMessages) as LocaleMessage;
 	localeCache.set(locale, result);
 	return result;
 }
