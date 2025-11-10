@@ -126,8 +126,9 @@ export function useResumeForm() {
 	const generationError = computed(() => resumeStore.generationError);
 
 	/**
-	 * Submits the resume (validates and stores it).
-	 * @returns true if the resume is valid, false otherwise
+	 * Validate the current resume form and save it to the resume store.
+	 *
+	 * @returns `true` if the resume is valid, `false` otherwise.
 	 */
 	function submitResume(): boolean {
 		resumeStore.setResume(resume.value);
@@ -135,24 +136,28 @@ export function useResumeForm() {
 	}
 
 	/**
-	 * Saves the current resume to the configured storage.
-	 * @returns Promise resolving when save is complete
+	 * Persist the current resume to the configured storage.
 	 */
 	async function saveToStorage(): Promise<void> {
 		return resumeStore.saveToStorage();
 	}
 
 	/**
-	 * Generates a PDF from the current resume data.
-	 * @param locale - Optional locale for PDF generation (e.g., 'en', 'es')
-	 * @returns Promise with the PDF blob
+	 * Generate a PDF from the current resume data.
+	 *
+	 * @param locale - Optional locale code (e.g., "en", "es") to localize generated content
+	 * @returns The generated PDF as a `Blob`
 	 */
 	async function generatePdf(locale?: string): Promise<Blob> {
 		return resumeStore.generatePdf(locale);
 	}
 
 	/**
-	 * Clears all form data and resume state.
+	 * Reset all form sections to their empty defaults and clear the resume in the store.
+	 *
+	 * This resets `basics` (including `location` and `profiles`) and clears every section array
+	 * (workExperiences, volunteers, education, awards, certificates, publications, skills,
+	 * languages, interests, references, projects), then delegates to the resume store to clear persisted state.
 	 */
 	function clearForm(): void {
 		basics.value = {
@@ -188,8 +193,11 @@ export function useResumeForm() {
 	}
 
 	/**
-	 * Loads resume data into the form.
-	 * @param resumeData - The resume data to load
+	 * Populate the form state with values from a Resume object.
+	 *
+	 * Clones the resume's arrays and the `basics.profiles` array before assigning to avoid retaining references to the source object.
+	 *
+	 * @param resumeData - The Resume object whose data should be loaded into the form
 	 */
 	function loadResume(resumeData: Resume): void {
 		basics.value = {

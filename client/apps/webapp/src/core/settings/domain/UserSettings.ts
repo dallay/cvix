@@ -103,10 +103,9 @@ export function isValidStoragePreference(
 }
 
 /**
- * Validates if a value is a valid ThemePreference.
+ * Determines whether a value is a ThemePreference.
  *
- * @param value - The value to validate
- * @returns true if the value is a valid ThemePreference
+ * @returns `true` if the value is one of `"light"`, `"dark"`, or `"system"`, `false` otherwise.
  */
 export function isValidThemePreference(
 	value: unknown,
