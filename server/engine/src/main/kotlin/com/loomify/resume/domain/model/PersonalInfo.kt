@@ -98,6 +98,7 @@ data class SocialProfile(
 data class PersonalInfo(
     val fullName: FullName,
     val label: JobTitle? = null,
+    val image: Url? = null,
     val email: Email,
     val phone: PhoneNumber? = null,
     val url: Url? = null,
