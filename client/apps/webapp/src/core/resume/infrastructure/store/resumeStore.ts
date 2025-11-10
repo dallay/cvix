@@ -34,10 +34,9 @@ function getValidator(): ResumeValidator {
 }
 
 /**
- * Gets the generator instance using Vue's provide/inject system.
- * Falls back to ResumeHttpClient if no generator is provided.
+ * Resolves a ResumeGenerator from Vue dependency injection, falling back to ResumeHttpClient when none is provided.
  *
- * @returns The generator instance
+ * @returns The resolved ResumeGenerator instance
  */
 function getGenerator(): ResumeGenerator {
 	const instance = getCurrentInstance();
@@ -122,16 +121,16 @@ export const useResumeStore = defineStore("resume", () => {
 
 	// Actions
 	/**
-	 * Sets the resume and validates it.
+	 * Replace the store's current resume with the provided `newResume`.
 	 *
-	 * @param newResume - The resume data to set
+	 * @param newResume - Resume object to set as the current resume
 	 */
 	function setResume(newResume: Resume) {
 		resume.value = newResume;
 	}
 
 	/**
-	 * Clears the current resume data.
+	 * Clears the stored resume and any recorded generation error.
 	 */
 	function clearResume() {
 		resume.value = null;
@@ -139,9 +138,9 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Validates the current resume.
+	 * Determine whether the store's current resume passes validation.
 	 *
-	 * @returns true if the resume is valid, false otherwise
+	 * @returns `true` if the current resume is valid, `false` otherwise
 	 */
 	function validateResume(): boolean {
 		if (!resume.value) {
@@ -151,29 +150,29 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Sets the generation state.
+	 * Set the store's generation-in-progress flag.
 	 *
-	 * @param generating - Whether resume generation is in progress
+	 * @param generating - `true` to mark resume generation as in progress, `false` to mark it stopped
 	 */
 	function setGenerating(generating: boolean) {
 		isGenerating.value = generating;
 	}
 
 	/**
-	 * Sets a generation error.
+	 * Updates the current PDF generation error state.
 	 *
-	 * @param error - The error details
+	 * @param error - A ProblemDetail describing the generation failure, or `null` to clear the error
 	 */
 	function setGenerationError(error: ProblemDetail | null) {
 		generationError.value = error;
 	}
 
 	/**
-	 * Generates a PDF from the current resume data.
+	 * Generate a PDF from the currently stored resume.
 	 *
-	 * @param locale - Optional locale for the PDF generation (e.g., 'en', 'es')
-	 * @returns A promise that resolves to a Blob containing the PDF
-	 * @throws Error if no resume is available
+	 * @param locale - Optional locale to use for generation (e.g., "en", "es")
+	 * @returns The generated PDF as a `Blob`
+	 * @throws Error if no resume is available to generate
 	 */
 	async function generatePdf(locale?: string): Promise<Blob> {
 		if (!resume.value) {
@@ -201,10 +200,10 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Saves the current resume to the configured storage.
+	 * Save the current resume to the configured storage.
 	 *
-	 * @returns Promise resolving when save is complete
-	 * @throws Error if no resume is available or storage operation fails
+	 * @throws Error if no resume is available to save.
+	 * @throws Error if the storage operation fails.
 	 */
 	async function saveToStorage(): Promise<void> {
 		if (!resume.value) {
@@ -227,9 +226,9 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Loads the resume from the configured storage.
+	 * Load the resume from the currently configured storage and update the store's resume and loading/error state.
 	 *
-	 * @returns Promise resolving when load is complete
+	 * @throws The original error thrown by the storage backend if the load operation fails.
 	 */
 	async function loadFromStorage(): Promise<void> {
 		try {
@@ -261,9 +260,7 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Clears the resume from the configured storage.
-	 *
-	 * @returns Promise resolving when clear is complete
+	 * Remove the stored resume from the current storage and clear the in-memory resume.
 	 */
 	async function clearStorage(): Promise<void> {
 		try {
@@ -278,11 +275,10 @@ export const useResumeStore = defineStore("resume", () => {
 	}
 
 	/**
-	 * Changes the storage strategy and optionally migrates data.
+	 * Switches the active resume storage implementation and optionally migrates the current resume to it.
 	 *
-	 * @param newStorage - The new storage implementation to use
-	 * @param migrateData - Whether to migrate existing data to the new storage
-	 * @returns Promise resolving when strategy change (and optional migration) is complete
+	 * @param migrateData - If `true`, saves the current resume to `newStorage` before switching
+	 * @throws Propagates any error encountered while migrating data or updating the storage strategy
 	 */
 	async function changeStorageStrategy(
 		newStorage: ResumeStorage,

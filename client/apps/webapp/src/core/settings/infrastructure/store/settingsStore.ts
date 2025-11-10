@@ -7,10 +7,9 @@ import { SETTINGS_REPOSITORY_KEY } from "../di";
 import { LocalStorageSettingsRepository } from "../storage";
 
 /**
- * Gets the settings repository instance using Vue's provide/inject system.
- * Falls back to LocalStorageSettingsRepository if no repository is provided.
+ * Resolve the SettingsRepository provided through Vue's injection/ global properties or return a LocalStorageSettingsRepository fallback.
  *
- * @returns The settings repository instance
+ * @returns The resolved SettingsRepository — the injected repository if available, otherwise a new LocalStorageSettingsRepository.
  */
 function getSettingsRepository(): SettingsRepository {
 	const instance = getCurrentInstance();
@@ -79,9 +78,9 @@ export const useSettingsStore = defineStore("settings", () => {
 	// Actions
 
 	/**
-	 * Loads user settings from the repository.
+	 * Load user settings from the configured repository into the store state.
 	 *
-	 * @returns Promise resolving when settings are loaded
+	 * Prevents concurrent loads. On success replaces the store's `settings` with the loaded values (or defaults if repository returns null) and marks the store as initialized. On failure records the error in `error` and resets `settings` to the default values.
 	 */
 	async function loadSettings(): Promise<void> {
 		if (isLoading.value) return;
@@ -110,9 +109,10 @@ export const useSettingsStore = defineStore("settings", () => {
 	}
 
 	/**
-	 * Saves the current settings to the repository.
+	 * Persist current in-memory settings to the configured repository and update the store state accordingly.
 	 *
-	 * @returns Promise resolving when settings are saved
+	 * @returns Nothing.
+	 * @throws Error if the repository reports a failure or saving fails
 	 */
 	async function saveSettings(): Promise<void> {
 		if (isSaving.value) return;
@@ -136,10 +136,9 @@ export const useSettingsStore = defineStore("settings", () => {
 	}
 
 	/**
-	 * Updates the storage preference and saves to repository.
+	 * Update the store's storage preference and persist the change.
 	 *
-	 * @param newPreference - The new storage preference
-	 * @returns Promise resolving when the preference is updated and saved
+	 * @param newPreference - The desired storage preference
 	 */
 	async function updateStoragePreference(
 		newPreference: StoragePreference,
@@ -155,10 +154,10 @@ export const useSettingsStore = defineStore("settings", () => {
 	}
 
 	/**
-	 * Updates multiple settings at once.
+	 * Update the current user settings with the provided partial values and persist the changes.
 	 *
-	 * @param updates - Partial settings to update
-	 * @returns Promise resolving when settings are updated and saved
+	 * @param updates - Partial settings to merge into the current settings
+	 * @returns No value
 	 */
 	async function updateSettings(updates: Partial<UserSettings>): Promise<void> {
 		// Update local state
@@ -172,9 +171,9 @@ export const useSettingsStore = defineStore("settings", () => {
 	}
 
 	/**
-	 * Resets settings to defaults and clears from repository.
+	 * Reset user settings to defaults and remove persisted settings from the repository.
 	 *
-	 * @returns Promise resolving when settings are reset
+	 * @throws Error if clearing the repository fails
 	 */
 	async function resetSettings(): Promise<void> {
 		error.value = null;

@@ -45,19 +45,22 @@ export function useStoragePreference() {
 	});
 
 	/**
-	 * Sets a new storage preference.
+	 * Update the user's storage preference in the settings store.
 	 *
-	 * @param type - The storage type to use
+	 * @param type - The desired storage type; one of "session", "local", "indexeddb", or "remote"
 	 */
 	async function setStoragePreference(type: StorageType): Promise<void> {
 		await settingsStore.updateStoragePreference(type);
 	}
 
 	/**
-	 * Checks if a storage type is available in the current browser.
+	 * Determine whether a given storage type is available in the current environment.
 	 *
-	 * @param type - The storage type to check
-	 * @returns true if the storage type is supported and available
+	 * Remote storage is treated as available regardless of browser APIs; other types
+	 * perform feature detection against the corresponding browser APIs.
+	 *
+	 * @param type - The storage type to check (`"session"`, `"local"`, `"indexeddb"`, or `"remote"`)
+	 * @returns `true` if the specified storage type is available, `false` otherwise.
 	 */
 	function isStorageAvailable(type: StorageType): boolean {
 		try {

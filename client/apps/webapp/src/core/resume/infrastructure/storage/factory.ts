@@ -9,20 +9,11 @@ import {
 } from "@/core/resume/infrastructure/storage";
 
 /**
- * Factory function that creates the appropriate storage instance based on type.
+ * Create a ResumeStorage implementation for the given storage type.
  *
- * This factory encapsulates the logic for instantiating storage implementations,
- * making it easy to create storage instances consistently across the application.
- *
- * @param type - The storage type to create
- * @returns A ResumeStorage instance of the requested type
- * @throws Error if the storage type is not supported or not yet implemented
- *
- * @example
- * ```typescript
- * const storage = createResumeStorage('local');
- * await storage.save(resume);
- * ```
+ * @param type - Storage type to instantiate (`"session"`, `"local"`, `"indexeddb"`, or `"remote"`)
+ * @returns A ResumeStorage instance corresponding to `type`
+ * @throws Error if `type` is `"remote"` (not implemented) or an unknown storage type
  */
 export function createResumeStorage(type: StorageType): ResumeStorage {
 	switch (type) {
@@ -92,10 +83,9 @@ export interface StorageMetadata {
 }
 
 /**
- * Gets metadata for all storage types.
- * Useful for displaying storage options in the UI.
+ * Metadata for each supported resume storage option, suitable for display and selection in the UI.
  *
- * @returns Array of storage metadata
+ * @returns An array of StorageMetadata objects describing the available storage types
  */
 export function getStorageMetadata(): StorageMetadata[] {
 	return [
