@@ -76,7 +76,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-    runtimeOnly("org.postgresql:postgresql:42.7.6")
+    runtimeOnly("org.postgresql:postgresql:42.7.8")
     runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
     runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
