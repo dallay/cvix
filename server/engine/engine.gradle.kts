@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm").version(libs.versions.kotlin)
     kotlin("plugin.spring").version(libs.versions.kotlin)
     alias(libs.plugins.gradle.git.properties)
-    id("org.asciidoctor.jvm.convert") version "4.0.4"
+    id("org.asciidoctor.jvm.convert") version "4.0.5"
 }
 
 group = "com.loomify"
@@ -26,7 +26,7 @@ repositories {
 }
 
 extra["snippetsDir"] = file("build/generated-snippets")
-extra["springCloudVersion"] = "2024.0.1"
+extra["springCloudVersion"] = "2024.0.2"
 extra["springModulithVersion"] = "1.3.5"
 
 dependencies {
@@ -76,7 +76,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-    runtimeOnly("org.postgresql:postgresql:42.7.6")
+    runtimeOnly("org.postgresql:postgresql:42.7.8")
     runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
     runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
