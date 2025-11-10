@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-import { useAuthStore } from "@/authentication/presentation/stores/authStore";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
 import PhGearLight from "~icons/ph/gear-light";
 import PhSignOutLight from "~icons/ph/sign-out-light";
 import PhUserLight from "~icons/ph/user-light";

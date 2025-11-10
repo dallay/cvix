@@ -15,46 +15,22 @@ const navigationItems: NavigationItem[] = [
 		to: "/dashboard",
 	},
 	{
-		label: "Analytics",
+		label: "Resumes",
 		icon: "analytics",
-		to: "/dashboard?view=analytics",
+		to: "/resumes",
 		children: [
-			{ label: "Overview", icon: "analytics", to: "/dashboard?view=analytics" },
-			{ label: "Funnels", to: "/dashboard?view=funnels" },
+			{ label: "Resume", to: "/resume" },
 			{ label: "Reports", to: "/dashboard?view=reports" },
-		],
-	},
-	{
-		label: "Team",
-		icon: "users",
-		to: "/dashboard?panel=team",
-		children: [
-			{ label: "Members", to: "/dashboard?panel=team&tab=members" },
-			{ label: "Roles", to: "/dashboard?panel=team&tab=roles" },
-			{ label: "Approvals", to: "/dashboard?panel=team&tab=approvals" },
 		],
 	},
 	{
 		label: "Settings",
 		icon: "settings",
-		to: "/dashboard?panel=settings",
+		to: "/settings",
 		children: [
-			{ label: "General", to: "/dashboard?panel=settings&tab=general" },
-			{
-				label: "Billing",
-				icon: "billing",
-				to: "/dashboard?panel=settings&tab=billing",
-			},
-			{
-				label: "Notifications",
-				icon: "notifications",
-				to: "/dashboard?panel=settings&tab=notifications",
-			},
-			{
-				label: "Security",
-				icon: "security",
-				to: "/dashboard?panel=settings&tab=security",
-			},
+			{ label: "Storage", to: "/settings?section=storage" },
+			{ label: "General", to: "/settings?section=general" },
+			{ label: "Privacy", to: "/settings?section=privacy" },
 		],
 	},
 	{

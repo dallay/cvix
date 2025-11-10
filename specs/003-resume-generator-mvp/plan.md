@@ -294,7 +294,7 @@ client/apps/webapp/src/
 │   ├── stores/
 │   │   └── resumeStore.ts          # Pinia store
 │   ├── types/
-│   │   └── resume.ts               # TypeScript types (JSON Resume schema)
+│   │   └── Resume.ts               # TypeScript types (JSON Resume schema)
 │   ├── schemas/
 │   │   └── resumeSchema.ts         # Zod validation schema
 │   └── pages/
