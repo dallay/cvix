@@ -1,5 +1,6 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
 import { useResumeForm } from "./useResumeForm";
 
@@ -71,7 +72,8 @@ describe("useResumeForm", () => {
 			basics.value.email = "john@example.com";
 
 			// Wait for the watch to trigger
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			await nextTick();
+			await nextTick();
 
 			// The validator will accept this as valid since basics exists
 			expect(isValid.value).toBe(true);
@@ -84,7 +86,8 @@ describe("useResumeForm", () => {
 			loadResume(resume);
 
 			// Wait for the watch to trigger
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			await nextTick();
+			await nextTick();
 
 			expect(isValid.value).toBe(true);
 		});
@@ -164,7 +167,8 @@ describe("useResumeForm", () => {
 			loadResume(resume);
 
 			// Wait for the watch to trigger
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			await nextTick();
+			await nextTick();
 
 			expect(hasResume.value).toBe(true);
 

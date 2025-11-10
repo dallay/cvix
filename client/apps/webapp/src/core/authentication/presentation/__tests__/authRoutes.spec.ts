@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authRoutes } from "../index.ts";
+import { authRoutes } from "@/core/authentication/presentation/router";
 
 describe("index", () => {
 	it("includes profile and settings routes", () => {

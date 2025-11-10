@@ -1,34 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-
-vi.mock("@loomify/utilities", () => ({
-	deepmerge: {
-		all: vi.fn((objs) => {
-			const deepMerge = (
-				target: Record<string, unknown>,
-				source: Record<string, unknown>,
-			): Record<string, unknown> => {
-				const result: Record<string, unknown> = { ...target };
-				for (const key in source) {
-					if (source[key] instanceof Object && !Array.isArray(source[key])) {
-						result[key] = deepMerge(
-							(result[key] as Record<string, unknown>) || {},
-							source[key] as Record<string, unknown>,
-						);
-					} else {
-						result[key] = source[key];
-					}
-				}
-				return result;
-			};
-			return objs.reduce(
-				(acc: Record<string, unknown>, obj: Record<string, unknown>) =>
-					deepMerge(acc, obj),
-				{},
-			);
-		}),
-	},
-}));
-
 import { getLocaleModulesSync } from "./load.locales";
 
 const enRegisterValidation = {
@@ -306,6 +276,29 @@ const mockMessages = {
 			},
 		},
 	},
+	"./locales/en/settings.json": {
+		default: {
+			settings: {
+				title: "Settings",
+				description: "Manage your application preferences and settings",
+				tabs: {
+					general: "General",
+					privacy: "Privacy",
+					storage: "Storage",
+				},
+				general: {
+					title: "General Settings",
+					description: "Configure general application preferences",
+					comingSoon: "General settings coming soon...",
+				},
+				privacy: {
+					title: "Privacy Settings",
+					description: "Manage your privacy and data preferences",
+					comingSoon: "Privacy settings coming soon...",
+				},
+			},
+		},
+	},
 	"./locales/es/global.json": {
 		default: {
 			global: {
@@ -456,6 +449,14 @@ const mockMessages = {
 					addProject: "Agregar Proyecto",
 					addHighlight: "Agregar Logro",
 				},
+				actions: {
+					add: "Agregar",
+					removeWorkExperience: "Eliminar experiencia laboral",
+					removeEducation: "Eliminar entrada de educación",
+					removeSkillCategory: "Eliminar categoría de habilidades",
+					removeSkill: "Eliminar {skill}",
+					addSkill: "Agregar habilidad",
+				},
 				validation: {
 					required: "Este campo es obligatorio",
 					email: "Debe ser una dirección de correo electrónico válida",
@@ -514,6 +515,29 @@ const mockMessages = {
 					empty_state:
 						"Comienza a llenar el formulario para ver la vista previa de tu currículum",
 					hide: "Ocultar Vista Previa",
+				},
+			},
+		},
+	},
+	"./locales/es/settings.json": {
+		default: {
+			settings: {
+				title: "Configuración",
+				description: "Administra las preferencias y ajustes de la aplicación",
+				tabs: {
+					general: "General",
+					privacy: "Privacidad",
+					storage: "Almacenamiento",
+				},
+				general: {
+					title: "Ajustes generales",
+					description: "Configura las preferencias generales de la aplicación",
+					comingSoon: "Ajustes generales próximamente...",
+				},
+				privacy: {
+					title: "Ajustes de privacidad",
+					description: "Gestiona tus preferencias de privacidad y datos",
+					comingSoon: "Ajustes de privacidad próximamente...",
 				},
 			},
 		},
@@ -598,12 +622,17 @@ const expectedEnMessages = {
 			skills: "Skills",
 			languages: "Languages",
 			projects: "Projects",
-			noEntries: "No entries yet",
+			publications: "Publications",
+			awards: "Awards and Honors",
+			volunteer: "Volunteer Experience",
+			interests: "Interests and Hobbies",
+			references: "References",
+			certificates: "Certificates and Licenses",
 		},
 		fields: {
 			name: "Full Name",
 			fullName: "Full Name",
-			label: "Job Title",
+			label: "Professional Title",
 			email: "Email",
 			phone: "Phone",
 			url: "Website",
@@ -615,14 +644,13 @@ const expectedEnMessages = {
 			startDate: "Start Date",
 			endDate: "End Date",
 			current: "I currently work here",
-			location: "Location",
-			highlights: "Achievements",
+			highlights: "Highlights",
 			institution: "Institution",
 			area: "Field of Study",
 			studyType: "Degree Type",
 			score: "GPA",
 			categoryName: "Category",
-			skillLevel: "Proficiency",
+			skillLevel: "Level",
 			keywords: "Skills",
 			skills: "Skills",
 			language: "Language",
@@ -630,37 +658,124 @@ const expectedEnMessages = {
 			projectName: "Project Name",
 			description: "Description",
 			entity: "Organization",
+			image: "Profile Photo",
+			location: {
+				address: "Address",
+				city: "City",
+				postalCode: "Postal Code",
+				region: "Province/Region",
+				countryCode: "Country Code",
+			},
+			profiles: "Social Profiles",
+			network: "Social Network",
+			username: "Username",
+			profileUrl: "Profile URL",
+			companyUrl: "Company Website",
+			currentVolunteer: "I currently volunteer here",
+			organization: "Organization",
+			organizationUrl: "Organization Website",
+			courses: "Relevant Courses",
+			skillName: "Skill Category",
+			interestName: "Interest",
+			certificateName: "Certificate Name",
+			issuer: "Issuing Organization",
+			date: "Date",
+			awardTitle: "Award Title",
+			awarder: "Awarded By",
+			publicationName: "Publication Title",
+			publisher: "Publisher",
+			releaseDate: "Release Date",
+			referenceName: "Reference Name",
+			referenceText: "Testimonial",
+			currentProject: "I currently work on this",
+			projectDescription: "Project Description",
+			keyword: "Keyword",
 		},
 		placeholders: {
-			name: "Jane Doe",
+			name: "Maria Garcia",
 			label: "Software Engineer",
-			email: "jane.doe@example.com",
-			phone: "+1 (555) 123-4567",
-			url: "https://janedoe.com",
+			email: "maria.garcia@example.com",
+			phone: "+1 555 123 4567",
+			url: "https://mariagarcia.com",
 			summary:
 				"Experienced software engineer with a passion for building scalable web applications...",
 			company: "ACME Corporation",
 			position: "Senior Developer",
-			location: "San Francisco, CA",
 			highlight:
-				"Led team of 5 developers to deliver project 2 weeks ahead of schedule",
-			institution: "Stanford University",
-			area: "Computer Science",
-			studyType: "Bachelor of Science",
-			score: "3.8",
+				"Led a team of 5 developers to deliver project 2 weeks ahead of schedule",
+			institution: "Polytechnic University of Madrid",
+			area: "Computer Engineering",
+			studyType: "Bachelor's Degree",
+			score: "8.5",
 			categoryName: "Programming Languages",
 			skill: "JavaScript, TypeScript, Python",
-			addSkill: "Add a skill",
+			image: "https://example.com/profile.jpg",
+			imageHint: "Upload a professional portrait",
+			location: {
+				address: "123 Main Street",
+				city: "San Francisco",
+				postalCode: "94105",
+				region: "California",
+				countryCode: "US",
+			},
+			network: "LinkedIn, GitHub, Twitter, etc.",
+			username: "mariagarcia",
+			profileUrl: "https://linkedin.com/in/mariagarcia",
+			companyUrl: "https://company.com",
+			organization: "Red Cross, Habitat for Humanity, etc.",
+			organizationUrl: "https://organization.org",
+			volunteerPosition: "Volunteer Coordinator",
+			volunteerSummary:
+				"Organized fundraising events and coordinated volunteer activities...",
+			volunteerHighlight: "Raised $10,000 for community programs",
+			course: "Advanced Algorithms",
+			skillName: "Web Development",
+			skillLevel: "Expert",
+			language: "Spanish",
+			fluency: "Native",
+			interestName: "Open Source",
+			certificateName: "AWS Certified Solutions Architect",
+			certificateUrl: "https://aws.amazon.com/verification",
+			issuer: "Amazon Web Services",
+			awardTitle: "Employee of the Year",
+			awarder: "ACME Corporation",
+			awardSummary:
+				"Recognized for exceptional performance and leadership in delivering critical projects...",
+			publicationName: "Building Scalable Microservices",
+			publisher: "Tech Inc. Publishing",
+			publicationUrl: "https://publication.com/article",
+			publicationSummary:
+				"A comprehensive guide to designing and implementing microservice architectures...",
+			referenceName: "Jane Smith",
+			referenceText:
+				"Juan was an exceptional team member who consistently delivered high-quality work...",
+			projectName: "E-commerce Platform",
+			projectDescription:
+				"A modern web application built with React and Node.js...",
+			projectUrl: "https://github.com/user/project",
+			projectHighlight: "Reduced load time by 50% through optimization",
+			keyword: "React",
+			workSummary:
+				"Led the development of key platform features and mentored junior developers...",
 		},
 		buttons: {
 			add: "Add",
 			remove: "Remove",
-			addExperience: "Add Work Experience",
+			addExperience: "Add Experience",
 			addEducation: "Add Education",
 			addSkillCategory: "Add Skill Category",
 			addLanguage: "Add Language",
 			addProject: "Add Project",
-			addHighlight: "Add Achievement",
+			addHighlight: "Add Highlight",
+			addSkill: "Add Skill",
+			addCourse: "Add Course",
+			addInterest: "Add Interest",
+			addCertificate: "Add Certificate",
+			addAward: "Add Award",
+			addPublication: "Add Publication",
+			addReference: "Add Reference",
+			addVolunteer: "Add Volunteer Experience",
+			addKeyword: "Add Keyword",
 		},
 		actions: {
 			add: "Add",
@@ -669,6 +784,81 @@ const expectedEnMessages = {
 			removeSkillCategory: "Remove skill category",
 			removeSkill: "Remove {skill}",
 			addSkill: "Add skill",
+			addFirstWorkExperience: "Add your first work experience",
+			addFirstEducation: "Add your first education entry",
+			addFirstSkill: "Add your first skill",
+			addFirstLanguage: "Add your first language",
+			addFirstProject: "Add your first project",
+			addFirstProfile: "Add your first profile",
+			addFirstVolunteer: "Add your first volunteer experience",
+			addFirstInterest: "Add your first interest",
+			addFirstCertificate: "Add your first certificate",
+			addFirstAward: "Add your first award",
+			addFirstPublication: "Add your first publication",
+			addFirstReference: "Add your first reference",
+			addProfile: "Add Profile",
+			addWorkExperience: "Add Work Experience",
+			addHighlight: "Add Highlight",
+			descriptions: {
+				workExperience: "Add your professional work history and achievements",
+				education: "Add your academic background and relevant courses",
+				skills: "Add your technical skills and areas of expertise",
+				languages: "Add the languages you speak and your proficiency levels",
+				projects: "Add your personal and professional projects",
+				profiles: "Add your social media and professional network profiles",
+				volunteer: "Add your volunteer work and community contributions",
+				interests: "Add your hobbies and personal interests",
+				certificates: "Add your professional certificates and licenses",
+				awards: "Add your awards, honors, and professional recognitions",
+				publications: "Add your published articles, papers, and books",
+				references: "Add professional references and testimonials",
+			},
+			empty: {
+				workExperience:
+					"No work experience has been added yet. Click the button above to add your first position.",
+				education:
+					"No education entries have been added yet. Click the button above to add your first degree or certification.",
+				skills:
+					"No skills have been added yet. Click the button above to add your first skill.",
+				languages:
+					"No languages have been added yet. Click the button above to add your first language.",
+				projects:
+					"No projects have been added yet. Click the button above to add your first project.",
+				profiles:
+					"No profiles have been added yet. Click the button above to add your first profile.",
+				volunteer:
+					"No volunteer experience has been added yet. Click the button above to add your first volunteer position.",
+				interests:
+					"No interests have been added yet. Click the button above to add your first interest.",
+				certificates:
+					"No certificates have been added yet. Click the button above to add your first certificate or license.",
+				awards:
+					"No awards have been added yet. Click the button above to add your first award or recognition.",
+				publications:
+					"No publications have been added yet. Click the button above to add your first publication.",
+				references:
+					"No references have been added yet. Click the button above to add your first reference.",
+				highlights:
+					"No highlights have been added yet. Click the button above to add highlights.",
+				courses:
+					"No courses have been added yet. Click the button above to add relevant courses.",
+				keywords:
+					"No keywords have been added yet. Click the button above to add related keywords.",
+			},
+			labels: {
+				workExperience: "Work Experience {number}",
+				education: "Education {number}",
+				skill: "Skill {number}",
+				language: "Language {number}",
+				project: "Project {number}",
+				profile: "Profile {number}",
+				volunteer: "Volunteer Experience {number}",
+				interest: "Interest {number}",
+				certificate: "Certificate {number}",
+				award: "Award {number}",
+				publication: "Publication {number}",
+				reference: "Reference {number}",
+			},
 		},
 		validation: {
 			required: "This field is required",
@@ -677,27 +867,27 @@ const expectedEnMessages = {
 			date: "Must be a valid date (YYYY-MM-DD)",
 			dateRange: "End date must be after start date",
 			maxLength: "Maximum length is {max} characters",
-			minContent:
-				"Resume must have at least one of: work experience, education, or skills",
 			minSkills: "At least one skill is required",
 			content_required:
 				"Please add at least one section (work experience, education, or skills) to generate your resume",
 		},
 		errors: {
 			title: "Error",
-			retry: "Try Again",
-			retryIn: "Try again in {seconds}s",
+			retry: "Retry",
+			retryIn: "Retry in {seconds}s",
 			dismiss: "Dismiss",
-			invalidData: "Invalid resume data. Please check all fields.",
-			templateRendering: "Failed to render resume template.",
-			pdfGeneration: "Failed to generate PDF. Please try again.",
-			pdfTimeout:
-				"PDF generation took too long. Please try again with simpler content.",
-			rateLimit:
-				"Too many requests. Please wait {seconds} seconds before trying again.",
-			maliciousContent: "Content contains potentially unsafe characters.",
-			validationError: "Please correct the errors in the form.",
+			malicious_content: "Content contains potentially unsafe characters.",
 			unknown: "An unexpected error occurred. Please try again later.",
+			invalid_resume_data:
+				"Resume data is invalid. Please verify required fields.",
+			template_rendering_error:
+				"Error rendering template. Please verify your data.",
+			pdf_generation_error: "Error generating PDF. Please try again.",
+			pdf_generation_timeout:
+				"PDF generation timed out. Please try again with simpler content.",
+			rate_limit_exceeded:
+				"Too many requests. Please wait {seconds} seconds before trying again.",
+			validation_error: "Please correct the errors in the form.",
 		},
 		success: {
 			generated: "Resume generated successfully!",
@@ -705,10 +895,17 @@ const expectedEnMessages = {
 		},
 		form: {
 			generate: "Generate Resume",
+			generatePdf: "Generate PDF",
+			generating: "Generating...",
+			submit: "Submit",
+			cancel: "Cancel",
+			confirmClear: "Are you sure you want to clear all form data?",
+			saving: "Saving...",
+			save_draft: "Save Draft",
 		},
 		loading: {
 			generating: "Generating your resume...",
-			please_wait: "This will take just a moment",
+			please_wait: "This will only take a moment",
 			rendering: "Rendering template...",
 			compiling: "Compiling PDF...",
 			downloading: "Preparing download...",
@@ -724,6 +921,65 @@ const expectedEnMessages = {
 			gpa: "GPA",
 			empty_state: "Start filling out the form to see your resume preview",
 			hide: "Hide Preview",
+			score: "GPA",
+			courses: "Relevant Courses",
+			sections: {
+				summary: "Summary",
+				experience: "Work Experience",
+				education: "Education",
+				skills: "Skills",
+				projects: "Projects",
+				volunteer: "Volunteer Experience",
+				languages: "Languages",
+				awards: "Awards & Honors",
+				certificates: "Certificates & Licenses",
+			},
+		},
+		toast: {
+			saveSuccess: {
+				title: "Success",
+				description: "Resume saved successfully!",
+			},
+			saveError: {
+				title: "Error",
+				description: "Failed to save resume. Please try again.",
+			},
+			pdfSuccess: {
+				title: "PDF Generated",
+				description: "Your resume has been generated successfully!",
+			},
+			pdfError: {
+				title: "Generation Failed",
+				description: "Failed to generate PDF. Please try again.",
+			},
+			validationError: {
+				title: "Validation Error",
+				description:
+					"Please check all required fields and ensure they are valid.",
+			},
+			formCleared: {
+				title: "Form Cleared",
+				description: "All form data has been reset.",
+			},
+		},
+	},
+	settings: {
+		title: "Settings",
+		description: "Manage your application preferences and settings",
+		tabs: {
+			general: "General",
+			privacy: "Privacy",
+			storage: "Storage",
+		},
+		general: {
+			title: "General Settings",
+			description: "Configure general application preferences",
+			comingSoon: "General settings coming soon...",
+		},
+		privacy: {
+			title: "Privacy Settings",
+			description: "Manage your privacy and data preferences",
+			comingSoon: "Privacy settings coming soon...",
 		},
 	},
 	workspace: {
@@ -840,6 +1096,12 @@ const expectedEsMessages = {
 			skills: "Habilidades",
 			languages: "Idiomas",
 			projects: "Proyectos",
+			publications: "Publicaciones",
+			awards: "Premios y Reconocimientos",
+			volunteer: "Experiencia de Voluntariado",
+			interests: "Intereses y Pasatiempos",
+			references: "Referencias",
+			certificates: "Certificados y Licencias",
 		},
 		fields: {
 			name: "Nombre Completo",
@@ -856,7 +1118,6 @@ const expectedEsMessages = {
 			startDate: "Fecha de Inicio",
 			endDate: "Fecha de Fin",
 			current: "Actualmente trabajo aquí",
-			location: "Ubicación",
 			highlights: "Logros",
 			institution: "Institución",
 			area: "Campo de Estudio",
@@ -871,6 +1132,38 @@ const expectedEsMessages = {
 			projectName: "Nombre del Proyecto",
 			description: "Descripción",
 			entity: "Organización",
+			image: "Foto de Perfil",
+			location: {
+				address: "Dirección",
+				city: "Ciudad",
+				postalCode: "Código Postal",
+				region: "Provincia/Región",
+				countryCode: "Código del País",
+			},
+			profiles: "Perfiles Sociales",
+			network: "Red Social",
+			username: "Usuario",
+			profileUrl: "URL del Perfil",
+			companyUrl: "Sitio Web de la Empresa",
+			currentVolunteer: "Actualmente hago voluntariado aquí",
+			organization: "Organización",
+			organizationUrl: "Sitio Web de la Organización",
+			courses: "Cursos Relevantes",
+			skillName: "Categoría de Habilidad",
+			interestName: "Interés",
+			certificateName: "Nombre del Certificado",
+			issuer: "Organización Emisora",
+			date: "Fecha",
+			awardTitle: "Título del Premio",
+			awarder: "Otorgado Por",
+			publicationName: "Título de la Publicación",
+			publisher: "Editorial",
+			releaseDate: "Fecha de Publicación",
+			referenceName: "Nombre de la Referencia",
+			referenceText: "Testimonio",
+			currentProject: "Actualmente trabajo en esto",
+			projectDescription: "Descripción del Proyecto",
+			keyword: "Palabra Clave",
 		},
 		placeholders: {
 			name: "María García",
@@ -882,7 +1175,6 @@ const expectedEsMessages = {
 				"Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
 			company: "Corporación ACME",
 			position: "Desarrolladora Senior",
-			location: "Barcelona, España",
 			highlight:
 				"Lideré equipo de 5 desarrolladores para entregar proyecto 2 semanas antes de lo planeado",
 			institution: "Universidad Politécnica de Madrid",
@@ -896,6 +1188,52 @@ const expectedEsMessages = {
 			projectName: "Plataforma de Comercio Electrónico",
 			description:
 				"Construí una plataforma moderna de comercio electrónico usando React y Node.js",
+			image: "https://example.com/profile.jpg",
+			imageHint: "Sube un retrato profesional",
+			location: {
+				address: "123 Calle Principal",
+				city: "San Francisco",
+				postalCode: "94105",
+				region: "Provincia/Región",
+				countryCode: "US",
+			},
+			network: "LinkedIn, GitHub, Twitter, etc.",
+			username: "mariagarcia",
+			profileUrl: "https://linkedin.com/in/mariagarcia",
+			companyUrl: "https://empresa.com",
+			organization: "Cruz Roja, Hábitat para la Humanidad, etc.",
+			organizationUrl: "https://organizacion.org",
+			volunteerPosition: "Coordinador de Voluntarios",
+			volunteerSummary:
+				"Organicé eventos de recaudación de fondos y coordiné actividades de voluntariado...",
+			volunteerHighlight: "Recaudé $10,000 para programas comunitarios",
+			course: "Algoritmos Avanzados",
+			skillName: "Desarrollo Web",
+			skillLevel: "Experto",
+			interestName: "Código Abierto",
+			certificateName: "AWS Certified Solutions Architect",
+			certificateUrl: "https://aws.amazon.com/verification",
+			issuer: "Amazon Web Services",
+			awardTitle: "Empleado del Año",
+			awarder: "Corporación ACME",
+			awardSummary:
+				"Reconocido por rendimiento excepcional y liderazgo en la entrega de proyectos críticos...",
+			publicationName: "Construyendo Microservicios Escalables",
+			publisher: "Editorial",
+			publicationUrl: "https://publication.com/articulo",
+			publicationSummary:
+				"Una guía completa para diseñar e implementar arquitecturas de microservicios...",
+			referenceName: "Jane Smith",
+			referenceText:
+				"Juan fue un miembro excepcional del equipo que entregó consistentemente trabajo de alta calidad...",
+			projectDescription:
+				"Una aplicación web moderna construida con React y Node.js...",
+			projectUrl: "https://github.com/usuario/proyecto",
+			projectHighlight:
+				"Redujo el tiempo de carga en un 50% mediante optimización",
+			keyword: "React",
+			workSummary:
+				"Lideré el desarrollo de características clave de la plataforma y mentoré a desarrolladores junior...",
 		},
 		buttons: {
 			add: "Agregar",
@@ -906,6 +1244,15 @@ const expectedEsMessages = {
 			addLanguage: "Agregar Idioma",
 			addProject: "Agregar Proyecto",
 			addHighlight: "Agregar Logro",
+			addSkill: "Agregar Habilidad",
+			addCourse: "Agregar Curso",
+			addInterest: "Agregar Interés",
+			addCertificate: "Agregar Certificado",
+			addAward: "Agregar Premio",
+			addPublication: "Agregar Publicación",
+			addReference: "Agregar Referencia",
+			addVolunteer: "Agregar Experiencia de Voluntariado",
+			addKeyword: "Agregar Palabra Clave",
 		},
 		actions: {
 			add: "Agregar",
@@ -914,6 +1261,82 @@ const expectedEsMessages = {
 			removeSkillCategory: "Eliminar categoría de habilidades",
 			removeSkill: "Eliminar {skill}",
 			addSkill: "Agregar habilidad",
+			addFirstWorkExperience: "Agrega tu primera experiencia laboral",
+			addFirstEducation: "Agrega tu primera entrada de educación",
+			addFirstSkill: "Agrega tu primera habilidad",
+			addFirstLanguage: "Agrega tu primer idioma",
+			addFirstProject: "Agrega tu primer proyecto",
+			addFirstProfile: "Agrega tu primer perfil",
+			addFirstVolunteer: "Agrega tu primera experiencia de voluntariado",
+			addFirstInterest: "Agrega tu primer interés",
+			addFirstCertificate: "Agrega tu primer certificado",
+			addFirstAward: "Agrega tu primer premio",
+			addFirstPublication: "Agrega tu primera publicación",
+			addFirstReference: "Agrega tu primera referencia",
+			addProfile: "Agregar Perfil",
+			addWorkExperience: "Agregar Experiencia Laboral",
+			addHighlight: "Agregar Logro",
+			descriptions: {
+				workExperience: "Agrega tu historial de trabajo profesional y logros",
+				education: "Agrega tu formación académica y cursos relevantes",
+				skills: "Agrega tus habilidades técnicas y áreas de experiencia",
+				languages: "Agrega los idiomas que hablas y tus niveles de competencia",
+				projects: "Agrega tus proyectos personales y profesionales",
+				profiles: "Agrega tus perfiles de redes sociales y redes profesionales",
+				volunteer:
+					"Agrega tu trabajo voluntario y contribuciones a la comunidad",
+				interests: "Agrega tus pasatiempos e intereses personales",
+				certificates: "Agrega tus certificados profesionales y licencias",
+				awards: "Agrega tus premios, honores y reconocimientos profesionales",
+				publications: "Agrega tus artículos, trabajos y libros publicados",
+				references: "Agrega referencias profesionales y testimonios",
+			},
+			empty: {
+				workExperience:
+					"No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto.",
+				education:
+					"No se han agregado entradas de educación aún. Haz clic en el botón de arriba para agregar tu primer título o certificación.",
+				skills:
+					"No se han agregado habilidades aún. Haz clic en el botón de arriba para agregar tu primera habilidad.",
+				languages:
+					"No se han agregado idiomas aún. Haz clic en el botón de arriba para agregar tu primer idioma.",
+				projects:
+					"No se han agregado proyectos aún. Haz clic en el botón de arriba para agregar tu primer proyecto.",
+				profiles:
+					"No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil.",
+				volunteer:
+					"No se ha agregado experiencia de voluntariado aún. Haz clic en el botón de arriba para agregar tu primera posición voluntaria.",
+				interests:
+					"No se han agregado intereses aún. Haz clic en el botón de arriba para agregar tu primer interés.",
+				certificates:
+					"No se han agregado certificados aún. Haz clic en el botón de arriba para agregar tu primer certificado o licencia.",
+				awards:
+					"No se han agregado premios aún. Haz clic en el botón de arriba para agregar tu primer premio o reconocimiento.",
+				publications:
+					"No se han agregado publicaciones aún. Haz clic en el botón de arriba para agregar tu primera publicación.",
+				references:
+					"No se han agregado referencias aún. Haz clic en el botón de arriba para agregar tu primera referencia.",
+				highlights:
+					"No se han agregado logros aún. Haz clic en el botón de arriba para agregar logros.",
+				courses:
+					"No se han agregado cursos aún. Haz clic en el botón de arriba para agregar cursos relevantes.",
+				keywords:
+					"No se han agregado palabras clave aún. Haz clic en el botón de arriba para agregar palabras clave relacionadas.",
+			},
+			labels: {
+				workExperience: "Experiencia Laboral {number}",
+				education: "Educación {number}",
+				skill: "Habilidad {number}",
+				language: "Idioma {number}",
+				project: "Proyecto {number}",
+				profile: "Perfil {number}",
+				volunteer: "Experiencia de Voluntariado {number}",
+				interest: "Interés {number}",
+				certificate: "Certificado {number}",
+				award: "Premio {number}",
+				publication: "Publicación {number}",
+				reference: "Referencia {number}",
+			},
 		},
 		validation: {
 			required: "Este campo es obligatorio",
@@ -922,8 +1345,6 @@ const expectedEsMessages = {
 			date: "Debe ser una fecha válida (AAAA-MM-DD)",
 			dateRange: "La fecha de fin debe ser posterior a la fecha de inicio",
 			maxLength: "La longitud máxima es de {max} caracteres",
-			minContent:
-				"El currículum debe tener al menos uno de: experiencia laboral, educación o habilidades",
 			minSkills: "Se requiere al menos una habilidad",
 			content_required:
 				"Por favor, agrega al menos una sección (experiencia laboral, educación o habilidades) para generar tu currículum",
@@ -955,6 +1376,14 @@ const expectedEsMessages = {
 		},
 		form: {
 			generate: "Generar Currículum",
+			generatePdf: "Generar PDF",
+			generating: "Generando...",
+			submit: "Enviar",
+			cancel: "Cancelar",
+			confirmClear:
+				"¿Estás seguro de que quieres borrar todos los datos del formulario?",
+			saving: "Guardando...",
+			save_draft: "Guardar Borrador",
 		},
 		loading: {
 			generating: "Generando tu currículum...",
@@ -975,6 +1404,66 @@ const expectedEsMessages = {
 			empty_state:
 				"Comienza a llenar el formulario para ver la vista previa de tu currículum",
 			hide: "Ocultar Vista Previa",
+			score: "Promedio",
+			courses: "Cursos Relevantes",
+			sections: {
+				summary: "Resumen",
+				experience: "Experiencia Laboral",
+				education: "Educación",
+				skills: "Habilidades",
+				projects: "Proyectos",
+				volunteer: "Experiencia de Voluntariado",
+				languages: "Idiomas",
+				awards: "Premios y Reconocimientos",
+				certificates: "Certificados y Licencias",
+			},
+		},
+		toast: {
+			saveSuccess: {
+				title: "Éxito",
+				description: "¡Currículum guardado exitosamente!",
+			},
+			saveError: {
+				title: "Error",
+				description:
+					"Error al guardar el currículum. Por favor, inténtalo de nuevo.",
+			},
+			pdfSuccess: {
+				title: "PDF Generado",
+				description: "¡Tu currículum ha sido generado exitosamente!",
+			},
+			pdfError: {
+				title: "Generación Fallida",
+				description: "Error al generar el PDF. Por favor, inténtalo de nuevo.",
+			},
+			validationError: {
+				title: "Error de Validación",
+				description:
+					"Por favor, verifica todos los campos requeridos y asegúrate de que sean válidos.",
+			},
+			formCleared: {
+				title: "Formulario Limpiado",
+				description: "Todos los datos del formulario han sido reiniciados.",
+			},
+		},
+	},
+	settings: {
+		title: "Configuración",
+		description: "Administra las preferencias y ajustes de la aplicación",
+		tabs: {
+			general: "General",
+			privacy: "Privacidad",
+			storage: "Almacenamiento",
+		},
+		general: {
+			title: "Ajustes generales",
+			description: "Configura las preferencias generales de la aplicación",
+			comingSoon: "Ajustes generales próximamente...",
+		},
+		privacy: {
+			title: "Ajustes de privacidad",
+			description: "Gestiona tus preferencias de privacidad y datos",
+			comingSoon: "Ajustes de privacidad próximamente...",
 		},
 	},
 	workspace: {

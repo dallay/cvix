@@ -1,4 +1,11 @@
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import {
+	computed,
+	getCurrentInstance,
+	nextTick,
+	onMounted,
+	ref,
+	watch,
+} from "vue";
 import type {
 	Award,
 	Basics,
@@ -46,8 +53,9 @@ interface MutableBasics extends Omit<Basics, "profiles"> {
 export function useResumeForm() {
 	const resumeStore = useResumeStore();
 
+	const hasComponentInstance = Boolean(getCurrentInstance());
 	// Flag para evitar que el watch sobrescriba datos durante la carga inicial
-	const isInitializing = ref(true);
+	const isInitializing = ref(hasComponentInstance);
 
 	// Form state - cada sección del resume
 	const basics = ref<MutableBasics>({
