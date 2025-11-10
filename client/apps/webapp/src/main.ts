@@ -15,8 +15,12 @@ import "./styles/globals.css";
 import type { StorageType } from "./core/resume/domain/ResumeStorage";
 
 /**
- * Gets the user's storage preference from localStorage.
- * Falls back to 'session' if no preference is set.
+ * Retrieve the user's storage preference from localStorage.
+ *
+ * Validates that the stored preference is one of "session", "local", "indexeddb", or "remote".
+ * Returns "session" if no valid preference is found or if reading/parsing fails.
+ *
+ * @returns One of "session", "local", "indexeddb", or "remote". Returns "session" when no valid preference is available.
  */
 function getUserStoragePreference(): StorageType {
 	try {

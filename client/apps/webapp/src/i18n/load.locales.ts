@@ -4,7 +4,17 @@ import type {
 	LocaleMessageValue,
 } from "./types";
 
-// Utility function to flatten nested objects into a flat key structure
+/**
+ * Convert a nested locale message object into a flat map where nested paths become dot-notated keys.
+ *
+ * Preserves any top-level object values under their original key while also adding flattened
+ * dot-delimited entries for nested properties (e.g., `{ a: { b: "x" } }` becomes `{ a: { b: "x" }, "a.b": "x" }`).
+ *
+ * @param obj - The source object to flatten
+ * @param parentKey - Optional prefix used for nested keys during recursion
+ * @param result - Optional accumulator for flattened entries (used internally)
+ * @returns A record mapping dot-notated keys to their locale message values, including preserved top-level objects
+ */
 function flattenKeys(
 	obj: Record<string, LocaleMessageValue>,
 	parentKey = "",
@@ -32,7 +42,10 @@ import { deepmerge } from "@loomify/utilities";
 const localeCache = new Map<string, LocaleMessage>();
 
 /**
- * Type guard to ensure module has the expected structure
+ * Type guard that checks whether a loaded locale module exports a `default` object suitable as a locale message.
+ *
+ * @param module - The imported module to validate
+ * @returns `true` if `module` is a non-null object with a `default` property whose value is an object, `false` otherwise.
  */
 function isValidLocaleModule(
 	module: unknown,
@@ -46,20 +59,23 @@ function isValidLocaleModule(
 }
 
 /**
- * Flattens nested keys in a locale message object.
- * @param messages - The array of locale message objects to flatten.
- * @returns The array of flattened locale message objects.
+ * Apply key flattening to each locale message in the input array.
+ *
+ * @param messages - Array of locale message objects to flatten into dot-notated key maps
+ * @returns An array of LocaleMessage objects with nested keys converted to flat dot-notated keys
  */
 function flattenLocaleMessages(messages: LocaleMessage[]): LocaleMessage[] {
 	return messages.map((message) => flattenKeys(message));
 }
 
 /**
- * Loads and merges all JSON message files for a given locale.
- * Uses lazy loading for better performance and caching to avoid redundant operations.
+ * Load and merge all JSON message files for the specified locale into a single LocaleMessage.
  *
- * @param locale - The locale code (e.g., 'en', 'es').
- * @returns Promise that resolves to the merged locale messages object.
+ * The merged result is cached to avoid redundant loads. If no locale files are found or an error occurs,
+ * an empty LocaleMessage is cached and returned.
+ *
+ * @param locale - Locale code (for example, `en`, `es`)
+ * @returns The merged LocaleMessage for `locale`; an empty object if no files were found or on error.
  */
 export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 	// Check cache first
@@ -104,8 +120,10 @@ export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 }
 
 /**
- * Synchronous version for initial locale loading.
- * Falls back to eager loading for the initial setup.
+ * Synchronously load, merge, and cache all JSON locale message files for the specified locale.
+ *
+ * @param locale - Locale identifier (for example, "en" or "fr")
+ * @returns The merged LocaleMessage containing flattened dot-notated keys to messages; if no locale files are found, returns and caches an empty object
  */
 export function getLocaleModulesSync(locale: string): LocaleMessage {
 	// Check cache first

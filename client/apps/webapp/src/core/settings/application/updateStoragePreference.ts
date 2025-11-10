@@ -1,20 +1,12 @@
 import type { StoragePreference, UserSettings } from "../domain";
 
 /**
- * Use case: Update storage preference.
+ * Update a user's storage preference after validating the new value.
  *
- * This use case encapsulates the business logic for changing the user's
- * storage preference. It validates the input and coordinates the update.
- *
- * @param currentSettings - The current user settings
- * @param newPreference - The new storage preference to set
- * @returns Updated user settings with the new storage preference
- * @throws Error if the new preference is invalid
- *
- * @example
- * ```typescript
- * const settings = await updateStoragePreference(currentSettings, 'local');
- * ```
+ * @param currentSettings - The existing user settings to base the update on
+ * @param newPreference - The storage preference to set (must be one of the allowed values)
+ * @returns The updated UserSettings with `storagePreference` set to `newPreference`
+ * @throws Error if `newPreference` is not a valid storage preference
  */
 export function updateStoragePreference(
 	currentSettings: UserSettings,
@@ -33,7 +25,10 @@ export function updateStoragePreference(
 }
 
 /**
- * Validates a storage preference value.
+ * Checks whether a value is an allowed storage preference.
+ *
+ * @param value - The value to validate
+ * @returns `true` if `value` is a `StoragePreference` ('session', 'local', 'indexeddb', or 'remote'), `false` otherwise. When `true`, narrows the type to `StoragePreference`.
  */
 function isValidPreference(value: unknown): value is StoragePreference {
 	return (
