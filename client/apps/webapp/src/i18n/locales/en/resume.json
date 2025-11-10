@@ -89,7 +89,7 @@
 			"label": "Software Engineer",
 			"image": "https://example.com/profile.jpg",
 			"imageHint": "Upload a professional portrait",
-			"email": "maria.garcia@example.com",
+			"email": "maria.garcia@ejemplo.com",
 			"phone": "+1 555 123 4567",
 			"url": "https://mariagarcia.com",
 			"network": "LinkedIn, GitHub, Twitter, etc.",
@@ -105,6 +105,8 @@
 			"summary": "Experienced software engineer with a passion for building scalable web applications...",
 			"company": "ACME Corporation",
 			"position": "Senior Developer",
+			"startDate": "2021-01",
+			"endDate": "2023-12",
 			"location": {
 				"address": "123 Main Street",
 				"postalCode": "94105",
@@ -186,6 +188,7 @@
 			"removeSkill": "Remove {skill}",
 			"addSkill": "Add skill",
 			"descriptions": {
+				"personalInfo": "Add your basic contact information and professional details",
 				"profiles": "Add your social media and professional network profiles",
 				"workExperience": "Add your professional work history and achievements",
 				"volunteer": "Add your volunteer work and community contributions",

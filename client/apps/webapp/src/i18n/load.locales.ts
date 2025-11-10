@@ -143,6 +143,7 @@ export function getLocaleModulesSync(locale: string): LocaleMessage {
 	const flattenedMessages = flattenLocaleMessages(messages);
 
 	if (flattenedMessages.length === 0) {
+		console.warn(`No locale files found for locale: ${locale}`);
 		const emptyResult: LocaleMessage = {};
 		localeCache.set(locale, emptyResult);
 		return emptyResult;
