@@ -395,4 +395,56 @@ class ResumeControllerTest {
             .expectStatus().isOk
             .expectHeader().contentType(MediaType.APPLICATION_PDF)
     }
+
+    @Test
+    fun `should accept resume with structured profiles array`() {
+        // Mock the handler
+        coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
+
+        webTestClient.mutateWith(csrf()).post()
+            .uri("/api/resumes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(
+                mapOf(
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
+                        "email" to "john@example.com",
+                        "phone" to "+1234567890",
+                        "location" to mapOf(
+                            "address" to "123 Main St",
+                            "city" to "San Francisco",
+                            "region" to "California",
+                            "countryCode" to "US",
+                            "postalCode" to "94102"
+                        ),
+                        "profiles" to listOf(
+                            mapOf(
+                                "network" to "LinkedIn",
+                                "username" to "johndoe",
+                                "url" to "https://linkedin.com/in/johndoe"
+                            ),
+                            mapOf(
+                                "network" to "GitHub",
+                                "username" to "johndoe",
+                                "url" to "https://github.com/johndoe"
+                            ),
+                            mapOf(
+                                "network" to "Twitter",
+                                "username" to "johndoe",
+                                "url" to "https://twitter.com/johndoe"
+                            )
+                        )
+                    ),
+                    "skills" to listOf(
+                        mapOf(
+                            "name" to "Programming",
+                            "keywords" to listOf("Kotlin"),
+                        ),
+                    ),
+                ),
+            )
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType(MediaType.APPLICATION_PDF)
+    }
 }
