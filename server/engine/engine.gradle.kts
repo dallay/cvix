@@ -26,7 +26,7 @@ repositories {
 }
 
 extra["snippetsDir"] = file("build/generated-snippets")
-extra["springCloudVersion"] = "2024.0.1"
+extra["springCloudVersion"] = "2024.0.2"
 extra["springModulithVersion"] = "1.3.5"
 
 dependencies {
