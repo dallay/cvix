@@ -109,12 +109,7 @@ export function useResumeForm() {
 	watch(
 		resume,
 		(newResume) => {
-			console.log(
-				"[useResumeForm] Watch triggered, isInitializing:",
-				isInitializing.value,
-			);
 			if (!isInitializing.value) {
-				console.log("[useResumeForm] Syncing resume to store");
 				resumeStore.setResume(newResume);
 			}
 		},
@@ -218,22 +213,17 @@ export function useResumeForm() {
 	} // Initialize: load from storage on mount
 	onMounted(async () => {
 		try {
-			console.log("[useResumeForm] Loading from storage...");
 			await resumeStore.loadFromStorage();
-			console.log("[useResumeForm] Resume from store:", resumeStore.resume);
 			if (resumeStore.resume) {
-				console.log("[useResumeForm] Loading resume into form...");
 				loadResume(resumeStore.resume);
 				// Esperar dos ticks: uno para que Vue procese los cambios, otro para que los componentes se actualicen
 				await nextTick();
 				await nextTick();
-				console.log("[useResumeForm] Resume loaded. Basics:", basics.value);
 			}
 		} catch (error) {
 			console.error("Failed to load resume from storage:", error);
 		} finally {
 			// Permitir que el watch sincronice cambios después de la carga inicial
-			console.log("[useResumeForm] Initialization complete, enabling watch");
 			isInitializing.value = false;
 		}
 	});

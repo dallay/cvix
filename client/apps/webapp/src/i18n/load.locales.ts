@@ -102,7 +102,6 @@ export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 		const flattenedMessages = flattenLocaleMessages(messages);
 
 		if (flattenedMessages.length === 0) {
-			console.warn(`No locale files found for locale: ${locale}`);
 			const emptyResult: LocaleMessage = {};
 			localeCache.set(locale, emptyResult);
 			return emptyResult;
@@ -112,7 +111,7 @@ export async function getLocaleModules(locale: string): Promise<LocaleMessage> {
 		localeCache.set(locale, result);
 		return result;
 	} catch (error) {
-		console.error(`Failed to load locale files for ${locale}:`, error);
+		console.error("Failed to load locale modules:", error);
 		const emptyResult: LocaleMessage = {};
 		localeCache.set(locale, emptyResult);
 		return emptyResult;
@@ -144,7 +143,6 @@ export function getLocaleModulesSync(locale: string): LocaleMessage {
 	const flattenedMessages = flattenLocaleMessages(messages);
 
 	if (flattenedMessages.length === 0) {
-		console.warn(`No locale files found for locale: ${locale}`);
 		const emptyResult: LocaleMessage = {};
 		localeCache.set(locale, emptyResult);
 		return emptyResult;

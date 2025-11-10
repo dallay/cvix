@@ -28,7 +28,8 @@ function getLocale(): SupportedLocale {
 			return stored as SupportedLocale;
 		}
 	} catch (error) {
-		console.debug("localStorage not available:", error);
+		console.error("Failed to get locale from localStorage:", error);
+		// localStorage might not be available
 	}
 
 	// Try browser language detection
@@ -40,7 +41,8 @@ function getLocale(): SupportedLocale {
 			}
 		}
 	} catch (error) {
-		console.debug("Browser language detection failed:", error);
+		console.error("Browser language detection failed:", error);
+		// Browser language detection failed
 	}
 
 	return DEFAULT_LOCALE;
@@ -70,9 +72,6 @@ export async function setLocale(locale: SupportedLocale) {
 	const targetLocale = SUPPORTED_LOCALES.includes(locale)
 		? locale
 		: (() => {
-				console.warn(
-					`Unsupported locale: ${locale}. Falling back to ${DEFAULT_LOCALE}`,
-				);
 				return DEFAULT_LOCALE;
 			})();
 
@@ -89,7 +88,8 @@ export async function setLocale(locale: SupportedLocale) {
 	try {
 		localStorage.setItem(LANGUAGE_STORAGE_KEY, targetLocale);
 	} catch (error) {
-		console.warn("Failed to save locale to localStorage:", error);
+		console.error("Failed to save locale to localStorage:", error);
+		// Failed to save locale to localStorage
 	}
 
 	document.documentElement.lang = targetLocale;

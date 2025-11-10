@@ -75,7 +75,6 @@ function getStorage(): ResumeStorage {
  * // In a component
  * const resumeStore = useResumeStore();
  * resumeStore.setResume(myResume);
- * console.log(resumeStore.isValid); // true or false
  *
  * // Save to storage
  * await resumeStore.saveToStorage();
@@ -235,18 +234,10 @@ export const useResumeStore = defineStore("resume", () => {
 			isLoading.value = true;
 			storageError.value = null;
 
-			console.log(
-				"[resumeStore] Loading from storage:",
-				currentStorage.value.type(),
-			);
 			const result = await currentStorage.value.load();
-			console.log("[resumeStore] Load result:", result);
 
 			if (result.data) {
 				resume.value = result.data;
-				console.log("[resumeStore] Resume set to:", resume.value);
-			} else {
-				console.log("[resumeStore] No data found in storage");
 			}
 
 			isLoading.value = false;

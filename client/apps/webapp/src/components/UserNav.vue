@@ -41,7 +41,6 @@ const handleLogout = async () => {
 		toast.success("Successfully logged out");
 		await router.push("/login");
 	} catch (error) {
-		console.error("Error during logout:", error);
 		toast.error("Logout failed");
 	} finally {
 		isLoggingOut.value = false;
