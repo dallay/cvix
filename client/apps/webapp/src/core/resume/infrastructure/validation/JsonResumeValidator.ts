@@ -23,6 +23,12 @@ export class JsonResumeValidator implements ResumeValidator {
 	private readonly EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	/**
+	 * Phone number pattern: allows digits, spaces, and common characters like (), -, +
+	 * Requires at least 7 digits.
+	 */
+	private readonly PHONE_PATTERN = /^(?=(?:\D*\d){7,})[\d\s()+-]+$/;
+
+	/**
 	 * URL format pattern (simplified RFC 3986 validation).
 	 */
 	private readonly URL_PATTERN = /^https?:\/\/.+/;
@@ -109,15 +115,20 @@ export class JsonResumeValidator implements ResumeValidator {
 		}
 
 		// Name is typically required for a valid resume
-		if (basics.name && typeof basics.name !== "string") {
+		if (!basics.name || typeof basics.name !== "string") {
 			return false;
 		}
 
 		// Validate email format if present and non-empty
+		if (!basics.email || !this.isValidEmail(basics.email)) {
+			return false;
+		}
+
+		// Validate phone number format if present and non-empty
 		if (
-			basics.email &&
-			basics.email !== "" &&
-			!this.isValidEmail(basics.email)
+			basics.phone &&
+			basics.phone !== "" &&
+			!this.PHONE_PATTERN.test(basics.phone)
 		) {
 			return false;
 		}

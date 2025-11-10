@@ -101,18 +101,9 @@ export const useResumeStore = defineStore("resume", () => {
 	const isLoading = ref(false);
 	const storageError = ref<Error | null>(null);
 	const currentStorageType = ref<StorageType>(initialStorage.type());
+	const isValid = ref(false);
 
 	// Computed properties
-	/**
-	 * Indicates whether the current resume is valid according to JSON Resume Schema.
-	 */
-	const isValid = computed(() => {
-		if (!resume.value) {
-			return false;
-		}
-		return validator.validate(resume.value);
-	});
-
 	/**
 	 * Returns validation errors if the resume is invalid.
 	 * Note: Current implementation returns a boolean, could be extended to return detailed errors.
@@ -127,6 +118,7 @@ export const useResumeStore = defineStore("resume", () => {
 	 */
 	function setResume(newResume: Resume) {
 		resume.value = newResume;
+		validateResume();
 	}
 
 	/**
@@ -135,6 +127,7 @@ export const useResumeStore = defineStore("resume", () => {
 	function clearResume() {
 		resume.value = null;
 		generationError.value = null;
+		isValid.value = false;
 	}
 
 	/**
@@ -144,9 +137,12 @@ export const useResumeStore = defineStore("resume", () => {
 	 */
 	function validateResume(): boolean {
 		if (!resume.value) {
+			isValid.value = false;
 			return false;
 		}
-		return validator.validate(resume.value);
+		const validationResult = validator.validate(resume.value);
+		isValid.value = validationResult;
+		return validationResult;
 	}
 
 	/**

@@ -190,6 +190,9 @@ export function useResumeForm() {
 		projects.value = [];
 
 		resumeStore.clearResume();
+		nextTick(() => {
+			resumeStore.validateResume();
+		});
 	}
 
 	/**

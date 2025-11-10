@@ -215,6 +215,41 @@ describe("JsonResumeValidator", () => {
 
 			expect(validator.validate(resume)).toBe(true);
 		});
+
+		it("should return false for a resume with empty strings", () => {
+			const resume: Resume = {
+				basics: {
+					name: "",
+					label: "",
+					image: "",
+					email: "",
+					phone: "",
+					url: "",
+					summary: "",
+					location: {
+						address: "",
+						postalCode: "",
+						city: "",
+						countryCode: "",
+						region: "",
+					},
+					profiles: [],
+				},
+				work: [],
+				volunteer: [],
+				education: [],
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+
+			expect(validator.validate(resume)).toBe(false);
+		});
 	});
 
 	describe("email validation", () => {

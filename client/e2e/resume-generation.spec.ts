@@ -6,6 +6,7 @@
  */
 
 import { expect, test } from "@playwright/test";
+import { AxeBuilder } from "@axe-core/playwright";
 
 test.describe("Resume Generation E2E Flow", () => {
 	test.beforeEach(async ({ page }) => {
@@ -145,10 +146,41 @@ test.describe("Resume Generation E2E Flow", () => {
 			expect(await download.failure()).toBeNull();
 
 			// Success message should appear
-			await expect(page.getByText(/success|generated|download/i)).toBeVisible({
+			await expect(
+				page.getByText(/success|generated|download/i),
+			).toBeVisible({
 				timeout: 10000,
 			});
+
+			// Verify PDF content (requires a PDF parsing library)
+			const downloadPath = await download.path();
+			expect(downloadPath).not.toBeNull();
 		});
+	});
+
+	test("should handle complex data input", async ({ page }) => {
+		// Fill personal information
+		await page.getByLabel("Full Name").fill("Jane Doe");
+		await page.getByLabel("Email").fill("jane.doe@example.com");
+
+		// Add multiple work experiences
+		await page.getByRole("button", { name: /add work experience/i }).click();
+		await page.getByLabel("Company Name").first().fill("Innovate Inc.");
+		await page.getByLabel("Position").first().fill("Lead Developer");
+		await page.getByLabel("Start Date").first().fill("2018-03");
+
+		await page.getByRole("button", { name: /add work experience/i }).click();
+		await page.getByLabel("Company Name").nth(1).fill("Creative Solutions");
+		await page.getByLabel("Position").nth(1).fill("Software Engineer");
+		await page.getByLabel("Start Date").nth(1).fill("2016-07");
+
+		// Verify preview updates
+		await expect(page.locator('[data-testid="resume-preview"]')).toContainText(
+			"Innovate Inc.",
+		);
+		await expect(page.locator('[data-testid="resume-preview"]')).toContainText(
+			"Creative Solutions",
+		);
 	});
 
 	test("should handle validation errors gracefully", async ({ page }) => {
@@ -191,15 +223,25 @@ test.describe("Resume Generation E2E Flow", () => {
 			await page.getByLabel("Start Date").fill("2023-01");
 		});
 
-		// Note: In a real test, you would intercept the API call and return an error
-		// For now, this tests that the retry mechanism exists
-		await test.step("Verify retry button exists in error state", async () => {
-			// The error display component should have a retry button
-			// This would be tested if we mock an error response
-			const _errorDisplay = page.locator('[data-testid="error-display"]');
-			// If error occurs, retry button should be available
-			// await expect(errorDisplay.getByRole('button', { name: /retry/i })).toBeVisible();
+		// Mock API to return a 500 error
+		await page.route("/api/resumes", (route) => {
+			route.fulfill({
+				status: 500,
+				contentType: "application/json",
+				body: JSON.stringify({ message: "Internal Server Error" }),
+			});
 		});
+
+		// Click generate resume button
+		await page.getByRole("button", { name: /generate resume/i }).click();
+
+		// Verify error message and retry button are visible
+		const errorDisplay = page.locator('[data-testid="error-display"]');
+		await expect(errorDisplay).toBeVisible();
+		await expect(errorDisplay).toContainText(/error/i);
+		await expect(
+			errorDisplay.getByRole("button", { name: /retry/i }),
+		).toBeVisible();
 	});
 
 	test("should be mobile responsive", async ({ page }) => {
@@ -311,11 +353,8 @@ test.describe("Resume Generation - Accessibility", () => {
 	test("should meet WCAG 2.1 AA standards", async ({ page }) => {
 		await page.goto("/resume");
 
-		// Run axe accessibility tests
-		// Note: This requires @axe-core/playwright to be installed
-		// await injectAxe(page);
-		// const results = await checkA11y(page);
-		// expect(results.violations).toHaveLength(0);
+		const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+		expect(accessibilityScanResults.violations).toEqual([]);
 	});
 
 	test("should have proper ARIA labels", async ({ page }) => {

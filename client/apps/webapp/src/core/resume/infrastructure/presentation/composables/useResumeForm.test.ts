@@ -91,16 +91,40 @@ describe("useResumeForm", () => {
 
 			expect(isValid.value).toBe(true);
 		});
+
+		it("should not validate resume with invalid email", async () => {
+			const { basics, isValid } = useResumeForm();
+
+			basics.value.name = "John Doe";
+			basics.value.email = "invalid-email";
+
+			await nextTick();
+			await nextTick();
+
+			expect(isValid.value).toBe(false);
+		});
+
+		it("should not validate resume with invalid phone number", async () => {
+			const { basics, isValid } = useResumeForm();
+
+			basics.value.name = "John Doe";
+			basics.value.email = "john@example.com";
+			basics.value.phone = "123";
+
+			await nextTick();
+			await nextTick();
+
+			expect(isValid.value).toBe(false);
+		});
 	});
 
 	describe("submitResume", () => {
-		it("should return true for empty resume with basics", () => {
+		it("should return false for empty resume", () => {
 			const { submitResume } = useResumeForm();
 
-			// The validator accepts a resume with just basics (even if empty strings)
 			const result = submitResume();
 
-			expect(result).toBe(true);
+			expect(result).toBe(false);
 		});
 
 		it("should return true for valid resume", () => {
@@ -178,6 +202,21 @@ describe("useResumeForm", () => {
 			expect(basics.value.email).toBe("");
 			expect(workExperiences.value).toEqual([]);
 			expect(hasResume.value).toBe(false);
+		});
+
+		it("should reset isValid state when form is cleared", async () => {
+			const { loadResume, clearForm, isValid } = useResumeForm();
+			const resume = createMockResume();
+
+			loadResume(resume);
+			await nextTick();
+			await nextTick();
+			expect(isValid.value).toBe(true);
+
+			clearForm();
+			await nextTick();
+			await nextTick();
+			expect(isValid.value).toBe(false);
 		});
 	});
 
