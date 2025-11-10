@@ -140,62 +140,127 @@ class ResumeController(
 
 /**
  * Extension function to convert DTO to domain model.
+ * Supports both new JSON Resume Schema fields and legacy fields for backward compatibility.
  */
 private fun GenerateResumeRequest.toDomain(): ResumeData {
     return ResumeData(
         basics = PersonalInfo(
             fullName = FullName(personalInfo.fullName),
-            label = null, // Not in DTO yet
+            label = personalInfo.label?.let { JobTitle(it) },
+            image = personalInfo.image?.let { Url(it) },
             email = com.loomify.common.domain.vo.email.Email(personalInfo.email),
             phone = PhoneNumber(personalInfo.phone),
-            url = personalInfo.website?.let { Url(it) },
+            url = personalInfo.url?.let { Url(it) } ?: personalInfo.website?.let { Url(it) },
             summary = personalInfo.summary?.let { Summary(it) },
-            location = personalInfo.location?.let {
-                Location(city = it) // Simplified for now
+            location = personalInfo.location?.let { loc ->
+                Location(
+                    address = loc.address,
+                    postalCode = loc.postalCode,
+                    city = loc.city,
+                    countryCode = loc.countryCode,
+                    region = loc.region
+                )
             },
             profiles = buildList {
-                personalInfo.linkedin?.let {
-                    add(SocialProfile("LinkedIn", "", it))
+                // Add new profiles from the profiles field
+                personalInfo.profiles?.forEach { profile ->
+                    add(SocialProfile(profile.network, profile.username ?: "", profile.url))
                 }
-                personalInfo.github?.let {
-                    add(SocialProfile("GitHub", "", it))
+                // Add legacy LinkedIn profile if not already in profiles
+                if (personalInfo.linkedin != null && 
+                    personalInfo.profiles?.none { it.network.equals("LinkedIn", ignoreCase = true) } != false) {
+                    add(SocialProfile("LinkedIn", "", personalInfo.linkedin))
+                }
+                // Add legacy GitHub profile if not already in profiles
+                if (personalInfo.github != null && 
+                    personalInfo.profiles?.none { it.network.equals("GitHub", ignoreCase = true) } != false) {
+                    add(SocialProfile("GitHub", "", personalInfo.github))
                 }
             },
         ),
         work = workExperience?.map { work ->
             WorkExperience(
-                company = CompanyName(work.company),
+                company = CompanyName(work.name ?: work.company ?: ""),
                 position = JobTitle(work.position),
                 startDate = work.startDate,
                 endDate = work.endDate,
                 location = work.location,
-                summary = work.description,
-                highlights = null,
-                url = null,
+                summary = work.summary ?: work.description,
+                highlights = work.highlights?.map { Highlight(it) },
+                url = work.url?.let { Url(it) },
+            )
+        } ?: emptyList(),
+        volunteer = volunteer?.map { vol ->
+            com.loomify.resume.domain.model.Volunteer(
+                organization = vol.organization,
+                position = vol.position,
+                url = vol.url?.let { Url(it) },
+                startDate = vol.startDate,
+                endDate = vol.endDate,
+                summary = vol.summary,
+                highlights = vol.highlights,
             )
         } ?: emptyList(),
         education = education?.map { edu ->
             Education(
                 institution = InstitutionName(edu.institution),
-                area = FieldOfStudy(edu.degree), // Using degree as area for now
-                studyType = DegreeType(edu.degree),
+                area = edu.area?.let { FieldOfStudy(it) } ?: edu.degree?.let { FieldOfStudy(it) },
+                studyType = edu.studyType?.let { DegreeType(it) } ?: edu.degree?.let { DegreeType(it) },
                 startDate = edu.startDate,
                 endDate = edu.endDate,
-                score = edu.gpa,
-                courses = null,
+                score = edu.score ?: edu.gpa,
+                url = edu.url?.let { Url(it) },
+                courses = edu.courses,
+            )
+        } ?: emptyList(),
+        awards = awards?.map { award ->
+            com.loomify.resume.domain.model.Award(
+                title = award.title,
+                date = award.date,
+                awarder = award.awarder,
+                summary = award.summary,
+            )
+        } ?: emptyList(),
+        certificates = certificates?.map { cert ->
+            com.loomify.resume.domain.model.Certificate(
+                name = cert.name,
+                date = cert.date,
+                url = cert.url?.let { Url(it) },
+                issuer = cert.issuer,
+            )
+        } ?: emptyList(),
+        publications = publications?.map { pub ->
+            com.loomify.resume.domain.model.Publication(
+                name = pub.name,
+                publisher = pub.publisher,
+                releaseDate = pub.releaseDate,
+                url = pub.url?.let { Url(it) },
+                summary = pub.summary,
             )
         } ?: emptyList(),
         skills = skills?.map { skill ->
             SkillCategory(
                 name = SkillCategoryName(skill.name),
-                level = null,
+                level = skill.level,
                 keywords = skill.keywords.map { Skill(it) },
             )
         } ?: emptyList(),
         languages = languages?.map { lang ->
             Language(
                 language = lang.language,
-                fluency = com.loomify.resume.domain.model.FluencyLevel.valueOf(lang.fluency),
+                fluency = lang.fluency,
+            )
+        } ?: emptyList(),
+        interests = interests?.map { interest ->
+            com.loomify.resume.domain.model.Interest(
+                name = interest.name,
+                keywords = interest.keywords,
+            )
+        } ?: emptyList(),
+        references = references?.map { ref ->
+            com.loomify.resume.domain.model.Reference(
+                name = ref.name,
+                reference = ref.reference,
             )
         } ?: emptyList(),
         projects = projects?.map { project ->
@@ -203,9 +268,38 @@ private fun GenerateResumeRequest.toDomain(): ResumeData {
                 name = project.name,
                 description = project.description,
                 url = project.url,
-                startDate = project.startDate?.let { LocalDate.parse(it) },
-                endDate = project.endDate?.let { LocalDate.parse(it) },
+                startDate = project.startDate?.let { parseFlexibleDate(it) },
+                endDate = project.endDate?.let { parseFlexibleDate(it) },
+                highlights = project.highlights,
+                keywords = project.keywords,
+                roles = project.roles,
+                entity = project.entity,
+                type = project.type,
             )
         } ?: emptyList(),
+        meta = meta?.let { m ->
+            com.loomify.resume.domain.model.Meta(
+                canonical = m.canonical,
+                version = m.version,
+                lastModified = m.lastModified,
+            )
+        },
     )
+}
+
+/**
+ * Parses a flexible ISO 8601 date (YYYY-MM-DD, YYYY-MM, or YYYY).
+ * Returns the parsed LocalDate or null if invalid.
+ */
+private fun parseFlexibleDate(date: String): LocalDate? {
+    return try {
+        when {
+            date.matches(Regex("""\d{4}-\d{2}-\d{2}""")) -> LocalDate.parse(date)
+            date.matches(Regex("""\d{4}-\d{2}""")) -> LocalDate.parse("$date-01")
+            date.matches(Regex("""\d{4}""")) -> LocalDate.parse("$date-01-01")
+            else -> null
+        }
+    } catch (e: Exception) {
+        null
+    }
 }

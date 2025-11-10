@@ -3,7 +3,7 @@ package com.loomify.resume.domain.model
 import java.time.LocalDate
 
 /**
- * Entity representing a project in a resume.
+ * Entity representing a project in a resume per JSON Resume Schema.
  * Contains project details and optional date range.
  */
 data class Project(
@@ -11,7 +11,12 @@ data class Project(
     val description: String,
     val url: String? = null,
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null
+    val endDate: LocalDate? = null,
+    val highlights: List<String>? = null,
+    val keywords: List<String>? = null,
+    val roles: List<String>? = null,
+    val entity: String? = null,
+    val type: String? = null
 ) {
     init {
         require(name.isNotBlank()) { "Project name must not be blank" }
