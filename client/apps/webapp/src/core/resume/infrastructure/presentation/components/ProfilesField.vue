@@ -36,12 +36,9 @@ const hasProfiles = computed(() => profiles.value.length > 0);
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <div>
-        <FieldLabel>{{ t('resume.fields.profiles') }}</FieldLabel>
-        <FieldDescription>
-          {{ t('resume.actions.descriptions.profiles') }}
-        </FieldDescription>
-      </div>
+      <FieldDescription>
+        {{ t('resume.actions.descriptions.profiles') }}
+      </FieldDescription>
       <Button
         type="button"
         variant="outline"

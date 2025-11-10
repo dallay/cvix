@@ -39,7 +39,6 @@ const hasAwards = computed(() => awards.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.awards') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.awards') }}
 		</FieldDescription>

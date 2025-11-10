@@ -19,9 +19,8 @@ const basics = defineModel<Basics>({ required: true });
 
 <template>
   <FieldSet>
-    <FieldLegend>{{ t('resume.sections.personalInfo') }}</FieldLegend>
     <FieldDescription>
-      All transactions are secure and encrypted
+      {{ t('resume.actions.descriptions.personalInfo') }}
     </FieldDescription>
     <FieldGroup>
       <Field>

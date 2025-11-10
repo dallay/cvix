@@ -73,12 +73,9 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <div>
-        <FieldLabel>{{ t('resume.sections.workExperience') }}</FieldLabel>
-        <FieldDescription>
-          {{ t('resume.actions.descriptions.workExperience') }}
-        </FieldDescription>
-      </div>
+      <FieldDescription>
+        {{ t('resume.actions.descriptions.workExperience') }}
+      </FieldDescription>
       <Button
         type="button"
         variant="outline"

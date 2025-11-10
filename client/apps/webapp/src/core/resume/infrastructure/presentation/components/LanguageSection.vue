@@ -36,7 +36,6 @@ const hasLanguages = computed(() => languages.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.languages') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.languages') }}
 		</FieldDescription>

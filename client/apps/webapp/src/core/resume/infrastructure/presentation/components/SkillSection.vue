@@ -64,7 +64,6 @@ const hasSkills = computed(() => skills.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.skills') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.skills') }}
 		</FieldDescription>

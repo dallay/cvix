@@ -92,8 +92,8 @@ const togglePreview = () => {
 
         <!-- Preview Section -->
         <Card v-if="showPreview"
-              class="hidden lg:block sticky top-8 h-fit max-h-[calc(100vh-6rem)] overflow-hidden">
-          <CardHeader>
+              class="hidden lg:flex lg:flex-col sticky top-8 max-h-[calc(100vh-6rem)] overflow-hidden">
+          <CardHeader class="flex-none">
             <CardTitle>
               {{ t('resume.previewButton') }}
             </CardTitle>
@@ -101,8 +101,8 @@ const togglePreview = () => {
               Live preview of your resume
             </CardDescription>
           </CardHeader>
-          <CardContent class="p-0">
-            <div class="max-h-[calc(100vh-16rem)] overflow-y-auto">
+          <CardContent class="flex-1 p-0 overflow-hidden">
+            <div class="h-full overflow-y-auto">
               <ResumePreview :data="resume"/>
             </div>
           </CardContent>

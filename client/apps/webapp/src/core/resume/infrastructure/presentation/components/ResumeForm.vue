@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { Loader2 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { Button } from "@/components/ui/button";
 import {
-	Field,
-	FieldGroup,
-	FieldSeparator,
-	FieldSet,
-} from "@/components/ui/field";
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import AwardSection from "@/core/resume/infrastructure/presentation/components/AwardSection.vue";
 import BasicsSection from "@/core/resume/infrastructure/presentation/components/BasicsSection.vue";
 import CertificateSection from "@/core/resume/infrastructure/presentation/components/CertificateSection.vue";
@@ -62,7 +64,6 @@ async function handleSubmit(event: Event) {
 			toast.error(t("resume.toast.validationError.title"), {
 				description: t("resume.toast.validationError.description"),
 			});
-			isSubmitting.value = false;
 			return;
 		}
 
@@ -72,11 +73,11 @@ async function handleSubmit(event: Event) {
 		toast.success(t("resume.toast.saveSuccess.title"), {
 			description: t("resume.toast.saveSuccess.description"),
 		});
-		isSubmitting.value = false;
 	} catch (error) {
 		toast.error(t("resume.toast.saveError.title"), {
 			description: t("resume.toast.saveError.description"),
 		});
+	} finally {
 		isSubmitting.value = false;
 	}
 }
@@ -121,54 +122,121 @@ function handleCancel() {
   <div class="w-full">
     <form @submit="handleSubmit">
       <FieldGroup>
-        <BasicsSection v-model="basics" />
-        <FieldSeparator />
-        <FieldSet>
-          <ProfilesField v-model="basics.profiles" />
-        </FieldSet>
-        <FieldSeparator />
-        <WorkExperienceSection v-model="workExperiences" />
-        <FieldSeparator />
-        <VolunteerSection v-model="volunteers" />
-        <FieldSeparator />
-        <EducationSection v-model="education" />
-        <FieldSeparator />
-        <AwardSection v-model="awards" />
-        <FieldSeparator />
-        <CertificateSection v-model="certificates" />
-        <FieldSeparator />
-        <PublicationSection v-model="publications" />
-        <FieldSeparator />
-        <SkillSection v-model="skills" />
-        <FieldSeparator />
-        <LanguageSection v-model="languages" />
-        <FieldSeparator />
-        <InterestSection v-model="interests" />
-        <FieldSeparator />
-        <ReferenceSection v-model="references" />
-        <FieldSeparator />
-        <ProjectSection v-model="projects" />
-        <FieldSeparator />
-        <Field orientation="horizontal">
-          <Button type="submit" :disabled="isSubmitting || isGenerating">
-            {{ isSubmitting ? t("resume.form.saving") : t("resume.form.submit") }}
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            :disabled="!isValid || isGenerating"
-            @click="handleGeneratePdf"
-          >
-            {{ isGenerating ? t("resume.form.generating") : t("resume.form.generatePdf") }}
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            @click="handleCancel"
-          >
-            {{ t("resume.form.cancel") }}
-          </Button>
-        </Field>
+        <Accordion type="multiple" class="w-full" :default-value="['basics', 'work', 'education']">
+          <AccordionItem value="basics">
+            <AccordionTrigger>{{ t("resume.sections.personalInfo") }}</AccordionTrigger>
+            <AccordionContent>
+              <div class="space-y-6">
+                <BasicsSection v-model="basics" />
+                <FieldSet>
+                  <ProfilesField v-model="basics.profiles" />
+                </FieldSet>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="work">
+            <AccordionTrigger>{{ t("resume.sections.workExperience") }}</AccordionTrigger>
+            <AccordionContent>
+              <WorkExperienceSection v-model="workExperiences" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="education">
+            <AccordionTrigger>{{ t("resume.sections.education") }}</AccordionTrigger>
+            <AccordionContent>
+              <EducationSection v-model="education" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="skills">
+            <AccordionTrigger>{{ t("resume.sections.skills") }}</AccordionTrigger>
+            <AccordionContent>
+              <SkillSection v-model="skills" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="projects">
+            <AccordionTrigger>{{ t("resume.sections.projects") }}</AccordionTrigger>
+            <AccordionContent>
+              <ProjectSection v-model="projects" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="languages">
+            <AccordionTrigger>{{ t("resume.sections.languages") }}</AccordionTrigger>
+            <AccordionContent>
+              <LanguageSection v-model="languages" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="volunteer">
+            <AccordionTrigger>{{ t("resume.sections.volunteer") }}</AccordionTrigger>
+            <AccordionContent>
+              <VolunteerSection v-model="volunteers" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="certificates">
+            <AccordionTrigger>{{ t("resume.sections.certificates") }}</AccordionTrigger>
+            <AccordionContent>
+              <CertificateSection v-model="certificates" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="awards">
+            <AccordionTrigger>{{ t("resume.sections.awards") }}</AccordionTrigger>
+            <AccordionContent>
+              <AwardSection v-model="awards" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="publications">
+            <AccordionTrigger>{{ t("resume.sections.publications") }}</AccordionTrigger>
+            <AccordionContent>
+              <PublicationSection v-model="publications" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="interests">
+            <AccordionTrigger>{{ t("resume.sections.interests") }}</AccordionTrigger>
+            <AccordionContent>
+              <InterestSection v-model="interests" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="references">
+            <AccordionTrigger>{{ t("resume.sections.references") }}</AccordionTrigger>
+            <AccordionContent>
+              <ReferenceSection v-model="references" />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <div class="mt-6">
+          <Field orientation="horizontal">
+            <Button type="submit" :disabled="isSubmitting || isGenerating">
+              <Loader2 v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isSubmitting ? t("resume.form.saving") : t("resume.form.submit") }}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              :disabled="!isValid || isGenerating"
+              @click="handleGeneratePdf"
+            >
+              <Loader2 v-if="isGenerating" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isGenerating ? t("resume.form.generating") : t("resume.form.generatePdf") }}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              @click="handleCancel"
+            >
+              {{ t("resume.form.cancel") }}
+            </Button>
+          </Field>
+        </div>
       </FieldGroup>
     </form>
   </div>

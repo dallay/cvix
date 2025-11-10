@@ -63,7 +63,6 @@ const hasInterests = computed(() => interests.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.interests') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.interests') }}
 		</FieldDescription>

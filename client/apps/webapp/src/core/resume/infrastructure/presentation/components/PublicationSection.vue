@@ -40,7 +40,6 @@ const hasPublications = computed(() => publications.value.length > 0);
 
 <template>
 	<FieldSet>
-		<FieldLegend>{{ t('resume.sections.publications') }}</FieldLegend>
 		<FieldDescription>
 			{{ t('resume.actions.descriptions.publications') }}
 		</FieldDescription>
