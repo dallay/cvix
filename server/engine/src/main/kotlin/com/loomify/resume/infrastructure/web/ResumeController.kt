@@ -159,9 +159,20 @@ private fun GenerateResumeRequest.toDomain(): ResumeData {
             url = personalInfo.website?.let { Url(it) },
             summary = personalInfo.summary?.let { Summary(it) },
             location = personalInfo.location?.let {
-                Location(city = it) // Simplified for now
+                Location(
+                    address = it.address,
+                    postalCode = it.postalCode,
+                    city = it.city,
+                    countryCode = it.countryCode,
+                    region = it.region
+                )
             },
             profiles = buildList {
+                // Add profiles from structured array (JSON Resume Schema format)
+                personalInfo.profiles?.forEach { profile ->
+                    add(SocialProfile(profile.network, profile.username ?: "", profile.url))
+                }
+                // Add profiles from legacy fields for backward compatibility
                 personalInfo.linkedin?.let {
                     add(SocialProfile("LinkedIn", "", it))
                 }
@@ -177,7 +188,7 @@ private fun GenerateResumeRequest.toDomain(): ResumeData {
                 startDate = work.startDate,
                 endDate = work.endDate,
                 location = work.location,
-                summary = work.summary,
+                summary = work.summary ?: work.description, // Prefer summary, fallback to description
                 highlights = work.highlights?.map { Highlight(it) },
                 url = work.url?.let { Url(it) },
             )

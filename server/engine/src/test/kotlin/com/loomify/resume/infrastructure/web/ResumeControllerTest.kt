@@ -116,7 +116,11 @@ class ResumeControllerTest {
                         "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
-                        "location" to "New York, NY, US",
+                        "location" to mapOf(
+                            "city" to "New York",
+                            "region" to "NY",
+                            "countryCode" to "US"
+                        ),
                         "summary" to "Experienced software engineer",
                     ),
                     "workExperience" to listOf(
@@ -131,7 +135,8 @@ class ResumeControllerTest {
                     "education" to listOf(
                         mapOf(
                             "institution" to "MIT",
-                            "degree" to "BSc Computer Science",
+                            "area" to "Computer Science",
+                            "studyType" to "BSc",
                             "startDate" to "2016-09-01",
                             "endDate" to "2020-06-01",
                         ),

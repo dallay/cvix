@@ -70,15 +70,54 @@ data class PersonalInfoDto(
     @field:NotBlank(message = "Phone is required")
     val phone: String,
 
-    @field:Size(max = 200, message = "Location must not exceed 200 characters")
-    val location: String? = null,
+    @field:Valid
+    val location: LocationDto? = null,
 
+    @field:Valid
+    val profiles: List<ProfileDto>? = null,
+
+    // Deprecated: Use profiles array instead. Kept for backward compatibility.
     val linkedin: String? = null,
     val github: String? = null,
     val website: String? = null,
 
     @field:Size(max = 500, message = "Summary must not exceed 500 characters")
     val summary: String? = null
+)
+
+/**
+ * DTO for location information per JSON Resume Schema.
+ */
+data class LocationDto(
+    @field:Size(max = 500, message = "Address must not exceed 500 characters")
+    val address: String? = null,
+
+    @field:Size(max = 20, message = "Postal code must not exceed 20 characters")
+    val postalCode: String? = null,
+
+    @field:Size(max = 100, message = "City must not exceed 100 characters")
+    val city: String? = null,
+
+    @field:Size(max = 2, message = "Country code must be 2 characters (ISO-3166-1 ALPHA-2)")
+    val countryCode: String? = null,
+
+    @field:Size(max = 100, message = "Region must not exceed 100 characters")
+    val region: String? = null
+)
+
+/**
+ * DTO for social profile per JSON Resume Schema.
+ */
+data class ProfileDto(
+    @field:NotBlank(message = "Network is required")
+    @field:Size(max = 50, message = "Network must not exceed 50 characters")
+    val network: String,
+
+    @field:Size(max = 100, message = "Username must not exceed 100 characters")
+    val username: String? = null,
+
+    @field:NotBlank(message = "URL is required")
+    val url: String
 )
 
 /**
@@ -103,6 +142,10 @@ data class WorkExperienceDto(
 
     @field:Size(max = 500, message = "Summary must not exceed 500 characters")
     val summary: String? = null,
+
+    // Deprecated: Use summary instead. Kept for backward compatibility.
+    @field:Size(max = 500, message = "Description must not exceed 500 characters")
+    val description: String? = null,
 
     val url: String? = null,
 
