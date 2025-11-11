@@ -1,92 +1,92 @@
 {
-  "name": "loomify",
-  "version": "1.0.0",
-  "description": "loomify Monorepo",
-  "private": true,
-  "type": "module",
-  "license": "MIT",
-  "homepage": "https://loomify.tech",
-  "author": "loomify Team",
-  "keywords": [
-    "loomify",
-    "monorepo"
-  ],
-  "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=10.0.0"
-  },
-  "packageManager": "pnpm@10.20.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dallay/cvix.git",
-    "branch": "main"
-  },
-  "bugs": {
-    "url": "https://github.com/dallay/cvix/issues"
-  },
-  "workspaces": {
-    "packages": [
-      "client/apps/*",
-      "client/packages/*",
-      "client/config",
-      "docs"
-    ]
-  },
-  "scripts": {
-    "update-deps": "pnpm update -i -r --latest",
-    "preinstall": "npx only-allow pnpm",
-    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
-    "ruler:check": "ruler check",
-    "ruler:apply": "ruler apply",
-    "dev": "pnpm --recursive --parallel run dev",
-    "dev:landing": "pnpm --filter @loomify/marketing dev",
-    "dev:web": "pnpm --filter @loomify/webapp dev",
-    "dev:docs": "pnpm --filter @loomify/docs dev",
-    "build": "pnpm --recursive run build",
-    "build:landing": "pnpm --filter @loomify/marketing build",
-    "preview:landing": "pnpm --filter @loomify/marketing preview",
-    "build:web": "pnpm --filter @loomify/webapp build",
-    "build:docs": "pnpm --filter @loomify/docs build",
-    "test": "pnpm --recursive run test",
-    "test:ui": "pnpm --recursive run test:ui",
-    "test:coverage": "pnpm --recursive run test:coverage",
-    "lint": "pnpm --recursive --parallel run lint",
-    "lint:strict": "pnpm --recursive --parallel run lint:strict",
-    "check": "pnpm run -r check && biome check . --write",
-    "clean": "pnpm --recursive run clean",
-    "backend:build": "./gradlew build",
-    "backend:run": "./gradlew bootRun",
-    "backend:test": "./gradlew test",
-    "backend:clean": "./gradlew clean",
-    "start": "run-p backend:run dev",
-    "test:all": "pnpm --recursive run test && pnpm run backend:test",
-    "precommit": "pnpm run ruler:apply"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.3.1",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@eslint/json": "^0.14.0",
-    "@playwright/test": "^1.56.1",
-    "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^24.9.1",
-    "@vitest/ui": "^4.0.4",
-    "deepmerge": "^4.3.1",
-    "lefthook": "^2.0.3",
-    "lychee": "^0.2.12",
-    "oxlint": "^1.28.0",
-    "tree-extended": "^4.6.0",
-    "tsup": "^8.5.0",
-    "tsx": "^4.20.6",
-    "typescript": "^5.8.2",
-    "vite": "^7.2.2",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.4",
-    "zod": "^4.1.12"
-  },
-  "pnpm": {
-    "overrides": {
-      "@loomify/docs>zod": "^3.23.8"
-    }
-  }
+	"name": "loomify",
+	"version": "1.0.0",
+	"description": "loomify Monorepo",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"homepage": "https://loomify.tech",
+	"author": "loomify Team",
+	"keywords": [
+		"loomify",
+		"monorepo"
+	],
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
+	"packageManager": "pnpm@10.20.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dallay/cvix.git",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/dallay/cvix/issues"
+	},
+	"workspaces": {
+		"packages": [
+			"client/apps/*",
+			"client/packages/*",
+			"client/config",
+			"docs"
+		]
+	},
+	"scripts": {
+		"update-deps": "pnpm update -i -r --latest",
+		"preinstall": "npx only-allow pnpm",
+		"prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
+		"ruler:check": "ruler check",
+		"ruler:apply": "ruler apply",
+		"dev": "pnpm --recursive --parallel run dev",
+		"dev:landing": "pnpm --filter @loomify/marketing dev",
+		"dev:web": "pnpm --filter @loomify/webapp dev",
+		"dev:docs": "pnpm --filter @loomify/docs dev",
+		"build": "pnpm --recursive run build",
+		"build:landing": "pnpm --filter @loomify/marketing build",
+		"preview:landing": "pnpm --filter @loomify/marketing preview",
+		"build:web": "pnpm --filter @loomify/webapp build",
+		"build:docs": "pnpm --filter @loomify/docs build",
+		"test": "pnpm --recursive run test",
+		"test:ui": "pnpm --recursive run test:ui",
+		"test:coverage": "pnpm --recursive run test:coverage",
+		"lint": "pnpm --recursive --parallel run lint",
+		"lint:strict": "pnpm --recursive --parallel run lint:strict",
+		"check": "pnpm run -r check && biome check . --write",
+		"clean": "pnpm --recursive run clean",
+		"backend:build": "./gradlew build",
+		"backend:run": "./gradlew bootRun",
+		"backend:test": "./gradlew test",
+		"backend:clean": "./gradlew clean",
+		"start": "run-p backend:run dev",
+		"test:all": "pnpm --recursive run test && pnpm run backend:test",
+		"precommit": "pnpm run ruler:apply"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.1",
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@eslint/json": "^0.14.0",
+		"@playwright/test": "^1.56.1",
+		"@total-typescript/ts-reset": "^0.6.1",
+		"@types/node": "^24.9.1",
+		"@vitest/ui": "^4.0.4",
+		"deepmerge": "^4.3.1",
+		"lefthook": "^2.0.3",
+		"lychee": "^0.2.12",
+		"oxlint": "^1.28.0",
+		"tree-extended": "^4.6.0",
+		"tsup": "^8.5.0",
+		"tsx": "^4.20.6",
+		"typescript": "^5.8.2",
+		"vite": "^7.2.2",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^4.0.4",
+		"zod": "^4.1.12"
+	},
+	"pnpm": {
+		"overrides": {
+			"@loomify/docs>zod": "^3.23.8"
+		}
+	}
 }
