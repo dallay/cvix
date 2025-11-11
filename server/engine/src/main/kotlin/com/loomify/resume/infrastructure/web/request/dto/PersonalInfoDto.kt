@@ -6,12 +6,13 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 /**
- * DTO for personal information.
+ * DTO for personal information following JSON Resume 'basics' schema.
+ * Maps to the 'basics' object in JSON Resume schema.
  */
 data class PersonalInfoDto(
-    @field:NotBlank(message = "Full name is required")
-    @field:Size(max = 100, message = "Full name must not exceed 100 characters")
-    val fullName: String,
+    @field:NotBlank(message = "Name is required")
+    @field:Size(max = 100, message = "Name must not exceed 100 characters")
+    val name: String,
 
     @field:Size(max = 100, message = "Label must not exceed 100 characters")
     val label: String? = null,
@@ -25,17 +26,14 @@ data class PersonalInfoDto(
     @field:NotBlank(message = "Phone is required")
     val phone: String,
 
+    val url: String? = null,
+
+    @field:Size(max = 500, message = "Summary must not exceed 500 characters")
+    val summary: String? = null,
+
     @field:Valid
     val location: LocationDto? = null,
 
     @field:Valid
-    val profiles: List<ProfileDto>? = null,
-
-    // Deprecated: Use profiles array instead. Kept for backward compatibility.
-    val linkedin: String? = null,
-    val github: String? = null,
-    val website: String? = null,
-
-    @field:Size(max = 500, message = "Summary must not exceed 500 characters")
-    val summary: String? = null
+    val profiles: List<ProfileDto>? = null
 )

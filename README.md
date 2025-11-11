@@ -181,7 +181,7 @@ make dev-web
 **API Endpoint:**
 
 ```bash
-POST /api/resumes
+POST /api/resume
 Content-Type: application/json
 Authorization: Bearer <jwt-token>
 Accept-Language: en

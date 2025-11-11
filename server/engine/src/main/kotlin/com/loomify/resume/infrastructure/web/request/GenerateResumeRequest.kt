@@ -16,16 +16,17 @@ import com.loomify.resume.infrastructure.web.request.dto.WorkExperienceDto
 import jakarta.validation.Valid
 
 /**
- * DTO for resume generation request.
+ * DTO for resume generation request following JSON Resume schema.
+ * Schema reference: https://jsonresume.org/schema/
  * Per FR-001: Must have at least one of work, education, or skills.
  */
 @ValidResumeContent
 data class GenerateResumeRequest(
     @field:Valid
-    val personalInfo: PersonalInfoDto,
+    val basics: PersonalInfoDto,
 
     @field:Valid
-    val workExperience: List<WorkExperienceDto>? = null,
+    val work: List<WorkExperienceDto>? = null,
 
     @field:Valid
     val volunteer: List<VolunteerDto>? = null,

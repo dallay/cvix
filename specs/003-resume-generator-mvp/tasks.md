@@ -94,7 +94,7 @@
 
 #### Integration Tests (Backend) - Write FIRST, verify they FAIL
 
-- [X] T034 [P] [US1] Integration test for ResumeController POST /api/resumes endpoint (@WebFluxTest) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
+- [X] T034 [P] [US1] Integration test for ResumeController POST /api/resume endpoint (@WebFluxTest) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
 - [X] T035 [P] [US1] Integration test for DockerPdfGeneratorAdapter with Testcontainers in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
 - [X] T036 [P] [US1] Integration test for LatexTemplateRenderer with sample data in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
 
@@ -150,7 +150,7 @@
 - [X] T071 [US1] Implement 10-second timeout handling in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
 - [X] T072 [US1] Add Docker resource limits (512MB memory, 0.5 CPU) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
 - [X] T073 [US1] Create GenerateResumeRequest DTO in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/GenerateResumeRequest.kt`
-- [X] T074 [US1] Implement ResumeController POST /api/resumes endpoint with JWT auth (depends on T063, T073) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [X] T074 [US1] Implement ResumeController POST /api/resume endpoint with JWT auth (depends on T063, T073) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
 - [X] T075 [US1] Add Content-Disposition, Content-Length, X-Generation-Time-Ms headers to response in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
 - [X] T076 [US1] Add Accept-Language header handling for locale selection in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
 - [X] T077 [US1] Add API-Version header validation in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
