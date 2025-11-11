@@ -63,7 +63,7 @@
 		"precommit": "pnpm run ruler:apply"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.1",
+		"@biomejs/biome": "^2.3.5",
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"@eslint/json": "^0.14.0",
