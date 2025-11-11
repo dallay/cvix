@@ -119,7 +119,7 @@ class ResumeControllerTest {
                         "location" to mapOf(
                             "city" to "New York",
                             "region" to "NY",
-                            "countryCode" to "US"
+                            "countryCode" to "US",
                         ),
                         "summary" to "Experienced software engineer",
                     ),
@@ -415,25 +415,25 @@ class ResumeControllerTest {
                             "city" to "San Francisco",
                             "region" to "California",
                             "countryCode" to "US",
-                            "postalCode" to "94102"
+                            "postalCode" to "94102",
                         ),
                         "profiles" to listOf(
                             mapOf(
                                 "network" to "LinkedIn",
                                 "username" to "johndoe",
-                                "url" to "https://linkedin.com/in/johndoe"
+                                "url" to "https://linkedin.com/in/johndoe",
                             ),
                             mapOf(
                                 "network" to "GitHub",
                                 "username" to "johndoe",
-                                "url" to "https://github.com/johndoe"
+                                "url" to "https://github.com/johndoe",
                             ),
                             mapOf(
                                 "network" to "Twitter",
                                 "username" to "johndoe",
-                                "url" to "https://twitter.com/johndoe"
-                            )
-                        )
+                                "url" to "https://twitter.com/johndoe",
+                            ),
+                        ),
                     ),
                     "skills" to listOf(
                         mapOf(
