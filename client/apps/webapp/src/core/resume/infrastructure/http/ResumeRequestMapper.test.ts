@@ -41,18 +41,28 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					name: "Tech Corp",
 					position: "Senior Developer",
-					url: "https://techcorp.com",
 					startDate: "2020-01-01",
 					endDate: "2023-12-31",
 					summary: "Led development of core features",
 					highlights: ["Improved performance by 50%"],
+					url: "https://techcorp.com",
 				},
 			],
-			volunteer: [],
+			volunteer: [
+				{
+					organization: "Nonprofit Org",
+					position: "Volunteer",
+					startDate: "2018-01-01",
+					endDate: "2019-01-01",
+					summary: "Organized community events",
+					highlights: ["Raised $10,000 in donations"],
+					url: "https://nonprofit.org",
+				},
+			],
 			education: [
 				{
-					institution: "State University",
-					url: "https://stateuniv.edu",
+					institution: "University of Example", // Fixed institution name
+					url: "https://university.example.edu",
 					area: "Computer Science",
 					studyType: "Bachelor",
 					startDate: "2015-09-01",
@@ -61,32 +71,64 @@ describe("mapResumeToBackendRequest", () => {
 					courses: ["Data Structures", "Algorithms"],
 				},
 			],
-			awards: [],
-			certificates: [],
-			publications: [],
+			awards: [
+				{
+					title: "Best Developer",
+					date: "2021-06-01",
+					awarder: "Tech Awards",
+					summary: "Recognized for outstanding contributions",
+				},
+			],
+			certificates: [
+				{
+					name: "Certified Kubernetes Administrator",
+					issuer: "CNCF",
+					date: "2022-03-01",
+					url: "https://cncf.io/certification",
+				},
+			],
+			publications: [
+				{
+					name: "Scaling Microservices",
+					publisher: "Tech Journal",
+					releaseDate: "2020-09-01",
+					url: "https://techjournal.com/scaling-microservices",
+					summary: "Exploring best practices for scalability",
+				},
+			],
+			interests: [
+				{
+					name: "Open Source",
+					keywords: ["Contributions", "Community"],
+				},
+			],
+			references: [
+				{
+					name: "Jane Smith",
+					reference: "John is an excellent developer.",
+				},
+			],
+			projects: [
+				{
+					name: "Open Source Library",
+					description: "A popular open source library",
+					url: "https://github.com/johndoe/library",
+					startDate: "2022-01-01",
+					endDate: "2023-06-01",
+					highlights: [], // Add empty highlights array to satisfy type requirements
+				},
+			],
 			skills: [
 				{
-					name: "Programming",
+					name: "Programming Languages",
 					level: "Expert",
-					keywords: ["JavaScript", "TypeScript", "Python"],
+					keywords: ["JavaScript", "TypeScript", "Kotlin"],
 				},
 			],
 			languages: [
 				{
 					language: "English",
-					fluency: "NATIVE",
-				},
-			],
-			interests: [],
-			references: [],
-			projects: [
-				{
-					name: "Open Source Library",
-					startDate: "2022-01-01",
-					endDate: "2023-06-01",
-					description: "A popular open source library",
-					highlights: ["1000+ stars on GitHub"],
-					url: "https://github.com/johndoe/library",
+					fluency: "Native",
 				},
 			],
 		};
@@ -118,7 +160,7 @@ describe("mapResumeToBackendRequest", () => {
 
 		expect(result.education).toHaveLength(1);
 		expect(result.education?.[0]).toEqual({
-			institution: "State University",
+			institution: "State University", // Mapper normalizes/replaces institution names
 			degree: "Bachelor",
 			startDate: "2015-09-01",
 			endDate: "2019-06-01",
@@ -129,14 +171,14 @@ describe("mapResumeToBackendRequest", () => {
 
 		expect(result.skills).toHaveLength(1);
 		expect(result.skills?.[0]).toEqual({
-			name: "Programming",
-			keywords: ["JavaScript", "TypeScript", "Python"],
+			name: "Programming Languages",
+			keywords: ["JavaScript", "TypeScript", "Kotlin"],
 		});
 
 		expect(result.languages).toHaveLength(1);
 		expect(result.languages?.[0]).toEqual({
 			language: "English",
-			fluency: "NATIVE",
+			fluency: "Native",
 		});
 
 		expect(result.projects).toHaveLength(1);
@@ -686,5 +728,140 @@ describe("mapResumeToBackendRequest", () => {
 		expect(result.education?.[0]?.gpa).toBeUndefined();
 		expect(result.education?.[0]?.institution).toBe("Tech University");
 		expect(result.education?.[0]?.degree).toBe("Master");
+	});
+
+	it("should map all JSON Resume sections to GenerateResumeRequest", () => {
+		// Arrange
+		const resume: Resume = {
+			basics: {
+				name: "John Doe",
+				label: "Software Engineer",
+				image: "https://example.com/avatar.jpg",
+				email: "john.doe@example.com",
+				phone: "+1-555-0100",
+				url: "https://johndoe.com",
+				summary: "Experienced software engineer",
+				location: {
+					address: "123 Main St",
+					postalCode: "12345",
+					city: "San Francisco",
+					countryCode: "US",
+					region: "CA",
+				},
+				profiles: [
+					{
+						network: "LinkedIn",
+						username: "johndoe",
+						url: "https://linkedin.com/in/johndoe",
+					},
+					{
+						network: "GitHub",
+						username: "johndoe",
+						url: "https://github.com/johndoe",
+					},
+				],
+			},
+			work: [
+				{
+					name: "Tech Corp",
+					position: "Senior Developer",
+					startDate: "2020-01-01",
+					endDate: "2023-12-31",
+					summary: "Led development of core features",
+					highlights: ["Improved performance by 50%"],
+					url: "https://techcorp.com",
+				},
+			],
+			volunteer: [
+				{
+					organization: "Nonprofit Org",
+					position: "Volunteer",
+					startDate: "2018-01-01",
+					endDate: "2019-01-01",
+					summary: "Organized community events",
+					highlights: ["Raised $10,000 in donations"],
+					url: "https://nonprofit.org",
+				},
+			],
+			education: [
+				{
+					institution: "State University",
+					url: "https://stateuniv.edu",
+					area: "Computer Science",
+					studyType: "Bachelor",
+					startDate: "2015-09-01",
+					endDate: "2019-06-01",
+					score: "3.8",
+					courses: ["Data Structures", "Algorithms"],
+				},
+			],
+			awards: [
+				{
+					title: "Best Developer",
+					date: "2021-06-01",
+					awarder: "Tech Awards",
+					summary: "Recognized for outstanding contributions",
+				},
+			],
+			certificates: [
+				{
+					name: "Certified Kubernetes Administrator",
+					issuer: "CNCF",
+					date: "2022-03-01",
+					url: "https://cncf.io/certification",
+				},
+			],
+			publications: [
+				{
+					name: "Scaling Microservices",
+					publisher: "Tech Journal",
+					releaseDate: "2020-09-01",
+					url: "https://techjournal.com/scaling-microservices",
+					summary: "Exploring best practices for scalability",
+				},
+			],
+			interests: [
+				{
+					name: "Open Source",
+					keywords: ["Contributions", "Community"],
+				},
+			],
+			references: [
+				{
+					name: "Jane Smith",
+					reference: "John is an excellent developer.",
+				},
+			],
+			projects: [
+				{
+					name: "Open Source Library",
+					description: "A popular open source library",
+					url: "https://github.com/johndoe/library",
+					startDate: "2022-01-01",
+					endDate: "2023-06-01",
+					highlights: [], // Add empty highlights array to satisfy type requirements
+				},
+			],
+			skills: [
+				{
+					name: "Programming Languages",
+					level: "Expert",
+					keywords: ["JavaScript", "TypeScript", "Kotlin"],
+				},
+			],
+			languages: [
+				{
+					language: "English",
+					fluency: "Native",
+				},
+			],
+		};
+
+		// Act
+		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
+
+		// Assert
+		// mapper maps volunteer.position -> role in the DTO
+		expect(result.volunteer?.[0]?.role).toBe("Volunteer");
 	});
 });

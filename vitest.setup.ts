@@ -50,10 +50,13 @@ global.localStorage = createMockStorage();
 
 // Refined mock for window object
 global.window = Object.create(global);
+Object.defineProperty(global.window, "navigator", {
+	value: { userAgent: "node.js" },
+	writable: true,
+});
 Object.assign(global.window, {
 	sessionStorage: global.sessionStorage,
 	localStorage: global.localStorage,
 	addEventListener: vi.fn(),
 	removeEventListener: vi.fn(),
-	navigator: { userAgent: "node.js" },
 });
