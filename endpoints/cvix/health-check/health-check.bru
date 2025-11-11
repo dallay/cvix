@@ -28,13 +28,23 @@ script:pre-request {
 }
 
 script:post-response {
-  const setCookieHeader = res.headers['set-cookie'][0];
+  // Extraer el token CSRF de las cookies de respuesta (si existen)
+  const setCookieHeaders = res.headers['set-cookie'];
 
-  const xsrfTokenMatch  = setCookieHeader.match(/XSRF-TOKEN=([^;]+)/);
+  if (setCookieHeaders) {
+    const cookies = Array.isArray(setCookieHeaders) ? setCookieHeaders : [setCookieHeaders];
 
-  const xsrfToken = decodeURIComponent(xsrfTokenMatch[1]);
+    for (const cookie of cookies) {
+      const xsrfTokenMatch = cookie.match(/XSRF-TOKEN=([^;]+)/);
 
-  bru.setEnvVar('X-XSRF-TOKEN',xsrfToken);
+      if (xsrfTokenMatch) {
+        const xsrfToken = decodeURIComponent(xsrfTokenMatch[1]);
+        bru.setEnvVar('xsrfToken', xsrfToken);
+        console.log('✅ CSRF Token guardado:', xsrfToken);
+        break;
+      }
+    }
+  }
 }
 
 settings {

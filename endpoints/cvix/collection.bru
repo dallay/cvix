@@ -15,16 +15,16 @@ auth:oauth2 {
   callback_url: http://localhost:8080
   authorization_url: {{keycloak-url}}/realms/{{realm}}/protocol/openid-connect/auth
   access_token_url: {{keycloak-url}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
+  refresh_token_url:
   client_id: {{clientId}}
   client_secret: {{clientSecret}}
   scope: {{scope}}
-  state: 
+  state:
   pkce: false
   credentials_placement: basic_auth_header
   credentials_id: credentials
   token_placement: header
-  token_header_prefix: 
+  token_header_prefix:
   auto_fetch_token: true
   auto_refresh_token: false
 }
@@ -37,3 +37,41 @@ vars:pre-request {
   tagId: 4ff98e9d-7f48-48af-96a0-221650e05084
   xsrfToken: oq__v5VvI3cPz_KKhZnmSYz_-M2_6VGg4BnUazKAJpsGcVOhl5ue2aNaF0Qi95Pr4bTSfLTM1fSM3zCN1CDjUgrhHv9gFTXD
 }
+
+script:pre-request {
+  // 🔧 Script Global de CSRF - Se ejecuta antes de cada request
+  // Asegura que la cookie XSRF-TOKEN se envíe automáticamente
+
+  const xsrfToken = bru.getEnvVar('xsrfToken');
+  const url = bru.getEnvVar('url');
+
+  if (xsrfToken && url) {
+    // Forzar que la cookie esté en el Cookie Jar para cada petición
+    const jar = bru.cookies.jar();
+    jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+  }
+}
+
+script:post-response {
+  // 🔧 Script Global de CSRF - Se ejecuta después de cada respuesta
+  // Actualiza automáticamente el token si el servidor envía uno nuevo
+
+  const url = bru.getEnvVar('url');
+  const jar = bru.cookies.jar();
+
+  // Si el servidor envió una nueva cookie XSRF-TOKEN, actualizarla
+  jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
+    if (cookie && cookie.value) {
+      const currentToken = bru.getEnvVar('xsrfToken');
+
+      // Solo actualizar si es diferente al actual
+      if (currentToken !== cookie.value) {
+        bru.setEnvVar('xsrfToken', cookie.value);
+        console.log('🔄 Token CSRF actualizado automáticamente');
+      }
+    }
+  }).catch(() => {
+    // Silenciar errores para no contaminar logs de requests normales
+  });
+}
+
