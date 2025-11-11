@@ -1,6 +1,7 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import { createI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { Resume } from "@/core/resume/domain/Resume";
@@ -282,6 +283,7 @@ describe("ResumeForm.vue", () => {
 			expect(generateButton).toBeTruthy();
 
 			await generateButton?.trigger("click");
+			await nextTick();
 			await flushPromises();
 
 			expect(toast.success).toHaveBeenCalledWith(

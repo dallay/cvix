@@ -5,8 +5,8 @@
  * @see T154 - E2E test for complete resume generation flow
  */
 
-import { expect, test } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
 
 test.describe("Resume Generation E2E Flow", () => {
 	test.beforeEach(async ({ page }) => {
@@ -146,9 +146,7 @@ test.describe("Resume Generation E2E Flow", () => {
 			expect(await download.failure()).toBeNull();
 
 			// Success message should appear
-			await expect(
-				page.getByText(/success|generated|download/i),
-			).toBeVisible({
+			await expect(page.getByText(/success|generated|download/i)).toBeVisible({
 				timeout: 10000,
 			});
 
