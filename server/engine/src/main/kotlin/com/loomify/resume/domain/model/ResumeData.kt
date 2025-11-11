@@ -7,9 +7,15 @@ package com.loomify.resume.domain.model
 data class ResumeData(
     val basics: PersonalInfo,
     val work: List<WorkExperience> = emptyList(),
+    val volunteer: List<Volunteer> = emptyList(),
     val education: List<Education> = emptyList(),
+    val awards: List<Award> = emptyList(),
+    val certificates: List<Certificate> = emptyList(),
+    val publications: List<Publication> = emptyList(),
     val skills: List<SkillCategory> = emptyList(),
     val languages: List<Language> = emptyList(),
+    val interests: List<Interest> = emptyList(),
+    val references: List<Reference> = emptyList(),
     val projects: List<Project> = emptyList(),
 ) {
     init {

@@ -35,8 +35,8 @@ class EducationTest {
         // Assert
         education shouldNotBe null
         education.institution.value shouldBe "MIT"
-        education.area.value shouldBe "Computer Science"
-        education.studyType.value shouldBe "Bachelor of Science"
+        education.area?.value shouldBe "Computer Science"
+        education.studyType?.value shouldBe "Bachelor of Science"
         education.score shouldBe "3.8"
         education.courses?.size shouldBe 3
     }
