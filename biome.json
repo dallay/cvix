@@ -49,14 +49,21 @@
     }
   },
   "overrides": [
-		{
-			"includes": ["**/coverage/**", "**/components.d.ts"],
-			"linter": {
-				"enabled": false
-			}
-		},
-		{
-			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
+    {
+      "includes": [
+        "**/coverage/**",
+        "**/components.d.ts"
+      ],
+      "linter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": [
+        "**/*.svelte",
+        "**/*.astro",
+        "**/*.vue"
+      ],
       "linter": {
         "rules": {
           "style": {
