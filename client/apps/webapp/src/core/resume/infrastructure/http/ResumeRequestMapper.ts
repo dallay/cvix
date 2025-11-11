@@ -1,3 +1,12 @@
+/**
+ * Normalizes an optional string field: trims and returns undefined if empty.
+ */
+function normalizeOptionalString(value?: string): string | undefined {
+	if (typeof value !== "string") return undefined;
+	const trimmed = value.trim();
+	return trimmed.length > 0 ? trimmed : undefined;
+}
+
 import type { Resume } from "@/core/resume/domain/Resume.ts";
 
 /**
@@ -80,14 +89,14 @@ export function mapResumeToBackendRequest(
 
 	return {
 		personalInfo: {
-			fullName: resume.basics.name,
-			email: resume.basics.email,
-			phone: resume.basics.phone,
-			location: resume.basics.location?.city,
-			linkedin: linkedinProfile?.url,
-			github: githubProfile?.url,
-			website: resume.basics.url,
-			summary: resume.basics.summary,
+			fullName: normalizeOptionalString(resume.basics.name) ?? "",
+			email: normalizeOptionalString(resume.basics.email) ?? "",
+			phone: normalizeOptionalString(resume.basics.phone) ?? "",
+			location: normalizeOptionalString(resume.basics.location?.city),
+			linkedin: normalizeOptionalString(linkedinProfile?.url),
+			github: normalizeOptionalString(githubProfile?.url),
+			website: normalizeOptionalString(resume.basics.url),
+			summary: normalizeOptionalString(resume.basics.summary),
 		},
 		workExperience:
 			resume.work.length > 0
@@ -96,8 +105,8 @@ export function mapResumeToBackendRequest(
 						position: work.position,
 						startDate: work.startDate,
 						endDate: work.endDate || undefined,
-						location: undefined, // Not in JSON Resume work schema
-						description: work.summary,
+						// location not present in Work type; omit from DTO
+						...(work.summary ? { description: work.summary } : {}),
 					}))
 				: undefined,
 		education:
@@ -107,9 +116,9 @@ export function mapResumeToBackendRequest(
 						degree: edu.studyType,
 						startDate: edu.startDate,
 						endDate: edu.endDate || undefined,
-						location: undefined, // Not in JSON Resume education schema
+						// location not present in Education type; omit from DTO
 						gpa: edu.score || undefined,
-						description: undefined, // Could map from courses if needed
+						// TODO: CVIX-1234 - Confirm with backend if education.description should be mapped from another field (e.g., courses or area)
 					}))
 				: undefined,
 		skills:
