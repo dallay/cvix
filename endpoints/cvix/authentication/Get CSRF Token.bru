@@ -11,33 +11,33 @@ get {
 }
 
 script:post-response {
-  // Solución directa: obtener cookie y guardar variable sincrónicamente
+  // Direct solution: get cookie and save variable synchronously
   const url = bru.getEnvVar('url');
   const jar = bru.cookies.jar();
 
-  // Obtener la cookie - esto es asíncrono pero Bruno lo maneja internamente
+  // Get the cookie - this is asynchronous but Bruno handles it internally
   jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
     if (cookie && cookie.value) {
       const xsrfToken = cookie.value;
 
-      // Guardar inmediatamente - SIN await, SIN setTimeout
+      // Save immediately - WITHOUT await, WITHOUT setTimeout
       bru.setEnvVar('xsrfToken', xsrfToken);
 
-      console.log('✅ Token guardado en variable xsrfToken');
-      console.log('   Valor:', xsrfToken.substring(0, 30) + '...');
-      console.log('   Dominio:', cookie.domain);
+      console.log('✅ Token saved in xsrfToken variable');
+      console.log('   Value:', xsrfToken.substring(0, 30) + '...');
+      console.log('   Domain:', cookie.domain);
       console.log('   Path:', cookie.path);
 
-      // Asegurar que la cookie está en el jar
+      // Ensure the cookie is in the jar
       jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
-      console.log('✅ Cookie también guardada en Cookie Jar');
+      console.log('✅ Cookie also saved in Cookie Jar');
     } else {
-      console.log('❌ No se encontró cookie XSRF-TOKEN');
-      console.log('💡 Verifica que el servidor esté enviando la cookie');
+      console.log('❌ XSRF-TOKEN cookie not found');
+      console.log('💡 Verify that the server is sending the cookie');
 
-      // Debug: mostrar todas las cookies
+      // Debug: show all cookies
       jar.getCookies().then(cookies => {
-        console.log('📋 Cookies disponibles:', cookies.length);
+        console.log('📋 Available cookies:', cookies.length);
         cookies.forEach(c => console.log('  -', c.key, '=', c.value.substring(0, 20) + '...'));
       });
     }

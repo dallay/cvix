@@ -21,12 +21,16 @@ export class ResumeHttpClient
 		// Map frontend Resume (JSON Resume schema) to backend GenerateResumeRequest format
 		const backendRequest = mapResumeToBackendRequest(resume);
 
-		const response = await this.client.post<Blob>("/resume", backendRequest, {
-			headers: {
-				"Accept-Language": locale,
+		const response = await this.client.post<Blob>(
+			"/resume/generate",
+			backendRequest,
+			{
+				headers: {
+					"Accept-Language": locale,
+				},
+				responseType: "blob",
 			},
-			responseType: "blob",
-		});
+		);
 		return response.data;
 	}
 }

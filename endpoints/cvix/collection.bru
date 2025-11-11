@@ -15,11 +15,11 @@ auth:oauth2 {
   callback_url: http://localhost:8080
   authorization_url: {{keycloak-url}}/realms/{{realm}}/protocol/openid-connect/auth
   access_token_url: {{keycloak-url}}/realms/{{realm}}/protocol/openid-connect/token
-  refresh_token_url: 
+  refresh_token_url:
   client_id: {{clientId}}
   client_secret: {{clientSecret}}
   scope: {{scope}}
-  state: 
+  state:
   pkce: false
   credentials_placement: basic_auth_header
   credentials_id: credentials
@@ -39,38 +39,38 @@ vars:pre-request {
 }
 
 script:pre-request {
-  // 🔧 Script Global de CSRF - Se ejecuta antes de cada request
-  // Asegura que la cookie XSRF-TOKEN se envíe automáticamente
-  
+  // 🔧 Global CSRF Script - Runs before each request
+  // Ensures the XSRF-TOKEN cookie is sent automatically
+
   const xsrfToken = bru.getEnvVar('xsrfToken');
   const url = bru.getEnvVar('url');
-  
+
   if (xsrfToken && url) {
-    // Forzar que la cookie esté en el Cookie Jar para cada petición
+    // Force the cookie to be in the Cookie Jar for each request
     const jar = bru.cookies.jar();
     jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
   }
 }
 
 script:post-response {
-  // 🔧 Script Global de CSRF - Se ejecuta después de cada respuesta
-  // Actualiza automáticamente el token si el servidor envía uno nuevo
-  
+  // 🔧 Global CSRF Script - Runs after each response
+  // Automatically updates the token if the server sends a new one
+
   const url = bru.getEnvVar('url');
   const jar = bru.cookies.jar();
-  
-  // Si el servidor envió una nueva cookie XSRF-TOKEN, actualizarla
+
+  // If the server sent a new XSRF-TOKEN cookie, update it
   jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
     if (cookie && cookie.value) {
       const currentToken = bru.getEnvVar('xsrfToken');
-  
-      // Solo actualizar si es diferente al actual
+
+      // Only update if it's different from the current one
       if (currentToken !== cookie.value) {
         bru.setEnvVar('xsrfToken', cookie.value);
-        console.log('🔄 Token CSRF actualizado automáticamente');
+        console.log('🔄 CSRF token updated automatically');
       }
     }
   }).catch(() => {
-    // Silenciar errores para no contaminar logs de requests normales
+    // Silence errors to not pollute logs of normal requests
   });
 }

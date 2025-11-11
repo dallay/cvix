@@ -14,8 +14,8 @@ import type { Resume } from "@/core/resume/domain/Resume.ts";
  * Maps the frontend JSON Resume schema to the backend's expected format.
  */
 export interface GenerateResumeRequest {
-	personalInfo: PersonalInfoDto;
-	workExperience?: WorkExperienceDto[];
+	basics: PersonalInfoDto;
+	work?: WorkExperienceDto[];
 	education?: EducationDto[];
 	skills?: SkillCategoryDto[];
 	languages?: LanguageDto[];
@@ -88,7 +88,7 @@ export function mapResumeToBackendRequest(
 	);
 
 	return {
-		personalInfo: {
+		basics: {
 			fullName: normalizeOptionalString(resume.basics.name) ?? "",
 			email: normalizeOptionalString(resume.basics.email) ?? "",
 			phone: normalizeOptionalString(resume.basics.phone) ?? "",
@@ -98,7 +98,7 @@ export function mapResumeToBackendRequest(
 			website: normalizeOptionalString(resume.basics.url),
 			summary: normalizeOptionalString(resume.basics.summary),
 		},
-		workExperience:
+		work:
 			resume.work.length > 0
 				? resume.work.map((work) => ({
 						company: work.name,

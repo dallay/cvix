@@ -95,7 +95,7 @@ describe("mapResumeToBackendRequest", () => {
 		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo).toEqual({
+		expect(result.basics).toEqual({
 			fullName: "John Doe",
 			email: "john.doe@example.com",
 			phone: "+1-555-0100",
@@ -106,8 +106,8 @@ describe("mapResumeToBackendRequest", () => {
 			summary: "Experienced software engineer",
 		});
 
-		expect(result.workExperience).toHaveLength(1);
-		expect(result.workExperience?.[0]).toEqual({
+		expect(result.work).toHaveLength(1);
+		expect(result.work?.[0]).toEqual({
 			company: "Tech Corp",
 			position: "Senior Developer",
 			startDate: "2020-01-01",
@@ -186,7 +186,7 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.workExperience).toBeUndefined();
+		expect(result.work).toBeUndefined();
 		expect(result.education).toBeUndefined();
 		expect(result.skills).toBeUndefined();
 		expect(result.languages).toBeUndefined();
@@ -236,8 +236,8 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.linkedin).toBeUndefined();
-		expect(result.personalInfo.github).toBeUndefined();
+		expect(result.basics.linkedin).toBeUndefined();
+		expect(result.basics.github).toBeUndefined();
 	});
 
 	it("should handle required string fields set to empty strings", () => {
@@ -277,10 +277,10 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.fullName).toBe("");
-		expect(result.personalInfo.email).toBe("");
-		expect(result.personalInfo.phone).toBe("");
-		expect(result.personalInfo.location).toBeUndefined(); // Empty city is normalized to undefined
+		expect(result.basics.fullName).toBe("");
+		expect(result.basics.email).toBe("");
+		expect(result.basics.phone).toBe("");
+		expect(result.basics.location).toBeUndefined(); // Empty city is normalized to undefined
 	});
 
 	it("should handle null vs undefined in optional fields - null location", () => {
@@ -325,9 +325,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.location).toBeUndefined(); // null.city should be handled gracefully
-		expect(result.workExperience).toHaveLength(1);
-		expect(result.workExperience?.[0]?.endDate).toBeUndefined();
+		expect(result.basics.location).toBeUndefined(); // null.city should be handled gracefully
+		expect(result.work).toHaveLength(1);
+		expect(result.work?.[0]?.endDate).toBeUndefined();
 	});
 
 	it("should handle undefined optional fields in work experience", () => {
@@ -377,9 +377,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.workExperience).toHaveLength(1);
-		expect(result.workExperience?.[0]?.description).toBeUndefined();
-		expect(result.workExperience?.[0]?.endDate).toBeUndefined();
+		expect(result.work).toHaveLength(1);
+		expect(result.work?.[0]?.description).toBeUndefined();
+		expect(result.work?.[0]?.endDate).toBeUndefined();
 	});
 
 	it("should handle profile network casing variations - LinkedIn", () => {
@@ -430,10 +430,8 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.linkedin).toBe(
-			"https://linkedin.com/in/davidlee",
-		);
-		expect(result.personalInfo.github).toBe("https://github.com/davidlee");
+		expect(result.basics.linkedin).toBe("https://linkedin.com/in/davidlee");
+		expect(result.basics.github).toBe("https://github.com/davidlee");
 	});
 
 	it("should handle profile network casing variations - lowercase", () => {
@@ -484,10 +482,8 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.linkedin).toBe(
-			"https://linkedin.com/in/evamartinez",
-		);
-		expect(result.personalInfo.github).toBe("https://github.com/evamartinez");
+		expect(result.basics.linkedin).toBe("https://linkedin.com/in/evamartinez");
+		expect(result.basics.github).toBe("https://github.com/evamartinez");
 	});
 
 	it("should handle profile network casing variations - mixed case", () => {
@@ -538,10 +534,8 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.linkedin).toBe(
-			"https://linkedin.com/in/frankwilson",
-		);
-		expect(result.personalInfo.github).toBe("https://github.com/frankwilson");
+		expect(result.basics.linkedin).toBe("https://linkedin.com/in/frankwilson");
+		expect(result.basics.github).toBe("https://github.com/frankwilson");
 	});
 
 	it("should handle missing nested location object entirely", () => {
@@ -576,9 +570,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.personalInfo.location).toBeUndefined();
-		expect(result.personalInfo.fullName).toBe("Grace Kim");
-		expect(result.personalInfo.email).toBe("grace@example.com");
+		expect(result.basics.location).toBeUndefined();
+		expect(result.basics.fullName).toBe("Grace Kim");
+		expect(result.basics.email).toBe("grace@example.com");
 	});
 
 	it("should handle optional fields as null in projects", () => {

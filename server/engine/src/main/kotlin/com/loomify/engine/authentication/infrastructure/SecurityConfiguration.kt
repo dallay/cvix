@@ -197,7 +197,6 @@ class SecurityConfiguration(
             .pathMatchers(
                 "/", "/api/health-check", "/api/auth/register",
                 "/api/auth/refresh-token", "/api/auth/login", "/api/auth/logout",
-                "/api/auth/csrf",
                 "/api/auth/federated/**", "/oauth2/**", "/login/oauth2/**",
                 "actuator/info",
             ).permitAll()
