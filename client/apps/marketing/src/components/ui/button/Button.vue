@@ -5,15 +5,15 @@ import { cn } from "@/lib/utils";
 import { type ButtonVariants, buttonVariants } from ".";
 
 interface Props extends PrimitiveProps {
-  variant?: ButtonVariants["variant"];
-  size?: ButtonVariants["size"];
-  class?: HTMLAttributes["class"];
-  type?: string;
-  ariaLabel?: string;
+	variant?: ButtonVariants["variant"];
+	size?: ButtonVariants["size"];
+	class?: HTMLAttributes["class"];
+	type?: string;
+	ariaLabel?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  as: "button",
+	as: "button",
 });
 </script>
 

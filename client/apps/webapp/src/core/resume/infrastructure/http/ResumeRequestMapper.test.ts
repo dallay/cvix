@@ -124,7 +124,7 @@ describe("mapResumeToBackendRequest", () => {
 			endDate: "2019-06-01",
 			location: undefined,
 			gpa: "3.8",
-			description: undefined,
+			description: "Computer Science | Data Structures, Algorithms",
 		});
 
 		expect(result.skills).toHaveLength(1);

@@ -59,17 +59,13 @@ export default defineConfig({
 					proxy.on("error", (err, _req, _res) => {
 						console.error("proxy error", err);
 					});
-					proxy.on("proxyReq", (_proxyReq, req, _res) => {
-						// Log cookies being sent
-						if (req.headers.cookie) {
-							// Log CSRF header being sent
-							if (req.headers["x-xsrf-token"]) {
-							}
-						}
-					});
 					proxy.on("proxyRes", (proxyRes, _req, _res) => {
 						// Log Set-Cookie headers from backend
 						if (proxyRes.headers["set-cookie"]) {
+							console.log(
+								"Set-Cookie headers from backend:",
+								proxyRes.headers["set-cookie"],
+							);
 						}
 					});
 				},

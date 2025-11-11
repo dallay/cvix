@@ -118,14 +118,28 @@ export function mapResumeToBackendRequest(
 						endDate: edu.endDate || undefined,
 						// location not present in Education type; omit from DTO
 						gpa: edu.score || undefined,
-						// TODO: CVIX-1234 - Confirm with backend if education.description should be mapped from another field (e.g., courses or area)
+						// Map description: area + courses (joined), normalized
+						description:
+							normalizeOptionalString(
+								[
+									normalizeOptionalString(edu.area),
+									edu.courses && edu.courses.length > 0
+										? edu.courses
+												.map(normalizeOptionalString)
+												.filter(Boolean)
+												.join(", ")
+										: undefined,
+								]
+									.filter(Boolean)
+									.join(" | "),
+							) || undefined,
 					}))
 				: undefined,
 		skills:
 			resume.skills.length > 0
 				? resume.skills.map((skill) => ({
 						name: skill.name,
-						keywords: [...skill.keywords],
+						keywords: Array.from(skill.keywords),
 					}))
 				: undefined,
 		languages:
