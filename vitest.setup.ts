@@ -53,6 +53,7 @@ global.window = Object.create(global);
 Object.defineProperty(global.window, "navigator", {
 	value: { userAgent: "node.js" },
 	writable: true,
+	configurable: true,
 });
 Object.assign(global.window, {
 	sessionStorage: global.sessionStorage,
