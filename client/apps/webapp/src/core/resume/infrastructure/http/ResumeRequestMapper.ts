@@ -114,6 +114,7 @@ export interface ReferenceDto {
 	name: string;
 	relation?: string;
 	contact?: string;
+	reference?: string;
 }
 
 /**
@@ -264,11 +265,21 @@ export function mapResumeToBackendRequest(
 				: undefined,
 		references:
 			resume.references.length > 0
-				? resume.references.map((ref) => ({
-						name: ref.name,
-						relation: undefined, // No relation field in domain model
-						contact: undefined, // No contact field in domain model
-					}))
+				? resume.references.map((ref) => {
+						const maybe = ref as Partial<{
+							relation?: string;
+							contact?: string;
+						}>;
+						const relation = normalizeOptionalString(maybe.relation);
+						const contact = normalizeOptionalString(maybe.contact);
+						const reference = normalizeOptionalString(ref.reference);
+						return {
+							name: ref.name,
+							...(relation ? { relation } : {}),
+							...(contact ? { contact } : {}),
+							...(reference ? { reference } : {}),
+						};
+					})
 				: undefined,
 	};
 }

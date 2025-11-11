@@ -1,6 +1,7 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.common.domain.vo.email.Email
+import java.util.Locale
 
 /**
  * FullName value object with validation.
@@ -63,7 +64,8 @@ value class Url private constructor(val value: String) {
             val uri = runCatching { java.net.URI(normalized) }
                 .getOrElse { throw IllegalArgumentException("Invalid URL format: ${it.message}") }
 
-            require(uri.scheme in VALID_SCHEMES) {
+            val scheme = uri.scheme?.lowercase(Locale.ROOT)
+            require(scheme in VALID_SCHEMES) {
                 "URL scheme must be http or https, got: ${uri.scheme}"
             }
             require(!uri.host.isNullOrBlank()) {
