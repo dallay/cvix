@@ -18,7 +18,6 @@ class CsrfService {
 	 */
 	async initialize(): Promise<void> {
 		if (this.initialized) {
-			console.debug("CSRF already initialized, skipping");
 			return;
 		}
 

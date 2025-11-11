@@ -1,6 +1,7 @@
 import type { Resume } from "@/core/resume/domain/Resume.ts";
 import type { ResumeGenerator } from "@/core/resume/domain/ResumeGenerator.ts";
 import { BaseHttpClient } from "@/shared/BaseHttpClient.ts";
+import { mapResumeToBackendRequest } from "./ResumeRequestMapper.ts";
 
 /**
  * HTTP client for resume generation API
@@ -17,7 +18,10 @@ export class ResumeHttpClient
 	 * @returns Promise with the PDF blob
 	 */
 	async generatePdf(resume: Resume, locale?: string): Promise<Blob> {
-		const response = await this.client.post<Blob>("/resumes", resume, {
+		// Map frontend Resume (JSON Resume schema) to backend GenerateResumeRequest format
+		const backendRequest = mapResumeToBackendRequest(resume);
+
+		const response = await this.client.post<Blob>("/resumes", backendRequest, {
 			headers: {
 				"Accept-Language": locale,
 			},

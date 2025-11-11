@@ -46,20 +46,8 @@ export function useWorkspaceLoader() {
 		// Retry loop with exponential backoff
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				if (isDev && attempt > 1) {
-					console.log(
-						`[Workspace] Retry attempt ${attempt}/${maxRetries} for user ${userId}`,
-					);
-				}
-
 				// Load all workspaces
 				await store.loadWorkspaces();
-
-				if (isDev) {
-					console.log(
-						`[Workspace] Loaded ${store.workspaces.length} workspaces for user ${userId}`,
-					);
-				}
 
 				// Validate userId format before attempting load
 				if (!WorkspaceId.isValid(userId)) {
@@ -78,11 +66,6 @@ export function useWorkspaceLoader() {
 				// Set as current workspace if found
 				if (workspaceToLoad) {
 					store.setCurrentWorkspace(workspaceToLoad);
-					if (isDev) {
-						console.log(
-							`[Workspace] Auto-loaded workspace: ${workspaceToLoad.name} (ID: ${workspaceToLoad.id})`,
-						);
-					}
 				} else if (isDev) {
 					console.warn(`[Workspace] No workspace available for user ${userId}`);
 				}
@@ -101,11 +84,6 @@ export function useWorkspaceLoader() {
 				// If not the last attempt, wait before retrying with exponential backoff
 				if (attempt < maxRetries) {
 					const delayMs = 2 ** (attempt - 1) * 1000; // 1s, 2s, 4s
-					if (isDev) {
-						console.log(
-							`[Workspace] Waiting ${delayMs}ms before retry ${attempt + 1}`,
-						);
-					}
 					await delay(delayMs);
 				}
 			}

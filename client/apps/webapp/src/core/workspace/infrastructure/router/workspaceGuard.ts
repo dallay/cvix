@@ -36,18 +36,10 @@ export async function workspaceGuard(
 	}
 
 	try {
-		if (isDev) {
-			console.log("[Workspace Guard] Loading workspace for authenticated user");
-		}
-
 		const { loadWorkspaceOnLogin } = useWorkspaceLoader();
 		await loadWorkspaceOnLogin(authStore.user.id);
 
 		workspaceStore.loadedInSession = true;
-
-		if (isDev) {
-			console.log("[Workspace Guard] Workspace loaded successfully");
-		}
 
 		next();
 	} catch (error) {

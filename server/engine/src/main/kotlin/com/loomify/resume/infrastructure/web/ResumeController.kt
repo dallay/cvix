@@ -3,40 +3,13 @@ package com.loomify.resume.infrastructure.web
 import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.handler.GenerateResumeCommandHandler
-import com.loomify.resume.domain.model.Award
-import com.loomify.resume.domain.model.Certificate
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.DegreeType
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FieldOfStudy
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.Highlight
-import com.loomify.resume.domain.model.InstitutionName
-import com.loomify.resume.domain.model.Interest
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.Language
-import com.loomify.resume.domain.model.Location
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.Project
-import com.loomify.resume.domain.model.Publication
-import com.loomify.resume.domain.model.Reference
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.Skill
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.SocialProfile
-import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.domain.model.Url
-import com.loomify.resume.domain.model.Volunteer
-import com.loomify.resume.domain.model.WorkExperience
-import com.loomify.resume.infrastructure.web.dto.GenerateResumeRequest
+import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
+import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
-import java.time.LocalDate
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -59,7 +32,7 @@ private const val MAX_BYTES_SUPPORTED = 100 * 1024
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class ResumeController(
     private val generateResumeCommandHandler: GenerateResumeCommandHandler,
-    private val applicationSecurityProperties: ApplicationSecurityProperties
+    private val applicationSecurityProperties: ApplicationSecurityProperties,
 ) {
 
     @Operation(summary = "Generate a PDF resume from resume data")
@@ -107,7 +80,7 @@ class ResumeController(
         }
 
         // Convert DTO to domain model
-        val resumeData = request.toDomain()
+        val resumeData = ResumeRequestMapper.toDomain(request)
 
         // Create command
         val command = GenerateResumeCommand(resumeData, locale)
@@ -143,142 +116,4 @@ class ResumeController(
         private const val X_FRAME_OPTIONS_VALUE = "DENY"
         private const val REFERRER_POLICY_VALUE = "strict-origin-when-cross-origin"
     }
-}
-
-/**
- * Extension function to convert DTO to domain model.
- */
-private fun GenerateResumeRequest.toDomain(): ResumeData {
-    return ResumeData(
-        basics = PersonalInfo(
-            fullName = FullName(personalInfo.fullName),
-            label = personalInfo.label?.let { JobTitle(it) },
-            image = personalInfo.image?.let { Url(it) },
-            email = com.loomify.common.domain.vo.email.Email(personalInfo.email),
-            phone = PhoneNumber(personalInfo.phone),
-            url = personalInfo.website?.let { Url(it) },
-            summary = personalInfo.summary?.let { Summary(it) },
-            location = personalInfo.location?.let {
-                Location(
-                    address = it.address,
-                    postalCode = it.postalCode,
-                    city = it.city,
-                    countryCode = it.countryCode,
-                    region = it.region
-                )
-            },
-            profiles = buildList {
-                // Add profiles from structured array (JSON Resume Schema format)
-                personalInfo.profiles?.forEach { profile ->
-                    add(SocialProfile(profile.network, profile.username ?: "", profile.url))
-                }
-                // Add profiles from legacy fields for backward compatibility
-                personalInfo.linkedin?.let {
-                    add(SocialProfile("LinkedIn", "", it))
-                }
-                personalInfo.github?.let {
-                    add(SocialProfile("GitHub", "", it))
-                }
-            },
-        ),
-        work = workExperience?.map { work ->
-            WorkExperience(
-                company = CompanyName(work.company),
-                position = JobTitle(work.position),
-                startDate = work.startDate,
-                endDate = work.endDate,
-                location = work.location,
-                summary = work.summary ?: work.description, // Prefer summary, fallback to description
-                highlights = work.highlights?.map { Highlight(it) },
-                url = work.url?.let { Url(it) },
-            )
-        } ?: emptyList(),
-        education = education?.map { edu ->
-            Education(
-                institution = InstitutionName(edu.institution),
-                area = edu.area?.let { FieldOfStudy(it) },
-                studyType = edu.studyType?.let { DegreeType(it) },
-                startDate = edu.startDate,
-                endDate = edu.endDate,
-                score = edu.score,
-                url = edu.url?.let { Url(it) },
-                courses = edu.courses,
-            )
-        } ?: emptyList(),
-        skills = skills?.map { skill ->
-            SkillCategory(
-                name = SkillCategoryName(skill.name),
-                level = skill.level,
-                keywords = skill.keywords.map { Skill(it) },
-            )
-        } ?: emptyList(),
-        languages = languages?.map { lang ->
-            Language(
-                language = lang.language,
-                fluency = lang.fluency,
-            )
-        } ?: emptyList(),
-        projects = projects?.map { project ->
-            Project(
-                name = project.name,
-                description = project.description,
-                url = project.url,
-                startDate = project.startDate?.let { LocalDate.parse(it) },
-                endDate = project.endDate?.let { LocalDate.parse(it) },
-                highlights = project.highlights,
-                keywords = project.keywords,
-                roles = project.roles,
-                entity = project.entity,
-                type = project.type,
-            )
-        } ?: emptyList(),
-        volunteer = volunteer?.map { vol ->
-            Volunteer(
-                organization = vol.organization,
-                position = vol.position,
-                url = vol.url?.let { Url(it) },
-                startDate = vol.startDate,
-                endDate = vol.endDate,
-                summary = vol.summary,
-                highlights = vol.highlights,
-            )
-        } ?: emptyList(),
-        awards = awards?.map { award ->
-            Award(
-                title = award.title,
-                date = award.date,
-                awarder = award.awarder,
-                summary = award.summary,
-            )
-        } ?: emptyList(),
-        certificates = certificates?.map { cert ->
-            Certificate(
-                name = cert.name,
-                date = cert.date,
-                url = cert.url?.let { Url(it) },
-                issuer = cert.issuer,
-            )
-        } ?: emptyList(),
-        publications = publications?.map { pub ->
-            Publication(
-                name = pub.name,
-                publisher = pub.publisher,
-                releaseDate = pub.releaseDate,
-                url = pub.url?.let { Url(it) },
-                summary = pub.summary,
-            )
-        } ?: emptyList(),
-        interests = interests?.map { interest ->
-            Interest(
-                name = interest.name,
-                keywords = interest.keywords,
-            )
-        } ?: emptyList(),
-        references = references?.map { ref ->
-            Reference(
-                name = ref.name,
-                reference = ref.reference,
-            )
-        } ?: emptyList(),
-    )
 }

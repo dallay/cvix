@@ -17,7 +17,8 @@ function getInitialTheme(): Theme {
 			return stored;
 		}
 	} catch (error) {
-		console.debug("localStorage not available:", error);
+		console.error("Failed to get initial theme from localStorage:", error);
+		// localStorage not available
 	}
 	return "system";
 }
@@ -93,7 +94,8 @@ watch(theme, (newTheme) => {
 	try {
 		localStorage.setItem(THEME_STORAGE_KEY, newTheme);
 	} catch (error) {
-		console.warn("Failed to save theme to localStorage:", error);
+		console.error("Failed to save theme to localStorage:", error);
+		// Failed to save theme to localStorage
 	}
 
 	const appliedTheme = newTheme === "system" ? getSystemTheme() : newTheme;

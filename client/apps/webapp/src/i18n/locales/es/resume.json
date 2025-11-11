@@ -89,7 +89,7 @@
 			"label": "Ingeniera de Software",
 			"image": "https://example.com/profile.jpg",
 			"imageHint": "Sube un retrato profesional",
-			"email": "maria.garcia@ejemplo.com",
+			"email": "{'maria.garcia@loomify.com'}",
 			"phone": "+34 612 345 678",
 			"url": "https://mariagarcia.com",
 			"network": "LinkedIn, GitHub, Twitter, etc.",
@@ -105,6 +105,8 @@
 			"summary": "Ingeniera de software experimentada con pasión por construir aplicaciones web escalables...",
 			"company": "Corporación ACME",
 			"position": "Desarrolladora Senior",
+			"startDate": "2021-01",
+			"endDate": "2023-12",
 			"location": {
 				"address": "123 Calle Principal",
 				"postalCode": "94105",
@@ -186,6 +188,7 @@
 			"removeSkill": "Eliminar {skill}",
 			"addSkill": "Agregar habilidad",
 			"descriptions": {
+				"personalInfo": "Agrega tu información de contacto básica y detalles profesionales",
 				"profiles": "Agrega tus perfiles de redes sociales y redes profesionales",
 				"workExperience": "Agrega tu historial de trabajo profesional y logros",
 				"volunteer": "Agrega tu trabajo voluntario y contribuciones a la comunidad",
