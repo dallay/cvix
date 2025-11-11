@@ -19,7 +19,7 @@ export function useEmailValidation(options: EmailValidationOptions = {}) {
 	const validationSchema = computed(() => {
 		let schema = z.string().email({
 			message: customMessage || t("form.email.invalid"),
-		});
+		} as { message: string }); // Explicitly cast to suppress warning
 
 		if (required) {
 			schema = schema.min(1, { message: t("form.email.required") });
