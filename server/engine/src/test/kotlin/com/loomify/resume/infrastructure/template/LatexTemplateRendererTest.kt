@@ -30,7 +30,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.stringtemplate.v4.ST
-import org.stringtemplate.v4.STGroupDir
+import org.stringtemplate.v4.STGroupString
 
 /**
  * Unit test for LatexTemplateRenderer.
@@ -39,7 +39,7 @@ import org.stringtemplate.v4.STGroupDir
 @UnitTest
 class LatexTemplateRendererTest {
 
-    private val templateGroup = mockk<STGroupDir>()
+    private val templateGroup = mockk<STGroupString>()
     private val renderer = LatexTemplateRenderer(templateGroup)
 
     @Test

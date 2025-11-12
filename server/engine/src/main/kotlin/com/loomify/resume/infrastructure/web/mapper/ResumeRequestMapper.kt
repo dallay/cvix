@@ -64,10 +64,10 @@ object ResumeRequestMapper {
         return PersonalInfo(
             fullName = FullName(basics.name),
             label = basics.label?.let { JobTitle(it) },
-            image = basics.image?.let { Url(it) },
+            image = basics.image?.takeIf { it.isNotBlank() }?.let { Url(it) },
             email = com.loomify.common.domain.vo.email.Email(basics.email),
             phone = PhoneNumber(basics.phone),
-            url = basics.url?.let { Url(it) },
+            url = basics.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             summary = basics.summary?.let { Summary(it) },
             location = basics.location?.let {
                 Location(
@@ -93,7 +93,7 @@ object ResumeRequestMapper {
             location = work.location,
             summary = work.summary ?: work.description,
             highlights = work.highlights?.map { Highlight(it) },
-            url = work.url?.let { Url(it) },
+            url = work.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
         )
 
     private fun mapEducation(edu: EducationDto): Education =
@@ -104,7 +104,7 @@ object ResumeRequestMapper {
             startDate = edu.startDate,
             endDate = edu.endDate,
             score = edu.score,
-            url = edu.url?.let { Url(it) },
+            url = edu.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             courses = edu.courses,
         )
 
@@ -139,7 +139,7 @@ object ResumeRequestMapper {
         Volunteer(
             organization = vol.organization,
             position = vol.position,
-            url = vol.url?.let { Url(it) },
+            url = vol.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             startDate = vol.startDate,
             endDate = vol.endDate,
             summary = vol.summary,
@@ -158,7 +158,7 @@ object ResumeRequestMapper {
         Certificate(
             name = cert.name,
             date = cert.date,
-            url = cert.url?.let { Url(it) },
+            url = cert.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             issuer = cert.issuer,
         )
 
@@ -167,7 +167,7 @@ object ResumeRequestMapper {
             name = pub.name,
             publisher = pub.publisher,
             releaseDate = pub.releaseDate,
-            url = pub.url?.let { Url(it) },
+            url = pub.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             summary = pub.summary,
         )
 

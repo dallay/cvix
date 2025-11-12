@@ -12,16 +12,21 @@ import com.loomify.resume.domain.model.WorkExperience
 import com.loomify.resume.domain.port.TemplateRendererPort
 import java.util.Locale
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
-import org.stringtemplate.v4.STGroupDir
+import org.stringtemplate.v4.ST
+import org.stringtemplate.v4.STGroupString
 
 /**
  * Adapter that renders LaTeX templates using StringTemplate 4.
  * Implements security measures to prevent LaTeX injection attacks.
+ *
+ * Uses STGroupString to load templates as raw content, preventing ST4 from
+ * parsing LaTeX syntax as ST4 commands.
  */
 @Component
 class LatexTemplateRenderer(
-    private val templateGroup: STGroupDir
+    private val templateGroup: STGroupString
 ) : TemplateRendererPort {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -32,10 +37,12 @@ class LatexTemplateRenderer(
             // Security check: Scan for malicious LaTeX commands
             validateContent(resumeData)
 
-            // Load template based on locale
-            val templateName = "resume-template-$locale"
-            val template = templateGroup.getInstanceOf(templateName)
-                ?: throw TemplateRenderingException("Template not found for locale: $locale")
+            // Load template content from classpath
+            val templatePath = "templates/resume/resume-template-$locale.st"
+            val templateContent = loadTemplateContent(templatePath)
+
+            // Create ST instance with the loaded content
+            val template = ST(templateGroup, templateContent)
 
             // Populate template with escaped data
             populateTemplate(template, resumeData, locale)
@@ -52,6 +59,14 @@ class LatexTemplateRenderer(
             logger.error("Failed to render template", e)
             throw TemplateRenderingException("Failed to render resume template: ${e.message}", e)
         }
+    }
+
+    private fun loadTemplateContent(templatePath: String): String {
+        val resource = ClassPathResource(templatePath)
+        if (!resource.exists()) {
+            throw TemplateRenderingException("Template file not found: $templatePath")
+        }
+        return resource.inputStream.bufferedReader().use { it.readText() }
     }
 
     private fun validateContent(resumeData: ResumeData) {
@@ -96,7 +111,7 @@ class LatexTemplateRenderer(
         return escaped
     }
 
-    private fun populateTemplate(template: org.stringtemplate.v4.ST, resumeData: ResumeData, locale: String) {
+    private fun populateTemplate(template: ST, resumeData: ResumeData, locale: String) {
         // Add content presence flags for adaptive layout
         template.add("hasProjects", resumeData.projects.isNotEmpty())
         template.add("hasLanguages", resumeData.languages.isNotEmpty())
@@ -109,7 +124,7 @@ class LatexTemplateRenderer(
         addProjects(template, resumeData.projects)
     }
 
-    private fun addPersonalInfo(template: org.stringtemplate.v4.ST, basics: PersonalInfo) {
+    private fun addPersonalInfo(template: ST, basics: PersonalInfo) {
         val nameParts = basics.fullName.value.split(" ", limit = 2)
         template.add("firstName", escapeLatex(nameParts[0]))
         template.add("lastName", escapeLatex(nameParts.getOrNull(1) ?: ""))
@@ -126,7 +141,7 @@ class LatexTemplateRenderer(
         basics.summary?.let { template.add("summary", escapeLatex(it.value)) }
     }
 
-    private fun addWorkExperience(template: org.stringtemplate.v4.ST, workList: List<WorkExperience>, locale: String) {
+    private fun addWorkExperience(template: ST, workList: List<WorkExperience>, locale: String) {
         if (workList.isNotEmpty()) {
             val mapped = workList.map { work ->
                 mapOf(
@@ -141,7 +156,7 @@ class LatexTemplateRenderer(
         }
     }
 
-    private fun addEducation(template: org.stringtemplate.v4.ST, eduList: List<Education>, locale: String) {
+    private fun addEducation(template: ST, eduList: List<Education>, locale: String) {
         if (eduList.isNotEmpty()) {
             val mapped = eduList.map { edu ->
                 mapOf(
@@ -156,7 +171,7 @@ class LatexTemplateRenderer(
         }
     }
 
-    private fun addSkills(template: org.stringtemplate.v4.ST, skillsList: List<SkillCategory>) {
+    private fun addSkills(template: ST, skillsList: List<SkillCategory>) {
         if (skillsList.isNotEmpty()) {
             val mapped = skillsList.map { category ->
                 mapOf(
@@ -168,7 +183,7 @@ class LatexTemplateRenderer(
         }
     }
 
-    private fun addLanguages(template: org.stringtemplate.v4.ST, langList: List<Language>) {
+    private fun addLanguages(template: ST, langList: List<Language>) {
         if (langList.isNotEmpty()) {
             val mapped = langList.map { lang ->
                 mapOf(
@@ -180,7 +195,7 @@ class LatexTemplateRenderer(
         }
     }
 
-    private fun addProjects(template: org.stringtemplate.v4.ST, projectList: List<Project>) {
+    private fun addProjects(template: ST, projectList: List<Project>) {
         if (projectList.isNotEmpty()) {
             val mapped = projectList.map { project ->
                 mapOf(
