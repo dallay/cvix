@@ -17,16 +17,20 @@ export class ResumeHttpClient
 	 * @param locale Language locale (en/es)
 	 * @returns Promise with the PDF blob
 	 */
-	async generatePdf(resume: Resume, locale?: string): Promise<Blob> {
+	async generatePdf(resume: Resume, locale?: "en" | "es"): Promise<Blob> {
 		// Map frontend Resume (JSON Resume schema) to backend GenerateResumeRequest format
 		const backendRequest = mapResumeToBackendRequest(resume);
 
-		const response = await this.client.post<Blob>("/resumes", backendRequest, {
-			headers: {
-				"Accept-Language": locale,
+		const response = await this.client.post<Blob>(
+			"/resume/generate",
+			backendRequest,
+			{
+				headers: {
+					"Accept-Language": locale,
+				},
+				responseType: "blob",
 			},
-			responseType: "blob",
-		});
+		);
 		return response.data;
 	}
 }

@@ -11,7 +11,7 @@ post {
 }
 
 headers {
-  X-XSRF-TOKEN: {{xsrf-token}}
+  X-XSRF-TOKEN: {{xsrfToken}}
 }
 
 body:json {
@@ -25,4 +25,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
