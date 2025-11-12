@@ -8,6 +8,7 @@ function normalizeOptionalString(value?: string): string | undefined {
 }
 
 import type { Resume } from "@/core/resume/domain/Resume.ts";
+import type { Reference } from "../../domain/Reference";
 
 /**
  * Backend DTO structure for resume generation request.
@@ -159,25 +160,12 @@ export function mapResumeToBackendRequest(
 		education:
 			resume.education.length > 0
 				? resume.education.map((edu) => ({
-						institution: edu.institution?.replace(
-							"University of Example",
-							"State University",
-						), // Map institution to expected value
-						degree: edu.studyType?.replace("'s", ""), // Normalize degree to match test expectations
+						institution: edu.institution,
+						degree: edu.studyType,
 						startDate: edu.startDate,
 						endDate: edu.endDate || undefined,
 						// location not present in Education type; omit from DTO
-						gpa: edu.score
-							? !Number.isNaN(Number.parseFloat(edu.score))
-								? edu.score // Numeric GPA
-								: edu.score === "A"
-									? "4.0"
-									: edu.score === "B"
-										? "3.0"
-										: edu.score === "C"
-											? "2.0"
-											: undefined // Map letter grades
-							: undefined,
+						gpa: normalizeOptionalString(edu.score), // Preserve original GPA value without conversion
 						// Map description: area + courses (joined), normalized
 						description:
 							normalizeOptionalString(
@@ -265,13 +253,9 @@ export function mapResumeToBackendRequest(
 				: undefined,
 		references:
 			resume.references.length > 0
-				? resume.references.map((ref) => {
-						const maybe = ref as Partial<{
-							relation?: string;
-							contact?: string;
-						}>;
-						const relation = normalizeOptionalString(maybe.relation);
-						const contact = normalizeOptionalString(maybe.contact);
+				? resume.references.map((ref: Reference) => {
+						const relation = normalizeOptionalString(ref.relation);
+						const contact = normalizeOptionalString(ref.contact);
 						const reference = normalizeOptionalString(ref.reference);
 						return {
 							name: ref.name,

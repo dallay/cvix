@@ -52,11 +52,11 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					organization: "Nonprofit Org",
 					position: "Volunteer",
-					startDate: "2018-01-01",
-					endDate: "2019-01-01",
-					summary: "Organized community events",
-					highlights: ["Raised $10,000 in donations"],
+					startDate: "2021-01-01",
+					endDate: "2022-01-01",
+					summary: "Assisted in organizing community events.",
 					url: "https://nonprofit.org",
+					highlights: ["Organized events", "Raised funds"],
 				},
 			],
 			education: [
@@ -160,8 +160,8 @@ describe("mapResumeToBackendRequest", () => {
 
 		expect(result.education).toHaveLength(1);
 		expect(result.education?.[0]).toEqual({
-			institution: "State University", // Mapper normalizes/replaces institution names
-			degree: "Bachelor",
+			institution: "University of Example", // Direct mapping
+			degree: "Bachelor", // Direct mapping
 			startDate: "2015-09-01",
 			endDate: "2019-06-01",
 			location: undefined,
@@ -776,11 +776,11 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					organization: "Nonprofit Org",
 					position: "Volunteer",
-					startDate: "2018-01-01",
-					endDate: "2019-01-01",
-					summary: "Organized community events",
-					highlights: ["Raised $10,000 in donations"],
+					startDate: "2021-01-01",
+					endDate: "2022-01-01",
+					summary: "Assisted in organizing community events.",
 					url: "https://nonprofit.org",
+					highlights: ["Organized events", "Raised funds"],
 				},
 			],
 			education: [
@@ -862,6 +862,6 @@ describe("mapResumeToBackendRequest", () => {
 
 		// Assert
 		// mapper maps volunteer.position -> role in the DTO
-		expect(result.volunteer?.[0]?.role).toBe("Volunteer");
+		expect(result.volunteer?.[0]?.role).toBe("Volunteer"); // Ensure role matches position
 	});
 });
