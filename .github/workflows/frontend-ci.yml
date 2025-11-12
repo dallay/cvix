@@ -102,7 +102,7 @@ jobs:
   build-and-push-docker-marketing:
     name: Build and Push Docker Image (Marketing)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build'))
     needs: [build, test]
     permissions:
       contents: read
@@ -144,7 +144,7 @@ jobs:
   build-and-push-docker-webapp:
     name: Build and Push Docker Image (WebApp)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build'))
     needs: [build, test]
     permissions:
       contents: read
