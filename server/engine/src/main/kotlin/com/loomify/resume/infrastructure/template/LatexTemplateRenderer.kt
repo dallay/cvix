@@ -26,8 +26,6 @@ class LatexTemplateRenderer(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    // ...existing code...
-
     @Suppress("TooGenericExceptionCaught") // wrap StringTemplate runtime exceptions
     override fun render(resumeData: ResumeData, locale: String): String {
         try {
