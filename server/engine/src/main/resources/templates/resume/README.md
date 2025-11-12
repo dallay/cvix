@@ -24,9 +24,11 @@ Los templates utilizan la extensión `.st` (StringTemplate) en lugar de `.tex` p
 
 Los templates contienen:
 - Sintaxis LaTeX válida para el documento final
-- Variables de ST4 usando delimitadores `$...$` (configurado en `StringTemplateConfiguration`)
-- Lógica condicional de ST4 para secciones opcionales (`$if(...)$`)
-- Iteraciones para listas (`$work:{...}$`)
+- Variables de ST4 usando delimitadores `@...@` (configurado en `StringTemplateConfiguration`)
+- Lógica condicional de ST4 para secciones opcionales (`@if(...)@`)
+- Iteraciones para listas (`@work:{...}@`)
+
+**Nota**: Usamos `@` como delimitadores en lugar de `$` (el default de ST4) para evitar conflictos con LaTeX, especialmente en modo matemático donde `$` se usa frecuentemente.
 
 ## Seguridad
 

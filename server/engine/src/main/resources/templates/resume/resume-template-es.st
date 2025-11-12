@@ -9,90 +9,90 @@
 \usepackage[spanish]{babel}
 
 % Ajustar márgenes de página - adaptativo según contenido
-$if(hasProjects)$
+@if(hasProjects)@
 \usepackage[scale=0.80]{geometry} % Más contenido, márgenes más ajustados
-$else$
+@else@
 \usepackage[scale=0.85]{geometry} % Márgenes estándar
-$endif$
+@endif@
 
 % Lógica condicional para diseño adaptativo
 \usepackage{ifthen}
 \usepackage{etoolbox}
 
 % Información personal
-\name{$basics.fullName$}{}
-\title{$if(basics.label)$$basics.label$$endif$}
-$if(basics.email)$\email{$basics.email$}$endif$
-$if(basics.phone)$\phone{$basics.phone$}$endif$
-$if(basics.url)$\homepage{$basics.url$}$endif$
-$if(basics.location)$\address{$basics.location.city$}{$basics.location.countryCode$}{}$endif$
+\name{@basics.fullName@}{}
+\title{@if(basics.label)@@basics.label@@endif@}
+@if(basics.email)@\email{@basics.email@}@endif@
+@if(basics.phone)@\phone{@basics.phone@}@endif@
+@if(basics.url)@\homepage{@basics.url@}@endif@
+@if(basics.location)@\address{@basics.location.city@}{@basics.location.countryCode@}{}@endif@
 
 \begin{document}
 
 \makecvtitle
 
 % Resumen (siempre primero si está presente)
-$if(basics.summary)$
+@if(basics.summary)@
 \section{Resumen}
-$basics.summary$
-$endif$
+@basics.summary@
+@endif@
 
 % Ordenación adaptativa de secciones: Experiencia laboral antes que educación para profesionales con experiencia
-$if(work)$
+@if(work)@
 \section{Experiencia Laboral}
-$work:{experience|
-\cventry{$experience.startDate$ -- $if(experience.endDate)$$experience.endDate$$else$Presente$endif$}{$experience.position$}{$experience.company$}{$if(experience.location)$$experience.location$$endif$}{}{
-$if(experience.summary)$$experience.summary$\\$endif$
-$if(experience.highlights)$
+@work:{experience|
+\cventry{@experience.startDate@ -- @if(experience.endDate)@@experience.endDate@@else@Presente@endif@}{@experience.position@}{@experience.company@}{@if(experience.location)@@experience.location@@endif@}{}{
+@if(experience.summary)@@experience.summary@\\@endif@
+@if(experience.highlights)@
 \begin{itemize}
-$experience.highlights:{highlight|
-\item $highlight$
-}$
+@experience.highlights:{highlight|
+\item @highlight@
+}@
 \end{itemize}
-$endif$
+@endif@
 }
-}$
-$endif$
+}@
+@endif@
 
 % Educación
-$if(education)$
+@if(education)@
 \section{Educación}
-$education:{edu|
-\cventry{$edu.startDate$ -- $if(edu.endDate)$$edu.endDate$$else$Presente$endif$}{$edu.studyType$ en $edu.area$}{$edu.institution$}{$if(edu.score)$Promedio: $edu.score$$endif$}{}{}
-}$
-$endif$
+@education:{edu|
+\cventry{@edu.startDate@ -- @if(edu.endDate)@@edu.endDate@@else@Presente@endif@}{@edu.studyType@ en @edu.area@}{@edu.institution@}{@if(edu.score)@Promedio: @edu.score@@endif@}{}{}
+}@
+@endif@
 
 % Habilidades
-$if(skills)$
+@if(skills)@
 \section{Habilidades}
-$skills:{category|
-\cvitem{$category.name$}{$category.keywords; separator=", "$}
-}$
-$endif$
+@skills:{category|
+\cvitem{@category.name@}{@category.keywords; separator=", "@}
+}@
+@endif@
 
 % Idiomas
-$if(languages)$
+@if(languages)@
 \section{Idiomas}
-$languages:{lang|
-\cvitem{$lang.language$}{$lang.fluency$}
-}$
-$endif$
+@languages:{lang|
+\cvitem{@lang.language@}{@lang.fluency@}
+}@
+@endif@
 
 % Proyectos
-$if(projects)$
+@if(projects)@
 \section{Proyectos}
-$projects:{project|
-\cventry{$if(project.startDate)$$project.startDate$ -- $if(project.endDate)$$project.endDate$$else$Presente$endif$$endif$}{$project.name$}{$if(project.entity)$$project.entity$$endif$}{$if(project.url)$$project.url$$endif$}{}{
-$if(project.description)$$project.description$\\$endif$
-$if(project.highlights)$
+@projects:{project|
+\cventry{@if(project.startDate)@@project.startDate@ -- @if(project.endDate)@@project.endDate@@else@Presente@endif@@endif@}{@project.name@}{@if(project.entity)@@project.entity@@endif@}{@if(project.url)@@project.url@@endif@}{}{
+@if(project.description)@@project.description@\\@endif@
+@if(project.highlights)@
 \begin{itemize}
-$project.highlights:{highlight|
-\item $highlight$
-}$
+@project.highlights:{highlight|
+\item @highlight@
+}@
 \end{itemize}
-$endif$
+@endif@
 }
-}$
-$endif$
+}@
+@endif@
 
 \end{document}
