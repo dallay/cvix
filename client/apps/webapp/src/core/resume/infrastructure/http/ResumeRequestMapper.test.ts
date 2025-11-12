@@ -41,28 +41,18 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					name: "Tech Corp",
 					position: "Senior Developer",
+					url: "https://techcorp.com",
 					startDate: "2020-01-01",
 					endDate: "2023-12-31",
 					summary: "Led development of core features",
 					highlights: ["Improved performance by 50%"],
-					url: "https://techcorp.com",
 				},
 			],
-			volunteer: [
-				{
-					organization: "Nonprofit Org",
-					position: "Volunteer",
-					startDate: "2021-01-01",
-					endDate: "2022-01-01",
-					summary: "Assisted in organizing community events.",
-					url: "https://nonprofit.org",
-					highlights: ["Organized events", "Raised funds"],
-				},
-			],
+			volunteer: [],
 			education: [
 				{
-					institution: "University of Example", // Fixed institution name
-					url: "https://university.example.edu",
+					institution: "State University",
+					url: "https://stateuniv.edu",
 					area: "Computer Science",
 					studyType: "Bachelor",
 					startDate: "2015-09-01",
@@ -71,64 +61,32 @@ describe("mapResumeToBackendRequest", () => {
 					courses: ["Data Structures", "Algorithms"],
 				},
 			],
-			awards: [
-				{
-					title: "Best Developer",
-					date: "2021-06-01",
-					awarder: "Tech Awards",
-					summary: "Recognized for outstanding contributions",
-				},
-			],
-			certificates: [
-				{
-					name: "Certified Kubernetes Administrator",
-					issuer: "CNCF",
-					date: "2022-03-01",
-					url: "https://cncf.io/certification",
-				},
-			],
-			publications: [
-				{
-					name: "Scaling Microservices",
-					publisher: "Tech Journal",
-					releaseDate: "2020-09-01",
-					url: "https://techjournal.com/scaling-microservices",
-					summary: "Exploring best practices for scalability",
-				},
-			],
-			interests: [
-				{
-					name: "Open Source",
-					keywords: ["Contributions", "Community"],
-				},
-			],
-			references: [
-				{
-					name: "Jane Smith",
-					reference: "John is an excellent developer.",
-				},
-			],
-			projects: [
-				{
-					name: "Open Source Library",
-					description: "A popular open source library",
-					url: "https://github.com/johndoe/library",
-					startDate: "2022-01-01",
-					endDate: "2023-06-01",
-					highlights: [], // Add empty highlights array to satisfy type requirements
-				},
-			],
+			awards: [],
+			certificates: [],
+			publications: [],
 			skills: [
 				{
-					name: "Programming Languages",
+					name: "Programming",
 					level: "Expert",
-					keywords: ["JavaScript", "TypeScript", "Kotlin"],
+					keywords: ["JavaScript", "TypeScript", "Python"],
 				},
 			],
 			languages: [
 				{
 					language: "English",
-					fluency: "Native",
+					fluency: "NATIVE",
+				},
+			],
+			interests: [],
+			references: [],
+			projects: [
+				{
+					name: "Open Source Library",
+					startDate: "2022-01-01",
+					endDate: "2023-06-01",
+					description: "A popular open source library",
+					highlights: ["1000+ stars on GitHub"],
+					url: "https://github.com/johndoe/library",
 				},
 			],
 		};
@@ -137,7 +95,7 @@ describe("mapResumeToBackendRequest", () => {
 		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics).toEqual({
+		expect(result.personalInfo).toEqual({
 			fullName: "John Doe",
 			email: "john.doe@example.com",
 			phone: "+1-555-0100",
@@ -148,8 +106,8 @@ describe("mapResumeToBackendRequest", () => {
 			summary: "Experienced software engineer",
 		});
 
-		expect(result.work).toHaveLength(1);
-		expect(result.work?.[0]).toEqual({
+		expect(result.workExperience).toHaveLength(1);
+		expect(result.workExperience?.[0]).toEqual({
 			company: "Tech Corp",
 			position: "Senior Developer",
 			startDate: "2020-01-01",
@@ -160,8 +118,8 @@ describe("mapResumeToBackendRequest", () => {
 
 		expect(result.education).toHaveLength(1);
 		expect(result.education?.[0]).toEqual({
-			institution: "University of Example", // Direct mapping
-			degree: "Bachelor", // Direct mapping
+			institution: "State University",
+			degree: "Bachelor",
 			startDate: "2015-09-01",
 			endDate: "2019-06-01",
 			location: undefined,
@@ -171,14 +129,14 @@ describe("mapResumeToBackendRequest", () => {
 
 		expect(result.skills).toHaveLength(1);
 		expect(result.skills?.[0]).toEqual({
-			name: "Programming Languages",
-			keywords: ["JavaScript", "TypeScript", "Kotlin"],
+			name: "Programming",
+			keywords: ["JavaScript", "TypeScript", "Python"],
 		});
 
 		expect(result.languages).toHaveLength(1);
 		expect(result.languages?.[0]).toEqual({
 			language: "English",
-			fluency: "Native",
+			fluency: "NATIVE",
 		});
 
 		expect(result.projects).toHaveLength(1);
@@ -228,7 +186,7 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.work).toBeUndefined();
+		expect(result.workExperience).toBeUndefined();
 		expect(result.education).toBeUndefined();
 		expect(result.skills).toBeUndefined();
 		expect(result.languages).toBeUndefined();
@@ -278,8 +236,8 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBeUndefined();
-		expect(result.basics.github).toBeUndefined();
+		expect(result.personalInfo.linkedin).toBeUndefined();
+		expect(result.personalInfo.github).toBeUndefined();
 	});
 
 	it("should handle required string fields set to empty strings", () => {
@@ -319,10 +277,10 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.fullName).toBe("");
-		expect(result.basics.email).toBe("");
-		expect(result.basics.phone).toBe("");
-		expect(result.basics.location).toBeUndefined(); // Empty city is normalized to undefined
+		expect(result.personalInfo.fullName).toBe("");
+		expect(result.personalInfo.email).toBe("");
+		expect(result.personalInfo.phone).toBe("");
+		expect(result.personalInfo.location).toBeUndefined(); // Empty city is normalized to undefined
 	});
 
 	it("should handle null vs undefined in optional fields - null location", () => {
@@ -367,9 +325,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.location).toBeUndefined(); // null.city should be handled gracefully
-		expect(result.work).toHaveLength(1);
-		expect(result.work?.[0]?.endDate).toBeUndefined();
+		expect(result.personalInfo.location).toBeUndefined(); // null.city should be handled gracefully
+		expect(result.workExperience).toHaveLength(1);
+		expect(result.workExperience?.[0]?.endDate).toBeUndefined();
 	});
 
 	it("should handle undefined optional fields in work experience", () => {
@@ -419,9 +377,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.work).toHaveLength(1);
-		expect(result.work?.[0]?.description).toBeUndefined();
-		expect(result.work?.[0]?.endDate).toBeUndefined();
+		expect(result.workExperience).toHaveLength(1);
+		expect(result.workExperience?.[0]?.description).toBeUndefined();
+		expect(result.workExperience?.[0]?.endDate).toBeUndefined();
 	});
 
 	it("should handle profile network casing variations - LinkedIn", () => {
@@ -472,8 +430,10 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/davidlee");
-		expect(result.basics.github).toBe("https://github.com/davidlee");
+		expect(result.personalInfo.linkedin).toBe(
+			"https://linkedin.com/in/davidlee",
+		);
+		expect(result.personalInfo.github).toBe("https://github.com/davidlee");
 	});
 
 	it("should handle profile network casing variations - lowercase", () => {
@@ -524,8 +484,10 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/evamartinez");
-		expect(result.basics.github).toBe("https://github.com/evamartinez");
+		expect(result.personalInfo.linkedin).toBe(
+			"https://linkedin.com/in/evamartinez",
+		);
+		expect(result.personalInfo.github).toBe("https://github.com/evamartinez");
 	});
 
 	it("should handle profile network casing variations - mixed case", () => {
@@ -576,8 +538,10 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/frankwilson");
-		expect(result.basics.github).toBe("https://github.com/frankwilson");
+		expect(result.personalInfo.linkedin).toBe(
+			"https://linkedin.com/in/frankwilson",
+		);
+		expect(result.personalInfo.github).toBe("https://github.com/frankwilson");
 	});
 
 	it("should handle missing nested location object entirely", () => {
@@ -612,9 +576,9 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.location).toBeUndefined();
-		expect(result.basics.fullName).toBe("Grace Kim");
-		expect(result.basics.email).toBe("grace@example.com");
+		expect(result.personalInfo.location).toBeUndefined();
+		expect(result.personalInfo.fullName).toBe("Grace Kim");
+		expect(result.personalInfo.email).toBe("grace@example.com");
 	});
 
 	it("should handle optional fields as null in projects", () => {
@@ -728,140 +692,5 @@ describe("mapResumeToBackendRequest", () => {
 		expect(result.education?.[0]?.gpa).toBeUndefined();
 		expect(result.education?.[0]?.institution).toBe("Tech University");
 		expect(result.education?.[0]?.degree).toBe("Master");
-	});
-
-	it("should map all JSON Resume sections to GenerateResumeRequest", () => {
-		// Arrange
-		const resume: Resume = {
-			basics: {
-				name: "John Doe",
-				label: "Software Engineer",
-				image: "https://example.com/avatar.jpg",
-				email: "john.doe@example.com",
-				phone: "+1-555-0100",
-				url: "https://johndoe.com",
-				summary: "Experienced software engineer",
-				location: {
-					address: "123 Main St",
-					postalCode: "12345",
-					city: "San Francisco",
-					countryCode: "US",
-					region: "CA",
-				},
-				profiles: [
-					{
-						network: "LinkedIn",
-						username: "johndoe",
-						url: "https://linkedin.com/in/johndoe",
-					},
-					{
-						network: "GitHub",
-						username: "johndoe",
-						url: "https://github.com/johndoe",
-					},
-				],
-			},
-			work: [
-				{
-					name: "Tech Corp",
-					position: "Senior Developer",
-					startDate: "2020-01-01",
-					endDate: "2023-12-31",
-					summary: "Led development of core features",
-					highlights: ["Improved performance by 50%"],
-					url: "https://techcorp.com",
-				},
-			],
-			volunteer: [
-				{
-					organization: "Nonprofit Org",
-					position: "Volunteer",
-					startDate: "2021-01-01",
-					endDate: "2022-01-01",
-					summary: "Assisted in organizing community events.",
-					url: "https://nonprofit.org",
-					highlights: ["Organized events", "Raised funds"],
-				},
-			],
-			education: [
-				{
-					institution: "State University",
-					url: "https://stateuniv.edu",
-					area: "Computer Science",
-					studyType: "Bachelor",
-					startDate: "2015-09-01",
-					endDate: "2019-06-01",
-					score: "3.8",
-					courses: ["Data Structures", "Algorithms"],
-				},
-			],
-			awards: [
-				{
-					title: "Best Developer",
-					date: "2021-06-01",
-					awarder: "Tech Awards",
-					summary: "Recognized for outstanding contributions",
-				},
-			],
-			certificates: [
-				{
-					name: "Certified Kubernetes Administrator",
-					issuer: "CNCF",
-					date: "2022-03-01",
-					url: "https://cncf.io/certification",
-				},
-			],
-			publications: [
-				{
-					name: "Scaling Microservices",
-					publisher: "Tech Journal",
-					releaseDate: "2020-09-01",
-					url: "https://techjournal.com/scaling-microservices",
-					summary: "Exploring best practices for scalability",
-				},
-			],
-			interests: [
-				{
-					name: "Open Source",
-					keywords: ["Contributions", "Community"],
-				},
-			],
-			references: [
-				{
-					name: "Jane Smith",
-					reference: "John is an excellent developer.",
-				},
-			],
-			projects: [
-				{
-					name: "Open Source Library",
-					description: "A popular open source library",
-					url: "https://github.com/johndoe/library",
-					startDate: "2022-01-01",
-					endDate: "2023-06-01",
-					highlights: [], // Add empty highlights array to satisfy type requirements
-				},
-			],
-			skills: [
-				{
-					name: "Programming Languages",
-					level: "Expert",
-					keywords: ["JavaScript", "TypeScript", "Kotlin"],
-				},
-			],
-			languages: [
-				{
-					language: "English",
-					fluency: "Native",
-				},
-			],
-		};
-
-		// Act
-		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
-
-		// Assert
-		// mapper maps volunteer.position -> role in the DTO
-		expect(result.volunteer?.[0]?.role).toBe("Volunteer"); // Ensure role matches position
 	});
 });

@@ -526,7 +526,7 @@ class ResumeRateLimitConfig {
 
 // Controller with rate limiting (leveraging existing infrastructure)
 @RestController
-@RequestMapping("/api/resume")
+@RequestMapping("/api/v1/resumes")
 class ResumeController(
     private val rateLimiter: RateLimiterPort,  // Injected from existing infra
     private val generateResumeHandler: GenerateResumeCommandHandler
@@ -670,7 +670,7 @@ class RateLimitingTest {
             )
 
             webTestClient.post()
-                .uri("/api/resume")
+                .uri("/api/v1/resumes")
                 .bodyValue(validResumeRequest)
                 .exchange()
                 .expectStatus().isOk
@@ -684,7 +684,7 @@ class RateLimitingTest {
         )
 
         webTestClient.post()
-            .uri("/api/resume")
+            .uri("/api/v1/resumes")
             .bodyValue(validResumeRequest)
             .exchange()
             .expectStatus().isEqualTo(429)

@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
   push:
     branches: [main]
   workflow_dispatch:
@@ -144,6 +144,8 @@ jobs:
   backend:
     name: Backend
     uses: ./.github/workflows/backend-ci.yml
+    with:
+      labels: ${{ toJSON(github.event.pull_request.labels.*.name) }}
     secrets:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -151,6 +153,8 @@ jobs:
   frontend:
     name: Frontend
     uses: ./.github/workflows/frontend-ci.yml
+    with:
+      labels: ${{ toJSON(github.event.pull_request.labels.*.name) }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

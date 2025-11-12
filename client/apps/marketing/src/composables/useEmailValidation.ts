@@ -17,8 +17,8 @@ export function useEmailValidation(options: EmailValidationOptions = {}) {
 
 	// Create validation schema based on options
 	const validationSchema = computed(() => {
-		let schema = z.email({
-      message: customMessage ?? t("form.email.invalid"),
+		let schema = z.string().email({
+			message: customMessage || t("form.email.invalid"),
 		});
 
 		if (required) {

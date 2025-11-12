@@ -45,7 +45,7 @@ object ResumeRequestMapper {
     fun toDomain(request: GenerateResumeRequest): ResumeData {
         return ResumeData(
             basics = mapBasics(request),
-            work = request.work?.map { mapWork(it) } ?: emptyList(),
+            work = request.workExperience?.map { mapWork(it) } ?: emptyList(),
             education = request.education?.map { mapEducation(it) } ?: emptyList(),
             skills = request.skills?.map { mapSkill(it) } ?: emptyList(),
             languages = request.languages?.map { mapLanguage(it) } ?: emptyList(),
@@ -60,16 +60,16 @@ object ResumeRequestMapper {
     }
 
     private fun mapBasics(request: GenerateResumeRequest): PersonalInfo {
-        val basics = request.basics
+        val info = request.personalInfo
         return PersonalInfo(
-            fullName = FullName(basics.name),
-            label = basics.label?.let { JobTitle(it) },
-            image = basics.image?.let { Url(it) },
-            email = com.loomify.common.domain.vo.email.Email(basics.email),
-            phone = PhoneNumber(basics.phone),
-            url = basics.url?.let { Url(it) },
-            summary = basics.summary?.let { Summary(it) },
-            location = basics.location?.let {
+            fullName = FullName(info.fullName),
+            label = info.label?.let { JobTitle(it) },
+            image = info.image?.let { Url(it) },
+            email = com.loomify.common.domain.vo.email.Email(info.email),
+            phone = PhoneNumber(info.phone),
+            url = info.website?.let { Url(it) },
+            summary = info.summary?.let { Summary(it) },
+            location = info.location?.let {
                 Location(
                     address = it.address,
                     postalCode = it.postalCode,
@@ -78,15 +78,19 @@ object ResumeRequestMapper {
                     region = it.region,
                 )
             },
-            profiles = basics.profiles?.map { profile ->
-                SocialProfile(profile.network, profile.username ?: "", profile.url)
-            } ?: emptyList(),
+            profiles = buildList {
+                info.profiles?.forEach { profile ->
+                    add(SocialProfile(profile.network, profile.username ?: "", profile.url))
+                }
+                info.linkedin?.let { add(SocialProfile("LinkedIn", "", it)) }
+                info.github?.let { add(SocialProfile("GitHub", "", it)) }
+            },
         )
     }
 
     private fun mapWork(work: WorkExperienceDto): WorkExperience =
         WorkExperience(
-            company = CompanyName(work.name),
+            company = CompanyName(work.company),
             position = JobTitle(work.position),
             startDate = work.startDate,
             endDate = work.endDate,

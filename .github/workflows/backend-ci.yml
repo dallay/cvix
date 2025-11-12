@@ -1,6 +1,10 @@
 name: Backend CI
 on:
   workflow_call:
+    inputs:
+      labels:
+        required: false
+        type: string
     secrets:
       NVD_API_KEY:
         required: false
@@ -103,7 +107,10 @@ jobs:
   build-and-push-docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build'))
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build')) ||
+      (github.event_name == 'workflow_call' && contains(inputs.labels, 'docker-build'))
     needs: [build, lint]
     permissions:
       contents: read

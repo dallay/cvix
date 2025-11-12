@@ -2,6 +2,10 @@ name: Frontend CI
 
 on:
   workflow_call:
+    inputs:
+      labels:
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -102,7 +106,10 @@ jobs:
   build-and-push-docker-marketing:
     name: Build and Push Docker Image (Marketing)
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build'))
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build')) ||
+      (github.event_name == 'workflow_call' && contains(inputs.labels, 'docker-build'))
     needs: [build, test]
     permissions:
       contents: read
@@ -144,7 +151,10 @@ jobs:
   build-and-push-docker-webapp:
     name: Build and Push Docker Image (WebApp)
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build'))
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'docker-build')) ||
+      (github.event_name == 'workflow_call' && contains(inputs.labels, 'docker-build'))
     needs: [build, test]
     permissions:
       contents: read

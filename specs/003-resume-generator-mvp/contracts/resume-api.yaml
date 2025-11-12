@@ -39,7 +39,7 @@ tags:
     description: Resume generation operations
 
 paths:
-  /resume:
+  /resumes:
     post:
       tags:
         - Resumes

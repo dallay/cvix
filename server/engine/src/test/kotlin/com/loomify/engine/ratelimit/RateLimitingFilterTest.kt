@@ -57,7 +57,7 @@ class RateLimitingFilterTest {
         } returns listOf("/api/auth/login", "/api/auth/register")
         every {
             configurationStrategy.getResumeEndpoints()
-        } returns listOf("/api/resume/generate")
+        } returns listOf("/api/resumes")
         every { chain.filter(any()) } returns Mono.empty()
     }
 
@@ -408,14 +408,14 @@ class RateLimitingFilterTest {
     @Test
     fun `should apply rate limit to resume endpoints`() {
         // Given
-        val request = MockServerHttpRequest.post("/api/resume/generate")
+        val request = MockServerHttpRequest.post("/api/resumes")
             .remoteAddress(java.net.InetSocketAddress("127.0.0.1", 8080))
             .build()
         val exchange = MockServerWebExchange.from(request)
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(identifier, "/api/resumes", RateLimitStrategy.RESUME)
         } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
 
         // When
@@ -426,7 +426,7 @@ class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(identifier, "/api/resumes", RateLimitStrategy.RESUME)
         }
     }
 
@@ -434,7 +434,7 @@ class RateLimitingFilterTest {
     fun `should skip rate limiting for resume endpoints when disabled`() {
         // Given
         every { configurationStrategy.isResumeRateLimitEnabled() } returns false
-        val request = MockServerHttpRequest.post("/api/resume/generate").build()
+        val request = MockServerHttpRequest.post("/api/resumes").build()
         val exchange = MockServerWebExchange.from(request)
 
         // When
@@ -451,7 +451,7 @@ class RateLimitingFilterTest {
     @Test
     fun `should return error when rate limit exceeded for resume endpoints`() {
         // Given
-        val request = MockServerHttpRequest.post("/api/resume/generate")
+        val request = MockServerHttpRequest.post("/api/resumes")
             .remoteAddress(java.net.InetSocketAddress("127.0.0.1", 8080))
             .build()
         val exchange = MockServerWebExchange.from(request)
@@ -459,7 +459,7 @@ class RateLimitingFilterTest {
         val retryAfter = Duration.ofMinutes(5)
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(identifier, "/api/resumes", RateLimitStrategy.RESUME)
         } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter))
 
         // When
@@ -471,7 +471,7 @@ class RateLimitingFilterTest {
 
         verify(exactly = 0) { chain.filter(exchange) }
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(identifier, "/api/resumes", RateLimitStrategy.RESUME)
         }
 
         exchange.response.statusCode shouldBe HttpStatus.TOO_MANY_REQUESTS

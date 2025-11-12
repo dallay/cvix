@@ -33,12 +33,12 @@ class ResumeControllerTest {
     @Test
     fun `should return 400 when project startDate is not ISO format`() {
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
                     ),
@@ -62,12 +62,12 @@ class ResumeControllerTest {
     @Test
     fun `should return 400 when project endDate is not ISO format`() {
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
                     ),
@@ -107,13 +107,13 @@ class ResumeControllerTest {
     fun `should generate PDF resume and return 200 with application pdf content type`() {
         // Act & Assert
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept-Language", "en")
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
                         "location" to mapOf(
@@ -123,9 +123,9 @@ class ResumeControllerTest {
                         ),
                         "summary" to "Experienced software engineer",
                     ),
-                    "work" to listOf(
+                    "workExperience" to listOf(
                         mapOf(
-                            "name" to "Tech Corp",
+                            "company" to "Tech Corp",
                             "position" to "Senior Developer",
                             "startDate" to "2020-01-01",
                             "endDate" to null,
@@ -163,13 +163,13 @@ class ResumeControllerTest {
     fun `should return 400 when resume data is missing required fields`() {
         // Act & Assert
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept-Language", "en")
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "",
+                    "personalInfo" to mapOf(
+                        "fullName" to "",
                         "email" to "invalid-email",
                         "phone" to "",
                     ),
@@ -187,18 +187,18 @@ class ResumeControllerTest {
     fun `should use English locale when Accept-Language header is not provided`() {
         // Act & Assert
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
                     ),
-                    "work" to listOf(
+                    "workExperience" to listOf(
                         mapOf(
-                            "name" to "Tech Corp",
+                            "company" to "Tech Corp",
                             "position" to "Senior Developer",
                             "startDate" to "2020-01-01",
                         ),
@@ -219,13 +219,13 @@ class ResumeControllerTest {
     fun `should handle Spanish locale from Accept-Language header`() {
         // Act & Assert
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept-Language", "es")
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "Juan Pérez",
+                    "personalInfo" to mapOf(
+                        "fullName" to "Juan Pérez",
                         "email" to "juan.perez@example.com",
                         "phone" to "+34123456789",
                     ),
@@ -254,13 +254,13 @@ class ResumeControllerTest {
     fun `should use primary language subtag when Accept-Language has region`() {
         // Act & Assert
         webTestClient.post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept-Language", "en-US")
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john.doe@example.com",
                         "phone" to "+1234567890",
                     ),
@@ -283,12 +283,12 @@ class ResumeControllerTest {
         coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
 
         webTestClient.mutateWith(csrf()).post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "label" to "Software Engineer",
                         "image" to "https://example.com/photo.jpg",
                         "email" to "john@example.com",
@@ -364,12 +364,12 @@ class ResumeControllerTest {
         coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
 
         webTestClient.mutateWith(csrf()).post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john@example.com",
                         "phone" to "+1234567890",
                     ),
@@ -402,12 +402,12 @@ class ResumeControllerTest {
         coEvery { handler.handle(any()) } returns Mono.just(ByteArrayInputStream(pdfBytes))
 
         webTestClient.mutateWith(csrf()).post()
-            .uri("/api/resume/generate")
+            .uri("/api/resumes")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(
                 mapOf(
-                    "basics" to mapOf(
-                        "name" to "John Doe",
+                    "personalInfo" to mapOf(
+                        "fullName" to "John Doe",
                         "email" to "john@example.com",
                         "phone" to "+1234567890",
                         "location" to mapOf(

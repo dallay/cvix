@@ -82,14 +82,12 @@ object ApplicationStartupTraces {
         return if (notWebEnvironment(environment)) {
             ""
         } else {
-            val normalizedProtocol = protocol(environment).lowercase(Locale.ROOT)
-            val normalizedHost = host.lowercase(Locale.ROOT)
             StringBuilder()
                 .append(type)
                 .append(": \t")
-                .append(normalizedProtocol)
+                .append(protocol(environment))
                 .append("://")
-                .append(normalizedHost)
+                .append(host)
                 .append(":")
                 .append(environment.getProperty("server.port"))
                 .append(contextPath(environment))

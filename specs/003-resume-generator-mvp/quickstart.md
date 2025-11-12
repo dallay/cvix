@@ -164,7 +164,7 @@ TOKEN=$(curl -s -X POST http://localhost:9080/realms/loomify/protocol/openid-con
   -d "grant_type=password" | jq -r '.access_token')
 
 # Generate resume PDF
-curl -X POST http://localhost:8080/api/resume \
+curl -X POST http://localhost:8080/api/v1/resumes \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept-Language: en" \
@@ -204,7 +204,7 @@ pnpm dev
 
 - Open browser: <http://localhost:9876>
 - You should see the Loomify dashboard
-- Navigate to "Resume Generator" (or `/resume/new`)
+- Navigate to "Resume Generator" (or `/resumes/new`)
 
 ### 3. Test Resume Form UI
 
@@ -313,7 +313,7 @@ Use `examples/minimal.json` - should handle sparse data gracefully.
 ### Scenario 4: Spanish Localization
 
 ```bash
-curl -X POST http://localhost:8080/api/resume \
+curl -X POST http://localhost:8080/api/v1/resumes \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept-Language: es" \
@@ -328,7 +328,7 @@ Verify Spanish date formats ("Ene 2020 - Presente") and section headings.
 ```bash
 # Make 11 requests in quick succession
 for i in {1..11}; do
-  curl -X POST http://localhost:8080/api/resume \
+  curl -X POST http://localhost:8080/api/v1/resumes \
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
     -d @specs/003-resume-generator-mvp/examples/minimal.json \
@@ -342,7 +342,7 @@ done
 
 ```bash
 # Missing required field (name)
-curl -X POST http://localhost:8080/api/resume \
+curl -X POST http://localhost:8080/api/v1/resumes \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"basics": {"email": "test@example.com"}}' \
