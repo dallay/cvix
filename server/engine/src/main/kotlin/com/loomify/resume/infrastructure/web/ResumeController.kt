@@ -29,13 +29,14 @@ private const val MAX_BYTES_SUPPORTED = 100 * 1024
  * REST controller for resume generation endpoints.
  */
 @RestController
-@RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
+@RequestMapping(value = ["/api/resume"], produces = ["application/vnd.api.v1+json"])
+@Validated
 class ResumeController(
     private val generateResumeCommandHandler: GenerateResumeCommandHandler,
     private val applicationSecurityProperties: ApplicationSecurityProperties,
 ) {
 
-    @Operation(summary = "Generate a PDF resume from resume data")
+    @Operation(summary = "Generate a PDF resume from JSON Resume schema data")
     @ApiResponses(
         ApiResponse(
             responseCode = "200",
@@ -48,7 +49,7 @@ class ResumeController(
         ApiResponse(responseCode = "500", description = "Internal server error"),
         ApiResponse(responseCode = "504", description = "PDF generation timeout"),
     )
-    @PostMapping("/resumes")
+    @PostMapping("/generate")
     fun generateResume(
         @Valid @Validated @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange

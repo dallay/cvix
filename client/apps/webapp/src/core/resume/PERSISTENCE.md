@@ -167,11 +167,11 @@ The architecture is designed to support remote backend storage:
 // Future implementation
 export class RemoteResumeStorage implements ResumeStorage {
     async save(resume: Resume | PartialResume) {
-        // PUT /api/v1/resume/{uuid}
+        // PUT /api/resume/{uuid}
     }
 
     async load() {
-        // GET /api/v1/resume/{uuid}
+        // GET /api/resume/{uuid}
     }
 
     type(): StorageType {

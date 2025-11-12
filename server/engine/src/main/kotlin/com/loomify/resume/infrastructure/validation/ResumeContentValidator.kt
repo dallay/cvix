@@ -32,7 +32,7 @@ class ResumeContentValidator : ConstraintValidator<ValidResumeContent, GenerateR
             return true // Let @NotNull handle null validation
         }
 
-        val hasWorkExperience = !request.workExperience.isNullOrEmpty()
+        val hasWorkExperience = !request.work.isNullOrEmpty()
         val hasEducation = !request.education.isNullOrEmpty()
         val hasSkills = !request.skills.isNullOrEmpty()
 

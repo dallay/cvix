@@ -155,7 +155,7 @@ data class RateLimitProperties(
          * List of endpoints that should be rate limited as resume endpoints.
          */
         val endpoints: List<String> = listOf(
-            "/api/resumes",
+            "/api/resume/generate",
         ),
 
         /**
