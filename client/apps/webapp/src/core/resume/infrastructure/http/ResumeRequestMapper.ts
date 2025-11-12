@@ -211,7 +211,7 @@ export function mapResumeToBackendRequest(
 			resume.volunteer.length > 0
 				? resume.volunteer.map((vol) => ({
 						organization: vol.organization,
-						role: vol.position, // Correctly map position instead of role
+						role: vol.position, // Map domain's position field to DTO's role field
 						startDate: vol.startDate || undefined,
 						endDate: vol.endDate || undefined,
 						description: vol.summary || undefined,
