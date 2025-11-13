@@ -21,6 +21,10 @@ on:
       - "gradle/**"
       - ".github/workflows/backend-ci.yml"
       - ".github/actions/setup/java/**"
+  # NOTE: This workflow is designed to be called by the main ci.yml workflow.
+  # The `pull_request` trigger below is for changes to backend files, but it does not
+  # trigger on `labeled` events. Label-based triggers are handled by ci.yml,
+  # which then calls this workflow via `workflow_call`.
   pull_request:
     paths:
       - "server/**"

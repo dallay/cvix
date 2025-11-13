@@ -19,6 +19,10 @@ on:
       - "pnpm-workspace.yaml"
       - ".github/workflows/frontend-ci.yml"
       - ".github/actions/setup/node/**"
+  # NOTE: This workflow is designed to be called by the main ci.yml workflow.
+  # The `pull_request` trigger below is for changes to frontend files, but it does not
+  # trigger on `labeled` events. Label-based triggers are handled by ci.yml,
+  # which then calls this workflow via `workflow_call`.
   pull_request:
     paths:
       - "client/**"
