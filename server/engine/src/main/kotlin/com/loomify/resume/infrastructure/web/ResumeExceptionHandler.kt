@@ -45,7 +45,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.validation_error", null, locale)
-        
+
         val fieldErrors = ex.fieldErrors.map { error ->
             mapOf(
                 "field" to error.field,
@@ -87,7 +87,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("resume.error.invalid_data", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
             ex.message ?: "Resume data validation failed",
@@ -114,7 +114,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("resume.error.template_rendering", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.UNPROCESSABLE_ENTITY,
             "Failed to render resume template. Please check your data.",
@@ -141,7 +141,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("resume.error.pdf_generation", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "Failed to generate PDF. Please try again later.",
@@ -168,7 +168,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("resume.error.pdf_timeout", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.GATEWAY_TIMEOUT,
             "PDF generation took too long. Please try again with simpler content.",
@@ -195,7 +195,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("resume.error.malicious_content", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
             "Content contains potentially unsafe characters.",
@@ -222,7 +222,7 @@ class ResumeExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.internal_server_error", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred. Please try again later.",

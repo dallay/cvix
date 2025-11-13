@@ -67,7 +67,7 @@ class GlobalExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.authentication_failed", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message)
         problemDetail.title = "User authentication failed"
         problemDetail.type = URI.create("$ERROR_PAGE/user-authentication-failed")
@@ -87,7 +87,7 @@ class GlobalExceptionHandler(
     fun handleEntityNotFound(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.entity_not_found", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message ?: ENTITY_NOT_FOUND)
         problemDetail.title = ENTITY_NOT_FOUND
         problemDetail.type = URI.create("$ERROR_PAGE/entity-not-found")
@@ -116,7 +116,7 @@ class GlobalExceptionHandler(
     fun handleIllegalArgumentException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.bad_request", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message ?: "Bad request")
         problemDetail.title = "Bad request"
         problemDetail.type = URI.create("$ERROR_PAGE/bad-request")
@@ -142,7 +142,7 @@ class GlobalExceptionHandler(
     ): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.missing_cookie", null, locale)
-        
+
         response.statusCode = HttpStatus.BAD_REQUEST
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message)
         problemDetail.title = "Missing cookie"
@@ -173,7 +173,7 @@ class GlobalExceptionHandler(
     ): Mono<org.springframework.http.ResponseEntity<Any>> {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.validation_error", null, locale)
-        
+
         val fieldErrors = ex.bindingResult.fieldErrors.associate { error ->
             error.field to (error.defaultMessage ?: "Invalid value")
         }
@@ -204,7 +204,7 @@ class GlobalExceptionHandler(
     fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val locale = LocaleContextHolder.getLocale()
         val localizedMessage = messageSource.getMessage("error.internal_server_error", null, locale)
-        
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             e.message ?: "Internal server error",
