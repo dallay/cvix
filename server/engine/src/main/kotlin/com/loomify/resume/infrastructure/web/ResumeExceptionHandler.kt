@@ -35,6 +35,12 @@ class ResumeExceptionHandler(
 
     private val logger = LoggerFactory.getLogger(ResumeExceptionHandler::class.java)
 
+    // Centralized locale/message resolution (reactive-safe)
+    private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        return messageSource.getMessage(messageKey, null, locale)
+    }
+
     /**
      * Handle validation errors from Spring Validation (@Valid)
      */
@@ -43,8 +49,7 @@ class ResumeExceptionHandler(
         ex: WebExchangeBindException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_VALIDATION_ERROR, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_VALIDATION_ERROR)
 
         val fieldErrors = ex.fieldErrors.map { error ->
             mapOf(
@@ -85,8 +90,7 @@ class ResumeExceptionHandler(
         ex: InvalidResumeDataException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_INVALID_DATA, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_INVALID_DATA)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
@@ -112,8 +116,7 @@ class ResumeExceptionHandler(
         ex: TemplateRenderingException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_TEMPLATE_RENDERING, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_TEMPLATE_RENDERING)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.UNPROCESSABLE_ENTITY,
@@ -139,8 +142,7 @@ class ResumeExceptionHandler(
         ex: PdfGenerationException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_PDF_GENERATION, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_PDF_GENERATION)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -166,8 +168,7 @@ class ResumeExceptionHandler(
         ex: PdfGenerationTimeoutException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_PDF_TIMEOUT, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_PDF_TIMEOUT)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.GATEWAY_TIMEOUT,
@@ -193,8 +194,7 @@ class ResumeExceptionHandler(
         ex: LaTeXInjectionException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_MALICIOUS_CONTENT, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_MALICIOUS_CONTENT)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
@@ -220,8 +220,7 @@ class ResumeExceptionHandler(
         ex: Exception,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedMessage = messageSource.getMessage(MSG_INTERNAL_ERROR, null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, MSG_INTERNAL_ERROR)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
