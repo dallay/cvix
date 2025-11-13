@@ -12,6 +12,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -22,10 +23,11 @@ internal class RefreshTokenControllerTest {
 
     private val accessToken = createAccessToken()
     private val refreshTokenManager = mockk<RefreshTokenManager>()
+    private val messageSource = mockk<MessageSource>(relaxed = true)
     private val refreshTokenQueryHandler = RefreshTokenQueryHandler(refreshTokenManager)
     private val refreshTokenController = RefreshTokenController(refreshTokenQueryHandler)
     private val webTestClient = WebTestClient.bindToController(refreshTokenController)
-        .controllerAdvice(GlobalExceptionHandler()) // Attach the global exception handler
+        .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
         .build()
 
     @Test

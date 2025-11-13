@@ -90,9 +90,10 @@ class ResumeControllerTest {
 
     @BeforeEach
     fun setUp() {
+        val messageSource = mockk<org.springframework.context.MessageSource>(relaxed = true)
         // Build WebTestClient with controller and exception handler
         webTestClient = WebTestClient.bindToController(controller)
-            .controllerAdvice(ResumeExceptionHandler())
+            .controllerAdvice(ResumeExceptionHandler(messageSource))
             .apply { csrf() }
             .build()
             .mutateWith(csrf())

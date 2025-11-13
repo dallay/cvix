@@ -10,6 +10,7 @@ import io.mockk.unmockkStatic
 import java.util.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.springframework.context.MessageSource
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.context.SecurityContext
@@ -27,6 +28,7 @@ import reactor.core.publisher.Mono
 abstract class ControllerTest {
     protected val mediator = mockk<Mediator>()
     protected val userId: UUID = UUID.randomUUID()
+    protected val messageSource = mockk<MessageSource>(relaxed = true)
 
     abstract val webTestClient: WebTestClient
 
@@ -40,7 +42,7 @@ abstract class ControllerTest {
         mockSecurity(jwtAuthenticationToken)
 
         return WebTestClient.bindToController(controller)
-            .controllerAdvice(GlobalExceptionHandler()) // Attach the global exception handler
+            .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
             .apply {
                 csrf()
             }.apply {

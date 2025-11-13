@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.context.MessageSource
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/auth/login"
@@ -27,11 +28,12 @@ class UserAuthenticatorControllerTest {
     private val accessToken = createAccessToken()
 
     private val userAuthenticator = mockk<UserAuthenticator>()
+    private val messageSource = mockk<MessageSource>(relaxed = true)
     private val authenticator = UserAuthenticatorService(userAuthenticator)
     private val authenticateUserQueryHandler = AuthenticateUserQueryHandler(authenticator)
     private val userAuthenticatorController = UserAuthenticatorController(authenticateUserQueryHandler)
     private val webTestClient = WebTestClient.bindToController(userAuthenticatorController)
-        .controllerAdvice(GlobalExceptionHandler()) // Attach the global exception handler
+        .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
         .build()
 
     @Test
