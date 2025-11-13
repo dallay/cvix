@@ -7,9 +7,9 @@ import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import com.loomify.resume.domain.exception.TemplateRenderingException
 import java.net.URI
 import java.time.Instant
+import java.util.Locale
 import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -43,8 +43,8 @@ class ResumeExceptionHandler(
         ex: WebExchangeBindException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.validation_error", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_VALIDATION_ERROR, null, locale)
 
         val fieldErrors = ex.fieldErrors.map { error ->
             mapOf(
@@ -65,7 +65,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/validation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "error.validation_error")
+        problemDetail.setProperty(MESSAGE, MSG_VALIDATION_ERROR)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty("fieldErrors", fieldErrors)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
@@ -85,8 +85,8 @@ class ResumeExceptionHandler(
         ex: InvalidResumeDataException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("resume.error.invalid_data", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_INVALID_DATA, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
@@ -96,7 +96,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/invalid-data")
         problemDetail.setProperty(ERROR_CATEGORY, "INVALID_RESUME_DATA")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "resume.error.invalid_data")
+        problemDetail.setProperty(MESSAGE, MSG_INVALID_DATA)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -112,8 +112,8 @@ class ResumeExceptionHandler(
         ex: TemplateRenderingException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("resume.error.template_rendering", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_TEMPLATE_RENDERING, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.UNPROCESSABLE_ENTITY,
@@ -123,7 +123,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/template-error")
         problemDetail.setProperty(ERROR_CATEGORY, "TEMPLATE_RENDERING")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "resume.error.template_rendering")
+        problemDetail.setProperty(MESSAGE, MSG_TEMPLATE_RENDERING)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -139,8 +139,8 @@ class ResumeExceptionHandler(
         ex: PdfGenerationException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("resume.error.pdf_generation", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_PDF_GENERATION, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -150,7 +150,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/pdf-generation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "PDF_GENERATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "resume.error.pdf_generation")
+        problemDetail.setProperty(MESSAGE, MSG_PDF_GENERATION)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -166,8 +166,8 @@ class ResumeExceptionHandler(
         ex: PdfGenerationTimeoutException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("resume.error.pdf_timeout", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_PDF_TIMEOUT, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.GATEWAY_TIMEOUT,
@@ -177,7 +177,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/pdf-timeout")
         problemDetail.setProperty(ERROR_CATEGORY, "PDF_TIMEOUT")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "resume.error.pdf_timeout")
+        problemDetail.setProperty(MESSAGE, MSG_PDF_TIMEOUT)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -193,8 +193,8 @@ class ResumeExceptionHandler(
         ex: LaTeXInjectionException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("resume.error.malicious_content", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_MALICIOUS_CONTENT, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST,
@@ -204,7 +204,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/malicious-content")
         problemDetail.setProperty(ERROR_CATEGORY, "SECURITY_VIOLATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "resume.error.malicious_content")
+        problemDetail.setProperty(MESSAGE, MSG_MALICIOUS_CONTENT)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -220,8 +220,8 @@ class ResumeExceptionHandler(
         ex: Exception,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.internal_server_error", null, locale)
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedMessage = messageSource.getMessage(MSG_INTERNAL_ERROR, null, locale)
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -231,7 +231,7 @@ class ResumeExceptionHandler(
         problemDetail.type = URI.create("$ERROR_PAGE/resume/internal-error")
         problemDetail.setProperty(ERROR_CATEGORY, "INTERNAL_ERROR")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE, "error.internal_server_error")
+        problemDetail.setProperty(MESSAGE, MSG_INTERNAL_ERROR)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
 
@@ -246,5 +246,14 @@ class ResumeExceptionHandler(
         private const val MESSAGE = "message"
         private const val LOCALIZED_MESSAGE = "localizedMessage"
         private const val TRACE_ID = "traceId"
+
+        // Message keys
+        private const val MSG_VALIDATION_ERROR = "error.validation_error"
+        private const val MSG_INVALID_DATA = "resume.error.invalid_data"
+        private const val MSG_TEMPLATE_RENDERING = "resume.error.template_rendering"
+        private const val MSG_PDF_GENERATION = "resume.error.pdf_generation"
+        private const val MSG_PDF_TIMEOUT = "resume.error.pdf_timeout"
+        private const val MSG_MALICIOUS_CONTENT = "resume.error.malicious_content"
+        private const val MSG_INTERNAL_ERROR = "error.internal_server_error"
     }
 }

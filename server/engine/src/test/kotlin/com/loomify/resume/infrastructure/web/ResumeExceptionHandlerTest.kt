@@ -21,8 +21,9 @@ internal class ResumeExceptionHandlerTest {
 
     private val messageSource = mockk<MessageSource>()
     private val handler = ResumeExceptionHandler(messageSource)
-    private val exchange = mockk<ServerWebExchange>()
+    private val exchange = mockk<ServerWebExchange>(relaxed = true)
     private val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
+    private val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
 
     @Test
     fun `should handle InvalidResumeDataException with localized message and trace ID`() {
@@ -30,6 +31,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-123"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage(
                 "resume.error.invalid_data",
@@ -56,6 +59,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-456"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage("resume.error.template_rendering", null, any<Locale>())
         } returns "Failed to render resume template"
@@ -81,6 +86,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-789"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage(
                 "resume.error.pdf_generation",
@@ -107,6 +114,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-timeout"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage("resume.error.pdf_timeout", null, any<Locale>())
         } returns "PDF generation timed out. Please try again with simpler content."
@@ -128,6 +137,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-security"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage("resume.error.malicious_content", null, any<Locale>())
         } returns "Content contains potentially unsafe characters"
@@ -153,6 +164,8 @@ internal class ResumeExceptionHandlerTest {
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id-generic"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage("error.internal_server_error", null, any<Locale>())
         } returns "An unexpected error occurred"
