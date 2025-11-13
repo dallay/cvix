@@ -4,13 +4,13 @@ import com.loomify.UnitTest
 import com.loomify.common.domain.error.BusinessRuleValidationException
 import io.mockk.every
 import io.mockk.mockk
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ServerWebExchange
-import java.util.Locale
 
 @UnitTest
 internal class GlobalExceptionHandlerTest {
@@ -23,12 +23,21 @@ internal class GlobalExceptionHandlerTest {
     fun `should return bad request problem detail when illegal argument exception occurs`() {
         val exception = mockk<IllegalArgumentException>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
-        
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
+
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Invalid argument"
-        every { messageSource.getMessage("error.bad_request", null, any<Locale>()) } returns "Bad request"
-        
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
+        every {
+            messageSource.getMessage(
+                "error.bad_request",
+                null,
+                Locale.ENGLISH,
+            )
+        } returns "Bad request"
+
         val problemDetail = handler.handleIllegalArgumentException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
@@ -43,12 +52,21 @@ internal class GlobalExceptionHandlerTest {
     fun `should return bad request problem detail when business rule validation exception occurs`() {
         val exception = mockk<BusinessRuleValidationException>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
-        
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
+
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Business rule violation"
-        every { messageSource.getMessage("error.bad_request", null, any<Locale>()) } returns "Bad request"
-        
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
+        every {
+            messageSource.getMessage(
+                "error.bad_request",
+                null,
+                Locale.ENGLISH,
+            )
+        } returns "Bad request"
+
         val problemDetail = handler.handleIllegalArgumentException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
@@ -62,12 +80,21 @@ internal class GlobalExceptionHandlerTest {
     fun `should return internal server error problem detail when exception occurs`() {
         val exception = mockk<Exception>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
-        
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
+
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Unexpected error"
-        every { messageSource.getMessage("error.internal_server_error", null, any<Locale>()) } returns "Internal server error"
-        
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
+        every {
+            messageSource.getMessage(
+                "error.internal_server_error",
+                null,
+                Locale.ENGLISH,
+            )
+        } returns "Internal server error"
+
         val problemDetail = handler.handleGenericException(exception, exchange)
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
