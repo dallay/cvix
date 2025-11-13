@@ -23,15 +23,18 @@ internal class GlobalExceptionHandlerTest {
     fun `should return bad request problem detail when illegal argument exception occurs`() {
         val exception = mockk<IllegalArgumentException>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Invalid argument"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage(
                 "error.bad_request",
                 null,
-                any<Locale>(),
+                Locale.ENGLISH,
             )
         } returns "Bad request"
 
@@ -49,15 +52,18 @@ internal class GlobalExceptionHandlerTest {
     fun `should return bad request problem detail when business rule validation exception occurs`() {
         val exception = mockk<BusinessRuleValidationException>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Business rule violation"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage(
                 "error.bad_request",
                 null,
-                any<Locale>(),
+                Locale.ENGLISH,
             )
         } returns "Bad request"
 
@@ -74,15 +80,18 @@ internal class GlobalExceptionHandlerTest {
     fun `should return internal server error problem detail when exception occurs`() {
         val exception = mockk<Exception>()
         val requestMock = mockk<org.springframework.http.server.reactive.ServerHttpRequest>()
+        val localeContextMock = mockk<org.springframework.context.i18n.LocaleContext>()
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
         every { exception.message } returns "Unexpected error"
+        every { exchange.localeContext } returns localeContextMock
+        every { localeContextMock.locale } returns Locale.ENGLISH
         every {
             messageSource.getMessage(
                 "error.internal_server_error",
                 null,
-                any<Locale>(),
+                Locale.ENGLISH,
             )
         } returns "Internal server error"
 

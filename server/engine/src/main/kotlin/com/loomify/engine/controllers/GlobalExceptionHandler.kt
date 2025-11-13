@@ -10,8 +10,8 @@ import com.loomify.engine.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.loomify.engine.workspace.domain.WorkspaceAuthorizationException
 import java.net.URI
 import java.time.Instant
+import java.util.Locale
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -65,8 +65,7 @@ class GlobalExceptionHandler(
         response: ServerHttpResponse,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.authentication_failed", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.authentication_failed")
 
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message)
         problemDetail.title = "User authentication failed"
@@ -85,8 +84,7 @@ class GlobalExceptionHandler(
         EntityNotFoundException::class,
     )
     fun handleEntityNotFound(e: Exception, exchange: ServerWebExchange): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.entity_not_found", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.entity_not_found")
 
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message ?: ENTITY_NOT_FOUND)
         problemDetail.title = ENTITY_NOT_FOUND
@@ -114,8 +112,7 @@ class GlobalExceptionHandler(
         LogoutFailedException::class,
     )
     fun handleIllegalArgumentException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.bad_request", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.bad_request")
 
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message ?: "Bad request")
         problemDetail.title = "Bad request"
@@ -140,8 +137,7 @@ class GlobalExceptionHandler(
         response: ServerHttpResponse,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.missing_cookie", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.missing_cookie")
 
         response.statusCode = HttpStatus.BAD_REQUEST
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message)
@@ -171,8 +167,7 @@ class GlobalExceptionHandler(
         status: org.springframework.http.HttpStatusCode,
         exchange: org.springframework.web.server.ServerWebExchange,
     ): Mono<org.springframework.http.ResponseEntity<Any>> {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.validation_error", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.validation_error")
 
         val fieldErrors = ex.bindingResult.fieldErrors.associate { error ->
             error.field to (error.defaultMessage ?: "Invalid value")
@@ -202,8 +197,7 @@ class GlobalExceptionHandler(
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
-        val locale = LocaleContextHolder.getLocale()
-        val localizedMessage = messageSource.getMessage("error.internal_server_error", null, locale)
+        val localizedMessage = getLocalizedMessage(exchange, "error.internal_server_error")
 
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -217,5 +211,10 @@ class GlobalExceptionHandler(
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
+    }
+
+    private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        return messageSource.getMessage(messageKey, null, locale)
     }
 }
