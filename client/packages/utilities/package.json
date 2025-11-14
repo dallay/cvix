@@ -65,13 +65,13 @@
 		"@internationalized/date": "^3.10.0",
 		"@loomify/config": "workspace:*",
 		"@loomify/tsconfig": "workspace:*",
-		"@vitest/coverage-v8": "^4.0.4",
+		"@vitest/coverage-v8": "^4.0.9",
 		"npm-run-all2": "^8.0.4",
 		"rimraf": "^6.1.0",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.2",
 		"vite-plugin-dts": "^4.5.4",
-		"vitest": "^4.0.4"
+		"vitest": "^4.0.9"
 	},
 	"publishConfig": {
 		"access": "public"
