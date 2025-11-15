@@ -33,6 +33,7 @@ import java.time.LocalDate
 import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -54,9 +55,162 @@ class TemplateValidatorTest {
         assertDoesNotThrow { TemplateValidator.validateContent(baseResume()) }
     }
 
+    @Test
+    @Order(2)
+    fun `should detect malicious content in nested work section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in work experience
+        val maliciousWork = WorkExperience(
+            name = CompanyName("Evil Corp"),
+            position = JobTitle("Developer"),
+            startDate = "2023-01-01",
+            endDate = null,
+            location = "Remote",
+            summary = "\\input{evil}", // Malicious LaTeX command
+            highlights = listOf(Highlight("Clean highlight")),
+            url = Url("https://example.com"),
+        )
+
+        val resume = baseResume().copy(
+            work = listOf(maliciousWork),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\input"))
+    }
+
+    @Test
+    @Order(3)
+    fun `should detect malicious content in nested education section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in education
+        val maliciousEducation = Education(
+            institution = InstitutionName("University"),
+            area = FieldOfStudy("\\def\\hack{}"), // Malicious LaTeX command
+            studyType = DegreeType("BS"),
+            startDate = "2019-01-01",
+            endDate = "2022-01-01",
+            score = "4.0",
+            url = Url("https://university.edu"),
+            courses = listOf("Algorithms"),
+        )
+
+        val resume = baseResume().copy(
+            education = listOf(maliciousEducation),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\def"))
+    }
+
+    @Test
+    @Order(4)
+    fun `should detect malicious content in nested projects section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in project
+        val maliciousProject = Project(
+            name = "System\\write{hack}", // Malicious LaTeX command
+            description = "A legitimate project description",
+            url = "https://project.example.com",
+            startDate = LocalDate.parse("2023-02-01"),
+            endDate = null,
+            highlights = listOf("Feature implementation"),
+            keywords = listOf("Kotlin"),
+            roles = listOf("Lead"),
+            entity = "Company",
+            type = "Internal",
+        )
+
+        val resume = baseResume().copy(
+            projects = listOf(maliciousProject),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\write"))
+    }
+
+    @Test
+    @Order(5)
+    fun `should detect malicious content in nested languages section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in language
+        val maliciousLanguage = Language(
+            language = "English",
+            fluency = "\\newcommand{\\evil}{}", // Malicious LaTeX command
+        )
+
+        val resume = baseResume().copy(
+            languages = listOf(maliciousLanguage),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\newcommand"))
+    }
+
+    @Test
+    @Order(6)
+    fun `should detect malicious content in nested volunteer section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in volunteer
+        val maliciousVolunteer = Volunteer(
+            organization = "Community\\include{bad}", // Malicious LaTeX command
+            position = "Mentor",
+            url = Url("https://volunteer.org"),
+            startDate = "2024-01-01",
+            endDate = null,
+            summary = "Helped students",
+            highlights = listOf("Weekly sessions"),
+        )
+
+        val resume = baseResume().copy(
+            volunteer = listOf(maliciousVolunteer),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\include"))
+    }
+
+    @Test
+    @Order(7)
+    fun `should detect malicious content in nested awards section using real resume data`() {
+        // Arrange: Create real ResumeData with malicious command in award
+        val maliciousAward = Award(
+            title = "Best Developer",
+            date = "2023-12-01",
+            awarder = "Acme Corp\\catcode{evil}", // Malicious LaTeX command
+            summary = "Outstanding contributions",
+        )
+
+        val resume = baseResume().copy(
+            awards = listOf(maliciousAward),
+        )
+
+        // Act & Assert
+        val exception = assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(resume)
+        }
+
+        assertTrue(exception.message!!.contains("\\catcode"))
+    }
+
     @ParameterizedTest(name = "{0} should trigger LaTeXInjectionException")
     @MethodSource("maliciousFieldProvider")
-    @Order(2)
+    @Order(8)
     fun `should detect malicious LaTeX commands in all fields`(
         @Suppress("UNUSED_PARAMETER") field: String,
         maliciousResume: ResumeData

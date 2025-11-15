@@ -109,6 +109,10 @@ internal class LatexTemplateRendererTest {
         assertTrue(result.contains("\\&"), "Ampersands must be escaped")
         assertTrue(result.contains("\\#"), "Hash symbols must be escaped")
         assertTrue(result.contains("\\_"), "Underscores must be escaped in text")
+        assertTrue(
+            result.contains("\\textbackslash\\{\\}"),
+            "Backslashes must be escaped as \\textbackslash with escaped braces",
+        )
 
         // Verify document compiles without math mode errors
         assertValidLatexStructure(result)

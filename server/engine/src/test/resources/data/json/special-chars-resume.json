@@ -5,7 +5,7 @@
     "email": "test_user+tag@example.com",
     "phone": "(123) 456-7890",
     "url": "https://example.com/~user",
-    "summary": "Summary with $5B revenue, 40% growth, #1 ranking, and special chars: & % $ # _ { } ~ ^",
+    "summary": "Summary with $5B revenue, 40% growth, #1 ranking, and special chars: & % $ # _ { } ~ ^ \\",
     "location": {
       "address": "123 Main St #456",
       "postalCode": "12345",
@@ -25,7 +25,7 @@
       "highlights": [
         "Reduced latency by 40% & improved performance",
         "Saved $500K annually through optimization",
-        "Led team of 5-10 engineers #techleadership"
+        "Led team of 5-10 engineers #techleadership with \\LaTeX docs"
       ]
     }
   ],
@@ -74,4 +74,3 @@
   "interests": [],
   "references": []
 }
-
