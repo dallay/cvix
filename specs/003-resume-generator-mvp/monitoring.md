@@ -364,7 +364,7 @@ Alert Contacts: [on-call-email, slack-webhook, pagerduty-integration]
 resume:
   pdf:
     docker:
-     image: texlive/texlive:TL2024-historic
+      image: texlive/texlive:TL2024-historic
       maxConcurrentContainers: 10  # Adjust based on host capacity
       timeoutSeconds: 30
       memoryLimitMb: 512
