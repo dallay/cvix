@@ -337,13 +337,13 @@ internal class LatexTemplateRendererTest {
      * Persist generated LaTeX to file for manual inspection.
      */
     private fun persistOutput(name: String, content: String) {
-        val outputPath = "build/test-output/$name.tex"
+        val safeName = name.replace(Regex("[^a-zA-Z0-9_-]"), "")
+        val outputPath = "build/test-output/$safeName.tex"
         java.io.File(outputPath).apply {
             parentFile.mkdirs()
             writeText(content)
         }
     }
-
     /**
      * Normalize line endings for cross-platform comparison.
      */
