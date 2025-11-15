@@ -32,12 +32,12 @@ class UrlRenderer : AttributeRenderer<String> {
     }
 
     /**
-     * Removes the protocol (https://, http://, www.) from the URL
+     * Removes the protocol (https://, http://, www.) from the URL, case-insensitive
      */
     private fun shortenUrl(url: String): String {
         return url
-            .replace(Regex("^https?://"), "") // Remove http:// or https://
-            .replace(Regex("^www\\."), "") // Remove www. if present
+            .replace(Regex("^https?://", RegexOption.IGNORE_CASE), "") // Remove http:// or https:// (case-insensitive)
+            .replace(Regex("^www\\.", RegexOption.IGNORE_CASE), "") // Remove www. if present (case-insensitive)
             .trimEnd('/') // Remove trailing slash if present
     }
 
