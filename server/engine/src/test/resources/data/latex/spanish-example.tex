@@ -109,18 +109,18 @@
 }
 
 \newenvironment{twocolentry}[2][]{
-    \onecolentry
+    \begin{onecolentry}
     \def\secondColumn{#2}
     \setcolumnwidth{\fill, 4.5 cm}
     \begin{paracol}{2}
 }{
     \switchcolumn \raggedleft \secondColumn
     \end{paracol}
-    \endonecolentry
+    \end{onecolentry}
 }
 
 \newenvironment{threecolentry}[3][]{
-    \onecolentry
+    \begin{onecolentry}
     \def\thirdColumn{#3}
     \setcolumnwidth{, \fill, 4.5 cm}
     \begin{paracol}{3}
@@ -128,7 +128,7 @@
 }{
     \switchcolumn \raggedleft \thirdColumn
     \end{paracol}
-    \endonecolentry
+    \end{onecolentry}
 }
 
 \newenvironment{header}{
