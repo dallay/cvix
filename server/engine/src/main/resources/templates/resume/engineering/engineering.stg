@@ -148,8 +148,6 @@ preamble(basics, i18n, locale, lastUpdated) ::= <<
 \setlength{\columnsep}{0.15cm}
 \pagenumbering{gobble}
 
-\placelastupdatedtext
-
 \titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
 
 \titlespacing{\section}{
@@ -243,6 +241,9 @@ preamble(basics, i18n, locale, lastUpdated) ::= <<
 }
 \newsavebox\ANDbox
 \sbox\ANDbox{$|$}
+
+% Now that the macro is defined above, place the last updated text
+\placelastupdatedtext
 >>
 
 education(educationList, i18n) ::= <<
@@ -296,7 +297,9 @@ projects(projectsList, i18n) ::= <<
 projectEntry(project) ::= <<
 
     \begin{twocolentry}{
-        \href{<project.url>}{<project.url; format="short-latex">}
+        <if(project.url)>
+            \href{<project.url; format="latex">}{<project.url; format="short-latex">}
+        <endif>
     }
         \textbf{<project.name>}\end{twocolentry}
 
@@ -333,7 +336,7 @@ publicationEntry(pub) ::= <<
 
             \vspace{0.10 cm}
 
-            \href{<pub.url>}{<pub.url; format="short-latex">}<endif>
+            \href{<pub.url; format="latex">}{<pub.url; format="short-latex">}<endif>
         \end{onecolentry}
     \end{samepage}>>
 
@@ -372,7 +375,7 @@ certificateEntry(cert) ::= <<
     \begin{twocolentry}{
         <cert.date>
     }
-        \textbf{<cert.name>}<if(cert.url)> (\href{<cert.url>}{<cert.url; format="short-latex">})<endif>\end{twocolentry}
+        \textbf{<cert.name>}<if(cert.url)> (\href{<cert.url; format="latex">}{<cert.url; format="short-latex">})<endif>\end{twocolentry}
 
     \vspace{0.10 cm}
     \begin{onecolentry}

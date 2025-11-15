@@ -63,8 +63,6 @@
 \setlength{\columnsep}{0.15cm}
 \pagenumbering{gobble}
 
-\placelastupdatedtext
-
 \titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
 
 \titlespacing{\section}{
@@ -158,6 +156,9 @@
 }
 \newsavebox\ANDbox
 \sbox\ANDbox{$|$}
+
+% Now that the macro is defined above, place the last updated text
+\placelastupdatedtext
 
 \begin{document}
 
@@ -343,7 +344,7 @@
     \section{Proyectos}
 
     \begin{twocolentry}{
-        \href{https://github.com/johndoe/shopease}{github.com/johndoe/shopease}
+            \href{https://github.com/johndoe/shopease}{github.com/johndoe/shopease}
     }
         \textbf{ShopEase}\end{twocolentry}
 
@@ -361,7 +362,7 @@
     \vspace{0.2 cm}
 
     \begin{twocolentry}{
-        \href{https://github.com/johndoe/budgetbuddy}{github.com/johndoe/budgetbuddy}
+            \href{https://github.com/johndoe/budgetbuddy}{github.com/johndoe/budgetbuddy}
     }
         \textbf{BudgetBuddy}\end{twocolentry}
 
@@ -379,7 +380,7 @@
     \vspace{0.2 cm}
 
     \begin{twocolentry}{
-        \href{https://github.com/johndoe/reciperealm}{github.com/johndoe/reciperealm}
+            \href{https://github.com/johndoe/reciperealm}{github.com/johndoe/reciperealm}
     }
         \textbf{RecipeRealm}\end{twocolentry}
 
