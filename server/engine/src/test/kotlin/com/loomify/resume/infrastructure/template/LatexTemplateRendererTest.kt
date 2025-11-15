@@ -3,10 +3,23 @@ package com.loomify.resume.infrastructure.template
 import com.loomify.FixtureDataLoader
 import com.loomify.FixtureDataLoader.readResource
 import com.loomify.UnitTest
+import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.exception.LaTeXInjectionException
+import com.loomify.resume.domain.model.FullName
+import com.loomify.resume.domain.model.JobTitle
+import com.loomify.resume.domain.model.Location
+import com.loomify.resume.domain.model.PersonalInfo
+import com.loomify.resume.domain.model.PhoneNumber
+import com.loomify.resume.domain.model.ResumeData
+import com.loomify.resume.domain.model.Skill
+import com.loomify.resume.domain.model.SkillCategory
+import com.loomify.resume.domain.model.SkillCategoryName
+import com.loomify.resume.domain.model.Summary
 import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -176,13 +189,51 @@ internal class LatexTemplateRendererTest {
      * Parameterized test to verify dangerous LaTeX commands are blocked.
      * Security test to prevent LaTeX injection attacks.
      */
-    @ParameterizedTest
-    @ValueSource(strings = ["\\input", "\\include", "\\write", "\\def", "\\newcommand"])
+    @ParameterizedTest(name = "should reject {0}")
+    @ValueSource(strings = ["\\input{malicious}", "\\include{evil}", "\\write{file}", "\\def\\bad{}", "\\newcommand{\\hack}{}"])
     fun `should reject dangerous LaTeX commands`(dangerousCommand: String) {
-        // This test would require creating malicious payloads
-        // For now, we verify the validation is in place
-        // In production, the LatexTemplateRenderer.validateContent() method blocks these
-        assertNotNull(dangerousCommand, "Validation should exist for: $dangerousCommand")
+        // Arrange: Create minimal resume with malicious command in name field
+        val maliciousResume = ResumeData(
+            basics = PersonalInfo(
+                name = FullName(dangerousCommand),
+                label = JobTitle("Engineer"),
+                image = null,
+                email = Email("test@example.com"),
+                phone = PhoneNumber("+1-555-0100"),
+                url = null,
+                summary = Summary("Clean summary"),
+                location = Location(
+                    address = "123 Main St",
+                    postalCode = "12345",
+                    city = "TestCity",
+                    countryCode = "US",
+                    region = "CA",
+                ),
+                profiles = emptyList(),
+            ),
+            work = emptyList(),
+            volunteer = emptyList(),
+            education = emptyList(),
+            awards = emptyList(),
+            certificates = emptyList(),
+            publications = emptyList(),
+            skills = listOf(
+                SkillCategory(
+                    name = SkillCategoryName("Technical"),
+                    level = null,
+                    keywords = listOf(Skill("Kotlin")),
+                ),
+            ),
+            languages = emptyList(),
+            interests = emptyList(),
+            references = emptyList(),
+            projects = emptyList(),
+        )
+
+        // Act & Assert: Verify LaTeXInjectionException is thrown
+        assertThrows(LaTeXInjectionException::class.java) {
+            renderer.render(maliciousResume, "en")
+        }
     }
 
     /**
