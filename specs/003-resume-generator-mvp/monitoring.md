@@ -67,7 +67,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 
 **Remediation**:
 
-- Increase `docker.pdf.maxConcurrentContainers` if pool is saturated
+- Increase `resume.pdf.docker.maxConcurrentContainers` if pool is saturated
 - Pre-pull TeX Live image to avoid pull delays: `docker pull texlive/texlive:TL2024-historic`
 - Increase Docker resource limits (memory/CPU) if host has capacity
 - Review LaTeX templates for complexity (nested tables, large images)
@@ -212,7 +212,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
         "docker.arch": "amd64",
         "texlive.image": "texlive/texlive:TL2024-historic",
         "concurrent.max": 10,
-        "timeout.seconds": 10
+        "timeout.seconds": 30
       }
     },
     "ping": {
@@ -361,14 +361,15 @@ Alert Contacts: [on-call-email, slack-webhook, pagerduty-integration]
 
 ```yaml
 # Docker PDF Generator Configuration
-docker:
+resume:
   pdf:
-    image: texlive/texlive:TL2024-historic
-    imageName: texlive/texlive:TL2024-historic
-    maxConcurrentContainers: 10  # Adjust based on host capacity
-    timeoutSeconds: 30
-    memoryLimitMb: 512
-    cpuQuota: 0.5  # 50% of one CPU core
+    docker:
+      image: texlive/texlive:TL2024-historic
+      imageName: texlive/texlive:TL2024-historic
+      maxConcurrentContainers: 10  # Adjust based on host capacity
+      timeoutSeconds: 30
+      memoryLimitMb: 512
+      cpuQuota: 0.5  # 50% of one CPU core
 
 # Management Endpoints
 management:

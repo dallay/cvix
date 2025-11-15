@@ -453,7 +453,7 @@ class TemplateValidatorTest {
                 ),
                 // Work
                 arg(
-                    "work[0].company",
+                    "work[0].name",
                     base.copy(work = listOf(base.work[0].copy(name = CompanyName(MALICIOUS)))),
                 ),
                 arg(
