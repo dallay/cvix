@@ -11,25 +11,28 @@ This document describes the comprehensive test suite for LaTeX resume template r
 
 **Location**: `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
 
-**Total Tests**: 12 tests covering all critical scenarios
+**Total Tests**: 9 test methods (13 test executions) covering all critical scenarios
 
 **Status**: ✅ All tests passing
 
 ## Test Categories
 
 ### 1. Complete Feature Test
+
 - **Test**: `should render complete resume with all fields populated`
 - **Fixture**: `john-doe.json` (comprehensive resume with all fields)
 - **Validates**: Full rendering pipeline with all optional fields populated
 - **Compares against**: Expected LaTeX fixture file
 
 ### 2. Minimal Data Test
+
 - **Test**: `should render minimal resume with only required fields`
 - **Fixture**: `minimal-resume.json`
 - **Validates**: Template handles sparse data gracefully
 - **Checks**: Required fields (name, email, phone) and at least one section (skills)
 
 ### 3. LaTeX Special Characters Escaping
+
 - **Test**: `should properly escape LaTeX special characters`
 - **Fixture**: `special-chars-resume.json`
 - **Critical Characters Tested**:
@@ -44,6 +47,7 @@ This document describes the comprehensive test suite for LaTeX resume template r
 **Why This Matters**: Without proper escaping, user content like "$5B revenue" or "40% growth" would cause LaTeX compilation to fail with "Command \item invalid in math mode" errors.
 
 ### 4. Unicode and International Characters
+
 - **Test**: `should handle Unicode and international characters`
 - **Fixture**: `unicode-resume.json`
 - **Validates**:
@@ -53,6 +57,7 @@ This document describes the comprehensive test suite for LaTeX resume template r
 - **Ensures**: UTF-8 encoding is preserved through the rendering pipeline
 
 ### 5. Long Content Handling
+
 - **Test**: `should handle long content without breaking LaTeX structure`
 - **Fixture**: `long-content-resume.json`
 - **Validates**:
@@ -62,12 +67,14 @@ This document describes the comprehensive test suite for LaTeX resume template r
 - **Checks**: All items are rendered and LaTeX structure remains valid
 
 ### 6. Null/Empty Fields
+
 - **Test**: `should handle null and empty optional fields gracefully`
 - **Fixture**: `null-fields-resume.json`
 - **Validates**: Missing optional data doesn't cause crashes or invalid LaTeX
 - **Checks**: Template conditionals work correctly
 
 ### 7. LaTeX Structure Validation
+
 - **Test**: `should generate valid LaTeX document structure`
 - **Validates**:
   - Document class declaration
@@ -78,6 +85,7 @@ This document describes the comprehensive test suite for LaTeX resume template r
   - No unescaped math mode triggers in user content
 
 ### 8. Security: LaTeX Injection Prevention
+
 - **Test**: `should reject dangerous LaTeX commands` (parameterized)
 - **Dangerous Commands Blocked**:
   - `\input` - File inclusion
@@ -90,6 +98,7 @@ This document describes the comprehensive test suite for LaTeX resume template r
 ## Test Fixtures
 
 ### JSON Fixtures (`src/test/resources/data/json/`)
+
 1. `john-doe.json` - Complete resume with all fields
 2. `minimal-resume.json` - Only required fields
 3. `special-chars-resume.json` - LaTeX special characters
@@ -98,14 +107,17 @@ This document describes the comprehensive test suite for LaTeX resume template r
 6. `null-fields-resume.json` - Null optional fields
 
 ### Expected LaTeX Fixtures (`src/test/resources/data/latex/`)
+
 1. `john-doe.tex` - Expected output for complete resume
 
 ## Key Implementation Details
 
 ### LaTeX Escaper
+
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/util/LatexEscaper.kt`
 
 Escapes all dangerous characters in user content:
+
 ```kotlin
 fun escape(input: String): String = input
     .replace("\\", "\\textbackslash{}")
@@ -116,12 +128,16 @@ fun escape(input: String): String = input
     .replace("_", "\\_")
     .replace("{", "\\{")
     .replace("}", "\\}")
+    .replace("<", "\\textless{}")
+    .replace(">", "\\textgreater{}")
     .replace("~", "\\textasciitilde{}")
     .replace("^", "\\textasciicircum{}")
 ```
 
 ### Template Bullet Point Fix
+
 Changed from nested math mode to simple text bullet:
+
 ```latex
 % Old (caused math mode issues):
 \renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
@@ -131,9 +147,11 @@ Changed from nested math mode to simple text bullet:
 ```
 
 ### URL Renderer
+
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/renders/UrlRenderer.kt`
 
 Handles URL escaping separately with format options:
+
 - `short` - Removes protocol
 - `latex` - Escapes LaTeX special chars
 - `short-latex` - Both
@@ -197,7 +215,6 @@ Handles URL escaping separately with format options:
 
 ---
 
-Last Updated: November 14, 2024
+Last Updated: November 14, 2024,
 Test Suite Version: 1.0
 Status: All tests passing ✅
-
