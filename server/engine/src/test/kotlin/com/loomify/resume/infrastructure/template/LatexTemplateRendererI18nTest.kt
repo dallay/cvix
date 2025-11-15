@@ -19,6 +19,9 @@ import com.loomify.resume.domain.model.WorkExperience
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldNotContain
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 import org.junit.jupiter.api.Test
 
 /**
@@ -28,7 +31,8 @@ import org.junit.jupiter.api.Test
 @UnitTest
 class LatexTemplateRendererI18nTest {
 
-    private val renderer = LatexTemplateRenderer()
+    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
+    private val renderer = LatexTemplateRenderer(fixedClock)
 
     @Test
     fun `should render resume with English translations`() {

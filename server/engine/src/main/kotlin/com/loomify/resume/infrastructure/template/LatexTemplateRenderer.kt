@@ -7,6 +7,7 @@ import com.loomify.resume.domain.port.TemplateRenderer
 import com.loomify.resume.infrastructure.template.mapper.ResumeTemplateMapper
 import com.loomify.resume.infrastructure.template.renders.UrlRenderer
 import com.loomify.resume.infrastructure.template.validator.TemplateValidator
+import java.time.Clock
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -26,7 +27,9 @@ import org.stringtemplate.v4.STGroupFile
  */
 @Component
 @Suppress("TooManyFunctions") // Template builders need multiple focused functions
-class LatexTemplateRenderer : TemplateRenderer {
+class LatexTemplateRenderer(
+    private val clock: Clock = Clock.systemDefaultZone()
+) : TemplateRenderer {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -115,8 +118,8 @@ class LatexTemplateRenderer : TemplateRenderer {
      */
     private fun formatLastUpdatedDate(locale: String): String {
         val resourceLocale = Locale.forLanguageTag(locale)
-        val currentDate = YearMonth.now()
-        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", resourceLocale)
-        return currentDate.format(formatter)
+        val pattern = if (resourceLocale.language == "es") "MMMM 'de' yyyy" else "MMMM yyyy"
+        val formatter = DateTimeFormatter.ofPattern(pattern, resourceLocale)
+        return YearMonth.now(clock.zone).format(formatter)
     }
 }

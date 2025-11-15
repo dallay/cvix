@@ -17,6 +17,9 @@ import com.loomify.resume.domain.model.SkillCategoryName
 import com.loomify.resume.domain.model.Summary
 import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -41,7 +44,8 @@ import org.junit.jupiter.params.provider.ValueSource
 @Suppress("StringShouldBeRawString")
 internal class LatexTemplateRendererTest {
 
-    private val renderer = LatexTemplateRenderer()
+    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
+    private val renderer = LatexTemplateRenderer(fixedClock)
 
     /**
      * Flag to persist generated LaTeX files for manual inspection.
