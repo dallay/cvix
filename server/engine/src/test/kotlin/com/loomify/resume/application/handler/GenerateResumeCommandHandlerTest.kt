@@ -9,8 +9,8 @@ import com.loomify.resume.domain.model.JobTitle
 import com.loomify.resume.domain.model.PersonalInfo
 import com.loomify.resume.domain.model.ResumeData
 import com.loomify.resume.domain.model.WorkExperience
-import com.loomify.resume.domain.port.PdfGeneratorPort
-import com.loomify.resume.domain.port.TemplateRendererPort
+import com.loomify.resume.domain.port.PdfGenerator
+import com.loomify.resume.domain.port.TemplateRenderer
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.coEvery
@@ -33,8 +33,8 @@ import reactor.test.StepVerifier
 @UnitTest
 class GenerateResumeCommandHandlerTest {
 
-    private val templateRenderer: TemplateRendererPort = mockk()
-    private val pdfGenerator: PdfGeneratorPort = mockk()
+    private val templateRenderer: TemplateRenderer = mockk()
+    private val pdfGenerator: PdfGenerator = mockk()
     private val handler = GenerateResumeCommandHandler(templateRenderer, pdfGenerator)
 
     @Test
@@ -156,7 +156,7 @@ class GenerateResumeCommandHandlerTest {
     // Helper function to create valid test data
     private fun createValidResumeData() = ResumeData(
         basics = PersonalInfo(
-            fullName = FullName("John Doe"),
+            name = FullName("John Doe"),
             label = JobTitle("Software Engineer"),
             email = com.loomify.common.domain.vo.email.Email("john@example.com"),
             phone = null,

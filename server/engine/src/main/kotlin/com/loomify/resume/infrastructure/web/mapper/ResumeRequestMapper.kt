@@ -62,7 +62,7 @@ object ResumeRequestMapper {
     private fun mapBasics(request: GenerateResumeRequest): PersonalInfo {
         val basics = request.basics
         return PersonalInfo(
-            fullName = FullName(basics.name),
+            name = FullName(basics.name),
             label = basics.label?.let { JobTitle(it) },
             image = basics.image?.takeIf { it.isNotBlank() }?.let { Url(it) },
             email = com.loomify.common.domain.vo.email.Email(basics.email),

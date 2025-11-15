@@ -1,0 +1,60 @@
+{
+  "basics": {
+    "name": "José García",
+    "label": "Développeur Senior",
+    "email": "jose@example.com",
+    "phone": "+33 1 23 45 67 89",
+    "summary": "Résumé en français avec des accents: àáâäæçéèêëïîôœùûüÿ. También español con ñ, ü, í, ó, ú."
+  },
+  "work": [
+    {
+      "name": "Société Française & Cie",
+      "position": "Ingénieur Logiciel",
+      "url": "https://example.fr",
+      "startDate": "2020-01-01",
+      "endDate": "2024-11-14",
+      "summary": "Développement d'applications web modernes",
+      "highlights": [
+        "Amélioration de 40% des performances",
+        "Création d'une architecture évolutive"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "École Polytechnique",
+      "area": "Informatique",
+      "studyType": "Maîtrise",
+      "startDate": "2015-01-01",
+      "endDate": "2019-01-01"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Langues de Programmation",
+      "keywords": [
+        "Python",
+        "JavaScript",
+        "C++"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "Français",
+      "fluency": "Langue maternelle"
+    },
+    {
+      "language": "Español",
+      "fluency": "Fluido"
+    }
+  ],
+  "volunteer": [],
+  "awards": [],
+  "certificates": [],
+  "publications": [],
+  "interests": [],
+  "references": [],
+  "projects": []
+}
+

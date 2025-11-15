@@ -28,7 +28,7 @@ data class PersonalInfoDto(
 
     val url: String? = null,
 
-    @field:Size(max = 500, message = "Summary must not exceed 500 characters")
+    @field:Size(max = 600, message = "Summary must not exceed 600 characters")
     val summary: String? = null,
 
     @field:Valid

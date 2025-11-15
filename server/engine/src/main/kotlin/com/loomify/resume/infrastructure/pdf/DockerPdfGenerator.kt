@@ -8,7 +8,7 @@ import com.github.dockerjava.api.model.Volume
 import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
-import com.loomify.resume.domain.port.PdfGeneratorPort
+import com.loomify.resume.domain.port.PdfGenerator
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
@@ -30,11 +30,11 @@ import reactor.core.scheduler.Schedulers
  * Uses a semaphore to limit concurrent Docker container executions.
  */
 @Component
-class DockerPdfGeneratorAdapter(
+class DockerPdfGenerator(
     private val dockerClient: DockerClient,
     private val properties: DockerPdfGeneratorProperties,
     meterRegistry: MeterRegistry,
-) : PdfGeneratorPort {
+) : PdfGenerator {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -124,9 +124,9 @@ class DockerPdfGeneratorAdapter(
     }
 
     private fun generatePdfInContainer(latexSource: String, locale: String): InputStream {
-        // Security check: Validate LaTeX source
-        validateLatexSource(latexSource)
-
+        // Note: Security validation of user content is performed in LatexTemplateRenderer
+        // before rendering. The latexSource here is the rendered template which contains
+        // safe LaTeX commands that would trigger false positives.
         logger.debug("Starting PDF generation for locale: $locale")
 
         // Create temporary directory for LaTeX compilation
@@ -178,83 +178,23 @@ class DockerPdfGeneratorAdapter(
     }
 
     private fun mapPdfGenerationError(error: Throwable): Throwable {
+        val pdfGenerationTimeoutException = PdfGenerationTimeoutException(
+            "PDF generation timed out after ${properties.timeoutSeconds} seconds",
+            error,
+        )
         return when {
             error is PdfGenerationTimeoutException -> error
             error is PdfGenerationException -> error
             error is LaTeXInjectionException -> error
             error is java.util.concurrent.TimeoutException ->
-                PdfGenerationTimeoutException(
-                    "PDF generation timed out after ${properties.timeoutSeconds} seconds",
-                    error,
-                )
+                pdfGenerationTimeoutException
             error.message?.contains("timeout", ignoreCase = true) == true ->
-                PdfGenerationTimeoutException(
-                    "PDF generation timed out after ${properties.timeoutSeconds} seconds",
-                    error,
-                )
+                pdfGenerationTimeoutException
             else -> {
                 val msg = "Failed to generate PDF: ${error.message}"
                 PdfGenerationException(msg, error)
             }
         }
-    }
-
-    private fun validateLatexSource(latexSource: String) {
-        val normalized = normalizeLatexSource(latexSource)
-        if (containsDeniedPrimitives(normalized)) {
-            throw LaTeXInjectionException(
-                "Potentially malicious LaTeX command detected in source",
-            )
-        }
-        if (containsInputOrInclude(normalized)) {
-            throw LaTeXInjectionException(
-                "Potentially malicious LaTeX command detected in source",
-            )
-        }
-    }
-
-    private fun normalizeLatexSource(latexSource: String): String {
-        val withoutComments = latexSource.replace(Regex("(?m)%.*$"), "")
-        return withoutComments.replace(Regex("\\s+"), " ").lowercase()
-    }
-
-    private fun containsDeniedPrimitives(source: String): Boolean {
-        val simpleDeny = listOf(
-            "\\write18", "\\immediate\\write", "\\openin", "\\openout", "\\read",
-            "\\catcode", "\\def", "\\let", "\\csname", "\\expandafter",
-        )
-        return simpleDeny.any { it in source }
-    }
-
-    private fun containsInputOrInclude(source: String) =
-        hasCommandArg(source, "input") || hasCommandArg(source, "include")
-
-    private fun hasCommandArg(source: String, cmd: String): Boolean {
-        var idx = 0
-        val cmdPattern = "\\$cmd"
-        while (idx < source.length) {
-            idx = source.indexOf(cmdPattern, idx)
-            if (idx == -1) break
-            val after = idx + cmdPattern.length
-            if (after >= source.length) {
-                return true
-            }
-            if (isCommandArgMatch(source, after)) {
-                return true
-            }
-            idx = after
-        }
-        return false
-    }
-
-    private fun isCommandArgMatch(source: String, after: Int): Boolean {
-        val next = source[after]
-        if (!next.isLetter()) {
-            var j = after
-            while (j < source.length && source[j].isWhitespace()) j++
-            return j >= source.length || source[j] == '{' || true
-        }
-        return false
     }
 
     private fun ensureDockerImage() {

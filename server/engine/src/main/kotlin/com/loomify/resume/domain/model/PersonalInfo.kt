@@ -88,7 +88,7 @@ value class Summary(val value: String) {
     }
 
     companion object {
-        private const val MAX_SUMMARY_LENGTH = 500
+        private const val MAX_SUMMARY_LENGTH = 600
     }
 }
 
@@ -117,7 +117,7 @@ data class SocialProfile(
  * Contains all personal information fields per JSON Resume Schema.
  */
 data class PersonalInfo(
-    val fullName: FullName,
+    val name: FullName,
     val label: JobTitle? = null,
     val image: Url? = null,
     val email: Email,

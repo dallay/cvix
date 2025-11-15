@@ -1,7 +1,6 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
-import com.loomify.common.domain.vo.email.Email
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.shouldBeWithinPercentageOf
 import io.kotest.matchers.shouldBe
@@ -139,7 +138,7 @@ class ResumeDataTest {
 
     // Helper functions to create valid test data
     private fun createValidPersonalInfo() = PersonalInfo(
-        fullName = FullName("John Doe"),
+        name = FullName("John Doe"),
         label = JobTitle("Software Engineer"),
         email = com.loomify.common.domain.vo.email.Email("john.doe@example.com"),
         phone = PhoneNumber("+1234567890"),

@@ -1,0 +1,449 @@
+baseResume(resumeData, i18n, locale) ::= <<
+ <! This is a CV/Resume template using StringTemplate.
+    For more information on StringTemplate, refer to the official documentation at:
+     https://github.com/antlr/stringtemplate4/blob/master/doc/index.md
+  !>
+<preamble(resumeData.basics, i18n, locale)>
+
+\begin{document}
+
+<header(resumeData.basics)>
+
+<about(resumeData.basics.summary, i18n)>
+
+<experience(resumeData.work, i18n)>
+
+<education(resumeData.education, i18n)>
+
+<skills(resumeData.skills, i18n)>
+
+<projects(resumeData.projects, i18n)>
+
+<publications(resumeData.publications, i18n)>
+
+<certificates(resumeData.certificates, i18n)>
+
+<awards(resumeData.awards, i18n)>
+
+<volunteer(resumeData.volunteer, i18n)>
+
+<languages(resumeData.languages, i18n)>
+
+<interests(resumeData.interests, i18n)>
+
+<references(resumeData.references, i18n)>
+
+\end{document}
+
+>>
+
+header(basics) ::= <<
+% Header
+    \begin{header}
+        \fontsize{25 pt}{25 pt}\selectfont <basics.name>
+
+        \vspace{5 pt}
+
+        \normalsize
+        \mbox{<basics.location.city>, <basics.location.region>}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{mailto:<basics.email>}{<basics.email>}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{tel:<basics.phone>}{<basics.phone>}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{<basics.url>}{<basics.url>}}%<basics.profiles:{profile|<profileLink(profile)>}>
+    \end{header}
+
+    \vspace{5 pt - 0.3 cm}
+>>
+
+profileLink(profile) ::= <<
+%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{<profile.url>}{<profile.network>: <profile.username>}}>>
+
+preamble(basics, i18n, locale) ::= <<
+%! Author = <basics.name>
+%! Date = 13/11/25
+
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot,
+    top=2 cm,
+    bottom=2 cm,
+    left=2 cm,
+    right=2 cm,
+    footskip=1.0 cm,
+]{geometry}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage[
+    pdftitle={<basics.name> - <basics.label> - <i18n.("label.resume_cv")>},
+    pdfauthor={<basics.name>},
+    pdfsubject={<i18n.("label.resume_cv")> <i18n.("label.of")> <basics.name>, <basics.label>},
+    pdfkeywords={<basics.label>, <i18n.("label.resume_cv")>, <basics.location.city>, <basics.location.region>},
+    pdfcreator={LaTeX with StringTemplate4},
+    pdfproducer={pdfTeX},
+    colorlinks=true,
+    urlcolor=primaryColor,
+    pdfstartview={FitH},
+    pdflang={<locale>}
+]{hyperref}
+\usepackage[pscoord]{eso-pic}
+\usepackage{calc}
+\usepackage{bookmark}
+\usepackage{lastpage}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{ifthen}
+\usepackage{needspace}
+\usepackage{iftex}
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Some settings:
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+
+\titlespacing{\section}{
+    -1pt
+}{
+    0.3 cm
+}{
+    0.2 cm
+}
+
+\renewcommand\labelitemi{\textbullet}
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0 cm + 10pt
+    ]
+}{
+    \end{itemize}
+}
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+}
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0 cm + 0.00001 cm
+    }{
+        0 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+}
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+}
+
+\newenvironment{threecolentry}[3][]{
+    \onecolentry
+    \def\thirdColumn{#3}
+    \setcolumnwidth{, \fill, 4.5 cm}
+    \begin{paracol}{3}
+    {\raggedright #2} \switchcolumn
+}{
+    \switchcolumn \raggedleft \thirdColumn
+    \end{paracol}
+    \endonecolentry
+}
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+    \par\kern\topsep
+}
+
+\newcommand{\placelastupdatedtext}{%
+    \AddToShipoutPictureFG*{%
+        \put(
+        \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
+        \LenToUnit{\paperheight-1.0 cm}
+        ){\vtop{{\null}\makebox[0pt][c]{
+            \small\color{gray}\textit{<i18n.("label.last_updated")>}\hspace{\widthof{<i18n.("label.last_updated")>}}
+        }}}%
+    }%
+}%
+
+\let\hrefWithoutArrow\href
+
+\newcommand{\AND}{\unskip
+\cleaders\copy\ANDbox\hskip\wd\ANDbox
+\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{$|$}
+>>
+
+education(educationList, i18n) ::= <<
+% Education Section
+    \section{<i18n.("section.education")>}
+<educationList:{edu|<educationEntry(edu)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+educationEntry(edu) ::= <<
+
+    \begin{twocolentry}{
+        <edu.startDate> – <edu.endDate>
+    }
+        \textbf{<edu.institution>}, <edu.studyType> in <edu.area><if(edu.url)> (\href{<edu.url>}{link})<endif>\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        \begin{highlights}<if(edu.score)>
+            \item <i18n.("label.gpa")>: <edu.score><endif><if(edu.courses)>
+            \item \textbf{<i18n.("label.coursework")>:} <edu.courses; separator=", "><endif>
+        \end{highlights}
+    \end{onecolentry}>>
+
+experience(workList, i18n) ::= <<
+% Experience Section
+    \section{<i18n.("section.experience")>}
+<workList:{work|<workEntry(work)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+workEntry(work) ::= <<
+
+    \begin{twocolentry}{
+        <work.startDate> – <work.endDate>
+    }
+        \textbf{<work.position>}, <work.name> -- <work.url>\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+<work.highlights:{highlight|            \item <highlight>}; separator="\n">
+        \end{highlights}
+    \end{onecolentry}>>
+
+
+projects(projectsList, i18n) ::= <<
+% Projects Section
+    \section{<i18n.("section.projects")>}
+<projectsList:{project|<projectEntry(project)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+projectEntry(project) ::= <<
+
+    \begin{twocolentry}{
+        \href{<project.url>}{<project.url; format="short-latex">}
+    }
+        \textbf{<project.name>}\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+<if(project.description)>            \item <project.description>
+<endif><project.highlights:{highlight|            \item <highlight>}; separator="\n">
+        \end{highlights}
+    \end{onecolentry}>>
+
+publications(publicationsList, i18n) ::= <<
+% Publications Section
+    \section{<i18n.("section.publications")>}
+<publicationsList:{pub|<publicationEntry(pub)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+publicationEntry(pub) ::= <<
+
+    \begin{samepage}
+        \begin{twocolentry}{
+            <pub.releaseDate>
+        }
+            \textbf{<pub.name>}\end{twocolentry}
+
+        \vspace{0.10 cm}
+
+        \begin{onecolentry}
+            <pub.publisher><if(pub.summary)>
+
+            \vspace{0.10 cm}
+
+            <pub.summary><endif><if(pub.url)>
+
+            \vspace{0.10 cm}
+
+            \href{<pub.url>}{<pub.url; format="short-latex">}<endif>
+        \end{onecolentry}
+    \end{samepage}>>
+
+skills(skillList, i18n) ::= <<
+% Skills Section
+    \section{<i18n.("section.skills")>}
+<skillList:{skill|<skillEntry(skill)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+skillEntry(skill) ::= <<
+
+    \begin{onecolentry}
+        \textbf{<skill.name>:} <skill.keywords; separator=", ">
+    \end{onecolentry}>>
+
+languages(languageList, i18n) ::= <<
+% Languages Section
+    \section{<i18n.("section.languages")>}
+<languageList:{lang|<languageEntry(lang)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+languageEntry(lang) ::= <<
+
+    \begin{onecolentry}
+        \textbf{<lang.language>:} <lang.fluency>
+    \end{onecolentry}>>
+
+certificates(certificateList, i18n) ::= <<
+% Certificates Section
+    \section{<i18n.("section.certificates")>}
+<certificateList:{cert|<certificateEntry(cert)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+certificateEntry(cert) ::= <<
+
+    \begin{twocolentry}{
+        <cert.date>
+    }
+        \textbf{<cert.name>}<if(cert.url)> (\href{<cert.url>}{<cert.url; format="short-latex">})<endif>\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        <i18n.("label.issued_by")>: <cert.issuer>
+    \end{onecolentry}>>
+
+awards(awardList, i18n) ::= <<
+% Awards Section
+    \section{<i18n.("section.awards")>}
+<awardList:{award|<awardEntry(award)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+awardEntry(award) ::= <<
+
+    \begin{twocolentry}{
+        <award.date>
+    }
+        \textbf{<award.title>}\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        <i18n.("label.awarded_by")>: <award.awarder><if(award.summary)>
+
+        \vspace{0.10 cm}
+
+        <award.summary><endif>
+    \end{onecolentry}>>
+
+volunteer(volunteerList, i18n) ::= <<
+% Volunteer Experience Section
+    \section{<i18n.("section.volunteer")>}
+<volunteerList:{vol|<volunteerEntry(vol)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+volunteerEntry(vol) ::= <<
+
+    \begin{twocolentry}{
+        <vol.startDate> – <vol.endDate>
+    }
+        \textbf{<vol.position>}, <vol.organization><if(vol.url)> (\href{<vol.url>}{link})<endif>\end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        <if(vol.summary)><vol.summary>
+
+        \vspace{0.10 cm}
+
+        <endif><if(vol.highlights)>\begin{highlights}
+<vol.highlights:{highlight|            \item <highlight>}; separator="\n">
+        \end{highlights}<endif>
+    \end{onecolentry}>>
+
+interests(interestList, i18n) ::= <<
+% Interests Section
+    \section{<i18n.("section.interests")>}
+<interestList:{interest|<interestEntry(interest)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+interestEntry(interest) ::= <<
+
+    \begin{onecolentry}
+        \textbf{<interest.name>:} <interest.keywords; separator=", ">
+    \end{onecolentry}>>
+
+references(referenceList, i18n) ::= <<
+% References Section
+    \section{<i18n.("section.references")>}
+<referenceList:{ref|<referenceEntry(ref)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+>>
+
+referenceEntry(ref) ::= <<
+
+    \begin{onecolentry}
+        \textbf{<ref.name>}
+
+        \vspace{0.10 cm}
+
+        <ref.reference>
+    \end{onecolentry}>>
+
+about(summary, i18n) ::= <<
+% About Me Section
+    \section{<i18n.("section.about")>}
+
+    \begin{onecolentry}
+        <summary>
+    \end{onecolentry}
+>>

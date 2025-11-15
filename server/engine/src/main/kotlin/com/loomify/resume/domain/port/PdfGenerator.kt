@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
  * - Must restrict network access
  * - Must clean up temp files on success/failure
  */
-interface PdfGeneratorPort {
+fun interface PdfGenerator {
     /**
      * Generates a PDF from the rendered LaTeX source.
      *
