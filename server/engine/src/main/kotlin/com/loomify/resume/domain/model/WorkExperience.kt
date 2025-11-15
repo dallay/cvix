@@ -2,7 +2,8 @@ package com.loomify.resume.domain.model
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
+import java.util.ResourceBundle
 
 /**
  * CompanyName value object with validation.
@@ -111,7 +112,8 @@ data class WorkExperience(
      * @param locale Locale object for language-specific formatting
      */
     fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
-        val presentLabel = if (locale.language == "es") "Presente" else "Present"
+        val resourceBundle = ResourceBundle.getBundle("messages.messages", locale)
+        val presentLabel = resourceBundle.getString("present")
         val end = endDate ?: presentLabel
         return "$startDate -- $end"
     }

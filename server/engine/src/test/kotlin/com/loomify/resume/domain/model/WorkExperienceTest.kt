@@ -165,7 +165,7 @@ class WorkExperienceTest {
         )
 
         // Act
-        val period = workExperience.formatPeriod(Locale("es"))
+        val period = workExperience.formatPeriod(Locale.forLanguageTag("es"))
 
         // Assert
         period shouldBe "2020-01-01 -- Presente"
