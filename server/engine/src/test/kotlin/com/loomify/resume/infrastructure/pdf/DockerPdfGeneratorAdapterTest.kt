@@ -48,7 +48,7 @@ class DockerPdfGeneratorAdapterTest {
     fun setUp() {
         dockerClient = mockk(relaxed = true)
         properties = DockerPdfGeneratorProperties(
-            image = "texlive/texlive:latest-minimal", // Updated to match the specific version
+            image = "texlive/texlive:TL2024-historic", // Updated to match the specific version
             maxConcurrentContainers = 10,
             timeoutSeconds = 10,
             memoryLimitMb = 512,
@@ -181,7 +181,7 @@ class DockerPdfGeneratorAdapterTest {
     @Test
     fun `should throw timeout exception when container execution exceeds limit`() {
         properties = DockerPdfGeneratorProperties(
-            image = "texlive/texlive:latest-minimal",
+            image = "texlive/texlive:TL2024-historic",
             maxConcurrentContainers = 1,
             timeoutSeconds = 1,
             memoryLimitMb = 512,
@@ -228,7 +228,7 @@ class DockerPdfGeneratorAdapterTest {
     @Test
     fun `should use correct Docker image from properties`() {
         // Assert
-        properties.image shouldBe "texlive/texlive:latest-minimal"
+        properties.image shouldBe "texlive/texlive:TL2024-historic"
         properties.timeoutSeconds shouldBe 10L
         properties.memoryLimitMb shouldBe 512L
         properties.cpuQuota shouldBe 0.5

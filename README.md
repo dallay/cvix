@@ -167,7 +167,7 @@ Prerequisites: Docker daemon must be running and TeX Live image available.
 
 ```bash
 # Pull TeX Live Docker image (one-time setup)
-docker pull texlive/texlive:latest-minimal
+docker pull texlive/texlive:TL2024-historic
 
 # Start the backend (includes resume API)
 make backend-run

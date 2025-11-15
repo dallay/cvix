@@ -52,7 +52,7 @@ The resume generator uses a TeX Live Docker image to compile LaTeX templates int
 
 ```bash
 # Pull lightweight Alpine-based TeX Live image (~300MB)
-docker pull texlive/texlive:latest-minimal
+docker pull texlive/texlive:TL2024-historic
 
 # Verify image is available
 docker images | grep texlive
@@ -104,7 +104,7 @@ spring:
 resume:
   generator:
     docker:
-      image: texlive/texlive:latest-minimal
+      image: texlive/texlive:TL2024-historic
       max-concurrent-containers: 10
       timeout-seconds: 10
     rate-limit:
@@ -379,7 +379,7 @@ docker run hello-world
 ```bash
 # Create Dockerfile
 cat > Dockerfile.texlive <<EOF
-FROM texlive/texlive:latest-minimal
+FROM texlive/texlive:TL2024-historic
 RUN tlmgr install babel datetime2 geometry titlesec etoolbox
 EOF
 

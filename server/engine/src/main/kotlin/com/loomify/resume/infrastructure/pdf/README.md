@@ -11,7 +11,7 @@ resume:
   pdf:
     docker:
       # Docker image to use (must have pdflatex installed)
-      image: texlive/texlive:latest
+      image: texlive/texlive:TL2024-historic
       # Maximum number of concurrent PDF generation containers
       max-concurrent-containers: 10
       # Timeout in seconds for PDF generation
@@ -24,7 +24,7 @@ resume:
 
 ## Docker Image Requirements
 
-The Docker image must have `pdflatex` installed and available in the system PATH. The default image `texlive/texlive:latest` includes:
+The Docker image must have `pdflatex` installed and available in the system PATH. The default image `texlive/texlive:TL2024-historic` includes:
 
 - pdfTeX 3.141592653-2.6-1.40.28 (TeX Live 2025)
 - Full LaTeX distribution with common packages
@@ -35,7 +35,7 @@ The Docker image must have `pdflatex` installed and available in the system PATH
 Before running the application for the first time, pull the Docker image:
 
 ```bash
-docker pull texlive/texlive:latest
+docker pull texlive/texlive:TL2024-historic
 ```
 
 **Note**: This image is ~3GB in size and may take some time to download.
@@ -81,9 +81,9 @@ The adapter exports the following metrics via Micrometer:
 
 This error occurs when using a Docker image that doesn't include pdflatex. Solutions:
 
-1. Ensure you're using `texlive/texlive:latest` (not `latest-minimal`)
-2. Pull the correct image: `docker pull texlive/texlive:latest`
-3. Verify pdflatex is available: `docker run --rm texlive/texlive:latest which pdflatex`
+1. Ensure you're using `texlive/texlive:TL2024-historic` (not `latest-minimal`)
+2. Pull the correct image: `docker pull texlive/texlive:TL2024-historic`
+3. Verify pdflatex is available: `docker run --rm texlive/texlive:TL2024-historic which pdflatex`
 
 ### Timeout Errors
 
@@ -115,7 +115,7 @@ You can override configuration via environment variables:
 Example:
 
 ```bash
-export PDF_DOCKER_IMAGE=texlive/texlive:latest
+export PDF_DOCKER_IMAGE=texlive/texlive:TL2024-historic
 export PDF_TIMEOUT_SECONDS=60
 export PDF_MAX_CONCURRENT_CONTAINERS=5
 ```
