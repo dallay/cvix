@@ -56,7 +56,7 @@ fun DependencyHandlerScope.kover(path: String) {
 fun ExtensionContainer.commonExtensions() {
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
+            languageVersion = JavaLanguageVersion.of(AppConfiguration.jvmTargetStr)
             // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
             // vendor.set(JvmVendorSpec.AZUL)
         }
@@ -64,7 +64,7 @@ fun ExtensionContainer.commonExtensions() {
 
     configure<KotlinProjectExtension> {
         jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
+            languageVersion = JavaLanguageVersion.of(AppConfiguration.jvmTargetStr)
             // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
             // vendor.set(JvmVendorSpec.AZUL)
         }
