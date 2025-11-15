@@ -33,7 +33,7 @@ runs:
   steps:
     - name: Run Trivy vulnerability scanner
       id: trivy-scan
-      uses: aquasecurity/trivy-action@b2933f565dbc598b29947660e66259e3c7bc8561  #0.20.0
+      uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8  # 0.33.1
       continue-on-error: true
       with:
         image-ref: ${{ inputs.image-ref }}
