@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.withType
 
+@Suppress("unused")
 internal class AppDependencyVersionsPlugin : ConventionPlugin {
     private val stableKeywords = arrayOf("RELEASE", "FINAL", "GA")
     private val releaseRegex = "^[\\d,.v-]+(-r)?$".toRegex(RegexOption.IGNORE_CASE)

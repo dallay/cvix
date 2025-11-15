@@ -13,6 +13,7 @@ private const val TEST_IMPLEMENTATION = "testImplementation"
 
 private const val IMPLEMENTATION = "implementation"
 
+@Suppress("unused")
 class SpringBootConventionPlugin : ConventionPlugin {
     override fun Project.configure() {
         apply(plugin = catalogPlugin("kotlin-jvm").get().pluginId)
