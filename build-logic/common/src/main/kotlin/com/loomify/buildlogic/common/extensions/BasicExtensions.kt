@@ -12,7 +12,6 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.jvm.toolchain.JvmVendorSpec
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -58,14 +57,16 @@ fun ExtensionContainer.commonExtensions() {
     configure<JavaPluginExtension> {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
+            // vendor.set(JvmVendorSpec.AZUL)
         }
     }
 
     configure<KotlinProjectExtension> {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
-            vendor.set(JvmVendorSpec.AZUL)
+            // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
+            // vendor.set(JvmVendorSpec.AZUL)
         }
     }
 }
