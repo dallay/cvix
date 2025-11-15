@@ -106,7 +106,7 @@ object ResumeTemplateMapper {
     private fun mapSkill(skill: SkillCategory): SkillCategoryTemplateModel =
         SkillCategoryTemplateModel(
             name = LatexEscaper.escape(skill.name.value),
-            level = skill.level,
+            level = skill.level?.let(LatexEscaper::escape),
             keywords = skill.keywords.map { LatexEscaper.escape(it.value) },
         )
 
