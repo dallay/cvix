@@ -167,7 +167,7 @@ class GenerateResumeCommandHandlerTest {
         ),
         work = listOf(
             WorkExperience(
-                company = CompanyName("ACME Corp"),
+                name = CompanyName("ACME Corp"),
                 position = JobTitle("Developer"),
                 startDate = "2020-01-01",
                 endDate = "2023-12-31",

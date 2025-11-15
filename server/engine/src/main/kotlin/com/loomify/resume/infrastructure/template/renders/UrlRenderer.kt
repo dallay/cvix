@@ -44,7 +44,5 @@ class UrlRenderer : AttributeRenderer<String> {
     /**
      * Escapes LaTeX special characters in the URL
      */
-    private fun escapeLatex(text: String): String {
-        return LatexEscaper.escape(text)
-    }
+    private fun escapeLatex(text: String): String = LatexEscaper.escape(text)
 }

@@ -132,7 +132,7 @@ class LatexTemplateRendererI18nTest {
             ),
             work = listOf(
                 WorkExperience(
-                    company = CompanyName("Tech Corp"),
+                    name = CompanyName("Tech Corp"),
                     position = JobTitle("Senior Developer"),
                     startDate = "2020-01-01",
                     endDate = "2023-12-31",

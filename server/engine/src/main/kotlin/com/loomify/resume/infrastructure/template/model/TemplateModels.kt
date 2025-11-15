@@ -31,7 +31,7 @@ data class SocialProfileTemplateModel(
 )
 
 data class WorkExperienceTemplateModel(
-    val company: String,
+    val name: String,
     val position: String,
     val startDate: String,
     val endDate: String?,

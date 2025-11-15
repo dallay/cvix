@@ -1,4 +1,4 @@
-baseResume(resumeData, i18n, locale) ::= <<
+baseResume(resumeData, i18n, locale, lastUpdated) ::= <<
  <! This is a CV/Resume template using StringTemplate.
     For more information on StringTemplate, refer to the official documentation at:
      https://github.com/antlr/stringtemplate4/blob/master/doc/index.md
@@ -228,7 +228,7 @@ preamble(basics, i18n, locale) ::= <<
         \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
         \LenToUnit{\paperheight-1.0 cm}
         ){\vtop{{\null}\makebox[0pt][c]{
-            \small\color{gray}\textit{<i18n.("label.last_updated")>}\hspace{\widthof{<i18n.("label.last_updated")>}}
+            \small\color{gray}\textit{<i18n.("label.last_updated")> <lastUpdated>}\hspace{\widthof{<i18n.("label.last_updated")> <lastUpdated>}}
         }}}%
     }%
 }%

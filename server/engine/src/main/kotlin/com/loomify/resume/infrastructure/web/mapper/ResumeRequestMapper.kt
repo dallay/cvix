@@ -86,7 +86,7 @@ object ResumeRequestMapper {
 
     private fun mapWork(work: WorkExperienceDto): WorkExperience =
         WorkExperience(
-            company = CompanyName(work.name),
+            name = CompanyName(work.name),
             position = JobTitle(work.position),
             startDate = work.startDate,
             endDate = work.endDate,

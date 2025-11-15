@@ -25,7 +25,7 @@ class WorkExperienceTest {
     fun `should create work experience with all fields`() {
         // Arrange & Act
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Software Engineer"),
             startDate = "2020-01-01",
             endDate = "2023-12-31",
@@ -40,7 +40,7 @@ class WorkExperienceTest {
 
         // Assert
         workExperience shouldNotBe null
-        workExperience.company.value shouldBe "ACME Corp"
+        workExperience.name.value shouldBe "ACME Corp"
         workExperience.position.value shouldBe "Software Engineer"
         workExperience.startDate shouldBe "2020-01-01"
         workExperience.endDate shouldBe "2023-12-31"
@@ -50,7 +50,7 @@ class WorkExperienceTest {
     fun `should create work experience with minimum required fields`() {
         // Arrange & Act
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Developer"),
             startDate = "2020-01-01",
             endDate = null,
@@ -69,7 +69,7 @@ class WorkExperienceTest {
     fun `should calculate duration in years for completed experience`() {
         // Arrange
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Engineer"),
             startDate = "2020-01-01",
             endDate = "2023-12-31",
@@ -91,7 +91,7 @@ class WorkExperienceTest {
         // Arrange
         val startDate = LocalDate.now().minusYears(2).minusMonths(6).toString()
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Engineer"),
             startDate = startDate,
             endDate = null, // Current job
@@ -112,7 +112,7 @@ class WorkExperienceTest {
     fun `should format period with both dates`() {
         // Arrange
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Engineer"),
             startDate = "2020-01-01",
             endDate = "2023-12-31",
@@ -133,7 +133,7 @@ class WorkExperienceTest {
     fun `should format period for current job in English`() {
         // Arrange
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Engineer"),
             startDate = "2020-01-01",
             endDate = null,
@@ -154,7 +154,7 @@ class WorkExperienceTest {
     fun `should format period for current job in Spanish`() {
         // Arrange
         val workExperience = WorkExperience(
-            company = CompanyName("ACME Corp"),
+            name = CompanyName("ACME Corp"),
             position = JobTitle("Engineer"),
             startDate = "2020-01-01",
             endDate = null,
@@ -176,7 +176,7 @@ class WorkExperienceTest {
         // Act & Assert
         shouldThrow<IllegalArgumentException> {
             WorkExperience(
-                company = CompanyName("ACME Corp"),
+                name = CompanyName("ACME Corp"),
                 position = JobTitle("Engineer"),
                 startDate = "2023-12-31",
                 endDate = "2020-01-01", // Before start date
@@ -185,6 +185,6 @@ class WorkExperienceTest {
                 highlights = null,
                 url = null,
             )
-        }.message shouldBe "End date must be after or equal to start date"
+        }.message shouldBe "End date (2020-01-01) must be on or after start date (2023-12-31)"
     }
 }

@@ -42,7 +42,7 @@ object TemplateValidator {
      * Covers all fields in ResumeData to provide comprehensive validation
      * as the first line of defense against LaTeX injection attacks.
      */
-    @Suppress("CyclomaticComplexMethod") // Focused on data extraction
+    @Suppress("CyclomaticComplexMethod", "LongMethod") // Focused on data extraction
     private fun ResumeData.getAllStringContent() = sequence {
         // Basics - Personal Information
         yield(basics.name.value)
@@ -70,7 +70,7 @@ object TemplateValidator {
 
         // Work Experience
         work.forEach { workItem ->
-            yield(workItem.company.value)
+            yield(workItem.name.value)
             yield(workItem.position.value)
             yield(workItem.startDate)
             workItem.endDate?.let { yield(it) }

@@ -7,6 +7,8 @@ import com.loomify.resume.domain.port.TemplateRenderer
 import com.loomify.resume.infrastructure.template.mapper.ResumeTemplateMapper
 import com.loomify.resume.infrastructure.template.renders.UrlRenderer
 import com.loomify.resume.infrastructure.template.validator.TemplateValidator
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
@@ -56,6 +58,7 @@ class LatexTemplateRenderer : TemplateRenderer {
             template.add("resumeData", templateModel)
             template.add("i18n", i18nMap)
             template.add("locale", locale)
+            template.add("lastUpdated", formatLastUpdatedDate(locale))
 
             // Render template
             val rendered = template.render()
@@ -99,4 +102,15 @@ class LatexTemplateRenderer : TemplateRenderer {
                 logger.debug("Loaded and cached i18n translations for locale: $locale")
             }
         }
+
+    /**
+     * Formats the current month and year according to the specified locale.
+     * Returns a localized string like "November 2025" (en) or "noviembre de 2025" (es).
+     */
+    private fun formatLastUpdatedDate(locale: String): String {
+        val resourceLocale = Locale.forLanguageTag(locale)
+        val currentDate = YearMonth.now()
+        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", resourceLocale)
+        return currentDate.format(formatter)
+    }
 }

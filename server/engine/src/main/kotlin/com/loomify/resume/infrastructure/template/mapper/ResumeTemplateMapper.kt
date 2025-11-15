@@ -81,7 +81,7 @@ object ResumeTemplateMapper {
 
     private fun mapWork(work: WorkExperience): WorkExperienceTemplateModel =
         WorkExperienceTemplateModel(
-            company = LatexEscaper.escape(work.company.value),
+            name = LatexEscaper.escape(work.name.value),
             position = LatexEscaper.escape(work.position.value),
             startDate = work.startDate,
             endDate = work.endDate,

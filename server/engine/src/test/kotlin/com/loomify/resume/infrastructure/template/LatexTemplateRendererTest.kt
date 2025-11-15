@@ -35,7 +35,7 @@ internal class LatexTemplateRendererTest {
      * Flag to persist generated LaTeX files for manual inspection.
      * Set to true during development or debugging.
      */
-    private val persistGeneratedDocument = false
+    private val persistGeneratedDocument = true
 
     /**
      * Test the complete resume fixture with all possible fields populated.

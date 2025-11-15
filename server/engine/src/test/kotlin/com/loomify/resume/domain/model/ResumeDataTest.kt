@@ -152,7 +152,7 @@ class ResumeDataTest {
         startDate: String = "2020-01-01",
         endDate: String? = "2023-12-31"
     ) = WorkExperience(
-        company = CompanyName("ACME Corp"),
+        name = CompanyName("ACME Corp"),
         position = JobTitle("Software Engineer"),
         startDate = startDate,
         endDate = endDate,
