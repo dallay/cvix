@@ -77,7 +77,7 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }
 # External Libraries
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
-jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.21.2" }
 bucket4j-core = { module = "com.bucket4j:bucket4j-core", version.ref = "bucket4j" }
 stringtemplate4 = { module = "org.antlr:ST4", version.ref = "stringtemplate" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
