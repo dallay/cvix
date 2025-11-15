@@ -10,6 +10,7 @@ import com.loomify.resume.infrastructure.template.validator.TemplateValidator
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.MissingResourceException
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
 import org.slf4j.LoggerFactory
@@ -94,7 +95,12 @@ class LatexTemplateRenderer : TemplateRenderer {
     private fun loadI18nTranslations(locale: String): Map<String, String> =
         i18nCache.computeIfAbsent(locale) {
             val resourceLocale = Locale.forLanguageTag(locale)
-            val bundle = ResourceBundle.getBundle("messages_template", resourceLocale)
+            val bundle = try {
+                ResourceBundle.getBundle("messages_template", resourceLocale)
+            } catch (_: MissingResourceException) {
+                logger.warn("i18n bundle not found for locale $locale, falling back to English")
+                ResourceBundle.getBundle("messages_template", Locale.ENGLISH)
+            }
 
             bundle.keys.asSequence().associateWith { key ->
                 bundle.getString(key)
