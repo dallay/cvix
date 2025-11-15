@@ -366,7 +366,7 @@ docker:
     image: texlive/texlive:TL2024-historic
     imageName: texlive/texlive:TL2024-historic
     maxConcurrentContainers: 10  # Adjust based on host capacity
-    timeoutSeconds: 10
+    timeoutSeconds: 30
     memoryLimitMb: 512
     cpuQuota: 0.5  # 50% of one CPU core
 

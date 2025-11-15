@@ -32,7 +32,7 @@ import org.junit.jupiter.api.io.TempDir
  * Tests PDF generation, security validation, and Docker interaction.
  */
 @UnitTest
-class DockerPdfGeneratorAdapterTest {
+class DockerPdfGeneratorTest {
 
     private lateinit var dockerClient: DockerClient
     private lateinit var properties: DockerPdfGeneratorProperties
@@ -50,7 +50,7 @@ class DockerPdfGeneratorAdapterTest {
         properties = DockerPdfGeneratorProperties(
             image = "texlive/texlive:TL2024-historic", // Updated to match the specific version
             maxConcurrentContainers = 10,
-            timeoutSeconds = 10,
+            timeoutSeconds = 30,
             memoryLimitMb = 512,
             cpuQuota = 0.5,
         )
@@ -229,7 +229,7 @@ class DockerPdfGeneratorAdapterTest {
     fun `should use correct Docker image from properties`() {
         // Assert
         properties.image shouldBe "texlive/texlive:TL2024-historic"
-        properties.timeoutSeconds shouldBe 10L
+        properties.timeoutSeconds shouldBe 30L
         properties.memoryLimitMb shouldBe 512L
         properties.cpuQuota shouldBe 0.5
         properties.maxConcurrentContainers shouldBe 10
