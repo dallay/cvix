@@ -1,5 +1,6 @@
 package com.loomify.resume.infrastructure.template.renders
 
+import com.loomify.resume.infrastructure.template.util.LatexEscaper
 import java.util.*
 import org.stringtemplate.v4.AttributeRenderer
 
@@ -44,12 +45,6 @@ class UrlRenderer : AttributeRenderer<String> {
      * Escapes LaTeX special characters in the URL
      */
     private fun escapeLatex(text: String): String {
-        return text
-            .replace("_", "\\_")
-            .replace("#", "\\#")
-            .replace("%", "\\%")
-            .replace("&", "\\&")
-            .replace("~", "\\textasciitilde{}")
-            .replace("^", "\\textasciicircum{}")
+        return LatexEscaper.escape(text)
     }
 }
