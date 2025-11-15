@@ -13,18 +13,19 @@ post {
 headers {
   X-XSRF-TOKEN: {{xsrfToken}}
   Accept: application/vnd.api.v1+json
+  Accept-Language: {{locale}}
 }
 
 body:json {
   {
     "basics": {
       "name": "John Doe",
-      "label": "Programmer",
-      "image": "",
+      "label": "Full-Stack Engineer & Technical Leader",
+      "image": "https://github.com/johndoe.png",
       "email": "john@gmail.com",
       "phone": "(912) 555-4321",
       "url": "https://johndoe.com",
-      "summary": "A summary of John Doe…",
+      "summary": "Results-driven Full-Stack Engineer with 6+ years of experience architecting and scaling distributed systems handling $5B+ in annual transaction volume. Proven track record driving technical innovation across fintech, ML infrastructure, and SaaS domains. Expertise spans backend microservices, cloud infrastructure, and ML pipeline optimization. Known for translating complex technical challenges into elegant solutions while mentoring high-performing engineering teams. AWS Solutions Architect with published research in distributed systems and ML performance optimization.",
       "location": {
         "address": "2712 Broadway St",
         "postalCode": "CA 94115",
@@ -32,99 +33,336 @@ body:json {
         "countryCode": "US",
         "region": "California"
       },
-      "profiles": [{
-        "network": "Twitter",
-        "username": "john",
-        "url": "https://twitter.com/john"
-      }]
+      "profiles": [
+        {
+          "network": "LinkedIn",
+          "username": "johndoe",
+          "url": "https://linkedin.com/in/johndoe"
+        },
+        {
+          "network": "GitHub",
+          "username": "johndoe",
+          "url": "https://github.com/johndoe"
+        },
+        {
+          "network": "Twitter",
+          "username": "john",
+          "url": "https://twitter.com/john"
+        }
+      ]
     },
-    "work": [{
-      "name": "Company",
-      "position": "President",
-      "url": "https://company.com",
-      "startDate": "2013-01-01",
-      "endDate": "2014-01-01",
-      "summary": "Description…",
-      "highlights": [
-        "Started the company"
-      ]
-    }],
-    "volunteer": [{
-      "organization": "Organization",
-      "position": "Volunteer",
-      "url": "https://organization.com/",
-      "startDate": "2012-01-01",
-      "endDate": "2013-01-01",
-      "summary": "Description…",
-      "highlights": [
-        "Awarded 'Volunteer of the Month'"
-      ]
-    }],
-    "education": [{
-      "institution": "University",
-      "url": "https://institution.com/",
-      "area": "Software Development",
-      "studyType": "Bachelor",
-      "startDate": "2011-01-01",
-      "endDate": "2013-01-01",
-      "score": "4.0",
-      "courses": [
-        "DB1101 - Basic SQL"
-      ]
-    }],
-    "awards": [{
-      "title": "Award",
-      "date": "2014-11-01",
-      "awarder": "Company",
-      "summary": "There is no spoon."
-    }],
-    "certificates": [{
-      "name": "Certificate",
-      "date": "2021-11-07",
-      "issuer": "Company",
-      "url": "https://certificate.com"
-    }],
-    "publications": [{
-      "name": "Publication",
-      "publisher": "Company",
-      "releaseDate": "2014-10-01",
-      "url": "https://publication.com",
-      "summary": "Description…"
-    }],
-    "skills": [{
-      "name": "Web Development",
-      "level": "Master",
-      "keywords": [
-        "HTML",
-        "CSS",
-        "JavaScript"
-      ]
-    }],
-    "languages": [{
-      "language": "English",
-      "fluency": "Native speaker"
-    }],
-    "interests": [{
-      "name": "Wildlife",
-      "keywords": [
-        "Ferrets",
-        "Unicorns"
-      ]
-    }],
-    "references": [{
-      "name": "Jane Doe",
-      "reference": "Reference…"
-    }],
-    "projects": [{
-      "name": "Project",
-      "startDate": "2019-01-01",
-      "endDate": "2021-01-01",
-      "description": "Description...",
-      "highlights": [
-        "Won award at AIHacks 2016"
-      ],
-      "url": "https://project.com/"
-    }]
+    "work": [
+      {
+        "name": "Nexus Financial Technologies",
+        "position": "Senior Backend Engineer",
+        "url": "https://www.nexusfintech.com",
+        "startDate": "2021-06-15",
+        "endDate": "2024-03-01",
+        "summary": "Designed and developed scalable, low-latency backend services for the international payment processing system, handling transactions worth over $5B annually. Led cross-functional initiatives to enhance system reliability, security posture, and operational efficiency across distributed infrastructure serving 45+ countries.",
+        "highlights": [
+          "Led the redesign of the microservices architecture for the currency conversion engine, reducing p95 latency by 40%.",
+          "Implemented security and fraud prevention features, decreasing fraudulent transactions by 15%.",
+          "Mentored 2 junior engineers and established coding best practices within the team."
+        ]
+      },
+      {
+        "name": "StreamFlow Inc.",
+        "position": "Data Scientist, ML Infrastructure",
+        "url": "https://www.streamflow.com",
+        "startDate": "2022-09-10",
+        "endDate": "2024-04-15",
+        "summary": "Developed and deployed machine learning models in production to power the content recommendation system, impacting over 50 million active users. Spearheaded ML infrastructure modernization initiatives to streamline model deployment, monitoring, and continuous improvement workflows across the analytics organization.",
+        "highlights": [
+          "Optimized the core recommendation algorithm, increasing user watch time by 8%.",
+          "Automated the model training and evaluation pipeline using AWS SageMaker, reducing iteration time by 70%.",
+          "Collaborated with engineering teams to integrate NLP models that analyze reviews and improve content tagging."
+        ]
+      },
+      {
+        "name": "GlobalShop",
+        "position": "Site Reliability Engineer",
+        "url": "https://www.globalshop.com",
+        "startDate": "2020-03-01",
+        "endDate": "2022-08-30",
+        "summary": "Responsible for the availability, latency, and capacity of the e-commerce platform, ensuring a robust user experience during high-traffic events like Black Friday. Drove organizational adoption of SRE best practices and observability frameworks, reducing MTTR by 65% while establishing foundational systems reliability culture.",
+        "highlights": [
+          "Reduced unplanned downtime by 60% through implementing observability best practices (monitoring, alerting, dashboards).",
+          "Automated infrastructure scaling in Kubernetes to handle traffic spikes exceeding 1 million requests per minute.",
+          "Led the Chaos Engineering initiative, running controlled experiments to identify and strengthen system weaknesses."
+        ]
+      },
+      {
+        "name": "CollabTool SaaS",
+        "position": "Technical Product Manager",
+        "url": "https://www.collabtool.com",
+        "startDate": "2019-11-15",
+        "endDate": "2021-05-20",
+        "summary": "Directed the strategy and execution of the roadmap for a B2B collaboration tools suite, from conception through launch and subsequent iterations. Managed stakeholder alignment across product, engineering, and go-to-market teams while translating market insights into scalable product initiatives generating $2M in new ARR.",
+        "highlights": [
+          "Launched the 'Shared Workspaces' feature, which became the primary conversion driver for enterprise plans, generating $2M in new annual recurring revenue (ARR).",
+          "Translated complex customer requirements into technical user stories and clear engineering specifications for a team of 8 developers.",
+          "Conducted competitive analysis that identified a market opportunity, resulting in a new product line that captured 5% market share in the first year."
+        ]
+      },
+      {
+        "name": "ShieldCyber Consultancy",
+        "position": "Penetration Tester",
+        "url": "https://www.shieldcyber.com",
+        "startDate": "2018-07-01",
+        "endDate": "2020-02-28",
+        "summary": "Performed proactive penetration testing and security assessments on web applications, networks, and infrastructure for a diverse portfolio of financial and healthcare clients. Delivered actionable security intelligence to C-suite executives, enabling strategic risk mitigation and compliance with regulatory frameworks.",
+        "highlights": [
+          "Discovered and reported over 50 critical and high-risk vulnerabilities (e.g., SQL injections, exploitable business logic) before they could be maliciously exploited.",
+          "Automated reconnaissance and initial exploitation processes with Python scripts, increasing team efficiency by 25%.",
+          "Created detailed technical reports and presented findings to C-level executives, guiding effective risk remediation."
+        ]
+      }
+    ],
+    "volunteer": [
+      {
+        "organization": "Code for Good",
+        "position": "Technical Mentor",
+        "url": "https://codeforgood.org/",
+        "startDate": "2022-01-01",
+        "endDate": null,
+        "summary": "Mentoring students and early-career professionals in software development fundamentals and advanced engineering practices. Fostering inclusive tech community engagement through hands-on workshops and curriculum development targeting underrepresented demographics in technology sectors.",
+        "highlights": [
+          "Mentored 20+ students in web development and programming fundamentals",
+          "Organized monthly coding workshops for underrepresented communities",
+          "Contributed to open-source projects supporting non-profit organizations"
+        ]
+      },
+      {
+        "organization": "Tech Education Alliance",
+        "position": "Workshop Facilitator",
+        "url": "https://techeducation.org/",
+        "startDate": "2020-06-01",
+        "endDate": "2021-12-31",
+        "summary": "Designed and delivered comprehensive technical curricula for K-12 educators and students. Championed technology literacy initiatives in underserved communities while establishing foundational computer science competencies through engaging, hands-on workshop experiences.",
+        "highlights": [
+          "Developed and delivered Python programming curriculum for high school students",
+          "Facilitated 15+ workshops reaching over 300 students"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "University of Pennsylvania",
+        "url": "https://www.upenn.edu/",
+        "area": "Computer Science",
+        "studyType": "BS",
+        "startDate": "2011-01-01",
+        "endDate": "2017-01-01",
+        "score": "3.9/4.0",
+        "courses": [
+          "Computer Architecture",
+          "Comparison of Learning Algorithms",
+          "Computational Theory"
+        ]
+      },
+      {
+        "institution": "Stanford University",
+        "url": "https://www.stanford.edu/",
+        "area": "Artificial Intelligence",
+        "studyType": "MS",
+        "startDate": "2005-09-01",
+        "endDate": "2007-06-01",
+        "score": "4.0/4.0",
+        "courses": [
+          "Machine Learning",
+          "Natural Language Processing",
+          "Computer Vision"
+        ]
+      }
+    ],
+    "awards": [
+      {
+        "title": "Excellence in Innovation Award",
+        "date": "2023-12-01",
+        "awarder": "IEEE Computer Society",
+        "summary": "Recognized for outstanding contributions to distributed systems architecture and performance optimization. Awarded for pioneering work in reducing latency and improving reliability in large-scale transaction processing systems."
+      },
+      {
+        "title": "Employee of the Year",
+        "date": "2022-01-15",
+        "awarder": "Apple Inc.",
+        "summary": "Awarded for exceptional leadership and technical excellence in delivering critical infrastructure improvements. Recognized for mentorship impact and strategic contributions to enterprise-scale platform reliability initiatives."
+      }
+    ],
+    "certificates": [
+      {
+        "name": "AWS Certified Solutions Architect - Professional",
+        "date": "2023-05-15",
+        "issuer": "Amazon Web Services",
+        "url": "https://aws.amazon.com/certification/"
+      },
+      {
+        "name": "Certified Kubernetes Administrator (CKA)",
+        "date": "2022-09-20",
+        "issuer": "Cloud Native Computing Foundation",
+        "url": "https://www.cncf.io/certification/cka/"
+      },
+      {
+        "name": "Google Cloud Professional Data Engineer",
+        "date": "2021-11-07",
+        "issuer": "Google Cloud",
+        "url": "https://cloud.google.com/certification/data-engineer"
+      }
+    ],
+    "publications": [
+      {
+        "name": "Optimizing Distributed Machine Learning Pipelines for Real-Time Data Processing",
+        "publisher": "IEEE Transactions on Parallel and Distributed Systems",
+        "releaseDate": "2023-06-15",
+        "url": "https://doi.org/10.1109/TPDS.2023.123456",
+        "summary": "This paper presents a novel approach to optimizing machine learning pipelines in distributed environments, reducing latency by 40% while maintaining model accuracy. The research demonstrates practical applications for real-time inference systems processing petabyte-scale datasets across global infrastructure."
+      },
+      {
+        "name": "Scalable Microservices Architecture: Lessons from Production Systems",
+        "publisher": "ACM Computing Surveys",
+        "releaseDate": "2022-11-20",
+        "url": "https://doi.org/10.1145/3571234",
+        "summary": "A comprehensive analysis of microservices patterns and anti-patterns based on real-world production systems at scale. Synthesizes best practices from high-traffic platforms, providing actionable guidance for architects designing resilient, maintainable distributed systems."
+      }
+    ],
+    "skills": [
+      {
+        "name": "Programming Languages",
+        "level": "Expert",
+        "keywords": [
+          "Java",
+          "Python",
+          "C++",
+          "JavaScript",
+          "TypeScript",
+          "Go",
+          "Kotlin"
+        ]
+      },
+      {
+        "name": "Frameworks & Libraries",
+        "level": "Advanced",
+        "keywords": [
+          "Spring Boot",
+          "React",
+          "Node.js",
+          "Django",
+          "TensorFlow",
+          "PyTorch"
+        ]
+      },
+      {
+        "name": "Cloud & DevOps",
+        "level": "Advanced",
+        "keywords": [
+          "AWS",
+          "Docker",
+          "Kubernetes",
+          "Terraform",
+          "Jenkins",
+          "GitHub Actions"
+        ]
+      },
+      {
+        "name": "Databases",
+        "level": "Advanced",
+        "keywords": [
+          "PostgreSQL",
+          "MongoDB",
+          "Redis",
+          "Elasticsearch",
+          "MySQL"
+        ]
+      }
+    ],
+    "languages": [
+      {
+        "language": "English",
+        "fluency": "Native speaker"
+      },
+      {
+        "language": "Spanish",
+        "fluency": "Professional working proficiency"
+      },
+      {
+        "language": "French",
+        "fluency": "Limited working proficiency"
+      }
+    ],
+    "interests": [
+      {
+        "name": "Open Source",
+        "keywords": [
+          "Kubernetes",
+          "Linux Kernel",
+          "Developer Tools"
+        ]
+      },
+      {
+        "name": "Emerging Technologies",
+        "keywords": [
+          "Machine Learning",
+          "Blockchain",
+          "Quantum Computing"
+        ]
+      },
+      {
+        "name": "Outdoor Activities",
+        "keywords": [
+          "Hiking",
+          "Photography",
+          "Trail Running"
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "Dr. Sarah Johnson - Senior Engineering Manager, Apple",
+        "reference": "I had the pleasure of managing John for two years at Apple. His technical expertise and leadership skills were instrumental in delivering critical infrastructure improvements. John consistently demonstrated exceptional problem-solving abilities and mentored junior engineers effectively. His ability to balance business priorities with technical excellence makes him an invaluable asset to any organization."
+      },
+      {
+        "name": "Michael Chen - Principal Software Engineer, Microsoft",
+        "reference": "John was an outstanding intern who quickly became a valuable team member. His ability to learn new technologies and contribute to complex projects was impressive. I highly recommend him for any senior engineering role. John's proactive approach to problem-solving and collaborative mindset set him apart from his peers."
+      }
+    ],
+    "projects": [
+      {
+        "description": "An e-commerce platform built with Flutter, allowing users to browse products, manage their cart, and complete purchases with real-time order tracking. Integrated with Stripe for secure payment processing and Firebase for real-time inventory synchronization.",
+        "highlights": [
+          "Flutter",
+          "Dart",
+          "Firebase",
+          "Stripe API"
+        ],
+        "name": "ShopEase",
+        "startDate": "2021-03-15",
+        "url": "https://github.com/johndoe/shopease"
+      },
+      {
+        "description": "A personal finance tracker that helps users monitor their expenses, set budgets, and visualize spending trends with interactive charts. Features include recurring transaction templates, multi-currency support, and machine learning-powered spending predictions.",
+        "highlights": [
+          "Flutter",
+          "Dart",
+          "SQLite",
+          "Data Visualization"
+        ],
+        "name": "BudgetBuddy",
+        "startDate": "2021-08-01",
+        "url": "https://github.com/johndoe/budgetbuddy"
+      },
+      {
+        "description": "A recipe discovery app that categorizes dishes by cuisine, provides step-by-step cooking instructions, and allows users to save their favorite recipes. Leverages REST API integration with comprehensive food database and includes offline capability for recipe access.",
+        "highlights": [
+          "Flutter",
+          "Dart",
+          "REST API",
+          "UI/UX Design"
+        ],
+        "name": "RecipeRealm",
+        "startDate": "2022-01-10",
+        "url": "https://github.com/johndoe/reciperealm"
+      }
+    ]
   }
 }
 

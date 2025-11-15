@@ -2,8 +2,8 @@ package com.loomify.resume.application.handler
 
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.command.Locale
-import com.loomify.resume.domain.port.PdfGeneratorPort
-import com.loomify.resume.domain.port.TemplateRendererPort
+import com.loomify.resume.domain.port.PdfGenerator
+import com.loomify.resume.domain.port.TemplateRenderer
 import java.io.InputStream
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono
  */
 @Service
 class GenerateResumeCommandHandler(
-    private val templateRenderer: TemplateRendererPort,
-    private val pdfGenerator: PdfGeneratorPort
+    private val templateRenderer: TemplateRenderer,
+    private val pdfGenerator: PdfGenerator
 ) {
     private val logger = LoggerFactory.getLogger(GenerateResumeCommandHandler::class.java)
 
@@ -28,7 +28,7 @@ class GenerateResumeCommandHandler(
      */
     fun handle(command: GenerateResumeCommand): Mono<InputStream> {
         val locale = try {
-            com.loomify.resume.application.command.Locale.from(command.locale.code)
+            Locale.from(command.locale.code)
         } catch (e: IllegalArgumentException) {
             throw IllegalArgumentException("Unsupported locale: ${command.locale}", e)
         }
@@ -52,7 +52,7 @@ class GenerateResumeCommandHandler(
 
             // Step 2: Generate PDF from LaTeX source
             logger.debug("Generating PDF - requestId={}", requestId)
-            pdfGenerator.generatePdf(latexSource, locale.code) // Directly return the Mono<InputStream>
+            pdfGenerator.generatePdf(latexSource, locale.code)
         }
             .doOnSuccess {
                 val duration = System.currentTimeMillis() - startTime
@@ -72,7 +72,5 @@ class GenerateResumeCommandHandler(
                     error,
                 )
             }
-        // Error handling is done by domain exceptions
-        // which will be propagated up to the infrastructure layer
     }
 }

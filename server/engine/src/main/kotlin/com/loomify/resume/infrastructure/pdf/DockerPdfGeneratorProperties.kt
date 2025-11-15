@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  */
 @ConfigurationProperties(prefix = "resume.pdf.docker")
 data class DockerPdfGeneratorProperties(
-    val image: String = "texlive/texlive:latest-minimal",
+    val image: String = "texlive/texlive:TL2024-historic",
     val maxConcurrentContainers: Int = 10,
-    val timeoutSeconds: Long = 10,
+    val timeoutSeconds: Long = 30,
     val memoryLimitMb: Long = 512,
     val cpuQuota: Double = 0.5
 )

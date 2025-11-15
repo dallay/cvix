@@ -1,15 +1,11 @@
 package com.loomify.resume.infrastructure.template
 
+import com.loomify.FixtureDataLoader
+import com.loomify.FixtureDataLoader.readResource
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.exception.LaTeXInjectionException
-import com.loomify.resume.domain.exception.TemplateRenderingException
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.DegreeType
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FieldOfStudy
 import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.InstitutionName
 import com.loomify.resume.domain.model.JobTitle
 import com.loomify.resume.domain.model.Location
 import com.loomify.resume.domain.model.PersonalInfo
@@ -18,344 +14,339 @@ import com.loomify.resume.domain.model.ResumeData
 import com.loomify.resume.domain.model.Skill
 import com.loomify.resume.domain.model.SkillCategory
 import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.SocialProfile
 import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.domain.model.Url
-import com.loomify.resume.domain.model.WorkExperience
-import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
+import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.stringtemplate.v4.ST
-import org.stringtemplate.v4.STGroupDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 /**
- * Unit test for LatexTemplateRenderer.
- * Tests LaTeX escaping, injection prevention, and template population.
+ * Comprehensive test suite for LaTeX template rendering.
+ *
+ * This test class validates that the LaTeX renderer correctly handles:
+ * - Complete resume data with all fields populated (john-doe fixture)
+ * - Minimal resume data with only required fields
+ * - Special LaTeX characters that must be escaped ($, %, &, #, _, {, }, ~, ^)
+ * - Unicode and international characters (accents, non-ASCII)
+ * - Long content that might cause line breaks or pagination issues
+ * - Null/empty optional fields
+ * - Malicious LaTeX injection attempts
+ * - Valid LaTeX compilation (document structure, environments, commands)
  */
 @UnitTest
-class LatexTemplateRendererTest {
+@Suppress("StringShouldBeRawString")
+internal class LatexTemplateRendererTest {
 
-    private val templateGroup = mockk<STGroupDir>()
-    private val renderer = LatexTemplateRenderer(templateGroup)
+    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
+    private val renderer = LatexTemplateRenderer(fixedClock)
+
+    /**
+     * Flag to persist generated LaTeX files for manual inspection.
+     * Set to true during development or debugging.
+     */
+    private val persistGeneratedDocument = false
+
+    /**
+     * Test the complete resume fixture with all possible fields populated.
+     * This is the primary comprehensive test that validates the full feature set.
+     */
+    @Test
+    fun `should render complete resume with all fields populated`() {
+        assertResumeRendersCorrectly("john-doe")
+    }
 
     @Test
-    fun `should render valid resume data successfully`() {
-        // Arrange
-        val resumeData = createValidResumeData()
-        val mockTemplate = mockk<ST>(relaxed = true)
+    fun `should render complete resume in spanish`() {
+        assertResumeRendersCorrectly("spanish-example", "es")
+    }
 
-        every { templateGroup.getInstanceOf("resume-template-en") } returns mockTemplate
-        every { mockTemplate.render() } returns "\\documentclass{article}..."
+    /**
+     * Test rendering with minimal required fields only.
+     * Validates that optional fields don't break the template.
+     */
+    @Test
+    fun `should render minimal resume with only required fields`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/minimal-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "en")
+
+        // Assert - verify LaTeX structure is valid
+        assertValidLatexStructure(result)
+        assertTrue(result.contains("Jane Minimal"), "Should contain the person's name")
+        assertTrue(result.contains("jane@example.com"), "Should contain the email")
+    }
+
+    /**
+     * Test that all LaTeX special characters are properly escaped.
+     * Critical for preventing LaTeX compilation errors and math mode issues.
+     */
+    @Test
+    fun `should properly escape LaTeX special characters`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/special-chars-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "en")
+
+        // Assert - verify critical escapes
+        assertTrue(
+            result.contains("\\$5B") || result.contains("\\$10M"),
+            "Dollar signs must be escaped",
+        )
+        assertTrue(
+            result.contains("40\\%") || result.contains("50\\%"),
+            "Percent signs must be escaped",
+        )
+        assertTrue(result.contains("\\&"), "Ampersands must be escaped")
+        assertTrue(result.contains("\\#"), "Hash symbols must be escaped")
+        assertTrue(result.contains("\\_"), "Underscores must be escaped in text")
+        assertTrue(
+            result.contains("\\textbackslash\\{\\}"),
+            "Backslashes must be escaped as \\textbackslash with escaped braces",
+        )
+
+        // Verify document compiles without math mode errors
+        assertValidLatexStructure(result)
+
+        if (persistGeneratedDocument) {
+            persistOutput("special-chars-resume", result)
+        }
+    }
+
+    /**
+     * Test rendering with Unicode characters and international text.
+     * Validates UTF-8 encoding and proper handling of accents.
+     */
+    @Test
+    fun `should handle Unicode and international characters`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/unicode-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
         val result = renderer.render(resumeData, "en")
 
         // Assert
-        result shouldBe "\\documentclass{article}..."
-        verify { templateGroup.getInstanceOf("resume-template-en") }
-        verify { mockTemplate.render() }
-    }
+        assertValidLatexStructure(result)
+        assertTrue(result.contains("José García"), "Should preserve Unicode in names")
+        assertTrue(result.contains("Développeur"), "Should preserve French accents")
+        assertTrue(result.contains("Français"), "Should preserve accented characters")
 
-    @Test
-    fun `should throw TemplateRenderingException when template not found`() {
-        // Arrange
-        val resumeData = createValidResumeData()
-        every { templateGroup.getInstanceOf("resume-template-fr") } returns null
-
-        // Act & Assert
-        val exception = shouldThrow<TemplateRenderingException> {
-            renderer.render(resumeData, "fr")
+        if (persistGeneratedDocument) {
+            persistOutput("unicode-resume", result)
         }
-        exception.message shouldContain "Template not found for locale: fr"
     }
 
+    /**
+     * Test rendering with very long content in various fields.
+     * Validates handling of extensive text blocks and large lists.
+     */
     @Test
-    fun `should detect and reject LaTeX input command injection`() {
+    fun `should handle long content without breaking LaTeX structure`() {
         // Arrange
-        val maliciousData = createResumeDataWithMaliciousContent("\\input{/etc/passwd}")
-
-        // Act & Assert
-        val exception = shouldThrow<LaTeXInjectionException> {
-            renderer.render(maliciousData, "en")
-        }
-        exception.message shouldContain "\\input"
-    }
-
-    @Test
-    fun `should detect and reject LaTeX include command injection`() {
-        // Arrange
-        val maliciousData = createResumeDataWithMaliciousContent("\\include{malicious}")
-
-        // Act & Assert
-        val exception = shouldThrow<LaTeXInjectionException> {
-            renderer.render(maliciousData, "en")
-        }
-        exception.message shouldContain "\\include"
-    }
-
-    @Test
-    fun `should detect and reject LaTeX write command injection`() {
-        // Arrange
-        val maliciousData = createResumeDataWithMaliciousContent("\\write18{rm -rf /}")
-
-        // Act & Assert
-        val exception = shouldThrow<LaTeXInjectionException> {
-            renderer.render(maliciousData, "en")
-        }
-        exception.message shouldContain "\\write"
-    }
-
-    @Test
-    fun `should detect and reject LaTeX def command injection`() {
-        // Arrange
-        val maliciousData = createResumeDataWithMaliciousContent("\\def\\malicious{hack}")
-
-        // Act & Assert
-        val exception = shouldThrow<LaTeXInjectionException> {
-            renderer.render(maliciousData, "en")
-        }
-        exception.message shouldContain "\\def"
-    }
-
-    @Test
-    fun `should escape LaTeX special characters in name`() {
-        // Arrange
-        val resumeData = ResumeData(
-            basics = PersonalInfo(
-                fullName = FullName("John & Doe $ Test"),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = null,
-                url = null,
-                summary = null,
-                location = null,
-                profiles = emptyList(),
-            ),
-            work = listOf(
-                WorkExperience(
-                    company = CompanyName("Tech"),
-                    position = JobTitle("Dev"),
-                    startDate = "2020-01-01",
-                    endDate = null,
-                    location = null,
-                    summary = null,
-                    highlights = null,
-                    url = null,
-                ),
-            ),
-            education = emptyList(),
-            skills = emptyList(),
-            languages = emptyList(),
-            projects = emptyList(),
-        )
-        val mockTemplate = mockk<ST>(relaxed = true)
-
-        every { templateGroup.getInstanceOf("resume-template-en") } returns mockTemplate
-        every { mockTemplate.render() } returns "rendered"
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/long-content-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        renderer.render(resumeData, "en")
-
-        // Assert - verify that special characters were escaped in lastName
-        verify { mockTemplate.add("firstName", "John") }
-        verify { mockTemplate.add("lastName", "\\& Doe \\$ Test") }
-    }
-
-    @Test
-    fun `should handle resume with work experience`() {
-        // Arrange
-        val resumeData = ResumeData(
-            basics = PersonalInfo(
-                fullName = FullName("John Doe"),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = null,
-                url = null,
-                summary = null,
-                location = null,
-                profiles = emptyList(),
-            ),
-            work = listOf(
-                WorkExperience(
-                    company = CompanyName("Tech Corp"),
-                    position = JobTitle("Senior Developer"),
-                    startDate = "2020-01-01",
-                    endDate = "2023-12-31",
-                    location = "New York, NY",
-                    summary = "Led development team",
-                    highlights = null,
-                    url = null,
-                ),
-            ),
-            education = emptyList(),
-            skills = emptyList(),
-            languages = emptyList(),
-            projects = emptyList(),
-        )
-        val mockTemplate = mockk<ST>(relaxed = true)
-
-        every { templateGroup.getInstanceOf("resume-template-en") } returns mockTemplate
-        every { mockTemplate.render() } returns "rendered"
-
-        // Act
-        renderer.render(resumeData, "en")
+        val result = renderer.render(resumeData, "en")
 
         // Assert
-        verify { mockTemplate.add("work", any<List<Map<String, String>>>()) }
+        assertValidLatexStructure(result)
+
+        // Count items in highlights (should be 10)
+        val highlightCount = result.split("\\item").size - 1
+        assertTrue(highlightCount >= 10, "Should render all 10 highlights")
+
+        if (persistGeneratedDocument) {
+            persistOutput("long-content-resume", result)
+        }
     }
 
+    /**
+     * Test rendering with null/empty optional fields.
+     * Validates that missing data doesn't cause crashes or invalid LaTeX.
+     */
     @Test
-    fun `should handle resume with education`() {
+    fun `should handle null and empty optional fields gracefully`() {
         // Arrange
-        val resumeData = ResumeData(
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "en")
+
+        // Assert
+        assertValidLatexStructure(result)
+        assertTrue(result.contains("Empty Fields Test"), "Should contain the name")
+
+        if (persistGeneratedDocument) {
+            persistOutput("null-fields-resume", result)
+        }
+    }
+
+    /**
+     * Parameterized test to verify dangerous LaTeX commands are blocked.
+     * Security test to prevent LaTeX injection attacks.
+     */
+    @ParameterizedTest(name = "should reject {0}")
+    @ValueSource(
+        strings = [
+            "\\input{malicious}", "\\include{evil}", "\\write{file}",
+            "\\def\\bad{}", "\\newcommand{\\hack}{}",
+        ],
+    )
+    fun `should reject dangerous LaTeX commands`(dangerousCommand: String) {
+        // Arrange: Create minimal resume with malicious command in name field
+        val maliciousResume = ResumeData(
             basics = PersonalInfo(
-                fullName = FullName("John Doe"),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = null,
+                name = FullName(dangerousCommand),
+                label = JobTitle("Engineer"),
+                image = null,
+                email = Email("test@example.com"),
+                phone = PhoneNumber("+1-555-0100"),
                 url = null,
-                summary = null,
-                location = null,
+                summary = Summary("Clean summary"),
+                location = Location(
+                    address = "123 Main St",
+                    postalCode = "12345",
+                    city = "TestCity",
+                    countryCode = "US",
+                    region = "CA",
+                ),
                 profiles = emptyList(),
             ),
             work = emptyList(),
-            education = listOf(
-                Education(
-                    institution = InstitutionName("MIT"),
-                    area = FieldOfStudy("Computer Science"),
-                    studyType = DegreeType("Bachelor of Science"),
-                    startDate = "2016-09-01",
-                    endDate = "2020-06-01",
-                    score = "4.0 GPA",
-                    courses = null,
-                ),
-            ),
-            skills = emptyList(),
-            languages = emptyList(),
-            projects = emptyList(),
-        )
-        val mockTemplate = mockk<ST>(relaxed = true)
-
-        every { templateGroup.getInstanceOf("resume-template-en") } returns mockTemplate
-        every { mockTemplate.render() } returns "rendered"
-
-        // Act
-        renderer.render(resumeData, "en")
-
-        // Assert
-        verify { mockTemplate.add("education", any<List<Map<String, String>>>()) }
-    }
-
-    @Test
-    fun `should handle resume with skills`() {
-        // Arrange
-        val resumeData = ResumeData(
-            basics = PersonalInfo(
-                fullName = FullName("John Doe"),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = null,
-                url = null,
-                summary = null,
-                location = null,
-                profiles = emptyList(),
-            ),
-            work = emptyList(),
+            volunteer = emptyList(),
             education = emptyList(),
+            awards = emptyList(),
+            certificates = emptyList(),
+            publications = emptyList(),
             skills = listOf(
                 SkillCategory(
-                    name = SkillCategoryName("Programming Languages"),
+                    name = SkillCategoryName("Technical"),
                     level = null,
-                    keywords = listOf(
-                        Skill("Kotlin"),
-                        Skill("Java"),
-                        Skill("Python"),
-                    ),
+                    keywords = listOf(Skill("Kotlin")),
                 ),
             ),
             languages = emptyList(),
+            interests = emptyList(),
+            references = emptyList(),
             projects = emptyList(),
         )
-        val mockTemplate = mockk<ST>(relaxed = true)
 
-        every { templateGroup.getInstanceOf("resume-template-en") } returns mockTemplate
-        every { mockTemplate.render() } returns "rendered"
+        // Act & Assert: Verify LaTeXInjectionException is thrown
+        assertThrows(LaTeXInjectionException::class.java) {
+            renderer.render(maliciousResume, "en")
+        }
+    }
+
+    /**
+     * Test that all valid LaTeX structure elements are present.
+     */
+    @Test
+    fun `should generate valid LaTeX document structure`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/john-doe.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        renderer.render(resumeData, "en")
+        val result = renderer.render(resumeData, "en")
 
-        // Assert
-        verify { mockTemplate.add("skills", any<List<Map<String, Any>>>()) }
+        // Assert - verify all critical LaTeX document components
+        assertTrue(result.contains("\\documentclass"), "Must have document class")
+        assertTrue(result.contains("\\begin{document}"), "Must have document begin")
+        assertTrue(result.contains("\\end{document}"), "Must have document end")
+        assertTrue(result.contains("\\usepackage"), "Must load packages")
+        assertTrue(result.contains("\\section"), "Must have sections")
+
+        // Verify no unescaped math mode triggers from user content
+        // The template itself uses $|$ in \sbox\ANDbox which is intentional
+        val unescapedDollars = Regex("(?<!\\\\)\\$(?!\\$)(?!\\|\\$)")
+        val userContentLines = result.lines().filter {
+            !it.contains("\\sbox\\ANDbox") // Skip the intentional template math mode
+        }
+        val matches = userContentLines.flatMap { line ->
+            unescapedDollars.findAll(line).toList()
+        }
+        assertTrue(
+            matches.isEmpty(),
+            "Should not have unescaped dollar signs in user content (found: ${matches.map { it.value }})",
+        )
     }
 
     // Helper methods
 
-    private fun createValidResumeData(): ResumeData {
-        return ResumeData(
-            basics = PersonalInfo(
-                fullName = FullName("John Doe"),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = JobTitle("Software Engineer"),
-                url = Url("https://johndoe.com"),
-                summary = Summary("Experienced software engineer"),
-                location = Location(city = "New York"),
-                profiles = listOf(
-                    SocialProfile("LinkedIn", "johndoe", "https://linkedin.com/in/johndoe"),
-                    SocialProfile("GitHub", "johndoe", "https://github.com/johndoe"),
-                ),
-            ),
-            work = listOf(
-                WorkExperience(
-                    company = CompanyName("Tech Corp"),
-                    position = JobTitle("Developer"),
-                    startDate = "2020-01-01",
-                    endDate = null,
-                    location = null,
-                    summary = null,
-                    highlights = null,
-                    url = null,
-                ),
-            ),
-            education = emptyList(),
-            skills = emptyList(),
-            languages = emptyList(),
-            projects = emptyList(),
+    /**
+     * Reusable assertion to verify a resume fixture renders correctly.
+     */
+    private fun assertResumeRendersCorrectly(fixtureName: String, locale: String = "en") {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/$fixtureName.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, locale)
+
+        if (persistGeneratedDocument) {
+            persistOutput(fixtureName, result)
+        }
+
+        // Assert
+        val expectedLatex: String = readResource("data/latex/$fixtureName.tex")
+        assertEquals(
+            normalize(expectedLatex),
+            normalize(result),
+            "Rendered LaTeX differs from expected fixture. See build/test-output/$fixtureName.tex for actual output.",
         )
     }
 
-    private fun createResumeDataWithMaliciousContent(maliciousText: String): ResumeData {
-        return ResumeData(
-            basics = PersonalInfo(
-                fullName = FullName(maliciousText),
-                email = Email("john@example.com"),
-                phone = PhoneNumber("+1234567890"),
-                label = null,
-                url = null,
-                summary = null,
-                location = null,
-                profiles = emptyList(),
-            ),
-            work = listOf(
-                WorkExperience(
-                    company = CompanyName("Company"),
-                    position = JobTitle("Position"),
-                    startDate = "2020-01-01",
-                    endDate = null,
-                    location = null,
-                    summary = null,
-                    highlights = null,
-                    url = null,
-                ),
-            ),
-            education = emptyList(),
-            skills = emptyList(),
-            languages = emptyList(),
-            projects = emptyList(),
-        )
+    /**
+     * Assert that the LaTeX output has valid structure.
+     */
+    private fun assertValidLatexStructure(latex: String) {
+        assertTrue(latex.contains("\\documentclass"), "Missing document class")
+        assertTrue(latex.contains("\\begin{document}"), "Missing document begin")
+        assertTrue(latex.contains("\\end{document}"), "Missing document end")
+
+        // Verify balanced environments
+        val beginCount = latex.split("\\begin{").size - 1
+        val endCount = latex.split("\\end{").size - 1
+        assertEquals(beginCount, endCount, "Unbalanced LaTeX environments")
     }
+
+    /**
+     * Persist generated LaTeX to file for manual inspection.
+     */
+    private fun persistOutput(name: String, content: String) {
+        val outputPath = "build/test-output/$name.tex"
+        java.io.File(outputPath).apply {
+            parentFile.mkdirs()
+            writeText(content)
+        }
+    }
+
+    /**
+     * Normalize line endings for cross-platform comparison.
+     */
+    private fun normalize(text: String): String =
+        text.replace("\r\n", "\n").replace("\r", "\n")
+            .trim()
 }

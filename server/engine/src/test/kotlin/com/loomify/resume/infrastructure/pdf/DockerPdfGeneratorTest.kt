@@ -10,7 +10,6 @@ import com.github.dockerjava.api.command.RemoveContainerCmd
 import com.github.dockerjava.api.command.StartContainerCmd
 import com.github.dockerjava.api.command.StopContainerCmd
 import com.loomify.UnitTest
-import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import io.kotest.assertions.throwables.shouldThrow
@@ -33,12 +32,12 @@ import org.junit.jupiter.api.io.TempDir
  * Tests PDF generation, security validation, and Docker interaction.
  */
 @UnitTest
-class DockerPdfGeneratorAdapterTest {
+class DockerPdfGeneratorTest {
 
     private lateinit var dockerClient: DockerClient
     private lateinit var properties: DockerPdfGeneratorProperties
     private lateinit var meterRegistry: SimpleMeterRegistry
-    private lateinit var adapter: DockerPdfGeneratorAdapter
+    private lateinit var adapter: DockerPdfGenerator
 
     private val latexSource = """\documentclass{article}\begin{document}Hello World\end{document}"""
 
@@ -49,14 +48,14 @@ class DockerPdfGeneratorAdapterTest {
     fun setUp() {
         dockerClient = mockk(relaxed = true)
         properties = DockerPdfGeneratorProperties(
-            image = "texlive/texlive:latest-minimal", // Updated to match the specific version
+            image = "texlive/texlive:TL2024-historic", // Updated to match the specific version
             maxConcurrentContainers = 10,
-            timeoutSeconds = 10,
+            timeoutSeconds = 30,
             memoryLimitMb = 512,
             cpuQuota = 0.5,
         )
         meterRegistry = SimpleMeterRegistry()
-        adapter = DockerPdfGeneratorAdapter(dockerClient, properties, meterRegistry)
+        adapter = DockerPdfGenerator(dockerClient, properties, meterRegistry)
     }
 
     @AfterEach
@@ -182,13 +181,13 @@ class DockerPdfGeneratorAdapterTest {
     @Test
     fun `should throw timeout exception when container execution exceeds limit`() {
         properties = DockerPdfGeneratorProperties(
-            image = "texlive/texlive:latest-minimal",
+            image = "texlive/texlive:TL2024-historic",
             maxConcurrentContainers = 1,
             timeoutSeconds = 1,
             memoryLimitMb = 512,
             cpuQuota = 0.5,
         )
-        adapter = DockerPdfGeneratorAdapter(dockerClient, properties, meterRegistry)
+        adapter = DockerPdfGenerator(dockerClient, properties, meterRegistry)
 
         val workspace = tempDir.resolve("docker-timeout")
         Files.createDirectory(workspace)
@@ -229,8 +228,8 @@ class DockerPdfGeneratorAdapterTest {
     @Test
     fun `should use correct Docker image from properties`() {
         // Assert
-        properties.image shouldBe "texlive/texlive:latest-minimal"
-        properties.timeoutSeconds shouldBe 10L
+        properties.image shouldBe "texlive/texlive:TL2024-historic"
+        properties.timeoutSeconds shouldBe 30L
         properties.memoryLimitMb shouldBe 512L
         properties.cpuQuota shouldBe 0.5
         properties.maxConcurrentContainers shouldBe 10
@@ -271,31 +270,5 @@ class DockerPdfGeneratorAdapterTest {
         every { removeContainerCmd.exec() } returns mockk()
 
         return inspectContainerCmd
-    }
-
-    // The validateLatexSource method can also be exercised via generatePdf; it rejects before Docker calls.
-
-    @Test
-    fun `should reject latex with write18`() {
-        val malicious = """\\documentclass{article}\\begin{document}Hi\\write18{ls}\\end{document}"""
-        shouldThrow<LaTeXInjectionException> {
-            adapter.generatePdf(malicious, "en").block()
-        }
-    }
-
-    @Test
-    fun `should reject latex with input without braces`() {
-        val malicious = """\\documentclass{article}\\begin{document}\\input file.tex\\end{document}"""
-        shouldThrow<LaTeXInjectionException> {
-            adapter.generatePdf(malicious, "en").block()
-        }
-    }
-
-    @Test
-    fun `should reject latex with catcode manipulation`() {
-        val malicious = """\\documentclass{article}\\begin{document}\\catcode`\\%=12 Text\\end{document}"""
-        shouldThrow<LaTeXInjectionException> {
-            adapter.generatePdf(malicious, "en").block()
-        }
     }
 }

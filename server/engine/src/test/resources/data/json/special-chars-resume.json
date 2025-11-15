@@ -1,0 +1,76 @@
+{
+  "basics": {
+    "name": "Test $pecial Ch@rs & More!",
+    "label": "Engineer & Developer",
+    "email": "test_user+tag@example.com",
+    "phone": "(123) 456-7890",
+    "url": "https://example.com/~user",
+    "summary": "Summary with $5B revenue, 40% growth, #1 ranking, and special chars: & % $ # _ { } ~ ^ \\",
+    "location": {
+      "address": "123 Main St #456",
+      "postalCode": "12345",
+      "city": "San Francisco",
+      "countryCode": "US",
+      "region": "California"
+    }
+  },
+  "work": [
+    {
+      "name": "Company & Co.",
+      "position": "Senior Engineer & Tech Lead",
+      "url": "https://example.com",
+      "startDate": "2020-01-01",
+      "endDate": "2024-11-14",
+      "summary": "Handled $10M+ budget with 50% cost reduction",
+      "highlights": [
+        "Reduced latency by 40% & improved performance",
+        "Saved $500K annually through optimization",
+        "Led team of 5-10 engineers #techleadership with \\LaTeX docs"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "MIT & Stanford",
+      "area": "CS & Math",
+      "studyType": "BS",
+      "startDate": "2015-01-01",
+      "endDate": "2019-01-01",
+      "score": "3.9/4.0",
+      "courses": [
+        "Algorithms & Data Structures",
+        "Machine Learning 101",
+        "Advanced Topics in AI"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Languages & Frameworks",
+      "keywords": [
+        "C++",
+        "Python 3.x",
+        "Node.js & Express",
+        "React & Vue.js"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project_Name_With_Underscores",
+      "description": "A project with $1M funding & 100% success rate",
+      "highlights": [
+        "Built with Flutter & Dart",
+        "Achieved 99.9% uptime"
+      ],
+      "url": "https://github.com/user/project_name"
+    }
+  ],
+  "volunteer": [],
+  "awards": [],
+  "certificates": [],
+  "publications": [],
+  "languages": [],
+  "interests": [],
+  "references": []
+}

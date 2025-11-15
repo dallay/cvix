@@ -197,6 +197,15 @@ management:
 notification:
   email:
     sendgrid-api-key: ${SENDGRID_API_KEY:WILL_BE_REPLACED}
+resume:
+  pdf:
+    docker:
+      # Use the full texlive image which includes pdflatex
+      image: ${PDF_DOCKER_IMAGE:texlive/texlive:TL2024-historic}
+      max-concurrent-containers: ${PDF_MAX_CONCURRENT_CONTAINERS:10}
+      timeout-seconds: ${PDF_TIMEOUT_SECONDS:30}
+      memory-limit-mb: ${PDF_MEMORY_LIMIT_MB:512}
+      cpu-quota: ${PDF_CPU_QUOTA:0.5}
 springdoc:
   show-actuator: true
   api-docs:

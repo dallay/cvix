@@ -1,0 +1,347 @@
+{
+  "basics": {
+    "name": "John Doe",
+    "label": "Ingeniero Full-Stack & Líder Técnico",
+    "image": "https://github.com/johndoe.png",
+    "email": "john@gmail.com",
+    "phone": "(912) 555-4321",
+    "url": "https://johndoe.com",
+    "summary": "Ingeniero Full-Stack orientado a resultados con más de 6 años de experiencia diseñando y escalando sistemas distribuidos que manejan más de $5B en volumen de transacciones anual. Historial comprobado impulsando la innovación técnica en dominios de fintech, infraestructura de ML y SaaS. La experiencia abarca microservicios backend, infraestructura cloud y optimización de pipelines de ML.",
+    "location": {
+      "address": "2712 Broadway St",
+      "postalCode": "CA 94115",
+      "city": "San Francisco",
+      "countryCode": "US",
+      "region": "California"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "johndoe",
+        "url": "https://linkedin.com/in/johndoe"
+      },
+      {
+        "network": "GitHub",
+        "username": "johndoe",
+        "url": "https://github.com/johndoe"
+      },
+      {
+        "network": "Twitter",
+        "username": "john",
+        "url": "https://twitter.com/john"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Nexus Financial Technologies",
+      "position": "Ingeniero Backend Senior",
+      "url": "https://www.nexusfintech.com",
+      "startDate": "2021-06-15",
+      "endDate": "2024-03-01",
+      "summary": "Diseñé y desarrollé servicios backend escalables y de baja latencia para el sistema de procesamiento de pagos internacionales, manejando transacciones por valor de más de $5B anuales. Lideré iniciativas cross-funcionales para mejorar la confiabilidad del sistema, la postura de seguridad y la eficiencia operativa en infraestructura distribuida que sirve a más de 45 países.",
+      "highlights": [
+        "Lideré el rediseño de la arquitectura de microservicios para el motor de conversión de divisas, reduciendo la latencia p95 en un 40%.",
+        "Implementé características de seguridad y prevención de fraudes, disminuyendo las transacciones fraudulentas en un 15%.",
+        "Mentoricé a 2 ingenieros junior y establecí las mejores prácticas de codificación dentro del equipo."
+      ]
+    },
+    {
+      "name": "StreamFlow Inc.",
+      "position": "Científico de Datos, Infraestructura de ML",
+      "url": "https://www.streamflow.com",
+      "startDate": "2022-09-10",
+      "endDate": "2024-04-15",
+      "summary": "Desarrollé e implementé modelos de machine learning en producción para impulsar el sistema de recomendación de contenido, impactando a más de 50 millones de usuarios activos. Dirigí iniciativas de modernización de la infraestructura de ML para agilizar la implementación, monitoreo y flujos de trabajo de mejora continua en toda la organización analítica.",
+      "highlights": [
+        "Optimicé el algoritmo central de recomendación, aumentando el tiempo de visualización de los usuarios en un 8%.",
+        "Automaticé el pipeline de entrenamiento y evaluación de modelos usando AWS SageMaker, reduciendo el tiempo de iteración en un 70%.",
+        "Colaboré con equipos de ingeniería para integrar modelos de NLP que analizan reseñas y mejoran el etiquetado de contenido."
+      ]
+    },
+    {
+      "name": "GlobalShop",
+      "position": "Ingeniero de Confiabilidad del Sitio (SRE)",
+      "url": "https://www.globalshop.com",
+      "startDate": "2020-03-01",
+      "endDate": "2022-08-30",
+      "summary": "Responsable de la disponibilidad, latencia y capacidad de la plataforma de comercio electrónico, asegurando una experiencia de usuario robusta durante eventos de alto tráfico como el Black Friday. Impulsé la adopción organizacional de las mejores prácticas de SRE y frameworks de observabilidad, reduciendo el MTTR en un 65% mientras establecía una cultura de confiabilidad de sistemas fundamental.",
+      "highlights": [
+        "Reduje el tiempo de inactividad no planificado en un 60% mediante la implementación de mejores prácticas de observabilidad (monitoreo, alertas, dashboards).",
+        "Automaticé el escalado de infraestructura en Kubernetes para manejar picos de tráfico que superaban 1 millón de solicitudes por minuto.",
+        "Lideré la iniciativa de Chaos Engineering, ejecutando experimentos controlados para identificar y fortalecer las debilidades del sistema."
+      ]
+    },
+    {
+      "name": "CollabTool SaaS",
+      "position": "Gerente de Producto Técnico",
+      "url": "https://www.collabtool.com",
+      "startDate": "2019-11-15",
+      "endDate": "2021-05-20",
+      "summary": "Dirigí la estrategia y ejecución del roadmap para una suite de herramientas de colaboración B2B, desde la concepción hasta el lanzamiento y las iteraciones posteriores. Gestioné la alineación de las partes interesadas en los equipos de producto, ingeniería y comercialización, traduciendo las ideas del mercado en iniciativas de producto escalables que generaron $2M en nueva ARR.",
+      "highlights": [
+        "Lancé la función 'Espacios de Trabajo Compartidos', que se convirtió en el principal impulsor de conversión para los planes empresariales, generando $2M en nuevos ingresos recurrentes anuales (ARR).",
+        "Traduje requisitos complejos de los clientes a historias de usuario técnicas y especificaciones de ingeniería claras para un equipo de 8 desarrolladores.",
+        "Realicé un análisis competitivo que identificó una oportunidad de mercado, resultando en una nueva línea de productos que capturó el 5% de la cuota de mercado en el primer año."
+      ]
+    },
+    {
+      "name": "ShieldCyber Consultancy",
+      "position": "Probador de Penetración",
+      "url": "https://www.shieldcyber.com",
+      "startDate": "2018-07-01",
+      "endDate": "2020-02-28",
+      "summary": "Realicé pruebas de penetración proactivas y evaluaciones de seguridad en aplicaciones web, redes e infraestructura para una cartera diversa de clientes financieros y de salud. Entregué inteligencia de seguridad accionable a ejecutivos de nivel C, permitiendo la mitigación estratégica de riesgos y el cumplimiento de marcos regulatorios.",
+      "highlights": [
+        "Descubrí y reporté más de 50 vulnerabilidades críticas y de alto riesgo (inyecciones SQL, lógica de negocio explotable) antes de que pudieran ser explotadas maliciosamente.",
+        "Automaticé los procesos de reconocimiento y explotación inicial con scripts de Python, aumentando la eficiencia del equipo en un 25%.",
+        "Creé informes técnicos detallados y presenté hallazgos a ejecutivos de nivel C, guiando una remediación efectiva de riesgos."
+      ]
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Code for Good",
+      "position": "Mentor Técnico",
+      "url": "https://codeforgood.org/",
+      "startDate": "2022-01-01",
+      "endDate": "Presente",
+      "summary": "Mentorizando a estudiantes y profesionales en etapas tempranas de su carrera en fundamentos de desarrollo de software y prácticas de ingeniería avanzadas. Fomentando la participación inclusiva en la comunidad tecnológica a través de talleres prácticos y desarrollo de currículos dirigidos a grupos demográficos subrepresentados en los sectores tecnológicos.",
+      "highlights": [
+        "Mentoricé a más de 20 estudiantes en desarrollo web y fundamentos de programación",
+        "Organicé talleres mensuales de programación para comunidades subrepresentadas",
+        "Contribuí a proyectos de código abierto que apoyan a organizaciones sin fines de lucro"
+      ]
+    },
+    {
+      "organization": "Tech Education Alliance",
+      "position": "Facilitador de Talleres",
+      "url": "https://techeducation.org/",
+      "startDate": "2020-06-01",
+      "endDate": "2021-12-31",
+      "summary": "Diseñé y entregué currículos técnicos integrales para educadores y estudiantes de K-12. Impulsé iniciativas de alfabetización tecnológica en comunidades desatendidas mientras establecía competencias fundamentales en ciencias de la computación a través de experiencias de taller atractivas y prácticas.",
+      "highlights": [
+        "Desarrollé y entregué un currículo de programación en Python para estudiantes de secundaria",
+        "Facilité más de 15 talleres llegando a más de 300 estudiantes"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Pennsylvania",
+      "url": "https://www.upenn.edu/",
+      "area": "Ciencias de la Computación",
+      "studyType": "Licenciatura",
+      "startDate": "2011-01-01",
+      "endDate": "2017-01-01",
+      "score": "3.9/4.0",
+      "courses": [
+        "Arquitectura de Computadoras",
+        "Comparación de Algoritmos de Aprendizaje",
+        "Teoría Computacional"
+      ]
+    },
+    {
+      "institution": "Stanford University",
+      "url": "https://www.stanford.edu/",
+      "area": "Inteligencia Artificial",
+      "studyType": "Maestría",
+      "startDate": "2005-09-01",
+      "endDate": "2007-06-01",
+      "score": "4.0/4.0",
+      "courses": [
+        "Machine Learning",
+        "Procesamiento de Lenguaje Natural",
+        "Visión por Computadora"
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "Premio a la Excelencia en Innovación",
+      "date": "2023-12-01",
+      "awarder": "IEEE Computer Society",
+      "summary": "Reconocido por contribuciones sobresalientes a la arquitectura de sistemas distribuidos y optimización del rendimiento. Galardonado por el trabajo pionero en la reducción de latencia y mejora de la confiabilidad en sistemas de procesamiento de transacciones a gran escala."
+    },
+    {
+      "title": "Empleado del Año",
+      "date": "2022-01-15",
+      "awarder": "Apple Inc.",
+      "summary": "Galardonado por un liderazgo excepcional y excelencia técnica en la entrega de mejoras críticas de infraestructura. Reconocido por el impacto en la mentoría y las contribuciones estratégicas a las iniciativas de confiabilidad de plataformas a escala empresarial."
+    }
+  ],
+  "certificates": [
+    {
+      "name": "AWS Certified Solutions Architect - Professional",
+      "date": "2023-05-15",
+      "issuer": "Amazon Web Services",
+      "url": "https://aws.amazon.com/certification/"
+    },
+    {
+      "name": "Administrador Certificado de Kubernetes (CKA)",
+      "date": "2022-09-20",
+      "issuer": "Cloud Native Computing Foundation",
+      "url": "https://www.cncf.io/certification/cka/"
+    },
+    {
+      "name": "Ingeniero de Datos Profesional de Google Cloud",
+      "date": "2021-11-07",
+      "issuer": "Google Cloud",
+      "url": "https://cloud.google.com/certification/data-engineer"
+    }
+  ],
+  "publications": [
+    {
+      "name": "Optimización de Pipelines de Machine Learning Distribuido para Procesamiento de Datos en Tiempo Real",
+      "publisher": "IEEE Transactions on Parallel and Distributed Systems",
+      "releaseDate": "2023-06-15",
+      "url": "https://doi.org/10.1109/TPDS.2023.123456",
+      "summary": "Este artículo presenta un enfoque novedoso para optimizar pipelines de machine learning en entornos distribuidos, reduciendo la latencia en un 40% mientras se mantiene la precisión del modelo. La investigación demuestra aplicaciones prácticas para sistemas de inferencia en tiempo real que procesan conjuntos de datos a escala de petabytes en infraestructura global."
+    },
+    {
+      "name": "Arquitectura de Microservicios Escalable: Lecciones de Sistemas en Producción",
+      "publisher": "ACM Computing Surveys",
+      "releaseDate": "2022-11-20",
+      "url": "https://doi.org/10.1145/3571234",
+      "summary": "Un análisis integral de los patrones y anti-patrones de microservicios basado en sistemas de producción del mundo real a escala. Sintetiza las mejores prácticas de plataformas de alto tráfico, proporcionando guía accionable para arquitectos que diseñan sistemas distribuidos resilientes y mantenibles."
+    }
+  ],
+  "skills": [
+    {
+      "name": "Lenguajes de Programación",
+      "level": "Experto",
+      "keywords": [
+        "Java",
+        "Python",
+        "C++",
+        "JavaScript",
+        "TypeScript",
+        "Go",
+        "Kotlin"
+      ]
+    },
+    {
+      "name": "Frameworks & Librerías",
+      "level": "Avanzado",
+      "keywords": [
+        "Spring Boot",
+        "React",
+        "Node.js",
+        "Django",
+        "TensorFlow",
+        "PyTorch"
+      ]
+    },
+    {
+      "name": "Cloud & DevOps",
+      "level": "Avanzado",
+      "keywords": [
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Terraform",
+        "Jenkins",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "name": "Bases de Datos",
+      "level": "Avanzado",
+      "keywords": [
+        "PostgreSQL",
+        "MongoDB",
+        "Redis",
+        "Elasticsearch",
+        "MySQL"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "Inglés",
+      "fluency": "Nativo"
+    },
+    {
+      "language": "Español",
+      "fluency": "Competencia profesional"
+    },
+    {
+      "language": "Francés",
+      "fluency": "Competencia limitada"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Código Abierto",
+      "keywords": [
+        "Kubernetes",
+        "Kernel de Linux",
+        "Herramientas de Desarrollo"
+      ]
+    },
+    {
+      "name": "Tecnologías Emergentes",
+      "keywords": [
+        "Machine Learning",
+        "Blockchain",
+        "Computación Cuántica"
+      ]
+    },
+    {
+      "name": "Actividades al Aire Libre",
+      "keywords": [
+        "Senderismo",
+        "Fotografía",
+        "Carrera por Montaña"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "Dra. Sarah Johnson - Gerente Senior de Ingeniería, Apple",
+      "reference": "Tuve el placer de gestionar a John durante dos años en Apple. Su experiencia técnica y habilidades de liderazgo fueron fundamentales para entregar mejoras críticas de infraestructura. John demostró consistentemente habilidades excepcionales para resolver problemas y mentorizó eficazmente a ingenieros junior. Su capacidad para equilibrar las prioridades comerciales con la excelencia técnica lo convierte en un activo invaluable para cualquier organización."
+    },
+    {
+      "name": "Michael Chen - Ingeniero Principal de Software, Microsoft",
+      "reference": "John fue un pasante excepcional que rápidamente se convirtió en un miembro valioso del equipo. Su capacidad para aprender nuevas tecnologías y contribuir a proyectos complejos fue impresionante. Lo recomiendo encarecidamente para cualquier puesto de ingeniería senior. El enfoque proactivo de John para resolver problemas y su mentalidad colaborativa lo distinguen de sus compañeros."
+    }
+  ],
+  "projects": [
+    {
+      "description": "Una plataforma de comercio electrónico construida con Flutter, que permite a los usuarios navegar por productos, gestionar su carrito y completar compras con seguimiento de pedidos en tiempo real. Integrada con Stripe para el procesamiento seguro de pagos y Firebase para la sincronización de inventario en tiempo real.",
+      "highlights": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "Stripe API"
+      ],
+      "name": "ShopEase",
+      "startDate": "2021-03-15",
+      "url": "https://github.com/johndoe/shopease"
+    },
+    {
+      "description": "Un rastreador de finanzas personales que ayuda a los usuarios a monitorear sus gastos, establecer presupuestos y visualizar tendencias de gasto con gráficos interactivos. Las características incluyen plantillas de transacciones recurrentes, soporte multi-moneda y predicciones de gastos impulsadas por machine learning.",
+      "highlights": [
+        "Flutter",
+        "Dart",
+        "SQLite",
+        "Visualización de Datos"
+      ],
+      "name": "BudgetBuddy",
+      "startDate": "2021-08-01",
+      "url": "https://github.com/johndoe/budgetbuddy"
+    },
+    {
+      "description": "Una aplicación de descubrimiento de recetas que categoriza platos por cocina, proporciona instrucciones de cocina paso a paso y permite a los usuarios guardar sus recetas favoritas. Aprovecha la integración de API REST con una base de datos completa de alimentos e incluye capacidad offline para el acceso a recetas.",
+      "highlights": [
+        "Flutter",
+        "Dart",
+        "REST API",
+        "Diseño UI/UX"
+      ],
+      "name": "RecipeRealm",
+      "startDate": "2022-01-10",
+      "url": "https://github.com/johndoe/reciperealm"
+    }
+  ]
+}

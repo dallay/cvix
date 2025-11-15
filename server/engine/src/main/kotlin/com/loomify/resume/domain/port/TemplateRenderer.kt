@@ -9,7 +9,7 @@ import com.loomify.resume.domain.model.ResumeData
  * Security: Must sanitize all user input to prevent LaTeX injection.
  * Special characters that must be escaped: \ { } $ & % # _ ^ ~
  */
-interface TemplateRendererPort {
+fun interface TemplateRenderer {
     /**
      * Renders resume data into LaTeX source code using the appropriate template.
      *

@@ -22,7 +22,7 @@ class PersonalInfoTest {
     fun `should create personal info with all fields`() {
         // Arrange & Act
         val personalInfo = PersonalInfo(
-            fullName = FullName("Jane Doe"),
+            name = FullName("Jane Doe"),
             label = JobTitle("Senior Software Engineer"),
             email = com.loomify.common.domain.vo.email.Email("jane.doe@example.com"),
             phone = PhoneNumber("+1 (555) 123-4567"),
@@ -46,7 +46,7 @@ class PersonalInfoTest {
 
         // Assert
         personalInfo shouldNotBe null
-        personalInfo.fullName.value shouldBe "Jane Doe"
+        personalInfo.name.value shouldBe "Jane Doe"
         personalInfo.label?.value shouldBe "Senior Software Engineer"
         personalInfo.phone?.value shouldBe "+1 (555) 123-4567"
         personalInfo.location?.city shouldBe "San Francisco"
@@ -57,7 +57,7 @@ class PersonalInfoTest {
     fun `should create personal info with minimum required fields`() {
         // Arrange & Act
         val personalInfo = PersonalInfo(
-            fullName = FullName("John Smith"),
+            name = FullName("John Smith"),
             label = null,
             email = com.loomify.common.domain.vo.email.Email("john@example.com"),
             phone = null,
@@ -69,7 +69,7 @@ class PersonalInfoTest {
 
         // Assert
         personalInfo shouldNotBe null
-        personalInfo.fullName.value shouldBe "John Smith"
+        personalInfo.name.value shouldBe "John Smith"
         personalInfo.label shouldBe null
         personalInfo.phone shouldBe null
     }
@@ -115,12 +115,12 @@ class PersonalInfoTest {
     @Test
     fun `should fail when summary exceeds max length`() {
         // Arrange
-        val longSummary = "a".repeat(501)
+        val longSummary = "a".repeat(601)
 
         // Act & Assert
         shouldThrow<IllegalArgumentException> {
             Summary(longSummary)
-        }.message shouldBe "Summary cannot exceed 500 characters"
+        }.message shouldBe "Summary cannot exceed 600 characters"
     }
 
     @Test
