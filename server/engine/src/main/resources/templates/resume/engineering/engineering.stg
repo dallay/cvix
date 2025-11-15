@@ -3,7 +3,7 @@ baseResume(resumeData, i18n, locale, lastUpdated) ::= <<
     For more information on StringTemplate, refer to the official documentation at:
      https://github.com/antlr/stringtemplate4/blob/master/doc/index.md
   !>
-<preamble(resumeData.basics, i18n, locale)>
+<preamble(resumeData.basics, i18n, locale, lastUpdated)>
 
 \begin{document}
 
@@ -82,7 +82,7 @@ profileLink(profile) ::= <<
         \kern 5.0 pt%
         \mbox{\hrefWithoutArrow{<profile.url>}{<profile.network>: <profile.username>}}>>
 
-preamble(basics, i18n, locale) ::= <<
+preamble(basics, i18n, locale, lastUpdated) ::= <<
 %! Author = <basics.name>
 %! Date = 13/11/25
 
@@ -147,6 +147,8 @@ preamble(basics, i18n, locale) ::= <<
 \setlength{\topskip}{0pt}
 \setlength{\columnsep}{0.15cm}
 \pagenumbering{gobble}
+
+\placelastupdatedtext
 
 \titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
 
