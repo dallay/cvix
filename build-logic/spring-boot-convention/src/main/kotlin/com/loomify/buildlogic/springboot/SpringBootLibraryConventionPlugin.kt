@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.dependencies
 
 private const val IMPLEMENTATION = "implementation"
 
+@Suppress("unused")
 class SpringBootLibraryConventionPlugin : ConventionPlugin {
     override fun Project.configure() {
         apply(plugin = catalogPlugin("kotlin-jvm").get().pluginId)

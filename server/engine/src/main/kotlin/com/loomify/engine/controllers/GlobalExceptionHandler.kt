@@ -172,7 +172,7 @@ class GlobalExceptionHandler(
         ex: WebExchangeBindException,
         headers: org.springframework.http.HttpHeaders,
         status: org.springframework.http.HttpStatusCode,
-        exchange: org.springframework.web.server.ServerWebExchange,
+        exchange: ServerWebExchange,
     ): Mono<org.springframework.http.ResponseEntity<Any>> {
         val localizedMessage = getLocalizedMessage(exchange, MSG_VALIDATION_ERROR)
 

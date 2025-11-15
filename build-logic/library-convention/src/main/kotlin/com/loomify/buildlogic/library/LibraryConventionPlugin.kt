@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
+@Suppress("unused")
 class LibraryConventionPlugin : ConventionPlugin {
     override fun Project.configure() {
         apply(plugin = catalogPlugin("kotlin-jvm").get().pluginId)

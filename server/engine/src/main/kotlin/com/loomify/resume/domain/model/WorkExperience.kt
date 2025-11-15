@@ -43,7 +43,7 @@ value class Highlight(val value: String) {
  * - `startDate`: Must parse as valid ISO-8601 date
  * - `endDate`: If present, must parse and be ≥ `startDate`
  * - Throws [IllegalArgumentException] on chronology violations
- * - Throws [DateTimeParseException] on malformed date strings
+ * - Throws [java.time.format.DateTimeParseException] on malformed date strings
  *
  * ## Example JSON Payload
  * ```json
@@ -72,7 +72,7 @@ value class Highlight(val value: String) {
  * @property url Company website [Url] value object (optional)
  *
  * @throws IllegalArgumentException If end date precedes start date
- * @throws DateTimeParseException If date strings aren't valid ISO-8601 format
+ * @throws java.time.format.DateTimeParseException If date strings aren't valid ISO-8601 format
  */
 data class WorkExperience(
     val name: CompanyName,
