@@ -1,95 +1,256 @@
 package com.loomify.resume.infrastructure.template.validator
 
-import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.exception.LaTeXInjectionException
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.Language
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.Project
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.domain.model.WorkExperience
-import io.mockk.every
-import io.mockk.mockk
+import com.loomify.resume.domain.model.*
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import java.time.LocalDate
+import java.util.stream.Stream
 
-@UnitTest
-internal class TemplateValidatorTest {
+/**
+ * Validation tests for TemplateValidator ensuring comprehensive coverage of all
+ * user-controlled string fields. Each field is individually mutated with a
+ * malicious LaTeX command to verify detection.
+ */
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+class TemplateValidatorTest {
 
-    private fun createMockResumeData(
-        name: String = "John Doe",
-        email: String = "john.doe@example.com",
-        phone: String? = null,
-        summary: String? = null,
-        work: List<WorkExperience> = emptyList(),
-        education: List<Education> = emptyList(),
-        skills: List<SkillCategory> = listOf(mockk(relaxed = true)),
-        projects: List<Project> = emptyList(),
-        languages: List<Language> = emptyList(),
-    ): ResumeData {
-        val personalInfo = mockk<PersonalInfo>(relaxed = true)
+    companion object {
+        private const val MALICIOUS = "\\input{evil}" // Matches DANGEROUS_PATTERN
 
-        // Use real instances for inline value classes (they can't be mocked)
-        val nameValue = FullName(name)
-        val emailValue = Email(email)
+        private fun baseResume(): ResumeData {
+            val basics = PersonalInfo(
+                name = FullName("John Doe"),
+                label = JobTitle("Engineer"),
+                image = null,
+                email = Email("john.doe@example.com"),
+                phone = PhoneNumber("+1-555-1234"),
+                url = com.loomify.resume.domain.model.Url("https://example.com"),
+                summary = Summary("Experienced engineer."),
+                location = Location(
+                    address = "123 Main St",
+                    postalCode = "12345",
+                    city = "Metropolis",
+                    countryCode = "US",
+                    region = "CA",
+                ),
+                profiles = listOf(
+                    SocialProfile(network = "LinkedIn", username = "johndoe", url = "https://linkedin.com/in/johndoe"),
+                ),
+            )
 
-        every { personalInfo.name } returns nameValue
-        every { personalInfo.email } returns emailValue
-        every { personalInfo.phone } returns phone?.let { PhoneNumber(it) }
-        every { personalInfo.summary } returns summary?.let { Summary(it) }
+            val work = listOf(
+                WorkExperience(
+                    company = CompanyName("Acme Corp"),
+                    position = JobTitle("Developer"),
+                    startDate = "2023-01-01",
+                    endDate = null,
+                    location = "Remote",
+                    summary = "Worked on platform.",
+                    highlights = listOf(Highlight("Improved performance")),
+                    url = com.loomify.resume.domain.model.Url("https://acme.example.com"),
+                ),
+            )
 
-        val resumeData = mockk<ResumeData>(relaxed = true)
-        every { resumeData.basics } returns personalInfo
-        every { resumeData.work } returns work
-        every { resumeData.education } returns education
-        every { resumeData.skills } returns skills
-        every { resumeData.projects } returns projects
-        every { resumeData.languages } returns languages
+            val education = listOf(
+                Education(
+                    institution = InstitutionName("State University"),
+                    area = FieldOfStudy("Computer Science"),
+                    studyType = DegreeType("BS"),
+                    startDate = "2019-01-01",
+                    endDate = "2022-01-01",
+                    score = "4.0/4.0",
+                    url = com.loomify.resume.domain.model.Url("https://university.example.edu"),
+                    courses = listOf("Algorithms"),
+                ),
+            )
 
-        return resumeData
-    }
+            val skills = listOf(
+                SkillCategory(
+                    name = SkillCategoryName("Backend"),
+                    level = "Senior",
+                    keywords = listOf(Skill("Kotlin")),
+                ),
+            )
 
-    @Test
-    fun `should throw exception when dangerous LaTeX commands are detected`() {
-        val resumeData = createMockResumeData(name = "\\input{malicious.tex}")
+            val projects = listOf(
+                Project(
+                    name = "Inventory System",
+                    description = "Manages stock levels.",
+                    url = "https://inventory.example.com",
+                    startDate = LocalDate.parse("2023-02-01"),
+                    endDate = null,
+                    highlights = listOf("Reduced errors"),
+                    keywords = listOf("Kotlin"),
+                    roles = listOf("Lead"),
+                    entity = "Acme",
+                    type = "Internal",
+                ),
+            )
 
-        assertThrows<LaTeXInjectionException> {
-            TemplateValidator.validateContent(resumeData)
+            val volunteer = listOf(
+                Volunteer(
+                    organization = "Code Club",
+                    position = "Mentor",
+                    url = com.loomify.resume.domain.model.Url("https://codeclub.example.org"),
+                    startDate = "2024-01-01",
+                    endDate = null,
+                    summary = "Helped students.",
+                    highlights = listOf("Weekly sessions"),
+                ),
+            )
+
+            val awards = listOf(
+                Award(
+                    title = "Best Developer",
+                    date = "2023-12-01",
+                    awarder = "Acme Corp",
+                    summary = "Recognized for outstanding contributions.",
+                ),
+            )
+
+            val certificates = listOf(
+                Certificate(
+                    name = "Cloud Cert",
+                    date = "2024-02-01",
+                    url = com.loomify.resume.domain.model.Url("https://cert.example.org"),
+                    issuer = "Cloud Board",
+                ),
+            )
+
+            val publications = listOf(
+                Publication(
+                    name = "Distributed Systems Paper",
+                    publisher = "Journal A",
+                    releaseDate = "2024-03-01",
+                    url = com.loomify.resume.domain.model.Url("https://journal.example.org/paper"),
+                    summary = "Explores scaling strategies.",
+                ),
+            )
+
+            val interests = listOf(
+                Interest(
+                    name = "Cycling",
+                    keywords = listOf("Road"),
+                ),
+            )
+
+            val references = listOf(
+                Reference(
+                    name = "Jane Smith",
+                    reference = "Former manager at Acme.",
+                ),
+            )
+
+            val languages = listOf(Language(language = "English", fluency = "Native"))
+
+            return ResumeData(
+                basics = basics,
+                work = work,
+                volunteer = volunteer,
+                education = education,
+                awards = awards,
+                certificates = certificates,
+                publications = publications,
+                skills = skills,
+                languages = languages,
+                interests = interests,
+                references = references,
+                projects = projects,
+            )
         }
-    }
 
-    @Test
-    fun `should not throw exception when no dangerous LaTeX commands are present`() {
-        val resumeData = createMockResumeData(name = "John Doe")
-
-        TemplateValidator.validateContent(resumeData)
-    }
-
-    @Test
-    fun `should validate all fields in resume data for dangerous LaTeX commands`() {
-        val resumeData = createMockResumeData(
-            name = "John Doe",
-            summary = "Experienced developer \\include{image.png}",
-        )
-
-        assertThrows<LaTeXInjectionException> {
-            TemplateValidator.validateContent(resumeData)
+        @JvmStatic
+        fun maliciousFieldProvider(): Stream<org.junit.jupiter.params.provider.Arguments> {
+            val base = baseResume()
+            return Stream.of(
+                // Basics
+                arg("basics.name", base.copy(basics = base.basics.copy(name = FullName(MALICIOUS)))),
+                arg("basics.label", base.copy(basics = base.basics.copy(label = JobTitle(MALICIOUS)))),
+                arg("basics.phone", base.copy(basics = base.basics.copy(phone = PhoneNumber(MALICIOUS)))),
+                arg("basics.summary", base.copy(basics = base.basics.copy(summary = Summary(MALICIOUS)))),
+                arg("basics.location.city", base.copy(basics = base.basics.copy(location = base.basics.location!!.copy(city = MALICIOUS)))),
+                arg("basics.location.address", base.copy(basics = base.basics.copy(location = base.basics.location!!.copy(address = MALICIOUS)))),
+                arg("basics.location.region", base.copy(basics = base.basics.copy(location = base.basics.location!!.copy(region = MALICIOUS)))),
+                arg("basics.location.postalCode", base.copy(basics = base.basics.copy(location = base.basics.location!!.copy(postalCode = MALICIOUS)))),
+                arg("basics.location.countryCode", base.copy(basics = base.basics.copy(location = base.basics.location!!.copy(countryCode = MALICIOUS)))),
+                arg("basics.profiles[0].network", base.copy(basics = base.basics.copy(profiles = listOf(base.basics.profiles[0].copy(network = MALICIOUS))))),
+                arg("basics.profiles[0].username", base.copy(basics = base.basics.copy(profiles = listOf(base.basics.profiles[0].copy(username = MALICIOUS))))),
+                // Work
+                arg("work[0].company", base.copy(work = listOf(base.work[0].copy(company = CompanyName(MALICIOUS))))),
+                arg("work[0].position", base.copy(work = listOf(base.work[0].copy(position = JobTitle(MALICIOUS))))),
+                arg("work[0].location", base.copy(work = listOf(base.work[0].copy(location = MALICIOUS)))),
+                arg("work[0].summary", base.copy(work = listOf(base.work[0].copy(summary = MALICIOUS)))),
+                arg("work[0].highlights[0]", base.copy(work = listOf(base.work[0].copy(highlights = listOf(Highlight(MALICIOUS)))))),
+                // Education
+                arg("education[0].institution", base.copy(education = listOf(base.education[0].copy(institution = InstitutionName(MALICIOUS))))),
+                arg("education[0].area", base.copy(education = listOf(base.education[0].copy(area = FieldOfStudy(MALICIOUS))))),
+                arg("education[0].studyType", base.copy(education = listOf(base.education[0].copy(studyType = DegreeType(MALICIOUS))))),
+                arg("education[0].score", base.copy(education = listOf(base.education[0].copy(score = MALICIOUS)))),
+                arg("education[0].courses[0]", base.copy(education = listOf(base.education[0].copy(courses = listOf(MALICIOUS))))),
+                // Skills
+                arg("skills[0].name", base.copy(skills = listOf(base.skills[0].copy(name = SkillCategoryName(MALICIOUS))))),
+                arg("skills[0].level", base.copy(skills = listOf(base.skills[0].copy(level = MALICIOUS)))),
+                arg("skills[0].keywords[0]", base.copy(skills = listOf(base.skills[0].copy(keywords = listOf(Skill(MALICIOUS)))))),
+                // Projects
+                arg("projects[0].name", base.copy(projects = listOf(base.projects[0].copy(name = MALICIOUS)))),
+                arg("projects[0].description", base.copy(projects = listOf(base.projects[0].copy(description = MALICIOUS)))),
+                arg("projects[0].highlights[0]", base.copy(projects = listOf(base.projects[0].copy(highlights = listOf(MALICIOUS))))),
+                arg("projects[0].keywords[0]", base.copy(projects = listOf(base.projects[0].copy(keywords = listOf(MALICIOUS))))),
+                arg("projects[0].roles[0]", base.copy(projects = listOf(base.projects[0].copy(roles = listOf(MALICIOUS))))),
+                arg("projects[0].entity", base.copy(projects = listOf(base.projects[0].copy(entity = MALICIOUS)))),
+                arg("projects[0].type", base.copy(projects = listOf(base.projects[0].copy(type = MALICIOUS)))),
+                // Volunteer
+                arg("volunteer[0].organization", base.copy(volunteer = listOf(base.volunteer[0].copy(organization = MALICIOUS)))),
+                arg("volunteer[0].position", base.copy(volunteer = listOf(base.volunteer[0].copy(position = MALICIOUS)))),
+                arg("volunteer[0].summary", base.copy(volunteer = listOf(base.volunteer[0].copy(summary = MALICIOUS)))),
+                arg("volunteer[0].highlights[0]", base.copy(volunteer = listOf(base.volunteer[0].copy(highlights = listOf(MALICIOUS))))),
+                // Awards
+                arg("awards[0].title", base.copy(awards = listOf(base.awards[0].copy(title = MALICIOUS)))),
+                arg("awards[0].awarder", base.copy(awards = listOf(base.awards[0].copy(awarder = MALICIOUS)))),
+                arg("awards[0].summary", base.copy(awards = listOf(base.awards[0].copy(summary = MALICIOUS)))),
+                // Certificates
+                arg("certificates[0].name", base.copy(certificates = listOf(base.certificates[0].copy(name = MALICIOUS)))),
+                arg("certificates[0].issuer", base.copy(certificates = listOf(base.certificates[0].copy(issuer = MALICIOUS)))),
+                // Publications
+                arg("publications[0].name", base.copy(publications = listOf(base.publications[0].copy(name = MALICIOUS)))),
+                arg("publications[0].publisher", base.copy(publications = listOf(base.publications[0].copy(publisher = MALICIOUS)))),
+                arg("publications[0].summary", base.copy(publications = listOf(base.publications[0].copy(summary = MALICIOUS)))),
+                // Interests
+                arg("interests[0].name", base.copy(interests = listOf(base.interests[0].copy(name = MALICIOUS)))),
+                arg("interests[0].keywords[0]", base.copy(interests = listOf(base.interests[0].copy(keywords = listOf(MALICIOUS))))),
+                // Languages
+                arg("languages[0].language", base.copy(languages = listOf(base.languages[0].copy(language = MALICIOUS)))),
+                arg("languages[0].fluency", base.copy(languages = listOf(base.languages[0].copy(fluency = MALICIOUS)))),
+                // References
+                arg("references[0].name", base.copy(references = listOf(base.references[0].copy(name = MALICIOUS)))),
+                arg("references[0].reference", base.copy(references = listOf(base.references[0].copy(reference = MALICIOUS)))),
+            )
         }
+
+        private fun arg(field: String, resume: ResumeData): org.junit.jupiter.params.provider.Arguments =
+            org.junit.jupiter.params.provider.Arguments.of(field, resume)
     }
 
     @Test
-    fun `should handle null fields gracefully without throwing exceptions`() {
-        val resumeData = createMockResumeData(
-            name = "John Doe",
-            phone = null,
-            summary = null,
-        )
+    @Order(1)
+    fun `should pass validation for safe resume`() {
+        assertDoesNotThrow { TemplateValidator.validateContent(baseResume()) }
+    }
 
-        TemplateValidator.validateContent(resumeData)
+    @ParameterizedTest(name = "{0} should trigger LaTeXInjectionException")
+    @MethodSource("maliciousFieldProvider")
+    @Order(2)
+    fun `should detect malicious LaTeX commands in all fields`(field: String, maliciousResume: ResumeData) {
+        assertThrows(LaTeXInjectionException::class.java) {
+            TemplateValidator.validateContent(maliciousResume)
+        }
     }
 }
