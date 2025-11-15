@@ -45,19 +45,31 @@ header(basics) ::= <<
         \vspace{5 pt}
 
         \normalsize
-        \mbox{<basics.location.city>, <basics.location.region>}%
+        <if(basics.location)>\mbox{<basics.location.city>, <basics.location.region>}%<endif><if(basics.email)><if(basics.location)>%
         \kern 5.0 pt%
         \AND%
         \kern 5.0 pt%
-        \mbox{\hrefWithoutArrow{mailto:<basics.email>}{<basics.email>}}%
+        <endif>\mbox{\hrefWithoutArrow{mailto:<basics.email>}{<basics.email>}}%<endif><if(basics.phone)><if(basics.email)>%
         \kern 5.0 pt%
         \AND%
         \kern 5.0 pt%
-        \mbox{\hrefWithoutArrow{tel:<basics.phone>}{<basics.phone>}}%
+        <elseif(basics.location)>%
         \kern 5.0 pt%
         \AND%
         \kern 5.0 pt%
-        \mbox{\hrefWithoutArrow{<basics.url>}{<basics.url>}}%<basics.profiles:{profile|<profileLink(profile)>}>
+        <endif>\mbox{\hrefWithoutArrow{tel:<basics.phone>}{<basics.phone>}}%<endif><if(basics.url)><if(basics.phone)>%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        <elseif(basics.email)>%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        <elseif(basics.location)>%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        <endif>\mbox{\hrefWithoutArrow{<basics.url>}{<basics.url>}}%<endif><basics.profiles:{profile|<profileLink(profile)>}>
     \end{header}
 
     \vspace{5 pt - 0.3 cm}
