@@ -16,11 +16,11 @@ kotest = "5.9.1"
 testcontainers = "1.20.2"
 testcontainers-keycloak = "3.4.0"
 jsonwebtoken = "0.12.6"
-cucumber = "7.20.0"
+cucumber = "7.31.0"
 apacheCommon = "1.12.0"
 jackson = "2.18.0"
 springSecurity = "6.5.6"
-bucket4j = "8.1.0"
+bucket4j = "8.10.1"
 stringtemplate = "4.3.4"
 docker-java = "3.6.0"
 
@@ -44,7 +44,7 @@ gradle-frontend = { module = "org.siouan:frontend-jdk17", version.ref = "fronten
 
 # Detekt
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.22" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" }
 detekt-compose2 = { module = "ru.kode:detekt-rules-compose", version = "1.4.0" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
@@ -88,9 +88,9 @@ docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-ja
 junit = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
 spring-security-test = { module = "org.springframework.security:spring-security-test", version.ref = "springSecurity" }
-reactor-test = { module = "io.projectreactor:reactor-test", version = "3.6.10" }
+reactor-test = { module = "io.projectreactor:reactor-test", version = "3.8.0" }
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
-mockk = { module = "io.mockk:mockk", version = "1.13.12" }
+mockk = { module = "io.mockk:mockk", version = "1.14.6" }
 faker = { module = "net.datafaker:datafaker", version = "2.4.0" }
 assertj = { module ="org.assertj:assertj-core", version = "3.26.3" }
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
