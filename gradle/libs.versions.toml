@@ -22,7 +22,7 @@ jackson = "2.18.0"
 springSecurity = "6.5.6"
 bucket4j = "8.10.1"
 stringtemplate = "4.3.4"
-docker-java = "3.6.0"
+docker-java = "3.7.0"
 
 [libraries]
 # Gradle Plugins
