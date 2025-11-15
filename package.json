@@ -82,7 +82,7 @@
     "vite": "^7.2.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.4",
-    "npm-run-all2": "^5.0.0"
+    "npm-run-all2": "^8.0.4"
   },
   "pnpm": {
     "overrides": {
