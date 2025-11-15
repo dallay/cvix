@@ -97,7 +97,7 @@ dependencies {
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest)
-    testImplementation("com.tngtech.archunit:archunit:1.3.0")
+    testImplementation("com.tngtech.archunit:archunit:1.4.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
