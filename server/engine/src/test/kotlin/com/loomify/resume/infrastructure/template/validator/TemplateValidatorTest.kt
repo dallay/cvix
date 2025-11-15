@@ -48,7 +48,7 @@ import org.junit.jupiter.params.provider.MethodSource
  * malicious LaTeX command to verify detection.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class TemplateValidatorTest {
+internal class TemplateValidatorTest {
     @Test
     @Order(1)
     fun `should pass validation for safe resume`() {
@@ -403,6 +403,19 @@ class TemplateValidatorTest {
                     "basics.summary",
                     base.copy(basics = base.basics.copy(summary = Summary(MALICIOUS))),
                 ),
+                // Added: test malicious email, url, image
+                arg(
+                    "basics.email",
+                    base.copy(basics = base.basics.copy(email = Email(MALICIOUS))),
+                ),
+                arg(
+                    "basics.url",
+                    base.copy(basics = base.basics.copy(url = Url(MALICIOUS))),
+                ),
+                arg(
+                    "basics.image",
+                    base.copy(basics = base.basics.copy(image = Url(MALICIOUS))),
+                ),
                 arg(
                     "basics.location.city",
                     base.copy(basics = base.basics.copy(location = location.copy(city = MALICIOUS))),
@@ -451,6 +464,17 @@ class TemplateValidatorTest {
                         ),
                     ),
                 ),
+                // Added: test malicious profile url
+                arg(
+                    "basics.profiles[0].url",
+                    base.copy(
+                        basics = base.basics.copy(
+                            profiles = listOf(
+                                base.basics.profiles[0].copy(url = MALICIOUS),
+                            ),
+                        ),
+                    ),
+                ),
                 // Work
                 arg(
                     "work[0].name",
@@ -479,6 +503,11 @@ class TemplateValidatorTest {
                             ),
                         ),
                     ),
+                ),
+                // Added: test malicious work url
+                arg(
+                    "work[0].url",
+                    base.copy(work = listOf(base.work[0].copy(url = Url(MALICIOUS)))),
                 ),
                 // Education
                 arg(
@@ -561,6 +590,11 @@ class TemplateValidatorTest {
                     "projects[0].type",
                     base.copy(projects = listOf(base.projects[0].copy(type = MALICIOUS))),
                 ),
+                // Added: test malicious project url
+                arg(
+                    "projects[0].url",
+                    base.copy(projects = listOf(base.projects[0].copy(url = MALICIOUS))),
+                ),
                 // Volunteer
                 arg(
                     "volunteer[0].organization",
@@ -584,6 +618,11 @@ class TemplateValidatorTest {
                         ),
                     ),
                 ),
+                // Added: test malicious volunteer url
+                arg(
+                    "volunteer[0].url",
+                    base.copy(volunteer = listOf(base.volunteer[0].copy(url = Url(MALICIOUS)))),
+                ),
                 // Awards
                 arg(
                     "awards[0].title",
@@ -606,6 +645,11 @@ class TemplateValidatorTest {
                     "certificates[0].issuer",
                     base.copy(certificates = listOf(base.certificates[0].copy(issuer = MALICIOUS))),
                 ),
+                // Added: test malicious certificate url
+                arg(
+                    "certificates[0].url",
+                    base.copy(certificates = listOf(base.certificates[0].copy(url = Url(MALICIOUS)))),
+                ),
                 // Publications
                 arg(
                     "publications[0].name",
@@ -618,6 +662,11 @@ class TemplateValidatorTest {
                 arg(
                     "publications[0].summary",
                     base.copy(publications = listOf(base.publications[0].copy(summary = MALICIOUS))),
+                ),
+                // Added: test malicious publication url
+                arg(
+                    "publications[0].url",
+                    base.copy(publications = listOf(base.publications[0].copy(url = Url(MALICIOUS)))),
                 ),
                 // Interests
                 arg(
