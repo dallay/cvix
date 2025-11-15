@@ -63,17 +63,17 @@ object ResumeTemplateMapper {
             summary = basics.summary?.value?.let { LatexEscaper.escape(it) },
             location = basics.location?.let {
                 LocationTemplateModel(
-                    address = it.address,
-                    postalCode = it.postalCode,
-                    city = it.city,
-                    countryCode = it.countryCode,
-                    region = it.region,
+                    address = it.address?.let(LatexEscaper::escape),
+                    postalCode = it.postalCode?.let(LatexEscaper::escape),
+                    city = it.city?.let(LatexEscaper::escape),
+                    countryCode = it.countryCode?.let(LatexEscaper::escape),
+                    region = it.region?.let(LatexEscaper::escape),
                 )
             },
             profiles = basics.profiles.map {
                 SocialProfileTemplateModel(
-                    network = it.network,
-                    username = it.username,
+                    network = LatexEscaper.escape(it.network),
+                    username = LatexEscaper.escape(it.username),
                     url = it.url,
                 )
             },
@@ -85,7 +85,7 @@ object ResumeTemplateMapper {
             position = LatexEscaper.escape(work.position.value),
             startDate = work.startDate,
             endDate = work.endDate,
-            location = work.location,
+            location = work.location?.let(LatexEscaper::escape),
             summary = work.summary?.let { LatexEscaper.escape(it) },
             highlights = work.highlights?.map { LatexEscaper.escape(it.value) },
             url = work.url?.value,
@@ -98,7 +98,7 @@ object ResumeTemplateMapper {
             studyType = edu.studyType?.value?.let { LatexEscaper.escape(it) },
             startDate = edu.startDate,
             endDate = edu.endDate,
-            score = edu.score,
+            score = edu.score?.let(LatexEscaper::escape),
             url = edu.url?.value,
             courses = edu.courses?.map { LatexEscaper.escape(it) },
         )
@@ -154,8 +154,8 @@ object ResumeTemplateMapper {
             organization = LatexEscaper.escape(vol.organization),
             position = LatexEscaper.escape(vol.position),
             url = vol.url?.value,
-            startDate = vol.startDate ?: "",
-            endDate = vol.endDate,
+            startDate = vol.startDate?.let(LatexEscaper::escape) ?: "",
+            endDate = vol.endDate?.let(LatexEscaper::escape),
             summary = vol.summary?.let { LatexEscaper.escape(it) },
             highlights = vol.highlights?.map { LatexEscaper.escape(it) },
         )
