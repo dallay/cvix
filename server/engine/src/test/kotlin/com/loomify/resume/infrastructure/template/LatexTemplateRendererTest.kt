@@ -18,7 +18,6 @@ import com.loomify.resume.domain.model.Summary
 import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -58,10 +57,12 @@ internal class LatexTemplateRendererTest {
     fun `should render complete resume with all fields populated`() {
         assertResumeRendersCorrectly("john-doe")
     }
+
     @Test
     fun `should render complete resume in spanish`() {
         assertResumeRendersCorrectly("spanish-example", "es")
     }
+
     /**
      * Test rendering with minimal required fields only.
      * Validates that optional fields don't break the template.
@@ -97,8 +98,14 @@ internal class LatexTemplateRendererTest {
         val result = renderer.render(resumeData, "en")
 
         // Assert - verify critical escapes
-        assertTrue(result.contains("\\$5B") || result.contains("\\$10M"), "Dollar signs must be escaped")
-        assertTrue(result.contains("40\\%") || result.contains("50\\%"), "Percent signs must be escaped")
+        assertTrue(
+            result.contains("\\$5B") || result.contains("\\$10M"),
+            "Dollar signs must be escaped",
+        )
+        assertTrue(
+            result.contains("40\\%") || result.contains("50\\%"),
+            "Percent signs must be escaped",
+        )
         assertTrue(result.contains("\\&"), "Ampersands must be escaped")
         assertTrue(result.contains("\\#"), "Hash symbols must be escaped")
         assertTrue(result.contains("\\_"), "Underscores must be escaped in text")
@@ -190,7 +197,12 @@ internal class LatexTemplateRendererTest {
      * Security test to prevent LaTeX injection attacks.
      */
     @ParameterizedTest(name = "should reject {0}")
-    @ValueSource(strings = ["\\input{malicious}", "\\include{evil}", "\\write{file}", "\\def\\bad{}", "\\newcommand{\\hack}{}"])
+    @ValueSource(
+        strings = [
+            "\\input{malicious}", "\\include{evil}", "\\write{file}",
+            "\\def\\bad{}", "\\newcommand{\\hack}{}",
+        ],
+    )
     fun `should reject dangerous LaTeX commands`(dangerousCommand: String) {
         // Arrange: Create minimal resume with malicious command in name field
         val maliciousResume = ResumeData(

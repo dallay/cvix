@@ -72,6 +72,13 @@ internal class LatexEscaperTest {
     }
 
     @Test
+    fun `should escape backslash followed by other special characters`() {
+        val result = LatexEscaper.escape("\\& \\% \\$")
+
+        result shouldBe "\\textbackslash\\{\\}\\& \\textbackslash\\{\\}\\% \\textbackslash\\{\\}\\$"
+    }
+
+    @Test
     fun `should escape multiple special characters in one string`() {
         val result = LatexEscaper.escape("Research & Development: 50% complete, Cost: $5,000")
 
