@@ -26,9 +26,9 @@ import org.stringtemplate.v4.STGroupFile
  * Template groups and i18n bundles are cached for performance.
  */
 @Component
-@Suppress("TooManyFunctions") // Template builders need multiple focused functions
 class LatexTemplateRenderer(
-    private val clock: Clock = Clock.systemDefaultZone()
+    private val clock: Clock = Clock.systemDefaultZone(),
+    private val templatePath: String = "templates/resume/engineering/engineering.stg" // Default path
 ) : TemplateRenderer {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -52,7 +52,6 @@ class LatexTemplateRenderer(
             val i18nMap = loadI18nTranslations(locale)
 
             // Load template group from classpath (cached)
-            val templatePath = "templates/resume/engineering/engineering.stg"
             val group = getOrCreateTemplateGroup(templatePath)
 
             // Get the main template
