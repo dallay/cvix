@@ -120,6 +120,6 @@ class LatexTemplateRenderer(
         val resourceLocale = Locale.forLanguageTag(locale)
         val pattern = if (resourceLocale.language == "es") "MMMM 'de' yyyy" else "MMMM yyyy"
         val formatter = DateTimeFormatter.ofPattern(pattern, resourceLocale)
-        return YearMonth.now(clock.zone).format(formatter)
+        return YearMonth.now(clock).format(formatter)
     }
 }
