@@ -70,8 +70,8 @@ class LatexTemplateRenderer(
             }
             resumeData.education.forEach {
                 add(it.institution.value)
-                add(it.area.value)
-                add(it.studyType.value)
+                it.area?.let { area -> add(area.value) }
+                it.studyType?.let { studyType -> add(studyType.value) }
             }
             resumeData.skills.forEach { category ->
                 add(category.name.value)
@@ -148,9 +148,9 @@ class LatexTemplateRenderer(
             val mapped = eduList.map { edu ->
                 mapOf(
                     "institution" to escapeLatex(edu.institution.value),
-                    "degree" to escapeLatex(edu.studyType.value),
+                    "degree" to (edu.studyType?.let { escapeLatex(it.value) } ?: ""),
                     "period" to escapeLatex(edu.formatPeriod(Locale.forLanguageTag(locale))),
-                    "area" to escapeLatex(edu.area.value),
+                    "area" to (edu.area?.let { escapeLatex(it.value) } ?: ""),
                     "score" to (edu.score?.let { escapeLatex(it) } ?: ""),
                 )
             }

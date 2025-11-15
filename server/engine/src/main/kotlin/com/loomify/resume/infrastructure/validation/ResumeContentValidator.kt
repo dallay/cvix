@@ -1,6 +1,6 @@
 package com.loomify.resume.infrastructure.validation
 
-import com.loomify.resume.infrastructure.web.dto.GenerateResumeRequest
+import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
@@ -32,7 +32,7 @@ class ResumeContentValidator : ConstraintValidator<ValidResumeContent, GenerateR
             return true // Let @NotNull handle null validation
         }
 
-        val hasWorkExperience = !request.workExperience.isNullOrEmpty()
+        val hasWorkExperience = !request.work.isNullOrEmpty()
         val hasEducation = !request.education.isNullOrEmpty()
         val hasSkills = !request.skills.isNullOrEmpty()
 

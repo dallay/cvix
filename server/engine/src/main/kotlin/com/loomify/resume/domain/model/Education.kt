@@ -57,11 +57,12 @@ value class DegreeType(val value: String) {
  */
 data class Education(
     val institution: InstitutionName,
-    val area: FieldOfStudy,
-    val studyType: DegreeType,
+    val area: FieldOfStudy? = null,
+    val studyType: DegreeType? = null,
     val startDate: String,
     val endDate: String? = null, // null means currently enrolled
     val score: String? = null, // GPA or grade
+    val url: Url? = null,
     val courses: List<String>? = null,
 ) {
     init {

@@ -9,6 +9,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.MessageSource
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/auth/logout"
@@ -17,9 +18,10 @@ private const val ENDPOINT = "/api/auth/logout"
 internal class UserLogoutControllerTest {
 
     private val mediator: Mediator = mockk()
+    private val messageSource = mockk<MessageSource>(relaxed = true)
     private val userLogoutController = UserLogoutController(mediator)
     private val webTestClient = WebTestClient.bindToController(userLogoutController)
-        .controllerAdvice(GlobalExceptionHandler())
+        .controllerAdvice(GlobalExceptionHandler(messageSource))
         .build()
 
     @BeforeEach

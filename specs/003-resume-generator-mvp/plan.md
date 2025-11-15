@@ -316,7 +316,7 @@ infra/
 ```text
 endpoints/cvix/
 └── resume/
-    ├── generate-resume.bru             # POST /api/v1/resumes
+    ├── generate-resume.bru             # POST /api/resume
     └── examples/
         ├── software-engineer.json      # Sample payload
         ├── project-manager.json

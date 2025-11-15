@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -7,26 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": [
-			"**",
-			"!**/node_modules",
-			"!**/coverage",
-			"!**/.astro",
-			"!**/.cache",
-			"!**/.git",
-			"!**/.vscode",
-			"!**/.idea",
-			"!**/.pnpm",
-			"!**/.yarn",
-			"!**/dist",
-			"!**/out",
-			"!**/public",
-			"!**/.vscode",
-			"!**/worker-configuration.d.ts",
-			"!**/components/ui",
-			"!**/components.d.ts",
-			"!**/styles/globals.css"
-		]
+		"includes": []
 	},
 	"formatter": {
 		"enabled": true,
@@ -69,6 +50,19 @@
 		}
 	},
 	"overrides": [
+		{
+			"includes": [
+				"**/coverage/**",
+				"**/components.d.ts",
+				"**/docs/src/content/docs/json-resume/schema.json"
+			],
+			"linter": {
+				"enabled": false
+			},
+			"formatter": {
+				"enabled": false
+			}
+		},
 		{
 			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
 			"linter": {

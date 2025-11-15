@@ -7,6 +7,7 @@ import {
 } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { toast } from "vue-sonner"; // Import toast from vue-sonner
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,6 +145,10 @@ const handleLogout = async () => {
 		await router.push("/login");
 	} catch (error) {
 		console.error("Logout failed:", error);
+		toast.error(
+			"Logout failed" +
+				(error instanceof Error && error.message ? `: ${error.message}` : ""),
+		);
 	} finally {
 		isLoggingOut.value = false;
 	}

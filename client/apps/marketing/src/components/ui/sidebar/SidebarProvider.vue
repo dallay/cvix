@@ -41,7 +41,7 @@ function setOpen(value: boolean) {
 
 	// This sets the cookie to keep the sidebar state.
 	// biome-ignore lint/suspicious/noDocumentCookie: This cookie is used for a non-sensitive UI state (sidebar open/closed) and does not require the Cookie Store API for this use case.
-	document.cookie = `${SIDEBAR_COOKIE_NAME}=${open.value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+	document.cookie = `${SIDEBAR_COOKIE_NAME}=${open.value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
 }
 
 function setOpenMobile(value: boolean) {

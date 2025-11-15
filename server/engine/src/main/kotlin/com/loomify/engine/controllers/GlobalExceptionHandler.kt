@@ -10,6 +10,8 @@ import com.loomify.engine.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.loomify.engine.workspace.domain.WorkspaceAuthorizationException
 import java.net.URI
 import java.time.Instant
+import java.util.Locale
+import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 private const val ERROR_PAGE = "https://loomify.com/errors"
@@ -28,6 +31,19 @@ private const val ENTITY_NOT_FOUND = "Entity not found"
 
 private const val ERROR_CATEGORY = "errorCategory"
 
+private const val LOCALIZED_MESSAGE = "localizedMessage"
+
+private const val MESSAGE = "message"
+
+private const val TRACE_ID = "traceId"
+
+private const val MSG_AUTHENTICATION_FAILED = "error.authentication_failed"
+private const val MSG_ENTITY_NOT_FOUND = "error.entity_not_found"
+private const val MSG_BAD_REQUEST = "error.bad_request"
+private const val MSG_MISSING_COOKIE = "error.missing_cookie"
+private const val MSG_VALIDATION_ERROR = "error.validation_error"
+private const val MSG_INTERNAL_SERVER_ERROR = "error.internal_server_error"
+
 /**
  * This class provides a global exception handling mechanism for the application.
  *
@@ -36,7 +52,9 @@ private const val ERROR_CATEGORY = "errorCategory"
  * @created 4/8/23
  */
 @RestControllerAdvice
-class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
+class GlobalExceptionHandler(
+    private val messageSource: MessageSource
+) : ResponseEntityExceptionHandler() {
     /**
      * Handles the [UserAuthenticationException] by creating a ProblemDetail object with the appropriate status,
      * detail and properties.
@@ -51,13 +69,19 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     )
     fun handleUserAuthenticationException(
         e: Exception,
-        response: ServerHttpResponse
+        response: ServerHttpResponse,
+        exchange: ServerWebExchange
     ): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_AUTHENTICATION_FAILED)
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message)
         problemDetail.title = "User authentication failed"
         problemDetail.type = URI.create("$ERROR_PAGE/user-authentication-failed")
         problemDetail.setProperty("errorCategory", "AUTHENTICATION")
         problemDetail.setProperty("timestamp", Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_AUTHENTICATION_FAILED)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         AuthCookieBuilder.clearCookies(response)
         return problemDetail
     }
@@ -66,12 +90,17 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(
         EntityNotFoundException::class,
     )
-    fun handleEntityNotFound(e: Exception): ProblemDetail {
+    fun handleEntityNotFound(e: Exception, exchange: ServerWebExchange): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_ENTITY_NOT_FOUND)
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message ?: ENTITY_NOT_FOUND)
         problemDetail.title = ENTITY_NOT_FOUND
         problemDetail.type = URI.create("$ERROR_PAGE/entity-not-found")
         problemDetail.setProperty(ERROR_CATEGORY, "NOT_FOUND")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_ENTITY_NOT_FOUND)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }
 
@@ -89,12 +118,17 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         BusinessRuleValidationException::class,
         LogoutFailedException::class,
     )
-    fun handleIllegalArgumentException(e: Exception): ProblemDetail {
+    fun handleIllegalArgumentException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_BAD_REQUEST)
+
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message ?: "Bad request")
         problemDetail.title = "Bad request"
         problemDetail.type = URI.create("$ERROR_PAGE/bad-request")
         problemDetail.setProperty(ERROR_CATEGORY, "BAD_REQUEST")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_BAD_REQUEST)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }
     /**
@@ -107,14 +141,20 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleMissingCookieException(
         e: MissingCookieException,
-        response: ServerHttpResponse
+        response: ServerHttpResponse,
+        exchange: ServerWebExchange
     ): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_MISSING_COOKIE)
+
         response.statusCode = HttpStatus.BAD_REQUEST
         val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message)
         problemDetail.title = "Missing cookie"
         problemDetail.type = URI.create("$ERROR_PAGE/missing-cookie")
         problemDetail.setProperty(ERROR_CATEGORY, "MISSING_COOKIE")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_MISSING_COOKIE)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }
 
@@ -134,6 +174,8 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         status: org.springframework.http.HttpStatusCode,
         exchange: org.springframework.web.server.ServerWebExchange,
     ): Mono<org.springframework.http.ResponseEntity<Any>> {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_VALIDATION_ERROR)
+
         val fieldErrors = ex.bindingResult.fieldErrors.associate { error ->
             error.field to (error.defaultMessage ?: "Invalid value")
         }
@@ -149,7 +191,10 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         problemDetail.type = URI.create("$ERROR_PAGE/validation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_VALIDATION_ERROR)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty("fieldErrors", fieldErrors)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         if (globalErrors.isNotEmpty()) {
             problemDetail.setProperty("errors", globalErrors)
         }
@@ -158,7 +203,9 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
-    fun handleException(e: Exception): ProblemDetail {
+    fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_INTERNAL_SERVER_ERROR)
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             e.message ?: "Internal server error",
@@ -167,6 +214,14 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         problemDetail.type = URI.create("$ERROR_PAGE/internal-server-error")
         problemDetail.setProperty(ERROR_CATEGORY, "INTERNAL_SERVER_ERROR")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(MESSAGE, MSG_INTERNAL_SERVER_ERROR)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
+    }
+
+    private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        return messageSource.getMessage(messageKey, null, locale)
     }
 }
