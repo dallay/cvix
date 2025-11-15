@@ -74,7 +74,7 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.2.3" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.9.0" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }
 # External Libraries
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
