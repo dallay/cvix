@@ -254,7 +254,7 @@ educationEntry(edu) ::= <<
     \begin{twocolentry}{
         <edu.startDate> – <edu.endDate>
     }
-        \textbf{<edu.institution>}, <edu.studyType> in <edu.area><if(edu.url)> (\href{<edu.url>}{link})<endif>\end{twocolentry}
+        \textbf{<edu.institution>}<if(edu.studyType)>, <edu.studyType><endif><if(edu.area)> in <edu.area><endif><if(edu.url)> (\href{<edu.url>}{link})<endif>\end{twocolentry}
 
     \vspace{0.10 cm}
     \begin{onecolentry}
