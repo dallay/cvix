@@ -1,5 +1,6 @@
 package com.loomify.buildlogic.gradle
 
+import com.loomify.buildlogic.common.AppConfiguration
 import com.loomify.buildlogic.common.ConventionPlugin
 import com.loomify.buildlogic.common.extensions.isRelease
 import com.loomify.buildlogic.common.extensions.kover
@@ -11,13 +12,22 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
+private const val DEFAULT_KOVER_MIN_COVERAGE = 80
+private const val KOVER_MIN_COVERAGE_LOWER_BOUND = 0
+private const val KOVER_MIN_COVERAGE_UPPER_BOUND = 100
+
+private fun Project.getMinCoverageBound(): Int =
+    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()
+        ?.coerceIn(KOVER_MIN_COVERAGE_LOWER_BOUND, KOVER_MIN_COVERAGE_UPPER_BOUND)
+        ?: DEFAULT_KOVER_MIN_COVERAGE
+
 @Suppress("unused")
 internal class AppKoverPlugin : ConventionPlugin {
     private val classesExcludes = listOf(
         // Serializers
         "*.*$\$serializer",
     )
-    private val packagesIncludes = listOf("com.loomify")
+    private val packagesIncludes = listOf(AppConfiguration.PACKAGE_NAME)
     private val packagesExcludes = listOf(
         // Common
         "*.buildlogic.*",
@@ -61,6 +71,11 @@ internal class AppKoverPlugin : ConventionPlugin {
                     classes(classesExcludes)
                     packages(packagesExcludes)
                     annotatedBy("*Generated*")
+                }
+            }
+            verify {
+                rule {
+                    minBound(project.getMinCoverageBound())
                 }
             }
         }

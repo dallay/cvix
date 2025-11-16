@@ -103,6 +103,13 @@ See these folders at the repository root:
 - `shared/` — shared Kotlin libraries
 - `infra/` — docker compose and helper scripts
 - `specs/` — feature specifications and planning documents
+- `docs/` — project documentation
+
+### Additional Documentation
+
+- **[Docker Deployment Guide](docs/DOCKER_DEPLOYMENT.md)** — Complete guide for building and deploying Docker images to GHCR
+- **[Contributing Guide](CONTRIBUTING.md)** — Development workflow and contribution guidelines
+- **[Security Policy](SECURITY.md)** — Security practices and vulnerability reporting
 
 ## Development Guidelines
 

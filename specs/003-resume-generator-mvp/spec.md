@@ -7,6 +7,10 @@
 
 ## Clarifications
 
+### Session 2025-11-15
+
+- Q: The initial spec called for session-only storage, but the implementation supports persistent local storage. Should the spec be updated? → A: Yes, the storage strategy was intentionally evolved during implementation to improve user experience. The initial assumption of session-only storage proved too restrictive for users who wanted to save drafts. The current implementation, which offers user-selectable storage options (Session, Local, IndexedDB), is now the source of truth. The specification has been updated to reflect this flexible, client-side persistence model.
+
 ### Session 2025-11-01
 
 - Q: Should we reuse existing shared value objects (Email, Name) from `com.loomify.common.domain.vo`? → A: Reuse Email only - The shared Email VO provides RFC-compliant validation (320 char limit). The resume-specific name field renamed to `FullName` to avoid confusion, as JSON Resume uses unstructured single string (e.g., "John Doe") while shared Name VO expects structured firstName + lastName for user profiles.
@@ -113,6 +117,25 @@ When PDF generation fails due to system issues, the user receives clear informat
 - What happens if the document compilation produces warnings but still generates a valid PDF?
 - How does the system handle users attempting to exploit document generation vulnerabilities through malicious input?
 
+---
+
+### User Story 6 - Storage Preference Selection (Priority: P3)
+
+A user wants to save their resume draft and continue working on it later. They can choose a persistent storage option to save their data across browser sessions.
+
+**Why this priority**: Improves user convenience for multi-session editing but is not essential for the core value of generating a resume in a single session.
+
+**Independent Test**: Can be tested by selecting a persistent storage option (e.g., Local Storage), entering data, closing and reopening the browser, and verifying the data is restored. Delivers value by preventing data loss and allowing users to complete their resume over multiple sessions.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user navigates to the application settings, **When** they view the storage options, **Then** they see a choice between Session Storage (default, temporary), Local Storage (persistent), and IndexedDB (persistent, for large data).
+2. **Given** a user has entered data into the resume form, **When** they select a new persistent storage option and confirm, **Then** their existing data is automatically migrated to the new storage location.
+3. **Given** a user has selected a persistent storage option, **When** they close and reopen their browser, **Then** their resume data is automatically loaded from the selected storage.
+4. **Given** a user switches back to Session Storage, **When** they confirm the change, **Then** their data is migrated to the session, and a warning is displayed that it will be cleared when the session ends.
+
+---
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -124,7 +147,7 @@ When PDF generation fails due to system issues, the user receives clear informat
 - **FR-003**: System MUST block potentially harmful user inputs that could compromise system security or document generation
 - **FR-004**: System MUST enforce field length limits to ensure proper document formatting and system performance: names/titles (100 characters), descriptions (500 characters), skills (50 characters per item)
 - **FR-005**: System MUST provide clear, field-specific error messages when validation fails
-- **FR-006**: System MUST preserve form data within the current browser session to prevent data loss on navigation
+- **FR-006**: System MUST preserve form data according to the user's selected storage preference (Session, Local, or IndexedDB) to prevent data loss on navigation or session termination
 
 #### PDF Generation
 
@@ -191,7 +214,7 @@ When PDF generation fails due to system issues, the user receives clear informat
 
 - Users have basic computer literacy and can fill out web forms
 - Users will access the service during normal business hours with peak load of 50 concurrent users
-- The MVP will use session-based processing with no long-term storage of user data for privacy
+- The application provides user-selectable storage options (session, local, IndexedDB) to balance privacy with the convenience of long-term draft saving. Session storage is the default.
 - Users understand that generated resumes may need manual adjustments for specific job applications
 - The service will initially target English-language resumes with support for international character sets
 - The service will support Spanish language as a secondary language option for the MVP
@@ -226,7 +249,7 @@ When PDF generation fails due to system issues, the user receives clear informat
 
 ### Constraints
 
-- Must not store user data long-term (privacy-first, stateless architecture)
+- User data is stored client-side according to the user's selected preference (session, local, or IndexedDB storage), with no server-side data persistence.
 - Must use lightweight, efficient containerization to minimize resource costs
 - Must comply with existing organizational security practices and industry standards
 - Must integrate with existing infrastructure and deployment processes
