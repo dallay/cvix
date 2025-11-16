@@ -116,6 +116,9 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
 
+      - name: Verify Docker availability
+        run: docker --version
+
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -123,7 +126,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Enforce coverage threshold
+        run: ./gradlew koverVerify --no-daemon
+
       - name: Build and push Docker image
         env:
-          SPRING_PROFILES_ACTIVE: prod
-        run: ./gradlew bootBuildImage --imageName=ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }}
+          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }}
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          DOCKER_REGISTRY_URL: https://ghcr.io
+          PUBLISH_IMAGE: true
+        run: ./gradlew :server:engine:bootBuildImage --info --no-daemon
+
+      - name: Tag image with latest
+        run: |
+          docker tag ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/loomify/backend:latest
+          docker push ghcr.io/${{ github.repository_owner }}/loomify/backend:latest
+
+      - name: List built images
+        if: always()
+        run: docker images | grep loomify || echo "No loomify images found"
