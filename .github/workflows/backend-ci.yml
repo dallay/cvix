@@ -124,4 +124,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        env:
+          SPRING_PROFILES_ACTIVE: prod
         run: ./gradlew bootBuildImage --imageName=ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }}

@@ -60,7 +60,6 @@ export interface WorkExperienceDto {
 	position: string;
 	startDate: string;
 	endDate?: string;
-	location?: string;
 	summary?: string;
 	url?: string;
 }
