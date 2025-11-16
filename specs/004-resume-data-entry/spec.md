@@ -71,7 +71,7 @@ As a user working on my resume, I want my progress to be automatically saved as 
 
 **Acceptance Scenarios**:
 
-1. **Given** I am actively editing the resume form, **When** I make changes to any field, **Then** the data is automatically saved to browser storage within 2 seconds
+1. **Given** I am actively editing the resume form, **When** I make changes to any field, **Then** the data is automatically saved to browser storage (the user selected storage) within 2 seconds
 2. **Given** I have unsaved changes, **When** I attempt to navigate away from the page, **Then** a warning dialog appears asking me to confirm before leaving
 3. **Given** I return to the application after closing my browser, **When** the page loads, **Then** all my previously entered data is automatically restored from storage
 4. **Given** autosave is active, **When** I successfully save, **Then** a subtle indicator shows "Last saved at [timestamp]"
