@@ -12,8 +12,7 @@ paths:
     post:
       summary: Create a new resume
       operationId: createResume
-      security:
-        - bearerAuth: []
+      # inherits global security
       requestBody:
         required: true
         content:
@@ -30,8 +29,7 @@ paths:
     get:
       summary: List resumes for current user
       operationId: listResumes
-      security:
-        - bearerAuth: []
+      # inherits global security
       parameters:
         - in: query
           name: limit
@@ -64,8 +62,7 @@ paths:
     get:
       summary: Get a resume by id
       operationId: getResume
-      security:
-        - bearerAuth: []
+      # inherits global security
       parameters:
         - in: path
           name: id
@@ -85,8 +82,7 @@ paths:
     put:
       summary: Replace a resume by id
       operationId: replaceResume
-      security:
-        - bearerAuth: []
+      # inherits global security
       parameters:
         - in: path
           name: id
@@ -112,8 +108,7 @@ paths:
     patch:
       summary: Partially update a resume by id
       operationId: updateResume
-      security:
-        - bearerAuth: []
+      # inherits global security
       parameters:
         - in: path
           name: id
@@ -155,8 +150,7 @@ paths:
     delete:
       summary: Delete a resume by id
       operationId: deleteResume
-      security:
-        - bearerAuth: []
+      # inherits global security
       parameters:
         - in: path
           name: id
@@ -177,10 +171,16 @@ paths:
           content:
             application/json:
               schema:
-                  type: array
-                  maxItems: 100
+                type: object
+                properties:
                   items:
-                    $ref: '#/components/schemas/TemplateMetadata'
+                    type: array
+                    maxItems: 100
+                    items:
+                      $ref: '#/components/schemas/TemplateMetadata'
+                  nextCursor:
+                    type: string
+                    nullable: true
         '304':
           description: Not Modified
 components:
@@ -278,12 +278,13 @@ components:
         name: { type: string }
         position: { type: string }
         url: { type: string, format: uri }
-        startDate: { type: string }
-        endDate: { type: string }
+          startDate: { type: string, format: date }
+          endDate: { type: string, format: date }
         summary: { type: string }
         highlights:
-          type: array
-          items: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
     Education:
       type: object
       properties:
@@ -291,20 +292,22 @@ components:
         url: { type: string, format: uri }
         area: { type: string }
         studyType: { type: string }
-        startDate: { type: string }
-        endDate: { type: string }
+          startDate: { type: string, format: date }
+          endDate: { type: string, format: date }
         gpa: { type: string }
         courses:
-          type: array
-          items: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
     Skill:
       type: object
       properties:
         name: { type: string }
         level: { type: string }
         keywords:
-          type: array
-          items: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
     Project:
       type: object
       properties:
@@ -312,13 +315,15 @@ components:
         description: { type: string }
         url: { type: string, format: uri }
         keywords:
-          type: array
-          items: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
         roles:
-          type: array
-          items: { type: string }
-        startDate: { type: string }
-        endDate: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
+          startDate: { type: string, format: date }
+          endDate: { type: string, format: date }
     Language:
       type: object
       properties:
@@ -329,21 +334,21 @@ components:
       properties:
         name: { type: string }
         issuer: { type: string }
-        date: { type: string }
+          date: { type: string, format: date }
         url: { type: string, format: uri }
     Publication:
       type: object
       properties:
         name: { type: string }
         publisher: { type: string }
-        releaseDate: { type: string }
+          releaseDate: { type: string, format: date }
         url: { type: string, format: uri }
         summary: { type: string }
     Award:
       type: object
       properties:
         title: { type: string }
-        date: { type: string }
+          date: { type: string, format: date }
         awarder: { type: string }
         summary: { type: string }
     Volunteer:
@@ -352,12 +357,13 @@ components:
         organization: { type: string }
         position: { type: string }
         url: { type: string, format: uri }
-        startDate: { type: string }
-        endDate: { type: string }
+          startDate: { type: string, format: date }
+          endDate: { type: string, format: date }
         summary: { type: string }
         highlights:
-          type: array
-          items: { type: string }
+            type: array
+            maxItems: 100
+            items: { type: string }
     Reference:
       type: object
       properties:
