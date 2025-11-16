@@ -106,7 +106,7 @@ Date: 2025-11-16
   - Full multi-locale at MVP: increases scope significantly.
 
 
-## 15) Template Metadata Retrieval
+## 14) Template Metadata Retrieval
 
 - Decision: Expose `/api/templates` endpoint returning array of template metadata objects: `{ id, name, version, paramsSchema }`.
 - Rationale: Centralized authoritative list; enables dynamic additions without frontend redeploy; paramsSchema guides client-side validation of configurable template parameters.

@@ -122,32 +122,19 @@ paths:
             type: string
             format: uuid
       requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                description: |
-                  Partial resume document (RFC 7386 JSON Merge Patch semantics).
-                  - Missing fields are preserved (not changed).
-                  - Null values set fields to null (do not delete keys).
-                  - Only provided fields are updated; all others remain unchanged.
-                example:
-                  # Original resume object
-                  # {
-                  #   "basics": { "name": "Alice", "email": "alice@example.com" },
-                  #   "work": [ { "company": "Acme", "position": "Engineer" } ]
-                  # }
-                  # PATCH payload
-                  # {
-                  #   "basics": { "email": "alice@newdomain.com" },
-                  #   "work": null
-                  # }
-                  # Resulting merged object
-                  # {
-                  #   "basics": { "name": "Alice", "email": "alice@newdomain.com" },
-                  #   "work": null
-                  # }
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: |
+                Partial resume document (RFC 7386 JSON Merge Patch semantics).
+                - Missing fields are preserved (not changed).
+                - Null values set fields to null (do not delete keys).
+                - Only provided fields are updated; all others remain unchanged.
+                Example: Given original { "basics": { "name": "Alice", "email": "alice@example.com" }, "work": [...] },
+                a PATCH of { "basics": { "email": "alice@newdomain.com" }, "work": null }
+                results in { "basics": { "name": "Alice", "email": "alice@newdomain.com" }, "work": null }.
       responses:
           '200':
             description: OK
