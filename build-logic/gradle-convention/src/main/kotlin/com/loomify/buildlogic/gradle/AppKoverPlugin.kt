@@ -63,6 +63,11 @@ internal class AppKoverPlugin : ConventionPlugin {
                     annotatedBy("*Generated*")
                 }
             }
+            verify {
+                rule {
+                    minBound(80)
+                }
+            }
         }
     }
 }
