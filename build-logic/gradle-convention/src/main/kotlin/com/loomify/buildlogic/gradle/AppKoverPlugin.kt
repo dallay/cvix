@@ -11,7 +11,9 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
-private const val MIN_BOUND = 80
+
+private fun Project.getMinCoverageBound(): Int =
+    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()?.coerceIn(0, 100) ?: 80
 
 @Suppress("unused")
 internal class AppKoverPlugin : ConventionPlugin {
@@ -67,7 +69,7 @@ internal class AppKoverPlugin : ConventionPlugin {
             }
             verify {
                 rule {
-                    minBound(MIN_BOUND)
+                    minBound(project.getMinCoverageBound())
                 }
             }
         }
