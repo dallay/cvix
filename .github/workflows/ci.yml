@@ -35,7 +35,7 @@ jobs:
       pull-requests: write # For reviewdog to post comments
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - name: Lint YAML files
         uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c # v3
@@ -82,7 +82,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Run Labeler
         uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9   # v5
         with:
@@ -98,7 +98,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Dependency Review
         # Pinned to v4 commit hash for security
         uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
@@ -121,7 +121,7 @@ jobs:
       - name:
           Checkout repository
           # Pinned to v4 commit hash for security
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
@@ -159,7 +159,7 @@ jobs:
     name: Markdown lint (docs)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@6d4a055237f335b06e764242f92b0e062e7f962d
         with:
