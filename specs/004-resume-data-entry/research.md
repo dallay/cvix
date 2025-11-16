@@ -60,13 +60,7 @@ Date: 2025-11-16
   - Fully normalized schema: high migration churn; complex joins for nested arrays.
   - Flat text blob: no indexing or structured querying.
 
-## 15) Template Metadata Retrieval
 
-- Decision: Expose `/api/templates` endpoint returning array of template metadata objects: `{ id, name, version, paramsSchema }`.
-- Rationale: Centralized authoritative list; enables dynamic additions without frontend redeploy; paramsSchema guides client-side validation of configurable template parameters.
-- Alternatives considered:
-  - Hardcoded frontend list: requires redeploys for changes; risk of drift.
-  - CDN manifest separate from API: splits authority; adds complexity.
 
 
 ## 8) Date Handling & Formats
@@ -111,10 +105,11 @@ Date: 2025-11-16
 - Alternatives considered:
   - Full multi-locale at MVP: increases scope significantly.
 
-## 14) Schema Type Safety in TS
 
-- Decision: Generate TS types from JSON Schema once and check-in `json-resume.ts`; validate at runtime via Ajv.
-- Rationale: Strong compile-time types + runtime validation; no drift.
+## 15) Template Metadata Retrieval
+
+- Decision: Expose `/api/templates` endpoint returning array of template metadata objects: `{ id, name, version, paramsSchema }`.
+- Rationale: Centralized authoritative list; enables dynamic additions without frontend redeploy; paramsSchema guides client-side validation of configurable template parameters.
 - Alternatives considered:
-  - Hand-written types only: risk of mismatch.
-  - Runtime validation only: poorer DX and refactors.
+  - Hardcoded frontend list: requires redeploys for changes; risk of drift.
+  - CDN manifest separate from API: splits authority; adds complexity.
