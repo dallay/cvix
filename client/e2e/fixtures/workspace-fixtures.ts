@@ -45,7 +45,7 @@ export class WorkspaceTestFixtures {
 	async checkApiAvailability(): Promise<boolean> {
 		try {
 			const response = await this.request.get(
-				`${this.apiBaseURL.replace("/api/v1", "")}/actuator/health`,
+				`${this.apiBaseURL.replace("/api", "")}/actuator/health`,
 				{
 					timeout: 5000,
 				},

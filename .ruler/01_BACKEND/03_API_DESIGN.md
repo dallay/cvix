@@ -35,7 +35,7 @@ Use standard HTTP status codes:
 
 - Use JSON for all request and response bodies.
 - Use camelCase for all JSON property names.
-- Version the API via the URL (e.g., `/api/v1/users`).
+- Version the API via the URL (e.g., `/api/users`).
 
 ## Error Handling
 
