@@ -3,6 +3,8 @@ info:
   title: Resume API (Resume Persistence & Templates)
   version: 0.1.0
   description: CRUD endpoints for storing JSON Resume documents for authenticated users.
+security:
+  - bearerAuth: []
 servers:
   - url: /api
 paths:
@@ -52,6 +54,7 @@ paths:
                 properties:
                   items:
                     type: array
+                    maxItems: 100
                     items:
                       $ref: '#/components/schemas/ResumeResource'
                   nextCursor:
@@ -119,19 +122,47 @@ paths:
             type: string
             format: uuid
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Partial resume document (merge-patch semantics)
-      responses:
-        '200':
-          description: OK
+          required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResumeResource'
+                type: object
+                description: |
+                  Partial resume document (RFC 7386 JSON Merge Patch semantics).
+                  - Missing fields are preserved (not changed).
+                  - Null values set fields to null (do not delete keys).
+                  - Only provided fields are updated; all others remain unchanged.
+                example:
+                  # Original resume object
+                  # {
+                  #   "basics": { "name": "Alice", "email": "alice@example.com" },
+                  #   "work": [ { "company": "Acme", "position": "Engineer" } ]
+                  # }
+                  # PATCH payload
+                  # {
+                  #   "basics": { "email": "alice@newdomain.com" },
+                  #   "work": null
+                  # }
+                  # Resulting merged object
+                  # {
+                  #   "basics": { "name": "Alice", "email": "alice@newdomain.com" },
+                  #   "work": null
+                  # }
+      responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ResumeResource'
+                examples:
+                  mergePatch:
+                    summary: RFC 7386 merge-patch result
+                    value:
+                      basics:
+                        name: Alice
+                        email: alice@newdomain.com
+                      work: null
         '404':
           description: Not Found
     delete:
@@ -153,17 +184,16 @@ paths:
     get:
       summary: List available PDF templates
       operationId: listTemplates
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TemplateMetadata'
+                  type: array
+                  maxItems: 100
+                  items:
+                    $ref: '#/components/schemas/TemplateMetadata'
         '304':
           description: Not Modified
 components:
