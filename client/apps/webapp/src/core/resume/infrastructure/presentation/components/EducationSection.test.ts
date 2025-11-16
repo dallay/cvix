@@ -1,50 +1,10 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { createI18n } from "vue-i18n";
 import type { Education } from "@/core/resume/domain/Resume";
+import { createTestI18n } from "@/test-utils/i18n-helper";
 import EducationSection from "./EducationSection.vue";
 
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				actions: {
-					descriptions: {
-						education: "Add your education history",
-					},
-					labels: {
-						education: "Education #{number}",
-						course: "Course #{number}",
-					},
-				},
-				buttons: {
-					addEducation: "Add Education",
-					addCourse: "Add Course",
-				},
-				fields: {
-					institution: "Institution",
-					url: "Website",
-					area: "Field of Study",
-					studyType: "Degree",
-					startDate: "Start Date",
-					endDate: "End Date",
-					score: "GPA/Score",
-					courses: "Courses",
-				},
-				placeholders: {
-					institution: "University Name",
-					url: "https://university.edu",
-					area: "Computer Science",
-					studyType: "Bachelor",
-					score: "3.8",
-					course: "Course Name",
-				},
-			},
-		},
-	},
-});
+const i18n = createTestI18n();
 
 describe("EducationSection.vue", () => {
 	const mountComponent = (educationEntries: Education[] = []) => {

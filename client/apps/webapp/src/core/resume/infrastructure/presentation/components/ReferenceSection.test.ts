@@ -196,6 +196,11 @@ describe("ReferenceSection.vue", () => {
 			expect(
 				wrapper.find('[data-testid="reference-name-0"]').attributes("type"),
 			).toBe("text");
+
+			// Verify that the reference text field is a textarea
+			const textArea = wrapper.find('[data-testid="reference-text-0"]');
+			expect(textArea.element.tagName).toBe("TEXTAREA");
+			expect(textArea.attributes("type")).toBeUndefined();
 		});
 	});
 

@@ -1,0 +1,35 @@
+{
+	"resume": {
+		"actions": {
+			"descriptions": {
+				"education": "Add your education history"
+			},
+			"labels": {
+				"education": "Education #{number}",
+				"course": "Course #{number}"
+			}
+		},
+		"buttons": {
+			"addEducation": "Add Education",
+			"addCourse": "Add Course"
+		},
+		"fields": {
+			"institution": "Institution",
+			"url": "Website",
+			"area": "Field of Study",
+			"studyType": "Degree",
+			"startDate": "Start Date",
+			"endDate": "End Date",
+			"score": "GPA/Score",
+			"courses": "Courses"
+		},
+		"placeholders": {
+			"institution": "University Name",
+			"url": "https://university.edu",
+			"area": "Computer Science",
+			"studyType": "Bachelor",
+			"score": "3.8",
+			"course": "Course Name"
+		}
+	}
+}
