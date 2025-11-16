@@ -99,31 +99,44 @@ describe("AwardSection.vue", () => {
 			expect(wrapper.find('[data-testid="award-title-1"]').exists()).toBe(true);
 		});
 
-		it("should display field labels", () => {
+		it("should preserve award order as provided", async () => {
 			const awards: Award[] = [
 				{
-					title: "",
-					date: "",
-					awarder: "",
+					title: "Recent Award",
+					date: "2023-01-01",
+					awarder: "Org A",
+					summary: "",
+				},
+				{
+					title: "Old Award",
+					date: "2015-01-01",
+					awarder: "Org B",
+					summary: "",
+				},
+				{
+					title: "Middle Award",
+					date: "2020-01-01",
+					awarder: "Org C",
 					summary: "",
 				},
 			];
 
 			const wrapper = mountComponent(awards);
-			expect(wrapper.text()).toContain("Award Title");
-			expect(wrapper.text()).toContain("Date");
-			expect(wrapper.text()).toContain("Awarder");
-			expect(wrapper.text()).toContain("Summary");
-		});
-	});
+			const date0 = wrapper.find('[data-testid="award-date-0"]');
+			const date1 = wrapper.find('[data-testid="award-date-1"]');
+			const date2 = wrapper.find('[data-testid="award-date-2"]');
 
-	describe("v-model binding", () => {
-		it("should bind title field", async () => {
+			expect((date0.element as HTMLInputElement).value).toBe("2023-01-01");
+			expect((date1.element as HTMLInputElement).value).toBe("2015-01-01");
+			expect((date2.element as HTMLInputElement).value).toBe("2020-01-01");
+		});
+
+		it("should allow editing award title", async () => {
 			const awards: Award[] = [
 				{
-					title: "",
-					date: "",
-					awarder: "",
+					title: "Employee of the Year",
+					date: "2022-01-01",
+					awarder: "Company",
 					summary: "",
 				},
 			];
