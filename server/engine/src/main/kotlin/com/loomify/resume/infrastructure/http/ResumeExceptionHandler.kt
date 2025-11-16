@@ -1,4 +1,4 @@
-package com.loomify.resume.infrastructure.web
+package com.loomify.resume.infrastructure.http
 
 import com.loomify.resume.domain.exception.InvalidResumeDataException
 import com.loomify.resume.domain.exception.LaTeXInjectionException

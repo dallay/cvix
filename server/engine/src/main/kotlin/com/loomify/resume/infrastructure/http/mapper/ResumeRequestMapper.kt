@@ -1,4 +1,4 @@
-package com.loomify.resume.infrastructure.web.mapper
+package com.loomify.resume.infrastructure.http.mapper
 
 import com.loomify.resume.domain.model.Award
 import com.loomify.resume.domain.model.Certificate
@@ -27,18 +27,18 @@ import com.loomify.resume.domain.model.Summary
 import com.loomify.resume.domain.model.Url
 import com.loomify.resume.domain.model.Volunteer
 import com.loomify.resume.domain.model.WorkExperience
-import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
-import com.loomify.resume.infrastructure.web.request.dto.AwardDto
-import com.loomify.resume.infrastructure.web.request.dto.CertificateDto
-import com.loomify.resume.infrastructure.web.request.dto.EducationDto
-import com.loomify.resume.infrastructure.web.request.dto.InterestDto
-import com.loomify.resume.infrastructure.web.request.dto.LanguageDto
-import com.loomify.resume.infrastructure.web.request.dto.ProjectDto
-import com.loomify.resume.infrastructure.web.request.dto.PublicationDto
-import com.loomify.resume.infrastructure.web.request.dto.ReferenceDto
-import com.loomify.resume.infrastructure.web.request.dto.SkillCategoryDto
-import com.loomify.resume.infrastructure.web.request.dto.VolunteerDto
-import com.loomify.resume.infrastructure.web.request.dto.WorkExperienceDto
+import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
+import com.loomify.resume.infrastructure.http.request.dto.AwardDto
+import com.loomify.resume.infrastructure.http.request.dto.CertificateDto
+import com.loomify.resume.infrastructure.http.request.dto.EducationDto
+import com.loomify.resume.infrastructure.http.request.dto.InterestDto
+import com.loomify.resume.infrastructure.http.request.dto.LanguageDto
+import com.loomify.resume.infrastructure.http.request.dto.ProjectDto
+import com.loomify.resume.infrastructure.http.request.dto.PublicationDto
+import com.loomify.resume.infrastructure.http.request.dto.ReferenceDto
+import com.loomify.resume.infrastructure.http.request.dto.SkillCategoryDto
+import com.loomify.resume.infrastructure.http.request.dto.VolunteerDto
+import com.loomify.resume.infrastructure.http.request.dto.WorkExperienceDto
 import java.time.LocalDate
 
 object ResumeRequestMapper {

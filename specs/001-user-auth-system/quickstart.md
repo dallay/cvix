@@ -221,7 +221,7 @@ pnpm dev
 
 ```bash
 # Register a new user
-curl -X POST http://localhost:8080/api/v1/auth/register \
+curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "jane.doe@example.com",
@@ -250,7 +250,7 @@ curl -X POST http://localhost:8080/api/v1/auth/register \
 
 ```bash
 # Login with email and password
-curl -X POST http://localhost:8080/api/v1/auth/login \
+curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "jane.doe@example.com",
@@ -273,7 +273,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 # Extract the refresh token from the Set-Cookie header (from login response)
 # Then use it to refresh the access token
 
-curl -X POST http://localhost:8080/api/v1/auth/token/refresh \
+curl -X POST http://localhost:8080/api/auth/token/refresh \
   -H "Cookie: refresh_token=eyJhbGci..." \
   -v
 
@@ -334,7 +334,7 @@ The frontend automatically refreshes the access token when it's about to expire 
 2. Open DevTools → Network tab
 3. Wait 55 minutes (or manually expire the token in Keycloak)
 4. Make any API request (e.g., navigate to another protected page)
-5. Observe a `POST /api/v1/auth/token/refresh` request in the Network tab
+5. Observe a `POST /api/auth/token/refresh` request in the Network tab
 6. The new access token is automatically used for subsequent requests
 
 ---

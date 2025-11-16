@@ -8,7 +8,7 @@ export const E2E_CONFIG = {
 	baseURL: process.env.BASE_URL || "http://localhost:9876",
 
 	/** Base URL for API calls */
-	apiBaseURL: process.env.API_BASE_URL || "http://localhost:8080/api/v1",
+	apiBaseURL: process.env.API_BASE_URL || "http://localhost:8080/api",
 
 	/** Keycloak authentication URL */
 	keycloakURL:

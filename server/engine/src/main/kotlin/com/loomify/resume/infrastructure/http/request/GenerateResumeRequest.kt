@@ -1,18 +1,18 @@
-package com.loomify.resume.infrastructure.web.request
+package com.loomify.resume.infrastructure.http.request
 
+import com.loomify.resume.infrastructure.http.request.dto.AwardDto
+import com.loomify.resume.infrastructure.http.request.dto.CertificateDto
+import com.loomify.resume.infrastructure.http.request.dto.EducationDto
+import com.loomify.resume.infrastructure.http.request.dto.InterestDto
+import com.loomify.resume.infrastructure.http.request.dto.LanguageDto
+import com.loomify.resume.infrastructure.http.request.dto.PersonalInfoDto
+import com.loomify.resume.infrastructure.http.request.dto.ProjectDto
+import com.loomify.resume.infrastructure.http.request.dto.PublicationDto
+import com.loomify.resume.infrastructure.http.request.dto.ReferenceDto
+import com.loomify.resume.infrastructure.http.request.dto.SkillCategoryDto
+import com.loomify.resume.infrastructure.http.request.dto.VolunteerDto
+import com.loomify.resume.infrastructure.http.request.dto.WorkExperienceDto
 import com.loomify.resume.infrastructure.validation.ValidResumeContent
-import com.loomify.resume.infrastructure.web.request.dto.AwardDto
-import com.loomify.resume.infrastructure.web.request.dto.CertificateDto
-import com.loomify.resume.infrastructure.web.request.dto.EducationDto
-import com.loomify.resume.infrastructure.web.request.dto.InterestDto
-import com.loomify.resume.infrastructure.web.request.dto.LanguageDto
-import com.loomify.resume.infrastructure.web.request.dto.PersonalInfoDto
-import com.loomify.resume.infrastructure.web.request.dto.ProjectDto
-import com.loomify.resume.infrastructure.web.request.dto.PublicationDto
-import com.loomify.resume.infrastructure.web.request.dto.ReferenceDto
-import com.loomify.resume.infrastructure.web.request.dto.SkillCategoryDto
-import com.loomify.resume.infrastructure.web.request.dto.VolunteerDto
-import com.loomify.resume.infrastructure.web.request.dto.WorkExperienceDto
 import jakarta.validation.Valid
 
 /**

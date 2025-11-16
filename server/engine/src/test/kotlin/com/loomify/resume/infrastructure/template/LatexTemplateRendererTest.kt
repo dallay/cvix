@@ -15,8 +15,8 @@ import com.loomify.resume.domain.model.Skill
 import com.loomify.resume.domain.model.SkillCategory
 import com.loomify.resume.domain.model.SkillCategoryName
 import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
-import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
+import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
+import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId

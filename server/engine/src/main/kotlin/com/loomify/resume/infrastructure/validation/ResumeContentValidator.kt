@@ -1,6 +1,6 @@
 package com.loomify.resume.infrastructure.validation
 
-import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
+import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
