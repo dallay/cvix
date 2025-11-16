@@ -11,6 +11,8 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
+private const val MIN_BOUND = 80
+
 @Suppress("unused")
 internal class AppKoverPlugin : ConventionPlugin {
     private val classesExcludes = listOf(
@@ -65,7 +67,7 @@ internal class AppKoverPlugin : ConventionPlugin {
             }
             verify {
                 rule {
-                    minBound(80)
+                    minBound(MIN_BOUND)
                 }
             }
         }
