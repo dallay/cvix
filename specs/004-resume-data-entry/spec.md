@@ -56,7 +56,7 @@ As a user creating my resume, I want to receive clear feedback when I make mista
 1. **Given** I am entering my email address, **When** I enter an invalid format (missing @, incorrect domain), **Then** an inline error message appears below the field indicating the correct format
 2. **Given** I am entering work experience dates, **When** the end date is before the start date, **Then** a validation error appears and highlights both date fields
 3. **Given** I have filled out multiple sections with errors, **When** I click "Validate JSON", **Then** a panel opens showing all validation errors grouped by section with jump-to links
-4. **Given** I am filling out a required field, **When** I leave it blank and move to another field, **Then** the field is marked with a visual indicator showing it's required
+4. **Given** I am filling out a required field, **When** I leave it blank and move to another field, **Then** the field displays a visual indicator marking it as required
 5. **Given** the form has validation errors, **When** I fix all errors, **Then** the error indicators clear automatically and the "Validate JSON" panel shows success
 
 ---
