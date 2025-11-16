@@ -1,6 +1,5 @@
 package com.loomify.resume.infrastructure.http.request
 
-import com.loomify.resume.infrastructure.validation.ValidResumeContent
 import com.loomify.resume.infrastructure.http.request.dto.AwardDto
 import com.loomify.resume.infrastructure.http.request.dto.CertificateDto
 import com.loomify.resume.infrastructure.http.request.dto.EducationDto
@@ -13,6 +12,7 @@ import com.loomify.resume.infrastructure.http.request.dto.ReferenceDto
 import com.loomify.resume.infrastructure.http.request.dto.SkillCategoryDto
 import com.loomify.resume.infrastructure.http.request.dto.VolunteerDto
 import com.loomify.resume.infrastructure.http.request.dto.WorkExperienceDto
+import com.loomify.resume.infrastructure.validation.ValidResumeContent
 import jakarta.validation.Valid
 
 /**
