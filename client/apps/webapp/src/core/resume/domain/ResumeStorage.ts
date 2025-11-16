@@ -52,9 +52,11 @@ export interface PersistenceResult<T = Resume> {
 type DeepPartial<T> = {
 	[K in keyof T]?: T[K] extends ReadonlyArray<infer U>
 		? ReadonlyArray<U>
-		: T[K] extends object
-			? DeepPartial<T[K]>
-			: T[K];
+		: T[K] extends Date | Map<unknown, unknown> | Set<unknown> | RegExp
+			? T[K]
+			: T[K] extends object
+				? DeepPartial<T[K]>
+				: T[K];
 };
 
 export type PartialResume = DeepPartial<Resume>;

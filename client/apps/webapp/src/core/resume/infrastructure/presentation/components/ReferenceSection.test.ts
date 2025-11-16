@@ -1,42 +1,10 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { createI18n } from "vue-i18n";
 import type { Reference } from "@/core/resume/domain/Resume";
+import { createTestI18n } from "@/test-utils/i18n-helper";
 import ReferenceSection from "./ReferenceSection.vue";
 
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				actions: {
-					descriptions: {
-						references: "Add professional references",
-					},
-					labels: {
-						reference: "Reference #{number}",
-					},
-					empty: {
-						references: "No references added yet",
-					},
-					addFirstReference: "Add your first reference",
-				},
-				buttons: {
-					addReference: "Add Reference",
-				},
-				fields: {
-					referenceName: "Reference Name",
-					referenceText: "Reference",
-				},
-				placeholders: {
-					referenceName: "Jane Doe",
-					referenceText: "Jane was a pleasure to work with...",
-				},
-			},
-		},
-	},
-});
+const i18n = createTestI18n();
 
 describe("ReferenceSection.vue", () => {
 	const mountComponent = (references: Reference[] = []) => {

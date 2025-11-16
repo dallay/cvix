@@ -1,45 +1,10 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { createI18n } from "vue-i18n";
 import type { Award } from "@/core/resume/domain/Resume";
+import { createTestI18n } from "@/test-utils/i18n-helper";
 import AwardSection from "./AwardSection.vue";
 
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				actions: {
-					descriptions: {
-						awards: "Add your awards and honors",
-					},
-					labels: {
-						award: "Award #{number}",
-					},
-					empty: {
-						awards: "No awards added yet",
-					},
-					addFirstAward: "Add your first award",
-				},
-				buttons: {
-					addAward: "Add Award",
-				},
-				fields: {
-					awardTitle: "Award Title",
-					date: "Date",
-					awarder: "Awarder",
-					summary: "Summary",
-				},
-				placeholders: {
-					awardTitle: "Best Developer Award",
-					awarder: "Company Name",
-					awardSummary: "Description of the award",
-				},
-			},
-		},
-	},
-});
+const i18n = createTestI18n();
 
 describe("AwardSection.vue", () => {
 	const mountComponent = (awards: Award[] = []) => {
