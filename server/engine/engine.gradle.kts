@@ -137,14 +137,20 @@ tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
-    imageName.set(providers.environmentVariable("IMAGE_NAME")
-        .orElse("ghcr.io/${rootProject.group}/loomify/backend:${rootProject.version}"))
-    environment.set(mapOf(
-        "BP_JVM_VERSION" to "21"
-    ))
-    publish.set(providers.environmentVariable("PUBLISH_IMAGE")
-        .map { it.toBoolean() }
-        .orElse(false))
+    imageName.set(
+        providers.environmentVariable("IMAGE_NAME")
+            .orElse("ghcr.io/${rootProject.group}/loomify/backend:${rootProject.version}"),
+    )
+    environment.set(
+        mapOf(
+            "BP_JVM_VERSION" to "21",
+        ),
+    )
+    publish.set(
+        providers.environmentVariable("PUBLISH_IMAGE")
+            .map { it.toBoolean() }
+            .orElse(false),
+    )
     docker {
         publishRegistry {
             username.set(providers.environmentVariable("DOCKER_USERNAME").orElse(""))
