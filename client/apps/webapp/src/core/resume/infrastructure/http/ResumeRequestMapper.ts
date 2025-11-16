@@ -62,6 +62,7 @@ export interface WorkExperienceDto {
 	endDate?: string;
 	location?: string;
 	summary?: string;
+	url?: string;
 }
 
 export interface EducationDto {
