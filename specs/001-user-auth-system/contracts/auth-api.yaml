@@ -10,9 +10,9 @@ info:
     email: platform@loomify.com
 
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8080/api
     description: Local development server
-  - url: https://api.loomify.com/v1
+  - url: https://api.loomify.com
     description: Production server
 
 security:
@@ -62,7 +62,7 @@ paths:
               description: HTTP-only secure cookie containing refresh token
               schema:
                 type: string
-                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/auth/token/refresh
           content:
             application/json:
               schema:
@@ -141,7 +141,7 @@ paths:
               description: HTTP-only secure cookie containing refresh token
               schema:
                 type: string
-                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/auth/token/refresh
           content:
             application/json:
               schema:
@@ -270,7 +270,7 @@ paths:
               description: HTTP-only secure cookie containing refresh token
               schema:
                 type: string
-                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/v1/auth/token/refresh
+                example: refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000; Path=/api/auth/token/refresh
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -311,7 +311,7 @@ paths:
               description: Clear refresh token cookie
               schema:
                 type: string
-                example: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/api/v1/auth/token/refresh
+                example: refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/api/auth/token/refresh
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':

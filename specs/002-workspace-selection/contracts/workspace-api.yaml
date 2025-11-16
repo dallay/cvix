@@ -10,7 +10,7 @@ servers:
     description: Local development server
   - url: https://api.loomify.dev/api
     description: Development server
-  - url: https://api.loomify.com/api
+  - url: https://api.loomify.com
     description: Production server
 
 security:

@@ -1,4 +1,4 @@
-package com.loomify.resume.infrastructure.web.request.dto
+package com.loomify.resume.infrastructure.http.request.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
