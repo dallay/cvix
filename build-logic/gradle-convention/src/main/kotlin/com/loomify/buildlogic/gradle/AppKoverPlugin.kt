@@ -11,9 +11,12 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
+private const val DEFAULT_KOVER_MIN_COVERAGE = 80
+private const val KOVER_MIN_COVERAGE_LOWER_BOUND = 0
+private const val KOVER_MIN_COVERAGE_UPPER_BOUND = 100
 
 private fun Project.getMinCoverageBound(): Int =
-    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()?.coerceIn(0, 100) ?: 80
+    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()?.coerceIn(KOVER_MIN_COVERAGE_LOWER_BOUND, KOVER_MIN_COVERAGE_UPPER_BOUND) ?: DEFAULT_KOVER_MIN_COVERAGE
 
 @Suppress("unused")
 internal class AppKoverPlugin : ConventionPlugin {
