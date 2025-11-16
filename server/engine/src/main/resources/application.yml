@@ -8,9 +8,8 @@ spring:
     basename: messages/messages
     encoding: UTF-8
   profiles:
-    # The commented value for `active` can be replaced with valid Spring profiles to load.
-    # Otherwise, it will be filled in by gradle when building the JAR file
-    # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
+    # Profile loading is now driven by the SPRING_PROFILES_ACTIVE environment variable.
+    # Defaults to 'dev' if not set. Can be overridden by `--spring.profiles.active` on the command line or `-Dspring.profiles.active` in `JAVA_OPTS`.
     active: ${SPRING_PROFILES_ACTIVE:dev}
     group:
       dev:

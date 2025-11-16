@@ -184,8 +184,7 @@ export function mapResumeToBackendRequest(
 						position: work.position,
 						startDate: work.startDate,
 						endDate: work.endDate || undefined,
-						// location not present in Work type; omit
-						...(work.summary ? { summary: work.summary } : {}),
+						summary: work.summary || undefined,
 						url: normalizeOptionalString(work.url),
 					}))
 				: undefined,
