@@ -1,0 +1,332 @@
+openapi: 3.1.0
+info:
+  title: Resume API (Optional Persistence)
+  version: 0.1.0
+  description: CRUD endpoints for storing JSON Resume documents for authenticated users.
+servers:
+  - url: /api
+paths:
+  /resumes:
+    post:
+      summary: Create a new resume
+      operationId: createResume
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resume'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+    get:
+      summary: List resumes for current user
+      operationId: listResumes
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: cursor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResumeResource'
+                  nextCursor:
+                    type: string
+                    nullable: true
+  /resumes/{id}:
+    get:
+      summary: Get a resume by id
+      operationId: getResume
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+        '404':
+          description: Not Found
+    put:
+      summary: Replace a resume by id
+      operationId: replaceResume
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resume'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+        '404':
+          description: Not Found
+    patch:
+      summary: Partially update a resume by id
+      operationId: updateResume
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Partial resume document (merge-patch semantics)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a resume by id
+      operationId: deleteResume
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ResumeResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/Resume'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, ownerId, data, createdAt, updatedAt]
+    Resume:
+      type: object
+      additionalProperties: false
+      properties:
+        basics:
+          $ref: '#/components/schemas/Basics'
+        work:
+          type: array
+          items: { $ref: '#/components/schemas/Work' }
+        education:
+          type: array
+          items: { $ref: '#/components/schemas/Education' }
+        skills:
+          type: array
+          items: { $ref: '#/components/schemas/Skill' }
+        projects:
+          type: array
+          items: { $ref: '#/components/schemas/Project' }
+        languages:
+          type: array
+          items: { $ref: '#/components/schemas/Language' }
+        certificates:
+          type: array
+          items: { $ref: '#/components/schemas/Certificate' }
+        publications:
+          type: array
+          items: { $ref: '#/components/schemas/Publication' }
+        awards:
+          type: array
+          items: { $ref: '#/components/schemas/Award' }
+        volunteer:
+          type: array
+          items: { $ref: '#/components/schemas/Volunteer' }
+        references:
+          type: array
+          items: { $ref: '#/components/schemas/Reference' }
+    Basics:
+      type: object
+      properties:
+        name: { type: string }
+        label: { type: string }
+        image: { type: string, format: uri }
+        email: { type: string, format: email }
+        phone: { type: string }
+        url: { type: string, format: uri }
+        summary: { type: string }
+        location: { $ref: '#/components/schemas/Location' }
+        profiles:
+          type: array
+          items: { $ref: '#/components/schemas/Profile' }
+    Location:
+      type: object
+      properties:
+        address: { type: string }
+        city: { type: string }
+        region: { type: string }
+        countryCode: { type: string }
+        postalCode: { type: string }
+    Profile:
+      type: object
+      properties:
+        network: { type: string }
+        username: { type: string }
+        url: { type: string, format: uri }
+    Work:
+      type: object
+      properties:
+        name: { type: string }
+        position: { type: string }
+        url: { type: string, format: uri }
+        startDate: { type: string }
+        endDate: { type: string }
+        summary: { type: string }
+        highlights:
+          type: array
+          items: { type: string }
+    Education:
+      type: object
+      properties:
+        institution: { type: string }
+        url: { type: string, format: uri }
+        area: { type: string }
+        studyType: { type: string }
+        startDate: { type: string }
+        endDate: { type: string }
+        gpa: { type: string }
+        courses:
+          type: array
+          items: { type: string }
+    Skill:
+      type: object
+      properties:
+        name: { type: string }
+        level: { type: string }
+        keywords:
+          type: array
+          items: { type: string }
+    Project:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        url: { type: string, format: uri }
+        keywords:
+          type: array
+          items: { type: string }
+        roles:
+          type: array
+          items: { type: string }
+        startDate: { type: string }
+        endDate: { type: string }
+    Language:
+      type: object
+      properties:
+        language: { type: string }
+        fluency: { type: string }
+    Certificate:
+      type: object
+      properties:
+        name: { type: string }
+        issuer: { type: string }
+        date: { type: string }
+        url: { type: string, format: uri }
+    Publication:
+      type: object
+      properties:
+        name: { type: string }
+        publisher: { type: string }
+        releaseDate: { type: string }
+        url: { type: string, format: uri }
+        summary: { type: string }
+    Award:
+      type: object
+      properties:
+        title: { type: string }
+        date: { type: string }
+        awarder: { type: string }
+        summary: { type: string }
+    Volunteer:
+      type: object
+      properties:
+        organization: { type: string }
+        position: { type: string }
+        url: { type: string, format: uri }
+        startDate: { type: string }
+        endDate: { type: string }
+        summary: { type: string }
+        highlights:
+          type: array
+          items: { type: string }
+    Reference:
+      type: object
+      properties:
+        name: { type: string }
+        reference: { type: string }
+        contact: { type: string }
