@@ -5,8 +5,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget as KtJvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion as KtVersion
 
 object AppConfiguration {
-    const val appName = "loomify"
-    const val packageName = "com.loomify"
+    const val APP_NAME = "loomify"
+    const val PACKAGE_NAME = "com.loomify"
 
     val useJavaVersion = JavaVersion.VERSION_21
     val jvmTarget = KtJvmTarget.fromTarget(useJavaVersion.toString())
