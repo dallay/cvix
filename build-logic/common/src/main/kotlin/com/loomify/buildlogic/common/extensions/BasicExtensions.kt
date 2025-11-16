@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 private val Project.libs get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 val Test.isRelease get() = name.contains("""beta|release""".toRegex(RegexOption.IGNORE_CASE))
 
-val Project.fullPackageName get() = AppConfiguration.packageName + path.replace(':', '.')
+val Project.fullPackageName get() = AppConfiguration.PACKAGE_NAME + path.replace(':', '.')
 
 fun Project.catalogVersion(alias: String) = libs.findVersion(alias).get().toString()
 fun Project.catalogLib(alias: String) = libs.findLibrary(alias).get()
@@ -56,7 +56,7 @@ fun DependencyHandlerScope.kover(path: String) {
 fun ExtensionContainer.commonExtensions() {
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
+            languageVersion = JavaLanguageVersion.of(AppConfiguration.jvmTargetStr)
             // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
             // vendor.set(JvmVendorSpec.AZUL)
         }
@@ -64,7 +64,7 @@ fun ExtensionContainer.commonExtensions() {
 
     configure<KotlinProjectExtension> {
         jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(AppConfiguration.jvmTargetStr))
+            languageVersion = JavaLanguageVersion.of(AppConfiguration.jvmTargetStr)
             // Commented out to allow any vendor (e.g., Temurin, Azul, etc.)
             // vendor.set(JvmVendorSpec.AZUL)
         }

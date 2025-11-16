@@ -51,7 +51,8 @@ internal class LatexTemplateRendererTest {
      * Flag to persist generated LaTeX files for manual inspection.
      * Set to true during development or debugging.
      */
-    private val persistGeneratedDocument = false
+    private val persistGeneratedDocument: Boolean =
+        System.getenv("PERSIST_LATEX_FILES")?.toBoolean() ?: false
 
     /**
      * Test the complete resume fixture with all possible fields populated.
@@ -336,13 +337,13 @@ internal class LatexTemplateRendererTest {
      * Persist generated LaTeX to file for manual inspection.
      */
     private fun persistOutput(name: String, content: String) {
-        val outputPath = "build/test-output/$name.tex"
+        val safeName = name.replace(Regex("[^a-zA-Z0-9_-]"), "")
+        val outputPath = "build/test-output/$safeName.tex"
         java.io.File(outputPath).apply {
             parentFile.mkdirs()
             writeText(content)
         }
     }
-
     /**
      * Normalize line endings for cross-platform comparison.
      */

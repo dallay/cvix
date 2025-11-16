@@ -14,7 +14,6 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
 	},
-	"packageManager": "pnpm@10.13.1",
 	"files": [
 		"stylelint.config.cjs",
 		"styles/**/*",
@@ -45,7 +44,7 @@
 		"stylelint-order": "^7.0.0",
 		"tailwindcss": "^4.1.17",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.4"
+		"vitest": "^4.0.9"
 	},
 	"publishConfig": {
 		"access": "public"

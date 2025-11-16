@@ -30,33 +30,49 @@ export interface GenerateResumeRequest {
 }
 
 export interface PersonalInfoDto {
-	fullName: string;
+	name: string;
+	label?: string;
+	image?: string;
 	email: string;
 	phone: string;
-	location?: string;
-	linkedin?: string;
-	github?: string;
-	website?: string;
+	url?: string;
 	summary?: string;
+	location?: LocationDto;
+	profiles?: ProfileDto[];
+}
+
+export interface LocationDto {
+	address?: string;
+	postalCode?: string;
+	city?: string;
+	countryCode?: string;
+	region?: string;
+}
+
+export interface ProfileDto {
+	network: string;
+	username?: string;
+	url: string;
 }
 
 export interface WorkExperienceDto {
-	company: string;
+	name: string;
 	position: string;
 	startDate: string;
 	endDate?: string;
-	location?: string;
-	description?: string;
+	summary?: string;
+	url?: string;
 }
 
 export interface EducationDto {
 	institution: string;
-	degree: string;
+	area?: string;
+	studyType?: string;
 	startDate: string;
 	endDate?: string;
-	location?: string;
-	gpa?: string;
-	description?: string;
+	score?: string;
+	url?: string;
+	courses?: string[];
 }
 
 export interface SkillCategoryDto {
@@ -79,31 +95,34 @@ export interface ProjectDto {
 
 export interface VolunteerDto {
 	organization: string;
-	role: string;
+	position: string;
 	startDate?: string;
 	endDate?: string;
-	description?: string;
+	summary?: string;
+	url?: string;
+	highlights?: string[];
 }
 
 export interface AwardDto {
 	title: string;
 	date: string;
 	awarder: string;
-	description?: string;
+	summary?: string;
 }
 
 export interface CertificateDto {
 	name: string;
 	issuer: string;
 	date: string;
+	url?: string;
 }
 
 export interface PublicationDto {
-	title: string;
+	name: string;
 	publisher: string;
-	date: string;
+	releaseDate: string;
 	url?: string;
-	description?: string;
+	summary?: string;
 }
 
 export interface InterestDto {
@@ -113,8 +132,6 @@ export interface InterestDto {
 
 export interface ReferenceDto {
 	name: string;
-	relation?: string;
-	contact?: string;
 	reference?: string;
 }
 
@@ -127,60 +144,65 @@ export interface ReferenceDto {
 export function mapResumeToBackendRequest(
 	resume: Resume,
 ): GenerateResumeRequest {
-	// Extract LinkedIn and GitHub URLs from profiles
-	const linkedinProfile = resume.basics.profiles.find(
-		(p) => p.network.toLowerCase() === "linkedin",
-	);
-	const githubProfile = resume.basics.profiles.find(
-		(p) => p.network.toLowerCase() === "github",
-	);
-
 	return {
 		basics: {
-			fullName: normalizeOptionalString(resume.basics.name) ?? "",
+			name: normalizeOptionalString(resume.basics.name) ?? "",
+			label: normalizeOptionalString(resume.basics.label),
+			image: normalizeOptionalString(resume.basics.image),
 			email: normalizeOptionalString(resume.basics.email) ?? "",
 			phone: normalizeOptionalString(resume.basics.phone) ?? "",
-			location: normalizeOptionalString(resume.basics.location?.city),
-			linkedin: normalizeOptionalString(linkedinProfile?.url),
-			github: normalizeOptionalString(githubProfile?.url),
-			website: normalizeOptionalString(resume.basics.url),
+			url: normalizeOptionalString(resume.basics.url),
 			summary: normalizeOptionalString(resume.basics.summary),
+			location: resume.basics.location
+				? {
+						address: normalizeOptionalString(resume.basics.location.address),
+						postalCode: normalizeOptionalString(
+							resume.basics.location.postalCode,
+						),
+						city: normalizeOptionalString(resume.basics.location.city),
+						countryCode: normalizeOptionalString(
+							resume.basics.location.countryCode,
+						),
+						region: normalizeOptionalString(resume.basics.location.region),
+					}
+				: undefined,
+			profiles:
+				resume.basics.profiles
+					.map((p) => ({
+						network: p.network,
+						username: normalizeOptionalString(p.username),
+						url: normalizeOptionalString(p.url) ?? "",
+					}))
+					// Backend requires url NotBlank; drop entries with empty url
+					.filter((p) => !!p.url) || undefined,
 		},
 		work:
 			resume.work.length > 0
 				? resume.work.map((work) => ({
-						company: work.name,
+						name: work.name,
 						position: work.position,
 						startDate: work.startDate,
 						endDate: work.endDate || undefined,
-						// location not present in Work type; omit from DTO
-						...(work.summary ? { description: work.summary } : {}),
+						summary: work.summary || undefined,
+						url: normalizeOptionalString(work.url),
 					}))
 				: undefined,
 		education:
 			resume.education.length > 0
 				? resume.education.map((edu) => ({
 						institution: edu.institution,
-						degree: edu.studyType,
+						area: normalizeOptionalString(edu.area),
+						studyType: normalizeOptionalString(edu.studyType),
 						startDate: edu.startDate,
 						endDate: edu.endDate || undefined,
-						// location not present in Education type; omit from DTO
-						gpa: normalizeOptionalString(edu.score), // Preserve original GPA value without conversion
-						// Map description: area + courses (joined), normalized
-						description:
-							normalizeOptionalString(
-								[
-									normalizeOptionalString(edu.area),
-									edu.courses && edu.courses.length > 0
-										? edu.courses
-												.map(normalizeOptionalString)
-												.filter(Boolean)
-												.join(", ")
-										: undefined,
-								]
-									.filter(Boolean)
-									.join(" | "),
-							) || undefined,
+						score: normalizeOptionalString(edu.score),
+						url: normalizeOptionalString(edu.url),
+						courses:
+							edu.courses && edu.courses.length > 0
+								? (edu.courses
+										.map(normalizeOptionalString)
+										.filter(Boolean) as string[])
+								: undefined,
 					}))
 				: undefined,
 		skills:
@@ -211,10 +233,15 @@ export function mapResumeToBackendRequest(
 			resume.volunteer.length > 0
 				? resume.volunteer.map((vol) => ({
 						organization: vol.organization,
-						role: vol.position, // Map domain's position field to DTO's role field
+						position: vol.position,
 						startDate: vol.startDate || undefined,
 						endDate: vol.endDate || undefined,
-						description: vol.summary || undefined,
+						summary: vol.summary || undefined,
+						url: normalizeOptionalString(vol.url),
+						highlights:
+							vol.highlights && vol.highlights.length > 0
+								? Array.from(vol.highlights)
+								: undefined,
 					}))
 				: undefined,
 		awards:
@@ -223,7 +250,7 @@ export function mapResumeToBackendRequest(
 						title: award.title,
 						date: award.date,
 						awarder: award.awarder,
-						description: award.summary || undefined,
+						summary: award.summary || undefined,
 					}))
 				: undefined,
 		certificates:
@@ -232,16 +259,17 @@ export function mapResumeToBackendRequest(
 						name: cert.name,
 						issuer: cert.issuer,
 						date: cert.date,
+						url: normalizeOptionalString(cert.url),
 					}))
 				: undefined,
 		publications:
 			resume.publications.length > 0
 				? resume.publications.map((pub) => ({
-						title: pub.name,
+						name: pub.name,
 						publisher: pub.publisher,
-						date: pub.releaseDate,
+						releaseDate: pub.releaseDate,
 						url: pub.url || undefined,
-						description: pub.summary || undefined,
+						summary: pub.summary || undefined,
 					}))
 				: undefined,
 		interests:
@@ -253,17 +281,10 @@ export function mapResumeToBackendRequest(
 				: undefined,
 		references:
 			resume.references.length > 0
-				? resume.references.map((ref: Reference) => {
-						const relation = normalizeOptionalString(ref.relation);
-						const contact = normalizeOptionalString(ref.contact);
-						const reference = normalizeOptionalString(ref.reference);
-						return {
-							name: ref.name,
-							...(relation ? { relation } : {}),
-							...(contact ? { contact } : {}),
-							...(reference ? { reference } : {}),
-						};
-					})
+				? resume.references.map((ref: Reference) => ({
+						name: ref.name,
+						reference: normalizeOptionalString(ref.reference),
+					}))
 				: undefined,
 	};
 }

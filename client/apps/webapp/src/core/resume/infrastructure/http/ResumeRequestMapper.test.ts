@@ -136,37 +136,56 @@ describe("mapResumeToBackendRequest", () => {
 		// Act
 		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
 
-		// Assert
+		// Assert basics mapped to backend shape
 		expect(result.basics).toEqual({
-			fullName: "John Doe",
+			name: "John Doe",
+			label: "Software Engineer",
+			image: "https://example.com/avatar.jpg",
 			email: "john.doe@example.com",
 			phone: "+1-555-0100",
-			location: "San Francisco",
-			linkedin: "https://linkedin.com/in/johndoe",
-			github: "https://github.com/johndoe",
-			website: "https://johndoe.com",
+			url: "https://johndoe.com",
 			summary: "Experienced software engineer",
+			location: {
+				address: "123 Main St",
+				postalCode: "12345",
+				city: "San Francisco",
+				countryCode: "US",
+				region: "CA",
+			},
+			profiles: [
+				{
+					network: "LinkedIn",
+					username: "johndoe",
+					url: "https://linkedin.com/in/johndoe",
+				},
+				{
+					network: "GitHub",
+					username: "johndoe",
+					url: "https://github.com/johndoe",
+				},
+			],
 		});
 
 		expect(result.work).toHaveLength(1);
 		expect(result.work?.[0]).toEqual({
-			company: "Tech Corp",
+			name: "Tech Corp",
 			position: "Senior Developer",
 			startDate: "2020-01-01",
 			endDate: "2023-12-31",
-			location: undefined,
-			description: "Led development of core features",
+			summary: "Led development of core features",
+			url: "https://techcorp.com",
 		});
 
 		expect(result.education).toHaveLength(1);
 		expect(result.education?.[0]).toEqual({
-			institution: "University of Example", // Direct mapping
-			degree: "Bachelor", // Direct mapping
+			institution: "University of Example",
+			area: "Computer Science",
+			studyType: "Bachelor",
 			startDate: "2015-09-01",
 			endDate: "2019-06-01",
-			location: undefined,
-			gpa: "3.8",
-			description: "Computer Science | Data Structures, Algorithms",
+			score: "3.8",
+			url: "https://university.example.edu",
+			courses: ["Data Structures", "Algorithms"],
 		});
 
 		expect(result.skills).toHaveLength(1);
@@ -277,9 +296,14 @@ describe("mapResumeToBackendRequest", () => {
 		// Act
 		const result = mapResumeToBackendRequest(resume);
 
-		// Assert
-		expect(result.basics.linkedin).toBeUndefined();
-		expect(result.basics.github).toBeUndefined();
+		// Assert: profiles preserved, but no LinkedIn/GitHub
+		expect(result.basics.profiles).toEqual([
+			{
+				network: "Twitter",
+				username: "bobsmith",
+				url: "https://twitter.com/bobsmith",
+			},
+		]);
 	});
 
 	it("should handle required string fields set to empty strings", () => {
@@ -319,10 +343,16 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.fullName).toBe("");
+		expect(result.basics.name).toBe("");
 		expect(result.basics.email).toBe("");
 		expect(result.basics.phone).toBe("");
-		expect(result.basics.location).toBeUndefined(); // Empty city is normalized to undefined
+		expect(result.basics.location).toEqual({
+			address: undefined,
+			postalCode: undefined,
+			city: undefined,
+			countryCode: undefined,
+			region: undefined,
+		});
 	});
 
 	it("should handle null vs undefined in optional fields - null location", () => {
@@ -420,7 +450,7 @@ describe("mapResumeToBackendRequest", () => {
 
 		// Assert
 		expect(result.work).toHaveLength(1);
-		expect(result.work?.[0]?.description).toBeUndefined();
+		expect(result.work?.[0]?.summary).toBeUndefined();
 		expect(result.work?.[0]?.endDate).toBeUndefined();
 	});
 
@@ -471,9 +501,19 @@ describe("mapResumeToBackendRequest", () => {
 		// Act
 		const result = mapResumeToBackendRequest(resume);
 
-		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/davidlee");
-		expect(result.basics.github).toBe("https://github.com/davidlee");
+		// Assert: profiles are passed through
+		expect(result.basics.profiles).toEqual([
+			{
+				network: "LINKEDIN",
+				username: "davidlee",
+				url: "https://linkedin.com/in/davidlee",
+			},
+			{
+				network: "GitHub",
+				username: "davidlee",
+				url: "https://github.com/davidlee",
+			},
+		]);
 	});
 
 	it("should handle profile network casing variations - lowercase", () => {
@@ -524,8 +564,18 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/evamartinez");
-		expect(result.basics.github).toBe("https://github.com/evamartinez");
+		expect(result.basics.profiles).toEqual([
+			{
+				network: "linkedin",
+				username: "evamartinez",
+				url: "https://linkedin.com/in/evamartinez",
+			},
+			{
+				network: "github",
+				username: "evamartinez",
+				url: "https://github.com/evamartinez",
+			},
+		]);
 	});
 
 	it("should handle profile network casing variations - mixed case", () => {
@@ -576,8 +626,18 @@ describe("mapResumeToBackendRequest", () => {
 		const result = mapResumeToBackendRequest(resume);
 
 		// Assert
-		expect(result.basics.linkedin).toBe("https://linkedin.com/in/frankwilson");
-		expect(result.basics.github).toBe("https://github.com/frankwilson");
+		expect(result.basics.profiles).toEqual([
+			{
+				network: "LiNkEdIn",
+				username: "frankwilson",
+				url: "https://linkedin.com/in/frankwilson",
+			},
+			{
+				network: "GiThUb",
+				username: "frankwilson",
+				url: "https://github.com/frankwilson",
+			},
+		]);
 	});
 
 	it("should handle missing nested location object entirely", () => {
@@ -613,7 +673,7 @@ describe("mapResumeToBackendRequest", () => {
 
 		// Assert
 		expect(result.basics.location).toBeUndefined();
-		expect(result.basics.fullName).toBe("Grace Kim");
+		expect(result.basics.name).toBe("Grace Kim");
 		expect(result.basics.email).toBe("grace@example.com");
 	});
 
@@ -725,9 +785,9 @@ describe("mapResumeToBackendRequest", () => {
 		// Assert
 		expect(result.education).toHaveLength(1);
 		expect(result.education?.[0]?.endDate).toBeUndefined();
-		expect(result.education?.[0]?.gpa).toBeUndefined();
+		expect(result.education?.[0]?.score).toBeUndefined();
 		expect(result.education?.[0]?.institution).toBe("Tech University");
-		expect(result.education?.[0]?.degree).toBe("Master");
+		expect(result.education?.[0]?.studyType).toBe("Master");
 	});
 
 	it("should map all JSON Resume sections to GenerateResumeRequest", () => {
@@ -861,7 +921,7 @@ describe("mapResumeToBackendRequest", () => {
 		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
 
 		// Assert
-		// mapper maps volunteer.position -> role in the DTO
-		expect(result.volunteer?.[0]?.role).toBe("Volunteer"); // Ensure role matches position
+		// volunteer.position must be preserved
+		expect(result.volunteer?.[0]?.position).toBe("Volunteer");
 	});
 });
