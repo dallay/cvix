@@ -16,7 +16,9 @@ private const val KOVER_MIN_COVERAGE_LOWER_BOUND = 0
 private const val KOVER_MIN_COVERAGE_UPPER_BOUND = 100
 
 private fun Project.getMinCoverageBound(): Int =
-    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()?.coerceIn(KOVER_MIN_COVERAGE_LOWER_BOUND, KOVER_MIN_COVERAGE_UPPER_BOUND) ?: DEFAULT_KOVER_MIN_COVERAGE
+    (findProperty("koverMinCoverage") as? String)?.toIntOrNull()
+        ?.coerceIn(KOVER_MIN_COVERAGE_LOWER_BOUND, KOVER_MIN_COVERAGE_UPPER_BOUND)
+        ?: DEFAULT_KOVER_MIN_COVERAGE
 
 @Suppress("unused")
 internal class AppKoverPlugin : ConventionPlugin {
