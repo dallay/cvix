@@ -152,7 +152,7 @@ describe("Storage Factory", () => {
 		});
 
 		it("should return undefined for unknown storage type", () => {
-			const metadata = getStorageMetadataByType("unknown" as any);
+			const metadata = getStorageMetadataByType("unknown" as never);
 			expect(metadata).toBeUndefined();
 		});
 
