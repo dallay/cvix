@@ -223,6 +223,9 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 - **FR-049**: System MUST restore autosaved data when the user returns to the application
 - **FR-050**: System MUST warn users before navigating away if there are unsaved changes
 - **FR-051**: System MUST clear autosaved data when "Reset Form" is confirmed
+- **FR-075**: System MUST perform background debounced server persistence of the full resume document for authenticated users: trigger after 2s of inactivity OR at least once every 10s during continuous editing, batching rapid changes into a single save
+- **FR-076**: System MUST retry failed server persistence with exponential backoff (initial 1s, max 30s) and surface a non-blocking warning after 3 consecutive failures
+- **FR-077**: System MUST record a server-synced timestamp and display it distinct from local autosave when the last remote save succeeds
 
 #### PDF Generation Screen
 
@@ -236,6 +239,12 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 - **FR-059**: System MUST provide a "Back to Data Entry" button that returns to the form without losing data
 - **FR-060**: System MUST support optional template parameters including: color palette, font family, spacing/density
 - **FR-061**: System MUST update the preview when template parameters are modified
+
+#### Template Metadata & Validation
+
+- **FR-078**: System MUST fetch template metadata from server endpoint `/api/templates` providing `{ id, name, version, paramsSchema }` on entering the PDF Generation screen (or first template interaction)
+- **FR-079**: System MUST validate user-specified template parameter values against `paramsSchema` before applying them to preview or sending them for PDF generation
+- **FR-080**: System MUST cache fetched template metadata for the active session and refresh it only if `ETag` or `version` changes
 
 #### Preview Interaction
 
@@ -297,3 +306,13 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 - **SC-012**: Users successfully complete their first resume using the tool with a task completion rate of 90% or higher
 - **SC-013**: Click-to-edit from preview to form successfully navigates and highlights the correct section 95% of the time
 - **SC-014**: System handles malformed JSON uploads gracefully and provides clear error messages identifying the issues in 100% of cases
+- **SC-015**: Server persistence round-trip (request to success) p95 < 400ms for documents up to 100KB JSON
+- **SC-016**: 99% of editing sessions persist the latest resume state to the server within 10s of the user's last keystroke
+- **SC-017**: Template metadata fetch completes within 800ms (p95) and includes version + schema for all templates
+
+## Clarifications
+
+### Session 2025-11-16
+
+- Q: What server persistence strategy should be used (background debounced vs manual save etc.)? → A: Background debounced server sync after 2s idle or every ≤10s while typing
+- Q: How should template metadata be provided to the client? → A: Server endpoint `/api/templates` returning array of `{id,name,version,paramsSchema}`

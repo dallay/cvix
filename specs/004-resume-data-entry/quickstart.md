@@ -1,6 +1,6 @@
 # Quickstart — Resume Data Entry Screen
 
-This guide explains how to run the resume editor (frontend) and optional persistence service (backend) locally.
+This guide explains how to run the resume editor (frontend) and mandatory server persistence (backend) locally.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ This guide explains how to run the resume editor (frontend) and optional persist
 docker compose up -d postgresql keycloak
 ```
 
-## 2) Backend (optional persistence)
+## 2) Backend (persistence & templates API)
 
 ```bash
 # Run full backend build
@@ -27,7 +27,7 @@ docker compose up -d postgresql keycloak
 
 Notes:
 
-- Optional API served under `/api/resume`.
+- API base served under `/api` with endpoints `/resumes` (CRUD) and `/templates` (list template metadata).
 - Requires Keycloak; configure `issuer-uri` via application.yml.
 
 ## 3) Frontend (resume editor)
@@ -51,16 +51,16 @@ Navigate to the Resume Editor via the app menu (feature route). You should see t
 - Export JSON: Top bar → "Download JSON Resume" (Cmd/Ctrl+S)
 - Validate JSON: Top bar → "Validate JSON" (bottom drawer opens)
 
-## 5) Autosave
+## 5) Autosave & Server Sync
 
-- Edits autosave to IndexedDB within ~2s.
+- Edits autosave to IndexedDB within ~2s and background sync to server (idle 2s or every ≤10s while typing).
 - Multi-tab editing synced via BroadcastChannel (last-write-wins).
 - Reset Form clears local storage after confirmation.
 
-## 6) PDF Generation
+## 6) PDF Generation & Templates
 
 - Open the PDF screen via "Generate PDF" navigation.
-- Select a template and preview updates.
+- Select a template (fetched from `/api/templates`) and preview updates.
 - Click "Generate PDF" → then "Download PDF" to save.
 
 ## 7) Tests

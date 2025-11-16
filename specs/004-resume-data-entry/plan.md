@@ -5,25 +5,24 @@
 
 ## Summary
 
-Deliver a two-column resume data entry experience backed by the JSON Resume schema with real-time, debounced preview and robust import/export. Provide a separate PDF generation module with template selection. Persist locally via IndexedDB (autosave) and optionally via backend storage (JSONB) for authenticated users. Follow Hexagonal Architecture on the backend and clean, screaming architecture on the frontend.
+Deliver a two-column resume data entry experience backed by the JSON Resume schema with real-time, debounced preview and robust import/export. Provide a separate PDF generation module with template selection (UI pending) leveraging existing backend LaTeX PDF generation. Persist data mandatorily to backend PostgreSQL (JSONB) with complementary local IndexedDB autosave for draft/offline support. Follow Hexagonal Architecture on the backend and clean, screaming architecture on the frontend.
 
 ## Technical Context
 
 **Language/Version**: Backend: Kotlin 2.x + Spring Boot 3.3 (WebFlux, R2DBC); Frontend: Vue 3 + TypeScript (Vite)
-**Primary Dependencies**: Frontend: Ajv v8 (+ ajv-formats, ajv-errors) for schema validation; `libphonenumber-js` for phone validation; `lodash.debounce`; optional `@vueuse/core` for shortcuts; `html2pdf.js` for initial client-side PDF. Backend: Spring WebFlux, Spring Security, Spring Data R2DBC, PostgreSQL.
-**Storage**: Local (IndexedDB via `idb-keyval`) for autosave; Optional server persistence in PostgreSQL using a `resumes` table with JSONB payload and owner scoping.
+**Primary Dependencies**: Frontend: Ajv v8 (+ ajv-formats, ajv-errors) for schema validation; `libphonenumber-js` for phone validation; internal debounce utility (`client/packages/utilities/src/debounce/debounce.ts`); optional `@vueuse/core` for shortcuts. Backend: Spring WebFlux, Spring Security, Spring Data R2DBC, PostgreSQL; existing LaTeX-based PDF generator service.
+**Storage**: Mandatory server persistence in PostgreSQL (`resumes` JSONB table) plus local IndexedDB (`idb-keyval`) for fast draft autosave and offline resilience.
 **Testing**: Backend: JUnit 5 + Kotest + MockK + Testcontainers; Frontend: Vitest + @testing-library/vue; E2E: Playwright.
 **Target Platform**: Web app (desktop-first responsive), JVM microservice, PostgreSQL via Docker Compose.
 **Project Type**: Monorepo with `server/` (Gradle multi-project) and `client/` (pnpm workspaces).
-**Performance Goals**: Live preview updates within 150ms; Template switch within 500ms; JSON import/export within 2s; Handle up to 50 work entries without UI jank.
+**Performance Goals**: Live preview updates within 150ms; Template switch within 500ms; JSON import/export within 2s; server persistence save round‑trip < 400ms p95 (local dev); handle up to 50 work entries without UI jank.
 **Constraints**: Must adhere to Hexagonal architecture, TDD, coverage gates (backend 80%+, domain 100%; frontend 75%+). Avoid blocking calls in WebFlux. No `any` in TS. Use design tokens.
 **Scale/Scope**: Single-user local editing by default; optional authenticated persistence for 10k+ users in future without redesign (JSONB allows schema evolution).
 
 NEEDS CLARIFICATION (Phase 0 to resolve):
 
 - JSON Resume schema version pin (proposed: 1.0.0) and commit hash.
-- Client-only PDF vs. server-rendered PDF (initial: client; future: server using Playwright).
-- Storage strategy: local-only vs. optional server save behind feature flag.
+- Template enumeration endpoint & model (proposed: `GET /api/resume-templates`).
 - Internationalization scope for resume content labels (out of scope for MVP?).
 
 ## Constitution Check
@@ -73,53 +72,53 @@ server/
     │   ├── domain/               # Entities, value objects, ports
     │   ├── application/          # Use cases (CQRS)
     │   └── infrastructure/
-    │       ├── http/             # REST controllers (optional MVP)
+    │       ├── http/             # REST controllers (persistence + PDF)
     │       ├── persistence/      # R2DBC repos, JSONB mapping
-    │       └── config/            # Beans, security
+    │       ├── pdf/              # LaTeX template service adapter
+    │       └── config/           # Beans, security
     └── test/kotlin/com/loomify/resume/
-      ├── unit/
-      ├── integration/
-      └── contract/
+        ├── unit/
+        ├── integration/
+        └── contract/
 
 client/
-└── apps/webapp/src/
-  ├── features/resume/
-  │   ├── pages/
-  │   │   ├── ResumeEditorPage.vue    # Split view: form + preview
-  │   │   └── ResumePdfPage.vue       # PDF generation screen
-  │   ├── components/
-  │   │   ├── ResumeToc.vue
-+    │   │   ├── ResumeBasicsForm.vue
-  │   │   ├── ResumeWorkForm.vue
-  │   │   ├── ResumeEducationForm.vue
-  │   │   ├── ResumeSkillsForm.vue
-  │   │   ├── ResumeProjectsForm.vue
-  │   │   ├── ResumeLanguagesForm.vue
-  │   │   ├── ResumeCertificatesForm.vue
-  │   │   ├── ResumeOptionalSections.vue
-  │   │   ├── ResumePreview.vue       # Debounced preview
-  │   │   └── PdfTemplateSelector.vue
-  │   ├── stores/
-  │   │   └── resume.store.ts         # Pinia store for form state
-  │   ├── composables/
-  │   │   ├── useJsonResume.ts        # Import/export, Ajv validation
-  │   │   ├── useAutosave.ts          # IndexedDB persistence
-  │   │   └── usePdf.ts               # html2pdf integration
-  │   ├── types/
-  │   │   └── json-resume.ts          # TS types aligned to schema
-  │   └── validators/
-  │       └── json-resume.schema.json # Pinned schema for Ajv
-  └── tests/
-    ├── unit/features/resume/
-    ├── integration/features/resume/
-    └── e2e/ (under client/e2e)
+└── apps/webapp/src/core/resume/
+    ├── pages/
+    │   ├── ResumeEditorPage.vue      # Split view: form + preview
+    │   └── ResumePdfPage.vue         # PDF template selection + generate
+    ├── components/
+    │   ├── ResumeToc.vue
+    │   ├── ResumeBasicsForm.vue
+    │   ├── ResumeWorkForm.vue
+    │   ├── ResumeEducationForm.vue
+    │   ├── ResumeSkillsForm.vue
+    │   ├── ResumeProjectsForm.vue
+    │   ├── ResumeLanguagesForm.vue
+    │   ├── ResumeCertificatesForm.vue
+    │   ├── ResumeOptionalSections.vue
+    │   ├── ResumePreview.vue         # Debounced preview (internal utility)
+    │   └── PdfTemplateSelector.vue   # UI to choose template (to implement)
+    ├── stores/
+    │   └── resume.store.ts           # Pinia store, sync local + server
+    ├── composables/
+    │   ├── useJsonResume.ts          # Import/export, Ajv validation
+    │   ├── useAutosave.ts            # IndexedDB + BroadcastChannel
+    │   ├── usePersistence.ts         # Server CRUD (JSONB)
+    │   └── usePdf.ts                 # Calls backend PDF endpoint
+    ├── types/
+    │   └── json-resume.ts            # Generated from schema
+    └── validators/
+        └── json-resume.schema.json   # Pinned schema for Ajv
+tests/
+  ├── unit/
+  ├── integration/
+  └── e2e/ (client/e2e)
 ```
 
-**Structure Decision**: Web application with optional backend API. Frontend houses feature in `client/apps/webapp/src/features/resume`. Backend adds modular package under `server/engine/src/main/kotlin/com/loomify/resume` following Hexagonal layers. Persistence initially local; backend persistence behind a feature flag and guarded endpoints.
+**Structure Decision**: Web application with mandatory backend API. Frontend houses feature in `client/apps/webapp/src/core/resume`. Backend module implements persistence + PDF generation adapters. Persistence is mandatory: all saved resumes stored server-side (JSONB). Local storage is supplemental for autosave/offline.
 
 ## Complexity Tracking
 
-| Violation                                   | Why Needed                                | Simpler Alternative Rejected Because                                                                      |
-| ------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Client-side PDF (html2pdf) quality tradeoff | Enables MVP without server infra          | Server-rendered PDF via Playwright adds infra and latency; can be added later as template-quality upgrade |
-| JSONB persistence (optional)                | Schema evolves rapidly; nested structures | Fully normalized schema increases migrations and complexity with little near-term benefit                 |
+| Violation                     | Why Needed                              | Simpler Alternative Rejected Because                                     |
+| ----------------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| JSONB persistence (mandatory) | Flexible evolving schema; nested arrays | Normalization raises migration churn and fragments nested list semantics |

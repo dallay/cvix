@@ -27,9 +27,9 @@ security:
   - bearerAuth: []
 
 servers:
-  - url: https://api.loomify.com/api
+  - url: https://api.loomify.com
     description: Production
-  - url: https://staging-api.loomify.com/api
+  - url: https://staging-api.loomify.com
     description: Staging
   - url: http://localhost:8080/api
     description: Local Development

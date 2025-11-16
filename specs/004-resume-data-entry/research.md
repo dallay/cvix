@@ -35,28 +35,39 @@ Date: 2025-11-16
   - localStorage: synchronous and small capacity; risk of blocking main thread.
   - Dexie: powerful but heavier than needed for a single key/value.
 
-## 5) PDF Generation Strategy (MVP)
+## 5) PDF Generation Strategy (Current Backend Integration)
 
-- Decision: Client-side PDF using `html2pdf.js` (html2canvas + jsPDF) with print styles
-- Rationale: No server dependency; good-enough fidelity for initial templates; fast iteration for template design.
+- Decision: Server-side LaTeX rendering pipeline (already implemented) invoked via backend; client sends selected template id + resume JSON; backend returns generated PDF.
+- Rationale: High typographic fidelity, stable pagination, deterministic output across platforms; leverages existing infrastructure instead of duplicating a less consistent client-only approach.
+- New Client Responsibility: Provide template selection UI and parameter editing; call backend generation endpoint and handle streaming/binary response.
 - Alternatives considered:
-  - Server-side Playwright/Chromium: superior fidelity, better fonts; deferred to Phase N as an optional service.
-  - pdfmake: layout DSL but poor CSS compatibility; higher authoring cost.
+  - Client-side `html2pdf.js`: rejected post-backend availability—lower fidelity, inconsistent fonts, larger client bundle.
+  - Headless Chromium render service: viable alternative for future multi-template HTML designs but higher ops complexity vs current LaTeX pipeline.
 
 ## 6) Template System for Preview & PDF
 
-- Decision: Shared Vue template components with print CSS; the Preview uses the same components as PDF (single source of truth)
-- Rationale: Eliminates duplication and drift between preview and PDF; print styles drive PDF output.
+- Decision: Client preview uses Vue components approximating LaTeX layout; PDF generation relies on backend LaTeX templates referenced by stable template ids.
+- Rationale: Keeps interactive preview fast while delegating final formatting to robust backend pipeline; template ids create contract boundary.
 - Alternatives considered:
-  - Separate preview vs PDF templates: doubles maintenance; increases mismatch risk.
+  - Fully sharing LaTeX layout in client: impractical; LaTeX not directly renderable.
+  - Distinct ad-hoc preview designs per template: increases drift risk.
 
-## 7) Backend Persistence Model (Optional)
+## 7) Backend Persistence Model (Mandatory)
 
-- Decision: Store full resume as JSONB in `resumes` table: columns `(id UUID PK, owner_id UUID, data JSONB, created_at, updated_at)` with GIN index on `data`
-- Rationale: Schema evolves; JSON Resume is hierarchic; JSONB avoids frequent migrations and preserves structure.
+- Decision: Mandatory storage of full resume as JSONB in `resumes` table: `(id UUID PK, owner_id UUID, data JSONB, created_at, updated_at)` plus GIN index on `data`, optimistic locking via updated_at check on writes.
+- Rationale: Ensures durability (server source of truth), supports future analytics/search and multi-device sync; JSONB provides evolution flexibility.
 - Alternatives considered:
-  - Fully normalized schema: high migration churn; complex queries for nested arrays.
-  - Flat text blob: no queryability; no JSON operators.
+  - Fully normalized schema: high migration churn; complex joins for nested arrays.
+  - Flat text blob: no indexing or structured querying.
+
+## 15) Template Metadata Retrieval
+
+- Decision: Expose `/api/templates` endpoint returning array of template metadata objects: `{ id, name, version, paramsSchema }`.
+- Rationale: Centralized authoritative list; enables dynamic additions without frontend redeploy; paramsSchema guides client-side validation of configurable template parameters.
+- Alternatives considered:
+  - Hardcoded frontend list: requires redeploys for changes; risk of drift.
+  - CDN manifest separate from API: splits authority; adds complexity.
+
 
 ## 8) Date Handling & Formats
 
