@@ -1,5 +1,6 @@
 package com.loomify.buildlogic.gradle
 
+import com.loomify.buildlogic.common.AppConfiguration
 import com.loomify.buildlogic.common.ConventionPlugin
 import com.loomify.buildlogic.common.extensions.isRelease
 import com.loomify.buildlogic.common.extensions.kover
@@ -26,7 +27,7 @@ internal class AppKoverPlugin : ConventionPlugin {
         // Serializers
         "*.*$\$serializer",
     )
-    private val packagesIncludes = listOf("com.loomify")
+    private val packagesIncludes = listOf(AppConfiguration.PACKAGE_NAME)
     private val packagesExcludes = listOf(
         // Common
         "*.buildlogic.*",
