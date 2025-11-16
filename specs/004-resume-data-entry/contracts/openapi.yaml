@@ -12,7 +12,6 @@ paths:
     post:
       summary: Create a new resume
       operationId: createResume
-      # inherits global security
       requestBody:
         required: true
         content:
@@ -29,7 +28,6 @@ paths:
     get:
       summary: List resumes for current user
       operationId: listResumes
-      # inherits global security
       parameters:
         - in: query
           name: limit
@@ -62,7 +60,6 @@ paths:
     get:
       summary: Get a resume by id
       operationId: getResume
-      # inherits global security
       parameters:
         - in: path
           name: id
@@ -82,7 +79,6 @@ paths:
     put:
       summary: Replace a resume by id
       operationId: replaceResume
-      # inherits global security
       parameters:
         - in: path
           name: id
@@ -108,7 +104,6 @@ paths:
     patch:
       summary: Partially update a resume by id
       operationId: updateResume
-      # inherits global security
       parameters:
         - in: path
           name: id
@@ -131,26 +126,25 @@ paths:
                 a PATCH of { "basics": { "email": "alice@newdomain.com" }, "work": null }
                 results in { "basics": { "name": "Alice", "email": "alice@newdomain.com" }, "work": null }.
       responses:
-          '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ResumeResource'
-                examples:
-                  mergePatch:
-                    summary: RFC 7386 merge-patch result
-                    value:
-                      basics:
-                        name: Alice
-                        email: alice@newdomain.com
-                      work: null
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+              examples:
+                mergePatch:
+                  summary: RFC 7386 merge-patch result
+                  value:
+                    basics:
+                      name: Alice
+                      email: alice@newdomain.com
+                    work: null
         '404':
           description: Not Found
     delete:
       summary: Delete a resume by id
       operationId: deleteResume
-      # inherits global security
       parameters:
         - in: path
           name: id
@@ -165,6 +159,7 @@ paths:
     get:
       summary: List available PDF templates
       operationId: listTemplates
+      security: []
       responses:
         '200':
           description: OK
@@ -216,160 +211,269 @@ components:
           $ref: '#/components/schemas/Basics'
         work:
           type: array
-          items: { $ref: '#/components/schemas/Work' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Work'
         education:
           type: array
-          items: { $ref: '#/components/schemas/Education' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Education'
         skills:
           type: array
-          items: { $ref: '#/components/schemas/Skill' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Skill'
         projects:
           type: array
-          items: { $ref: '#/components/schemas/Project' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Project'
         languages:
           type: array
-          items: { $ref: '#/components/schemas/Language' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Language'
         certificates:
           type: array
-          items: { $ref: '#/components/schemas/Certificate' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Certificate'
         publications:
           type: array
-          items: { $ref: '#/components/schemas/Publication' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Publication'
         awards:
           type: array
-          items: { $ref: '#/components/schemas/Award' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Award'
         volunteer:
           type: array
-          items: { $ref: '#/components/schemas/Volunteer' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Volunteer'
         references:
           type: array
-          items: { $ref: '#/components/schemas/Reference' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Reference'
     Basics:
       type: object
       properties:
-        name: { type: string }
-        label: { type: string }
-        image: { type: string, format: uri }
-        email: { type: string, format: email }
-        phone: { type: string }
-        url: { type: string, format: uri }
-        summary: { type: string }
-        location: { $ref: '#/components/schemas/Location' }
+        name:
+          type: string
+        label:
+          type: string
+        image:
+          type: string
+          format: uri
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        url:
+          type: string
+          format: uri
+        summary:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
         profiles:
           type: array
-          items: { $ref: '#/components/schemas/Profile' }
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Profile'
     Location:
       type: object
       properties:
-        address: { type: string }
-        city: { type: string }
-        region: { type: string }
-        countryCode: { type: string }
-        postalCode: { type: string }
+        address:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        countryCode:
+          type: string
+        postalCode:
+          type: string
     Profile:
       type: object
       properties:
-        network: { type: string }
-        username: { type: string }
-        url: { type: string, format: uri }
+        network:
+          type: string
+        username:
+          type: string
+        url:
+          type: string
+          format: uri
     Work:
       type: object
       properties:
-        name: { type: string }
-        position: { type: string }
-        url: { type: string, format: uri }
-          startDate: { type: string, format: date }
-          endDate: { type: string, format: date }
-        summary: { type: string }
+        name:
+          type: string
+        position:
+          type: string
+        url:
+          type: string
+          format: uri
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        summary:
+          type: string
         highlights:
-            type: array
-            maxItems: 100
-            items: { type: string }
+          type: array
+          maxItems: 100
+          items:
+            type: string
     Education:
       type: object
       properties:
-        institution: { type: string }
-        url: { type: string, format: uri }
-        area: { type: string }
-        studyType: { type: string }
-          startDate: { type: string, format: date }
-          endDate: { type: string, format: date }
-        gpa: { type: string }
+        institution:
+          type: string
+        url:
+          type: string
+          format: uri
+        area:
+          type: string
+        studyType:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        gpa:
+          type: string
         courses:
-            type: array
-            maxItems: 100
-            items: { type: string }
+          type: array
+          maxItems: 100
+          items:
+            type: string
     Skill:
       type: object
       properties:
-        name: { type: string }
-        level: { type: string }
+        name:
+          type: string
+        level:
+          type: string
         keywords:
-            type: array
-            maxItems: 100
-            items: { type: string }
+          type: array
+          maxItems: 100
+          items:
+            type: string
     Project:
       type: object
       properties:
-        name: { type: string }
-        description: { type: string }
-        url: { type: string, format: uri }
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
         keywords:
-            type: array
-            maxItems: 100
-            items: { type: string }
+          type: array
+          maxItems: 100
+          items:
+            type: string
         roles:
-            type: array
-            maxItems: 100
-            items: { type: string }
-          startDate: { type: string, format: date }
-          endDate: { type: string, format: date }
+          type: array
+          maxItems: 100
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
     Language:
       type: object
       properties:
-        language: { type: string }
-        fluency: { type: string }
+        language:
+          type: string
+        fluency:
+          type: string
     Certificate:
       type: object
       properties:
-        name: { type: string }
-        issuer: { type: string }
-          date: { type: string, format: date }
-        url: { type: string, format: uri }
+        name:
+          type: string
+        issuer:
+          type: string
+        date:
+          type: string
+          format: date
+        url:
+          type: string
+          format: uri
     Publication:
       type: object
       properties:
-        name: { type: string }
-        publisher: { type: string }
-          releaseDate: { type: string, format: date }
-        url: { type: string, format: uri }
-        summary: { type: string }
+        name:
+          type: string
+        publisher:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        url:
+          type: string
+          format: uri
+        summary:
+          type: string
     Award:
       type: object
       properties:
-        title: { type: string }
-          date: { type: string, format: date }
-        awarder: { type: string }
-        summary: { type: string }
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        awarder:
+          type: string
+        summary:
+          type: string
     Volunteer:
       type: object
       properties:
-        organization: { type: string }
-        position: { type: string }
-        url: { type: string, format: uri }
-          startDate: { type: string, format: date }
-          endDate: { type: string, format: date }
-        summary: { type: string }
+        organization:
+          type: string
+        position:
+          type: string
+        url:
+          type: string
+          format: uri
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        summary:
+          type: string
         highlights:
-            type: array
-            maxItems: 100
-            items: { type: string }
+          type: array
+          maxItems: 100
+          items:
+            type: string
     Reference:
       type: object
       properties:
-        name: { type: string }
-        reference: { type: string }
-        contact: { type: string }
+        name:
+          type: string
+        reference:
+          type: string
+        contact:
+          type: string
     TemplateMetadata:
       type: object
       properties:
