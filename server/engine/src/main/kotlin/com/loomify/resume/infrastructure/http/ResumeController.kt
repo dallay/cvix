@@ -1,10 +1,10 @@
-package com.loomify.resume.infrastructure.web
+package com.loomify.resume.infrastructure.http
 
 import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.handler.GenerateResumeCommandHandler
-import com.loomify.resume.infrastructure.web.mapper.ResumeRequestMapper
-import com.loomify.resume.infrastructure.web.request.GenerateResumeRequest
+import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
+import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse

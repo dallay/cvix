@@ -1,4 +1,4 @@
-package com.loomify.resume.infrastructure.web
+package com.loomify.resume.infrastructure.http
 
 import com.loomify.UnitTest
 import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
