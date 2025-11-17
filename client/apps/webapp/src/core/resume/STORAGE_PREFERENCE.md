@@ -126,7 +126,7 @@ app.provide(RESUME_STORAGE_KEY, resumeStorage);
 
 ### Store Integration
 
-The `resume.store` now has a mutable `currentStorage` ref that can be swapped at runtime:
+The store instance now has a mutable `currentStorage` ref that can be swapped at runtime:
 
 ```typescript
 async function changeStorageStrategy(
