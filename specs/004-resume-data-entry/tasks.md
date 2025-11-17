@@ -31,12 +31,13 @@ This is a monorepo with:
 
 **Purpose**: Project initialization and basic structure for resume feature
 
-- [ ] T001 Create feature directory structure in `client/apps/webapp/src/core/resume/` with subdirectories: pages, components, stores, composables, types, validators
-- [ ] T002 Create backend module structure in `server/engine/src/main/kotlin/com/loomify/resume/` with subdirectories: domain, application, infrastructure
-- [ ] T003 [P] Download and pin JSON Resume schema v1.0.0 to `client/apps/webapp/src/core/resume/validators/json-resume.schema.json`. The version 1.0.0 is located at `docs/src/content/docs/json-resume/schema.json`
-- [ ] T004 [P] Add frontend dependencies to `client/apps/webapp/package.json`: ajv@^8.0.0, ajv-formats@^3.0.0, ajv-errors@^3.0.0, libphonenumber-js@^1.10.0, idb-keyval@^6.2.0
-- [ ] T005 [P] Add Liquibase migration script in `server/engine/src/main/resources/db/changelog/` to create resumes table with JSONB column
-- [ ] T006 Configure resume routes in `client/apps/webapp/src/core/resume/infrastructure/router/index.ts` for `/resume/editor` and `/resume/pdf` paths
+- [X] T001 Create feature directory structure in `client/apps/webapp/src/core/resume/` with subdirectories: pages, components, stores, composables, types, validators
+- [X] T002 Create backend module structure in `server/engine/src/main/kotlin/com/loomify/resume/` with subdirectories: domain, application, infrastructure
+- [X] T003 [P] Download and pin JSON Resume schema v1.0.0 to `client/apps/webapp/src/core/resume/validators/json-resume.schema.json`. The version 1.0.0 is located at `docs/src/content/docs/json-resume/schema.json`
+- [X] T004 [P] Add frontend dependencies to `client/apps/webapp/package.json`: ajv@^8.0.0, ajv-formats@^3.0.0, ajv-errors@^3.0.0, libphonenumber-js@^1.10.0, idb-keyval@^6.2.0
+- [X] T005 [P] Add Liquibase migration script in `server/engine/src/main/resources/db/changelog/` to create resumes table with JSONB column
+- [X] T006 Configure resume routes in `client/apps/webapp/src/core/resume/infrastructure/router/index.ts` for `/resume/editor` and `/resume/pdf` paths
+
 
 ---
 
