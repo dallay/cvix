@@ -9,7 +9,7 @@ If you don't provide any storage configuration, the system automatically uses `S
 ```typescript
 // In any component
 const resumeStore = useResumeStore();
-await resume.store.saveToStorage(); // Uses session storage by default
+await resumeStore.saveToStorage(); // Uses session storage by default
 ```
 
 ## Global Configuration via Dependency Injection
@@ -96,7 +96,7 @@ async function upgradeToLocalStorage() {
   const resumeStore = useResumeStore();
 
   // Switch to local storage and migrate existing data
-  await resume.store.changeStorageStrategy(
+  await resumeStore.changeStorageStrategy(
     new LocalStorageResumeStorage(),
     true // migrate data from current storage
   );
@@ -194,7 +194,7 @@ import {
 import type { StorageType } from '@/core/resume/domain/ResumeStorage';
 
 const resumeStore = useResumeStore();
-const selectedStorage = ref<StorageType>(resume.store.currentStorageType);
+const selectedStorage = ref<StorageType>(resumeStore.currentStorageType);
 const isMigrating = ref(false);
 
 async function changeStorage(newType: StorageType, migrate: boolean) {
@@ -213,7 +213,7 @@ async function changeStorage(newType: StorageType, migrate: boolean) {
         storage = new SessionStorageResumeStorage();
     }
 
-    await resume.store.changeStorageStrategy(storage, migrate);
+    await resumeStore.changeStorageStrategy(storage, migrate);
     selectedStorage.value = newType;
 
     // Persist preference

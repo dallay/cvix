@@ -92,7 +92,7 @@ import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store'
 const resume.store = useResumeStore()
 
 // Set a resume
-resume.store.setResume({
+resumeStore.setResume({
   basics: {
     name: "John Doe",
     email: "john@example.com",
@@ -100,16 +100,16 @@ resume.store.setResume({
 })
 
 // Automatic validation
-console.log(resume.store.isValid) // true/false
+console.log(resumeStore.isValid) // true/false
 
 // Manual validation
-const errors = resume.store.validateResume()
+const errors = resumeStore.validateResume()
 console.log(errors) // true/false
 
 // Generate PDF
 async function downloadPDF() {
   try {
-    const pdf = await resume.store.generatePdf('en')
+    const pdf = await resumeStore.generatePdf('en')
 
     // Create download link
     const url = URL.createObjectURL(pdf)

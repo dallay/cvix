@@ -62,8 +62,8 @@ export default {
       // ...
     };
 
-    resume.store.setResume(resume);
-    console.log(resume.store.isValid); // true/false
+    resumeStore.setResume(resume);
+    console.log(resumeStore.isValid); // true/false
 
     return { resume.store };
   }
@@ -91,8 +91,8 @@ Sets a new resume and validates it automatically.
 
 ```typescript
 const resume = createResume();
-resume.store.setResume(resume);
-console.log(resume.store.isValid); // Automatic validation
+resumeStore.setResume(resume);
+console.log(resumeStore.isValid); // Automatic validation
 ```
 
 #### `clearResume(): void`
@@ -100,8 +100,8 @@ console.log(resume.store.isValid); // Automatic validation
 Clears the current resume and errors.
 
 ```typescript
-resume.store.clearResume();
-console.log(resume.store.hasResume); // false
+resumeStore.clearResume();
+console.log(resumeStore.hasResume); // false
 ```
 
 #### `validateResume(): boolean`
@@ -109,7 +109,7 @@ console.log(resume.store.hasResume); // false
 Explicitly validates the current resume.
 
 ```typescript
-const isValid = resume.store.validateResume();
+const isValid = resumeStore.validateResume();
 if (!isValid) {
   console.error('Resume validation failed');
 }
@@ -120,9 +120,9 @@ if (!isValid) {
 Sets the generation state.
 
 ```typescript
-resume.store.setGenerating(true);
+resumeStore.setGenerating(true);
 // ... perform generation ...
-resume.store.setGenerating(false);
+resumeStore.setGenerating(false);
 ```
 
 #### `setGenerationError(error: ProblemDetail | null): void`
@@ -133,7 +133,7 @@ Sets a generation error.
 try {
   // ... generate resume ...
 } catch (error) {
-  resume.store.setGenerationError({
+  resumeStore.setGenerationError({
     type: 'generation_error',
     title: 'Generation Failed',
     status: 500,
@@ -151,7 +151,7 @@ Generates a PDF from the current resume data.
 ```typescript
 async function downloadResume() {
   try {
-    const pdfBlob = await resume.store.generatePdf('en');
+    const pdfBlob = await resumeStore.generatePdf('en');
 
     // Create download link
     const url = URL.createObjectURL(pdfBlob);
@@ -164,8 +164,8 @@ async function downloadResume() {
     console.error('Failed to generate PDF:', error);
 
     // Check if there's a detailed error
-    if (resume.store.generationError) {
-      console.error('Error details:', resume.store.generationError);
+    if (resumeStore.generationError) {
+      console.error('Error details:', resumeStore.generationError);
     }
   }
 }
@@ -184,18 +184,18 @@ async function downloadResume() {
 const resumeStore = useResumeStore();
 
 // Check if there's a resume before generating
-if (!resume.store.hasResume) {
+if (!resumeStore.hasResume) {
   console.error('No resume available');
   return;
 }
 
 try {
-  const pdf = await resume.store.generatePdf('es');
+  const pdf = await resumeStore.generatePdf('es');
   // ... handle pdf ...
 } catch (error) {
-  // Error is automatically stored in resume.store.generationError
-  if (resume.store.generationError) {
-    alert(resume.store.generationError.title);
+  // Error is automatically stored in resumeStore.generationError
+  if (resumeStore.generationError) {
+    alert(resumeStore.generationError.title);
   }
 }
 ```

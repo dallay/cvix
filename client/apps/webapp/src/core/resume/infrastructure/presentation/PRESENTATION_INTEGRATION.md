@@ -107,7 +107,7 @@ The composable watches all form fields and automatically validates when they cha
 watch(
   resume,
   (newResume) => {
-    resume.store.setResume(newResume)
+    resumeStore.setResume(newResume)
   },
   { deep: true }
 )
@@ -249,7 +249,7 @@ basics.value.name changes
        ↓
 watch() triggers
        ↓
-resume.store.setResume(resume)
+resumeStore.setResume(resume)
        ↓
 Validator validates resume
        ↓
@@ -281,7 +281,7 @@ handleGeneratePdf() called
        ↓
 generatePdf() called on composable
        ↓
-resume.store.generatePdf() called
+resumeStore.generatePdf() called
        ↓
 ResumeHttpClient.generatePdf() (via DI)
        ↓

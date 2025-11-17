@@ -167,7 +167,7 @@ import { createResumeStorage } from '@/core/resume/infrastructure/storage';
 const resumeStore = useResumeStore();
 
 // Change to local storage with migration
-await resume.store.changeStorageStrategy(
+await resumeStore.changeStorageStrategy(
   createResumeStorage('local'),
   true // migrate existing data
 );
@@ -179,7 +179,7 @@ await resume.store.changeStorageStrategy(
 import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 
 const resumeStore = useResumeStore();
-console.log(resume.store.currentStorageType); // 'session' | 'local' | 'indexeddb'
+console.log(resumeStore.currentStorageType); // 'session' | 'local' | 'indexeddb'
 ```
 
 ## Testing

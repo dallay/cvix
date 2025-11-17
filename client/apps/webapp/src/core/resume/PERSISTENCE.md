@@ -55,16 +55,16 @@ import {useResumeStore} from '@/core/resume/infrastructure/store/resume.store';
 const resumeStore = useResumeStore();
 
 // Save current resume
-await resume.store.saveToStorage();
+await resumeStore.saveToStorage();
 
 // Load from storage
-await resume.store.loadFromStorage();
+await resumeStore.loadFromStorage();
 
 // Clear storage
-await resume.store.clearStorage();
+await resumeStore.clearStorage();
 
 // Check storage type
-console.log(resume.store.currentStorageType); // 'session' | 'local' | 'indexeddb'
+console.log(resumeStore.currentStorageType); // 'session' | 'local' | 'indexeddb'
 ```
 
 ### Direct Service Usage
@@ -99,10 +99,10 @@ import {SessionStorageResumeStorage} from '@/core/resume/infrastructure/storage'
 const resumeStore = useResumeStore();
 
 // Load from current storage
-const result = await resume.store.loadFromStorage();
+const result = await resumeStore.loadFromStorage();
 
 // Change to session storage and migrate data
-await resume.store.changeStorageStrategy(
+await resumeStore.changeStorageStrategy(
         new SessionStorageResumeStorage(),
         true // migrate existing data
 );
@@ -153,9 +153,9 @@ All storage operations can throw errors. Always use try-catch:
 const resumeStore = useResumeStore();
 
 try {
-    await resume.store.saveToStorage();
+    await resumeStore.saveToStorage();
 } catch (error) {
-    console.error('Failed to save:', resume.store.storageError);
+    console.error('Failed to save:', resumeStore.storageError);
 }
 ```
 

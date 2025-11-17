@@ -147,8 +147,8 @@ const resume = {
   // ...
 };
 
-resume.store.setResume(resume);
-console.log(resume.store.isValid); // true/false (automatically validated)
+resumeStore.setResume(resume);
+console.log(resumeStore.isValid); // true/false (automatically validated)
 </script>
 ```
 
