@@ -157,8 +157,8 @@ This is a monorepo with:
 - [ ] T048 [US3] Implement blur validation for all input fields that runs validation when user leaves field and displays inline errors
 - [ ] T049 [US3] Update ValidationErrorPanel to show all current validation errors with section grouping and click-to-jump functionality
 - [ ] T050 [US3] Add success state to ValidationErrorPanel showing green checkmark when all validations pass
-- [ ] T051 [US3] Implement auto-clearing of error indicators when user fixes validation errors by watching field values in validation composable and removing corresponding error entries from validation state when field becomes valid
-- [ ] T051a [US3] Add reactive error clearing logic in ValidationErrorPanel that automatically removes error entries when corresponding fields pass validation (implements FR-046)
+- [ ] T051 [US3] Implement field-level auto-clearing: watch field values in validation composable and remove corresponding error entries from validation state when a field becomes valid.
+- [ ] T051a [US3] Implement panel-level sync: update ValidationErrorPanel to react to validation state changes and remove displayed errors when state entries are cleared.
 - [ ] T052 [US3] Add validation state tracking in `resume.store.ts` with errors object keyed by field path
 
 **Checkpoint**: All validation features should now work - users receive immediate feedback on data quality issues and can navigate to errors easily
@@ -213,15 +213,15 @@ This is a monorepo with:
 - [ ] T074 [P] [US5] Implement TemplateController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/TemplateController.kt` with GET `/api/templates` endpoint (no auth required)
 - [ ] T075 [P] [US5] Create PdfTemplateSelector component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PdfTemplateSelector.vue` with dropdown for template selection and parameter editing based on paramsSchema
 - [ ] T076 [P] [US5] Create usePdf composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePdf.ts` to fetch templates list and call PDF generation endpoint
-- [ ] T077 [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons
-- [ ] T078 [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce
-- [ ] T079 [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters
-- [ ] T080 [US5], T081 [US5] Use POST `/api/resume/generate` endpoint in `ResumeController` that streams binary PDF response with proper Content-Type and Content-Disposition headers. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt`
-- [ ] T082 [US5] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf"
-- [ ] T083 [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact
-- [ ] T084 [US5] Add "Generate PDF" navigation link in ResumeEditorPage utility bar that routes to ResumePdfPage
-- [ ] T085 [US5] Implement template parameter validation in PdfTemplateSelector using the paramsSchema from TemplateMetadata
-- [ ] T086 [US5] Add loading states and error handling to PDF generation with user-friendly error messages for LaTeX compilation failures
+- [ ] T077 [P] [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons
+- [ ] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce
+- [ ] T079 [P] [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters
+- [ ] T080 [P] [US5], T081 [US5] Use POST `/api/resume/generate` endpoint in `ResumeController` that streams binary PDF response with proper Content-Type and Content-Disposition headers. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt`
+- [ ] T082 [P] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf"
+- [ ] T083 [P] [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact
+- [ ] T084 [P] [US5] Add "Generate PDF" navigation link in ResumeEditorPage utility bar that routes to ResumePdfPage
+- [ ] T085 [P] [US5] Implement template parameter validation in PdfTemplateSelector using the paramsSchema from TemplateMetadata
+- [ ] T086 [P] [US5] Add loading states and error handling to PDF generation with user-friendly error messages for LaTeX compilation failures
 
 **Checkpoint**: PDF generation should now be fully functional - users can select templates, customize parameters, preview changes, and download high-quality PDFs
 
