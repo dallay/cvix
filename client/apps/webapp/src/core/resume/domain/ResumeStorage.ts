@@ -49,7 +49,17 @@ export interface PersistenceResult<T = Resume> {
  * };
  * ```
  */
-export type PartialResume = Partial<Resume>;
+type DeepPartial<T> = {
+	[K in keyof T]?: T[K] extends ReadonlyArray<infer U>
+		? ReadonlyArray<U>
+		: T[K] extends Date | Map<unknown, unknown> | Set<unknown> | RegExp
+			? T[K]
+			: T[K] extends object
+				? DeepPartial<T[K]>
+				: T[K];
+};
+
+export type PartialResume = DeepPartial<Resume>;
 
 /**
  * Domain interface for resume storage operations.
