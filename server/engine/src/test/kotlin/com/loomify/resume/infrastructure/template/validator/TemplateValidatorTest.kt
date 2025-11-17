@@ -1,7 +1,6 @@
 package com.loomify.resume.infrastructure.template.validator
 
 import com.loomify.common.domain.vo.email.Email
-import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.Award
 import com.loomify.resume.domain.Certificate
 import com.loomify.resume.domain.CompanyName
@@ -29,6 +28,7 @@ import com.loomify.resume.domain.Summary
 import com.loomify.resume.domain.Url
 import com.loomify.resume.domain.Volunteer
 import com.loomify.resume.domain.WorkExperience
+import com.loomify.resume.domain.exception.LaTeXInjectionException
 import java.time.LocalDate
 import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow

@@ -4,7 +4,6 @@ import com.loomify.FixtureDataLoader
 import com.loomify.FixtureDataLoader.readResource
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
-import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Location
@@ -15,6 +14,7 @@ import com.loomify.resume.domain.Skill
 import com.loomify.resume.domain.SkillCategory
 import com.loomify.resume.domain.SkillCategoryName
 import com.loomify.resume.domain.Summary
+import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import java.time.Clock

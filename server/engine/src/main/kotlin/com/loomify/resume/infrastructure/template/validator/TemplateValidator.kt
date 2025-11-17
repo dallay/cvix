@@ -1,7 +1,7 @@
 package com.loomify.resume.infrastructure.template.validator
 
-import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.exception.LaTeXInjectionException
 
 /**
  * High-performance validator leveraging regex-based pattern matching
