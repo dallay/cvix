@@ -161,7 +161,7 @@ jobs:
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@6d4a055237f335b06e764242f92b0e062e7f962d
+        uses: DavidAnson/markdownlint-cli2-action@30a0e04f1870d58f8d717450cc6134995f993c63
         with:
           globs: |
             **/*.md
