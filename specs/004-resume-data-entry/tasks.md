@@ -47,7 +47,7 @@ This is a monorepo with:
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [ ] T007 Create Resume domain entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/Resume.kt` with all JSON Resume fields as Kotlin data classes
-- [ ] T008 [P] Create value objects in `server/engine/src/main/kotlin/com/loomify/resume/domain/` for Basics (PersonalInfo), Profile, Work, Education, Skill, Project, Language, Certificate, Publication, Award, Volunteer, Reference. This feature is already in place, but we need to ensure it aligns with the data model.
+- [ ] T008 [P] Align existing value objects in `server/engine/src/main/kotlin/com/loomify/resume/domain/` with JSON Resume schema: ensure Basics (currently PersonalInfo), Profile, Work (WorkExperience), Education, Skill (SkillCategory), Project, Language, Certificate, Publication, Award, Volunteer, Reference match data-model.md specifications. Rename PersonalInfo to Basics for consistency with JSON Resume schema.
 
     ```text
     └── 📁domain
@@ -61,15 +61,15 @@ This is a monorepo with:
     ├── Interest.kt
     ├── Language.kt
     ├── PdfGenerator.kt
-    ├── PersonalInfo.kt
+    ├── PersonalInfo.kt (rename to Basics.kt)
     ├── Project.kt
     ├── Publication.kt
     ├── Reference.kt
     ├── Resume.kt
-    ├── SkillCategory.kt
+    ├── SkillCategory.kt (align with Skill model)
     ├── TemplateRenderer.kt
     ├── Volunteer.kt
-    └── WorkExperience.kt
+    └── WorkExperience.kt (align with Work model)
     ```
 
 - [ ] T009 [P] Define ResumeRepository port interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/ResumeRepository.kt` with CRUD operations returning Mono/Flux
@@ -77,7 +77,7 @@ This is a monorepo with:
 - [ ] T011 [P] Create TypeScript types in `client/apps/webapp/src/core/resume/types/json-resume.ts` matching JSON Resume schema (can be generated from schema)
 - [ ] T012 [P] Setup Ajv validator instance in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/useJsonResume.ts` with schema loading and error formatting
 - [ ] T013 Create base Pinia store in `client/apps/webapp/src/core/resume/infrastructure/store/resume.store.ts` with state structure for Resume type and loading/error states
-- [ ] T014 Implement security configuration in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/SecurityConfiguration.kt` to secure /api/resumes endpoints with JWT
+- [ ] T014 Create dedicated ResumeSecurityConfig in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/config/ResumeSecurityConfig.kt` to configure security rules for /api/resumes endpoints with JWT authentication, following Hexagonal Architecture by keeping resume-specific security configuration within the resume module (do not modify core SecurityConfiguration.kt)
 - [ ] T015 Create TemplateMetadata domain entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateMetadata.kt`
 - [ ] T016 [P] Define TemplateRepository port in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateRepository.kt`
 - [ ] T017 Create stub implementation in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/persistence/InMemoryTemplateRepository.kt` returning hardcoded template metadata list
@@ -94,7 +94,7 @@ This is a monorepo with:
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Create ResumeToc (ResumeForm) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ResumeToc.vue` with sticky navigation, accordion sections, aria-current support. Check the current implementation in the component `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ResumeForm.vue`
+- [ ] T018 [P] [US1] Create ResumeToc component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ResumeToc.vue` with sticky navigation, accordion sections (default state: Basics expanded, all others collapsed), aria-current support. Check the current implementation in the component `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ResumeForm.vue`
 - [ ] T019 [P] [US1] Create ResumeBasicsForm (BasicsSection) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/BasicsSection.vue` with fields: name, label, image, email, phone, url, summary, location (address, city, region, countryCode, postalCode), profiles array
 - [ ] T020 [P] [US1] Create ResumeWorkForm (WorkExperienceSection) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/WorkExperienceSection.vue` with dynamic array for work entries (company, position, url, startDate, endDate, summary, highlights array)
 - [ ] T021 [P] [US1] Create ResumeEducationForm (EducationSection) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/EducationSection.vue` with dynamic array for education entries (institution, url, area, studyType, startDate, endDate, gpa, courses array)
@@ -103,16 +103,16 @@ This is a monorepo with:
 - [ ] T024 [P] [US1] Create ResumeLanguagesForm (LanguageSection) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/LanguageSection.vue` with dynamic array for languages (language, fluency)
 - [ ] T025 [P] [US1] Create ResumeCertificatesForm (CertificateSection) component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/CertificateSection.vue` with dynamic array for certificates (name, issuer, date, url)
 - [ ] T026 [P] [US1] Create ResumeOptionalSections component in `client/apps/webapp/src/core/resume/components/ResumeOptionalSections.vue` for publications, awards, volunteer, and references. Use the following existing components:
-    - `PublicationSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PublicationSection.vue`
-    - `AwardSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/AwardSection.vue`
-    - `VolunteerSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/VolunteerSection.vue`
-    - `ReferenceSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ReferenceSection.vue`
+  - `PublicationSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PublicationSection.vue`
+  - `AwardSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/AwardSection.vue`
+  - `VolunteerSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/VolunteerSection.vue`
+  - `ReferenceSection` in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ReferenceSection.vue`
 - [ ] T027 [P] [US1] Create ResumePreview component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ResumePreview.vue` with debounced rendering (120ms) using internal debounce utility from `client/packages/utilities/src/debounce/debounce.ts`
-- [ ] T028 [US1] Create ResumeEditorPage layout in `client/apps/webapp/src/core/resume/infrastructure/presentation/pages/ResumeEditorPage.vue` with two-column split view: form column (left) with ResumeToc (ResumeForm) and all form components, preview column (right) with ResumePreview. Exist an implementation of this page in `client/apps/webapp/src/core/resume/infrastructure/presentation/pages/ResumeGeneratorPage.vue` you can refer to and rename it accordingly.
+- [ ] T028 [US1] Create ResumeEditorPage layout in `client/apps/webapp/src/core/resume/infrastructure/presentation/pages/ResumeEditorPage.vue` with two-column split view: form column (left) with ResumeToc and all form components, preview column (right) with ResumePreview. Exist an implementation of this page in `client/apps/webapp/src/core/resume/infrastructure/presentation/pages/ResumeGeneratorPage.vue` you can refer to and rename it accordingly.
 - [ ] T029 [US1] Implement debounced preview updates in `resume.store.ts` with 120ms delay, connecting form mutations to preview rendering
 - [ ] T030 [US1] Add independent scroll handling in ResumeEditorPage ensuring form and preview columns scroll separately. The scroll bar must be subtle and not too visible so as not to disturb the user's view.
 - [ ] T031 [US1] Wire up all form components to Pinia store with v-model bindings for reactive state management
-- [ ] T032 [US1] Implement accordion collapse/expand logic in ResumeToc (ResumeForm) with aria-expanded and keyboard navigation support
+- [ ] T032 [US1] Implement accordion collapse/expand logic in ResumeToc with aria-expanded and keyboard navigation support, ensuring Basics section is expanded by default on initial load
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can enter data in the form and see real-time preview updates with proper scrolling behavior
 
@@ -157,7 +157,8 @@ This is a monorepo with:
 - [ ] T048 [US3] Implement blur validation for all input fields that runs validation when user leaves field and displays inline errors
 - [ ] T049 [US3] Update ValidationErrorPanel to show all current validation errors with section grouping and click-to-jump functionality
 - [ ] T050 [US3] Add success state to ValidationErrorPanel showing green checkmark when all validations pass
-- [ ] T051 [US3] Implement auto-clearing of error indicators when user fixes validation errors
+- [ ] T051 [US3] Implement auto-clearing of error indicators when user fixes validation errors by watching field values in validation composable and removing corresponding error entries from validation state when field becomes valid
+- [ ] T051a [US3] Add reactive error clearing logic in ValidationErrorPanel that automatically removes error entries when corresponding fields pass validation (implements FR-046)
 - [ ] T052 [US3] Add validation state tracking in `resume.store.ts` with errors object keyed by field path
 
 **Checkpoint**: All validation features should now work - users receive immediate feedback on data quality issues and can navigate to errors easily
@@ -187,6 +188,9 @@ This is a monorepo with:
 - [ ] T065 [US4] Add PATCH `/api/resumes/{id}` endpoint to ResumeController implementing RFC 7386 JSON Merge Patch semantics
 - [ ] T066 [US4] Add DELETE `/api/resumes/{id}` endpoint to ResumeController calling DeleteResumeCommand
 - [ ] T067 [US4] Wire up autosave in `resume.store.ts` to trigger both IndexedDB save (fast draft) and background server sync (every 10s max or on idle 2s)
+- [ ] T067a [US4] Implement exponential backoff retry mechanism for failed server persistence: initial delay 1s, max 30s, with retry attempt tracking (implements FR-076)
+- [ ] T067b [US4] Add non-blocking warning notification after 3 consecutive server save failures that allows user to continue editing while displaying sync status (implements FR-076)
+- [ ] T067c [US4] Record and display server-synced timestamp distinct from local autosave timestamp in "Last saved" indicator component (implements FR-077)
 - [ ] T068 [US4] Implement data restoration on page load in ResumeEditorPage that checks IndexedDB first, then fetches from server if authenticated
 - [ ] T069 [US4] Add beforeunload event listener in ResumeEditorPage to warn users about unsaved changes when navigating away
 - [ ] T070 [US4] Create "Last saved at [timestamp]" indicator component and add to top utility bar showing both local and server save times
@@ -211,7 +215,7 @@ This is a monorepo with:
 - [ ] T076 [P] [US5] Create usePdf composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePdf.ts` to fetch templates list and call PDF generation endpoint
 - [ ] T077 [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons
 - [ ] T078 [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce
-- [ ] T079 [US5] Create GeneratePdfCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/GeneratePdfCommand.kt` that validates resume data and template parameters
+- [ ] T079 [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters
 - [ ] T080 [US5], T081 [US5] Use POST `/api/resume/generate` endpoint in `ResumeController` that streams binary PDF response with proper Content-Type and Content-Disposition headers. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt`
 - [ ] T082 [US5] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf"
 - [ ] T083 [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact
@@ -234,7 +238,7 @@ This is a monorepo with:
 - [ ] T087 [P] [US6] Add click handlers to preview sections in ResumePreview.vue that emit section navigation events with section identifiers
 - [ ] T088 [P] [US6] Implement scroll-to-section logic in ResumeEditorPage that receives navigation events and uses scrollIntoView({ behavior: 'smooth', block: 'start' })
 - [ ] T089 [US6] Add highlight effect to form sections in CSS with subtle visual indicator (border glow or background color) that fades after 2s
-- [ ] T090 [US6] Implement accordion auto-expand in ResumeToc (ResumeForm) when navigation event targets a collapsed section
+- [ ] T090 [US6] Implement accordion auto-expand in ResumeToc when navigation event targets a collapsed section
 - [ ] T091 [US6] Add focus management that moves keyboard focus to the first input field in the target section after scroll completes
 - [ ] T092 [US6] Implement granular navigation for array entries (e.g., clicking specific work experience in preview scrolls to that exact entry in form)
 - [ ] T093 [US6] Add data-section and data-entry-id attributes to preview elements for reliable click target identification
