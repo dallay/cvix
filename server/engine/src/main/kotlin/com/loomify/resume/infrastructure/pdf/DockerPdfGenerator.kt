@@ -8,7 +8,7 @@ import com.github.dockerjava.api.model.Volume
 import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.PdfGenerationException
 import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
-import com.loomify.resume.domain.port.PdfGenerator
+import com.loomify.resume.domain.PdfGenerator
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer

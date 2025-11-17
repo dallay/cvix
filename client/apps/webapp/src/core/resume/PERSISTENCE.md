@@ -49,22 +49,22 @@ Three browser storage implementations:
 The easiest way to use persistence is through the Pinia store:
 
 ```typescript
-import {useResumeStore} from '@/core/resume/infrastructure/store/resumeStore';
+import {useResumeStore} from '@/core/resume/infrastructure/store/resume.store';
 
 // In a component
 const resumeStore = useResumeStore();
 
 // Save current resume
-await resumeStore.saveToStorage();
+await resume.store.saveToStorage();
 
 // Load from storage
-await resumeStore.loadFromStorage();
+await resume.store.loadFromStorage();
 
 // Clear storage
-await resumeStore.clearStorage();
+await resume.store.clearStorage();
 
 // Check storage type
-console.log(resumeStore.currentStorageType); // 'session' | 'local' | 'indexeddb'
+console.log(resume.store.currentStorageType); // 'session' | 'local' | 'indexeddb'
 ```
 
 ### Direct Service Usage
@@ -99,10 +99,10 @@ import {SessionStorageResumeStorage} from '@/core/resume/infrastructure/storage'
 const resumeStore = useResumeStore();
 
 // Load from current storage
-const result = await resumeStore.loadFromStorage();
+const result = await resume.store.loadFromStorage();
 
 // Change to session storage and migrate data
-await resumeStore.changeStorageStrategy(
+await resume.store.changeStorageStrategy(
         new SessionStorageResumeStorage(),
         true // migrate existing data
 );
@@ -153,9 +153,9 @@ All storage operations can throw errors. Always use try-catch:
 const resumeStore = useResumeStore();
 
 try {
-    await resumeStore.saveToStorage();
+    await resume.store.saveToStorage();
 } catch (error) {
-    console.error('Failed to save:', resumeStore.storageError);
+    console.error('Failed to save:', resume.store.storageError);
 }
 ```
 

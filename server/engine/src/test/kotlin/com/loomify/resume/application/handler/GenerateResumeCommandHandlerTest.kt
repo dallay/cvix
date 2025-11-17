@@ -1,16 +1,17 @@
 package com.loomify.resume.application.handler
 
 import com.loomify.UnitTest
+import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.command.Locale
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.WorkExperience
-import com.loomify.resume.domain.port.PdfGenerator
-import com.loomify.resume.domain.port.TemplateRenderer
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.WorkExperience
+import com.loomify.resume.domain.PdfGenerator
+import com.loomify.resume.domain.TemplateRenderer
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.coEvery
@@ -154,11 +155,11 @@ class GenerateResumeCommandHandlerTest {
     }
 
     // Helper function to create valid test data
-    private fun createValidResumeData() = ResumeData(
+    private fun createValidResumeData() = Resume(
         basics = PersonalInfo(
             name = FullName("John Doe"),
             label = JobTitle("Software Engineer"),
-            email = com.loomify.common.domain.vo.email.Email("john@example.com"),
+            email = Email("john@example.com"),
             phone = null,
             url = null,
             summary = null,

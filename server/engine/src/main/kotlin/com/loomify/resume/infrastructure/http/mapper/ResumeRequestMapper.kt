@@ -1,32 +1,33 @@
 package com.loomify.resume.infrastructure.http.mapper
 
-import com.loomify.resume.domain.model.Award
-import com.loomify.resume.domain.model.Certificate
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.DegreeType
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FieldOfStudy
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.Highlight
-import com.loomify.resume.domain.model.InstitutionName
-import com.loomify.resume.domain.model.Interest
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.Language
-import com.loomify.resume.domain.model.Location
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.Project
-import com.loomify.resume.domain.model.Publication
-import com.loomify.resume.domain.model.Reference
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.Skill
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.SocialProfile
-import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.domain.model.Url
-import com.loomify.resume.domain.model.Volunteer
-import com.loomify.resume.domain.model.WorkExperience
+import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Certificate
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.DegreeType
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.FieldOfStudy
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.Highlight
+import com.loomify.resume.domain.InstitutionName
+import com.loomify.resume.domain.Interest
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.Language
+import com.loomify.resume.domain.Location
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.Project
+import com.loomify.resume.domain.Publication
+import com.loomify.resume.domain.Reference
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
+import com.loomify.resume.domain.SocialProfile
+import com.loomify.resume.domain.Summary
+import com.loomify.resume.domain.Url
+import com.loomify.resume.domain.Volunteer
+import com.loomify.resume.domain.WorkExperience
 import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import com.loomify.resume.infrastructure.http.request.dto.AwardDto
 import com.loomify.resume.infrastructure.http.request.dto.CertificateDto
@@ -42,8 +43,8 @@ import com.loomify.resume.infrastructure.http.request.dto.WorkExperienceDto
 import java.time.LocalDate
 
 object ResumeRequestMapper {
-    fun toDomain(request: GenerateResumeRequest): ResumeData {
-        return ResumeData(
+    fun toDomain(request: GenerateResumeRequest): Resume {
+        return Resume(
             basics = mapBasics(request),
             work = request.work?.map { mapWork(it) } ?: emptyList(),
             education = request.education?.map { mapEducation(it) } ?: emptyList(),
@@ -65,7 +66,7 @@ object ResumeRequestMapper {
             name = FullName(basics.name),
             label = basics.label?.let { JobTitle(it) },
             image = basics.image?.takeIf { it.isNotBlank() }?.let { Url(it) },
-            email = com.loomify.common.domain.vo.email.Email(basics.email),
+            email = Email(basics.email),
             phone = PhoneNumber(basics.phone),
             url = basics.url?.takeIf { it.isNotBlank() }?.let { Url(it) },
             summary = basics.summary?.let { Summary(it) },

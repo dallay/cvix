@@ -1,6 +1,15 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
+import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.Location
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.SocialProfile
+import com.loomify.resume.domain.Summary
+import com.loomify.resume.domain.Url
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -24,7 +33,7 @@ class PersonalInfoTest {
         val personalInfo = PersonalInfo(
             name = FullName("Jane Doe"),
             label = JobTitle("Senior Software Engineer"),
-            email = com.loomify.common.domain.vo.email.Email("jane.doe@example.com"),
+            email = Email("jane.doe@example.com"),
             phone = PhoneNumber("+1 (555) 123-4567"),
             url = Url("https://janedoe.com"),
             summary = Summary("Experienced software engineer with 10+ years building scalable applications"),
@@ -59,7 +68,7 @@ class PersonalInfoTest {
         val personalInfo = PersonalInfo(
             name = FullName("John Smith"),
             label = null,
-            email = com.loomify.common.domain.vo.email.Email("john@example.com"),
+            email = Email("john@example.com"),
             phone = null,
             url = null,
             summary = null,

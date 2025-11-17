@@ -5,16 +5,16 @@ import com.loomify.FixtureDataLoader.readResource
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.exception.LaTeXInjectionException
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.Location
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.Skill
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.Summary
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.Location
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
+import com.loomify.resume.domain.Summary
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
 import java.time.Clock
@@ -214,7 +214,7 @@ internal class LatexTemplateRendererTest {
     )
     fun `should reject dangerous LaTeX commands`(dangerousCommand: String) {
         // Arrange: Create minimal resume with malicious command in name field
-        val maliciousResume = ResumeData(
+        val maliciousResume = Resume(
             basics = PersonalInfo(
                 name = FullName(dangerousCommand),
                 label = JobTitle("Engineer"),

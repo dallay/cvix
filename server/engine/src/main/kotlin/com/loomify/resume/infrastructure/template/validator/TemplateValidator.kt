@@ -1,7 +1,7 @@
 package com.loomify.resume.infrastructure.template.validator
 
 import com.loomify.resume.domain.exception.LaTeXInjectionException
-import com.loomify.resume.domain.model.ResumeData
+import com.loomify.resume.domain.Resume
 
 /**
  * High-performance validator leveraging regex-based pattern matching
@@ -25,8 +25,8 @@ object TemplateValidator {
      *
      * @throws LaTeXInjectionException on first detection of malicious command
      */
-    fun validateContent(resumeData: ResumeData) {
-        val violation = resumeData.getAllStringContent()
+    fun validateContent(resume: Resume) {
+        val violation = resume.getAllStringContent()
             .mapNotNull { content -> DANGEROUS_PATTERN.find(content)?.value }
             .firstOrNull()
 
@@ -43,7 +43,7 @@ object TemplateValidator {
      * as the first line of defense against LaTeX injection attacks.
      */
     @Suppress("CyclomaticComplexMethod", "LongMethod") // Focused on data extraction
-    private fun ResumeData.getAllStringContent() = sequence {
+    private fun Resume.getAllStringContent() = sequence {
         // Basics - Personal Information
         yield(basics.name.value)
         yield(basics.email.value)

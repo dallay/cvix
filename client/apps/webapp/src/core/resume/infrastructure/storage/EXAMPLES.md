@@ -9,7 +9,7 @@ If you don't provide any storage configuration, the system automatically uses `S
 ```typescript
 // In any component
 const resumeStore = useResumeStore();
-await resumeStore.saveToStorage(); // Uses session storage by default
+await resume.store.saveToStorage(); // Uses session storage by default
 ```
 
 ## Global Configuration via Dependency Injection
@@ -89,14 +89,14 @@ Switch storage strategies dynamically based on user actions:
 
 ```typescript
 // In a settings component
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 import { LocalStorageResumeStorage } from '@/core/resume/infrastructure/storage';
 
 async function upgradeToLocalStorage() {
   const resumeStore = useResumeStore();
 
   // Switch to local storage and migrate existing data
-  await resumeStore.changeStorageStrategy(
+  await resume.store.changeStorageStrategy(
     new LocalStorageResumeStorage(),
     true // migrate data from current storage
   );
@@ -185,7 +185,7 @@ Complete example of a settings component with storage selection:
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 import {
   SessionStorageResumeStorage,
   LocalStorageResumeStorage,
@@ -194,7 +194,7 @@ import {
 import type { StorageType } from '@/core/resume/domain/ResumeStorage';
 
 const resumeStore = useResumeStore();
-const selectedStorage = ref<StorageType>(resumeStore.currentStorageType);
+const selectedStorage = ref<StorageType>(resume.store.currentStorageType);
 const isMigrating = ref(false);
 
 async function changeStorage(newType: StorageType, migrate: boolean) {
@@ -213,7 +213,7 @@ async function changeStorage(newType: StorageType, migrate: boolean) {
         storage = new SessionStorageResumeStorage();
     }
 
-    await resumeStore.changeStorageStrategy(storage, migrate);
+    await resume.store.changeStorageStrategy(storage, migrate);
     selectedStorage.value = newType;
 
     // Persist preference

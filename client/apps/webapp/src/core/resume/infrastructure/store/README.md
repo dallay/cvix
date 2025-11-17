@@ -24,8 +24,8 @@ infrastructure/
 │   ├── di.ts            # DI configuration
 │   └── index.ts         # Barrel export
 ├── store/
-│   ├── resumeStore.ts   # Pinia store
-│   └── resumeStore.test.ts
+│   ├── resume.store.ts   # Pinia store
+│   └── resume.store.test.ts
 └── validation/
     └── JsonResumeValidator.ts
 ```
@@ -50,7 +50,7 @@ app.mount('#app');
 ### 2. Use the store in components
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 
 export default {
   setup() {
@@ -62,10 +62,10 @@ export default {
       // ...
     };
 
-    resumeStore.setResume(resume);
-    console.log(resumeStore.isValid); // true/false
+    resume.store.setResume(resume);
+    console.log(resume.store.isValid); // true/false
 
-    return { resumeStore };
+    return { resume.store };
   }
 };
 ```
@@ -91,8 +91,8 @@ Sets a new resume and validates it automatically.
 
 ```typescript
 const resume = createResume();
-resumeStore.setResume(resume);
-console.log(resumeStore.isValid); // Automatic validation
+resume.store.setResume(resume);
+console.log(resume.store.isValid); // Automatic validation
 ```
 
 #### `clearResume(): void`
@@ -100,8 +100,8 @@ console.log(resumeStore.isValid); // Automatic validation
 Clears the current resume and errors.
 
 ```typescript
-resumeStore.clearResume();
-console.log(resumeStore.hasResume); // false
+resume.store.clearResume();
+console.log(resume.store.hasResume); // false
 ```
 
 #### `validateResume(): boolean`
@@ -109,7 +109,7 @@ console.log(resumeStore.hasResume); // false
 Explicitly validates the current resume.
 
 ```typescript
-const isValid = resumeStore.validateResume();
+const isValid = resume.store.validateResume();
 if (!isValid) {
   console.error('Resume validation failed');
 }
@@ -120,9 +120,9 @@ if (!isValid) {
 Sets the generation state.
 
 ```typescript
-resumeStore.setGenerating(true);
+resume.store.setGenerating(true);
 // ... perform generation ...
-resumeStore.setGenerating(false);
+resume.store.setGenerating(false);
 ```
 
 #### `setGenerationError(error: ProblemDetail | null): void`
@@ -133,7 +133,7 @@ Sets a generation error.
 try {
   // ... generate resume ...
 } catch (error) {
-  resumeStore.setGenerationError({
+  resume.store.setGenerationError({
     type: 'generation_error',
     title: 'Generation Failed',
     status: 500,
@@ -151,7 +151,7 @@ Generates a PDF from the current resume data.
 ```typescript
 async function downloadResume() {
   try {
-    const pdfBlob = await resumeStore.generatePdf('en');
+    const pdfBlob = await resume.store.generatePdf('en');
 
     // Create download link
     const url = URL.createObjectURL(pdfBlob);
@@ -164,8 +164,8 @@ async function downloadResume() {
     console.error('Failed to generate PDF:', error);
 
     // Check if there's a detailed error
-    if (resumeStore.generationError) {
-      console.error('Error details:', resumeStore.generationError);
+    if (resume.store.generationError) {
+      console.error('Error details:', resume.store.generationError);
     }
   }
 }
@@ -184,18 +184,18 @@ async function downloadResume() {
 const resumeStore = useResumeStore();
 
 // Check if there's a resume before generating
-if (!resumeStore.hasResume) {
+if (!resume.store.hasResume) {
   console.error('No resume available');
   return;
 }
 
 try {
-  const pdf = await resumeStore.generatePdf('es');
+  const pdf = await resume.store.generatePdf('es');
   // ... handle pdf ...
 } catch (error) {
-  // Error is automatically stored in resumeStore.generationError
-  if (resumeStore.generationError) {
-    alert(resumeStore.generationError.title);
+  // Error is automatically stored in resume.store.generationError
+  if (resume.store.generationError) {
+    alert(resume.store.generationError.title);
   }
 }
 ```
@@ -206,7 +206,7 @@ try {
 
 ```typescript
 import { setActivePinia, createPinia } from 'pinia';
-import { useResumeStore } from './resumeStore';
+import { useResumeStore } from './resume.store';
 
 describe('Resume Store', () => {
   beforeEach(() => {
@@ -230,7 +230,7 @@ describe('Resume Store', () => {
 import { createApp } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { RESUME_VALIDATOR_KEY } from '@/core/resume/infrastructure/di';
-import { useResumeStore } from './resumeStore';
+import { useResumeStore } from './resume.store';
 
 describe('Resume Store with Mock Validator', () => {
   it('should use injected validator', () => {

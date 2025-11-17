@@ -1,6 +1,11 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.Highlight
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.Url
+import com.loomify.resume.domain.WorkExperience
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.shouldBeWithinPercentageOf
 import io.kotest.matchers.shouldBe

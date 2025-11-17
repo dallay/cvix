@@ -174,7 +174,7 @@
 - [X] T075 [US1] Create ResumeForm.vue main component integrating all sections (depends on T069-T074) in `client/apps/webapp/src/resume/components/ResumeForm.vue`
 - [X] T076 [US1] Implement session-based form data persistence using sessionStorage in `client/apps/webapp/src/resume/composables/useResumeSession.ts`
 - [X] T077 [US1] Create useResumeGeneration composable with API call logic in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
-- [X] T078 [US1] Create Pinia store for resume state management in `client/apps/webapp/src/resume/stores/resumeStore.ts`
+- [X] T078 [US1] Create Pinia store for resume state management in `client/apps/webapp/src/resume/stores/resume.store.ts`
 - [X] T079 [US1] Create API client for resume endpoint in `client/apps/webapp/src/api/Resume.ts`
 - [X] T080 [US1] Create ResumeGeneratorPage.vue main page (depends on T075, T077-T079) in `client/apps/webapp/src/resume/pages/ResumeGeneratorPage.vue`
 - [X] T081 [US1] Add route for resume generator page to Vue Router in `client/apps/webapp/src/router/index.ts`
@@ -267,7 +267,7 @@
 - [X] T113 [US5] Add error handling for timeout errors (HTTP 504) in GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeExceptionHandler.kt`
 - [X] T114 [US5] Add error handling for Docker execution errors (HTTP 500) in GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeExceptionHandler.kt`
 - [X] T115 [US5] Create user-friendly error messages (no technical details exposed) in i18n files in `server/engine/src/main/resources/messages/messages.properties` and `messages_es.properties`
-- [X] T116 [US5] Add error state management to Pinia store in `client/apps/webapp/src/resume/stores/resumeStore.ts`
+- [X] T116 [US5] Add error state management to Pinia store in `client/apps/webapp/src/resume/stores/resume.store.ts`
 - [X] T117 [US5] Create ErrorDisplay component with retry button in `client/apps/webapp/src/resume/components/ErrorDisplay.vue`
 - [X] T118 [US5] Implement retry logic that preserves form data in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
 - [X] T119 [US5] Add specific error messages for different failure types (timeout, compilation, Docker) in `client/apps/webapp/src/resume/components/ErrorDisplay.vue`

@@ -1,4 +1,4 @@
-package com.loomify.resume.domain.model
+package com.loomify.resume.domain
 
 /**
  * Entity representing an award entry in a resume.

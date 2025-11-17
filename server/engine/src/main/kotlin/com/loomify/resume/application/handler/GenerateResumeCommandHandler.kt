@@ -2,8 +2,8 @@ package com.loomify.resume.application.handler
 
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.command.Locale
-import com.loomify.resume.domain.port.PdfGenerator
-import com.loomify.resume.domain.port.TemplateRenderer
+import com.loomify.resume.domain.PdfGenerator
+import com.loomify.resume.domain.TemplateRenderer
 import java.io.InputStream
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -40,15 +40,15 @@ class GenerateResumeCommandHandler(
             "Resume generation started - requestId={}, locale={}, hasWork={}, hasEducation={}, hasSkills={}",
             requestId,
             locale.code,
-            command.resumeData.work.isNotEmpty(),
-            command.resumeData.education.isNotEmpty(),
-            command.resumeData.skills.isNotEmpty(),
+            command.resume.work.isNotEmpty(),
+            command.resume.education.isNotEmpty(),
+            command.resume.skills.isNotEmpty(),
         )
 
         return Mono.defer {
             // Step 1: Render LaTeX template with resume data
             logger.debug("Rendering template - requestId={}", requestId)
-            val latexSource = templateRenderer.render(command.resumeData, locale.code)
+            val latexSource = templateRenderer.render(command.resume, locale.code)
 
             // Step 2: Generate PDF from LaTeX source
             logger.debug("Generating PDF - requestId={}", requestId)

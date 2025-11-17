@@ -17,8 +17,8 @@ infrastructure/
 │   └── index.ts
 │
 ├── store/                 # State Management (Pinia)
-│   ├── resumeStore.ts     # Main Resume store
-│   ├── resumeStore.test.ts
+│   ├── resume.store.ts     # Main Resume store
+│   ├── resume.store.test.ts
 │   └── README.md
 │
 └── validation/            # Validators (Adapters)
@@ -87,12 +87,12 @@ app.mount('#app')
 ### Usage in Components
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore'
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store'
 
-const resumeStore = useResumeStore()
+const resume.store = useResumeStore()
 
 // Set a resume
-resumeStore.setResume({
+resume.store.setResume({
   basics: {
     name: "John Doe",
     email: "john@example.com",
@@ -100,16 +100,16 @@ resumeStore.setResume({
 })
 
 // Automatic validation
-console.log(resumeStore.isValid) // true/false
+console.log(resume.store.isValid) // true/false
 
 // Manual validation
-const errors = resumeStore.validateResume()
+const errors = resume.store.validateResume()
 console.log(errors) // true/false
 
 // Generate PDF
 async function downloadPDF() {
   try {
-    const pdf = await resumeStore.generatePdf('en')
+    const pdf = await resume.store.generatePdf('en')
 
     // Create download link
     const url = URL.createObjectURL(pdf)
@@ -142,7 +142,7 @@ async function downloadPDF() {
 │              INFRASTRUCTURE LAYER                       │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │ JsonResumeValidator (Adapter)                    │  │
-│  │ resumeStore (State Management)                   │  │
+│  │ resume.store (State Management)                   │  │
 │  │ DI Configuration (Wiring)                        │  │
 │  └──────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
@@ -175,7 +175,7 @@ const validator = getValidator() // Injected via DI
 pnpm --filter @loomify/webapp test:unit JsonResumeValidator
 
 # Store tests
-pnpm --filter @loomify/webapp test:unit resumeStore
+pnpm --filter @loomify/webapp test:unit resume.store
 
 # All resume tests
 pnpm --filter @loomify/webapp test:unit resume
@@ -186,7 +186,7 @@ pnpm --filter @loomify/webapp test:unit resume
 | Module              | Tests | Status |
 | ------------------- | ----- | ------ |
 | JsonResumeValidator | 15    | ✅ 100% |
-| resumeStore         | 15    | ✅ 100% |
+| resume.store         | 15    | ✅ 100% |
 
 ## Extension
 

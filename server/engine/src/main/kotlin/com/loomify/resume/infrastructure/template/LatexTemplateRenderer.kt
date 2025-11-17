@@ -2,8 +2,8 @@ package com.loomify.resume.infrastructure.template
 
 import com.loomify.resume.domain.exception.LaTeXInjectionException
 import com.loomify.resume.domain.exception.TemplateRenderingException
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.port.TemplateRenderer
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.TemplateRenderer
 import com.loomify.resume.infrastructure.template.mapper.ResumeTemplateMapper
 import com.loomify.resume.infrastructure.template.renders.UrlRenderer
 import com.loomify.resume.infrastructure.template.validator.TemplateValidator
@@ -40,13 +40,13 @@ class LatexTemplateRenderer(
     private val i18nCache = ConcurrentHashMap<String, Map<String, String>>()
 
     @Suppress("TooGenericExceptionCaught")
-    override fun render(resumeData: ResumeData, locale: String): String {
+    override fun render(resume: Resume, locale: String): String {
         try {
             // Security check: Scan for malicious LaTeX commands
-            TemplateValidator.validateContent(resumeData)
+            TemplateValidator.validateContent(resume)
 
             // Convert domain model to template-friendly model
-            val templateModel = ResumeTemplateMapper.toTemplateModel(resumeData)
+            val templateModel = ResumeTemplateMapper.toTemplateModel(resume)
 
             // Load i18n translations for the specified locale (cached)
             val i18nMap = loadI18nTranslations(locale)

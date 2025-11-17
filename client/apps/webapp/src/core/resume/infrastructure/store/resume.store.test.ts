@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume.ts";
-import { useResumeStore } from "./resumeStore.ts";
+import { useResumeStore } from "./resume.store.ts";
 
 // Mock the ResumeHttpClient
 vi.mock("@/core/resume/infrastructure/http/ResumeHttpClient", () => {

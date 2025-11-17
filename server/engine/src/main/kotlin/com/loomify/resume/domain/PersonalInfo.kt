@@ -1,6 +1,7 @@
-package com.loomify.resume.domain.model
+package com.loomify.resume.domain
 
 import com.loomify.common.domain.vo.email.Email
+import java.net.URI
 import java.util.Locale
 
 /**
@@ -61,7 +62,7 @@ value class Url private constructor(val value: String) {
             require(value.isNotBlank()) { "URL cannot be blank" }
 
             val normalized = value.trim()
-            val uri = runCatching { java.net.URI(normalized) }
+            val uri = runCatching { URI(normalized) }
                 .getOrElse { throw IllegalArgumentException("Invalid URL format: ${it.message}") }
 
             val scheme = uri.scheme?.lowercase(Locale.ROOT)

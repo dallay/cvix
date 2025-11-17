@@ -27,7 +27,7 @@ This document explains how the presentation layer (`ResumeForm.vue`) is connecte
 ┌────────────────────▼─▼────────────────────────────────────┐
 │              INFRASTRUCTURE LAYER                          │
 │  ┌───────────────────────────────────────────────────────┐ │
-│  │ resumeStore (Pinia)                                   │ │
+│  │ resume.store (Pinia)                                   │ │
 │  │   - Validates resume data                             │ │
 │  │   - Generates PDFs                                    │ │
 │  │   - Manages generation state                          │ │
@@ -107,7 +107,7 @@ The composable watches all form fields and automatically validates when they cha
 watch(
   resume,
   (newResume) => {
-    resumeStore.setResume(newResume)
+    resume.store.setResume(newResume)
   },
   { deep: true }
 )
@@ -249,7 +249,7 @@ basics.value.name changes
        ↓
 watch() triggers
        ↓
-resumeStore.setResume(resume)
+resume.store.setResume(resume)
        ↓
 Validator validates resume
        ↓
@@ -281,7 +281,7 @@ handleGeneratePdf() called
        ↓
 generatePdf() called on composable
        ↓
-resumeStore.generatePdf() called
+resume.store.generatePdf() called
        ↓
 ResumeHttpClient.generatePdf() (via DI)
        ↓
@@ -358,7 +358,7 @@ See `useResumeForm.test.ts` for test examples.
 
 ```vue
 <script setup>
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore'
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store'
 
 const store = useResumeStore() // ❌ Don't do this
 </script>

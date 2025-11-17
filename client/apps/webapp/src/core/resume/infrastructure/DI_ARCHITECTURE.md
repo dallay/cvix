@@ -29,8 +29,8 @@ src/core/resume/
 │   │   └── index.ts
 │   │
 │   ├── store/                       # State Management
-│   │   ├── resumeStore.ts           # Pinia store (consumes validator)
-│   │   └── resumeStore.test.ts
+│   │   ├── resume.store.ts           # Pinia store (consumes validator)
+│   │   └── resume.store.test.ts
 │   │
 │   └── validation/                  # Validators (adapters)
 │       ├── JsonResumeValidator.ts   # Concrete implementation
@@ -53,7 +53,7 @@ src/core/resume/
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    resumeStore.ts                           │
+│                    resume.store.ts                           │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │ function getValidator(): ResumeValidator {            │  │
 │  │   const instance = getCurrentInstance()              │  │
@@ -91,7 +91,7 @@ export function setupResumeDI(app: App): void {
 
 **Purpose**: Registers dependencies in the Vue container
 
-### 3. Store with DI (`store/resumeStore.ts`)
+### 3. Store with DI (`store/resume.store.ts`)
 
 ```typescript
 function getValidator(): ResumeValidator {
@@ -134,7 +134,7 @@ app.mount('#app');
 
 ```typescript
 <script setup lang="ts">
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 
 const resumeStore = useResumeStore();
 
@@ -147,8 +147,8 @@ const resume = {
   // ...
 };
 
-resumeStore.setResume(resume);
-console.log(resumeStore.isValid); // true/false (automatically validated)
+resume.store.setResume(resume);
+console.log(resume.store.isValid); // true/false (automatically validated)
 </script>
 ```
 
@@ -188,7 +188,7 @@ If in the future you need to test with a mock validator, you could extend the ap
 ### 2. **Dependency Inversion Principle (SOLID)**
 ```
 ┌──────────────────────────────┐
-│     resumeStore.ts           │  ← Depends on abstraction
+│     resume.store.ts           │  ← Depends on abstraction
 │   (depends on interface)     │
 └──────────┬───────────────────┘
            │ uses
@@ -239,7 +239,7 @@ export function setupResumeDI(app: App): void {
 
 **3. Consume in the store:**
 ```typescript
-// store/resumeStore.ts
+// store/resume.store.ts
 function getGenerator(): ResumeGenerator {
   const instance = getCurrentInstance();
   if (instance?.appContext.provides[RESUME_GENERATOR_KEY as symbol]) {
