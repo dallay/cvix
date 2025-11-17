@@ -1,0 +1,58 @@
+{
+	"resume": {
+		"actions": {
+			"descriptions": {
+				"education": "Add your education history",
+				"references": "Add professional references",
+				"awards": "Add your awards and honors"
+			},
+			"labels": {
+				"education": "Education #{number}",
+				"course": "Course #{number}",
+				"reference": "Reference #{number}",
+				"award": "Award #{number}"
+			},
+			"empty": {
+				"references": "No references added yet",
+				"awards": "No awards added yet"
+			},
+			"addFirstReference": "Add your first reference",
+			"addFirstAward": "Add your first award"
+		},
+		"buttons": {
+			"addEducation": "Add Education",
+			"addCourse": "Add Course",
+			"addReference": "Add Reference",
+			"addAward": "Add Award"
+		},
+		"fields": {
+			"institution": "Institution",
+			"url": "Website",
+			"area": "Field of Study",
+			"studyType": "Degree",
+			"startDate": "Start Date",
+			"endDate": "End Date",
+			"score": "GPA/Score",
+			"courses": "Courses",
+			"referenceName": "Reference Name",
+			"referenceText": "Reference",
+			"awardTitle": "Award Title",
+			"date": "Date",
+			"awarder": "Awarder",
+			"summary": "Summary"
+		},
+		"placeholders": {
+			"institution": "University Name",
+			"url": "https://university.edu",
+			"area": "Computer Science",
+			"studyType": "Bachelor",
+			"score": "3.8",
+			"course": "Course Name",
+			"referenceName": "Jane Doe",
+			"referenceText": "Jane was a pleasure to work with...",
+			"awardTitle": "Best Developer Award",
+			"awarder": "Company Name",
+			"awardSummary": "Description of the award"
+		}
+	}
+}

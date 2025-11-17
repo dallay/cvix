@@ -10,6 +10,25 @@ export default mergeConfig(
 			exclude: [...configDefaults.exclude, "e2e/**"],
 			root: fileURLToPath(new URL("./", import.meta.url)),
 			setupFiles: ["./vitest.setup.ts"],
+			coverage: {
+				provider: "v8",
+				reporter: ["text", "json", "html", "lcov"],
+				exclude: [
+					...(configDefaults.coverage.exclude ?? []),
+					"e2e/**",
+					"**/*.config.*",
+					"**/*.d.ts",
+					"**/index.ts",
+					"**/__tests__/**",
+					"**/tests/**",
+				],
+				thresholds: {
+					lines: 80,
+					branches: 80,
+					functions: 80,
+					statements: 80,
+				},
+			},
 		},
 	}),
 );
