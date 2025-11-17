@@ -138,7 +138,7 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 
 - **FR-001**: System MUST provide a two-column split-view layout with independent scrolling for the form (left) and preview (right)
 - **FR-002**: System MUST display a sticky Table of Contents in the left column listing all resume sections: Basics, Work, Education, Skills, Projects, Languages, Certificates, Publications, Awards, Volunteer, References
-- **FR-003**: System MUST implement accordion-style collapsible sections for each resume category in the Table of Contents
+- **FR-003**: System MUST implement accordion-style collapsible sections for each resume category in the Table of Contents, with Basics section expanded by default on initial load and all other sections collapsed
 - **FR-004**: System MUST render the live preview with a debounce of 100-150ms after any form field change
 - **FR-005**: System MUST maintain independent scroll positions between the form column and preview column
 
@@ -218,11 +218,12 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 
 #### Data Persistence
 
-- **FR-047**: System MUST automatically save form data to browser local storage or IndexedDB within 2 seconds of changes
+- **FR-047**: System MUST automatically save form data to user-selected browser storage (session storage, local storage, or IndexedDB) within 2 seconds of changes for fast local draft persistence
 - **FR-048**: System MUST display a "Last saved at [timestamp]" indicator after successful autosave
 - **FR-049**: System MUST restore autosaved data when the user returns to the application
 - **FR-050**: System MUST warn users before navigating away if there are unsaved changes
 - **FR-051**: System MUST clear autosaved data when "Reset Form" is confirmed
+- **FR-074a**: System MUST support multi-tab synchronization using BroadcastChannel with last-write-wins conflict resolution strategy based on timestamp comparison
 - **FR-075**: System MUST perform background debounced server persistence of the full resume document for authenticated users: trigger after 2s of inactivity OR at least once every 10s during continuous editing, batching rapid changes into a single save
 - **FR-076**: System MUST retry failed server persistence with exponential backoff (initial 1s, max 30s) and surface a non-blocking warning after 3 consecutive failures
 - **FR-077**: System MUST record a server-synced timestamp and display it distinct from local autosave when the last remote save succeeds
@@ -242,7 +243,7 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 
 #### Template Metadata & Validation
 
-- **FR-078**: System MUST fetch template metadata from server endpoint `/api/templates` providing `{ id, name, version, paramsSchema }` on entering the PDF Generation screen (or first template interaction)
+- **FR-078**: System MUST fetch template metadata from server endpoint `/api/templates` providing `{ id, name, version, paramsSchema }` once on PDF Generation screen load and cache for the active session duration
 - **FR-079**: System MUST validate user-specified template parameter values against `paramsSchema` before applying them to preview or sending them for PDF generation
 - **FR-080**: System MUST cache fetched template metadata for the active session and refresh it only if `ETag` or `version` changes
 
@@ -259,8 +260,8 @@ As a user reviewing my resume, I want to click on a section in the preview pane 
 
 #### Performance
 
-- **FR-067**: System MUST render preview updates within 150ms of form changes for optimal user experience
-- **FR-068**: System MUST handle resume data with up to 50 work experiences without performance degradation
+- **FR-067**: System MUST render preview updates within 150ms (p95 latency) of form changes for optimal user experience
+- **FR-068**: System MUST handle resume data with up to 50 work experiences while maintaining preview update times <300ms (p95 latency)
 - **FR-069**: System MUST handle text fields with up to 10,000 characters without lag
 
 #### Error Handling
