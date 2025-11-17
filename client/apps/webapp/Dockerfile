@@ -1,7 +1,7 @@
 # Multi-stage build for Vue.js webapp
 
 # Build stage
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
