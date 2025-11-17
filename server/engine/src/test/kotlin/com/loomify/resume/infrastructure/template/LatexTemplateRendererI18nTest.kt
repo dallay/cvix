@@ -2,20 +2,20 @@ package com.loomify.resume.infrastructure.template
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FieldOfStudy
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.Highlight
-import com.loomify.resume.domain.model.InstitutionName
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.Skill
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.WorkExperience
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.FieldOfStudy
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.Highlight
+import com.loomify.resume.domain.InstitutionName
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
+import com.loomify.resume.domain.WorkExperience
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldNotContain
@@ -122,8 +122,8 @@ class LatexTemplateRendererI18nTest {
         result shouldContain "\\section{Experience}"
     }
 
-    private fun createResumeDataWithAllSections(): ResumeData {
-        return ResumeData(
+    private fun createResumeDataWithAllSections(): Resume {
+        return Resume(
             basics = PersonalInfo(
                 name = FullName("Juan Pérez"),
                 email = Email("juan@example.com"),

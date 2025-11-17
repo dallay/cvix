@@ -18,7 +18,7 @@ import {
 	getStorageMetadata,
 	type StorageMetadata,
 } from "@/core/resume/infrastructure/storage";
-import { useResumeStore } from "@/core/resume/infrastructure/store/resumeStore";
+import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
 import { useStoragePreference } from "@/core/settings/infrastructure/presentation/composables";
 
 const resumeStore = useResumeStore();

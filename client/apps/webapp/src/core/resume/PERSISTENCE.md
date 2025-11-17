@@ -49,7 +49,7 @@ Three browser storage implementations:
 The easiest way to use persistence is through the Pinia store:
 
 ```typescript
-import {useResumeStore} from '@/core/resume/infrastructure/store/resumeStore';
+import {useResumeStore} from '@/core/resume/infrastructure/store/resume.store';
 
 // In a component
 const resumeStore = useResumeStore();

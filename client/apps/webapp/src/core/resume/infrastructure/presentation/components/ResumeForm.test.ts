@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { Resume } from "@/core/resume/domain/Resume";
-import { useResumeStore } from "@/core/resume/infrastructure/store/resumeStore";
+import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
 import ResumeForm from "./ResumeForm.vue";
 
 // Mock vue-sonner

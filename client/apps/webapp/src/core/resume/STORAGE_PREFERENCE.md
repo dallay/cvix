@@ -126,7 +126,7 @@ app.provide(RESUME_STORAGE_KEY, resumeStorage);
 
 ### Store Integration
 
-The `resumeStore` now has a mutable `currentStorage` ref that can be swapped at runtime:
+The store instance now has a mutable `currentStorage` ref that can be swapped at runtime:
 
 ```typescript
 async function changeStorageStrategy(
@@ -161,7 +161,7 @@ import StorageSelector from '@/components/StorageSelector.vue';
 ### Programmatically Change Storage
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 import { createResumeStorage } from '@/core/resume/infrastructure/storage';
 
 const resumeStore = useResumeStore();
@@ -176,7 +176,7 @@ await resumeStore.changeStorageStrategy(
 ### Check Current Storage
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 
 const resumeStore = useResumeStore();
 console.log(resumeStore.currentStorageType); // 'session' | 'local' | 'indexeddb'

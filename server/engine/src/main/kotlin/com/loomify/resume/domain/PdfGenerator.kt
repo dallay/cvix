@@ -1,4 +1,4 @@
-package com.loomify.resume.domain.port
+package com.loomify.resume.domain
 
 import java.io.InputStream
 import reactor.core.publisher.Mono

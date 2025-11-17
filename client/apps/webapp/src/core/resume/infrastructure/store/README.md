@@ -24,8 +24,8 @@ infrastructure/
 │   ├── di.ts            # DI configuration
 │   └── index.ts         # Barrel export
 ├── store/
-│   ├── resumeStore.ts   # Pinia store
-│   └── resumeStore.test.ts
+│   ├── resume.store.ts   # Pinia store
+│   └── resume.store.test.ts
 └── validation/
     └── JsonResumeValidator.ts
 ```
@@ -50,7 +50,7 @@ app.mount('#app');
 ### 2. Use the store in components
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 
 export default {
   setup() {
@@ -65,7 +65,7 @@ export default {
     resumeStore.setResume(resume);
     console.log(resumeStore.isValid); // true/false
 
-    return { resumeStore };
+    return { resume.store };
   }
 };
 ```
@@ -206,7 +206,7 @@ try {
 
 ```typescript
 import { setActivePinia, createPinia } from 'pinia';
-import { useResumeStore } from './resumeStore';
+import { useResumeStore } from './resume.store';
 
 describe('Resume Store', () => {
   beforeEach(() => {
@@ -230,7 +230,7 @@ describe('Resume Store', () => {
 import { createApp } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { RESUME_VALIDATOR_KEY } from '@/core/resume/infrastructure/di';
-import { useResumeStore } from './resumeStore';
+import { useResumeStore } from './resume.store';
 
 describe('Resume Store with Mock Validator', () => {
   it('should use injected validator', () => {

@@ -70,7 +70,7 @@
 | `src/authentication/presentation/stores/authStore.ts`      | 36.92%  | 82            | **HIGH**   |
 | `src/shared/BaseHttpClient.ts`                             | 11.53%  | 182           | **HIGH**   |
 | `src/workspace/infrastructure/router/workspaceGuard.ts`    | 3.57%   | 54            | **MEDIUM** |
-| `src/resume/stores/resumeStore.ts`                         | 53.48%  | 67            | **MEDIUM** |
+| `src/resume/stores/resume.store.ts`                         | 53.48%  | 67            | **MEDIUM** |
 | `src/resume/components/SkillsSection.vue`                  | 32.43%  | 23            | **MEDIUM** |
 | `src/resume/validation/resumeSchema.ts`                    | 50%     | 7             | **LOW**    |
 
@@ -84,7 +84,7 @@
 | EducationSection.vue      | 57.69%   |
 | SkillsSection.vue         | 32.43%   |
 | useResumeGeneration.ts    | 100%     |
-| resumeStore.ts            | 53.48%   |
+| resume.store.ts            | 53.48%   |
 | resumeSchema.ts           | 50%      |
 
 ### Action Items for Frontend
@@ -97,7 +97,7 @@
    - Add `BaseHttpClient` tests (182 lines)
 
 2. **Priority 2 (Medium)**: Complete resume feature tests
-   - Add `resumeStore` state management tests (67 lines)
+   - Add `resume.store` state management tests (67 lines)
    - Test `SkillsSection` component interactions (23 lines)
    - Test workspace routing guard (54 lines)
 

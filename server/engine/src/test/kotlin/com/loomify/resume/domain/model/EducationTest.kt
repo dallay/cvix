@@ -1,6 +1,10 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
+import com.loomify.resume.domain.DegreeType
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.FieldOfStudy
+import com.loomify.resume.domain.InstitutionName
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

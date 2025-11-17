@@ -1,6 +1,9 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

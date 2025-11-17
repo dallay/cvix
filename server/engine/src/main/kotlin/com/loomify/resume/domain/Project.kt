@@ -1,4 +1,4 @@
-package com.loomify.resume.domain.model
+package com.loomify.resume.domain
 
 import java.time.LocalDate
 

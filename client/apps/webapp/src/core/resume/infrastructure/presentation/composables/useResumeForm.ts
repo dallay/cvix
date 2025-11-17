@@ -23,7 +23,7 @@ import type {
 	Volunteer,
 	Work,
 } from "@/core/resume/domain/Resume";
-import { useResumeStore } from "@/core/resume/infrastructure/store/resumeStore";
+import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
 
 /**
  * Mutable version of Basics for form editing

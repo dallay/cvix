@@ -1,6 +1,6 @@
 package com.loomify.resume.application.command
 
-import com.loomify.resume.domain.model.ResumeData
+import com.loomify.resume.domain.Resume
 
 /**
  * Command to generate a PDF resume from resume data.
@@ -9,7 +9,7 @@ import com.loomify.resume.domain.model.ResumeData
  * Supported locales: "en", "es"
  */
 data class GenerateResumeCommand(
-    val resumeData: ResumeData,
+    val resume: Resume,
     val locale: Locale = Locale.EN
 )
 

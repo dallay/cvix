@@ -1,18 +1,18 @@
 package com.loomify.resume.infrastructure.template.mapper
 
-import com.loomify.resume.domain.model.Award
-import com.loomify.resume.domain.model.Certificate
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.Interest
-import com.loomify.resume.domain.model.Language
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.Project
-import com.loomify.resume.domain.model.Publication
-import com.loomify.resume.domain.model.Reference
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.Volunteer
-import com.loomify.resume.domain.model.WorkExperience
+import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Certificate
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.Interest
+import com.loomify.resume.domain.Language
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.Project
+import com.loomify.resume.domain.Publication
+import com.loomify.resume.domain.Reference
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.Volunteer
+import com.loomify.resume.domain.WorkExperience
 import com.loomify.resume.infrastructure.template.model.AwardTemplateModel
 import com.loomify.resume.infrastructure.template.model.CertificateTemplateModel
 import com.loomify.resume.infrastructure.template.model.EducationTemplateModel
@@ -36,7 +36,7 @@ import com.loomify.resume.infrastructure.template.util.LatexEscaper
  */
 object ResumeTemplateMapper {
 
-    fun toTemplateModel(resume: ResumeData): ResumeTemplateModel =
+    fun toTemplateModel(resume: Resume): ResumeTemplateModel =
         ResumeTemplateModel(
             basics = mapBasics(resume.basics),
             work = resume.work.map { mapWork(it) },

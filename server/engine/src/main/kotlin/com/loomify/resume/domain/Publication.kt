@@ -1,4 +1,4 @@
-package com.loomify.resume.domain.model
+package com.loomify.resume.domain
 
 /**
  * Entity representing a publication in a resume.

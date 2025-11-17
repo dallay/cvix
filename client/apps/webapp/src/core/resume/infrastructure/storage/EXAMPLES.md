@@ -89,7 +89,7 @@ Switch storage strategies dynamically based on user actions:
 
 ```typescript
 // In a settings component
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 import { LocalStorageResumeStorage } from '@/core/resume/infrastructure/storage';
 
 async function upgradeToLocalStorage() {
@@ -185,7 +185,7 @@ Complete example of a settings component with storage selection:
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore';
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store';
 import {
   SessionStorageResumeStorage,
   LocalStorageResumeStorage,

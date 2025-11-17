@@ -292,7 +292,7 @@ client/apps/webapp/src/
 │   │   ├── useResumeGeneration.ts  # API calls
 │   │   └── useResumeValidation.ts  # Form validation logic
 │   ├── stores/
-│   │   └── resumeStore.ts          # Pinia store
+│   │   └── resume.store.ts          # Pinia store
 │   ├── types/
 │   │   └── Resume.ts               # TypeScript types (JSON Resume schema)
 │   ├── schemas/

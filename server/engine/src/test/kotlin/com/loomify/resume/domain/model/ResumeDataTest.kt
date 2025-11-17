@@ -1,6 +1,24 @@
 package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
+import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.DegreeType
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.FieldOfStudy
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.Highlight
+import com.loomify.resume.domain.InstitutionName
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
+import com.loomify.resume.domain.Summary
+import com.loomify.resume.domain.Url
+import com.loomify.resume.domain.WorkExperience
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.shouldBeWithinPercentageOf
 import io.kotest.matchers.shouldBe
@@ -24,7 +42,7 @@ class ResumeDataTest {
         val workExperience = listOf(createValidWorkExperience())
 
         // Act
-        val resumeData = ResumeData(
+        val resume = Resume(
             basics = personalInfo,
             work = workExperience,
             education = emptyList(),
@@ -32,9 +50,9 @@ class ResumeDataTest {
         )
 
         // Assert
-        resumeData shouldNotBe null
-        resumeData.basics shouldBe personalInfo
-        resumeData.work shouldBe workExperience
+        resume shouldNotBe null
+        resume.basics shouldBe personalInfo
+        resume.work shouldBe workExperience
     }
 
     @Test
@@ -44,7 +62,7 @@ class ResumeDataTest {
         val education = listOf(createValidEducation())
 
         // Act
-        val resumeData = ResumeData(
+        val resume = Resume(
             basics = personalInfo,
             work = emptyList(),
             education = education,
@@ -52,8 +70,8 @@ class ResumeDataTest {
         )
 
         // Assert
-        resumeData shouldNotBe null
-        resumeData.education shouldBe education
+        resume shouldNotBe null
+        resume.education shouldBe education
     }
 
     @Test
@@ -63,7 +81,7 @@ class ResumeDataTest {
         val skills = listOf(createValidSkillCategory())
 
         // Act
-        val resumeData = ResumeData(
+        val resume = Resume(
             basics = personalInfo,
             work = emptyList(),
             education = emptyList(),
@@ -71,8 +89,8 @@ class ResumeDataTest {
         )
 
         // Assert
-        resumeData shouldNotBe null
-        resumeData.skills shouldBe skills
+        resume shouldNotBe null
+        resume.skills shouldBe skills
     }
 
     @Test
@@ -82,7 +100,7 @@ class ResumeDataTest {
 
         // Act & Assert
         shouldThrow<IllegalArgumentException> {
-            ResumeData(
+            Resume(
                 basics = personalInfo,
                 work = emptyList(),
                 education = emptyList(),
@@ -94,7 +112,7 @@ class ResumeDataTest {
     @Test
     fun `should calculate content metrics for skills-heavy resume`() {
         // Arrange
-        val resumeData = ResumeData(
+        val resume = Resume(
             basics = createValidPersonalInfo(),
             work = emptyList(),
             education = emptyList(),
@@ -105,7 +123,7 @@ class ResumeDataTest {
         )
 
         // Act
-        val metrics = resumeData.contentMetrics()
+        val metrics = resume.contentMetrics()
 
         // Assert
         metrics.skillsCount shouldBe 6
@@ -117,7 +135,7 @@ class ResumeDataTest {
     @Test
     fun `should calculate content metrics for experience-heavy resume`() {
         // Arrange
-        val resumeData = ResumeData(
+        val resume = Resume(
             basics = createValidPersonalInfo(),
             work = listOf(
                 createValidWorkExperience(startDate = "2020-01-01", endDate = "2022-12-31"),
@@ -128,7 +146,7 @@ class ResumeDataTest {
         )
 
         // Act
-        val metrics = resumeData.contentMetrics()
+        val metrics = resume.contentMetrics()
 
         // Assert
         metrics.experienceEntries shouldBe 2
@@ -140,7 +158,7 @@ class ResumeDataTest {
     private fun createValidPersonalInfo() = PersonalInfo(
         name = FullName("John Doe"),
         label = JobTitle("Software Engineer"),
-        email = com.loomify.common.domain.vo.email.Email("john.doe@example.com"),
+        email = Email("john.doe@example.com"),
         phone = PhoneNumber("+1234567890"),
         url = Url("https://johndoe.com"),
         summary = Summary("Experienced software engineer"),

@@ -1,34 +1,34 @@
 package com.loomify.resume.infrastructure.template.validator
 
 import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Certificate
+import com.loomify.resume.domain.CompanyName
+import com.loomify.resume.domain.DegreeType
+import com.loomify.resume.domain.Education
+import com.loomify.resume.domain.FieldOfStudy
+import com.loomify.resume.domain.FullName
+import com.loomify.resume.domain.Highlight
+import com.loomify.resume.domain.InstitutionName
+import com.loomify.resume.domain.Interest
+import com.loomify.resume.domain.JobTitle
+import com.loomify.resume.domain.Language
+import com.loomify.resume.domain.Location
+import com.loomify.resume.domain.PersonalInfo
+import com.loomify.resume.domain.PhoneNumber
+import com.loomify.resume.domain.Project
+import com.loomify.resume.domain.Publication
+import com.loomify.resume.domain.Reference
+import com.loomify.resume.domain.Resume
+import com.loomify.resume.domain.Skill
+import com.loomify.resume.domain.SkillCategory
+import com.loomify.resume.domain.SkillCategoryName
+import com.loomify.resume.domain.SocialProfile
+import com.loomify.resume.domain.Summary
+import com.loomify.resume.domain.Url
+import com.loomify.resume.domain.Volunteer
+import com.loomify.resume.domain.WorkExperience
 import com.loomify.resume.domain.exception.LaTeXInjectionException
-import com.loomify.resume.domain.model.Award
-import com.loomify.resume.domain.model.Certificate
-import com.loomify.resume.domain.model.CompanyName
-import com.loomify.resume.domain.model.DegreeType
-import com.loomify.resume.domain.model.Education
-import com.loomify.resume.domain.model.FieldOfStudy
-import com.loomify.resume.domain.model.FullName
-import com.loomify.resume.domain.model.Highlight
-import com.loomify.resume.domain.model.InstitutionName
-import com.loomify.resume.domain.model.Interest
-import com.loomify.resume.domain.model.JobTitle
-import com.loomify.resume.domain.model.Language
-import com.loomify.resume.domain.model.Location
-import com.loomify.resume.domain.model.PersonalInfo
-import com.loomify.resume.domain.model.PhoneNumber
-import com.loomify.resume.domain.model.Project
-import com.loomify.resume.domain.model.Publication
-import com.loomify.resume.domain.model.Reference
-import com.loomify.resume.domain.model.ResumeData
-import com.loomify.resume.domain.model.Skill
-import com.loomify.resume.domain.model.SkillCategory
-import com.loomify.resume.domain.model.SkillCategoryName
-import com.loomify.resume.domain.model.SocialProfile
-import com.loomify.resume.domain.model.Summary
-import com.loomify.resume.domain.model.Url
-import com.loomify.resume.domain.model.Volunteer
-import com.loomify.resume.domain.model.WorkExperience
 import java.time.LocalDate
 import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -213,7 +213,7 @@ internal class TemplateValidatorTest {
     @Order(8)
     fun `should detect malicious LaTeX commands in all fields`(
         @Suppress("UNUSED_PARAMETER") field: String,
-        maliciousResume: ResumeData
+        maliciousResume: Resume
     ): LaTeXInjectionException? =
         assertThrows(LaTeXInjectionException::class.java) {
             TemplateValidator.validateContent(maliciousResume)
@@ -221,7 +221,7 @@ internal class TemplateValidatorTest {
     companion object {
         private const val MALICIOUS = "\\input{evil}" // Matches DANGEROUS_PATTERN
 
-        private fun baseResume(): ResumeData {
+        private fun baseResume(): Resume {
             val basics = personalInfo()
             val work = experiences()
             val education = educations()
@@ -234,7 +234,7 @@ internal class TemplateValidatorTest {
             val interests = interests()
             val references = references()
             val languages = languages()
-            return ResumeData(
+            return Resume(
                 basics = basics,
                 work = work,
                 volunteer = volunteer,
@@ -700,7 +700,7 @@ internal class TemplateValidatorTest {
 
         private fun arg(
             field: String,
-            resume: ResumeData
+            resume: Resume
         ): Arguments =
             Arguments.of(field, resume)
     }

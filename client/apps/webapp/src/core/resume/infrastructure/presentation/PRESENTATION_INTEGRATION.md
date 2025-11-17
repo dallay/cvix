@@ -27,7 +27,7 @@ This document explains how the presentation layer (`ResumeForm.vue`) is connecte
 ┌────────────────────▼─▼────────────────────────────────────┐
 │              INFRASTRUCTURE LAYER                          │
 │  ┌───────────────────────────────────────────────────────┐ │
-│  │ resumeStore (Pinia)                                   │ │
+│  │ resume.store (Pinia)                                   │ │
 │  │   - Validates resume data                             │ │
 │  │   - Generates PDFs                                    │ │
 │  │   - Manages generation state                          │ │
@@ -358,7 +358,7 @@ See `useResumeForm.test.ts` for test examples.
 
 ```vue
 <script setup>
-import { useResumeStore } from '@/core/resume/infrastructure/store/resumeStore'
+import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store'
 
 const store = useResumeStore() // ❌ Don't do this
 </script>

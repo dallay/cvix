@@ -74,16 +74,16 @@ function getStorage(): ResumeStorage {
  * @example
  * // In a component
  * const resumeStore = useResumeStore();
- * resumeStore.setResume(myResume);
+ * resume.store.setResume(myResume);
  *
  * // Save to storage
- * await resumeStore.saveToStorage();
+ * await resume.store.saveToStorage();
  *
  * // Load from storage
- * await resumeStore.loadFromStorage();
+ * await resume.store.loadFromStorage();
  *
  * // Generate PDF
- * const pdf = await resumeStore.generatePdf('en');
+ * const pdf = await resume.store.generatePdf('en');
  */
 export const useResumeStore = defineStore("resume", () => {
 	// Get dependency instances
@@ -245,7 +245,7 @@ export const useResumeStore = defineStore("resume", () => {
 			isLoading.value = false;
 			storageError.value =
 				error instanceof Error ? error : new Error("Unknown storage error");
-			console.error("[resumeStore] Error loading from storage:", error);
+			console.error("[resume.store] Error loading from storage:", error);
 			throw error;
 		}
 	}
