@@ -47,7 +47,10 @@ class ResumeR2dbcRepository(
 
     override suspend fun deleteById(id: UUID, userId: UUID) {
         log.debug("Deleting resume by id: {}, userId: {}", id, userId)
-        resumeReactiveR2dbcRepository.deleteByIdAndUserId(id, userId)
+        val rowsAffected = resumeReactiveR2dbcRepository.deleteByIdAndUserId(id, userId)
+        if (rowsAffected == 0L) {
+            log.warn("No resume found to delete for id: {}, userId: {}", id, userId)
+        }
     }
 
     override suspend fun existsById(id: UUID, userId: UUID): Boolean {
