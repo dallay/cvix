@@ -4,7 +4,7 @@ import com.loomify.common.domain.AggregateRoot
 import com.loomify.engine.users.domain.UserId
 import com.loomify.engine.workspace.domain.event.WorkspaceCreatedEvent
 import com.loomify.engine.workspace.domain.event.WorkspaceUpdatedEvent
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -27,9 +27,9 @@ data class Workspace(
     val ownerId: UserId,
     val isDefault: Boolean = false,
     val members: MutableSet<UserId> = mutableSetOf(),
-    override val createdAt: LocalDateTime = LocalDateTime.now(),
+    override val createdAt: Instant = Instant.now(),
     override val createdBy: String = "system",
-    override var updatedAt: LocalDateTime? = createdAt,
+    override var updatedAt: Instant? = createdAt,
     override var updatedBy: String? = null
 ) : AggregateRoot<WorkspaceId>() {
 
@@ -88,7 +88,7 @@ data class Workspace(
         if (description != null) {
             this.description = description
         }
-        this.updatedAt = LocalDateTime.now()
+        this.updatedAt = Instant.now()
 
         // Record the workspace updated event
         record(

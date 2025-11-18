@@ -1,11 +1,11 @@
 package com.loomify.resume.infrastructure.template.mapper
 
 import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.Certificate
 import com.loomify.resume.domain.Education
 import com.loomify.resume.domain.Interest
 import com.loomify.resume.domain.Language
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.Project
 import com.loomify.resume.domain.Publication
 import com.loomify.resume.domain.Reference
@@ -14,12 +14,12 @@ import com.loomify.resume.domain.SkillCategory
 import com.loomify.resume.domain.Volunteer
 import com.loomify.resume.domain.WorkExperience
 import com.loomify.resume.infrastructure.template.model.AwardTemplateModel
+import com.loomify.resume.infrastructure.template.model.BasicsTemplateModel
 import com.loomify.resume.infrastructure.template.model.CertificateTemplateModel
 import com.loomify.resume.infrastructure.template.model.EducationTemplateModel
 import com.loomify.resume.infrastructure.template.model.InterestTemplateModel
 import com.loomify.resume.infrastructure.template.model.LanguageTemplateModel
 import com.loomify.resume.infrastructure.template.model.LocationTemplateModel
-import com.loomify.resume.infrastructure.template.model.PersonalInfoTemplateModel
 import com.loomify.resume.infrastructure.template.model.ProjectTemplateModel
 import com.loomify.resume.infrastructure.template.model.PublicationTemplateModel
 import com.loomify.resume.infrastructure.template.model.ReferenceTemplateModel
@@ -52,8 +52,8 @@ object ResumeTemplateMapper {
             references = resume.references.map { mapReference(it) },
         )
 
-    private fun mapBasics(basics: PersonalInfo): PersonalInfoTemplateModel =
-        PersonalInfoTemplateModel(
+    private fun mapBasics(basics: Basics): BasicsTemplateModel =
+        BasicsTemplateModel(
             name = LatexEscaper.escape(basics.name.value),
             label = basics.label?.value?.let { LatexEscaper.escape(it) },
             image = basics.image?.value,

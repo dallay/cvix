@@ -308,7 +308,7 @@ components:
         - basics
       properties:
         basics:
-          $ref: '#/components/schemas/PersonalInfo'
+          $ref: '#/components/schemas/Basics'
         work:
           type: array
           description: Work experience entries
@@ -340,7 +340,7 @@ components:
             $ref: '#/components/schemas/Project'
           maxItems: 10
 
-    PersonalInfo:
+    Basics:
       type: object
       description: Basic personal information (JSON Resume 'basics' section)
       required:

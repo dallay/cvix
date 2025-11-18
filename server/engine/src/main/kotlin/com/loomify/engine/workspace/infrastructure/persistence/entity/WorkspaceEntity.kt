@@ -3,8 +3,8 @@ package com.loomify.engine.workspace.infrastructure.persistence.entity
 import com.loomify.common.domain.AuditableEntity
 import com.loomify.engine.workspace.domain.Workspace.Companion.NAME_MAX_LENGTH
 import jakarta.validation.constraints.Size
-import java.time.LocalDateTime
-import java.util.*
+import java.time.Instant
+import java.util.UUID
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
@@ -44,7 +44,7 @@ data class WorkspaceEntity(
 
     @CreatedDate
     @Column("created_at")
-    override val createdAt: LocalDateTime,
+    override val createdAt: Instant,
 
     @LastModifiedBy
     @Column("updated_by")
@@ -53,7 +53,7 @@ data class WorkspaceEntity(
 
     @LastModifiedDate
     @Column("updated_at")
-    override var updatedAt: LocalDateTime? = null
+    override var updatedAt: Instant? = null
 ) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
     /**
      * This method returns the unique identifier of the workspace.

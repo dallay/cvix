@@ -100,7 +100,7 @@ All resume components have been reviewed and meet WCAG 2.1 AA standards.
    - ✅ Form elements have labels
    - ✅ Error handling with ARIA attributes
 
-2. **PersonalInfoSection.vue** - Personal information inputs
+2. **BasicsSection.vue** - Personal information inputs
    - ✅ Input labels properly associated
    - ✅ Email and phone inputs use correct input types
    - ✅ Validation messages accessible

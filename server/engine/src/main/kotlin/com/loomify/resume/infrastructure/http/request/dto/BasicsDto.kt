@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size
  * DTO for personal information following JSON Resume 'basics' schema.
  * Maps to the 'basics' object in JSON Resume schema.
  */
-data class PersonalInfoDto(
+data class BasicsDto(
     @field:NotBlank(message = "Name is required")
     @field:Size(max = 100, message = "Name must not exceed 100 characters")
     val name: String,

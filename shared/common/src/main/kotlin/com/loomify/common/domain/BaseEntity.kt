@@ -2,7 +2,7 @@ package com.loomify.common.domain
 
 import com.loomify.common.domain.bus.event.DomainEvent
 import java.io.Serializable
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * Abstract base class for all domain entities.
@@ -12,9 +12,9 @@ import java.time.LocalDateTime
  */
 abstract class BaseEntity<ID> : Serializable {
     abstract val id: ID
-    open val createdAt: LocalDateTime = LocalDateTime.now()
+    open val createdAt: Instant = Instant.now()
     open val createdBy: String = "system"
-    open val updatedAt: LocalDateTime? = null
+    open val updatedAt: Instant? = null
     open val updatedBy: String? = null
     private val domainEvents: MutableList<DomainEvent> = mutableListOf()
 

@@ -155,7 +155,7 @@ This document captures research findings for technical unknowns identified durin
 ```kotlin
 // Domain entities (pure Kotlin, no framework deps)
 data class ResumeData(
-    val basics: PersonalInfo,
+    val basics: Basics,
     val work: List<WorkExperience> = emptyList(),
     val education: List<Education> = emptyList(),
     val skills: List<SkillCategory> = emptyList(),
@@ -163,7 +163,7 @@ data class ResumeData(
     val projects: List<Project> = emptyList()
 )
 
-data class PersonalInfo(
+data class Basics(
     val name: String,          // Max 100 chars (FR-004)
     val label: String?,        // Job title, max 100 chars
     val email: String,

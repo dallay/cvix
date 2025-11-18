@@ -2,10 +2,11 @@ package com.loomify.resume.domain
 
 /**
  * Aggregate root representing a complete resume.
+ * Aligns with JSON Resume schema specification.
  * Enforces business rule BR-001: Resume must contain at least one of work experience, education, or skills.
  */
 data class Resume(
-    val basics: PersonalInfo,
+    val basics: Basics,
     val work: List<WorkExperience> = emptyList(),
     val volunteer: List<Volunteer> = emptyList(),
     val education: List<Education> = emptyList(),

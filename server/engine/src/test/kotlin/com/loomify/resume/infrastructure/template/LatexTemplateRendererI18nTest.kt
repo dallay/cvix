@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.template
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.CompanyName
 import com.loomify.resume.domain.Education
 import com.loomify.resume.domain.FieldOfStudy
@@ -9,7 +10,6 @@ import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.Highlight
 import com.loomify.resume.domain.InstitutionName
 import com.loomify.resume.domain.JobTitle
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.Skill
@@ -124,7 +124,7 @@ class LatexTemplateRendererI18nTest {
 
     private fun createResumeDataWithAllSections(): Resume {
         return Resume(
-            basics = PersonalInfo(
+            basics = Basics(
                 name = FullName("Juan Pérez"),
                 email = Email("juan@example.com"),
                 phone = PhoneNumber("+34 123 456 789"),

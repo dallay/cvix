@@ -48,6 +48,7 @@ describe("ResumeGeneratorService", () => {
 
 		mockResumeValidator = {
 			validate: vi.fn(),
+			getErrors: vi.fn(() => []),
 		};
 
 		service = new ResumeGeneratorService(
