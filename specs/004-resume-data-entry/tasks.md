@@ -217,7 +217,8 @@ This is a monorepo with:
 - [ ] T077 [P] [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons
 - [ ] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce
 - [ ] T079 [P] [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters
-- [ ] T080 [P] [US5], T081 [US5] Use POST `/api/resume/generate` endpoint in `ResumeController` that streams binary PDF response with proper Content-Type and Content-Disposition headers. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt`
+- [ ] T080 [P] [US5] Create POST `/api/resumes/generate` endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` that streams binary PDF response with proper Content-Type and Content-Disposition headers
+- [ ] T081 [US5] Handle PDF response streaming in ResumeController with correct MIME type and download headers
 - [ ] T082 [P] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf"
 - [ ] T083 [P] [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact
 - [ ] T084 [P] [US5] Add "Generate PDF" navigation link in ResumeEditorPage utility bar that routes to ResumePdfPage
