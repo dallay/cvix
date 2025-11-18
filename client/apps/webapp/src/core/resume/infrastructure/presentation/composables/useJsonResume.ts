@@ -25,7 +25,8 @@ export interface ImportResult {
 /**
  * Composable for handling JSON Resume import/export operations.
  *
- * Provides validation, file I/O, and error formatting for JSON Resume files
+ * This composable is intended for browser-only execution in a client-side Vue 3 SPA.
+ * It provides validation, file I/O, and error formatting for JSON Resume files
  * following the JSON Resume schema v1.0.0.
  *
  * @example

@@ -48,7 +48,7 @@ export class JsonResumeValidator implements ResumeValidator {
 	 * @returns {ValidationError[]} Array of validation errors
 	 */
 	getErrors(): ValidationError[] {
-		return this.errors;
+		return [...this.errors];
 	}
 
 	/**
