@@ -5,7 +5,6 @@ import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Location
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.SocialProfile
 import com.loomify.resume.domain.Summary
