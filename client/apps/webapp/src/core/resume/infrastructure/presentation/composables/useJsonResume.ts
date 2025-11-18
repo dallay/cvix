@@ -22,7 +22,7 @@ export interface GroupedErrors {
 export interface ImportResult {
 	success: boolean;
 	data?: Resume;
-	errors?: ValidationError[];
+	errors?: ReadonlyArray<ValidationError>;
 }
 
 /**
@@ -55,7 +55,7 @@ export interface ImportResult {
 export function useJsonResume() {
 	const validator = new JsonResumeValidator();
 	const isValidating = ref(false);
-	const validationErrors = ref<ValidationError[]>([]);
+	const validationErrors = ref<ReadonlyArray<ValidationError>>([]);
 
 	/**
 	 * Populates validationErrors ref from validator's accumulated errors
@@ -80,7 +80,7 @@ export function useJsonResume() {
 	/**
 	 * Groups validation errors by resume section
 	 */
-	function groupErrors(errors: ValidationError[]): GroupedErrors {
+	function groupErrors(errors: ReadonlyArray<ValidationError>): GroupedErrors {
 		return errors.reduce((acc, error) => {
 			const section = error.section || "General";
 			acc[section] ??= [];
@@ -198,21 +198,10 @@ export function useJsonResume() {
 	 * @param data - Resume data to validate
 	 * @returns Array of validation errors (empty if valid)
 	 */
-	function validateResume(data: Resume): ValidationError[] {
-		isValidating.value = true;
-		validationErrors.value = [];
-
-		try {
-			const isValid = validator.validate(data);
-
-			if (!isValid) {
-				populateValidationErrors(validator);
-			}
-
-			return validationErrors.value;
-		} finally {
-			isValidating.value = false;
-		}
+	function validateResume(data: Resume): ReadonlyArray<ValidationError> {
+		const errors = validator.validate(data) ? [] : validator.getErrors();
+		validationErrors.value = [...errors];
+		return validationErrors.value;
 	}
 
 	return {
