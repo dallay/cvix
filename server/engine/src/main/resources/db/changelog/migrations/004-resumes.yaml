@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-resumes-table
+      author: loomify
+      changes:
+        - createTable:
+            tableName: resumes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workspace_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: data
+                  type: jsonb
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(50)
+                  defaultValue: 'system'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: varchar(50)
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+        - addForeignKeyConstraint:
+            baseTableName: resumes
+            baseColumnNames: user_id
+            constraintName: fk_resume_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: resumes
+            baseColumnNames: workspace_id
+            constraintName: fk_resume_workspace
+            referencedTableName: workspaces
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            tableName: resumes
+            indexName: idx_resumes_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: resumes
+            indexName: idx_resumes_workspace_id
+            columns:
+              - column:
+                  name: workspace_id
+        - sql:
+            sql: CREATE INDEX idx_resumes_data_gin ON resumes USING GIN (data);
+            comment: "GIN index for JSONB data column to enable efficient JSON queries"
