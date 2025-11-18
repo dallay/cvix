@@ -99,6 +99,11 @@ dependencies {
     testImplementation(libs.bundles.kotest)
     testImplementation("com.tngtech.archunit:archunit:1.4.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // C U C U M B E R
+    testImplementation("io.cucumber:cucumber-java:7.18.0")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine:7.18.0")
+    testImplementation("io.cucumber:cucumber-spring:7.18.0")
 }
 
 dependencyManagement {
