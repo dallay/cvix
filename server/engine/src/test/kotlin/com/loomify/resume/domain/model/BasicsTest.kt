@@ -2,6 +2,7 @@ package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Location
@@ -15,7 +16,7 @@ import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for PersonalInfo value object.
+ * Unit tests for Basics value object.
  *
  * Tests validation rules:
  * - Full name required, max 100 chars
@@ -24,12 +25,12 @@ import org.junit.jupiter.api.Test
  * - Summary optional, max 500 chars
  */
 @UnitTest
-class PersonalInfoTest {
+class BasicsTest {
 
     @Test
     fun `should create personal info with all fields`() {
         // Arrange & Act
-        val personalInfo = PersonalInfo(
+        val personalInfo = Basics(
             name = FullName("Jane Doe"),
             label = JobTitle("Senior Software Engineer"),
             email = Email("jane.doe@example.com"),
@@ -64,7 +65,7 @@ class PersonalInfoTest {
     @Test
     fun `should create personal info with minimum required fields`() {
         // Arrange & Act
-        val personalInfo = PersonalInfo(
+        val personalInfo = Basics(
             name = FullName("John Smith"),
             label = null,
             email = Email("john@example.com"),

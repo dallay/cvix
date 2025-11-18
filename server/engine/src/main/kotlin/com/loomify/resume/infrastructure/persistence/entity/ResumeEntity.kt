@@ -1,8 +1,14 @@
 package com.loomify.resume.infrastructure.persistence.entity
 
+import com.loomify.common.domain.AuditableEntity
+import jakarta.validation.constraints.Size
 import java.time.Instant
 import java.util.UUID
+import org.springframework.data.annotation.CreatedBy
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedBy
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
@@ -12,8 +18,9 @@ import org.springframework.data.relational.core.mapping.Table
  * Stores resume data as JSONB text.
  */
 @Table("resumes")
-data class ResumeEntityDb(
+data class ResumeEntity(
     @Id
+    @JvmField
     val id: UUID,
 
     @Column("user_id")
@@ -28,16 +35,21 @@ data class ResumeEntityDb(
     @Column("data")
     val data: String, // JSON string
 
+    @CreatedBy
     @Column("created_by")
-    val createdBy: String,
+    @get:Size(max = 50)
+    override val createdBy: String = "system",
 
+    @CreatedDate
     @Column("created_at")
-    val createdAt: Instant,
+    override val createdAt: Instant,
 
+    @LastModifiedBy
     @Column("updated_by")
-    val updatedBy: String? = null,
+    @get:Size(max = 50)
+    override var updatedBy: String? = null,
 
+    @LastModifiedDate
     @Column("updated_at")
-    val updatedAt: Instant? = null,
-)
-
+    override var updatedAt: Instant? = null
+) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy)

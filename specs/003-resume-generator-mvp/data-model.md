@@ -30,7 +30,7 @@ import java.util.UUID
  */
 data class ResumeData(
     val id: UUID = UUID.randomUUID(),
-    val basics: PersonalInfo,
+    val basics: Basics,
     val work: List<WorkExperience> = emptyList(),
     val education: List<Education> = emptyList(),
     val skills: List<SkillCategory> = emptyList(),
@@ -74,7 +74,7 @@ data class ContentMetrics(
 
 **Relationships**:
 
-- Owns: 1 PersonalInfo (required)
+- Owns: 1 Basics (required)
 - Owns: 0..n WorkExperience entries
 - Owns: 0..n Education entries
 - Owns: 0..n SkillCategory entries
@@ -83,11 +83,11 @@ data class ContentMetrics(
 
 ---
 
-### 2. PersonalInfo (Value Object)
+### 2. Basics (Value Object)
 
 **Purpose**: Basic personal information (JSON Resume `basics` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
+**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
 
 ```kotlin
 package com.loomify.resume.domain.model
@@ -106,7 +106,7 @@ import com.loomify.common.domain.vo.email.Email  // Reused from shared library
  * Note: FullName is resume-specific (unstructured single string per JSON Resume schema).
  * The shared Name VO (firstName + lastName) has different semantics for user profiles.
  */
-data class PersonalInfo(
+data class Basics(
     val fullName: FullName,
     val label: JobTitle?,
     val email: Email,  // Reused from com.loomify.common.domain.vo.email
@@ -647,11 +647,11 @@ class TemplateRenderingException(message: String, cause: Throwable? = null) : Re
 ## Validation Rules Summary
 
 | Rule ID | Entity                | Field       | Constraint                                                      |
-| ------- | --------------------- | ----------- | --------------------------------------------------------------- |
-| VR-001  | PersonalInfo          | fullName    | Required, max 100 chars                                         |
-| VR-002  | PersonalInfo          | email       | Required, reuses shared Email VO (RFC-compliant, max 320 chars) |
-| VR-003  | PersonalInfo          | label       | Optional, max 100 chars                                         |
-| VR-004  | PersonalInfo          | summary     | Optional, max 500 chars                                         |
+| ------- |-----------------------| ----------- | --------------------------------------------------------------- |
+| VR-001  | Basics                | fullName    | Required, max 100 chars                                         |
+| VR-002  | Basics                | email       | Required, reuses shared Email VO (RFC-compliant, max 320 chars) |
+| VR-003  | Basics                | label       | Optional, max 100 chars                                         |
+| VR-004  | Basics                | summary     | Optional, max 500 chars                                         |
 | VR-005  | WorkExperience        | company     | Required, max 100 chars                                         |
 | VR-006  | WorkExperience        | position    | Required, max 100 chars                                         |
 | VR-007  | WorkExperience        | summary     | Optional, max 500 chars                                         |
@@ -700,8 +700,8 @@ class TemplateRenderingException(message: String, cause: Throwable? = null) : Re
 ## Hexagonal Architecture Mapping
 
 | Layer              | Component                                               | Location                   |
-| ------------------ | ------------------------------------------------------- | -------------------------- |
-| **Domain**         | ResumeData, PersonalInfo, WorkExperience, etc.          | `domain/model/`            |
+| ------------------ |---------------------------------------------------------| -------------------------- |
+| **Domain**         | ResumeData, Basics, WorkExperience, etc.                | `domain/model/`            |
 | **Domain**         | ResumeGenerationException hierarchy                     | `domain/exception/`        |
 | **Domain**         | GeneratedDocument (event)                               | `domain/event/`            |
 | **Domain**         | PdfGeneratorPort (interface)                            | `domain/port/`             |

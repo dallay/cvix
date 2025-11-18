@@ -4,11 +4,11 @@ import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.application.command.GenerateResumeCommand
 import com.loomify.resume.application.command.Locale
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.CompanyName
 import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.PdfGenerator
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.TemplateRenderer
 import com.loomify.resume.domain.WorkExperience
@@ -156,7 +156,7 @@ class GenerateResumeCommandHandlerTest {
 
     // Helper function to create valid test data
     private fun createValidResumeData() = Resume(
-        basics = PersonalInfo(
+        basics = Basics(
             name = FullName("John Doe"),
             label = JobTitle("Software Engineer"),
             email = Email("john@example.com"),

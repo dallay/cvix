@@ -77,14 +77,14 @@
 #### Resume Module Coverage
 
 | Component                 | Coverage |
-| ------------------------- | -------- |
-| PersonalInfoSection.vue   | 85%      |
+|---------------------------| -------- |
+| BasicsSection.vue         | 85%      |
 | ResumeForm.vue            | 68.18%   |
 | WorkExperienceSection.vue | 56%      |
 | EducationSection.vue      | 57.69%   |
 | SkillsSection.vue         | 32.43%   |
 | useResumeGeneration.ts    | 100%     |
-| resume.store.ts            | 53.48%   |
+| resume.store.ts           | 53.48%   |
 | resumeSchema.ts           | 50%      |
 
 ### Action Items for Frontend
@@ -158,7 +158,7 @@
 
 **Files**: Likely missing edge cases in:
 
-- `PersonalInfo.kt` - validation edge cases
+- `Basics.kt` - validation edge cases
 - `WorkExperience.kt` - date validation
 - `Education.kt` - degree validation
 - `Language.kt` - proficiency validation

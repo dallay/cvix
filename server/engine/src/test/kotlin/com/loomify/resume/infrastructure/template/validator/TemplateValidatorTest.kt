@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.template.validator
 
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.Certificate
 import com.loomify.resume.domain.CompanyName
 import com.loomify.resume.domain.DegreeType
@@ -14,7 +15,6 @@ import com.loomify.resume.domain.Interest
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Language
 import com.loomify.resume.domain.Location
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.Project
 import com.loomify.resume.domain.Publication
@@ -222,7 +222,7 @@ internal class TemplateValidatorTest {
         private const val MALICIOUS = "\\input{evil}" // Matches DANGEROUS_PATTERN
 
         private fun baseResume(): Resume {
-            val basics = personalInfo()
+            val basics = basics()
             val work = experiences()
             val education = educations()
             val skills = skillCategories()
@@ -343,7 +343,7 @@ internal class TemplateValidatorTest {
             ),
         )
 
-        private fun personalInfo(): PersonalInfo = PersonalInfo(
+        private fun basics(): Basics = Basics(
             name = FullName("John Doe"),
             label = JobTitle("Engineer"),
             image = null,

@@ -14,6 +14,7 @@ import com.loomify.engine.workspace.infrastructure.persistence.mapper.WorkspaceM
 import com.loomify.engine.workspace.infrastructure.persistence.mapper.toDomain
 import com.loomify.engine.workspace.infrastructure.persistence.repository.WorkspaceMemberR2dbcRepository
 import com.loomify.engine.workspace.infrastructure.persistence.repository.WorkspaceR2dbcRepository
+import java.time.Instant
 import java.util.UUID
 import kotlinx.coroutines.flow.toList
 import org.slf4j.LoggerFactory
@@ -79,7 +80,7 @@ class WorkspaceStoreR2DbcRepository(
             val entityToUpdate = workspace.toEntity().copy(
                 createdAt = existingEntity.createdAt,
                 createdBy = existingEntity.createdBy,
-                updatedAt = java.time.LocalDateTime.now(),
+                updatedAt = Instant.now(),
                 updatedBy = "system",
             )
 

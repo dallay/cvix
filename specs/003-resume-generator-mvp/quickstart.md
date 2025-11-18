@@ -436,7 +436,7 @@ Edit templates and restart backend to see changes.
 
 **Template Variables**:
 
-- `<name>`, `<email>`, `<phone>`, etc. (from PersonalInfo)
+- `<name>`, `<email>`, `<phone>`, etc. (from Basics)
 - `<skills_count>`, `<experience_years>` (content metrics)
 - See `data-model.md` for full list
 

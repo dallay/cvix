@@ -1,7 +1,7 @@
 package com.loomify.common.domain
 
 import java.io.Serializable
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * Base class for entities that need to be audited.
@@ -12,13 +12,13 @@ import java.time.LocalDateTime
  * @param createdBy The user or system that created the entity.
  * @param updatedAt The date and time when the entity was last updated.
  * @param updatedBy The user or system that last updated the entity.
- * @see LocalDateTime
- * @see LocalDateTime.now
+ * @see Instant
+ * @see Instant.now
  */
 abstract class AuditableEntity(
-    open val createdAt: LocalDateTime = LocalDateTime.now(),
+    open val createdAt: Instant = Instant.now(),
     open val createdBy: String = "system",
-    open var updatedAt: LocalDateTime? = null,
+    open var updatedAt: Instant? = null,
     open var updatedBy: String? = null
 ) : Serializable {
     companion object {

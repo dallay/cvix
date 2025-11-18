@@ -59,7 +59,7 @@ The MVP supports English and Spanish localization with intelligent content layou
 
 ### I. Hexagonal Architecture ✅ PASS
 
-- **Domain layer**: Resume business entities (ResumeData, PersonalInfo, WorkExperience, etc.) will be pure Kotlin data classes with no framework dependencies
+- **Domain layer**: Resume business entities (ResumeData, Basics, WorkExperience, etc.) will be pure Kotlin data classes with no framework dependencies
 - **Application layer**: CQRS pattern - `GenerateResumeCommand` and `GenerateResumeCommandHandler` will orchestrate domain logic
 - **Infrastructure layer**: All adapters isolated - REST controller (Spring WebFlux), LaTeX template engine (StringTemplate/FreeMarker), PDF generator (TeX Live Docker), JSON Resume validation
 
@@ -216,7 +216,7 @@ server/engine/src/main/kotlin/com/loomify/resume/
 ├── domain/
 │   ├── model/
 │   │   ├── ResumeData.kt           # Aggregate root
-│   │   ├── PersonalInfo.kt         # Value object
+│   │   ├── Basics.kt         # Value object
 │   │   ├── WorkExperience.kt       # Value object
 │   │   ├── Education.kt            # Value object
 │   │   ├── SkillCategory.kt        # Value object
@@ -281,7 +281,7 @@ client/apps/webapp/src/
 ├── resume/
 │   ├── components/
 │   │   ├── ResumeForm.vue          # Main form component
-│   │   ├── PersonalInfoSection.vue # Form section
+│   │   ├── BasicsSection.vue # Form section
 │   │   ├── WorkExperienceSection.vue
 │   │   ├── EducationSection.vue
 │   │   ├── SkillsSection.vue

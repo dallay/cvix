@@ -88,7 +88,7 @@
 - [X] T028 [P] [US1] Unit test for ResumeData validation logic (must have work/education/skills) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/ResumeDataTest.kt`
 - [X] T029 [P] [US1] Unit test for WorkExperience date validation (endDate >= startDate) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/WorkExperienceTest.kt`
 - [X] T030 [P] [US1] Unit test for Education date validation in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/EducationTest.kt`
-- [X] T031 [P] [US1] Unit test for PersonalInfo value object validations (name, email) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/PersonalInfoTest.kt`
+- [X] T031 [P] [US1] Unit test for Basics value object validations (name, email) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/BasicsTest.kt`
 - [X] T032 [P] [US1] Unit test for SkillCategory validation (must have keywords) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/SkillCategoryTest.kt`
 - [X] T033 [P] [US1] Unit test for GenerateResumeCommandHandler orchestration logic in `server/engine/src/test/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandlerTest.kt`
 
@@ -102,7 +102,7 @@
 
 - [X] T037 [P] [US1] Component test for ResumeForm.vue (form validation, submission) in `client/apps/webapp/src/resume/__tests__/ResumeForm.spec.ts`
 - [X] T038 [P] [US1] Composable test for useResumeGeneration (API calls, error handling) in `client/apps/webapp/src/resume/__tests__/useResumeGeneration.spec.ts`
-- [X] T039 [P] [US1] Component test for PersonalInfoSection.vue in `client/apps/webapp/src/resume/__tests__/PersonalInfoSection.spec.ts`
+- [X] T039 [P] [US1] Component test for BasicsSection.vue in `client/apps/webapp/src/resume/__tests__/BasicsSection.spec.ts`
 
 **Checkpoint**: All tests written and FAILING. Now proceed with implementation to make them pass.
 
@@ -110,13 +110,13 @@
 
 #### Domain Layer (Backend)
 
-- [X] T040 [P] [US1] Create FullName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T041 [P] [US1] Create JobTitle value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T042 [P] [US1] Create PhoneNumber value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T043 [P] [US1] Create Url value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T044 [P] [US1] Create Summary value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T045 [P] [US1] Create Location and SocialProfile data classes in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
-- [X] T046 [US1] Create PersonalInfo value object (depends on T040-T045) in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/PersonalInfo.kt`
+- [X] T040 [P] [US1] Create FullName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T041 [P] [US1] Create JobTitle value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T042 [P] [US1] Create PhoneNumber value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T043 [P] [US1] Create Url value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T044 [P] [US1] Create Summary value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T045 [P] [US1] Create Location and SocialProfile data classes in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+- [X] T046 [US1] Create Basics value object (depends on T040-T045) in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
 - [X] T047 [P] [US1] Create CompanyName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
 - [X] T048 [P] [US1] Create Highlight value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
 - [X] T049 [US1] Create WorkExperience entity with validation and formatPeriod logic in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
@@ -159,13 +159,13 @@
 
 - [X] T064 [US1] Implement adaptive layout logic in English template using ifthen/etoolbox (depends on T019) in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
 - [X] T065 [US1] Implement adaptive layout logic in Spanish template using ifthen/etoolbox (depends on T020) in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
-- [X] T066 [US1] Add section templates for PersonalInfo, WorkExperience, Education, Skills, Languages, Projects to English template in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
-- [X] T067 [US1] Add section templates for PersonalInfo, WorkExperience, Education, Skills, Languages, Projects to Spanish template in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
+- [X] T066 [US1] Add section templates for Basics, WorkExperience, Education, Skills, Languages, Projects to English template in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
+- [X] T067 [US1] Add section templates for Basics, WorkExperience, Education, Skills, Languages, Projects to Spanish template in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
 - [X] T068 [US1] Add conditional section ordering based on content metrics in both templates in `server/engine/src/main/resources/templates/resume/resume-template-en.tex` and `resume-template-es.tex`
 
 #### Frontend (Form UI)
 
-- [X] T069 [P] [US1] Create PersonalInfoSection.vue component in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
+- [X] T069 [P] [US1] Create BasicsSection.vue component in `client/apps/webapp/src/resume/components/BasicsSection.vue`
 - [X] T070 [P] [US1] Create WorkExperienceSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/WorkExperienceSection.vue`
 - [X] T071 [P] [US1] Create EducationSection.vue component (with dynamic add/remove entries) in `client/apps/webapp/src/resume/components/EducationSection.vue`
 - [X] T072 [P] [US1] Create SkillsSection.vue component (with dynamic add/remove categories) in `client/apps/webapp/src/resume/components/SkillsSection.vue`
@@ -201,7 +201,7 @@
 - [X] T086 [US2] Create useResumeValidation composable with vee-validate integration in `client/apps/webapp/src/resume/composables/useResumeValidation.ts`
 - [X] T087 [US2] Add Zod validation rules for all required fields in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
 - [X] T088 [US2] Add field length validation (100/500/50 char limits) in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
-- [X] T089 [US2] Implement manual validation on blur (no validate-on-blur/change/input props per conventions) in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
+- [X] T089 [US2] Implement manual validation on blur (no validate-on-blur/change/input props per conventions) in `client/apps/webapp/src/resume/components/BasicsSection.vue`
 - [X] T090 [US2] Add validation error messages to all form sections in `client/apps/webapp/src/resume/components/WorkExperienceSection.vue`
 - [X] T091 [US2] Add validation error messages to all form sections in `client/apps/webapp/src/resume/components/EducationSection.vue`
 - [X] T092 [US2] Add validation error messages to all form sections in `client/apps/webapp/src/resume/components/SkillsSection.vue`
@@ -245,8 +245,8 @@
 ### Implementation for User Story 4
 
 - [X] T106 [US4] Add mobile-responsive breakpoints to ResumeForm.vue using Tailwind responsive classes in `client/apps/webapp/src/resume/components/ResumeForm.vue`
-- [X] T107 [US4] Optimize form field sizing for touch targets (44px min height) in all section components in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
-- [X] T108 [US4] Add appropriate input types for mobile keyboards (email, tel, url) in `client/apps/webapp/src/resume/components/PersonalInfoSection.vue`
+- [X] T107 [US4] Optimize form field sizing for touch targets (44px min height) in all section components in `client/apps/webapp/src/resume/components/BasicsSection.vue`
+- [X] T108 [US4] Add appropriate input types for mobile keyboards (email, tel, url) in `client/apps/webapp/src/resume/components/BasicsSection.vue`
 - [X] T109 [US4] Make preview panel collapsible/scrollable on mobile in `client/apps/webapp/src/resume/components/ResumePreview.vue`
 - [X] T110 [US4] Test mobile PDF download flow and handle mobile browser differences in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
 - [X] T111 [US4] Add mobile-optimized layout for ResumeGeneratorPage (stacked vs side-by-side) in `client/apps/webapp/src/resume/pages/ResumeGeneratorPage.vue`
@@ -402,15 +402,15 @@
 
 ```bash
 # Launch all value objects together:
-Task: "Create FullName value object in PersonalInfo.kt" [T040]
-Task: "Create JobTitle value object in PersonalInfo.kt" [T041]
-Task: "Create PhoneNumber value object in PersonalInfo.kt" [T042]
-Task: "Create Url value object in PersonalInfo.kt" [T043]
-Task: "Create Summary value object in PersonalInfo.kt" [T044]
-Task: "Create Location and SocialProfile in PersonalInfo.kt" [T045]
+Task: "Create FullName value object in Basics.kt" [T040]
+Task: "Create JobTitle value object in Basics.kt" [T041]
+Task: "Create PhoneNumber value object in Basics.kt" [T042]
+Task: "Create Url value object in Basics.kt" [T043]
+Task: "Create Summary value object in Basics.kt" [T044]
+Task: "Create Location and SocialProfile in Basics.kt" [T045]
 
 # Launch all form section components together:
-Task: "Create PersonalInfoSection.vue component" [T069]
+Task: "Create BasicsSection.vue component" [T069]
 Task: "Create WorkExperienceSection.vue component" [T070]
 Task: "Create EducationSection.vue component" [T071]
 Task: "Create SkillsSection.vue component" [T072]

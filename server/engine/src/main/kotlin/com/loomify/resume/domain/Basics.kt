@@ -114,10 +114,11 @@ data class SocialProfile(
 )
 
 /**
- * PersonalInfo value object representing the basics section of a resume.
+ * Basics value object representing the basics section of a resume.
  * Contains all personal information fields per JSON Resume Schema.
+ * Aligned with JSON Resume specification: https://jsonresume.org/schema
  */
-data class PersonalInfo(
+data class Basics(
     val name: FullName,
     val label: JobTitle? = null,
     val image: Url? = null,

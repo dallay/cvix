@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.http.mapper
 
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.resume.domain.Award
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.Certificate
 import com.loomify.resume.domain.CompanyName
 import com.loomify.resume.domain.DegreeType
@@ -14,7 +15,6 @@ import com.loomify.resume.domain.Interest
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Language
 import com.loomify.resume.domain.Location
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.Project
 import com.loomify.resume.domain.Publication
@@ -60,9 +60,9 @@ object ResumeRequestMapper {
         )
     }
 
-    private fun mapBasics(request: GenerateResumeRequest): PersonalInfo {
+    private fun mapBasics(request: GenerateResumeRequest): Basics {
         val basics = request.basics
-        return PersonalInfo(
+        return Basics(
             name = FullName(basics.name),
             label = basics.label?.let { JobTitle(it) },
             image = basics.image?.takeIf { it.isNotBlank() }?.let { Url(it) },

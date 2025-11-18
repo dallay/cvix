@@ -2,6 +2,7 @@ package com.loomify.resume.domain.model
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.CompanyName
 import com.loomify.resume.domain.DegreeType
 import com.loomify.resume.domain.Education
@@ -10,7 +11,6 @@ import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.Highlight
 import com.loomify.resume.domain.InstitutionName
 import com.loomify.resume.domain.JobTitle
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.Skill
@@ -38,7 +38,7 @@ class ResumeDataTest {
     @Test
     fun `should create resume data with work experience only`() {
         // Arrange
-        val personalInfo = createValidPersonalInfo()
+        val personalInfo = createValidBasics()
         val workExperience = listOf(createValidWorkExperience())
 
         // Act
@@ -58,7 +58,7 @@ class ResumeDataTest {
     @Test
     fun `should create resume data with education only`() {
         // Arrange
-        val personalInfo = createValidPersonalInfo()
+        val personalInfo = createValidBasics()
         val education = listOf(createValidEducation())
 
         // Act
@@ -77,7 +77,7 @@ class ResumeDataTest {
     @Test
     fun `should create resume data with skills only`() {
         // Arrange
-        val personalInfo = createValidPersonalInfo()
+        val personalInfo = createValidBasics()
         val skills = listOf(createValidSkillCategory())
 
         // Act
@@ -96,7 +96,7 @@ class ResumeDataTest {
     @Test
     fun `should fail when resume has no content sections`() {
         // Arrange
-        val personalInfo = createValidPersonalInfo()
+        val personalInfo = createValidBasics()
 
         // Act & Assert
         shouldThrow<IllegalArgumentException> {
@@ -113,7 +113,7 @@ class ResumeDataTest {
     fun `should calculate content metrics for skills-heavy resume`() {
         // Arrange
         val resume = Resume(
-            basics = createValidPersonalInfo(),
+            basics = createValidBasics(),
             work = emptyList(),
             education = emptyList(),
             skills = listOf(
@@ -136,7 +136,7 @@ class ResumeDataTest {
     fun `should calculate content metrics for experience-heavy resume`() {
         // Arrange
         val resume = Resume(
-            basics = createValidPersonalInfo(),
+            basics = createValidBasics(),
             work = listOf(
                 createValidWorkExperience(startDate = "2020-01-01", endDate = "2022-12-31"),
                 createValidWorkExperience(startDate = "2018-06-01", endDate = "2019-12-31"),
@@ -155,7 +155,7 @@ class ResumeDataTest {
     }
 
     // Helper functions to create valid test data
-    private fun createValidPersonalInfo() = PersonalInfo(
+    private fun createValidBasics() = Basics(
         name = FullName("John Doe"),
         label = JobTitle("Software Engineer"),
         email = Email("john.doe@example.com"),

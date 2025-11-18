@@ -44,7 +44,7 @@ This document provides a comprehensive overview of the test coverage status for 
 ### Resume Module
 - **Coverage:** High (85%+)
 - **Tests Include:**
-  - Domain model validation (PersonalInfo, Education, WorkExperience, etc.)
+  - Domain model validation (Basics, Education, WorkExperience, etc.)
   - Application command handlers (GenerateResumeCommandHandler)
   - Infrastructure components (LaTeX template rendering, PDF generation)
   - Web controllers and exception handlers

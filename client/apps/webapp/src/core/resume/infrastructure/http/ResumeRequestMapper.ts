@@ -15,7 +15,7 @@ import type { Reference } from "../../domain/Reference";
  * Maps the frontend JSON Resume schema to the backend's expected format.
  */
 export interface GenerateResumeRequest {
-	basics: PersonalInfoDto;
+	basics: BasicsDto;
 	work?: WorkExperienceDto[];
 	education?: EducationDto[];
 	skills?: SkillCategoryDto[];
@@ -29,7 +29,7 @@ export interface GenerateResumeRequest {
 	references?: ReferenceDto[];
 }
 
-export interface PersonalInfoDto {
+export interface BasicsDto {
 	name: string;
 	label?: string;
 	image?: string;

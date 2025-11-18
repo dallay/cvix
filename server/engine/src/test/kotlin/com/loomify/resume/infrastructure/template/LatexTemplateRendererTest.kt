@@ -4,10 +4,10 @@ import com.loomify.FixtureDataLoader
 import com.loomify.FixtureDataLoader.readResource
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.email.Email
+import com.loomify.resume.domain.Basics
 import com.loomify.resume.domain.FullName
 import com.loomify.resume.domain.JobTitle
 import com.loomify.resume.domain.Location
-import com.loomify.resume.domain.PersonalInfo
 import com.loomify.resume.domain.PhoneNumber
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.Skill
@@ -215,7 +215,7 @@ internal class LatexTemplateRendererTest {
     fun `should reject dangerous LaTeX commands`(dangerousCommand: String) {
         // Arrange: Create minimal resume with malicious command in name field
         val maliciousResume = Resume(
-            basics = PersonalInfo(
+            basics = Basics(
                 name = FullName(dangerousCommand),
                 label = JobTitle("Engineer"),
                 image = null,

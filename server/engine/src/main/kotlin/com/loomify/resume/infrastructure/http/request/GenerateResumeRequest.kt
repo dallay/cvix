@@ -1,11 +1,11 @@
 package com.loomify.resume.infrastructure.http.request
 
 import com.loomify.resume.infrastructure.http.request.dto.AwardDto
+import com.loomify.resume.infrastructure.http.request.dto.BasicsDto
 import com.loomify.resume.infrastructure.http.request.dto.CertificateDto
 import com.loomify.resume.infrastructure.http.request.dto.EducationDto
 import com.loomify.resume.infrastructure.http.request.dto.InterestDto
 import com.loomify.resume.infrastructure.http.request.dto.LanguageDto
-import com.loomify.resume.infrastructure.http.request.dto.PersonalInfoDto
 import com.loomify.resume.infrastructure.http.request.dto.ProjectDto
 import com.loomify.resume.infrastructure.http.request.dto.PublicationDto
 import com.loomify.resume.infrastructure.http.request.dto.ReferenceDto
@@ -23,7 +23,7 @@ import jakarta.validation.Valid
 @ValidResumeContent
 data class GenerateResumeRequest(
     @field:Valid
-    val basics: PersonalInfoDto,
+    val basics: BasicsDto,
 
     @field:Valid
     val work: List<WorkExperienceDto>? = null,

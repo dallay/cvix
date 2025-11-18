@@ -1,10 +1,10 @@
 package com.loomify.resume.infrastructure.template.model
 
 /**
- * Template-friendly model for PersonalInfo.
+ * Template-friendly model for Basics.
  * All properties are exposed as simple types for StringTemplate 4 access.
  */
-data class PersonalInfoTemplateModel(
+data class BasicsTemplateModel(
     val name: String,
     val label: String?,
     val image: String?,
@@ -123,7 +123,7 @@ data class ReferenceTemplateModel(
  * All nested value classes are unwrapped to simple types.
  */
 data class ResumeTemplateModel(
-    val basics: PersonalInfoTemplateModel,
+    val basics: BasicsTemplateModel,
     val work: List<WorkExperienceTemplateModel>,
     val education: List<EducationTemplateModel>,
     val skills: List<SkillCategoryTemplateModel>,
