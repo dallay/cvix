@@ -9,5 +9,5 @@
 </template>
 
 <script setup lang="ts">
-// Resume PDF Page - Phase 8 implementation
+// Resume PDF Page - Phase 7 implementation (User Story 5)
 </script>
