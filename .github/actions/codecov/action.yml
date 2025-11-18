@@ -32,6 +32,8 @@ runs:
         files: ${{ inputs.files }}
         flags: ${{ inputs.flags }}
         name: ${{ inputs.name }}
+        slug: dallay/cvix
+        token: ${{ inputs.codecov-token }}
         fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
       env:
         CODECOV_TOKEN: ${{ inputs.codecov-token }}
