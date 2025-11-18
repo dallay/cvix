@@ -1,15 +1,10 @@
 import { ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
+import type { ValidationError } from "@/core/resume/domain/ResumeValidator";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation/JsonResumeValidator";
 
-/**
- * Validation error structure with field path and human-readable message
- */
-export interface ValidationError {
-	path: string;
-	message: string;
-	section?: string;
-}
+// Re-export for convenience
+export type { ValidationError };
 
 /**
  * Grouped validation errors by resume section
@@ -59,7 +54,26 @@ export function useJsonResume() {
 	const validationErrors = ref<ValidationError[]>([]);
 
 	/**
-	 * Groups validation errors by resume section for organized display
+	 * Populates validationErrors ref from validator's accumulated errors
+	 */
+	function populateValidationErrors(validator: JsonResumeValidator): void {
+		const errors = validator.getErrors();
+		if (errors.length > 0) {
+			validationErrors.value = errors;
+		} else {
+			// If validator reports no errors but validation failed, add generic error
+			validationErrors.value = [
+				{
+					path: "",
+					message: "Validation failed. Please check your data.",
+					section: "General",
+				},
+			];
+		}
+	}
+
+	/**
+	 * Groups validation errors by resume section
 	 */
 	function groupErrors(errors: ValidationError[]): GroupedErrors {
 		return errors.reduce((acc, error) => {
@@ -101,14 +115,7 @@ export function useJsonResume() {
 			const isValid = validator.validate(data as Resume);
 
 			if (!isValid) {
-				validationErrors.value = [
-					{
-						path: "",
-						message:
-							"Resume data does not match JSON Resume schema. Please check required fields.",
-						section: "General",
-					},
-				];
+				populateValidationErrors(validator);
 				return { success: false, errors: validationErrors.value };
 			}
 
@@ -148,14 +155,7 @@ export function useJsonResume() {
 			const isValid = validator.validate(data);
 
 			if (!isValid) {
-				validationErrors.value = [
-					{
-						path: "",
-						message:
-							"Resume data is incomplete or invalid. Please fix errors before exporting.",
-						section: "General",
-					},
-				];
+				populateValidationErrors(validator);
 				return false;
 			}
 
@@ -201,14 +201,7 @@ export function useJsonResume() {
 			const isValid = validator.validate(data);
 
 			if (!isValid) {
-				validationErrors.value = [
-					{
-						path: "",
-						message:
-							"Resume validation failed. Please ensure all required fields are filled correctly.",
-						section: "General",
-					},
-				];
+				populateValidationErrors(validator);
 			}
 
 			return validationErrors.value;

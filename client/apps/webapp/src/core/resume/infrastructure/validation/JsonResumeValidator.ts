@@ -1,5 +1,8 @@
 import type { Resume } from "@/core/resume/domain/Resume.ts";
-import type { ResumeValidator } from "@/core/resume/domain/ResumeValidator.ts";
+import type {
+	ResumeValidator,
+	ValidationError,
+} from "@/core/resume/domain/ResumeValidator.ts";
 
 /**
  * Validates a Resume object against the JSON Resume Schema specification.
@@ -12,12 +15,19 @@ import type { ResumeValidator } from "@/core/resume/domain/ResumeValidator.ts";
  */
 export class JsonResumeValidator implements ResumeValidator {
 	/**
+	 * Accumulated validation errors from the last validation run
+	 */
+	private errors: ValidationError[] = [];
+
+	/**
 	 * ISO 8601 date pattern for JSON Resume Schema.
 	 * Supports formats: YYYY, YYYY-MM, YYYY-MM-DD
 	 * Validates actual month (01-12) and day (01-31) ranges
 	 */
 	private readonly ISO8601_PATTERN =
-		/^([1-2][0-9]{3}(-((0[1-9])|(1[0-2]))(-((0[1-9])|([1-2][0-9])|(3[0-1])))?)?)$/; /**
+		/^([1-2][0-9]{3}(-((0[1-9])|(1[0-2]))(-((0[1-9])|([1-2][0-9])|(3[0-1])))?)?)$/;
+
+	/**
 	 * Email format pattern (simplified RFC 5322 validation).
 	 */
 	private readonly EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,69 +43,95 @@ export class JsonResumeValidator implements ResumeValidator {
 	private readonly COUNTRY_CODE_PATTERN = /^[A-Z]{2}$/;
 
 	/**
+	 * Returns all accumulated validation errors from the last validation run.
+	 *
+	 * @returns {ValidationError[]} Array of validation errors
+	 */
+	getErrors(): ValidationError[] {
+		return this.errors;
+	}
+
+	/**
+	 * Adds a validation error to the errors array.
+	 *
+	 * @param {string} path - The path to the invalid field (e.g., "basics.email")
+	 * @param {string} message - The error message
+	 */
+	private addError(path: string, message: string): void {
+		this.errors.push({
+			path,
+			message,
+			section: this.getSectionFromPath(path),
+		});
+	}
+
+	/**
+	 * Determines the section name from a field path.
+	 *
+	 * @param {string} path - The field path (e.g., "basics.email", "work[0].company")
+	 * @returns {string} The section name
+	 */
+	private getSectionFromPath(path: string): string {
+		if (!path) return "General";
+		const firstSegment = path.split("[")[0]?.split(".")[0];
+		if (!firstSegment) return "General";
+
+		const sectionMap: Record<string, string> = {
+			basics: "Personal Information",
+			work: "Work Experience",
+			volunteer: "Volunteer Experience",
+			education: "Education",
+			awards: "Awards",
+			certificates: "Certificates",
+			publications: "Publications",
+			skills: "Skills",
+			languages: "Languages",
+			interests: "Interests",
+			references: "References",
+			projects: "Projects",
+			meta: "Metadata",
+		};
+		return sectionMap[firstSegment] || "General";
+	}
+
+	/**
 	 * Validates the provided resume data against the JSON Resume Schema.
 	 *
 	 * @param {Resume} resume - The resume data to be validated.
 	 * @returns {boolean} True if the resume is valid, false otherwise.
 	 */
 	validate(resume: Resume): boolean {
+		// Clear previous errors
+		this.errors = [];
 		if (!resume) {
+			this.addError("resume", "Resume object is null or undefined");
 			return false;
 		}
 
 		try {
 			// Validate required sections
-			if (!this.validateBasics(resume.basics)) {
-				return false;
-			}
+			this.validateBasics(resume.basics);
 
 			// Validate optional arrays (must be arrays if present)
-			if (!this.validateWorkArray(resume.work)) {
-				return false;
-			}
+			this.validateWorkArray(resume.work);
+			this.validateVolunteerArray(resume.volunteer);
+			this.validateEducationArray(resume.education);
+			this.validateAwardsArray(resume.awards);
+			this.validateCertificatesArray(resume.certificates);
+			this.validatePublicationsArray(resume.publications);
+			this.validateSkillsArray(resume.skills);
+			this.validateLanguagesArray(resume.languages);
+			this.validateInterestsArray(resume.interests);
+			this.validateReferencesArray(resume.references);
+			this.validateProjectsArray(resume.projects);
 
-			if (!this.validateVolunteerArray(resume.volunteer)) {
-				return false;
-			}
-
-			if (!this.validateEducationArray(resume.education)) {
-				return false;
-			}
-
-			if (!this.validateAwardsArray(resume.awards)) {
-				return false;
-			}
-
-			if (!this.validateCertificatesArray(resume.certificates)) {
-				return false;
-			}
-
-			if (!this.validatePublicationsArray(resume.publications)) {
-				return false;
-			}
-
-			if (!this.validateSkillsArray(resume.skills)) {
-				return false;
-			}
-
-			if (!this.validateLanguagesArray(resume.languages)) {
-				return false;
-			}
-
-			if (!this.validateInterestsArray(resume.interests)) {
-				return false;
-			}
-
-			if (!this.validateReferencesArray(resume.references)) {
-				return false;
-			}
-
-			if (!this.validateProjectsArray(resume.projects)) {
-				return false;
-			}
-
-			return true;
-		} catch {
+			// Return true if no errors accumulated
+			return this.errors.length === 0;
+		} catch (error) {
+			this.addError(
+				"resume",
+				`Validation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+			);
 			return false;
 		}
 	}
@@ -103,14 +139,18 @@ export class JsonResumeValidator implements ResumeValidator {
 	/**
 	 * Validates the basics section (required).
 	 */
-	private validateBasics(basics: Resume["basics"]): boolean {
+	private validateBasics(basics: Resume["basics"]): void {
 		if (!basics || typeof basics !== "object") {
-			return false;
+			this.addError(
+				"basics",
+				"Basics section is required and must be an object",
+			);
+			return;
 		}
 
 		// Name is typically required for a valid resume
 		if (basics.name && typeof basics.name !== "string") {
-			return false;
+			this.addError("basics.name", "Name must be a string");
 		}
 
 		// Validate email format if present and non-empty
@@ -119,36 +159,37 @@ export class JsonResumeValidator implements ResumeValidator {
 			basics.email !== "" &&
 			!this.isValidEmail(basics.email)
 		) {
-			return false;
+			this.addError("basics.email", "Email format is invalid");
 		}
 
 		// Validate URL format if present and non-empty
 		if (basics.url && basics.url !== "" && !this.isValidUrl(basics.url)) {
-			return false;
+			this.addError("basics.url", "URL format is invalid");
 		}
 
 		// Validate image URL if present and non-empty
 		if (basics.image && basics.image !== "" && !this.isValidUrl(basics.image)) {
-			return false;
+			this.addError("basics.image", "Image URL format is invalid");
 		}
 
 		// Validate location if present
-		if (basics.location && !this.validateLocation(basics.location)) {
-			return false;
+		if (basics.location) {
+			this.validateLocation(basics.location);
 		}
 
 		// Validate profiles array if present
-		if (basics.profiles && !this.validateProfilesArray(basics.profiles)) {
-			return false;
+		if (basics.profiles) {
+			this.validateProfilesArray(basics.profiles);
 		}
+	}
 
-		return true;
-	} /**
+	/**
 	 * Validates location object.
 	 */
-	private validateLocation(location: Resume["basics"]["location"]): boolean {
+	private validateLocation(location: Resume["basics"]["location"]): void {
 		if (!location || typeof location !== "object") {
-			return false;
+			this.addError("basics.location", "Location must be an object");
+			return;
 		}
 
 		// Validate country code if present
@@ -156,45 +197,49 @@ export class JsonResumeValidator implements ResumeValidator {
 			location.countryCode &&
 			!this.COUNTRY_CODE_PATTERN.test(location.countryCode)
 		) {
-			return false;
+			this.addError(
+				"basics.location.countryCode",
+				"Country code must be ISO 3166-1 alpha-2 format (e.g., US, GB)",
+			);
 		}
-
-		return true;
 	}
 
 	/**
 	 * Validates profiles array.
 	 */
-	private validateProfilesArray(
-		profiles: Resume["basics"]["profiles"],
-	): boolean {
+	private validateProfilesArray(profiles: Resume["basics"]["profiles"]): void {
 		if (!Array.isArray(profiles)) {
-			return false;
+			this.addError("basics.profiles", "Profiles must be an array");
+			return;
 		}
 
-		return profiles.every((profile) => {
+		profiles.forEach((profile, index) => {
 			if (!profile || typeof profile !== "object") {
-				return false;
+				this.addError(`basics.profiles[${index}]`, "Profile must be an object");
+				return;
 			}
 
 			// Validate URL if present and non-empty
 			if (profile.url && profile.url !== "" && !this.isValidUrl(profile.url)) {
-				return false;
+				this.addError(
+					`basics.profiles[${index}].url`,
+					"Profile URL format is invalid",
+				);
 			}
-
-			return true;
 		});
 	} /**
 	 * Validates work experience array.
 	 */
-	private validateWorkArray(work: Resume["work"]): boolean {
+	private validateWorkArray(work: Resume["work"]): void {
 		if (!Array.isArray(work)) {
-			return false;
+			this.addError("work", "Work must be an array");
+			return;
 		}
 
-		return work.every((item) => {
+		work.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`work[${index}]`, "Work item must be an object");
+				return;
 			}
 
 			// Validate dates if present and non-empty
@@ -203,7 +248,10 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.startDate !== "" &&
 				!this.isValidIso8601Date(item.startDate)
 			) {
-				return false;
+				this.addError(
+					`work[${index}].startDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			if (
@@ -211,32 +259,42 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.endDate !== "" &&
 				!this.isValidIso8601Date(item.endDate)
 			) {
-				return false;
+				this.addError(
+					`work[${index}].endDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`work[${index}].url`, "URL format is invalid");
 			}
 
 			// Validate highlights array if present
 			if (item.highlights && !this.isValidStringArray(item.highlights)) {
-				return false;
+				this.addError(
+					`work[${index}].highlights`,
+					"Highlights must be an array of strings",
+				);
 			}
-
-			return true;
 		});
-	} /**
+	}
+	/**
 	 * Validates volunteer experience array.
 	 */
-	private validateVolunteerArray(volunteer: Resume["volunteer"]): boolean {
+	private validateVolunteerArray(volunteer: Resume["volunteer"]): void {
 		if (!Array.isArray(volunteer)) {
-			return false;
+			this.addError("volunteer", "Volunteer must be an array");
+			return;
 		}
 
-		return volunteer.every((item) => {
+		volunteer.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(
+					`volunteer[${index}]`,
+					"Volunteer item must be an object",
+				);
+				return;
 			}
 
 			// Validate dates if present and non-empty
@@ -245,7 +303,10 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.startDate !== "" &&
 				!this.isValidIso8601Date(item.startDate)
 			) {
-				return false;
+				this.addError(
+					`volunteer[${index}].startDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			if (
@@ -253,34 +314,43 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.endDate !== "" &&
 				!this.isValidIso8601Date(item.endDate)
 			) {
-				return false;
+				this.addError(
+					`volunteer[${index}].endDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`volunteer[${index}].url`, "URL format is invalid");
 			}
 
 			// Validate highlights array if present
 			if (item.highlights && !this.isValidStringArray(item.highlights)) {
-				return false;
+				this.addError(
+					`volunteer[${index}].highlights`,
+					"Highlights must be an array of strings",
+				);
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates education array.
 	 */
-	private validateEducationArray(education: Resume["education"]): boolean {
+	private validateEducationArray(education: Resume["education"]): void {
 		if (!Array.isArray(education)) {
-			return false;
+			this.addError("education", "Education must be an array");
+			return;
 		}
 
-		return education.every((item) => {
+		education.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(
+					`education[${index}]`,
+					"Education item must be an object",
+				);
+				return;
 			}
 
 			// Validate dates if present and non-empty
@@ -289,7 +359,10 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.startDate !== "" &&
 				!this.isValidIso8601Date(item.startDate)
 			) {
-				return false;
+				this.addError(
+					`education[${index}].startDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			if (
@@ -297,32 +370,39 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.endDate !== "" &&
 				!this.isValidIso8601Date(item.endDate)
 			) {
-				return false;
+				this.addError(
+					`education[${index}].endDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`education[${index}].url`, "URL format is invalid");
 			}
 
 			// Validate courses array if present
 			if (item.courses && !this.isValidStringArray(item.courses)) {
-				return false;
+				this.addError(
+					`education[${index}].courses`,
+					"Courses must be an array of strings",
+				);
 			}
-
-			return true;
 		});
-	} /**
+	}
+	/**
 	 * Validates awards array.
 	 */
-	private validateAwardsArray(awards: Resume["awards"]): boolean {
+	private validateAwardsArray(awards: Resume["awards"]): void {
 		if (!Array.isArray(awards)) {
-			return false;
+			this.addError("awards", "Awards must be an array");
+			return;
 		}
 
-		return awards.every((item) => {
+		awards.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`awards[${index}]`, "Award item must be an object");
+				return;
 			}
 
 			// Validate date if present and non-empty
@@ -331,10 +411,11 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.date !== "" &&
 				!this.isValidIso8601Date(item.date)
 			) {
-				return false;
+				this.addError(
+					`awards[${index}].date`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
-
-			return true;
 		});
 	}
 
@@ -343,14 +424,19 @@ export class JsonResumeValidator implements ResumeValidator {
 	 */
 	private validateCertificatesArray(
 		certificates: Resume["certificates"],
-	): boolean {
+	): void {
 		if (!Array.isArray(certificates)) {
-			return false;
+			this.addError("certificates", "Certificates must be an array");
+			return;
 		}
 
-		return certificates.every((item) => {
+		certificates.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(
+					`certificates[${index}]`,
+					"Certificate item must be an object",
+				);
+				return;
 			}
 
 			// Validate date if present and non-empty
@@ -359,15 +445,16 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.date !== "" &&
 				!this.isValidIso8601Date(item.date)
 			) {
-				return false;
+				this.addError(
+					`certificates[${index}].date`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`certificates[${index}].url`, "URL format is invalid");
 			}
-
-			return true;
 		});
 	}
 	/**
@@ -375,14 +462,19 @@ export class JsonResumeValidator implements ResumeValidator {
 	 */
 	private validatePublicationsArray(
 		publications: Resume["publications"],
-	): boolean {
+	): void {
 		if (!Array.isArray(publications)) {
-			return false;
+			this.addError("publications", "Publications must be an array");
+			return;
 		}
 
-		return publications.every((item) => {
+		publications.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(
+					`publications[${index}]`,
+					"Publication item must be an object",
+				);
+				return;
 			}
 
 			// Validate release date if present and non-empty
@@ -391,107 +483,117 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.releaseDate !== "" &&
 				!this.isValidIso8601Date(item.releaseDate)
 			) {
-				return false;
+				this.addError(
+					`publications[${index}].releaseDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`publications[${index}].url`, "URL format is invalid");
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates skills array.
 	 */
-	private validateSkillsArray(skills: Resume["skills"]): boolean {
+	private validateSkillsArray(skills: Resume["skills"]): void {
 		if (!Array.isArray(skills)) {
-			return false;
+			this.addError("skills", "Skills must be an array");
+			return;
 		}
 
-		return skills.every((item) => {
+		skills.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`skills[${index}]`, "Skill item must be an object");
+				return;
 			}
 
 			// Validate keywords array if present
 			if (item.keywords && !this.isValidStringArray(item.keywords)) {
-				return false;
+				this.addError(
+					`skills[${index}].keywords`,
+					"Keywords must be an array of strings",
+				);
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates languages array.
 	 */
-	private validateLanguagesArray(languages: Resume["languages"]): boolean {
+	private validateLanguagesArray(languages: Resume["languages"]): void {
 		if (!Array.isArray(languages)) {
-			return false;
+			this.addError("languages", "Languages must be an array");
+			return;
 		}
 
-		return languages.every((item) => {
+		languages.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`languages[${index}]`, "Language item must be an object");
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates interests array.
 	 */
-	private validateInterestsArray(interests: Resume["interests"]): boolean {
+	private validateInterestsArray(interests: Resume["interests"]): void {
 		if (!Array.isArray(interests)) {
-			return false;
+			this.addError("interests", "Interests must be an array");
+			return;
 		}
 
-		return interests.every((item) => {
+		interests.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`interests[${index}]`, "Interest item must be an object");
+				return;
 			}
 
 			// Validate keywords array if present
 			if (item.keywords && !this.isValidStringArray(item.keywords)) {
-				return false;
+				this.addError(
+					`interests[${index}].keywords`,
+					"Keywords must be an array of strings",
+				);
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates references array.
 	 */
-	private validateReferencesArray(references: Resume["references"]): boolean {
+	private validateReferencesArray(references: Resume["references"]): void {
 		if (!Array.isArray(references)) {
-			return false;
+			this.addError("references", "References must be an array");
+			return;
 		}
 
-		return references.every((item) => {
+		references.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(
+					`references[${index}]`,
+					"Reference item must be an object",
+				);
 			}
-
-			return true;
 		});
 	}
 
 	/**
 	 * Validates projects array.
 	 */
-	private validateProjectsArray(projects: Resume["projects"]): boolean {
+	private validateProjectsArray(projects: Resume["projects"]): void {
 		if (!Array.isArray(projects)) {
-			return false;
+			this.addError("projects", "Projects must be an array");
+			return;
 		}
 
-		return projects.every((item) => {
+		projects.forEach((item, index) => {
 			if (!item || typeof item !== "object") {
-				return false;
+				this.addError(`projects[${index}]`, "Project item must be an object");
+				return;
 			}
 
 			// Validate dates if present and non-empty
@@ -500,7 +602,10 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.startDate !== "" &&
 				!this.isValidIso8601Date(item.startDate)
 			) {
-				return false;
+				this.addError(
+					`projects[${index}].startDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			if (
@@ -508,20 +613,24 @@ export class JsonResumeValidator implements ResumeValidator {
 				item.endDate !== "" &&
 				!this.isValidIso8601Date(item.endDate)
 			) {
-				return false;
+				this.addError(
+					`projects[${index}].endDate`,
+					"Date format must be YYYY, YYYY-MM, or YYYY-MM-DD",
+				);
 			}
 
 			// Validate URL if present and non-empty
 			if (item.url && item.url !== "" && !this.isValidUrl(item.url)) {
-				return false;
+				this.addError(`projects[${index}].url`, "URL format is invalid");
 			}
 
 			// Validate highlights array if present
 			if (item.highlights && !this.isValidStringArray(item.highlights)) {
-				return false;
+				this.addError(
+					`projects[${index}].highlights`,
+					"Highlights must be an array of strings",
+				);
 			}
-
-			return true;
 		});
 	}
 
