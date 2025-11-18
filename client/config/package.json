@@ -44,7 +44,7 @@
 		"stylelint-order": "^7.0.0",
 		"tailwindcss": "^4.1.17",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.9"
+		"vitest": "^4.0.10"
 	},
 	"publishConfig": {
 		"access": "public"
