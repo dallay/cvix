@@ -78,6 +78,12 @@ internal class AppKoverPlugin : ConventionPlugin {
                     minBound(project.getMinCoverageBound())
                 }
             }
+            total {
+                xml {
+                    onCheck.set(true)
+                    xmlFile.set(project.layout.buildDirectory.file("reports/kover/report.xml"))
+                }
+            }
         }
     }
 }

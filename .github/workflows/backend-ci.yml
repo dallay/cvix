@@ -88,7 +88,7 @@ jobs:
         uses: ./.github/actions/codecov
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./server/engine/build/reports/kover/report.xml
+          files: ./build/reports/kover/report.xml
           flags: backend
           name: codecov-backend
       - name: Upload build artifacts
