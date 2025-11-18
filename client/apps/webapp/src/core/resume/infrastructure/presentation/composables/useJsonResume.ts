@@ -1,6 +1,9 @@
 import { ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
-import type { ValidationError } from "@/core/resume/domain/ResumeValidator";
+import type {
+	ResumeValidator,
+	ValidationError,
+} from "@/core/resume/domain/ResumeValidator";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation/JsonResumeValidator";
 
 // Re-export for convenience
@@ -57,10 +60,11 @@ export function useJsonResume() {
 	/**
 	 * Populates validationErrors ref from validator's accumulated errors
 	 */
-	function populateValidationErrors(validator: JsonResumeValidator): void {
+	function populateValidationErrors(validator: ResumeValidator): void {
 		const errors = validator.getErrors();
 		if (errors.length > 0) {
-			validationErrors.value = errors;
+			// Convert readonly array to mutable array before assignment
+			validationErrors.value = [...errors];
 		} else {
 			// If validator reports no errors but validation failed, add generic error
 			validationErrors.value = [

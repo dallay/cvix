@@ -37,9 +37,9 @@ export interface ResumeValidator {
 	/**
 	 * Returns the validation errors from the last validation.
 	 *
-	 * @returns {ValidationError[]} Array of validation errors.
+	 * @returns {ReadonlyArray<ValidationError>} Read-only array of validation errors.
 	 *
 	 * Note: This method MUST NOT have side effects and should return the current snapshot of errors.
 	 */
-	getErrors(): ValidationError[];
+	getErrors(): ReadonlyArray<ValidationError>;
 }
