@@ -116,6 +116,8 @@ The workflows are configured to satisfy these branch protection rules on `main`:
   - `Analyze (java-kotlin)` → from the `analyze-java` job
   - `Analyze (javascript-typescript)` → from the `analyze-javascript` job
 
+**Note:** Frontend CI status checks (`Lint with Biome`, `Build`, `Test`) are not enforced by branch protection rules and are shown here for informational mapping only.
+
 All these status checks will now **always appear** for every PR, either as:
 
 - ✅ Passed (after running actual checks)
