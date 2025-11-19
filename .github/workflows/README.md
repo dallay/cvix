@@ -86,7 +86,7 @@ This ensures all required status checks always appear in GitHub, but actual work
   - Frontend files changed, OR
   - It's not a PR/push (manual trigger)
 
-Both jobs always appear in the status checks, but skip the actual analysis when not needed.
+Both jobs always appear as required status checks in GitHub, but the actual analysis only runs when triggered by a schedule, when relevant changes are detected, or on manual execution.
 
 ## Branch Protection Rules Alignment
 
