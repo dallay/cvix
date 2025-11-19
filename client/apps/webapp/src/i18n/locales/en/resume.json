@@ -4,7 +4,6 @@
 		"subtitle": "Create a professional resume in minutes",
 		"generate": "Generate PDF",
 		"generating": "Generating...",
-		"previewButton": "Preview",
 		"download": "Download PDF",
 		"clearForm": "Clear Form",
 		"saveProgress": "Save Progress",
@@ -163,7 +162,14 @@
 			"addSkill": "Add Skill",
 			"addInterest": "Add Interest",
 			"addReference": "Add Reference",
-			"addKeyword": "Add Keyword"
+			"addKeyword": "Add Keyword",
+			"uploadJson": "Upload JSON Resume",
+			"uploadJsonHint": "Upload a JSON file in Resume Schema format",
+			"downloadJson": "Download JSON Resume",
+			"downloadJsonHint": "Download JSON Resume (Cmd/Ctrl+S)",
+			"validateJson": "Validate JSON Resume",
+			"validateJsonHint": "Validate JSON Resume format",
+			"preview": "Preview"
 		},
 		"actions": {
 			"add": "Add",
@@ -317,6 +323,7 @@
 			"gpa": "GPA",
 			"empty_state": "Start filling out the form to see your resume preview",
 			"hide": "Hide Preview",
+			"show": "Show Preview",
 			"sections": {
 				"summary": "Summary",
 				"experience": "Work Experience",

@@ -293,6 +293,37 @@ export const useResumeStore = defineStore("resume", () => {
 		}
 	}
 
+	/**
+	 * Import a resume from an external source and set it as the current resume.
+	 * This is a convenience method that wraps setResume for semantic clarity when importing data.
+	 *
+	 * @param importedResume - Resume object to import
+	 * @throws Error if the imported resume fails validation
+	 */
+	function importResume(importedResume: Resume): void {
+		if (!validator.validate(importedResume)) {
+			throw new Error(
+				"Invalid resume data: imported resume does not conform to JSON Resume Schema",
+			);
+		}
+		setResume(importedResume);
+	}
+
+	/**
+	 * Export the current resume for external use.
+	 * This returns a deep snapshot copy of the resume, not the live reactive object.
+	 *
+	 * @returns A cloned snapshot of the current resume, or null if no resume exists
+	 */
+	function exportResume(): Resume | null {
+		if (!resume.value) return null;
+		if (typeof structuredClone === "function") {
+			return structuredClone(resume.value);
+		}
+		// Fallback for environments without structuredClone
+		return JSON.parse(JSON.stringify(resume.value));
+	}
+
 	return {
 		// State
 		resume,
@@ -318,5 +349,7 @@ export const useResumeStore = defineStore("resume", () => {
 		loadFromStorage,
 		clearStorage,
 		changeStorageStrategy,
+		importResume,
+		exportResume,
 	};
 });

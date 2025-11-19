@@ -24,7 +24,7 @@ export interface ValidationErrorPanelProps {
 	/**
 	 * Validation errors to display
 	 */
-	errors: ValidationError[];
+	errors: readonly ValidationError[];
 }
 
 const props = defineProps<ValidationErrorPanelProps>();
