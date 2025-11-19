@@ -20,6 +20,10 @@ inputs:
     description: 'Fail CI if Codecov upload fails'
     required: false
     default: 'false'
+  slug:
+    description: 'Codecov slug'
+    required: false
+    default: 'dallay/cvix'
 
 runs:
   using: "composite"
@@ -33,5 +37,6 @@ runs:
         flags: ${{ inputs.flags }}
         name: ${{ inputs.name }}
         fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
+        slug: ${{ inputs.slug }}
       env:
         CODECOV_TOKEN: ${{ inputs.codecov-token }}
