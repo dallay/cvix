@@ -25,12 +25,14 @@ This ensures all required status checks always appear in GitHub, but actual work
 
 - `Lint with Detekt`
 - `Build and Test`
+- `Test Results` (published by `EnricoMi/publish-unit-test-result-action`)
 
 **How it works:**
 
 - `changes` job always runs and detects if backend files changed
 - If backend changes detected → runs real `lint` and `build` jobs
 - If no backend changes → runs `lint-skip` and `build-skip` jobs that immediately succeed
+- The `Build and Test` job publishes test results as a separate "Test Results" status check
 
 **Monitored paths:**
 
@@ -44,7 +46,7 @@ This ensures all required status checks always appear in GitHub, but actual work
 
 ### Frontend CI (`frontend-ci.yml`)
 
-**Jobs:**
+**Required Status Checks:**
 
 - `Lint with Biome`
 - `Build`
@@ -101,6 +103,18 @@ The workflows are configured to satisfy these branch protection rules on `main`:
   ]
 }
 ```
+
+**Status Check Mapping:**
+
+- **Backend CI**:
+  - `Lint with Detekt` → from the `lint` job
+  - `Build and Test` → from the `build` job
+  - `Test Results` → published by `EnricoMi/publish-unit-test-result-action` within the `build` job
+- **Frontend CI**:
+  - `Lint with Biome`, `Build`, `Test` → from their respective jobs
+- **CodeQL**:
+  - `Analyze (java-kotlin)` → from the `analyze-java` job
+  - `Analyze (javascript-typescript)` → from the `analyze-javascript` job
 
 All these status checks will now **always appear** for every PR, either as:
 
