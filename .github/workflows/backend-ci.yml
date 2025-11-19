@@ -9,23 +9,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "server/**"
-      - "shared/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle/**"
-      - ".github/workflows/backend-ci.yml"
-      - ".github/actions/setup/java/**"
   pull_request:
-    paths:
-      - "server/**"
-      - "shared/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle/**"
-      - ".github/workflows/backend-ci.yml"
-      - ".github/actions/setup/java/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -37,9 +21,35 @@ permissions:
   pull-requests: write
 
 jobs:
-  lint:
-    name: Lint with Detekt # Renamed
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36	#v3.0.2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+              - 'shared/**'
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'gradle/**'
+              - '.github/workflows/backend-ci.yml'
+              - '.github/actions/setup/java/**'
+
+  lint:
+    name: Lint with Detekt
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     permissions:
       contents: read
       checks: write
@@ -67,6 +77,8 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     env:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
@@ -100,11 +112,31 @@ jobs:
             server/engine/build/reports/
           retention-days: 7
 
+  # Dummy jobs that always pass when there are no backend changes
+  # These ensure required status checks are always present
+  lint-skip:
+    name: Lint with Detekt
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'false'
+    steps:
+      - name: Skip linting (no backend changes)
+        run: echo "No backend changes detected, skipping lint."
+
+  build-skip:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'false'
+    steps:
+      - name: Skip build (no backend changes)
+        run: echo "No backend changes detected, skipping build and tests."
+
   build-and-push-docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build, lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend == 'true'
+    needs: [build, lint, changes]
     permissions:
       contents: read
       packages: write
