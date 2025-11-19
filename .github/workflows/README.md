@@ -13,7 +13,7 @@ All critical workflows now:
 1. **Always execute** on all PRs and pushes to `main` (no `paths` filters on triggers)
 2. **Detect changes** using the `dorny/paths-filter` action in a dedicated job
 3. **Conditionally run** heavy jobs only when relevant changes are detected
-4. **Provide dummy jobs** that skip with success when no changes are detected
+4. **Provide dummy jobs** that successfully skip when no changes are detected
 
 This ensures all required status checks always appear in GitHub, but actual work only happens when needed.
 
