@@ -106,8 +106,8 @@ export function useFieldValidation(
 	}
 
 	// Watch field value to auto-clear errors when user starts typing
-	watch(fieldRef, (newValue) => {
-		if (error.value && newValue !== fieldRef.value) {
+	watch(fieldRef, () => {
+		if (error.value) {
 			clearError();
 		}
 	});
@@ -121,13 +121,23 @@ export function useFieldValidation(
 }
 
 /**
- * Validate email format
+ * Validate email format (basic validation only - verify on backend for production use)
+ *
+ * This performs basic format validation to catch obvious mistakes but does not:
+ * - Validate all RFC 5322 compliant email formats
+ * - Handle internationalized domain names (IDN)
+ * - Check for disposable email domains
+ * - Verify the email actually exists
+ *
+ * For production use, always perform server-side validation and consider
+ * sending a confirmation email to verify ownership.
  */
 export function validateEmail(email: string): string | null {
 	if (!email) {
 		return null;
 	}
 
+	// Basic format validation - does not catch all edge cases
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	if (!emailRegex.test(email)) {
 		return "Please enter a valid email address";

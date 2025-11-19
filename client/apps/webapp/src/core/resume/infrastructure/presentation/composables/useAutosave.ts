@@ -80,6 +80,8 @@ export function useAutosave(
 		error: null,
 	});
 
+	const isSyncingFromBroadcast = ref(false); // Flag to prevent self-induced save loops
+
 	let broadcastChannel: BroadcastChannel | null = null;
 
 	/**
@@ -182,8 +184,10 @@ export function useAutosave(
 
 					// Only update if the remote change is newer
 					if (timestamp > localTimestamp) {
+						isSyncingFromBroadcast.value = true; // Prevent self-induced saves
 						resumeRef.value = data;
 						state.value.lastSaved = new Date(timestamp);
+						isSyncingFromBroadcast.value = false;
 					}
 				} else if (type === "resume-cleared") {
 					resumeRef.value = null;
@@ -212,6 +216,8 @@ export function useAutosave(
 	watch(
 		resumeRef,
 		(newResume) => {
+			if (isSyncingFromBroadcast.value) return; // Skip save if syncing from broadcast
+
 			debouncedSave(newResume)
 				.then((r) => r)
 				.catch((e) => {
