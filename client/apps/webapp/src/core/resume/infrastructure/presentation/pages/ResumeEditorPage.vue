@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMagicKeys } from "@vueuse/core";
 import { CheckCircle, Download, Upload } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import {
@@ -43,6 +43,23 @@ const { resume, loadResume: setResume } = useResumeForm();
 const { importJson, exportJson, validateResume, validationErrors } =
 	useJsonResume();
 
+// Prevent browser default Save dialog on Cmd/Ctrl+S
+function handleSaveShortcut(event: KeyboardEvent) {
+	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+		event.preventDefault();
+		event.stopPropagation();
+		handleExportJson();
+	}
+}
+
+onMounted(() => {
+	window.addEventListener("keydown", handleSaveShortcut);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("keydown", handleSaveShortcut);
+});
+
 // Keyboard shortcuts
 const keys = useMagicKeys();
 const cmdS = keys["Meta+KeyS"];
@@ -63,13 +80,7 @@ const togglePreview = () => {
  * Triggers the hidden file input for upload
  */
 function triggerFileUpload() {
-	if (resume.value) {
-		// Show confirmation if there's existing data
-		showUploadConfirmation.value = true;
-	} else {
-		// No data, proceed directly
-		fileInputRef.value?.click();
-	}
+	fileInputRef.value?.click();
 }
 
 /**
@@ -85,11 +96,11 @@ async function handleFileSelect(event: Event) {
 
 	pendingFile.value = file;
 
-	// If there's existing data, show confirmation
 	if (resume.value) {
 		showUploadConfirmation.value = true;
 	} else {
 		await processUpload(file);
+		pendingFile.value = null;
 	}
 
 	// Reset input so the same file can be selected again
@@ -109,6 +120,11 @@ async function confirmUpload() {
 		// User confirmed but we don't have a pending file, trigger input
 		fileInputRef.value?.click();
 	}
+}
+
+function cancelUpload() {
+	showUploadConfirmation.value = false;
+	pendingFile.value = null;
 }
 
 /**
@@ -342,7 +358,7 @@ function handleJumpTo(section: string, path: string) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel @click="cancelUpload">Cancel</AlertDialogCancel>
           <AlertDialogAction @click="confirmUpload">
             Continue
           </AlertDialogAction>
