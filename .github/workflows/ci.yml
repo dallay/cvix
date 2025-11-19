@@ -25,6 +25,7 @@ permissions:
   checks: write
   pull-requests: write
   security-events: write # Required for CodeQL to upload results
+  id-token: write
 
 jobs:
   lint-meta:
@@ -44,13 +45,13 @@ jobs:
           config_file: ".yamllint.yml"
 
       - name: Lint GitHub Actions
-        uses: reviewdog/action-actionlint@v1.68.0 # use released tag instead of commit SHA to avoid missing-tarball errors
+        uses: reviewdog/action-actionlint@c50f83c2e4242e88a38b4751b3a51601732d861f # v1.68.0
         with:
           reporter: github-pr-review
           fail_level: error
 
       - name: Lint Shell scripts
-        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
+        uses: reviewdog/action-shellcheck@248d249f03403a49f57f1a3a41a31d92750e3b1c # v1.32.0
         with:
           reporter: github-pr-review
           fail_on_error: true
