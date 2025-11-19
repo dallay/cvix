@@ -311,12 +311,17 @@ export const useResumeStore = defineStore("resume", () => {
 
 	/**
 	 * Export the current resume for external use.
-	 * This is a convenience method that returns the current resume for semantic clarity when exporting data.
+	 * This returns a deep snapshot copy of the resume, not the live reactive object.
 	 *
-	 * @returns The current resume or null if no resume exists
+	 * @returns A cloned snapshot of the current resume, or null if no resume exists
 	 */
 	function exportResume(): Resume | null {
-		return resume.value;
+		if (!resume.value) return null;
+		if (typeof structuredClone === "function") {
+			return structuredClone(resume.value);
+		}
+		// Fallback for environments without structuredClone
+		return JSON.parse(JSON.stringify(resume.value));
 	}
 
 	return {

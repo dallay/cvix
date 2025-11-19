@@ -218,7 +218,7 @@ export function validateDateRange(
 	const end = new Date(endDate);
 
 	// Check if dates are valid
-	if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+	if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
 		return "Please enter valid dates";
 	}
 
