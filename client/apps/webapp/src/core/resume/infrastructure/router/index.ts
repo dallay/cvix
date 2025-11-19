@@ -6,7 +6,7 @@ export const resumeRoutes: RouteRecordRaw[] = [
 		name: "ResumeGenerator",
 		component: () =>
 			import(
-				"@/core/resume/infrastructure/presentation/pages/ResumeGeneratorPage.vue"
+				"@/core/resume/infrastructure/presentation/pages/ResumeEditorPage.vue"
 			),
 		meta: {
 			requiresAuth: true,

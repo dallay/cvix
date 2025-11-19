@@ -4,7 +4,6 @@
 		"subtitle": "Crea un currículum profesional en minutos",
 		"generate": "Generar PDF",
 		"generating": "Generando...",
-		"previewButton": "Vista Previa",
 		"download": "Descargar PDF",
 		"clearForm": "Limpiar Formulario",
 		"saveProgress": "Guardar Progreso",
@@ -163,7 +162,14 @@
 			"addSkill": "Agregar Habilidad",
 			"addInterest": "Agregar Interés",
 			"addReference": "Agregar Referencia",
-			"addKeyword": "Agregar Palabra Clave"
+			"addKeyword": "Agregar Palabra Clave",
+			"uploadJson": "Subir JSON del Currículum",
+			"uploadJsonHint": "Sube un archivo JSON en formato JSON Resume",
+			"downloadJson": "Descargar JSON del Currículum",
+			"downloadJsonHint": "Descargar JSON del Currículum (Cmd/Ctrl+S)",
+			"validateJson": "Validar JSON del Currículum",
+			"validateJsonHint": "Validar formato JSON Resume",
+			"preview": "Vista Previa"
 		},
 		"actions": {
 			"add": "Agregar",
@@ -317,6 +323,7 @@
 			"gpa": "Promedio",
 			"empty_state": "Comienza a llenar el formulario para ver la vista previa de tu currículum",
 			"hide": "Ocultar Vista Previa",
+			"show": "Mostrar Vista Previa",
 			"sections": {
 				"summary": "Resumen",
 				"experience": "Experiencia Laboral",
