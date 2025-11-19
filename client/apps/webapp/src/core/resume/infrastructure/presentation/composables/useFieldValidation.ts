@@ -217,6 +217,11 @@ export function validateDateRange(
 	const start = new Date(startDate);
 	const end = new Date(endDate);
 
+	// Check if dates are valid
+	if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+		return "Please enter valid dates";
+	}
+
 	if (end < start) {
 		return "End date must be after or equal to start date";
 	}
