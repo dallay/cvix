@@ -5,8 +5,6 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
   schedule:
     - cron: "0 3 * * 1"
 
@@ -15,32 +13,76 @@ permissions:
   security-events: write
 
 jobs:
-  analyze:
-    name: Analyze (JVM + JS/TS)
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [java-kotlin, javascript-typescript]
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36	#v3.0.2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+              - 'shared/**'
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'gradle/**'
+            frontend:
+              - 'client/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+
+  analyze-java:
+    name: Analyze (java-kotlin)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      always() &&
+      (github.event_name == 'schedule' ||
+       needs.changes.outputs.backend == 'true' ||
+       needs.changes.result == 'skipped')
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - uses: github/codeql-action/init@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # v4
         with:
-          languages: ${{ matrix.language }}
+          languages: java-kotlin
       - name: Setup Java
-        if: matrix.language == 'java-kotlin'
         uses: ./.github/actions/setup/java
         with:
           java-version: "21"
           distribution: "temurin"
       - name: Build Gradle project
-        if: matrix.language == 'java-kotlin'
         run: ./gradlew build -x test --stacktrace
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # v4
+
+  analyze-javascript:
+    name: Analyze (javascript-typescript)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      always() &&
+      (github.event_name == 'schedule' ||
+       needs.changes.outputs.frontend == 'true' ||
+       needs.changes.result == 'skipped')
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: github/codeql-action/init@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # v4
+        with:
+          languages: javascript-typescript
       - name: Setup Node.js and pnpm
-        if: matrix.language == 'javascript-typescript'
         uses: ./.github/actions/setup/node
       - name: Build PNPM project
-        if: matrix.language == 'javascript-typescript'
         run: pnpm run build
       - name: Analyze with CodeQL
         uses: github/codeql-action/analyze@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # v4
