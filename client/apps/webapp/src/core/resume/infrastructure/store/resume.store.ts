@@ -293,6 +293,26 @@ export const useResumeStore = defineStore("resume", () => {
 		}
 	}
 
+	/**
+	 * Import a resume from an external source and set it as the current resume.
+	 * This is a convenience method that wraps setResume for semantic clarity when importing data.
+	 *
+	 * @param importedResume - Resume object to import
+	 */
+	function importResume(importedResume: Resume): void {
+		setResume(importedResume);
+	}
+
+	/**
+	 * Export the current resume for external use.
+	 * This is a convenience method that returns the current resume for semantic clarity when exporting data.
+	 *
+	 * @returns The current resume or null if no resume exists
+	 */
+	function exportResume(): Resume | null {
+		return resume.value;
+	}
+
 	return {
 		// State
 		resume,
@@ -318,5 +338,7 @@ export const useResumeStore = defineStore("resume", () => {
 		loadFromStorage,
 		clearStorage,
 		changeStorageStrategy,
+		importResume,
+		exportResume,
 	};
 });
