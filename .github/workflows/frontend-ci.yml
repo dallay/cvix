@@ -173,7 +173,7 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/loomify/marketing
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: .
           file: ./client/apps/marketing/Dockerfile
@@ -215,7 +215,7 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/loomify/webapp
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: .
           file: ./client/apps/webapp/Dockerfile
