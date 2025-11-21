@@ -1,6 +1,8 @@
 name: CI
 
 on:
+env:
+  NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   push:
@@ -25,6 +27,7 @@ permissions:
   checks: write
   pull-requests: write
   security-events: write # Required for CodeQL to upload results
+  id-token: write
 
 jobs:
   lint-meta:
@@ -44,13 +47,13 @@ jobs:
           config_file: ".yamllint.yml"
 
       - name: Lint GitHub Actions
-        uses: reviewdog/action-actionlint@v1.68.0 # use released tag instead of commit SHA to avoid missing-tarball errors
+        uses: reviewdog/action-actionlint@f00ad0691526c10be4021a91b2510f0a769b14d0 # v1.68.0
         with:
           reporter: github-pr-review
           fail_level: error
 
       - name: Lint Shell scripts
-        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
+        uses: reviewdog/action-shellcheck@248d249f03403a49f57f1a3a41a31d92750e3b1c # v1.32.0
         with:
           reporter: github-pr-review
           fail_on_error: true
@@ -84,7 +87,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Run Labeler
-        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b   # v6
+        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yaml
@@ -97,63 +100,34 @@ jobs:
       pull-requests: write # Required to comment on PRs
     steps:
       - name: Checkout repository
-        # Pinned to v4 commit hash for security
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Dependency Review
-        # Pinned to v4 commit hash for security
         uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
-        continue-on-error: true # Allow workflow to continue if dependency graph or GitHub Advanced Security is not enabled
+        continue-on-error: true
         with:
-          # You can specify configuration options here, e.g.:
-          # fail-on-severity: critical
-          # allow-licenses: Apache-2.0, MIT
-          # deny-licenses: GPL-3.0
-          comment-summary-in-pr: always # Add a summary comment to PRs
+          comment-summary-in-pr: always
 
   owasp-dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
     permissions:
-      contents: read # To read dependency files
-      # issues: write   # If you want to create issues for vulnerabilities (optional)
-      # pull-requests: write   # If you want to comment on PRs (optional)
+      contents: read
     steps:
-      - name:
-          Checkout repository
-          # Pinned to v4 commit hash for security
+      - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
           project: "Loomify-monorepo"
           path: "."
-          format: "HTML" # You can choose other formats like XML, JSON, CSV
-          # Optional: specify suppression file if you have one
-          # suppressionPath: 'config/owasp/owasp-suppression.xml'
-          # Optional: fail the build if vulnerabilities are found
-          # Optional: Upload the report as an artifact
+          format: "HTML"
       - name: Upload OWASP Dependency Check Report
-        if: always() # Ensure report is uploaded even if previous steps fail
-        # Pinned to v4 commit hash for security
+        if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: owasp-dependency-check-report
-          path: reports/dependency-check-report.html # Default path for HTML report
+          path: reports/dependency-check-report.html
           retention-days: 7
-
-  backend:
-    name: Backend
-    uses: ./.github/workflows/backend-ci.yml
-    secrets:
-      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  frontend:
-    name: Frontend
-    uses: ./.github/workflows/frontend-ci.yml
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
 
   markdown:
     name: Markdown lint (docs)
@@ -161,7 +135,7 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@43dc18c80bec558d5f444fc9f507792390450296
+        uses: DavidAnson/markdownlint-cli2-action@bfd3fdc8e281653c43afbfbf5f4b31bf25ba1109
         with:
           globs: |
             **/*.md
@@ -175,3 +149,323 @@ jobs:
             !dist/**
             !build/**
           config: .markdownlint.json
+
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 #v3.0.2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+              - 'shared/**'
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'gradle/**'
+              - '.github/workflows/ci.yml'
+              - '.github/actions/setup/java/**'
+            frontend:
+              - 'client/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+              - '.github/actions/setup/node/**'
+
+  lint-backend:
+    name: Lint with Detekt
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+      - name: Install reviewdog
+        run: |
+          curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0
+      - name: Run Detekt and Reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew detektAll --no-daemon --stacktrace || true
+          reviewdog -reporter=github-pr-check -name="Detekt" -f=sarif -level="warning" --filter-mode="nofilter" < build/reports/detekt/detekt.sarif
+
+  lint-backend-skip:
+    name: Lint with Detekt
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'false'
+    steps:
+      - name: Skip linting (no backend changes)
+        run: echo "No backend changes detected, skipping lint."
+
+  build-backend:
+    name: Build and Test (Backend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+      - name: Run tests
+        run: ./gradlew test
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
+        if: always()
+        with:
+          files: |
+            **/build/test-results/**/*.xml
+      - name: Upload coverage to Codecov
+        uses: ./.github/actions/codecov
+        with:
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/reports/kover/report.xml
+          flags: backend
+          name: codecov-backend
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: backend-artifacts
+          path: |
+            server/engine/build/libs/*.jar
+            server/engine/build/reports/
+          retention-days: 7
+
+  build-backend-skip:
+    name: Build and Test (Backend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'false'
+    steps:
+      - name: Skip build (no backend changes)
+        run: echo "No backend changes detected, skipping build and tests."
+
+  build-and-push-docker-backend:
+    name: Build and Push Docker Image (Backend)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend == 'true'
+    needs: [build-backend, lint-backend]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+      - name: Enforce coverage threshold
+        run: ./gradlew koverVerify --no-daemon
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        with:
+          driver: docker-container
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/loomify/backend
+      - name: Build and push Docker image
+        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        with:
+          context: .
+          file: ./server/engine/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  lint-frontend:
+    name: Lint with Biome
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: 🧩 Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Run Biome with Reviewdog
+        uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./client
+          reporter: github-pr-review
+          fail_level: error
+
+  lint-frontend-skip:
+    name: Lint with Biome
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'false'
+    steps:
+      - name: Skip linting (no frontend changes)
+        run: echo "No frontend changes detected, skipping lint."
+
+  build-frontend:
+    name: Build (Frontend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Build
+        run: pnpm build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: frontend-artifacts
+          path: |
+            client/apps/*/dist/
+            client/marketing/dist/
+            client/docs/dist/
+          retention-days: 7
+
+  build-frontend-skip:
+    name: Build (Frontend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'false'
+    steps:
+      - name: Skip build (no frontend changes)
+        run: echo "No frontend changes detected, skipping build."
+
+  test-frontend:
+    name: Test (Frontend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Test
+        run: pnpm test
+      - name: Upload coverage to Codecov
+        uses: ./.github/actions/codecov
+        with:
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: frontend
+          name: codecov-frontend
+
+  test-frontend-skip:
+    name: Test (Frontend)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'false'
+    steps:
+      - name: Skip tests (no frontend changes)
+        run: echo "No frontend changes detected, skipping tests."
+
+  build-and-push-docker-marketing:
+    name: Build and Push Docker Image (Marketing)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
+    needs: [build-frontend, test-frontend]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        with:
+          driver: docker-container
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/loomify/marketing
+      - name: Build and push Docker image
+        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        with:
+          context: .
+          file: ./client/apps/marketing/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-and-push-docker-webapp:
+    name: Build and Push Docker Image (WebApp)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
+    needs: [build-frontend, test-frontend]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        with:
+          driver: docker-container
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/loomify/webapp
+      - name: Build and push Docker image
+        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        with:
+          context: .
+          file: ./client/apps/webapp/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
