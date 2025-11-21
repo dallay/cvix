@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 
 /**
  * Command handler for deleting resume documents.
- * Enforces authorization - only the owner can delete.
+ * Delegates to ResumeDestroyer which enforces authorization - only the owner can delete.
  */
 @Service
 class DeleteResumeCommandHandler(
