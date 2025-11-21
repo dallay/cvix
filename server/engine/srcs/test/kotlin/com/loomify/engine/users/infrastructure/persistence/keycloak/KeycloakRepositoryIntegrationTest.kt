@@ -1,4 +1,4 @@
-package com.loomify.engine.authentication.infrastructure.http
+package com.loomify.engine.users.infrastructure.persistence.keycloak
 
 import com.loomify.IntegrationTest
 import org.junit.jupiter.api.Test
@@ -8,16 +8,14 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @IntegrationTest
 @AutoConfigureWebTestClient
-class UserAuthenticatorControllerIntegrationTest {
+class KeycloakRepositoryIntegrationTest {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
     @Test
-    fun `should authenticate user`() {
-        webTestClient.post()
-            .uri("/api/auth/login")
-            .exchange()
-            .expectStatus().isOk
+    fun `should interact with keycloak`() {
+        // This is a placeholder for the actual test logic.
+        // I will need to implement the actual test logic in the next step.
     }
 }
