@@ -1,6 +1,8 @@
 name: CI
 
 on:
+env:
+  NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   push:
@@ -85,7 +87,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Run Labeler
-        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b   # v6
+        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yaml
@@ -273,31 +275,33 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Setup Java
         uses: ./.github/actions/setup/java
-      - name: Verify Docker availability
-        run: docker --version
+      - name: Enforce coverage threshold
+        run: ./gradlew koverVerify --no-daemon
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enforce coverage threshold
-        run: ./gradlew koverVerify --no-daemon
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        with:
+          driver: docker-container
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/loomify/backend
       - name: Build and push Docker image
-        env:
-          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }}
-          DOCKER_USERNAME: ${{ github.actor }}
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          DOCKER_REGISTRY_URL: https://ghcr.io
-          PUBLISH_IMAGE: true
-        run: ./gradlew :server:engine:bootBuildImage --info --no-daemon
-      - name: Tag image with latest
-        run: |
-          docker tag ghcr.io/${{ github.repository_owner }}/loomify/backend:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/loomify/backend:latest
-          docker push ghcr.io/${{ github.repository_owner }}/loomify/backend:latest
-      - name: List built images
-        if: always()
-        run: docker images | grep loomify || echo "No loomify images found"
+        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        with:
+          context: .
+          file: ./server/engine/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   lint-frontend:
     name: Lint with Biome
@@ -310,7 +314,7 @@ jobs:
       - name: 🧩 Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
       - name: Run Biome with Reviewdog
         uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
         with:
@@ -339,7 +343,7 @@ jobs:
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
       - name: Build
         run: pnpm build
       - name: Upload build artifacts
@@ -372,7 +376,7 @@ jobs:
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
       - name: Test
         run: pnpm test
       - name: Upload coverage to Codecov
