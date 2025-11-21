@@ -87,7 +87,7 @@ class Bucket4jRateLimiter(
     private fun newBucket(identifier: String, strategy: RateLimitStrategy): Bucket {
         val configuration = when (strategy) {
             RateLimitStrategy.AUTH -> {
-                logger.debug("Creating AUTH bucket for identifier: {}", identifier)
+                logger.debug("Creating AUTH bucket for identifier: {}", identifier.take(10))
                 configurationStrategy.createAuthBucketConfiguration()
             }
 
@@ -95,14 +95,14 @@ class Bucket4jRateLimiter(
                 val pricingPlan = PricingPlan.resolvePlanFromApiKey(identifier)
                 logger.debug(
                     "Creating BUSINESS bucket for identifier: {} with plan: {}",
-                    identifier,
+                    identifier.take(10),
                     pricingPlan.name,
                 )
                 configurationStrategy.createBusinessBucketConfiguration(pricingPlan.name.lowercase())
             }
 
             RateLimitStrategy.RESUME -> {
-                logger.debug("Creating RESUME bucket for identifier: {}", identifier)
+                logger.debug("Creating RESUME bucket for identifier: {}", identifier.take(10))
                 configurationStrategy.createResumeBucketConfiguration()
             }
         }

@@ -20,7 +20,8 @@ class ResumeRetrieval(
      *
      * @param id The resume document ID
      * @param userId The authenticated user ID
-     * @return The resume document if found, null otherwise
+     * @return The resume document if found
+     * @throws ResumeNotFoundException if no resume exists for the given id/userId
      */
     suspend fun retrieve(
         id: UUID,
