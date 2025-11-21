@@ -10,7 +10,7 @@ This document provides a permanent, unified reference for building, publishing, 
 ## Overview
 
 - **Backend Docker images** are now built using a multi-stage Dockerfile and Docker Buildx, with GitHub Actions cache for optimal performance and consistency.
-- **Frontend images** (marketing, webapp) use the same Buildx + cache pattern for unified maintenance.**Frontend images** (marketing, webapp) use the same Buildx + cache pattern for unified maintenance.
+- **Frontend images** (marketing, webapp) use the same Buildx + cache pattern for unified maintenance.
 - All images are published to GitHub Container Registry (GHCR) on every push to `main`.
 
 ## Why Standardize?
