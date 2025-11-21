@@ -41,6 +41,14 @@ interface ResumeRepository {
     suspend fun deleteById(id: UUID, userId: UUID)
 
     /**
+     * Deletes a resume document if it exists and the user is authorized.
+     * @param id The resume ID
+     * @param userId The authenticated user ID (for authorization)
+     * @return The number of rows affected (0 if not found or unauthorized)
+     */
+    suspend fun deleteIfAuthorized(id: UUID, userId: UUID): Long
+
+    /**
      * Checks if a resume document exists.
      * @param id The resume ID
      * @param userId The authenticated user ID (for authorization)

@@ -4,6 +4,7 @@ import com.loomify.UnitTest
 import com.loomify.common.domain.bus.event.EventPublisher
 import com.loomify.resume.domain.ResumeRepository
 import com.loomify.resume.domain.event.ResumeDeletedEvent
+import com.loomify.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,7 +28,7 @@ internal class DeleteResumeCommandHandlerTest {
     fun setUp() {
         resumeId = randomUUID()
         userId = randomUUID()
-        coEvery { repository.deleteById(eq(resumeId), eq(userId)) } returns Unit
+        coEvery { repository.deleteIfAuthorized(eq(resumeId), eq(userId)) } returns 1L
         coEvery { eventPublisher.publish(any<ResumeDeletedEvent>()) } returns Unit
     }
 
@@ -35,14 +36,13 @@ internal class DeleteResumeCommandHandlerTest {
     fun `should delete a resume and publish event when handle is called`() = runTest {
         // Given
         val command = DeleteResumeCommand(id = resumeId, userId = userId)
-        coEvery { repository.existsById(eq(resumeId), eq(userId)) } returns true
 
         // When
         deleteResumeCommandHandler.handle(command)
 
         // Then
         coVerify {
-            repository.deleteById(
+            repository.deleteIfAuthorized(
                 withArg {
                     assertEquals(resumeId, it)
                 },
@@ -58,17 +58,25 @@ internal class DeleteResumeCommandHandlerTest {
     fun `should throw ResumeNotFoundException when resume does not exist`() = runTest {
         // Given
         val command = DeleteResumeCommand(id = resumeId, userId = userId)
-        coEvery { repository.existsById(eq(resumeId), eq(userId)) } returns false
+        coEvery { repository.deleteIfAuthorized(eq(resumeId), eq(userId)) } returns 0L
 
         // When / Then
         try {
             deleteResumeCommandHandler.handle(command)
             assert(false) { "Expected ResumeNotFoundException to be thrown" }
         } catch (e: Exception) {
-            assert(e is com.loomify.resume.domain.exception.ResumeNotFoundException)
+            assert(e is ResumeNotFoundException)
         }
-
-        coVerify(exactly = 0) { repository.deleteById(any(), any()) }
+        coVerify {
+            repository.deleteIfAuthorized(
+                withArg {
+                    assertEquals(resumeId, it)
+                },
+                withArg {
+                    assertEquals(userId, it)
+                },
+            )
+        }
         coVerify(exactly = 0) { eventPublisher.publish(any<ResumeDeletedEvent>()) }
     }
 }

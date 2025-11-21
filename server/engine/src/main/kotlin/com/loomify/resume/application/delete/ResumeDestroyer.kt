@@ -46,14 +46,10 @@ class ResumeDestroyer(
      */
     suspend fun deleteResume(id: UUID, userId: UUID) {
         log.debug("Deleting resume - id={}, userId={}", id, userId)
-        // Check if resume exists and user is authorized
-        val exists = resumeRepository.existsById(id, userId)
-        if (!exists) {
+        val rowsDeleted = resumeRepository.deleteIfAuthorized(id, userId)
+        if (rowsDeleted == 0L) {
             throw ResumeNotFoundException("Resume not found or unauthorized: $id")
         }
-
-        // Delete the resume
-        resumeRepository.deleteById(id, userId)
         eventBroadcaster.publish(
             ResumeDeletedEvent(
                 id.toString(),

@@ -56,6 +56,11 @@ class ResumeR2dbcRepository(
         }
     }
 
+    override suspend fun deleteIfAuthorized(id: UUID, userId: UUID): Long {
+        log.debug("Attempting atomic delete for id: {}, userId: {}", id, userId)
+        return resumeReactiveR2dbcRepository.deleteByIdAndUserId(id, userId)
+    }
+
     override suspend fun existsById(id: UUID, userId: UUID): Boolean {
         log.debug("Checking if resume exists by id: {}, userId: {}", id, userId)
         return resumeReactiveR2dbcRepository.existsByIdAndUserId(id, userId)
