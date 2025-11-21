@@ -1,0 +1,49 @@
+meta {
+  name: Create a Resume Minimal
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{url}}/api/resume/{{$guid}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "workspaceId": "93667c1b-8bae-32df-8564-06f6c88c3a48",
+    "title": "Mi first CV",
+    "content": {
+      "basics": {
+        "name": "Jane Minimal",
+        "email": "jane@example.com",
+        "phone": "(555) 000-0000"
+      },
+      "work": [],
+      "volunteer": [],
+      "education": [],
+      "awards": [],
+      "certificates": [],
+      "publications": [],
+      "skills": [
+        {
+          "name": "Programming",
+          "keywords": [
+            "Python",
+            "Java"
+          ]
+        }
+      ],
+      "languages": [],
+      "interests": [],
+      "references": [],
+      "projects": []
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
