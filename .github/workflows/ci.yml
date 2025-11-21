@@ -45,7 +45,7 @@ jobs:
           config_file: ".yamllint.yml"
 
       - name: Lint GitHub Actions
-        uses: reviewdog/action-actionlint@c50f83c2e4242e88a38b4751b3a51601732d861f # v1.68.0
+        uses: reviewdog/action-actionlint@f00ad0691526c10be4021a91b2510f0a769b14d0 # v1.68.0
         with:
           reporter: github-pr-review
           fail_level: error
@@ -133,7 +133,7 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@43dc18c80bec558d5f444fc9f507792390450296
+        uses: DavidAnson/markdownlint-cli2-action@bfd3fdc8e281653c43afbfbf5f4b31bf25ba1109
         with:
           globs: |
             **/*.md
