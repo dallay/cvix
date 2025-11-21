@@ -25,6 +25,10 @@ class DatabaseConfig(
     // Custom converters are not needed and can interfere with native type handling
 
     @Bean
-    fun transactionalOperator(): TransactionalOperator =
-        TransactionalOperator.create(R2dbcTransactionManager(connectionFactory))
+    fun connectionFactoryTransactionManager(): R2dbcTransactionManager =
+        R2dbcTransactionManager(connectionFactory)
+
+    @Bean
+    fun transactionalOperator(txManager: R2dbcTransactionManager): TransactionalOperator =
+        TransactionalOperator.create(txManager)
 }

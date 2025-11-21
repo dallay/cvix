@@ -65,7 +65,7 @@ class ResumeCreator(
             savedDocument.title,
         )
 
-        val domainEvents = document.pullDomainEvents()
+        val domainEvents = savedDocument.pullDomainEvents()
         domainEvents.filterIsInstance<ResumeCreatedEvent>().forEach { eventBroadcaster.publish(it) }
     }
 
