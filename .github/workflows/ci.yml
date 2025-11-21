@@ -450,52 +450,71 @@ jobs:
         run: |
           echo "Checking all job results..."
 
-          # Check if changes detection succeeded
+          # Jobs that must always succeed
           if [ "${{ needs.changes.result }}" != "success" ]; then
-            echo "❌ Changes detection failed"
+            echo "❌ Changes detection failed: ${{ needs.changes.result }}"
             exit 1
           fi
 
-          # Check meta linting
           if [ "${{ needs.lint-meta.result }}" != "success" ]; then
-            echo "❌ Meta linting failed"
+            echo "❌ Meta linting failed: ${{ needs.lint-meta.result }}"
             exit 1
           fi
 
-          # Check markdown linting
           if [ "${{ needs.lint-markdown.result }}" != "success" ]; then
-            echo "❌ Markdown linting failed"
+            echo "❌ Markdown linting failed: ${{ needs.lint-markdown.result }}"
             exit 1
           fi
 
-          # Check backend jobs (only if backend changes detected)
-          if [ "${{ needs.changes.outputs.backend }}" == "true" ]; then
-            if [ "${{ needs.lint-backend.result }}" != "success" ]; then
-              echo "❌ Backend linting failed"
-              exit 1
-            fi
-            if [ "${{ needs.backend-pipeline.result }}" != "success" ]; then
-              echo "❌ Backend pipeline failed"
-              exit 1
-            fi
-          fi
-
-          # Check frontend jobs (only if frontend changes detected)
-          if [ "${{ needs.changes.outputs.frontend }}" == "true" ]; then
-            if [ "${{ needs.lint-frontend.result }}" != "success" ]; then
-              echo "❌ Frontend linting failed"
-              exit 1
-            fi
-            if [ "${{ needs.frontend-pipeline.result }}" != "success" ]; then
-              echo "❌ Frontend pipeline failed"
-              exit 1
-            fi
-          fi
-
-          # Check security scans
           if [ "${{ needs.security-scans.result }}" != "success" ]; then
-            echo "❌ Security scans failed"
+            echo "❌ Security scans failed: ${{ needs.security-scans.result }}"
             exit 1
+          fi
+
+          # Backend jobs - must succeed if changes detected, can be skipped otherwise
+          backend_lint="${{ needs.lint-backend.result }}"
+          backend_pipeline="${{ needs.backend-pipeline.result }}"
+
+          if [ "${{ needs.changes.outputs.backend }}" == "true" ]; then
+            if [ "$backend_lint" != "success" ]; then
+              echo "❌ Backend linting failed: $backend_lint"
+              exit 1
+            fi
+            if [ "$backend_pipeline" != "success" ]; then
+              echo "❌ Backend pipeline failed: $backend_pipeline"
+              exit 1
+            fi
+          else
+            # No backend changes - jobs should be skipped
+            if [ "$backend_lint" != "skipped" ]; then
+              echo "⚠️  Backend linting unexpected status: $backend_lint (expected: skipped)"
+            fi
+            if [ "$backend_pipeline" != "skipped" ]; then
+              echo "⚠️  Backend pipeline unexpected status: $backend_pipeline (expected: skipped)"
+            fi
+          fi
+
+          # Frontend jobs - must succeed if changes detected, can be skipped otherwise
+          frontend_lint="${{ needs.lint-frontend.result }}"
+          frontend_pipeline="${{ needs.frontend-pipeline.result }}"
+
+          if [ "${{ needs.changes.outputs.frontend }}" == "true" ]; then
+            if [ "$frontend_lint" != "success" ]; then
+              echo "❌ Frontend linting failed: $frontend_lint"
+              exit 1
+            fi
+            if [ "$frontend_pipeline" != "success" ]; then
+              echo "❌ Frontend pipeline failed: $frontend_pipeline"
+              exit 1
+            fi
+          else
+            # No frontend changes - jobs should be skipped
+            if [ "$frontend_lint" != "skipped" ]; then
+              echo "⚠️  Frontend linting unexpected status: $frontend_lint (expected: skipped)"
+            fi
+            if [ "$frontend_pipeline" != "skipped" ]; then
+              echo "⚠️  Frontend pipeline unexpected status: $frontend_pipeline (expected: skipped)"
+            fi
           fi
 
           echo "✅ All critical checks passed!"
