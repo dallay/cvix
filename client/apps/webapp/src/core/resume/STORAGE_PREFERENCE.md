@@ -27,6 +27,7 @@ const {
 Location: `src/components/StorageSelector.vue`
 
 Visual UI for selecting storage type with:
+
 - Radio button selection
 - Storage type descriptions
 - Capacity information
@@ -80,12 +81,14 @@ const metadata = getStorageMetadata();
 ## Storage Options
 
 ### Session Storage (Default)
+
 - **Persistence**: Tab/window session only
 - **Capacity**: ~5-10 MB
 - **Best for**: Privacy-conscious users, temporary work
 - **Icon**: 🔒
 
 ### Local Storage
+
 - **Persistence**: Permanent (across sessions)
 - **Capacity**: ~5-10 MB
 - **Best for**: Regular users, saving drafts
@@ -93,6 +96,7 @@ const metadata = getStorageMetadata();
 - **Badge**: Recommended
 
 ### IndexedDB
+
 - **Persistence**: Permanent (across sessions)
 - **Capacity**: ~50+ MB
 - **Best for**: Large resumes, power users
@@ -103,6 +107,7 @@ const metadata = getStorageMetadata();
 ### Preference Storage
 
 The preference is stored in `localStorage` with the key:
+
 ```typescript
 const STORAGE_PREFERENCE_KEY = "cvix:storage-preference";
 ```
@@ -243,6 +248,7 @@ The system handles various error scenarios:
 ## Accessibility
 
 The `StorageSelector` component is fully accessible:
+
 - Keyboard navigable
 - Screen reader friendly labels
 - ARIA attributes on radio group

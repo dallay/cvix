@@ -11,17 +11,17 @@ storage mechanisms without changing application code.
 ### Domain Layer (`domain/`)
 
 - **`ResumeStorage.ts`**: Core interfaces and types
-    - `ResumeStorage`: Main interface for all storage implementations
-    - `StorageType`: Type union for supported storage types
-    - `PersistenceResult<T>`: Standardized result object with metadata
-    - `PartialResume`: Utility type for draft/incomplete resumes
+  - `ResumeStorage`: Main interface for all storage implementations
+  - `StorageType`: Type union for supported storage types
+  - `PersistenceResult<T>`: Standardized result object with metadata
+  - `PartialResume`: Utility type for draft/incomplete resumes
 
 ### Application Layer (`application/`)
 
 - **`ResumePersistenceService.ts`**: Service that uses the strategy pattern
-    - Delegates operations to the configured storage strategy
-    - Provides runtime strategy switching
-    - Storage-agnostic API
+  - Delegates operations to the configured storage strategy
+  - Provides runtime strategy switching
+  - Storage-agnostic API
 
 ### Infrastructure Layer (`infrastructure/storage/`)
 

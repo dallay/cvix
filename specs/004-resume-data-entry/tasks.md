@@ -38,7 +38,6 @@ This is a monorepo with:
 - [X] T005 [P] Add Liquibase migration script in `server/engine/src/main/resources/db/changelog/` to create resumes table with JSONB column
 - [X] T006 Configure resume routes in `client/apps/webapp/src/core/resume/infrastructure/router/index.ts` for `/resume/editor` and `/resume/pdf` paths
 
-
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
@@ -174,7 +173,8 @@ This is a monorepo with:
 
 ### Implementation for User Story 4
 
-- [X] T053 [P] [US4] Implement IndexedDB autosave in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/useAutosave.ts` using idb-keyval with key `resume:draft` and debounced save (2s). Check the user settings storage preferences in `client/apps/webapp/src/core/settings/README.md`. Currently the user can define how he wants to store his data, at the moment the system supports three options, session storage (which is lost when the browser is closed), local storage and IndexedDB which are permanent between tabs and are maintained when the browser is closed. These storage are local because the app must be local first and in this same iteration we are going to implement server storage for users that want to persist their data in our system. The user can choose what type of storage he wants.
+- [X] T053 [P] [US4] Implement IndexedDB autosave in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/useAutosave.ts` using idb-keyval with key `resume:draft` and debounced save (2s). Check the user settings storage preferences in `client/apps/webapp/src/core/settings/README.md`. Currently the user can define how he wants to store his data, at the moment the system supports three options, session storage (which is lost when the browser is closed), local storage and IndexedDB which are permanent between tabs and are maintained when the browser is closed.
+- These storage are local because the app must be local first and in this same iteration we are going to implement server storage for users that want to persist their data in our system. The user can choose what type of storage he wants.
 - [X] T054 [P] [US4] Implement BroadcastChannel sync in useAutosave.ts for multi-tab coordination with last-write-wins strategy
 - [X] T055 [P] [US4] Implement server persistence composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts` with CRUD operations calling /api/resumes endpoints (ResumeHttpClient already implements this functionality)
 - [ ] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt` with handler that validates and saves to repository (BACKEND: Requires implementation)
