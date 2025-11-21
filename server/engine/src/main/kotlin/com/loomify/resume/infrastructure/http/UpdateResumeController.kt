@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.util.HtmlUtils
 
 /**
  * REST controller for updating resumes.
@@ -88,13 +89,14 @@ class UpdateResumeController(
             )
             throw e
         }
+        val sanitizedId = HtmlUtils.htmlEscape(id)
         return ResponseEntity
             .ok()
-            .location(URI.create("/api/resume/$id"))
+            .location(URI.create("/api/resume/$sanitizedId"))
             .body(
                 """
                     {
-                        "message": "Resume with ID $id updated successfully."
+                        "message": "Resume with ID $sanitizedId updated successfully."
                     }
                 """.trimIndent(),
             )
