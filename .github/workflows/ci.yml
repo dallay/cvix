@@ -1,8 +1,6 @@
 name: CI
 
 on:
-env:
-  NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   push:
@@ -18,6 +16,9 @@ env:
         default: "development"
         required: true
 
+env:
+  NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -30,12 +31,50 @@ permissions:
   id-token: write
 
 jobs:
+  # ============================================================================
+  # Change Detection - Run once, output for all jobs
+  # ============================================================================
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 #v3.0.2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+              - 'shared/**'
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'gradle/**'
+              - '.github/workflows/ci.yml'
+              - '.github/actions/setup/java/**'
+            frontend:
+              - 'client/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+              - '.github/actions/setup/node/**'
+
+  # ============================================================================
+  # Linting & Static Analysis - Grouped by concern
+  # ============================================================================
   lint-meta:
     name: Lint Meta-Files
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write # For reviewdog to post comments
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
@@ -69,7 +108,7 @@ jobs:
           output-file: "/dev/stdout"
           format: "tty"
           failure-threshold: "error"
-          ignore: "DL3008,DL4006" # Example: ignore rules, customize as needed
+          ignore: "DL3008,DL4006"
 
       - name: Lint JSON files
         run: |
@@ -77,63 +116,12 @@ jobs:
             -exec jq . {} \; > /dev/null
         shell: bash
 
-  labeler:
-    name: Label PRs
+  lint-markdown:
+    name: Lint Markdown
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Run Labeler
-        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler.yaml
-
-  dependency-review:
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read # Required to read dependency files
-      pull-requests: write # Required to comment on PRs
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Dependency Review
-        uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
-        continue-on-error: true
-        with:
-          comment-summary-in-pr: always
-
-  owasp-dependency-check:
-    name: OWASP Dependency Check
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
-        with:
-          project: "Loomify-monorepo"
-          path: "."
-          format: "HTML"
-      - name: Upload OWASP Dependency Check Report
-        if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
-        with:
-          name: owasp-dependency-check-report
-          path: reports/dependency-check-report.html
-          retention-days: 7
-
-  markdown:
-    name: Markdown lint (docs)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@bfd3fdc8e281653c43afbfbf5f4b31bf25ba1109
         with:
@@ -150,43 +138,14 @@ jobs:
             !build/**
           config: .markdownlint.json
 
-  changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 #v3.0.2
-        id: filter
-        with:
-          filters: |
-            backend:
-              - 'server/**'
-              - 'shared/**'
-              - 'build.gradle.kts'
-              - 'settings.gradle.kts'
-              - 'gradle/**'
-              - '.github/workflows/ci.yml'
-              - '.github/actions/setup/java/**'
-            frontend:
-              - 'client/**'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - 'pnpm-workspace.yaml'
-              - '.github/workflows/ci.yml'
-              - '.github/actions/setup/node/**'
-
+  # ============================================================================
+  # Backend Pipeline - Conditional execution based on changes
+  # ============================================================================
   lint-backend:
-    name: Lint with Detekt
+    name: Lint Backend (Detekt)
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    if: always() && needs.changes.outputs.backend == 'true'
     permissions:
       contents: read
       checks: write
@@ -206,20 +165,11 @@ jobs:
           ./gradlew detektAll --no-daemon --stacktrace || true
           reviewdog -reporter=github-pr-check -name="Detekt" -f=sarif -level="warning" --filter-mode="nofilter" < build/reports/detekt/detekt.sarif
 
-  lint-backend-skip:
-    name: Lint with Detekt
+  backend-pipeline:
+    name: Backend Build & Test
     runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.backend == 'false'
-    steps:
-      - name: Skip linting (no backend changes)
-        run: echo "No backend changes detected, skipping lint."
-
-  build-backend:
-    name: Build and Test (Backend)
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    needs: [changes, lint-backend]
+    if: always() && needs.changes.outputs.backend == 'true' && !cancelled()
     env:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
@@ -228,9 +178,9 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: ./gradlew build -x test --no-daemon
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew test --no-daemon
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         if: always()
@@ -253,20 +203,123 @@ jobs:
             server/engine/build/reports/
           retention-days: 7
 
-  build-backend-skip:
-    name: Build and Test (Backend)
+  # ============================================================================
+  # Frontend Pipeline - Conditional execution based on changes
+  # ============================================================================
+  lint-frontend:
+    name: Lint Frontend (Biome)
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.backend == 'false'
+    if: always() && needs.changes.outputs.frontend == 'true'
     steps:
-      - name: Skip build (no backend changes)
-        run: echo "No backend changes detected, skipping build and tests."
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Run Biome with Reviewdog
+        uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: ./client
+          reporter: github-pr-review
+          fail_level: error
 
-  build-and-push-docker-backend:
-    name: Build and Push Docker Image (Backend)
+  frontend-pipeline:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+    needs: [changes, lint-frontend]
+    if: always() && needs.changes.outputs.frontend == 'true' && !cancelled()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Build
+        run: pnpm build
+      - name: Test
+        run: pnpm test
+      - name: Upload coverage to Codecov
+        uses: ./.github/actions/codecov
+        with:
+          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: frontend
+          name: codecov-frontend
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: frontend-artifacts
+          path: |
+            client/apps/*/dist/
+            client/marketing/dist/
+            client/docs/dist/
+          retention-days: 7
+
+  # ============================================================================
+  # Security & Compliance - Run in parallel
+  # ============================================================================
+  security-scans:
+    name: Security & Dependency Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
+        continue-on-error: true
+        with:
+          comment-summary-in-pr: always
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
+        continue-on-error: true
+        with:
+          project: "Loomify-monorepo"
+          path: "."
+          format: "HTML"
+
+      - name: Upload OWASP Dependency Check Report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: owasp-dependency-check-report
+          path: reports/dependency-check-report.html
+          retention-days: 7
+
+  # ============================================================================
+  # PR Automation - Non-blocking
+  # ============================================================================
+  labeler:
+    name: Label PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Run Labeler
+        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yaml
+
+  # ============================================================================
+  # Docker Image Publishing - Only on main branch push
+  # ============================================================================
+  docker-backend:
+    name: Build & Push Docker (Backend)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend == 'true'
-    needs: [build-backend, lint-backend]
+    needs: [changes, backend-pipeline]
     permissions:
       contents: read
       packages: write
@@ -303,104 +356,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  lint-frontend:
-    name: Lint with Biome
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: 🧩 Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workdir: ./client
-          reporter: github-pr-review
-          fail_level: error
-
-  lint-frontend-skip:
-    name: Lint with Biome
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'false'
-    steps:
-      - name: Skip linting (no frontend changes)
-        run: echo "No frontend changes detected, skipping lint."
-
-  build-frontend:
-    name: Build (Frontend)
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Build
-        run: pnpm build
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
-        with:
-          name: frontend-artifacts
-          path: |
-            client/apps/*/dist/
-            client/marketing/dist/
-            client/docs/dist/
-          retention-days: 7
-
-  build-frontend-skip:
-    name: Build (Frontend)
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'false'
-    steps:
-      - name: Skip build (no frontend changes)
-        run: echo "No frontend changes detected, skipping build."
-
-  test-frontend:
-    name: Test (Frontend)
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Test
-        run: pnpm test
-      - name: Upload coverage to Codecov
-        uses: ./.github/actions/codecov
-        with:
-          codecov-token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: frontend
-          name: codecov-frontend
-
-  test-frontend-skip:
-    name: Test (Frontend)
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.frontend == 'false'
-    steps:
-      - name: Skip tests (no frontend changes)
-        run: echo "No frontend changes detected, skipping tests."
-
-  build-and-push-docker-marketing:
-    name: Build and Push Docker Image (Marketing)
+  docker-marketing:
+    name: Build & Push Docker (Marketing)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
-    needs: [build-frontend, test-frontend]
+    needs: [changes, frontend-pipeline]
     permissions:
       contents: read
       packages: write
@@ -433,11 +393,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  build-and-push-docker-webapp:
-    name: Build and Push Docker Image (WebApp)
+  docker-webapp:
+    name: Build & Push Docker (WebApp)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
-    needs: [build-frontend, test-frontend]
+    needs: [changes, frontend-pipeline]
     permissions:
       contents: read
       packages: write
@@ -469,3 +429,89 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ============================================================================
+  # Quality Gate - Ensures all critical jobs pass
+  # ============================================================================
+  gatekeeper:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - changes
+      - lint-meta
+      - lint-markdown
+      - lint-backend
+      - backend-pipeline
+      - lint-frontend
+      - frontend-pipeline
+      - security-scans
+    steps:
+      - name: Check job results
+        run: |
+          echo "Checking all job results..."
+
+          # Check if changes detection succeeded
+          if [ "${{ needs.changes.result }}" != "success" ]; then
+            echo "❌ Changes detection failed"
+            exit 1
+          fi
+
+          # Check meta linting
+          if [ "${{ needs.lint-meta.result }}" != "success" ]; then
+            echo "❌ Meta linting failed"
+            exit 1
+          fi
+
+          # Check markdown linting
+          if [ "${{ needs.lint-markdown.result }}" != "success" ]; then
+            echo "❌ Markdown linting failed"
+            exit 1
+          fi
+
+          # Check backend jobs (only if backend changes detected)
+          if [ "${{ needs.changes.outputs.backend }}" == "true" ]; then
+            if [ "${{ needs.lint-backend.result }}" != "success" ] && [ "${{ needs.lint-backend.result }}" != "skipped" ]; then
+              echo "❌ Backend linting failed"
+              exit 1
+            fi
+            if [ "${{ needs.backend-pipeline.result }}" != "success" ] && [ "${{ needs.backend-pipeline.result }}" != "skipped" ]; then
+              echo "❌ Backend pipeline failed"
+              exit 1
+            fi
+          fi
+
+          # Check frontend jobs (only if frontend changes detected)
+          if [ "${{ needs.changes.outputs.frontend }}" == "true" ]; then
+            if [ "${{ needs.lint-frontend.result }}" != "success" ] && [ "${{ needs.lint-frontend.result }}" != "skipped" ]; then
+              echo "❌ Frontend linting failed"
+              exit 1
+            fi
+            if [ "${{ needs.frontend-pipeline.result }}" != "success" ] && [ "${{ needs.frontend-pipeline.result }}" != "skipped" ]; then
+              echo "❌ Frontend pipeline failed"
+              exit 1
+            fi
+          fi
+
+          # Security scans are advisory only, so we just report but don't fail
+          if [ "${{ needs.security-scans.result }}" != "success" ]; then
+            echo "⚠️  Security scans completed with warnings (non-blocking)"
+          fi
+
+          echo "✅ All critical checks passed!"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Changes Detection | ${{ needs.changes.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint Meta | ${{ needs.lint-meta.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint Markdown | ${{ needs.lint-markdown.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Lint | ${{ needs.lint-backend.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Pipeline | ${{ needs.backend-pipeline.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend Lint | ${{ needs.lint-frontend.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scans | ${{ needs.security-scans.result }} |" >> $GITHUB_STEP_SUMMARY
