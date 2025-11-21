@@ -178,17 +178,17 @@ This is a monorepo with:
 - [X] T054 [P] [US4] Implement BroadcastChannel sync in useAutosave.ts for multi-tab coordination with last-write-wins strategy
 - [X] T055 [P] [US4] Implement server persistence composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts` with CRUD operations calling /api/resumes endpoints (ResumeHttpClient already implements this functionality)
 - [ ] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt` with handler that validates and saves to repository (BACKEND: Requires implementation)
-- [ ] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/UpdateResumeCommand.kt` with optimistic locking via updatedAt check (BACKEND: Requires implementation)
-- [ ] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/queries/GetResumeQuery.kt` with handler that retrieves by ID and ownerId (BACKEND: Requires implementation)
-- [ ] T059 [US4] Create ListResumesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/queries/ListResumesQuery.kt` with cursor pagination support (BACKEND: Requires implementation)
-- [ ] T060 [US4] Create DeleteResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/DeleteResumeCommand.kt` with authorization check (BACKEND: Requires implementation)
-- [ ] T061 [US4] Implement ResumeController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` with POST /api/resumes endpoint calling CreateResumeCommand (BACKEND: Requires implementation)
-- [ ] T062 [US4] Add GET `/api/resumes` endpoint to ResumeController calling ListResumesQuery with pagination parameters (BACKEND: Requires implementation)
-- [ ] T063 [US4] Add GET `/api/resumes/{id}` endpoint to ResumeController calling GetResumeQuery with owner authorization (BACKEND: Requires implementation)
-- [ ] T064 [US4] Add PUT `/api/resumes/{id}` endpoint to ResumeController calling UpdateResumeCommand with optimistic locking (BACKEND: Requires implementation)
-- [ ] T065 [US4] Add PATCH `/api/resumes/{id}` endpoint to ResumeController implementing RFC 7386 JSON Merge Patch semantics (BACKEND: Requires implementation)
-- [ ] T066 [US4] Add DELETE `/api/resumes/{id}` endpoint to ResumeController calling DeleteResumeCommand (BACKEND: Requires implementation)
-- [X] T067 [US4] Wire up autosave in `resume.store.ts` to trigger both IndexedDB save (fast draft) and background server sync (every 10s max or on idle 2s) (Infrastructure ready via useAutosave composable and existing storage strategy pattern)
+- [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
+- [X] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/UpdateResumeCommand.kt` with optimistic locking via updatedAt check ✓
+- [X] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/GetResumeQuery.kt` with handler that retrieves by ID and ownerId ✓
+- [X] T059 [US4] Create ListResumesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/ListResumesQuery.kt` with cursor pagination support ✓
+- [X] T060 [US4] Create DeleteResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/DeleteResumeCommand.kt` with authorization check ✓
+- [X] T061 [US4] Implement ResumeCrudController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeCrudController.kt` with POST /api/resumes endpoint calling CreateResumeCommand ✓
+- [X] T062 [US4] Add GET `/api/resumes` endpoint to ResumeCrudController calling ListResumesQuery with pagination parameters ✓
+- [X] T063 [US4] Add GET `/api/resumes/{id}` endpoint to ResumeCrudController calling GetResumeQuery with owner authorization ✓
+- [X] T064 [US4] Add PUT `/api/resumes/{id}` endpoint to ResumeCrudController calling UpdateResumeCommand with optimistic locking ✓
+- [X] T065 [US4] Add PATCH `/api/resumes/{id}` endpoint to ResumeCrudController implementing RFC 7386 JSON Merge Patch semantics ✓
+- [X] T066 [US4] Add DELETE `/api/resumes/{id}` endpoint to ResumeCrudController calling DeleteResumeCommand ✓
 - [ ] T067a [US4] Implement exponential backoff retry mechanism for failed server persistence: initial delay 1s, max 30s, with retry attempt tracking (implements FR-076) (Deferred: requires backend endpoints T061-T066)
 - [ ] T067b [US4] Add non-blocking warning notification after 3 consecutive server save failures that allows user to continue editing while displaying sync status (implements FR-076) (Deferred: requires backend endpoints T061-T066)
 - [ ] T067c [US4] Record and display server-synced timestamp distinct from local autosave timestamp in "Last saved" indicator component (implements FR-077) (Deferred: requires backend endpoints T061-T066)

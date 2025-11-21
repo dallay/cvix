@@ -1,15 +1,19 @@
 package com.loomify.resume.infrastructure.http
 
+import com.loomify.common.domain.bus.Mediator
 import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
-import com.loomify.resume.application.command.GenerateResumeCommand
-import com.loomify.resume.application.handler.GenerateResumeCommandHandler
+import com.loomify.resume.application.generate.GenerateResumeCommand
+import com.loomify.resume.domain.Locale
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.GenerateResumeRequest
+import com.loomify.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -21,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Mono
-
-private const val MAX_BYTES_SUPPORTED = 100 * 1024
 
 /**
  * REST controller for resume generation endpoints.
@@ -31,10 +32,10 @@ private const val MAX_BYTES_SUPPORTED = 100 * 1024
 @RestController
 @RequestMapping(value = ["/api/resume"], produces = ["application/vnd.api.v1+json"])
 @Validated
-class ResumeController(
-    private val generateResumeCommandHandler: GenerateResumeCommandHandler,
+class ResumeGeneratorController(
+    mediator: Mediator,
     private val applicationSecurityProperties: ApplicationSecurityProperties,
-) {
+) : ApiController(mediator) {
 
     @Operation(summary = "Generate a PDF resume from JSON Resume schema data")
     @ApiResponses(
@@ -50,17 +51,16 @@ class ResumeController(
         ApiResponse(responseCode = "504", description = "PDF generation timeout"),
     )
     @PostMapping("/generate")
-    fun generateResume(
+    suspend fun generateResume(
         @Valid @Validated @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange
-    ): Mono<ResponseEntity<ByteArray>> {
+    ): ResponseEntity<ByteArray> {
         // Validate payload size (FR-015: reject requests exceeding 100KB)
         val contentLength = exchange.request.headers.contentLength
-        if (contentLength > MAX_BYTES_SUPPORTED) { // 100KB in bytes
-            return Mono.error(
-                IllegalArgumentException(
-                    "Request payload too large: $contentLength bytes. Maximum allowed: 102400 bytes (100KB)",
-                ),
+        if (contentLength > MAX_BYTES_SUPPORTED) {
+            throw ResponseStatusException(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Request payload too large: $contentLength bytes. Maximum allowed: 102400 bytes (100KB)",
             )
         }
 
@@ -75,7 +75,7 @@ class ResumeController(
                 ?.lowercase()
                 ?: "en"
 
-            com.loomify.resume.application.command.Locale.from(languageCode)
+            Locale.from(languageCode)
         } catch (e: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported locale", e)
         }
@@ -90,22 +90,23 @@ class ResumeController(
         val startTime = System.currentTimeMillis()
 
         // Execute command and return PDF
-        return generateResumeCommandHandler.handle(command)
-            .map { inputStream ->
-                val pdfBytes = inputStream.readBytes()
-                val generationTimeMs = System.currentTimeMillis() - startTime
+        // Await the result of dispatch (should be suspend)
+        val inputStream = dispatch(command)
+        val pdfBytes = withContext(Dispatchers.IO) {
+            inputStream.readBytes()
+        }
+        val generationTimeMs = System.currentTimeMillis() - startTime
 
-                ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .contentLength(pdfBytes.size.toLong())
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"resume.pdf\"")
-                    .header("X-Generation-Time-Ms", generationTimeMs.toString())
-                    .header(CONTENT_SECURITY_POLICY_HEADER, applicationSecurityProperties.contentSecurityPolicy)
-                    .header(X_CONTENT_TYPE_OPTIONS_HEADER, X_CONTENT_TYPE_OPTIONS_VALUE)
-                    .header(X_FRAME_OPTIONS_HEADER, X_FRAME_OPTIONS_VALUE)
-                    .header(REFERRER_POLICY_HEADER, REFERRER_POLICY_VALUE)
-                    .body(pdfBytes)
-            }
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .contentLength(pdfBytes.size.toLong())
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"resume.pdf\"")
+            .header("X-Generation-Time-Ms", generationTimeMs.toString())
+            .header(CONTENT_SECURITY_POLICY_HEADER, applicationSecurityProperties.contentSecurityPolicy)
+            .header(X_CONTENT_TYPE_OPTIONS_HEADER, X_CONTENT_TYPE_OPTIONS_VALUE)
+            .header(X_FRAME_OPTIONS_HEADER, X_FRAME_OPTIONS_VALUE)
+            .header(REFERRER_POLICY_HEADER, REFERRER_POLICY_VALUE)
+            .body(pdfBytes)
     }
 
     companion object {
@@ -116,5 +117,6 @@ class ResumeController(
         private const val X_CONTENT_TYPE_OPTIONS_VALUE = "nosniff"
         private const val X_FRAME_OPTIONS_VALUE = "DENY"
         private const val REFERRER_POLICY_VALUE = "strict-origin-when-cross-origin"
+        private const val MAX_BYTES_SUPPORTED = 100 * 1024
     }
 }

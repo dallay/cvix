@@ -92,6 +92,25 @@ abstract class ApiController(
     }
 
     /**
+     * Retrieves the current user email from the JWT token attributes.
+     * If the authentication is not a JwtAuthenticationToken or the email claim is missing,
+     * this method returns null.
+     *
+     * @return The current user email from JWT token attributes, or null if not available.
+     */
+    protected suspend fun userEmail(): String? {
+        val authentication = ReactiveSecurityContextHolder.getContext()
+            .map { it.authentication }
+            .awaitSingleOrNull()
+
+        return when (authentication) {
+            is JwtAuthenticationToken -> authentication.tokenAttributes["email"] as? String
+            is UsernamePasswordAuthenticationToken -> null
+            else -> null
+        }
+    }
+
+    /**
      * Validates a path variable against an allow-list regex (^[a-zA-Z0-9_-]+$)
      * to prevent path traversal and other injection attacks.
      *

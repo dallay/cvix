@@ -1,6 +1,7 @@
 package com.loomify.resume.infrastructure.persistence.entity
 
 import com.loomify.common.domain.AuditableEntity
+import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
 import java.time.Instant
 import java.util.UUID
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
@@ -33,7 +35,7 @@ data class ResumeEntity(
     val title: String,
 
     @Column("data")
-    val data: String, // JSON string
+    val data: Json, // JSONB column
 
     @CreatedBy
     @Column("created_by")
@@ -52,4 +54,18 @@ data class ResumeEntity(
     @LastModifiedDate
     @Column("updated_at")
     override var updatedAt: Instant? = null
-) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy)
+) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
+    /**
+     * This method returns the unique identifier of the workspace.
+     *
+     * @return The unique identifier of the workspace.
+     */
+    override fun getId(): UUID = id
+
+    /**
+     * This method checks if the workspace is new by comparing the creation and update timestamps.
+     *
+     * @return A boolean indicating whether the workspace is new.
+     */
+    override fun isNew(): Boolean = updatedAt == null || createdAt == updatedAt
+}

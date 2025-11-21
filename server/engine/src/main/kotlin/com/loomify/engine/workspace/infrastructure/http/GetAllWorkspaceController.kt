@@ -39,7 +39,7 @@ class GetAllWorkspaceController(
         ApiResponse(responseCode = "200", description = "Success"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
-    @GetMapping("workspace")
+    @GetMapping("/workspace")
     @ResponseBody
     suspend fun findAll(): Response {
         val authentication = authentication()

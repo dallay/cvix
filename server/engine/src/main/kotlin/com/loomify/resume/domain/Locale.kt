@@ -1,17 +1,4 @@
-package com.loomify.resume.application.command
-
-import com.loomify.resume.domain.Resume
-
-/**
- * Command to generate a PDF resume from resume data.
- * Part of the CQRS pattern in the application layer.
- *
- * Supported locales: "en", "es"
- */
-data class GenerateResumeCommand(
-    val resume: Resume,
-    val locale: Locale = Locale.EN
-)
+package com.loomify.resume.domain
 
 /**
  * Enum representing supported locales for resume generation.
