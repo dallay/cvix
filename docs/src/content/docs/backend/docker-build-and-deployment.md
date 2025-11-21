@@ -75,7 +75,7 @@ WORKDIR /app
 COPY --from=builder /workspace/server/engine/build/libs/*.jar app.jar
 USER spring:spring
 EXPOSE 8080
-HEALTHCHECK CMD curl -f http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK CMD bash -c 'echo > /dev/tcp/localhost/8080' || exit 1
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```
 
