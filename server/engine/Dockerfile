@@ -47,9 +47,9 @@ USER spring:spring
 # Expose the application port
 EXPOSE 8080
 
-# Health check
+# Health check (uses bash and /dev/tcp to avoid curl dependency)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+  CMD bash -c 'echo > /dev/tcp/localhost/8080' || exit 1
 
 # Set JVM options for containerized environment
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom"
