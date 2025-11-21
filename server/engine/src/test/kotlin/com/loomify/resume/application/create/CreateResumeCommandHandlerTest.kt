@@ -2,7 +2,7 @@ package com.loomify.resume.application.create
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.bus.event.EventPublisher
-import com.loomify.resume.application.ResumeTestFixtures
+import com.loomify.resume.ResumeTestFixtures
 import com.loomify.resume.domain.ResumeDocument
 import com.loomify.resume.domain.ResumeRepository
 import com.loomify.resume.domain.event.ResumeCreatedEvent

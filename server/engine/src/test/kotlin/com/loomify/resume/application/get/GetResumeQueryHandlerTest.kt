@@ -1,7 +1,7 @@
 package com.loomify.resume.application.get
 
 import com.loomify.UnitTest
-import com.loomify.resume.application.ResumeTestFixtures
+import com.loomify.resume.ResumeTestFixtures
 import com.loomify.resume.domain.ResumeRepository
 import com.loomify.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery

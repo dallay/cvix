@@ -1,7 +1,7 @@
 package com.loomify.resume.application.generate
 
 import com.loomify.UnitTest
-import com.loomify.resume.application.ResumeTestFixtures
+import com.loomify.resume.ResumeTestFixtures
 import com.loomify.resume.domain.Locale
 import io.mockk.coEvery
 import io.mockk.coVerify

@@ -1,7 +1,7 @@
 package com.loomify.resume.application.list
 
 import com.loomify.UnitTest
-import com.loomify.resume.application.ResumeTestFixtures
+import com.loomify.resume.ResumeTestFixtures
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
