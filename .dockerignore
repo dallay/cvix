@@ -16,6 +16,11 @@ build/
 .cache/
 .parcel-cache/
 coverage/
+.gradle/
+*.jar
+*.war
+*.class
+bin/
 
 # Git
 .git/
