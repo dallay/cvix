@@ -25,7 +25,7 @@ interface ResumeReactiveR2dbcRepository : CoroutineCrudRepository<ResumeEntity, 
         SELECT id, user_id, workspace_id, title, data, created_by, created_at, updated_by, updated_at
         FROM resumes
         WHERE user_id = :userId AND workspace_id = :workspaceId
-        ORDER BY updated_at DESC
+        ORDER BY updated_at DESC, id DESC
         """,
     )
     suspend fun findByUserIdAndWorkspaceId(userId: UUID, workspaceId: UUID): List<ResumeEntity>

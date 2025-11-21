@@ -6,6 +6,7 @@ import com.loomify.engine.authentication.infrastructure.mapper.AccessTokenRespon
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.UUID
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -85,7 +86,10 @@ abstract class InfrastructureTestContainers {
                 .withRealmImportFile("keycloak/demo-realm-test.json")
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
-                .withCreateContainerCmdModifier { cmd -> cmd.withName("keycloak-tests") }
+                .withCreateContainerCmdModifier { cmd ->
+                    val unique = System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
+                    cmd.withName("keycloak-tests-$unique")
+                }
                 .withNetwork(NETWORK)
 
         @JvmStatic
@@ -98,7 +102,10 @@ abstract class InfrastructureTestContainers {
             )
             waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
             withExposedPorts(*ports)
-            withCreateContainerCmdModifier { cmd -> cmd.withName("greenmail-tests") }
+            withCreateContainerCmdModifier { cmd ->
+                val unique = System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
+                cmd.withName("greenmail-tests-$unique")
+            }
             withNetwork(NETWORK)
         }
 

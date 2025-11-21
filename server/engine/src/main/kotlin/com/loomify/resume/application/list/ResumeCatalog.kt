@@ -32,7 +32,10 @@ class ResumeCatalog(
         log.debug("Resume Catalog Listing resumes for user={}, workspace={}", userId, workspaceId)
         // For now, return all resumes for the user in the workspace
         // Cursor pagination will be implemented when we add proper sorting and filtering
+        // Fetch from persistence (already ordered by updated_at DESC at the repo level)
         val resumes = resumeRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
+            // Defensive: eliminate any accidental duplicates by ID while preserving order
+            .distinctBy { it.id.value }
 
         // Apply limit
         val result = if (cursor != null) {
