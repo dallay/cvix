@@ -144,7 +144,7 @@
 **U3**: JSON size specification (100KB)
 
 - **Suggestion**: Clarify if minified or formatted JSON
-- **Priority**: Low - edge case for extremely large resumes
+- **Priority**: Low - edge case for large resumes (>100KB)
 - **Decision**: Assume minified, document in implementation
 
 **C5**: ETag conditional GET implementation
