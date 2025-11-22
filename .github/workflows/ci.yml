@@ -53,7 +53,7 @@ jobs:
           fail_level: error
 
       - name: Lint Shell scripts
-        uses: reviewdog/action-shellcheck@248d249f03403a49f57f1a3a41a31d92750e3b1c # v1.32.0
+        uses: reviewdog/action-shellcheck@4c07458293ac342d477251099501a718ae5ef86e # v1.32.0
         with:
           reporter: github-pr-review
           fail_on_error: true
