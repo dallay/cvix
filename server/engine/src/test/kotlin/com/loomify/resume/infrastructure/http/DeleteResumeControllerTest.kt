@@ -42,5 +42,6 @@ internal class DeleteResumeControllerTest : ControllerTest() {
             .uri("/api/resume/invalid-uuid")
             .exchange()
             .expectStatus().isBadRequest
+        coVerify(exactly = 0) { mediator.send(any<DeleteResumeCommand>()) }
     }
 }

@@ -25,4 +25,24 @@ internal class DeleteResumeControllerIntegrationTest : ControllerIntegrationTest
             .exchange()
             .expectStatus().isNotFound
     }
+    @Test
+    @Sql(
+        "/db/user/users.sql",
+        "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
+    )
+    @Sql(
+        "/db/workspace/clean.sql",
+        "/db/user/clean.sql",
+        "/db/resume/clean.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+    )
+    fun `should delete existing resume`() {
+        val resumeId = "11111111-1111-1111-1111-111111111111"
+
+        webTestClient.mutateWith(csrf()).delete()
+            .uri("/api/resume/$resumeId")
+            .exchange()
+            .expectStatus().isNoContent
+    }
 }

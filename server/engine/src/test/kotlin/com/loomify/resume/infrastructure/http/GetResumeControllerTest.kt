@@ -49,5 +49,6 @@ internal class GetResumeControllerTest : ControllerTest() {
             .uri("/api/resume/invalid-uuid")
             .exchange()
             .expectStatus().isBadRequest
+        coVerify(exactly = 0) { mediator.send(any<GetResumeQuery>()) }
     }
 }
