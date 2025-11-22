@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import java.util.UUID
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -54,7 +54,13 @@ class ListResumeController(
             ),
         )
 
-        log.debug("[ListResumes] userId={}, workspaceId={}, limit={}, cursor={}", userId, workspaceId, limit, cursor)
+        log.debug(
+            "[ListResumes] userId={}, workspaceId={}, limit={}, cursor={}",
+            userId,
+            workspaceId,
+            limit,
+            cursor,
+        )
 
         val query = ListResumesQuery(
             userId = userId,

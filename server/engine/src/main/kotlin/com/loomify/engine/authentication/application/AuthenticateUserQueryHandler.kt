@@ -24,7 +24,6 @@ class AuthenticateUserQueryHandler(private val authenticator: UserAuthenticatorS
      * @return The response of the query.
      */
     override suspend fun handle(query: AuthenticateUserQuery): AccessToken {
-        val sanitizedEmail = query.email.replace("\n", "").replace("\r", "")
         log.info("Authenticating user (rememberMe: {})", query.rememberMe)
         val username = Username(query.email)
         val password = Credential(CredentialId(UUID.randomUUID()), query.password)

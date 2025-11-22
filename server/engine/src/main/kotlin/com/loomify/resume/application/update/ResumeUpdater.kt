@@ -20,10 +20,12 @@ class ResumeUpdater(
     eventPublisher: EventPublisher<ResumeUpdatedEvent>
 ) {
     private val eventBroadcaster = EventBroadcaster<ResumeUpdatedEvent>()
+
     init {
         this.eventBroadcaster.use(eventPublisher)
     }
-/**
+
+    /**
      * Updates a resume document and publishes a [ResumeUpdatedEvent].
      *
      * @param id The ID of the resume document
@@ -70,6 +72,7 @@ class ResumeUpdater(
             throw ResumeNotFoundException("Resume not found: $id")
         }
     }
+
     companion object {
         private val log = LoggerFactory.getLogger(ResumeUpdater::class.java)
     }
