@@ -10,6 +10,7 @@ import com.loomify.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -73,7 +74,15 @@ internal class UpdateResumeCommandHandlerTest {
                 },
             )
         }
-        coVerify { eventPublisher.publish(any<ResumeUpdatedEvent>()) }
+        val eventSlot = slot<ResumeUpdatedEvent>()
+
+        coVerify(exactly = 1) {
+            eventPublisher.publish(capture(eventSlot))
+        }
+
+        assertEquals(command.id, eventSlot.captured.resumeId)
+        assertEquals(command.userId, eventSlot.captured.userId)
+        assertEquals(command.workspaceId, eventSlot.captured.workspaceId)
     }
 
     @Test
@@ -112,6 +121,15 @@ internal class UpdateResumeCommandHandlerTest {
                 },
             )
         }
+        val eventSlot = slot<ResumeUpdatedEvent>()
+
+        coVerify(exactly = 1) {
+            eventPublisher.publish(capture(eventSlot))
+        }
+
+        assertEquals(command.id, eventSlot.captured.resumeId)
+        assertEquals(command.userId, eventSlot.captured.userId)
+        assertEquals(command.workspaceId, eventSlot.captured.workspaceId)
     }
 
     @Test

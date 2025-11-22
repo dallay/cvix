@@ -1,6 +1,7 @@
 package com.loomify.spring.boot.logging
 
 import java.io.IOException
+import kotlin.coroutines.coroutineContext //noinspection
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.slf4j.MDCContext
@@ -57,7 +58,14 @@ class UserMdcCoFilter : CoWebFilter() {
         }
 
         // Propagate context through both MDC (coroutines) and Reactor (reactive libraries)
-        withContext(MDCContext(mdcMap) + ReactorContext(reactorContext)) {
+        // IMPORTANT: Merge with existing ReactorContext so we do NOT drop entries like Spring SecurityContext
+        val existingReactor = coroutineContext[ReactorContext]?.context ?: Context.empty()
+        // Manual merge to avoid deprecated putAll
+        var mergedReactor = existingReactor
+        reactorContext.stream().forEach { entry ->
+            mergedReactor = mergedReactor.put(entry.key, entry.value)
+        }
+        withContext(MDCContext(mdcMap) + ReactorContext(mergedReactor)) {
             chain.filter(exchange)
         }
     }

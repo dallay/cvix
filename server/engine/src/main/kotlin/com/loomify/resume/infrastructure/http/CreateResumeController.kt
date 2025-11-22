@@ -75,7 +75,7 @@ class CreateResumeController(
             )
             throw e
         }
-        return ResponseEntity.created(URI.create("/api/resumes/$resumeId")).build()
+        return ResponseEntity.created(URI.create("/api/resume/$resumeId")).build()
     }
 
     companion object {

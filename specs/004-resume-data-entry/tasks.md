@@ -77,7 +77,7 @@ This is a monorepo with:
 - [X] T011 [P] Create TypeScript types in `client/apps/webapp/src/core/resume/domain/Resume.ts` matching JSON Resume schema (already exists ✓)
 - [X] T012 [P] Setup Ajv validator instance in `client/apps/webapp/src/core/resume/infrastructure/validation/JsonResumeValidator.ts` with schema loading and error formatting (already exists ✓)
 - [X] T013 Create base Pinia store in `client/apps/webapp/src/core/resume/infrastructure/store/resume.store.ts` with state structure for Resume type and loading/error states (already exists ✓)
-- [X] T014 Create dedicated ResumeSecurityConfig in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/config/ResumeSecurityConfig.kt` to configure security rules for /api/resumes endpoints with JWT authentication, following Hexagonal Architecture by keeping resume-specific security configuration within the resume module (do not modify core SecurityConfiguration.kt)
+- [X] T014 Create dedicated ResumeSecurityConfig in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/config/ResumeSecurityConfig.kt` to configure security rules for /api/resume endpoints with JWT authentication, following Hexagonal Architecture by keeping resume-specific security configuration within the resume module (do not modify core SecurityConfiguration.kt)
 - [X] T015 Create TemplateMetadata domain entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateMetadata.kt`
 - [X] T016 [P] Define TemplateRepository port in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateRepository.kt`
 - [X] T017 Create stub implementation in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/persistence/InMemoryTemplateRepository.kt` returning hardcoded template metadata list
@@ -176,19 +176,19 @@ This is a monorepo with:
 - [X] T053 [P] [US4] Implement IndexedDB autosave in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/useAutosave.ts` using idb-keyval with key `resume:draft` and debounced save (2s). Check the user settings storage preferences in `client/apps/webapp/src/core/settings/README.md`. Currently the user can define how he wants to store his data, at the moment the system supports three options, session storage (which is lost when the browser is closed), local storage and IndexedDB which are permanent between tabs and are maintained when the browser is closed.
 - These storage are local because the app must be local first and in this same iteration we are going to implement server storage for users that want to persist their data in our system. The user can choose what type of storage he wants.
 - [X] T054 [P] [US4] Implement BroadcastChannel sync in useAutosave.ts for multi-tab coordination with last-write-wins strategy
-- [X] T055 [P] [US4] Implement server persistence composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts` with CRUD operations calling /api/resumes endpoints (ResumeHttpClient already implements this functionality)
+- [X] T055 [P] [US4] Implement server persistence composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts` with CRUD operations calling /api/resume endpoints (ResumeHttpClient already implements this functionality)
 - [ ] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt` with handler that validates and saves to repository (BACKEND: Requires implementation)
 - [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
 - [X] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/UpdateResumeCommand.kt` with optimistic locking via updatedAt check ✓
 - [X] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/GetResumeQuery.kt` with handler that retrieves by ID and ownerId ✓
 - [X] T059 [US4] Create ListResumesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/ListResumesQuery.kt` with cursor pagination support ✓
 - [X] T060 [US4] Create DeleteResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/DeleteResumeCommand.kt` with authorization check ✓
-- [X] T061 [US4] Implement ResumeCrudController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeCrudController.kt` with POST /api/resumes endpoint calling CreateResumeCommand ✓
-- [X] T062 [US4] Add GET `/api/resumes` endpoint to ResumeCrudController calling ListResumesQuery with pagination parameters ✓
-- [X] T063 [US4] Add GET `/api/resumes/{id}` endpoint to ResumeCrudController calling GetResumeQuery with owner authorization ✓
-- [X] T064 [US4] Add PUT `/api/resumes/{id}` endpoint to ResumeCrudController calling UpdateResumeCommand with optimistic locking ✓
-- [X] T065 [US4] Add PATCH `/api/resumes/{id}` endpoint to ResumeCrudController implementing RFC 7386 JSON Merge Patch semantics ✓
-- [X] T066 [US4] Add DELETE `/api/resumes/{id}` endpoint to ResumeCrudController calling DeleteResumeCommand ✓
+- [X] T061 [US4] Implement ResumeCrudController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeCrudController.kt` with POST /api/resume endpoint calling CreateResumeCommand ✓
+- [X] T062 [US4] Add GET `/api/resume` endpoint to ResumeCrudController calling ListResumesQuery with pagination parameters ✓
+- [X] T063 [US4] Add GET `/api/resume/{id}` endpoint to ResumeCrudController calling GetResumeQuery with owner authorization ✓
+- [X] T064 [US4] Add PUT `/api/resume/{id}` endpoint to ResumeCrudController calling UpdateResumeCommand with optimistic locking ✓
+- [X] T065 [US4] Add PATCH `/api/resume/{id}` endpoint to ResumeCrudController implementing RFC 7386 JSON Merge Patch semantics ✓
+- [X] T066 [US4] Add DELETE `/api/resume/{id}` endpoint to ResumeCrudController calling DeleteResumeCommand ✓
 - [ ] T067a [US4] Implement exponential backoff retry mechanism for failed server persistence: initial delay 1s, max 30s, with retry attempt tracking (implements FR-076) (Deferred: requires backend endpoints T061-T066)
 - [ ] T067b [US4] Add non-blocking warning notification after 3 consecutive server save failures that allows user to continue editing while displaying sync status (implements FR-076) (Deferred: requires backend endpoints T061-T066)
 - [ ] T067c [US4] Record and display server-synced timestamp distinct from local autosave timestamp in "Last saved" indicator component (implements FR-077) (Deferred: requires backend endpoints T061-T066)
@@ -217,7 +217,7 @@ This is a monorepo with:
 - [ ] T077 [P] [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons (Deferred: requires T075, T076)
 - [ ] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce (Deferred: requires T077)
 - [X] T079 [P] [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters (Already implemented)
-- [X] T080 [P] [US5] Create POST `/api/resumes/generate` endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` that streams binary PDF response with proper Content-Type and Content-Disposition headers (Already implemented at POST /api/resume/generate)
+- [X] T080 [P] [US5] Create POST `/api/resume/generate` endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` that streams binary PDF response with proper Content-Type and Content-Disposition headers (Already implemented at POST /api/resume/generate)
 - [X] T081 [US5] Handle PDF response streaming in ResumeController with correct MIME type and download headers (Already implemented)
 - [X] T082 [P] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf" (Already implemented in resume.store.ts generatePdf method)
 - [ ] T083 [P] [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact (Deferred: requires T077)
