@@ -92,9 +92,7 @@ app.mount('#app')
 ```typescript
 import {useResumeStore} from '@/core/resume/infrastructure/store/resume.store'
 
-const resume
-.
-store = useResumeStore()
+const resumeStore = useResumeStore()
 
 // Set a resume
 resumeStore.setResume({
