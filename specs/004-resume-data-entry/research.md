@@ -60,9 +60,6 @@ Date: 2025-11-16
   - Fully normalized schema: high migration churn; complex joins for nested arrays.
   - Flat text blob: no indexing or structured querying.
 
-
-
-
 ## 8) Date Handling & Formats
 
 - Decision: ISO 8601 dates (`YYYY-MM-DD`) everywhere; no time component in resume domain.
@@ -104,7 +101,6 @@ Date: 2025-11-16
 - Rationale: Focus on feature; enable future expansion with `vue-i18n`.
 - Alternatives considered:
   - Full multi-locale at MVP: increases scope significantly.
-
 
 ## 14) Template Metadata Retrieval
 

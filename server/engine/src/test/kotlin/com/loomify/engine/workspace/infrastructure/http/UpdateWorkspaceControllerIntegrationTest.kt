@@ -28,9 +28,8 @@ internal class UpdateWorkspaceControllerIntegrationTest : ControllerIntegrationT
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
-            .expectStatus().isOk
-            .expectBody(String::class.java)
-            .isEqualTo("Workspace updated successfully")
+            .expectStatus().isOk.expectBody(UpdateWorkspaceResponse::class.java)
+            .isEqualTo(UpdateWorkspaceResponse("Workspace updated successfully."))
     }
 
     @Test

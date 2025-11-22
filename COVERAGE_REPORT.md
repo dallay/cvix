@@ -9,6 +9,7 @@ This document provides a comprehensive overview of the test coverage status for 
 **Last Updated:** 2025-11-16
 
 ### Overall Metrics
+
 - **Line Coverage:** 89.26%
 - **Branch Coverage:** 76.78%
 - **Instruction Coverage:** 88.86%
@@ -25,23 +26,27 @@ This document provides a comprehensive overview of the test coverage status for 
 ## Testing Infrastructure
 
 ### Unit Testing
+
 - **JUnit 5:** Primary testing framework for Java/Kotlin
 - **Kotest:** BDD-style testing with descriptive test names
 - **MockK:** Mocking framework for Kotlin
 
 ### Integration Testing
+
 - **Testcontainers:** PostgreSQL, Keycloak, GreenMail containers
 - **Spring Boot Test:** Application context testing
 - **Reactor Test:** Reactive streams testing
 - **Coroutines Test:** Kotlin coroutines testing
 
 ### Coverage Tools
+
 - **Kover:** Kotlin code coverage with 80% minimum threshold
 - **Gradle Plugin:** org.jetbrains.kotlinx.kover
 
 ## Module Coverage Breakdown
 
 ### Resume Module
+
 - **Coverage:** High (85%+)
 - **Tests Include:**
   - Domain model validation (Basics, Education, WorkExperience, etc.)
@@ -51,6 +56,7 @@ This document provides a comprehensive overview of the test coverage status for 
   - Template validators and utilities
 
 ### Authentication Module
+
 - **Coverage:** Excellent (90%+)
 - **Tests Include:**
   - User authentication flows
@@ -61,6 +67,7 @@ This document provides a comprehensive overview of the test coverage status for 
   - CSRF protection
 
 ### Infrastructure Components
+
 - **Coverage:** Good (80%+)
 - **Tests Include:**
   - HTTP clients and mappers
@@ -85,11 +92,13 @@ This document provides a comprehensive overview of the test coverage status for 
 ## Running Tests
 
 ### Run All Tests
+
 ```bash
 ./gradlew test
 ```
 
 ### Generate Coverage Report
+
 ```bash
 ./gradlew koverHtmlReport
 ```
@@ -97,6 +106,7 @@ This document provides a comprehensive overview of the test coverage status for 
 Report location: `build/reports/kover/html/index.html`
 
 ### Verify Coverage Threshold
+
 ```bash
 ./gradlew koverVerify
 ```
@@ -106,6 +116,7 @@ This will fail the build if coverage drops below 80%.
 ## CI/CD Integration
 
 Coverage verification is integrated into the CI/CD pipeline:
+
 - ✅ Kover verification runs on every build
 - ✅ Minimum 80% coverage enforced
 - ✅ Coverage reports published as build artifacts
