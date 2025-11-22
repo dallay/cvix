@@ -50,6 +50,11 @@ class ResumeUpdater(
             id, userId, workspaceId, title,
         )
         resumeRepository.findById(id, userId)?.let { existing ->
+            // Validate workspaceId matches persisted resume
+            if (workspaceId != existing.workspaceId) {
+                log.error("WorkspaceId mismatch: supplied={}, persisted={}", workspaceId, existing.workspaceId)
+                throw IllegalArgumentException("WorkspaceId does not match persisted resume workspace")
+            }
             val updatedDocument = existing.update(
                 title = title,
                 newContent = content,
@@ -64,7 +69,7 @@ class ResumeUpdater(
                 ResumeUpdatedEvent(
                     resumeId = savedDocument.id.value.toString(),
                     userId = userId.toString(),
-                    workspaceId = workspaceId.toString(),
+                    workspaceId = savedDocument.workspaceId.toString(),
                 ),
             )
         } ?: run {
