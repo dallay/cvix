@@ -9,6 +9,7 @@ import com.loomify.resume.domain.event.ResumeCreatedEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -51,6 +52,14 @@ internal class CreateResumeCommandHandlerTest {
                 },
             )
         }
-        coVerify { eventPublisher.publish(any<ResumeCreatedEvent>()) }
+        val eventSlot = slot<ResumeCreatedEvent>()
+
+        coVerify(exactly = 1) {
+            eventPublisher.publish(capture(eventSlot))
+        }
+
+        assertEquals(command.id, eventSlot.captured.resumeId)
+        assertEquals(command.userId, eventSlot.captured.userId)
+        assertEquals(command.workspaceId, eventSlot.captured.workspaceId)
     }
 }

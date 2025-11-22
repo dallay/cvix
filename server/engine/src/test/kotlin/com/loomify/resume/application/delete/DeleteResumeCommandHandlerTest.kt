@@ -11,6 +11,7 @@ import io.mockk.mockk
 import java.util.*
 import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -62,11 +63,8 @@ internal class DeleteResumeCommandHandlerTest {
         coEvery { repository.existsById(resumeId, userId) } returns false
 
         // When / Then
-        try {
+        assertFailsWith<ResumeNotFoundException> {
             deleteResumeCommandHandler.handle(command)
-            assert(false) { "Expected ResumeNotFoundException to be thrown" }
-        } catch (e: Exception) {
-            assert(e is ResumeNotFoundException)
         }
         coVerify(exactly = 0) {
             repository.deleteIfAuthorized(any(), any())
