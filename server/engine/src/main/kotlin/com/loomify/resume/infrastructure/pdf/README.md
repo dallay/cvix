@@ -119,4 +119,3 @@ export PDF_DOCKER_IMAGE=texlive/texlive:TL2024-historic
 export PDF_TIMEOUT_SECONDS=60
 export PDF_MAX_CONCURRENT_CONTAINERS=5
 ```
-
