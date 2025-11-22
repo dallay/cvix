@@ -104,7 +104,7 @@ object ResumeTestFixtures {
         title: String? = null,
         content: Resume = createValidResume(),
         updatedBy: String = "test@example.com",
-        expectedUpdatedAt: String? = null
+        expectedUpdatedAt: java.time.Instant? = null
     ): UpdateResumeCommand = UpdateResumeCommand(
         id = id,
         userId = userId,

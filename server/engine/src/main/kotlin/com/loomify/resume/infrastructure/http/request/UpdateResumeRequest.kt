@@ -22,7 +22,8 @@ data class UpdateResumeRequest(
 
     /**
      * Expected last update timestamp for optimistic locking.
-     * Format: ISO-8601 instant (e.g., "2025-11-19T10:30:00Z")
+     * Format: ISO-8601 UTC instant (e.g., "2025-11-19T10:30:00Z").
+     * Must be parsed to java.time.Instant at the boundary.
      */
     val expectedUpdatedAt: String? = null,
 )

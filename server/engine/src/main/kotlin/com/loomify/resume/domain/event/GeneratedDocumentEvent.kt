@@ -2,6 +2,7 @@ package com.loomify.resume.domain.event
 
 import com.loomify.common.domain.bus.event.BaseDomainEvent
 import com.loomify.resume.domain.DocumentType
+import com.loomify.resume.domain.Locale
 import java.time.Instant
 import java.util.*
 
@@ -18,7 +19,7 @@ import java.util.*
 data class GeneratedDocumentEvent(
     val id: UUID,
     val documentType: DocumentType,
-    val locale: String,
+    val locale: Locale,
     val sizeInBytes: Long,
     val generatedAt: Instant = Instant.now(),
 ) : BaseDomainEvent()

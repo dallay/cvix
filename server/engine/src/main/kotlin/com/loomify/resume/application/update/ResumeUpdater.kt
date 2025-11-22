@@ -27,6 +27,7 @@ class ResumeUpdater(
 
     /**
      * Updates a resume document and publishes a [ResumeUpdatedEvent].
+     * Implements optimistic locking via expectedUpdatedAt timestamp check.
      *
      * @param id The ID of the resume document
      * @param userId The ID of the user updating the resume
@@ -34,8 +35,10 @@ class ResumeUpdater(
      * @param title The new title of the resume
      * @param content The updated resume data following JSON Resume schema
      * @param updatedBy The username or email of the updater
+     * @param expectedUpdatedAt The expected last update timestamp (optimistic locking, nullable)
      *
      * @throws ResumeNotFoundException if the resume does not exist
+     * @throws OptimisticLockException if the updatedAt timestamp does not match expectedUpdatedAt
      */
     suspend fun update(
         id: UUID,
@@ -43,7 +46,8 @@ class ResumeUpdater(
         workspaceId: UUID,
         title: String,
         content: Resume,
-        updatedBy: String
+        updatedBy: String,
+        expectedUpdatedAt: java.time.Instant? = null
     ) {
         log.debug(
             "Updating resume document - id={}, userId={}, workspaceId={}, title={}",
@@ -52,8 +56,25 @@ class ResumeUpdater(
         resumeRepository.findById(id, userId)?.let { existing ->
             // Validate workspaceId matches persisted resume
             if (workspaceId != existing.workspaceId) {
-                log.error("WorkspaceId mismatch: supplied={}, persisted={}", workspaceId, existing.workspaceId)
+                log.error(
+                    "WorkspaceId mismatch: supplied={}, persisted={}",
+                    workspaceId,
+                    existing.workspaceId,
+                )
                 throw IllegalArgumentException("WorkspaceId does not match persisted resume workspace")
+            }
+            // Optimistic locking check
+            if (expectedUpdatedAt != null && existing.updatedAt != expectedUpdatedAt) {
+                log.error(
+                    "Optimistic lock failed: expectedUpdatedAt={}, actualUpdatedAt={}",
+                    expectedUpdatedAt,
+                    existing.updatedAt,
+                )
+                throw com.loomify.resume.domain.exception.OptimisticLockException(
+                    resumeId = existing.id.value,
+                    expectedUpdatedAt = expectedUpdatedAt,
+                    actualUpdatedAt = existing.updatedAt,
+                )
             }
             val updatedDocument = existing.update(
                 title = title,

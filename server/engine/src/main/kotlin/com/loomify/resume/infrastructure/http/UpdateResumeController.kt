@@ -77,7 +77,7 @@ class UpdateResumeController(
             title = request.title,
             content = ResumeRequestMapper.toDomain(request.content),
             updatedBy = userEmail() ?: userId.toString(),
-            expectedUpdatedAt = request.expectedUpdatedAt,
+            expectedUpdatedAt = request.expectedUpdatedAt?.let { java.time.Instant.parse(it) },
         )
         try {
             dispatch(command)

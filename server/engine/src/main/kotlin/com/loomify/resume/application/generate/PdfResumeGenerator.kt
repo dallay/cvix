@@ -75,7 +75,7 @@ class PdfResumeGenerator(
                 GeneratedDocumentEvent(
                     id = requestId,
                     documentType = DocumentType.RESUME,
-                    locale = locale.code,
+                    locale = locale,
                     sizeInBytes = result.available().toLong(),
                 ),
             )

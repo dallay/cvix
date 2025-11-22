@@ -25,5 +25,9 @@ data class UpdateResumeCommand(
     val title: String?,
     val content: Resume,
     val updatedBy: String,
-    val expectedUpdatedAt: String? = null,
+    /**
+     * Expected last update timestamp (for optimistic locking).
+     * ISO-8601 UTC format (e.g., 2025-11-22T12:34:56Z).
+     */
+    val expectedUpdatedAt: java.time.Instant? = null,
 ) : Command
