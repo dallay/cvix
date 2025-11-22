@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume";
 import type { PartialResume } from "@/core/resume/domain/ResumeStorage";
 import { SessionStorageResumeStorage } from "./SessionStorageResumeStorage";
@@ -98,16 +98,22 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			setItemSpy.mockImplementation(() => {
-				throw new Error("QuotaExceededError");
-			});
-
-			await expect(storage.save(mockResume)).rejects.toThrow(
+			const failingStorage: Storage = {
+				length: 0,
+				clear: () => {},
+				key: () => null,
+				getItem: () => null,
+				removeItem: () => {
+					throw new Error("QuotaExceededError");
+				},
+				setItem: () => {
+					throw new Error("QuotaExceededError");
+				},
+			};
+			const failing = new SessionStorageResumeStorage(failingStorage);
+			await expect(failing.save(mockResume)).rejects.toThrow(
 				"Failed to save resume to session storage",
 			);
-
-			setItemSpy.mockRestore();
 		});
 	});
 
@@ -138,16 +144,20 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const getItemSpy = vi.spyOn(Storage.prototype, "getItem");
-			getItemSpy.mockImplementation(() => {
-				throw new Error("Storage error");
-			});
-
-			await expect(storage.load()).rejects.toThrow(
+			const failingStorage: Storage = {
+				length: 0,
+				clear: () => {},
+				key: () => null,
+				setItem: () => {},
+				removeItem: () => {},
+				getItem: () => {
+					throw new Error("Storage error");
+				},
+			};
+			const failing = new SessionStorageResumeStorage(failingStorage);
+			await expect(failing.load()).rejects.toThrow(
 				"Failed to load resume from session storage",
 			);
-
-			getItemSpy.mockRestore();
 		});
 	});
 
@@ -166,16 +176,20 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const removeItemSpy = vi.spyOn(Storage.prototype, "removeItem");
-			removeItemSpy.mockImplementation(() => {
-				throw new Error("Storage error");
-			});
-
-			await expect(storage.clear()).rejects.toThrow(
+			const failingStorage: Storage = {
+				length: 0,
+				clear: () => {},
+				key: () => null,
+				getItem: () => null,
+				setItem: () => {},
+				removeItem: () => {
+					throw new Error("Storage error");
+				},
+			};
+			const failing = new SessionStorageResumeStorage(failingStorage);
+			await expect(failing.clear()).rejects.toThrow(
 				"Failed to clear resume from session storage",
 			);
-
-			removeItemSpy.mockRestore();
 		});
 	});
 
