@@ -274,7 +274,6 @@ jobs:
 
       - name: Dependency Review
         uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
-        continue-on-error: true
         with:
           comment-summary-in-pr: always
 
@@ -284,13 +283,16 @@ jobs:
           project: "Loomify-monorepo"
           path: "."
           format: "HTML"
+          args: >
+            --failOnCVSS 7
+            --enableRetired
 
       - name: Upload OWASP Dependency Check Report
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: owasp-dependency-check-report
-          path: reports/dependency-check-report.html
+          path: ${{github.workspace}}/reports
           retention-days: 7
 
   # ============================================================================
