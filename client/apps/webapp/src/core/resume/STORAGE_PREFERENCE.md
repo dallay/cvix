@@ -109,8 +109,10 @@ const metadata = getStorageMetadata();
 The preference is stored in `localStorage` with the key:
 
 ```typescript
-const STORAGE_PREFERENCE_KEY = "cvix:storage-preference";
+const STORAGE_KEY = "cvix:user-settings"; // See LocalStorageSettingsRepository.ts
 ```
+
+Defined in [`LocalStorageSettingsRepository.ts`](../settings/infrastructure/storage/LocalStorageSettingsRepository.ts).
 
 Valid values: `"session" | "local" | "indexeddb" | "remote"`
 
