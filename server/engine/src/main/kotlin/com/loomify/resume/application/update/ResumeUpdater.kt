@@ -33,7 +33,7 @@ class ResumeUpdater(
      * @param workspaceId The ID of the workspace where the resume is located
      * @param title The new title of the resume
      * @param content The updated resume data following JSON Resume schema
-     * @param createdBy The username or email of the updater
+     * @param updatedBy The username or email of the updater
      *
      * @throws ResumeNotFoundException if the resume does not exist
      */
@@ -43,7 +43,7 @@ class ResumeUpdater(
         workspaceId: UUID,
         title: String,
         content: Resume,
-        createdBy: String
+        updatedBy: String
     ) {
         log.debug(
             "Updating resume document - id={}, userId={}, workspaceId={}, title={}",
@@ -53,7 +53,7 @@ class ResumeUpdater(
             val updatedDocument = existing.update(
                 title = title,
                 newContent = content,
-                updatedBy = createdBy,
+                updatedBy = updatedBy,
             )
             val savedDocument = resumeRepository.save(updatedDocument)
             log.debug(
