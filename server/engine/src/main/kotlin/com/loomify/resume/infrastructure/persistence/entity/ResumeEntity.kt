@@ -56,16 +56,16 @@ data class ResumeEntity(
     override var updatedAt: Instant? = null
 ) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
     /**
-     * This method returns the unique identifier of the workspace.
+     * This method returns the unique identifier of the resume.
      *
-     * @return The unique identifier of the workspace.
+     * @return The unique identifier of the resume.
      */
     override fun getId(): UUID = id
 
     /**
-     * This method checks if the workspace is new by comparing the creation and update timestamps.
+     * This method checks if the resume is new by comparing the creation and update timestamps.
      *
-     * @return A boolean indicating whether the workspace is new.
+     * @return A boolean indicating whether the resume is new.
      */
     override fun isNew(): Boolean = updatedAt == null || createdAt == updatedAt
 }

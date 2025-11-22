@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
 import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
+import com.loomify.common.domain.presentation.SimpleMessageResponse
 import com.loomify.engine.AppConstants
 import com.loomify.resume.application.update.UpdateResumeCommand
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
@@ -57,7 +58,7 @@ class UpdateResumeController(
         )
         id: String,
         @Valid @Validated @RequestBody request: UpdateResumeRequest
-    ): ResponseEntity<String> {
+    ): ResponseEntity<SimpleMessageResponse> {
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
@@ -86,13 +87,7 @@ class UpdateResumeController(
         return ResponseEntity
             .ok()
             .location(URI.create("/api/resume/$sanitizedId"))
-            .body(
-                """
-                    {
-                        "message": "Resume with ID $sanitizedId updated successfully."
-                    }
-                """.trimIndent(),
-            )
+            .body(SimpleMessageResponse("Resume with ID $sanitizedId updated successfully."))
     }
 
     companion object {
