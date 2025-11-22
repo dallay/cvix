@@ -13,13 +13,11 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import java.util.*
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 /**
  *
@@ -47,12 +45,7 @@ class ListResumeController(
         Int,
         @Parameter(description = "Cursor for pagination") @RequestParam(required = false) cursor: UUID?,
     ): ResponseEntity<ResumeDocumentResponses> {
-        val userId = UUID.fromString(
-            userId() ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Missing user ID in token",
-            ),
-        )
+        val userId = userIdFromToken()
 
         log.debug(
             "[ListResumes] userId={}, workspaceId={}, limit={}, cursor={}",

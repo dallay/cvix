@@ -48,12 +48,7 @@ class GetResumeController(
         )
         id: String,
     ): ResponseEntity<ResumeDocumentResponse> {
-        val userId = UUID.fromString(
-            userId() ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Missing user ID in token",
-            ),
-        )
+        val userId = userIdFromToken()
 
         val query = GetResumeQuery(id = UUID.fromString(id), userId = userId)
 

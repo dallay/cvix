@@ -9,11 +9,14 @@ import com.loomify.common.domain.bus.query.QueryHandlerExecutionError
 import com.loomify.common.domain.bus.query.Response
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
+import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.web.server.ResponseStatusException
 
 /**
  * Abstract base class for API controllers.
@@ -108,6 +111,20 @@ abstract class ApiController(
             is UsernamePasswordAuthenticationToken -> null
             else -> null
         }
+    }
+
+    protected suspend fun userIdFromToken(): UUID {
+        val userId = try {
+            UUID.fromString(
+                userId() ?: throw ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Missing user ID in token",
+                ),
+            )
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user ID format in token", e)
+        }
+        return userId
     }
 
     /**

@@ -49,12 +49,7 @@ class DeleteResumeController(
         )
         id: String,
     ): ResponseEntity<Void> {
-        val userId = UUID.fromString(
-            userId() ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Missing user ID in token",
-            ),
-        )
+        val userId = userIdFromToken()
 
         val command = DeleteResumeCommand(id = UUID.fromString(id), userId = userId)
 
