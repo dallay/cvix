@@ -64,7 +64,7 @@ internal class UpdateResumeCommandHandlerTest {
         coVerify {
             resumeRepository.save(
                 withArg {
-                    assertEquals(resumeId, it.id.value)
+                    assertEquals(resumeId, it.id.id)
                     assertEquals(userId, it.userId)
                     assertEquals(workspaceId, it.workspaceId)
                     assertEquals("Updated Resume Title", it.title)

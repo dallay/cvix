@@ -71,7 +71,7 @@ class ResumeUpdater(
                     existing.updatedAt,
                 )
                 throw com.loomify.resume.domain.exception.OptimisticLockException(
-                    resumeId = existing.id.value,
+                    resumeId = existing.id.id,
                     expectedUpdatedAt = expectedUpdatedAt,
                     actualUpdatedAt = existing.updatedAt,
                 )
@@ -88,9 +88,9 @@ class ResumeUpdater(
             )
             eventBroadcaster.publish(
                 ResumeUpdatedEvent(
-                    resumeId = savedDocument.id.value.toString(),
-                    userId = userId.toString(),
-                    workspaceId = savedDocument.workspaceId.toString(),
+                    resumeId = savedDocument.id.id,
+                    userId = userId,
+                    workspaceId = savedDocument.workspaceId,
                 ),
             )
         } ?: run {

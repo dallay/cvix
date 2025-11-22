@@ -179,7 +179,7 @@ class UserRegistratorTest {
                 } returns mockCreatedUser
                 every { mockCreatedUser.pullDomainEvents() } returns listOf(userCreatedEvent)
                 every { mockCreatedUser.id } returns mockUserId
-                every { mockUserId.value } returns expectedUserId
+                every { mockUserId.id } returns expectedUserId
 
                 // When
                 val actualUserId = userRegistrator.registerNewUser(
@@ -395,7 +395,7 @@ class UserRegistratorTest {
             } returns mockUser
             every { mockUser.pullDomainEvents() } returns emptyList()
             every { mockUser.id } returns mockUserId
-            every { mockUserId.value } returns expectedUserId
+            every { mockUserId.id } returns expectedUserId
 
             // When
             val actualUserId = registrator.registerNewUser(

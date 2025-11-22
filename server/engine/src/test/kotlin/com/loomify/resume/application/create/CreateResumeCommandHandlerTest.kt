@@ -41,10 +41,10 @@ internal class CreateResumeCommandHandlerTest {
         coVerify {
             resumeRepository.save(
                 withArg {
-                    assertEquals(command.id, it.id.value)
+                    assertEquals(command.id, it.id.id)
                     assertEquals(command.userId, it.userId)
                     assertEquals(command.workspaceId, it.workspaceId)
-                    // When title is null, it's extracted from content (name)
+                    // When title is null, it is extracted from content (name)
                     assertEquals("John Doe", it.title)
                     assertEquals(command.content, it.content)
                     assertEquals(command.createdBy, it.createdBy)

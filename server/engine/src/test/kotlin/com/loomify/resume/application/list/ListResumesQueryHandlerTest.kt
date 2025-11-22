@@ -52,8 +52,8 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertEquals(2, result.data.size)
-        assertEquals(expectedDocuments[0].id.value, result.data[0].id)
-        assertEquals(expectedDocuments[1].id.value, result.data[1].id)
+        assertEquals(expectedDocuments[0].id.id, result.data[0].id)
+        assertEquals(expectedDocuments[1].id.id, result.data[1].id)
         coVerify {
             resumeCatalog.listResumes(
                 eq(userId),
@@ -130,7 +130,7 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertEquals(1, result.data.size)
-        assertEquals(expectedDocuments[0].id.value, result.data[0].id)
+        assertEquals(expectedDocuments[0].id.id, result.data[0].id)
         coVerify {
             resumeCatalog.listResumes(
                 eq(userId),

@@ -4,7 +4,7 @@ import com.loomify.UnitTest
 import com.loomify.common.domain.bus.event.EventBroadcaster
 import com.loomify.resume.domain.ResumeRepository
 import com.loomify.resume.domain.event.ResumeDeletedEvent
-import com.loomify.resume.domain.exception.ResumeNotFoundException
+import com.loomify.resume.domain.exception.ResumeAccessDeniedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -25,6 +25,7 @@ class ResumeDestroyerTest {
         // Arrange
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
+        coEvery { resumeRepository.existsById(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 1L
 
         // Act
@@ -32,18 +33,19 @@ class ResumeDestroyerTest {
 
         // Assert
         coVerify { resumeRepository.deleteIfAuthorized(resumeId, userId) }
-        coVerify { eventBroadcaster.publish(ResumeDeletedEvent(resumeId.toString(), userId.toString())) }
+        coVerify { eventBroadcaster.publish(ResumeDeletedEvent(resumeId, userId)) }
     }
 
     @Test
-    fun `should throw ResumeNotFoundException when resume does not exist`() = runTest {
+    fun `should throw ResumeAccessDeniedException when resume does not exist`() = runTest {
         // Arrange
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
+        coEvery { resumeRepository.existsById(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 0L
 
         // Act & Assert
-        assertThrows<ResumeNotFoundException> {
+        assertThrows<ResumeAccessDeniedException> {
             resumeDestroyer.deleteResume(resumeId, userId)
         }
 

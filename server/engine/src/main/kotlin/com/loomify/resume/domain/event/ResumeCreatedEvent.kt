@@ -1,6 +1,7 @@
 package com.loomify.resume.domain.event
 
 import com.loomify.common.domain.bus.event.BaseDomainEvent
+import java.util.UUID
 
 /**
  * Event published when a new resume is created.
@@ -10,7 +11,7 @@ import com.loomify.common.domain.bus.event.BaseDomainEvent
  * @property workspaceId The ID of the workspace where the resume was created
  */
 data class ResumeCreatedEvent(
-    val resumeId: String,
-    val userId: String,
-    val workspaceId: String,
+    val resumeId: UUID,
+    val userId: UUID,
+    val workspaceId: UUID,
 ) : BaseDomainEvent()

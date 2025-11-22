@@ -105,7 +105,7 @@ data class Credential(
  * @see Credential for the credential type
  * @see CredentialId for the id type
  */
-class CredentialId(id: UUID) : BaseId<UUID>(id)
+data class CredentialId(override val id: UUID) : BaseId<UUID>(id)
 
 /**
  * Credential type representation in the domain layer of the application that is used to identify the type of credential

@@ -44,7 +44,7 @@ internal class DeleteWorkspaceCommandHandlerTest {
         coVerify {
             repository.delete(
                 withArg {
-                    assert(it.value.toString() == workspaceId)
+                    assert(it.id.toString() == workspaceId)
                 },
             )
         }

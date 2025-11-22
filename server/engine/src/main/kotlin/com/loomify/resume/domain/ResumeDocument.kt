@@ -61,9 +61,9 @@ data class ResumeDocument(
         )
         document.record(
             ResumeUpdatedEvent(
-                resumeId = document.id.value.toString(),
-                userId = document.userId.toString(),
-                workspaceId = document.workspaceId.toString(),
+                resumeId = document.id.id,
+                userId = document.userId,
+                workspaceId = document.workspaceId,
             ),
         )
         return document
@@ -105,9 +105,9 @@ data class ResumeDocument(
             )
             resumeDocument.record(
                 ResumeCreatedEvent(
-                    resumeDocument.id.toString(),
-                    resumeDocument.userId.toString(),
-                    resumeDocument.workspaceId.toString(),
+                    resumeDocument.id.id,
+                    resumeDocument.userId,
+                    resumeDocument.workspaceId,
                 ),
             )
             return resumeDocument

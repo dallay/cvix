@@ -4,6 +4,7 @@ import com.loomify.common.domain.bus.Mediator
 import com.loomify.engine.AppConstants
 import com.loomify.resume.application.ResumeDocumentResponse
 import com.loomify.resume.application.get.GetResumeQuery
+import com.loomify.resume.domain.exception.ResumeAccessDeniedException
 import com.loomify.resume.domain.exception.ResumeNotFoundException
 import com.loomify.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
@@ -61,6 +62,8 @@ class GetResumeController(
             ResponseEntity.ok(document)
         } catch (e: ResumeNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message, e)
+        } catch (e: ResumeAccessDeniedException) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message, e)
         }
     }
 }

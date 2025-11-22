@@ -44,9 +44,9 @@ class KeycloakRepositoryIntegrationTest : InfrastructureTestContainers() {
         assertEquals(createdUser.name?.lastName?.value ?: "", lastName ?: "")
 
         // Assert local users row exists
-        val found = userR2dbcRepository.findById(createdUser.id.value)
+        val found = userR2dbcRepository.findById(createdUser.id.id)
         assertNotNull(found, "Local users row should be created after Keycloak registration")
-        assertEquals(createdUser.id.value, found!!.id, "Found user's ID should match created user's ID")
+        assertEquals(createdUser.id.id, found!!.id, "Found user's ID should match created user's ID")
         assertEquals(email, found.email)
         assertEquals("$firstName $lastName".trim(), found.fullName)
     }

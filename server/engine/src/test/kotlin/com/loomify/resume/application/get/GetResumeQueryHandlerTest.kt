@@ -41,7 +41,7 @@ internal class GetResumeQueryHandlerTest {
         val result = getResumeQueryHandler.handle(query)
 
         // Then
-        assertEquals(expectedDocument.id.value, result.id)
+        assertEquals(expectedDocument.id.id, result.id)
         assertEquals(expectedDocument.userId, result.userId)
         assertEquals(expectedDocument.workspaceId, result.workspaceId)
         assertEquals(expectedDocument.title, result.title)

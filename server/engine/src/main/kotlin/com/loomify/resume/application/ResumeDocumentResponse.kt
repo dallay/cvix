@@ -38,7 +38,7 @@ data class ResumeDocumentResponse(
          * @return A `ResumeDocumentResponse` containing the details of the given `ResumeDocument`.
          */
         fun from(resumeDocument: ResumeDocument) = ResumeDocumentResponse(
-            id = resumeDocument.id.value,
+            id = resumeDocument.id.id,
             userId = resumeDocument.userId,
             workspaceId = resumeDocument.workspaceId,
             title = resumeDocument.title,

@@ -58,7 +58,7 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
             val workspace = workspaces.first()
             workspace.name shouldBe "$firstname $lastname's Workspace"
             workspace.description shouldBe "Default workspace created automatically upon user registration"
-            workspace.ownerId.value.toString() shouldBe userId
+            workspace.ownerId.id.toString() shouldBe userId
         }
     }
 

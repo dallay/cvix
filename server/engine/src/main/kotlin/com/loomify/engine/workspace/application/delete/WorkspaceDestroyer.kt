@@ -33,7 +33,7 @@ class WorkspaceDestroyer(
     suspend fun delete(id: WorkspaceId) {
         log.debug("Deleting workspace with id: {}", id)
         destroyer.delete(id)
-        eventBroadcaster.publish(WorkspaceDeletedEvent(id.value.toString()))
+        eventBroadcaster.publish(WorkspaceDeletedEvent(id.id.toString()))
     }
 
     companion object {

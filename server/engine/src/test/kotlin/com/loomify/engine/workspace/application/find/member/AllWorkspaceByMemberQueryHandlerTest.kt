@@ -36,7 +36,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     @Test
     fun `should find all workspaces`() = runTest {
         // Given
-        val query = AllWorkspaceByMemberQuery(userId.value.toString())
+        val query = AllWorkspaceByMemberQuery(userId.id.toString())
 
         // When
         val response = handler.handle(query)
@@ -49,7 +49,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     fun `should return empty list when no workspaces found`() = runTest {
         // Given
         coEvery { repository.findByMemberId(any()) } returns emptyList()
-        val query = AllWorkspaceByMemberQuery(userId.value.toString())
+        val query = AllWorkspaceByMemberQuery(userId.id.toString())
 
         // When
         val response = handler.handle(query)
@@ -62,7 +62,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     fun `should handle repository exception`(): Unit = runTest {
         // Given
         coEvery { repository.findByMemberId(any()) } throws RuntimeException("Database error")
-        val query = AllWorkspaceByMemberQuery(userId.value.toString())
+        val query = AllWorkspaceByMemberQuery(userId.id.toString())
 
         // When & Then
         val ex = assertFailsWith<RuntimeException> {
