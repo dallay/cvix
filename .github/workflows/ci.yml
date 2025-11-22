@@ -203,6 +203,19 @@ jobs:
             server/engine/build/reports/
           retention-days: 7
 
+  coverage-verification:
+    name: Enforce Coverage Thresholds
+    runs-on: ubuntu-latest
+    needs: [backend-pipeline]
+    if: needs.backend-pipeline.result == 'success'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Java
+        uses: ./.github/actions/setup/java
+      - name: Enforce coverage threshold
+        run: ./gradlew koverVerify --no-daemon
+
   # ============================================================================
   # Frontend Pipeline - Conditional execution based on changes
   # ============================================================================
@@ -320,7 +333,7 @@ jobs:
     name: Build & Push Docker (Backend)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend == 'true'
-    needs: [changes, backend-pipeline]
+    needs: [changes, backend-pipeline, coverage-verification]
     permissions:
       contents: read
       packages: write
@@ -329,8 +342,6 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Setup Java
         uses: ./.github/actions/setup/java
-      - name: Enforce coverage threshold
-        run: ./gradlew koverVerify --no-daemon
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
         with:
