@@ -101,12 +101,12 @@ describe("SessionStorageResumeStorage", () => {
 			const failingStorage: Storage = {
 				length: 0,
 				clear: () => {},
-				key: () => null,
-				getItem: () => null,
-				removeItem: () => {
+				key: (_index: number) => null,
+				getItem: (_key: string) => null,
+				removeItem: (_key: string) => {
 					throw new Error("QuotaExceededError");
 				},
-				setItem: () => {
+				setItem: (_key: string, _value: string) => {
 					throw new Error("QuotaExceededError");
 				},
 			};

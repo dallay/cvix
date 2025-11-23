@@ -13,6 +13,7 @@ export const sharedVitestConfig = (dirname) =>
 				provider: "v8",
 				enabled: true,
 				reportsDirectory: "./coverage",
+				reporter: ["text", "json-summary", "lcov"],
 			},
 			reporters: [
 				"default",
@@ -22,7 +23,6 @@ export const sharedVitestConfig = (dirname) =>
 					"junit",
 					{ suiteName: "UI tests", outputFile: "./coverage/junit-report.xml" },
 				],
-				["lcov", { file: "./coverage/lcov.info" }],
 			],
 		},
 		plugins: [tsconfigPaths()],
