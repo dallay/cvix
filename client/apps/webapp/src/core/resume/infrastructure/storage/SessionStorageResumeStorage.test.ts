@@ -3,6 +3,26 @@ import type { Resume } from "@/core/resume/domain/Resume";
 import type { PartialResume } from "@/core/resume/domain/ResumeStorage";
 import { SessionStorageResumeStorage } from "./SessionStorageResumeStorage";
 
+// Helper factory to create a Storage implementation that throws for a specified method
+const createFailingStorage = (
+	failingMethod: "setItem" | "getItem" | "removeItem",
+	errorMessage = "Storage error",
+): Storage => ({
+	length: 0,
+	clear: () => {},
+	key: (_index: number) => null,
+	getItem: (_key: string) => {
+		if (failingMethod === "getItem") throw new Error(errorMessage);
+		return null;
+	},
+	setItem: (_key: string, _value: string) => {
+		if (failingMethod === "setItem") throw new Error(errorMessage);
+	},
+	removeItem: (_key: string) => {
+		if (failingMethod === "removeItem") throw new Error(errorMessage);
+	},
+});
+
 describe("SessionStorageResumeStorage", () => {
 	let storage: SessionStorageResumeStorage;
 	let mockResume: Resume;
@@ -98,19 +118,9 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const failingStorage: Storage = {
-				length: 0,
-				clear: () => {},
-				key: (_index: number) => null,
-				getItem: (_key: string) => null,
-				removeItem: (_key: string) => {
-					throw new Error("QuotaExceededError");
-				},
-				setItem: (_key: string, _value: string) => {
-					throw new Error("QuotaExceededError");
-				},
-			};
-			const failing = new SessionStorageResumeStorage(failingStorage);
+			const failing = new SessionStorageResumeStorage(
+				createFailingStorage("setItem", "QuotaExceededError"),
+			);
 			await expect(failing.save(mockResume)).rejects.toThrow(
 				/Failed to save resume to session storage/,
 			);
@@ -144,17 +154,9 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const failingStorage: Storage = {
-				length: 0,
-				clear: () => {},
-				key: () => null,
-				setItem: () => {},
-				removeItem: () => {},
-				getItem: () => {
-					throw new Error("Storage error");
-				},
-			};
-			const failing = new SessionStorageResumeStorage(failingStorage);
+			const failing = new SessionStorageResumeStorage(
+				createFailingStorage("getItem", "Storage error"),
+			);
 			await expect(failing.load()).rejects.toThrow(
 				/Failed to load resume from session storage/,
 			);
@@ -176,17 +178,9 @@ describe("SessionStorageResumeStorage", () => {
 		});
 
 		it("should handle storage errors gracefully", async () => {
-			const failingStorage: Storage = {
-				length: 0,
-				clear: () => {},
-				key: () => null,
-				getItem: () => null,
-				setItem: () => {},
-				removeItem: () => {
-					throw new Error("Storage error");
-				},
-			};
-			const failing = new SessionStorageResumeStorage(failingStorage);
+			const failing = new SessionStorageResumeStorage(
+				createFailingStorage("removeItem", "Storage error"),
+			);
 			await expect(failing.clear()).rejects.toThrow(
 				/Failed to clear resume from session storage/,
 			);

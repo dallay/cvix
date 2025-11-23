@@ -5,6 +5,7 @@ import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
 import com.loomify.engine.workspace.application.create.CreateWorkspaceCommand
 import com.loomify.engine.workspace.infrastructure.http.request.CreateWorkspaceRequest
 import com.loomify.spring.boot.ApiController
+import com.loomify.spring.boot.logging.LogMasker
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
@@ -55,14 +56,15 @@ class CreateWorkspaceController(
         id: UUID,
         @Validated @RequestBody request: CreateWorkspaceRequest
     ): ResponseEntity<String> {
-        log.debug("Creating Workspace with ID: {}", id)
+        val safeIdMasked = LogMasker.mask(id)
+        log.debug("Creating Workspace with ID: {}", safeIdMasked)
         try {
             dispatch(
                 CreateWorkspaceCommand(id, request.name, request.description, request.ownerId),
             )
-            return ResponseEntity.created(URI.create("/api/workspace/$id")).build()
+            return ResponseEntity.created(URI.create("/api/workspace/$safeIdMasked")).build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating workspace with ID: {}", id, e)
+            log.error("Error creating workspace with ID: {}", safeIdMasked, e)
             throw e
         }
     }

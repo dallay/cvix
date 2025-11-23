@@ -6,13 +6,14 @@ import com.loomify.resume.application.create.CreateResumeCommand
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.CreateResumeRequest
 import com.loomify.spring.boot.ApiController
+import com.loomify.spring.boot.logging.LogMasker
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import java.net.URI
-import java.util.UUID
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -45,6 +46,8 @@ class CreateResumeController(
         id: UUID,
         @Valid @RequestBody request: CreateResumeRequest
     ): ResponseEntity<String> {
+        val safeIdMasked = LogMasker.mask(id)
+        log.debug("Creating new resume: {}", safeIdMasked)
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
@@ -60,10 +63,12 @@ class CreateResumeController(
         try {
             dispatch(command)
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating resume/cv with ID: {}", id, e)
+            log.error("Error creating resume/cv with ID: {}", safeIdMasked, e)
             throw e
         }
-        return ResponseEntity.created(URI.create("/api/resume/$id")).build()
+        return ResponseEntity.created(
+            URI.create("/api/resume/$safeIdMasked"),
+        ).build()
     }
 
     companion object {
