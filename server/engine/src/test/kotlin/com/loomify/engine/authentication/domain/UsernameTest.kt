@@ -35,22 +35,22 @@ internal class UsernameTest {
 
     @Test
     fun `should throw exception when username is blank`() {
-        val instanceOf =
-            assertThatThrownBy { Username(" ") }.isInstanceOf(IllegalArgumentException::class.java)
-        instanceOf.hasMessage("Username cannot be blank")
+        assertThatThrownBy { Username(" ") }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Username cannot be blank")
     }
 
     @Test
     fun `should throw exception when username is less than 3 characters`() {
-        val instanceOf =
-            assertThatThrownBy { Username("ab") }.isInstanceOf(IllegalArgumentException::class.java)
-        instanceOf.hasMessage("Username must be between 3 and 100 characters")
+        assertThatThrownBy { Username("ab") }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Username must be between 3 and 100 characters")
     }
 
     @Test
     fun `should throw exception when username is more than 100 characters`() {
-        val instanceOf =
-            assertThatThrownBy { Username("a".repeat(101)) }.isInstanceOf(IllegalArgumentException::class.java)
-        instanceOf.hasMessage("Username must be between 3 and 100 characters")
+        assertThatThrownBy { Username("a".repeat(101)) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Username must be between 3 and 100 characters")
     }
 }
