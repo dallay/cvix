@@ -58,7 +58,7 @@ class CreateWorkspaceController(
         log.debug("Creating Workspace with ID: {}", id)
         try {
             dispatch(
-                CreateWorkspaceCommand(id, request.name, request.description, request.ownerId,),
+                CreateWorkspaceCommand(id, request.name, request.description, request.ownerId),
             )
             return ResponseEntity.created(URI.create("/api/workspace/$id")).build()
         } catch (e: CommandHandlerExecutionError) {

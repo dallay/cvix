@@ -3,7 +3,6 @@ package com.loomify.resume.infrastructure.http
 import com.loomify.common.domain.bus.Mediator
 import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
 import com.loomify.common.domain.presentation.SimpleMessageResponse
-import com.loomify.engine.AppConstants
 import com.loomify.resume.application.update.UpdateResumeCommand
 import com.loomify.resume.domain.exception.ResumeNotFoundException
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Pattern
 import java.net.URI
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.util.HtmlUtils
 
 /**
  * REST controller for updating resumes.
@@ -73,10 +70,10 @@ class UpdateResumeController(
         try {
             dispatch(command)
         } catch (e: ResumeNotFoundException) {
-            log.warn("Resume not found for update: {}",id, e)
+            log.warn("Resume not found for update: {}", id, e)
             return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating workspace with ID: {}",id, e,)
+            log.error("Error creating workspace with ID: {}", id, e)
             throw e
         }
         return ResponseEntity

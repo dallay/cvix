@@ -2,7 +2,6 @@ package com.loomify.resume.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
 import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
-import com.loomify.engine.AppConstants
 import com.loomify.resume.application.create.CreateResumeCommand
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.CreateResumeRequest
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Pattern
 import java.net.URI
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -62,7 +60,7 @@ class CreateResumeController(
         try {
             dispatch(command)
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating resume/cv with ID: {}", id, e,)
+            log.error("Error creating resume/cv with ID: {}", id, e)
             throw e
         }
         return ResponseEntity.created(URI.create("/api/resume/$id")).build()

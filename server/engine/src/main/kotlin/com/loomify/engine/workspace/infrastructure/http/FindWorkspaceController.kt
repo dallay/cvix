@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.constraints.Pattern
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping

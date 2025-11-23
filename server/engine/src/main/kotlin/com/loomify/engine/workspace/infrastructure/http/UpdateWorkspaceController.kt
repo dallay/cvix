@@ -59,7 +59,8 @@ class UpdateWorkspaceController(
     ): ResponseEntity<SimpleMessageResponse> {
         log.debug("Updating workspace with ID: {}", id)
         dispatch(
-            UpdateWorkspaceCommand(id, request.name, request.description?.takeIf { it.isNotBlank() },
+            UpdateWorkspaceCommand(
+                id, request.name, request.description?.takeIf { it.isNotBlank() },
             ),
         )
         return ResponseEntity.ok(SimpleMessageResponse("Workspace updated successfully."))

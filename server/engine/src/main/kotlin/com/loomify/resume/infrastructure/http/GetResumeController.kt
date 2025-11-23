@@ -1,7 +1,6 @@
 package com.loomify.resume.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.AppConstants
 import com.loomify.resume.application.ResumeDocumentResponse
 import com.loomify.resume.application.get.GetResumeQuery
 import com.loomify.resume.domain.exception.ResumeAccessDeniedException
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import jakarta.validation.constraints.Pattern
 import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
