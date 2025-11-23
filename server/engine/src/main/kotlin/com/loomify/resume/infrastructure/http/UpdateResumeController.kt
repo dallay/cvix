@@ -5,6 +5,7 @@ import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
 import com.loomify.common.domain.presentation.SimpleMessageResponse
 import com.loomify.engine.AppConstants
 import com.loomify.resume.application.update.UpdateResumeCommand
+import com.loomify.resume.domain.exception.ResumeNotFoundException
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.UpdateResumeRequest
 import com.loomify.spring.boot.ApiController
@@ -75,6 +76,9 @@ class UpdateResumeController(
         )
         try {
             dispatch(command)
+        } catch (e: ResumeNotFoundException) {
+            log.warn("Resume not found for update: {}", sanitizePathVariable(resumeId.toString()), e)
+            return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
             log.error(
                 "Error creating workspace with ID: {}",

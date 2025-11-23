@@ -3,6 +3,7 @@ package com.loomify.resume.infrastructure.http
 import com.loomify.ControllerTest
 import com.loomify.resume.ResumeTestFixtures
 import com.loomify.resume.application.update.UpdateResumeCommand
+import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.loomify.resume.infrastructure.http.request.UpdateResumeRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -52,6 +53,10 @@ internal class UpdateResumeControllerTest : ControllerTest() {
         assertEquals(userId, commandSlot.captured.userId)
         assertEquals(workspaceId, commandSlot.captured.workspaceId)
         assertEquals(title, commandSlot.captured.title)
+        // Compare mapped Resume objects instead of direct object comparison
+        val expectedResume = ResumeRequestMapper.toDomain(request.content)
+        assertEquals(expectedResume, commandSlot.captured.content)
+        assertEquals(Instant.parse(request.expectedUpdatedAt!!), commandSlot.captured.expectedUpdatedAt)
     }
 
     @Test

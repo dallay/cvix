@@ -35,7 +35,7 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
-            .expectStatus().is5xxServerError // Controller logs error but doesn't handle it properly
+            .expectStatus().isNotFound
     }
 
     @Test

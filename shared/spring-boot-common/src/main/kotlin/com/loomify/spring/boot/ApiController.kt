@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.util.HtmlUtils
 
 /**
  * Abstract base class for API controllers.
@@ -140,7 +141,7 @@ abstract class ApiController(
         require(pathVariable.matches(regex)) {
             "Invalid path variable. Only alphanumeric characters, underscores, and hyphens are allowed."
         }
-        return URLEncoder.encode(pathVariable, "UTF-8")
+        return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
     }
 
     /**
