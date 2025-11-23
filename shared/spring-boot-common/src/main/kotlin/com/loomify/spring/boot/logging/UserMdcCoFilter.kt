@@ -23,17 +23,21 @@ import reactor.core.publisher.Flux
 import reactor.util.context.Context
 
 /**
- * Coroutine-based WebFilter that propagates user context to MDC for logging.
+ * Coroutine-based WebFilter that propagates user and workspace context to MDC and Reactor context for logging and tracing.
  *
  * This filter:
  * 1. Extracts the userId from the JWT token (subject claim)
- * 2. Masks the userId using SHA-256 hashing for security
- * 3. Propagates the masked ID through both:
+ * 2. Extracts workspaceId from request headers, query parameters, or JSON request body
+ * 3. Masks both userId and workspaceId using SHA-256 hashing for security
+ * 4. Propagates maskedUserId and maskedWorkspaceId through both:
  *    - MDCContext: For coroutine-based code (services, handlers)
  *    - ReactorContext: For reactive library calls (WebClient, repositories)
  *
- * The masked ID will automatically appear in logs via the Logback pattern
- * configuration using %X{maskedUserId}.
+ * The masked IDs will automatically appear in logs via the Logback pattern
+ * configuration using %X{maskedUserId} and %X{maskedWorkspaceId}.
+ *
+ * The filter also ensures the request body is cached and re-exposed for downstream handlers when extracting workspaceId from JSON body,
+ * and releases all DataBuffers to avoid memory leaks.
  */
 @Component
 @Profile("!test")
@@ -53,11 +57,16 @@ class UserMdcCoFilter : CoWebFilter() {
         val isJson = exchange.request.headers.contentType?.toString()?.lowercase()?.contains("json") == true
         val isWriteMethod = method == "POST" || method == "PUT" || method == "PATCH"
         if (isWriteMethod && isJson) {
-            val dataBuffer = DataBufferUtils.join(exchange.request.body).awaitSingleOrNull()
-            if (dataBuffer != null) {
-                val bytes = ByteArray(dataBuffer.readableByteCount())
-                dataBuffer.read(bytes)
-                DataBufferUtils.release(dataBuffer)
+            val dataBuffers = mutableListOf<DataBuffer>()
+            val joinedBuffer = DataBufferUtils.join(exchange.request.body.doOnNext { buf ->
+                DataBufferUtils.retain(buf)
+                dataBuffers.add(buf)
+            }).awaitSingleOrNull()
+            if (joinedBuffer != null) {
+                val bytes = ByteArray(joinedBuffer.readableByteCount())
+                joinedBuffer.read(bytes)
+                DataBufferUtils.release(joinedBuffer)
+                dataBuffers.forEach { DataBufferUtils.release(it) }
                 val body = String(bytes, Charsets.UTF_8)
                 val workspaceIdFromBody = extractWorkspaceIdFromString(body)
                 if (workspaceIdFromBody != null) {
