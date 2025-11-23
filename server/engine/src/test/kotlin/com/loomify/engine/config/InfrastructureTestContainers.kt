@@ -6,7 +6,7 @@ import com.loomify.engine.authentication.infrastructure.mapper.AccessTokenRespon
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -71,6 +71,11 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
+
+        /**
+         * Unique suffix for test container names. Can be overridden via system property
+         * `tc.name.suffix` to support container reuse across test runs.
+         */
         private val uniqueTestSuffix: String by lazy {
             System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
         }

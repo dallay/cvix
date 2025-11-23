@@ -83,7 +83,7 @@ internal class BeanValidationTest {
     }
 
     private fun errorMessage(method: Method, parameter: Parameter): String {
-        return "Missing @Validated annotation in " +
+        return "Missing @Validated or @Valid annotation in " + 
             method.declaringClass.simpleName +
             " on method " +
             method.name +
