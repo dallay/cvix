@@ -8,6 +8,7 @@ import com.loomify.engine.workspace.domain.WorkspaceId
 import com.loomify.engine.workspace.domain.WorkspaceNotFoundException
 import com.loomify.engine.workspace.domain.WorkspaceRepository
 import com.loomify.engine.workspace.domain.event.WorkspaceUpdatedEvent
+import java.util.*
 import org.slf4j.LoggerFactory
 
 /**
@@ -37,8 +38,8 @@ class WorkspaceUpdater(
      * @param name The new name of the workspace.
      * @param description The new description of the workspace.
      */
-    suspend fun update(teamId: String, name: String, description: String?) {
-        log.info("Updating workspace with id: $teamId")
+    suspend fun update(teamId: UUID, name: String, description: String?) {
+        log.info("Updating workspace with id: {}", teamId)
         val workspaceId = WorkspaceId(teamId)
         val workspace = workspaceFinderRepository.findById(workspaceId)
             ?: throw WorkspaceNotFoundException("Workspace not found")

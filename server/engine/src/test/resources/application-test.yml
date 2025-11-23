@@ -5,13 +5,13 @@ server:
     enabled: true
 logging:
   level:
-    org.springframework.r2dbc: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2.client: DEBUG
-    com.loomify: DEBUG
+    org.springframework.r2dbc: WARN
+    org.springframework.security: WARN
+    org.springframework.security.oauth2.client: WARN
+    com.loomify: WARN
 spring:
   main:
-    banner-mode: false
+    banner-mode: off
     allow-bean-definition-overriding: true
   autoconfigure:
     exclude:

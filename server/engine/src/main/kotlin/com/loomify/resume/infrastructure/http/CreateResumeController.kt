@@ -58,7 +58,7 @@ class CreateResumeController(
             workspaceId = workspaceId,
             title = request.title,
             content = ResumeRequestMapper.toDomain(request.content),
-            createdBy = userEmail() ?: userId.toString(),
+            createdBy = userId.toString(),
         )
         try {
             dispatch(command)

@@ -2,7 +2,8 @@ package com.loomify.resume.infrastructure.http
 
 import com.loomify.ControllerIntegrationTest
 import com.loomify.resume.ResumeTestFixtures.createResumeRequest
-import java.util.UUID
+import com.loomify.spring.boot.logging.LogMasker
+import java.util.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
@@ -29,7 +30,7 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .bodyValue(request)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().valueMatches("Location", "/api/resume/$id")
+            .expectHeader().valueMatches("Location", "/api/resume/${LogMasker.mask(id)}")
             .expectBody().isEmpty
 
         // Follow-up GET to verify persistence
@@ -47,8 +48,8 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.userId").isEqualTo("efc4b2b8-08be-4020-93d5-f795762bf5c9")
             .jsonPath("$.workspaceId").isEqualTo(workspaceId)
             .jsonPath("$.title").isEqualTo("My first resume")
-            .jsonPath("$.createdBy").isEqualTo("john.doe@loomify.com")
-            .jsonPath("$.updatedBy").isEqualTo("john.doe@loomify.com")
+            .jsonPath("$.createdBy").isEqualTo("efc4b2b8-08be-4020-93d5-f795762bf5c9")
+            .jsonPath("$.updatedBy").isEqualTo("efc4b2b8-08be-4020-93d5-f795762bf5c9")
             .jsonPath("$.createdAt").exists()
             .jsonPath("$.updatedAt").exists()
             // content.basics

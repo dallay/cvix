@@ -25,10 +25,10 @@ class UpdateWorkspaceCommandHandler(
 
         log.debug("Updating workspace with id: {}", command.id)
         try {
-            workspaceUpdater.update(command.id.toString(), command.name, command.description)
-            log.info("Successfully updated workspace with id: ${command.id}")
+            workspaceUpdater.update(command.id, command.name, command.description)
+            log.info("Successfully updated workspace with id: {}", command.id)
         } catch (exception: Exception) {
-            log.error("Failed to update workspace with id: ${command.id}", exception)
+            log.error("Failed to update workspace with id: {}", command.id, exception)
             throw exception
         }
     }

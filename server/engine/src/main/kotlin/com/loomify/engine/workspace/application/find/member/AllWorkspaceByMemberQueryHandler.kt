@@ -21,7 +21,7 @@ class AllWorkspaceByMemberQueryHandler(
      */
     override suspend fun handle(query: AllWorkspaceByMemberQuery): WorkspaceResponses {
         log.debug("Handling query: {}", query)
-        return finder.findAll(query.userId.toString())
+        return finder.findAll(query.userId)
     }
 
     companion object {

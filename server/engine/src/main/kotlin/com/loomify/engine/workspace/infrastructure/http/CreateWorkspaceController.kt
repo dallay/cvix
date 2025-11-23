@@ -50,7 +50,7 @@ class CreateWorkspaceController(
         @Parameter(
             description = "ID of the workspace to be found",
             required = true,
-            schema = Schema(type = "uuid", format = "uuid"),
+            schema = Schema(type = "string", format = "uuid"),
         )
         @PathVariable
         id: UUID,

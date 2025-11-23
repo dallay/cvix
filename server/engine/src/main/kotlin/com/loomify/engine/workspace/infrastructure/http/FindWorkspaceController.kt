@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import java.util.UUID
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -46,7 +46,7 @@ class FindWorkspaceController(
         @Parameter(
             description = "ID of the workspace to be found",
             required = true,
-            schema = Schema(type = "uuid", format = "uuid"),
+            schema = Schema(type = "string", format = "uuid"),
         )
         @PathVariable
         id: UUID,
