@@ -11,7 +11,7 @@ logging:
     com.loomify: DEBUG
 spring:
   main:
-    banner-mode: off
+    banner-mode: false
     allow-bean-definition-overriding: true
   autoconfigure:
     exclude:
