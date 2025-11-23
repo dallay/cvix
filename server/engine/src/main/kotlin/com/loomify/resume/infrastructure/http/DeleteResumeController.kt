@@ -37,7 +37,7 @@ class DeleteResumeController(
         ApiResponse(responseCode = "204", description = "Resume deleted successfully"),
         ApiResponse(
             responseCode = "400",
-            description = "Bad Request - Invalid identifier or token subject"
+            description = "Bad Request - Invalid identifier or token subject",
         ),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
         ApiResponse(responseCode = "403", description = "Forbidden - Access denied to this resume"),

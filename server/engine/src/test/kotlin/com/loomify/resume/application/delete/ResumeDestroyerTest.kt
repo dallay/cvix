@@ -8,7 +8,7 @@ import com.loomify.resume.domain.exception.ResumeAccessDeniedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,7 +26,6 @@ class ResumeDestroyerTest {
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
         coEvery { resumeRepository.existsById(resumeId) } returns true
-        coEvery { resumeRepository.existsByIdForUser(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 1L
 
         // Act
@@ -43,7 +42,6 @@ class ResumeDestroyerTest {
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
         coEvery { resumeRepository.existsById(resumeId) } returns true
-        coEvery { resumeRepository.existsByIdForUser(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 0L
 
         // Act & Assert
