@@ -41,6 +41,7 @@ class ResumeDestroyerTest {
         // Arrange
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
+        coEvery { resumeRepository.existsById(resumeId) } returns true
         coEvery { resumeRepository.existsById(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 0L
 
