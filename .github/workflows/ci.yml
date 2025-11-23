@@ -459,6 +459,7 @@ jobs:
       - lint-frontend
       - frontend-pipeline
       - security-scans
+      - coverage-verification
     steps:
       - name: Check job results
         run: |
@@ -482,6 +483,11 @@ jobs:
 
           if [ "${{ needs.security-scans.result }}" != "success" ]; then
             echo "❌ Security scans failed: ${{ needs.security-scans.result }}"
+            exit 1
+          fi
+
+          if [ "${{ needs.coverage-verification.result }}" != "success" ]; then
+            echo "❌ Coverage verification failed: ${{ needs.coverage-verification.result }}"
             exit 1
           fi
 
@@ -548,3 +554,4 @@ jobs:
           echo "| Frontend Lint | ${{ needs.lint-frontend.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Security Scans | ${{ needs.security-scans.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage Verification | ${{ needs.coverage-verification.result }} |" >> $GITHUB_STEP_SUMMARY
