@@ -71,6 +71,9 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
+        private val uniqueTestSuffix: String by lazy {
+            System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
+        }
         private const val ADMIN_USER: String = "admin"
         private const val ADMIN_PASSWORD: String = "secret"
         private const val REALM: String = "loomify"
@@ -87,8 +90,7 @@ abstract class InfrastructureTestContainers {
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
                 .withCreateContainerCmdModifier { cmd ->
-                    val unique = System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
-                    cmd.withName("keycloak-tests-$unique")
+                    cmd.withName("keycloak-tests-$uniqueTestSuffix")
                 }
                 .withNetwork(NETWORK)
 
@@ -103,8 +105,7 @@ abstract class InfrastructureTestContainers {
             waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
             withExposedPorts(*ports)
             withCreateContainerCmdModifier { cmd ->
-                val unique = System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
-                cmd.withName("greenmail-tests-$unique")
+                cmd.withName("greenmail-tests-$uniqueTestSuffix")
             }
             withNetwork(NETWORK)
         }
