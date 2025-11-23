@@ -74,7 +74,10 @@ internal class BeanValidationTest {
                         ),
                     )
                         .`as`(errorMessage(method, parameter))
-                        .anyMatch { annotation: Annotation -> annotation.annotationClass.java == Validated::class.java }
+                        .anyMatch { annotation: Annotation ->
+                            annotation.annotationClass.java == Validated::class.java ||
+                                annotation.annotationClass.java == jakarta.validation.Valid::class.java
+                        }
                 }
         }
     }

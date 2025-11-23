@@ -17,7 +17,6 @@ import java.net.URI
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -50,7 +49,7 @@ class CreateResumeController(
             message = "Invalid UUID format",
         )
         id: String,
-        @Valid @Validated @RequestBody request: CreateResumeRequest
+        @Valid @RequestBody request: CreateResumeRequest
     ): ResponseEntity<String> {
         val userId = userIdFromToken()
 
