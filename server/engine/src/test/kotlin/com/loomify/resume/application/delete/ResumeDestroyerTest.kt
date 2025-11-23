@@ -37,7 +37,7 @@ class ResumeDestroyerTest {
     }
 
     @Test
-    fun `should throw ResumeAccessDeniedException when resume does not exist`() = runTest {
+    fun `should throw ResumeAccessDeniedException when user is not authorized`() = runTest {
         // Arrange
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()

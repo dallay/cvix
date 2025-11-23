@@ -1,5 +1,4 @@
 import com.loomify.buildlogic.common.extensions.implementation
-import org.gradle.kotlin.dsl.implementation
 
 plugins {
     id("app.spring.boot.library.convention")

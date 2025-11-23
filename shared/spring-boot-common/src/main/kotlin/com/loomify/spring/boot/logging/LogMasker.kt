@@ -26,7 +26,7 @@ object LogMasker {
         }
 
         val digest = MessageDigest.getInstance("SHA-256")
-        val hashBytes = digest.digest(value.toByteArray())
+        val hashBytes = digest.digest(value.toByteArray(Charsets.UTF_8))
         val hashHex = hashBytes.joinToString("") { "%02x".format(it) }
 
         return hashHex.take(HASH_PREVIEW_LENGTH)

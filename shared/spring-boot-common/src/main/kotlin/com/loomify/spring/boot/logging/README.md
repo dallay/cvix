@@ -18,10 +18,11 @@ Utility for masking sensitive information using SHA-256:
 Coroutine-based filter (`CoWebFilter`) that:
 
 - Extracts userId from the JWT token in the security context
-- Extracts workspaceId from:
-    - Header `X-Workspace-Id`
-    - Query parameter `workspaceId`
-    - Request body (JSON, for POST/PUT/PATCH)
+        - Extracts workspaceId from (in order of precedence):
+                1. Header `X-Workspace-Id`
+                2. Query parameter `workspaceId`
+                3. Request body (JSON, for POST/PUT/PATCH)
+            The filter always prefers the header first, then query, and finally the body if neither is present.
 - Masks IDs using `LogMasker`
 - Propagates context via:
     - **MDCContext**: For coroutine-based code (services, handlers)
