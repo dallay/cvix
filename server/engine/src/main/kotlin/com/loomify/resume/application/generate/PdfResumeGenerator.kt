@@ -9,6 +9,7 @@ import com.loomify.resume.domain.PdfGenerator
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.TemplateRenderer
 import com.loomify.resume.domain.event.GeneratedDocumentEvent
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
 import kotlinx.coroutines.reactor.awaitSingle
@@ -37,11 +38,6 @@ class PdfResumeGenerator(
      * @throws Exception if there is an error during generation
      */
     suspend fun generate(resume: Resume, locale: Locale = Locale.EN): InputStream {
-        val locale = try {
-            Locale.from(locale.code)
-        } catch (e: IllegalArgumentException) {
-            throw IllegalArgumentException("Unsupported locale: $locale", e)
-        }
 
         val requestId = UUID.randomUUID()
         val startTime = System.currentTimeMillis()
@@ -62,8 +58,10 @@ class PdfResumeGenerator(
 
             // Step 2: Generate PDF from LaTeX source
             log.debug("Generating PDF - requestId={}", requestId)
-            val result = pdfGenerator.generatePdf(latexSource, locale.code).awaitSingle()
+            val inputStream = pdfGenerator.generatePdf(latexSource, locale.code).awaitSingle()
 
+            // Read the InputStream fully into a ByteArray to get the exact size
+            val pdfBytes = inputStream.readAllBytes()
             val duration = System.currentTimeMillis() - startTime
             log.info(
                 "Resume generation completed - requestId={}, duration={}ms",
@@ -76,10 +74,10 @@ class PdfResumeGenerator(
                     id = requestId,
                     documentType = DocumentType.RESUME,
                     locale = locale,
-                    sizeInBytes = result.available().toLong(),
+                    sizeInBytes = pdfBytes.size.toLong(),
                 ),
             )
-            result
+            ByteArrayInputStream(pdfBytes)
         } catch (error: Throwable) {
             val duration = System.currentTimeMillis() - startTime
             log.error(
