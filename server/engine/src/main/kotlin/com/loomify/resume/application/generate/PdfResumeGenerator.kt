@@ -80,12 +80,14 @@ class PdfResumeGenerator(
             withTimeout(GENERATION_TIMEOUT_MS) {
                 // Step 1: Render LaTeX template (offload to IO dispatcher)
                 val latexSource = withContext(Dispatchers.IO) {
-                    val renderTime = measureTimeMillis {
-                        if (log.isDebugEnabled) {
-                            log.debug("Rendering template - requestId={}", requestId)
-                        }
+                    if (log.isDebugEnabled) {
+                        log.debug("Rendering template - requestId={}", requestId)
                     }
-                    val latex = templateRenderer.render(resume, locale.code)
+
+                    var latex: String
+                    val renderTime = measureTimeMillis {
+                        latex = templateRenderer.render(resume, locale.code)
+                    }
 
                     if (log.isDebugEnabled) {
                         log.debug(
