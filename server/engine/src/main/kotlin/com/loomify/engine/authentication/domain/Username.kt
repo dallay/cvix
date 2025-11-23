@@ -14,10 +14,11 @@ value class Username(val value: String) {
     companion object {
         private const val MAX_LENGTH = 100
         private const val MIN_LENGTH = 3
-        fun of(username: String): Username? = try {
-            Username(username)
-        } catch (_: IllegalArgumentException) {
-            null
-        }
+        fun of(username: String): Username? =
+            if (username.isNotBlank() && username.length in MIN_LENGTH..MAX_LENGTH) {
+                Username(username)
+            } else {
+                null
+            }
     }
 }
