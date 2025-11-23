@@ -63,6 +63,9 @@ internal class ListResumesQueryHandlerTest {
         assertEquals(expectedDocuments[0].id.id, result.data[0].id)
         assertEquals(expectedDocuments[1].id.id, result.data[1].id)
         coVerify {
+            workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
+        }
+        coVerify {
             resumeCatalog.listResumes(
                 eq(userId),
                 eq(workspaceId),
@@ -98,6 +101,9 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertTrue(result.data.isEmpty())
+        coVerify {
+            workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
+        }
         coVerify {
             resumeCatalog.listResumes(
                 eq(userId),
@@ -140,6 +146,9 @@ internal class ListResumesQueryHandlerTest {
         assertEquals(1, result.data.size)
         assertEquals(expectedDocuments[0].id.id, result.data[0].id)
         coVerify {
+            workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
+        }
+        coVerify {
             resumeCatalog.listResumes(
                 eq(userId),
                 eq(workspaceId),
@@ -178,6 +187,9 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertEquals(5, result.data.size)
+        coVerify {
+            workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
+        }
         coVerify {
             resumeCatalog.listResumes(
                 eq(userId),
