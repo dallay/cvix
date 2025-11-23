@@ -112,7 +112,7 @@ describe("SessionStorageResumeStorage", () => {
 			};
 			const failing = new SessionStorageResumeStorage(failingStorage);
 			await expect(failing.save(mockResume)).rejects.toThrow(
-				"Failed to save resume to session storage",
+				/Failed to save resume to session storage/,
 			);
 		});
 	});
@@ -139,7 +139,7 @@ describe("SessionStorageResumeStorage", () => {
 			sessionStorage.setItem("cvix:resume", "invalid json{]");
 
 			await expect(storage.load()).rejects.toThrow(
-				"Failed to load resume from session storage",
+				/Failed to load resume from session storage/,
 			);
 		});
 
@@ -156,7 +156,7 @@ describe("SessionStorageResumeStorage", () => {
 			};
 			const failing = new SessionStorageResumeStorage(failingStorage);
 			await expect(failing.load()).rejects.toThrow(
-				"Failed to load resume from session storage",
+				/Failed to load resume from session storage/,
 			);
 		});
 	});
@@ -188,7 +188,7 @@ describe("SessionStorageResumeStorage", () => {
 			};
 			const failing = new SessionStorageResumeStorage(failingStorage);
 			await expect(failing.clear()).rejects.toThrow(
-				"Failed to clear resume from session storage",
+				/Failed to clear resume from session storage/,
 			);
 		});
 	});
