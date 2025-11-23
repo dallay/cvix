@@ -7,12 +7,14 @@ import com.loomify.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @UnitTest
 internal class GetResumeQueryHandlerTest {
@@ -49,23 +51,15 @@ internal class GetResumeQueryHandlerTest {
         coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
     }
 
-    @Test
-    fun `should throw ResumeNotFoundException when resume does not exist`() = runTest {
-        val resumeId = UUID.randomUUID()
-        val userId = UUID.randomUUID()
-        val query = GetResumeQuery(id = resumeId, userId = userId)
-        coEvery { resumeRepository.findById(eq(resumeId), eq(userId)) } returns null
-        assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
-        coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
-    }
-
-    @Test
-    fun `should throw ResumeNotFoundException when user is not authorized`() = runTest {
-        val resumeId = UUID.randomUUID()
-        val unauthorizedUserId = UUID.randomUUID()
-        val query = GetResumeQuery(id = resumeId, userId = unauthorizedUserId)
-        coEvery { resumeRepository.findById(eq(resumeId), eq(unauthorizedUserId)) } returns null
-        assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
-        coVerify { resumeRepository.findById(eq(resumeId), eq(unauthorizedUserId)) }
-    }
+    @ParameterizedTest
+    @ValueSource(strings = ["resume does not exist", "user is not authorized"])
+    fun `should throw ResumeNotFoundException when repository returns null`() =
+        runTest {
+            val resumeId = UUID.randomUUID()
+            val userId = UUID.randomUUID()
+            val query = GetResumeQuery(id = resumeId, userId = userId)
+            coEvery { resumeRepository.findById(eq(resumeId), eq(userId)) } returns null
+            assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
+            coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
+        }
 }
