@@ -1,27 +1,15 @@
 package com.loomify.common.domain.vo.name
 
-import com.loomify.common.domain.BaseValidateValueObject
-
-/**
- * LastName value object
- * @param lastname last name value
- * @throws LastNameNotValidException if last name is not valid
- * @see BaseValidateValueObject
- * @see com.loomify.common.domain.BaseValidateValueObject
- * @see LastNameNotValidException
- */
-data class LastName(val lastname: String) : BaseValidateValueObject<String>(lastname) {
-    /**
-     * Validate last name value object
-     * @param value last name value
-     * @throws LastNameNotValidException if last name is not valid
-     */
-    override fun validate(value: String) {
-        val lastname = value.trim()
-        if (lastname.isEmpty() || lastname.length > NAME_LEN) {
-            throw LastNameNotValidException(value)
-        }
+@JvmInline
+value class LastName(val value: String) {
+    init {
+        require(value.isNotBlank()) { "Last name cannot be blank" }
+        require(value.length <= MAX_LASTNAME_LENGTH) { "Last name cannot exceed $MAX_LASTNAME_LENGTH characters" }
     }
 
-    override fun toString(): String = lastname
+    override fun toString(): String = value
+
+    companion object {
+        private const val MAX_LASTNAME_LENGTH = 50
+    }
 }

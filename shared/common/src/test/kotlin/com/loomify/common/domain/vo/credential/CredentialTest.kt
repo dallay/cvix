@@ -12,8 +12,8 @@ internal class CredentialTest {
     fun `should create a credential`() {
         val credential = Credential.create(strongPassword)
         assertThat(credential).isNotNull
-        assertThat(credential.value).isNotBlank()
-        assertEquals(credential.value, strongPassword)
+        assertThat(credential.credentialValue.value).isNotBlank()
+        assertEquals(credential.credentialValue.value, strongPassword)
         assertEquals(credential.type, CredentialType.PASSWORD)
     }
 
@@ -87,7 +87,7 @@ internal class CredentialTest {
         assertThat(credentialPassword.length).isGreaterThanOrEqualTo(Credential.MIN_LENGTH)
         val credential = Credential.create(credentialPassword)
         assertThat(credential).isNotNull
-        assertThat(credential.value).isNotBlank()
-        assertEquals(credential.value, credentialPassword)
+        assertThat(credential.credentialValue.value).isNotBlank()
+        assertEquals(credential.credentialValue.value, credentialPassword)
     }
 }

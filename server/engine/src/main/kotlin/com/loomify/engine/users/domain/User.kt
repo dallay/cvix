@@ -54,7 +54,7 @@ data class User(
         username = Username(email),
         email = Email(email),
         name = if (!firstName.isNullOrBlank() && !lastName.isNullOrBlank()) {
-            Name(
+            Name.of(
                 firstName,
                 lastName,
             )
@@ -80,7 +80,7 @@ data class User(
      * @param lastName The last name of the user.
      */
     fun updateName(firstName: String, lastName: String) {
-        name = Name(firstName, lastName)
+        name = Name.of(firstName, lastName)
     }
 
     companion object {

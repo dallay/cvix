@@ -10,8 +10,10 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
     @Sql(
         "/db/user/users.sql",
         "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
     )
     @Sql(
+        "/db/resume/clean.sql",
         "/db/workspace/clean.sql",
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
@@ -25,15 +27,17 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.data").isArray
-            .jsonPath("$.data.length()").value<Int> { it >= 0 }
+            .jsonPath("$.data.length()").isEqualTo(3)
     }
 
     @Test
     @Sql(
         "/db/user/users.sql",
         "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
     )
     @Sql(
+        "/db/resume/clean.sql",
         "/db/workspace/clean.sql",
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
@@ -42,11 +46,12 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
         val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
 
         webTestClient.mutateWith(csrf()).get()
-            .uri("/api/resume?workspaceId=$workspaceId&limit=5")
+            .uri("/api/resume?workspaceId=$workspaceId&limit=2")
             .exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.data").isArray
+            .jsonPath("$.data.length()").value<Int> { it <= 2 }
     }
 
     @Test
