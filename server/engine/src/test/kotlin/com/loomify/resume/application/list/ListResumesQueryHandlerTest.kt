@@ -1,11 +1,12 @@
 package com.loomify.resume.application.list
 
 import com.loomify.UnitTest
+import com.loomify.engine.workspace.application.security.WorkspaceAuthorizationService
 import com.loomify.resume.ResumeTestFixtures
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -16,10 +17,15 @@ import org.junit.jupiter.api.Test
 internal class ListResumesQueryHandlerTest {
     private lateinit var listResumesQueryHandler: ListResumesQueryHandler
     private val resumeCatalog: ResumeCatalog = mockk()
+    private val workspaceAuthorizationService: WorkspaceAuthorizationService = mockk()
 
     @BeforeEach
     fun setUp() {
-        listResumesQueryHandler = ListResumesQueryHandler(resumeCatalog)
+        listResumesQueryHandler =
+            ListResumesQueryHandler(resumeCatalog, workspaceAuthorizationService)
+        coEvery {
+            workspaceAuthorizationService.ensureAccess(any(UUID::class), any(UUID::class))
+        } returns Unit
     }
 
     @Test
