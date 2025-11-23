@@ -19,7 +19,7 @@ internal class CreateWorkspaceControllerTest : ControllerTest() {
         id = id,
         name = workspace.name,
         description = workspace.description,
-        ownerId = workspace.ownerId.value.toString(),
+        ownerId = workspace.ownerId.id.toString(),
     )
     private val controller = CreateWorkspaceController(mediator)
     override val webTestClient = buildWebTestClient(controller)
@@ -35,7 +35,7 @@ internal class CreateWorkspaceControllerTest : ControllerTest() {
         val request = CreateWorkspaceRequest(
             name = workspace.name,
             description = workspace.description,
-            ownerId = workspace.ownerId.value.toString(),
+            ownerId = workspace.ownerId.id.toString(),
         )
         webTestClient.put()
             .uri("/api/workspace/$id")

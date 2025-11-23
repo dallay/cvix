@@ -46,8 +46,8 @@ class WorkspaceStoreR2DbcRepository(
             // Save each member
             workspace.members.forEach { memberId ->
                 workspaceMemberRepository.insertWorkspaceMember(
-                    workspace.id.value,
-                    memberId.value,
+                    workspace.id.id,
+                    memberId.id,
                     WorkspaceRole.EDITOR.name,
                 )
             }
@@ -73,7 +73,7 @@ class WorkspaceStoreR2DbcRepository(
         log.debug("Updating workspace with id: {}", workspace.id)
         try {
             // First, check if the workspace exists
-            val existingEntity = workspaceRepository.findById(workspace.id.value)
+            val existingEntity = workspaceRepository.findById(workspace.id.id)
                 ?: throw WorkspaceException("Workspace with id ${workspace.id} does not exist")
 
             // Create entity with proper timestamps for update
@@ -103,7 +103,7 @@ class WorkspaceStoreR2DbcRepository(
      */
     override suspend fun findById(id: WorkspaceId): Workspace? {
         log.debug("Finding workspace with id: {}", id)
-        return workspaceRepository.findById(id.value)?.toDomain()
+        return workspaceRepository.findById(id.id)?.toDomain()
     }
 
     /**
@@ -124,7 +124,7 @@ class WorkspaceStoreR2DbcRepository(
      */
     override suspend fun findByMemberId(userId: UserId): List<Workspace> {
         log.debug("Finding workspaces by member id: {}", userId)
-        return workspaceRepository.findByMemberId(userId.value).toList().map { it.toDomain() }
+        return workspaceRepository.findByMemberId(userId.id).toList().map { it.toDomain() }
     }
 
     /**
@@ -135,7 +135,7 @@ class WorkspaceStoreR2DbcRepository(
      */
     override suspend fun findByOwnerId(userId: UserId): List<Workspace> {
         log.debug("Finding workspaces by owner id: {}", userId)
-        return workspaceRepository.findByOwnerId(userId.value).toList().map { it.toDomain() }
+        return workspaceRepository.findByOwnerId(userId.id).toList().map { it.toDomain() }
     }
 
     /**
@@ -145,7 +145,7 @@ class WorkspaceStoreR2DbcRepository(
      */
     override suspend fun delete(id: WorkspaceId) {
         log.debug("Deleting workspace with id: {}", id)
-        workspaceRepository.deleteById(id.value)
+        workspaceRepository.deleteById(id.id)
     }
 
     /**

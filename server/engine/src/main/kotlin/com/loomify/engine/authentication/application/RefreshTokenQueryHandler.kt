@@ -23,7 +23,7 @@ class RefreshTokenQueryHandler(private val refreshTokenManager: RefreshTokenMana
      * @return The response of the query.
      */
     override suspend fun handle(query: RefreshTokenQuery): AccessToken {
-        log.debug("Handling query: {}", query)
+        log.debug("Handling refresh token query")
         return refreshTokenManager.refresh(RefreshToken(query.refreshToken))
     }
     companion object {

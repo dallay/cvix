@@ -40,9 +40,8 @@ internal class UpdateWorkspaceControllerTest : ControllerTest() {
             .uri("/api/workspace/$id/update")
             .bodyValue(request)
             .exchange()
-            .expectStatus().isOk
-            .expectBody(String::class.java)
-            .isEqualTo("Workspace updated successfully")
+            .expectStatus().isOk.expectBody(UpdateWorkspaceResponse::class.java)
+            .isEqualTo(UpdateWorkspaceResponse("Workspace updated successfully."))
 
         val commandSlot = slot<UpdateWorkspaceCommand>()
         coVerify(exactly = 1) { mediator.send(capture(commandSlot)) }

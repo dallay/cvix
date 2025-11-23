@@ -24,7 +24,7 @@ class CookieCsrfFilter(
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap { serverWebExchange: ServerWebExchange ->
                     serverWebExchange.getAttributeOrDefault(
-                        CsrfToken::class.java.getName(),
+                        CsrfToken::class.java.name,
                         Mono.empty<CsrfToken>(),
                     )
                 }

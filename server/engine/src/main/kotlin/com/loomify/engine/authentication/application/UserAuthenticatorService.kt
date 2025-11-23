@@ -22,7 +22,7 @@ class UserAuthenticatorService(private val userAuthenticator: UserAuthenticator)
      * @return the access token of the user
      */
     suspend fun authenticate(username: Username, password: Credential, rememberMe: Boolean = false): AccessToken {
-        log.info("Authenticating user with username: {} (rememberMe: {})", username, rememberMe)
+        log.info("Authenticating user (rememberMe: {})", rememberMe)
         return userAuthenticator.authenticate(username, password, rememberMe)
     }
 

@@ -16,19 +16,21 @@ This document defines the conventions, practices, and structure of the loomify p
 
 ## 📁 Migration Structure
 
-Migrations are organized in the `/migrations` directory and automatically included via `master.yaml`:
+Migrations are organized in the `/migrations` directory and automatically included via
+`master.yaml`:
 
 ```yaml
 databaseChangeLog:
-  - includeAll:
-      path: migrations
-      relativeToChangelogFile: true
+    -   includeAll:
+            path: migrations
+            relativeToChangelogFile: true
 ```
 
 **File naming conventions:**
 
 - Numeric prefixes for ordering (`001`, `002`, ...).
-- Clear domain-based names: `001-initial-schema.yaml`, `002-workspaces.yaml`, `003-subscribers.yaml`, etc.
+- Clear domain-based names: `001-initial-schema.yaml`, `002-workspaces.yaml`,
+  `003-subscribers.yaml`, etc.
 - Optional subversions: `002a-workspaces-rls.yaml`.
 
 ---
@@ -39,13 +41,13 @@ databaseChangeLog:
 
 Local table representing users authenticated via Keycloak.
 
-| Field       | Type           | Constraints                     |
-|-------------|----------------|----------------------------------|
-| id          | uuid           | PK, NOT NULL                    |
-| email       | varchar(255)   | UNIQUE, NOT NULL                |
-| full_name   | varchar(255)   |                                |
-| created_at  | timestamptz    | DEFAULT now(), NOT NULL         |
-| updated_at  | timestamptz    |                                |
+| Field      | Type         | Constraints             |
+|------------|--------------|-------------------------|
+| id         | uuid         | PK, NOT NULL            |
+| email      | varchar(255) | UNIQUE, NOT NULL        |
+| full_name  | varchar(255) |                         |
+| created_at | timestamptz  | DEFAULT now(), NOT NULL |
+| updated_at | timestamptz  |                         |
 
 ---
 
@@ -53,16 +55,16 @@ Local table representing users authenticated via Keycloak.
 
 Unit of multi-tenant isolation.
 
-| Field       | Type            | Constraints                        |
-|-------------|-----------------|------------------------------------|
-| id          | uuid            | PK, NOT NULL                       |
-| name        | varchar(100)    | NOT NULL                           |
-| description | varchar(500)    |                                    |
-| owner_id    | uuid            | FK → `users(id)`, NOT NULL         |
-| created_by  | varchar(50)     | DEFAULT 'system', NOT NULL         |
-| created_at  | timestamptz     | DEFAULT now(), NOT NULL            |
-| updated_by  | varchar(50)     |                                    |
-| updated_at  | timestamptz     |                                    |
+| Field       | Type         | Constraints                |
+|-------------|--------------|----------------------------|
+| id          | uuid         | PK, NOT NULL               |
+| name        | varchar(100) | NOT NULL                   |
+| description | varchar(500) |                            |
+| owner_id    | uuid         | FK → `users(id)`, NOT NULL |
+| created_by  | varchar(50)  | DEFAULT 'system', NOT NULL |
+| created_at  | timestamptz  | DEFAULT now(), NOT NULL    |
+| updated_by  | varchar(50)  |                            |
+| updated_at  | timestamptz  |                            |
 
 ---
 
@@ -70,13 +72,13 @@ Unit of multi-tenant isolation.
 
 User–workspace relationship with role.
 
-| Field        | Type         | Constraints                             |
-|--------------|--------------|-----------------------------------------|
-| workspace_id | uuid         | PK, FK → `workspaces(id)`               |
-| user_id      | uuid         | PK, FK → `users(id)`                    |
-| role         | role_type    | DEFAULT 'EDITOR', NOT NULL              |
-| created_at   | timestamptz  | DEFAULT now()                           |
-| updated_at   | timestamptz  | DEFAULT now()                           |
+| Field        | Type        | Constraints                |
+|--------------|-------------|----------------------------|
+| workspace_id | uuid        | PK, FK → `workspaces(id)`  |
+| user_id      | uuid        | PK, FK → `users(id)`       |
+| role         | role_type   | DEFAULT 'EDITOR', NOT NULL |
+| created_at   | timestamptz | DEFAULT now()              |
+| updated_at   | timestamptz | DEFAULT now()              |
 
 ---
 
@@ -84,9 +86,9 @@ User–workspace relationship with role.
 
 Global roles mapped from Keycloak or used for cross-workspace permissions.
 
-| Field | Type         | Constraints          |
-|-------|--------------|----------------------|
-| name  | varchar(50)  | PK, NOT NULL         |
+| Field | Type        | Constraints  |
+|-------|-------------|--------------|
+| name  | varchar(50) | PK, NOT NULL |
 
 ---
 
@@ -94,10 +96,10 @@ Global roles mapped from Keycloak or used for cross-workspace permissions.
 
 Many-to-many relationship between users and global authorities.
 
-| Field         | Type         | Constraints                                  |
-|---------------|--------------|----------------------------------------------|
-| user_id       | uuid         | PK, FK → `users(id)`                         |
-| authority_name| varchar(50)  | PK, FK → `authority(name)`                   |
+| Field          | Type        | Constraints                |
+|----------------|-------------|----------------------------|
+| user_id        | uuid        | PK, FK → `users(id)`       |
+| authority_name | varchar(50) | PK, FK → `authority(name)` |
 
 ---
 
@@ -105,17 +107,17 @@ Many-to-many relationship between users and global authorities.
 
 Contacts managed per workspace.
 
-| Field        | Type              | Constraints                                 |
-|--------------|-------------------|---------------------------------------------|
-| id           | uuid              | PK, NOT NULL                                |
-| email        | varchar(320)      | UNIQUE (per workspace), NOT NULL            |
-| firstname    | text              | NOT NULL                                    |
-| lastname     | text              |                                             |
-| status       | subscriber_status | ENUM, NOT NULL (default: ENABLED)           |
-| attributes   | jsonb             |                                             |
-| workspace_id | uuid              | FK → `workspaces(id)`, NOT NULL             |
-| created_at   | timestamptz       | DEFAULT now()                               |
-| updated_at   | timestamptz       | DEFAULT now()                               |
+| Field        | Type              | Constraints                       |
+|--------------|-------------------|-----------------------------------|
+| id           | uuid              | PK, NOT NULL                      |
+| email        | varchar(320)      | UNIQUE (per workspace), NOT NULL  |
+| firstname    | text              | NOT NULL                          |
+| lastname     | text              |                                   |
+| status       | subscriber_status | ENUM, NOT NULL (default: ENABLED) |
+| attributes   | jsonb             |                                   |
+| workspace_id | uuid              | FK → `workspaces(id)`, NOT NULL   |
+| created_at   | timestamptz       | DEFAULT now()                     |
+| updated_at   | timestamptz       | DEFAULT now()                     |
 
 ---
 
@@ -123,15 +125,15 @@ Contacts managed per workspace.
 
 Custom labels to segment subscribers.
 
-| Field        | Type           | Constraints                                  |
-|--------------|----------------|----------------------------------------------|
-| id           | uuid           | PK, NOT NULL                                 |
-| name         | text           | NOT NULL                                     |
-| color        | text           | CHECK (`color IN ('default', 'purple', 'pink', 'red', 'blue', 'yellow')`), NOT NULL           |
-| workspace_id | uuid           | FK → `workspaces(id)`, NOT NULL              |
-| created_at   | timestamptz    | DEFAULT now()                                |
-| updated_at   | timestamptz    | DEFAULT now()                                |
-| deleted_at   | timestamptz    |                                              |
+| Field        | Type        | Constraints                                                                         |
+|--------------|-------------|-------------------------------------------------------------------------------------|
+| id           | uuid        | PK, NOT NULL                                                                        |
+| name         | text        | NOT NULL                                                                            |
+| color        | text        | CHECK (`color IN ('default', 'purple', 'pink', 'red', 'blue', 'yellow')`), NOT NULL |
+| workspace_id | uuid        | FK → `workspaces(id)`, NOT NULL                                                     |
+| created_at   | timestamptz | DEFAULT now()                                                                       |
+| updated_at   | timestamptz | DEFAULT now()                                                                       |
+| deleted_at   | timestamptz |                                                                                     |
 
 ---
 
@@ -139,12 +141,12 @@ Custom labels to segment subscribers.
 
 M:N relation between `subscribers` and `tags`.
 
-| Field         | Type        | Constraints                                   |
-|---------------|-------------|-----------------------------------------------|
-| subscriber_id | uuid        | FK → `subscribers(id)`, part of PK            |
-| tag_id        | uuid        | FK → `tags(id)`, part of PK                   |
-| created_at    | timestamptz | DEFAULT now()                                 |
-| updated_at    | timestamptz | DEFAULT now()                                 |
+| Field         | Type        | Constraints                        |
+|---------------|-------------|------------------------------------|
+| subscriber_id | uuid        | FK → `subscribers(id)`, part of PK |
+| tag_id        | uuid        | FK → `tags(id)`, part of PK        |
+| created_at    | timestamptz | DEFAULT now()                      |
+| updated_at    | timestamptz | DEFAULT now()                      |
 
 ---
 
@@ -152,23 +154,23 @@ M:N relation between `subscribers` and `tags`.
 
 Embeddable forms used to collect subscribers. Scoped per workspace.
 
-| Field              | Type             | Constraints                                    |
-|-------------------|------------------|------------------------------------------------|
-| id                | uuid             | PK, NOT NULL                                   |
-| name              | varchar(150)     | NOT NULL                                       |
-| header            | text             |                                                |
-| description       | text             |                                                |
-| input_placeholder | varchar(100)     |                                                |
-| button_text       | varchar(50)      |                                                |
-| button_color      | varchar(30)      |                                                |
-| background_color  | varchar(30)      |                                                |
-| text_color        | varchar(30)      |                                                |
-| button_text_color | varchar(30)      |                                                |
-| workspace_id      | uuid             | FK → `workspaces(id)`, NOT NULL                |
-| created_by        | varchar(50)      | DEFAULT 'system', NOT NULL                     |
-| created_at        | timestamptz      | DEFAULT now(), NOT NULL                        |
-| updated_by        | varchar(50)      |                                                |
-| updated_at        | timestamptz      |                                                |
+| Field             | Type         | Constraints                     |
+|-------------------|--------------|---------------------------------|
+| id                | uuid         | PK, NOT NULL                    |
+| name              | varchar(150) | NOT NULL                        |
+| header            | text         |                                 |
+| description       | text         |                                 |
+| input_placeholder | varchar(100) |                                 |
+| button_text       | varchar(50)  |                                 |
+| button_color      | varchar(30)  |                                 |
+| background_color  | varchar(30)  |                                 |
+| text_color        | varchar(30)  |                                 |
+| button_text_color | varchar(30)  |                                 |
+| workspace_id      | uuid         | FK → `workspaces(id)`, NOT NULL |
+| created_by        | varchar(50)  | DEFAULT 'system', NOT NULL      |
+| created_at        | timestamptz  | DEFAULT now(), NOT NULL         |
+| updated_by        | varchar(50)  |                                 |
+| updated_at        | timestamptz  |                                 |
 
 ## 🔁 Enums
 
@@ -187,8 +189,10 @@ CREATE TYPE subscriber_status AS ENUM ('ENABLED', 'DISABLED', 'BLOCKLISTED');
 - **Decoupling from Keycloak** via internal `users` table.
 - **Strict naming conventions** for files and constraints.
 - **Multi-tenancy via `workspace_id`**, reinforced with RLS.
-- **Row-level security policies (RLS)** controlled by `current_setting('loomify.current_workspace')`.
-- **Hybrid permission model**: combines workspace-local roles (`workspace_members.role`) and global authorities (`user_authority`).
+- **Row-level security policies (RLS)** controlled by
+  `current_setting('loomify.current_workspace')`.
+- **Hybrid permission model**: combines workspace-local roles (`workspace_members.role`) and global
+  authorities (`user_authority`).
 - **Global roles from Keycloak groups** are stored in `authority` and joined via `user_authority`.
 
 ---

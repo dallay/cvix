@@ -101,16 +101,16 @@ internal class WorkspaceStoreR2DbcRepositoryTest {
 
         workspaceStoreR2dbcRepository.create(workspaceToCreate)
 
-        val fetched = directWorkspaceR2dbcRepository.findById(workspaceToCreate.id.value)
+        val fetched = directWorkspaceR2dbcRepository.findById(workspaceToCreate.id.id)
         assertNotNull(fetched)
         assertEquals(workspaceToCreate.name, fetched!!.name)
-        assertEquals(workspaceToCreate.ownerId.value, fetched.ownerId)
+        assertEquals(workspaceToCreate.ownerId.id, fetched.ownerId)
 
         val members =
-            directWorkspaceMemberR2dbcRepository.findByWorkspaceId(workspaceToCreate.id.value)
+            directWorkspaceMemberR2dbcRepository.findByWorkspaceId(workspaceToCreate.id.id)
                 .toList()
         assertEquals(1, members.size)
-        assertTrue(members.any { it.userId == commonExistingUserId.value })
+        assertTrue(members.any { it.userId == commonExistingUserId.id })
     }
 
     @Test
@@ -118,7 +118,7 @@ internal class WorkspaceStoreR2DbcRepositoryTest {
         val workspaceToUpdate = workspace1.copy(name = "Updated Name")
         workspaceStoreR2dbcRepository.update(workspaceToUpdate)
 
-        val fetched = directWorkspaceR2dbcRepository.findById(workspaceToUpdate.id.value)
+        val fetched = directWorkspaceR2dbcRepository.findById(workspaceToUpdate.id.id)
         assertNotNull(fetched)
         assertEquals("Updated Name", fetched!!.name)
     }
@@ -145,10 +145,10 @@ internal class WorkspaceStoreR2DbcRepositoryTest {
     fun `should delete workspace`() = runTest {
         workspaceStoreR2dbcRepository.delete(workspace1.id)
 
-        val fetched = directWorkspaceR2dbcRepository.findById(workspace1.id.value)
+        val fetched = directWorkspaceR2dbcRepository.findById(workspace1.id.id)
         assertNull(fetched)
         val members =
-            directWorkspaceMemberR2dbcRepository.findByWorkspaceId(workspace1.id.value).toList()
+            directWorkspaceMemberR2dbcRepository.findByWorkspaceId(workspace1.id.id).toList()
         assertTrue(members.isEmpty())
     }
 
@@ -173,40 +173,40 @@ internal class WorkspaceStoreR2DbcRepositoryTest {
 
     @Test
     fun `should find workspace members by workspace id`() = runTest {
-        val members = workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.value)
+        val members = workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.id)
         assertEquals(1, members.size)
-        assertTrue(members.any { it.id.userId == ownerId.value })
+        assertTrue(members.any { it.id.userId == ownerId.id })
     }
 
     @Test
     fun `should find workspace members by user id`() = runTest {
-        val workspacesForOwner = workspaceStoreR2dbcRepository.findByUserId(ownerId.value)
-        val workspacesForMember1 = workspaceStoreR2dbcRepository.findByUserId(memberId1.value)
+        val workspacesForOwner = workspaceStoreR2dbcRepository.findByUserId(ownerId.id)
+        val workspacesForMember1 = workspaceStoreR2dbcRepository.findByUserId(memberId1.id)
 
         assertEquals(2, workspacesForOwner.size)
-        assertTrue(workspacesForOwner.any { it.id.workspaceId == workspace1.id.value })
-        assertTrue(workspacesForOwner.any { it.id.workspaceId == workspace2.id.value })
+        assertTrue(workspacesForOwner.any { it.id.workspaceId == workspace1.id.id })
+        assertTrue(workspacesForOwner.any { it.id.workspaceId == workspace2.id.id })
 
         assertEquals(2, workspacesForMember1.size)
-        assertTrue(workspacesForMember1.any { it.id.workspaceId == workspace1.id.value })
-        assertTrue(workspacesForMember1.any { it.id.workspaceId == workspace2.id.value })
+        assertTrue(workspacesForMember1.any { it.id.workspaceId == workspace1.id.id })
+        assertTrue(workspacesForMember1.any { it.id.workspaceId == workspace2.id.id })
     }
 
     @Test
     fun `should check if user is member of workspace`() = runTest {
         val isOwnerMemberOfWorkspace1 = workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-            workspace1.id.value,
-            ownerId.value,
+            workspace1.id.id,
+            ownerId.id,
         )
         val isMember1MemberOfWorkspace1 =
             workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-                workspace1.id.value,
-                memberId1.value,
+                workspace1.id.id,
+                memberId1.id,
             )
 
         val nonMemberUUID = UUID.randomUUID()
         val isNonMemberInWorkspace1 = workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-            workspace1.id.value,
+            workspace1.id.id,
             nonMemberUUID,
         )
 
@@ -220,49 +220,49 @@ internal class WorkspaceStoreR2DbcRepositoryTest {
         val existingMemberId = ownerId
         assertTrue(
             workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-                workspace1.id.value,
-                existingMemberId.value,
+                workspace1.id.id,
+                existingMemberId.id,
             ),
         )
 
         val membersBeforeDelete =
-            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.value)
+            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.id)
         val initialCount = membersBeforeDelete.size
 
         val deleteResult = workspaceStoreR2dbcRepository.deleteByWorkspaceIdAndUserId(
-            workspace1.id.value,
-            existingMemberId.value,
+            workspace1.id.id,
+            existingMemberId.id,
         )
         assertEquals(1, deleteResult)
 
         assertFalse(
             workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-                workspace1.id.value,
-                existingMemberId.value,
+                workspace1.id.id,
+                existingMemberId.id,
             ),
         )
         val membersAfterDelete =
-            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.value)
+            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.id)
         assertEquals(initialCount - 1, membersAfterDelete.size)
 
         val insertResult = workspaceStoreR2dbcRepository.insertWorkspaceMember(
-            workspace1.id.value,
-            existingMemberId.value,
+            workspace1.id.id,
+            existingMemberId.id,
             WorkspaceRole.VIEWER.name,
         )
         assertEquals(1, insertResult)
         assertTrue(
             workspaceStoreR2dbcRepository.existsByWorkspaceIdAndUserId(
-                workspace1.id.value,
-                existingMemberId.value,
+                workspace1.id.id,
+                existingMemberId.id,
             ),
         )
         val membersAfterReInsert =
-            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.value)
+            workspaceStoreR2dbcRepository.findByWorkspaceId(workspace1.id.id)
         assertEquals(initialCount, membersAfterReInsert.size)
         assertTrue(
             membersAfterReInsert.any {
-                it.id.userId == existingMemberId.value &&
+                it.id.userId == existingMemberId.id &&
                     it.role == WorkspaceRole.VIEWER
             },
         )

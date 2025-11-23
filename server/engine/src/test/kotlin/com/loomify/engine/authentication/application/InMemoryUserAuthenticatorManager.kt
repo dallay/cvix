@@ -26,7 +26,7 @@ class InMemoryUserAuthenticatorManager(
      * @return the access token of the user
      */
     override suspend fun authenticate(username: Username, password: Credential, rememberMe: Boolean): AccessToken {
-        return if (database[username.value] == password.value) {
+        return if (database[username.value] == password.credentialValue.value) {
             accessToken()
         } else {
             throw UserAuthenticationException("Invalid account. User probably hasn't verified email.")
