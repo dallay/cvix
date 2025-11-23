@@ -6,6 +6,7 @@ import com.loomify.common.domain.bus.event.EventPublisher
 import com.loomify.resume.domain.ResumeRepository
 import com.loomify.resume.domain.event.ResumeDeletedEvent
 import com.loomify.resume.domain.exception.ResumeAccessDeniedException
+import com.loomify.resume.domain.exception.ResumeNotFoundException
 import java.util.UUID
 import org.slf4j.LoggerFactory
 
@@ -46,13 +47,14 @@ class ResumeDestroyer(
      */
     suspend fun deleteResume(id: UUID, userId: UUID) {
         log.debug("Deleting resume - id={}, userId={}", id, userId)
-        val exists = resumeRepository.existsById(id, userId)
-        if (!exists) {
-            throw com.loomify.resume.domain.exception.ResumeNotFoundException("Resume not found: $id")
-        }
         val rowsDeleted = resumeRepository.deleteIfAuthorized(id, userId)
         if (rowsDeleted == 0L) {
-            throw ResumeAccessDeniedException("Resume access denied: $id")
+            val exists = resumeRepository.existsById(id)
+            if (!exists) {
+                throw ResumeNotFoundException("Resume not found: $id")
+            } else {
+                throw ResumeAccessDeniedException("Resume access denied: $id")
+            }
         }
         eventBroadcaster.publish(
             ResumeDeletedEvent(

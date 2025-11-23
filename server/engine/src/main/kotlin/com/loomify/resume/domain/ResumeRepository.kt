@@ -11,6 +11,12 @@ import java.util.UUID
  */
 interface ResumeRepository {
     /**
+     * Checks if a resume exists by its ID (regardless of user).
+     * @param id The resume ID
+     * @return true if the resume exists, false otherwise
+     */
+    suspend fun existsById(id: UUID): Boolean
+    /**
      * Saves a resume document (create or update).
      * @param document The resume document to save
      * @return The saved resume document

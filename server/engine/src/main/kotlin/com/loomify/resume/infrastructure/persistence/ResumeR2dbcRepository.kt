@@ -23,6 +23,13 @@ import org.springframework.stereotype.Repository
 class ResumeR2dbcRepository(
     private val resumeReactiveR2dbcRepository: ResumeReactiveR2dbcRepository,
 ) : ResumeRepository {
+    /**
+     * Checks if a resume exists by its ID (regardless of user).
+     * @param id The resume ID
+     * @return true if the resume exists, false otherwise
+     */
+    override suspend fun existsById(id: UUID): Boolean =
+        resumeReactiveR2dbcRepository.existsById(id)
 
     override suspend fun save(document: ResumeDocument): ResumeDocument {
         log.debug("Saving resume document id: {}, userId: {}", document.id, document.userId)
@@ -42,7 +49,10 @@ class ResumeR2dbcRepository(
         return resumeReactiveR2dbcRepository.findByIdAndUserId(id, userId)?.toDomain()
     }
 
-    override suspend fun findByUserIdAndWorkspaceId(userId: UUID, workspaceId: UUID): List<ResumeDocument> {
+    override suspend fun findByUserIdAndWorkspaceId(
+        userId: UUID,
+        workspaceId: UUID
+    ): List<ResumeDocument> {
         log.debug("Finding all resumes for userId: {}, workspaceId: {}", userId, workspaceId)
         return resumeReactiveR2dbcRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
             .map { it.toDomain() }

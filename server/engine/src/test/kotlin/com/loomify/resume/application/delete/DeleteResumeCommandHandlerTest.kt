@@ -60,15 +60,15 @@ internal class DeleteResumeCommandHandlerTest {
     fun `should throw ResumeNotFoundException when resume does not exist`() = runTest {
         // Given
         val command = DeleteResumeCommand(id = resumeId, userId = userId)
-        coEvery { repository.existsById(resumeId, userId) } returns false
+        coEvery { repository.deleteIfAuthorized(resumeId, userId) } returns 0L
+        coEvery { repository.existsById(resumeId) } returns false
 
         // When / Then
         assertFailsWith<ResumeNotFoundException> {
             deleteResumeCommandHandler.handle(command)
         }
-        coVerify(exactly = 0) {
-            repository.deleteIfAuthorized(any(), any())
-        }
+        coVerify(exactly = 1) { repository.deleteIfAuthorized(resumeId, userId) }
+        coVerify(exactly = 1) { repository.existsById(resumeId) }
         coVerify(exactly = 0) { eventPublisher.publish(any<ResumeDeletedEvent>()) }
     }
 }
