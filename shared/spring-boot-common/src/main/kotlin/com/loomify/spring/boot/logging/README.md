@@ -25,8 +25,8 @@ Coroutine-based filter (`CoWebFilter`) that:
             The filter always prefers the header first, then query, and finally the body if neither is present.
 - Masks IDs using `LogMasker`
 - Propagates context via:
-    - **MDCContext**: For coroutine-based code (services, handlers)
-    - **ReactorContext**: For reactive library calls (WebClient, R2DBC)
+  - **MDCContext**: For coroutine-based code (services, handlers)
+  - **ReactorContext**: For reactive library calls (WebClient, R2DBC)
 
 ### 3. Dependency: kotlinx-coroutines-slf4j
 
