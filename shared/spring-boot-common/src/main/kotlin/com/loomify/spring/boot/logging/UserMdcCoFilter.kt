@@ -1,7 +1,6 @@
 package com.loomify.spring.boot.logging
 
-import java.io.IOException
-import kotlin.coroutines.coroutineContext //noinspection
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.slf4j.MDCContext
@@ -11,12 +10,16 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
 import org.springframework.web.server.CoWebFilter
 import org.springframework.web.server.CoWebFilterChain
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Flux
 import reactor.util.context.Context
 
 /**
@@ -44,29 +47,47 @@ class UserMdcCoFilter : CoWebFilter() {
         val userId = extractUserId()
 
         // Extract workspace ID from header, query param, or body
-        val workspaceId = extractWorkspaceId(exchange)
+        var workspaceId: String? = null
+        var mutatedExchange = exchange
+        val method = exchange.request.method.toString()
+        val isJson = exchange.request.headers.contentType?.toString()?.lowercase()?.contains("json") == true
+        val isWriteMethod = method == "POST" || method == "PUT" || method == "PATCH"
+        if (isWriteMethod && isJson) {
+            val dataBuffer = DataBufferUtils.join(exchange.request.body).awaitSingleOrNull()
+            if (dataBuffer != null) {
+                val bytes = ByteArray(dataBuffer.readableByteCount())
+                dataBuffer.read(bytes)
+                DataBufferUtils.release(dataBuffer)
+                val body = String(bytes, Charsets.UTF_8)
+                val workspaceIdFromBody = extractWorkspaceIdFromString(body)
+                if (workspaceIdFromBody != null) {
+                    workspaceId = workspaceIdFromBody
+                    val cached = exchange.response.bufferFactory().wrap(bytes)
+                    val decoratedRequest = object : ServerHttpRequestDecorator(exchange.request) {
+                        override fun getBody(): Flux<DataBuffer> = Flux.just(cached)
+                    }
+                    mutatedExchange = exchange.mutate().request(decoratedRequest).build()
+                }
+            }
+        }
+        if (workspaceId == null) {
+            workspaceId = extractWorkspaceId(mutatedExchange)
+        }
 
         // Create MDC context map
         val mdcMap = buildMdcMap(userId, workspaceId)
 
-        // Create Reactor context for reactive libraries
+        // Create Reactor context for reactive libraries, preserving upstream context
         val reactorContext = buildReactorContext(userId, workspaceId)
 
         // Log context establishment (only in debug mode)
         if (logger.isDebugEnabled && userId != null) {
-            logger.debug("Established logging context for user: ${LogMasker.mask(userId)}")
+            logger.debug("Established logging context for user: " + LogMasker.mask(userId))
         }
 
         // Propagate context through both MDC (coroutines) and Reactor (reactive libraries)
-        // IMPORTANT: Merge with existing ReactorContext so we do NOT drop entries like Spring SecurityContext
-        val existingReactor = coroutineContext[ReactorContext]?.context ?: Context.empty()
-        // Manual merge to avoid deprecated putAll
-        var mergedReactor = existingReactor
-        reactorContext.stream().forEach { entry ->
-            mergedReactor = mergedReactor.put(entry.key, entry.value)
-        }
-        withContext(MDCContext(mdcMap) + ReactorContext(mergedReactor)) {
-            chain.filter(exchange)
+        withContext(MDCContext(mdcMap) + ReactorContext(reactorContext)) {
+            chain.filter(mutatedExchange)
         }
     }
 
@@ -94,6 +115,7 @@ class UserMdcCoFilter : CoWebFilter() {
     /**
      * Extracts workspaceId from header, query param, or request body (JSON).
      * Return count reduced to 3.
+     * This method now only checks header and query param, not body.
      */
     @Suppress("ReturnCount")
     private suspend fun extractWorkspaceId(exchange: ServerWebExchange): String? {
@@ -103,40 +125,19 @@ class UserMdcCoFilter : CoWebFilter() {
         val queryId = exchange.request.queryParams["workspaceId"]?.firstOrNull()
         if (queryId != null) return queryId
 
-        val method = exchange.request.method.toString()
-        val isJson = exchange.request.headers.contentType?.toString()?.lowercase()?.contains("json") == true
-        val isWriteMethod = method == "POST" || method == "PUT" || method == "PATCH"
-        if (isWriteMethod && isJson) {
-            val bodyId = extractWorkspaceIdFromBody(exchange)
-            if (bodyId != null) return bodyId
-        }
         return null
     }
 
     /**
-     * Helper to extract workspaceId from request body (JSON).
+     * Pure helper to extract workspaceId from a JSON string body.
      */
-    private suspend fun extractWorkspaceIdFromBody(exchange: ServerWebExchange): String? {
-        try {
-            val bodyStr = StringBuilder()
-            val bodyFlux = exchange.request.body
-            bodyFlux.collectList().awaitSingleOrNull()?.forEach { dataBuffer ->
-                val bytes = ByteArray(dataBuffer.readableByteCount())
-                dataBuffer.read(bytes)
-                bodyStr.append(String(bytes))
+    private fun extractWorkspaceIdFromString(body: String): String? {
+        if (body.isNotBlank()) {
+            val regex = """"workspaceId"\s*:\s*"([^"]+)""".toRegex()
+            val match = regex.find(body)
+            if (match != null) {
+                return match.groupValues[1]
             }
-            val body = bodyStr.toString()
-            if (body.isNotBlank()) {
-                val regex = """"workspaceId"\s*:\s*"([^"]+)""".toRegex()
-                val match = regex.find(body)
-                if (match != null) {
-                    return match.groupValues[1]
-                }
-            }
-        } catch (e: IllegalStateException) {
-            logger.trace("Could not extract workspaceId from request body (illegal state)", e)
-        } catch (e: IOException) {
-            logger.trace("Could not extract workspaceId from request body (IO error)", e)
         }
         return null
     }
@@ -159,20 +160,17 @@ class UserMdcCoFilter : CoWebFilter() {
     }
 
     /**
-     * Builds the Reactor context with masked identifiers.
+     * Builds the Reactor context with masked identifiers, preserving upstream context.
      * This ensures reactive library calls (WebClient, R2DBC) can access the context.
      */
-    private fun buildReactorContext(userId: String?, workspaceId: String?): Context {
-        var context = Context.empty()
-
+    private suspend fun buildReactorContext(userId: String?, workspaceId: String?): Context {
+        var context = currentCoroutineContext()[ReactorContext]?.context ?: Context.empty()
         if (userId != null) {
             context = context.put(REACTOR_USER_ID_KEY, LogMasker.mask(userId))
         }
-
         if (workspaceId != null) {
             context = context.put(REACTOR_WORKSPACE_ID_KEY, LogMasker.mask(workspaceId))
         }
-
         return context
     }
 
