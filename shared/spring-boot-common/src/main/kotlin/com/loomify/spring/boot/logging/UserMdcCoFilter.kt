@@ -23,7 +23,8 @@ import reactor.core.publisher.Flux
 import reactor.util.context.Context
 
 /**
- * Coroutine-based WebFilter that propagates user and workspace context to MDC and Reactor context for logging and tracing.
+ * Coroutine-based WebFilter that propagates user and workspace context to MDC and Reactor context
+ * for logging and tracing.
  *
  * This filter:
  * 1. Extracts the userId from the JWT token (subject claim)
@@ -36,8 +37,8 @@ import reactor.util.context.Context
  * The masked IDs will automatically appear in logs via the Logback pattern
  * configuration using %X{maskedUserId} and %X{maskedWorkspaceId}.
  *
- * The filter also ensures the request body is cached and re-exposed for downstream handlers when extracting workspaceId from JSON body,
- * and releases all DataBuffers to avoid memory leaks.
+ * The filter also ensures the request body is cached and re-exposed for downstream handlers when
+ * extracting workspaceId from JSON body, and releases all DataBuffers to avoid memory leaks.
  */
 @Component
 @Profile("!test")
@@ -58,10 +59,12 @@ class UserMdcCoFilter : CoWebFilter() {
         val isWriteMethod = method == "POST" || method == "PUT" || method == "PATCH"
         if (isWriteMethod && isJson) {
             val dataBuffers = mutableListOf<DataBuffer>()
-            val joinedBuffer = DataBufferUtils.join(exchange.request.body.doOnNext { buf ->
-                DataBufferUtils.retain(buf)
-                dataBuffers.add(buf)
-            }).awaitSingleOrNull()
+            val joinedBuffer = DataBufferUtils.join(
+                exchange.request.body.doOnNext { buf ->
+                    DataBufferUtils.retain(buf)
+                    dataBuffers.add(buf)
+                },
+            ).awaitSingleOrNull()
             if (joinedBuffer != null) {
                 val bytes = ByteArray(joinedBuffer.readableByteCount())
                 joinedBuffer.read(bytes)
