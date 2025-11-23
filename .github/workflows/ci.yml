@@ -125,11 +125,12 @@ jobs:
       - name: Markdownlint
         uses: DavidAnson/markdownlint-cli2-action@bfd3fdc8e281653c43afbfbf5f4b31bf25ba1109
         with:
+          fix: true
           globs: |
             **/*.md
             **/*.mdx
             !.github/copilot-instructions.md
-            !.github/prompts/*speckit*
+            !.github/agents/**
             !.specify/**
             !CLAUDE.md
             !GEMINI.md
