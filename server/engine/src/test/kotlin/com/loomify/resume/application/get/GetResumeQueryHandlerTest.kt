@@ -55,11 +55,11 @@ internal class GetResumeQueryHandlerTest {
     @ValueSource(strings = ["resume does not exist", "user is not authorized"])
     fun `should throw ResumeNotFoundException when repository returns null`(scenario: String) =
         runTest {
-        val resumeId = UUID.randomUUID()
-        val userId = UUID.randomUUID()
-        val query = GetResumeQuery(id = resumeId, userId = userId)
-        coEvery { resumeRepository.findById(eq(resumeId), eq(userId)) } returns null
-        assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
-        coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
-    }
+            val resumeId = UUID.randomUUID()
+            val userId = UUID.randomUUID()
+            val query = GetResumeQuery(id = resumeId, userId = userId)
+            coEvery { resumeRepository.findById(eq(resumeId), eq(userId)) } returns null
+            assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
+            coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
+        }
 }
