@@ -24,7 +24,7 @@ Each endpoint needed its own script:
 
 ```javascript
 // In User Login.bru
-script:pre - request
+script:pre-request
 {
     const jar = bru.cookies.jar();
     const xsrfToken = bru.getEnvVar('xsrfToken');
@@ -32,7 +32,7 @@ script:pre - request
 }
 
 // In Create Workspace.bru
-script:pre - request
+script:pre-request
 {
     const jar = bru.cookies.jar();
     const xsrfToken = bru.getEnvVar('xsrfToken');
@@ -47,7 +47,7 @@ script:pre - request
 A single script in `collection.bru` that applies to **ALL endpoints**:
 
 ```javascript
-script:pre - request
+script:pre-request
 {
     const xsrfToken = bru.getEnvVar('xsrfToken');
     const url = bru.getEnvVar('url');
@@ -116,7 +116,7 @@ headers {
 ### 2. Global Pre-Request Script
 
 ```javascript
-script:pre - request
+script:pre-request
 {
     const xsrfToken = bru.getEnvVar('xsrfToken');
     const url = bru.getEnvVar('url');
@@ -134,7 +134,7 @@ with the request.
 ### 3. Global Post-Response Script
 
 ```javascript
-script:post - response
+script:post-response
 {
     jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
         if (cookie && cookie.value) {
@@ -293,7 +293,7 @@ GET /api/auth/csrf
 **Included script:**
 
 ```javascript
-script:post - response
+script:post-response
 {
     // ✅ CORRECT WAY: Use Bruno Cookie API
     const jar = bru.cookies.jar();

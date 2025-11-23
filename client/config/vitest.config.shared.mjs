@@ -22,6 +22,7 @@ export const sharedVitestConfig = (dirname) =>
 					"junit",
 					{ suiteName: "UI tests", outputFile: "./coverage/junit-report.xml" },
 				],
+				["lcov", { file: "./coverage/lcov.info" }],
 			],
 		},
 		plugins: [tsconfigPaths()],
