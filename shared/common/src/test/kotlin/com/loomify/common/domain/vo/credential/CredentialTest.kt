@@ -14,7 +14,6 @@ internal class CredentialTest {
         assertThat(credential).isNotNull
         assertThat(credential.credentialValue.value).isNotBlank()
         assertEquals(credential.credentialValue.value, strongPassword)
-        assertEquals(credential.type, CredentialType.PASSWORD)
     }
 
     @Test
