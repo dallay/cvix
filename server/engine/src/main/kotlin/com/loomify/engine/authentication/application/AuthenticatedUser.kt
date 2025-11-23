@@ -41,7 +41,6 @@ object AuthenticatedUser {
     fun optionalUsername(): Optional<Username> = authentication()
         .map(::readPrincipal)
         .map { Username.of(it) }
-        .flatMap { Optional.ofNullable(it) }
 
     /**
      * Read user principal from authentication

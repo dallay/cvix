@@ -25,7 +25,8 @@ class ResumeDestroyerTest {
         // Arrange
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
-        coEvery { resumeRepository.existsById(resumeId, userId) } returns true
+        coEvery { resumeRepository.existsById(resumeId) } returns true
+        coEvery { resumeRepository.existsByIdForUser(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 1L
 
         // Act
@@ -42,7 +43,7 @@ class ResumeDestroyerTest {
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
         coEvery { resumeRepository.existsById(resumeId) } returns true
-        coEvery { resumeRepository.existsById(resumeId, userId) } returns true
+        coEvery { resumeRepository.existsByIdForUser(resumeId, userId) } returns true
         coEvery { resumeRepository.deleteIfAuthorized(resumeId, userId) } returns 0L
 
         // Act & Assert

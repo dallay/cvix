@@ -32,9 +32,9 @@ class PdfResumeGenerator(
      * Generates a PDF resume from the given resume data and locale.
      *
      * @param resume The resume data following JSON Resume schema
-     * @param locale The locale for the resume (default is EN)
+     * @param locale The locale for the resume (default is EN). The locale is passed through without
+     * explicit validation; ensure it is supported.
      * @return An InputStream of the generated PDF
-     * @throws IllegalArgumentException if the locale is unsupported
      * @throws Exception if there is an error during generation
      */
     suspend fun generate(resume: Resume, locale: Locale = Locale.EN): InputStream {

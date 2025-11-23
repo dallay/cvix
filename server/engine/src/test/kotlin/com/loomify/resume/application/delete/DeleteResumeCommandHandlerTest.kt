@@ -29,7 +29,7 @@ internal class DeleteResumeCommandHandlerTest {
     fun setUp() {
         resumeId = randomUUID()
         userId = randomUUID()
-        coEvery { repository.existsById(resumeId, userId) } returns true
+        coEvery { repository.existsByIdForUser(resumeId, userId) } returns true
         coEvery { repository.deleteIfAuthorized(eq(resumeId), eq(userId)) } returns 1L
         coEvery { eventPublisher.publish(any<ResumeDeletedEvent>()) } returns Unit
     }
