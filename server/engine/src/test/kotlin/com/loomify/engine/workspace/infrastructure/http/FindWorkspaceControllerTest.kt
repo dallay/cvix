@@ -14,7 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 internal class FindWorkspaceControllerTest : ControllerTest() {
     private var controller: FindWorkspaceController = FindWorkspaceController(mediator)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
-    private val id = UUID.randomUUID().toString()
+    private val id = UUID.randomUUID()
 
     @BeforeEach
     override fun setUp() {

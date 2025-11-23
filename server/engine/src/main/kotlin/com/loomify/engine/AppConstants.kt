@@ -11,7 +11,7 @@ object AppConstants {
     const val SPRING_PROFILE_SWAGGER = "swagger"
     const val SPRING_PROFILE_NO_LIQUIBASE = "no-liquibase"
 
-    const val UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+//    const val UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     const val HEXADECIMAL_COLOR_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
     object Paths {
         const val API = "/api"

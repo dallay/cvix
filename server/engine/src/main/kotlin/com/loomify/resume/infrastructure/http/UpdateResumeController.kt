@@ -54,20 +54,15 @@ class UpdateResumeController(
     @PutMapping("/resume/{id}/update")
     suspend fun updateResume(
         @PathVariable
-        @Pattern(
-            regexp = AppConstants.UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
         @Valid @Validated @RequestBody request: UpdateResumeRequest
     ): ResponseEntity<SimpleMessageResponse> {
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
 
-        val resumeId = UUID.fromString(id)
         val command = UpdateResumeCommand(
-            id = resumeId,
+            id = id,
             userId = userId,
             workspaceId = workspaceId,
             title = request.title,
@@ -78,21 +73,16 @@ class UpdateResumeController(
         try {
             dispatch(command)
         } catch (e: ResumeNotFoundException) {
-            log.warn("Resume not found for update: {}", sanitizePathVariable(resumeId.toString()), e)
+            log.warn("Resume not found for update: {}",id, e)
             return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error(
-                "Error creating workspace with ID: {}",
-                sanitizePathVariable(resumeId.toString()),
-                e,
-            )
+            log.error("Error creating workspace with ID: {}",id, e,)
             throw e
         }
-        val sanitizedId = HtmlUtils.htmlEscape(id)
         return ResponseEntity
             .ok()
-            .location(URI.create("/api/resume/$sanitizedId"))
-            .body(SimpleMessageResponse("Resume with ID $sanitizedId updated successfully."))
+            .location(URI.create("/api/resume/$id"))
+            .body(SimpleMessageResponse("Resume with ID $id updated successfully."))
     }
 
     companion object {

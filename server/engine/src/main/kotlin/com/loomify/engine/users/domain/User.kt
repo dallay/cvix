@@ -114,7 +114,7 @@ data class User(
             // Record domain event when user is created
             user.record(
                 UserCreatedEvent(
-                    id = user.id.id.toString(),
+                    id = user.id.id,
                     email = user.email.value,
                     firstName = user.name?.firstName?.value,
                     lastName = user.name?.lastName?.value,

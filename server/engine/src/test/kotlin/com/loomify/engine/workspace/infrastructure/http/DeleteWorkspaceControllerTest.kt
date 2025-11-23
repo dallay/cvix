@@ -14,7 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 internal class DeleteWorkspaceControllerTest : ControllerTest() {
     private lateinit var controller: DeleteWorkspaceController
     override lateinit var webTestClient: WebTestClient
-    private val id = UUID.randomUUID().toString()
+    private val id = UUID.randomUUID()
     private val command = DeleteWorkspaceCommand(id)
 
     @BeforeEach

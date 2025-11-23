@@ -43,15 +43,11 @@ class GetResumeController(
     @GetMapping("/resume/{id}")
     suspend fun getResume(
         @PathVariable
-        @Pattern(
-            regexp = AppConstants.UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
     ): ResponseEntity<ResumeDocumentResponse> {
         val userId = userIdFromToken()
 
-        val query = GetResumeQuery(id = UUID.fromString(id), userId = userId)
+        val query = GetResumeQuery(id = id, userId = userId)
 
         return try {
             val document = ask(query)

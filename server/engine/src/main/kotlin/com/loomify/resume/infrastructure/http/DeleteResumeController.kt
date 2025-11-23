@@ -1,7 +1,6 @@
 package com.loomify.resume.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.AppConstants.UUID_PATTERN
 import com.loomify.resume.application.delete.DeleteResumeCommand
 import com.loomify.resume.domain.exception.ResumeAccessDeniedException
 import com.loomify.resume.domain.exception.ResumeNotFoundException
@@ -44,19 +43,15 @@ class DeleteResumeController(
     @DeleteMapping("/resume/{id}")
     suspend fun deleteResume(
         @PathVariable
-        @Pattern(
-            regexp = UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
     ): ResponseEntity<Void> {
         val userId = userIdFromToken()
 
-        val command = DeleteResumeCommand(id = UUID.fromString(id), userId = userId)
+        val command = DeleteResumeCommand(id = id, userId = userId)
 
         return try {
             dispatch(command)
-            log.debug("Successfully deleted resume by $id")
+            log.debug("Successfully deleted resume by {}", id)
             ResponseEntity.noContent().build()
         } catch (e: ResumeNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message, e)

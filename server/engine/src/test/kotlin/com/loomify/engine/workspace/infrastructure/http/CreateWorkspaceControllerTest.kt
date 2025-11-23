@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test
 
 internal class CreateWorkspaceControllerTest : ControllerTest() {
     private val workspace = WorkspaceStub.create()
-    private val id = UUID.randomUUID().toString()
+    private val id = UUID.randomUUID()
     private val command = CreateWorkspaceCommand(
         id = id,
         name = workspace.name,
         description = workspace.description,
-        ownerId = workspace.ownerId.id.toString(),
+        ownerId = workspace.ownerId.id,
     )
     private val controller = CreateWorkspaceController(mediator)
     override val webTestClient = buildWebTestClient(controller)
@@ -35,7 +35,7 @@ internal class CreateWorkspaceControllerTest : ControllerTest() {
         val request = CreateWorkspaceRequest(
             name = workspace.name,
             description = workspace.description,
-            ownerId = workspace.ownerId.id.toString(),
+            ownerId = workspace.ownerId.id,
         )
         webTestClient.put()
             .uri("/api/workspace/$id")

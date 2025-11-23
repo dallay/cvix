@@ -43,7 +43,7 @@ internal class UpdateWorkspaceCommandHandlerTest {
     fun `should update an workspace`() = runTest {
         // Given
         val command = UpdateWorkspaceCommand(
-            id = workspace.id.id.toString(),
+            id = workspace.id.id,
             name = workspace.name,
             description = workspace.description,
         )

@@ -1,10 +1,8 @@
 package com.loomify.engine.workspace.application.find
 
 import com.loomify.common.domain.bus.query.Query
-import com.loomify.engine.AppConstants.UUID_PATTERN
 import com.loomify.engine.workspace.application.WorkspaceResponse
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Pattern
+import java.util.*
 
 /**
  * Represents a query to find a workspace by its ID.
@@ -12,12 +10,7 @@ import jakarta.validation.constraints.Pattern
  * @property id The ID of the workspace to find.
  */
 data class FindWorkspaceQuery(
-    @field:NotBlank(message = "Workspace ID cannot be blank")
-    @field:Pattern(
-        regexp = UUID_PATTERN,
-        message = "Workspace ID must be a valid UUID",
-    )
-    val id: String
+    val id: UUID
 ) : Query<WorkspaceResponse> {
 
     override fun equals(other: Any?): Boolean {

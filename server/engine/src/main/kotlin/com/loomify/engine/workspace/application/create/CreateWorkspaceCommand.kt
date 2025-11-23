@@ -1,9 +1,7 @@
 package com.loomify.engine.workspace.application.create
 
 import com.loomify.common.domain.bus.command.Command
-import com.loomify.engine.AppConstants.UUID_PATTERN
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Pattern
+import java.util.UUID
 
 /**
  * Represents a command to create a workspace.
@@ -15,20 +13,9 @@ import jakarta.validation.constraints.Pattern
  * @property isDefault Whether this is the default workspace for the owner.
  */
 data class CreateWorkspaceCommand(
-    @field:NotBlank(message = "Workspace ID cannot be blank")
-    @field:Pattern(
-        regexp = UUID_PATTERN,
-        message = "Workspace ID must be a valid UUID",
-    )
-    val id: String,
-    @field:NotBlank(message = "Workspace name cannot be blank")
+    val id: UUID,
     val name: String,
     val description: String? = null,
-    @field:NotBlank(message = "Owner ID cannot be blank")
-    @field:Pattern(
-        regexp = UUID_PATTERN,
-        message = "Owner ID must be a valid UUID",
-    )
-    val ownerId: String,
+    val ownerId: UUID,
     val isDefault: Boolean = false,
 ) : Command

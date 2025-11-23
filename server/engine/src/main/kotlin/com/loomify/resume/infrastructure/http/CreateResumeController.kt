@@ -44,20 +44,15 @@ class CreateResumeController(
     @PutMapping("/resume/{id}")
     suspend fun createResume(
         @PathVariable
-        @Pattern(
-            regexp = AppConstants.UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
         @Valid @RequestBody request: CreateResumeRequest
     ): ResponseEntity<String> {
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
 
-        val resumeId = UUID.fromString(id)
         val command = CreateResumeCommand(
-            id = resumeId,
+            id = id,
             userId = userId,
             workspaceId = workspaceId,
             title = request.title,
@@ -67,14 +62,10 @@ class CreateResumeController(
         try {
             dispatch(command)
         } catch (e: CommandHandlerExecutionError) {
-            log.error(
-                "Error creating resume/cv with ID: {}",
-                sanitizePathVariable(resumeId.toString()),
-                e,
-            )
+            log.error("Error creating resume/cv with ID: {}", id, e,)
             throw e
         }
-        return ResponseEntity.created(URI.create("/api/resume/$resumeId")).build()
+        return ResponseEntity.created(URI.create("/api/resume/$id")).build()
     }
 
     companion object {

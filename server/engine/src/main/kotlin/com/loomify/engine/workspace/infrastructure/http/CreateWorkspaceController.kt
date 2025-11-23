@@ -2,7 +2,6 @@ package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
 import com.loomify.common.domain.bus.command.CommandHandlerExecutionError
-import com.loomify.engine.AppConstants.UUID_PATTERN
 import com.loomify.engine.workspace.application.create.CreateWorkspaceCommand
 import com.loomify.engine.workspace.infrastructure.http.request.CreateWorkspaceRequest
 import com.loomify.spring.boot.ApiController
@@ -11,8 +10,8 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.constraints.Pattern
 import java.net.URI
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -50,30 +49,20 @@ class CreateWorkspaceController(
         @Parameter(
             description = "ID of the workspace to be found",
             required = true,
-            schema = Schema(type = "string", format = "uuid"),
+            schema = Schema(type = "uuid", format = "uuid"),
         )
         @PathVariable
-        @Pattern(
-            regexp = UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
         @Validated @RequestBody request: CreateWorkspaceRequest
     ): ResponseEntity<String> {
-        val safeId = sanitizePathVariable(id)
-        log.debug("Creating Workspace with ID: {}", safeId)
+        log.debug("Creating Workspace with ID: {}", id)
         try {
             dispatch(
-                CreateWorkspaceCommand(
-                    safeId,
-                    request.name,
-                    request.description,
-                    request.ownerId,
-                ),
+                CreateWorkspaceCommand(id, request.name, request.description, request.ownerId,),
             )
-            return ResponseEntity.created(URI.create("/api/workspace/$safeId")).build()
+            return ResponseEntity.created(URI.create("/api/workspace/$id")).build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating workspace with ID: {}", sanitizePathVariable(id), e)
+            log.error("Error creating workspace with ID: {}", id, e)
             throw e
         }
     }

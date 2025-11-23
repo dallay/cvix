@@ -1,7 +1,6 @@
 package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.AppConstants.UUID_PATTERN
 import com.loomify.engine.workspace.application.delete.DeleteWorkspaceCommand
 import com.loomify.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
@@ -9,7 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.constraints.Pattern
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -49,18 +48,13 @@ class DeleteWorkspaceController(
         @Parameter(
             description = "ID of the workspace to be found",
             required = true,
-            schema = Schema(type = "string", format = "uuid"),
+            schema = Schema(type = "uuid", format = "uuid"),
         )
         @PathVariable
-        @Pattern(
-            regexp = UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
+        id: UUID,
     ) {
-        val safeId = sanitizePathVariable(id)
-        log.debug("Deleting workspace with id: $safeId")
-        dispatch(DeleteWorkspaceCommand(safeId))
+        log.debug("Deleting workspace with id: {}", id)
+        dispatch(DeleteWorkspaceCommand(id))
     }
 
     companion object {

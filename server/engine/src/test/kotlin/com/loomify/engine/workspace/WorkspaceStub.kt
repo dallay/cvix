@@ -25,7 +25,7 @@ object WorkspaceStub {
     fun generateRequest(
         name: String = generateName(),
         description: String = faker.lorem().sentence(),
-        ownerId: String = UUID.randomUUID().toString(),
+        ownerId: UUID = UUID.randomUUID(),
     ): CreateWorkspaceRequest = CreateWorkspaceRequest(
         name = name,
         description = description,

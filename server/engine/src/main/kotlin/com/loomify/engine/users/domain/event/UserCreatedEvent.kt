@@ -1,6 +1,7 @@
 package com.loomify.engine.users.domain.event
 
 import com.loomify.common.domain.bus.event.BaseDomainEvent
+import java.util.UUID
 
 /**
  * Represents an event that is triggered when a user is created.
@@ -15,7 +16,7 @@ import com.loomify.common.domain.bus.event.BaseDomainEvent
  * @property lastName The last name of the user, nullable if not provided.
  */
 data class UserCreatedEvent(
-    val id: String,
+    val id: UUID,
     val email: String,
     val firstName: String?,
     val lastName: String?

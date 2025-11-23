@@ -43,7 +43,7 @@ class CreateDefaultWorkspaceOnUserCreation(
             log.debug("Creating default workspace for user: {}", event.id)
 
             // Use deterministic workspace ID based on user ID to prevent race conditions
-            val workspaceId = UUID.nameUUIDFromBytes("default-workspace:${event.id}".toByteArray()).toString()
+            val workspaceId = UUID.nameUUIDFromBytes("default-workspace:${event.id}".toByteArray())
             val workspaceName = generateDefaultWorkspaceName(event.firstName, event.lastName)
 
             val createWorkspaceCommand = CreateWorkspaceCommand(

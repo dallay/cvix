@@ -29,7 +29,7 @@ internal class FindWorkspaceQueryHandlerTest {
     @Test
     fun `should return workspace response when workspace is found`() = runTest {
         // Given
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val workspaceId = WorkspaceId(id)
         val workspace = WorkspaceStub.create()
         val workspaceResponse = WorkspaceResponse.from(workspace)
@@ -44,7 +44,7 @@ internal class FindWorkspaceQueryHandlerTest {
 
     @Test
     fun `should throw exception when workspace is not found`() = runTest {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val workspaceId = WorkspaceId(id)
         coEvery { workspaceFinder.find(workspaceId) } returns null
 
