@@ -104,8 +104,7 @@
 3. **Priority 3 (Low)**: Validation schema tests
     - Add `resumeSchema` validation tests (7 lines)
 
-**Estimated Effort**: Adding the High priority tests should increase coverage to ~70%. Adding Medium
-priority tests should reach the 75% target.
+**Estimated Effort**: Adding the high-priority tests should increase coverage to ~70%. Adding medium-priority tests should reach the 75% target.
 
 ## Domain Layer Coverage (Kotlin)
 
