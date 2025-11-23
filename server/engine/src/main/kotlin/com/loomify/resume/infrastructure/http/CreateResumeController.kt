@@ -67,7 +67,7 @@ class CreateResumeController(
             throw e
         }
         return ResponseEntity.created(
-            URI.create("/api/resume/$safeIdMasked"),
+            URI.create("/api/resume/${sanitizePathVariable(id.toString())}"),
         ).build()
     }
 

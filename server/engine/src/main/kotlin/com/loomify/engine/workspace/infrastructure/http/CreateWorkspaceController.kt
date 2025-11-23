@@ -62,7 +62,9 @@ class CreateWorkspaceController(
             dispatch(
                 CreateWorkspaceCommand(id, request.name, request.description, request.ownerId),
             )
-            return ResponseEntity.created(URI.create("/api/workspace/$safeIdMasked")).build()
+            return ResponseEntity.created(
+                URI.create("/api/workspace/${sanitizePathVariable(id.toString())}"),
+            ).build()
         } catch (e: CommandHandlerExecutionError) {
             log.error("Error creating workspace with ID: {}", safeIdMasked, e)
             throw e

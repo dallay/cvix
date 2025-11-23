@@ -2,7 +2,6 @@ package com.loomify.resume.infrastructure.http
 
 import com.loomify.ControllerIntegrationTest
 import com.loomify.resume.ResumeTestFixtures.createResumeRequest
-import com.loomify.spring.boot.logging.LogMasker
 import java.util.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -30,7 +29,7 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .bodyValue(request)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().valueMatches("Location", "/api/resume/${LogMasker.mask(id)}")
+            .expectHeader().valueMatches("Location", "/api/resume/$id")
             .expectBody().isEmpty
 
         // Follow-up GET to verify persistence
