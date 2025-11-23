@@ -18,7 +18,7 @@ class DeleteResumeCommandHandler(
      * @param command The command containing resume ID and user ID
      */
     override suspend fun handle(command: DeleteResumeCommand) {
-        log.debug("Deleting resume - id={}, userId={}", command.id, command.userId)
+        log.debug("Deleting resume - id={}", command.id)
         destroyer.deleteResume(command.id, command.userId)
     }
     companion object {
