@@ -44,6 +44,7 @@ class UpdateResumeController(
         ApiResponse(responseCode = "200", description = "Resume updated successfully"),
         ApiResponse(responseCode = "400", description = "Invalid request data"),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
+        ApiResponse(responseCode = "403", description = "Forbidden - Access denied to this resume"),
         ApiResponse(responseCode = "404", description = "Resume not found"),
         ApiResponse(
             responseCode = "409",

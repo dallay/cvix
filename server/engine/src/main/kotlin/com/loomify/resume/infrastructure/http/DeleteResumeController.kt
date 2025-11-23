@@ -38,6 +38,7 @@ class DeleteResumeController(
     @ApiResponses(
         ApiResponse(responseCode = "204", description = "Resume deleted successfully"),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
+        ApiResponse(responseCode = "403", description = "Forbidden - Access denied to this resume"),
         ApiResponse(responseCode = "404", description = "Resume not found"),
     )
     @DeleteMapping("/resume/{id}")

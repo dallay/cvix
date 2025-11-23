@@ -4,6 +4,7 @@ import com.loomify.common.domain.bus.Mediator
 import com.loomify.resume.application.ResumeDocumentResponses
 import com.loomify.resume.application.list.ListResumesQuery
 import com.loomify.spring.boot.ApiController
+import com.loomify.spring.boot.logging.LogMasker
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -47,9 +48,10 @@ class ListResumeController(
     ): ResponseEntity<ResumeDocumentResponses> {
         val userId = userIdFromToken()
 
+        val maskedUserId = LogMasker.mask(userId)
         log.debug(
-            "[ListResumes] userId={}, workspaceId={}, limit={}, cursor={}",
-            userId,
+            "[ListResumes] userId(masked)={}, workspaceId={}, limit={}, cursor={}",
+            maskedUserId,
             workspaceId,
             limit,
             cursor,
