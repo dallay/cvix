@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
+import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpHeaders
@@ -95,7 +96,7 @@ class ResumeGeneratorController(
 
         // Execute command and return PDF
         // Await the result of dispatch (should be suspend)
-        val inputStream = dispatch(command)
+        val inputStream: InputStream = dispatch(command)
         val pdfBytes = withContext(Dispatchers.IO) {
             inputStream.use { it.readBytes() }
         }

@@ -35,6 +35,7 @@ class ListResumeController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Resumes retrieved successfully"),
+        ApiResponse(responseCode = "400", description = "Invalid request parameters"),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
     )
     @GetMapping("/resume")
