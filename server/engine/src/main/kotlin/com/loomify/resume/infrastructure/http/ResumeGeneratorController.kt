@@ -106,6 +106,7 @@ class ResumeGeneratorController(
             .header(X_CONTENT_TYPE_OPTIONS_HEADER, X_CONTENT_TYPE_OPTIONS_VALUE)
             .header(X_FRAME_OPTIONS_HEADER, X_FRAME_OPTIONS_VALUE)
             .header(REFERRER_POLICY_HEADER, REFERRER_POLICY_VALUE)
+            .header(HttpHeaders.CONTENT_LANGUAGE, locale.code)
             .body(pdfBytes)
     }
 

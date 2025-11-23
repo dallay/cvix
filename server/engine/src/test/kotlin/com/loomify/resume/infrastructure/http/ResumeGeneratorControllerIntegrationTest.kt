@@ -2,6 +2,8 @@ package com.loomify.resume.infrastructure.http
 
 import com.loomify.ControllerIntegrationTest
 import com.loomify.resume.ResumeTestFixtures
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.text.PDFTextStripper
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -54,6 +56,18 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentType(MediaType.APPLICATION_PDF)
+            .expectHeader().valueEquals("Content-Language", "es")
+            .expectBody().consumeWith { response ->
+                val pdfBytes = response.responseBody
+                requireNotNull(pdfBytes) { "PDF response body is null" }
+                PDDocument.load(pdfBytes.inputStream()).use { doc ->
+                    val text = PDFTextStripper().getText(doc)
+                    // Assert at least one known Spanish label is present
+                    assert(text.contains("Resumen") || text.contains("Experiencia")) {
+                        "PDF does not contain expected Spanish localization: $text"
+                    }
+                }
+            }
     }
 
     @Test

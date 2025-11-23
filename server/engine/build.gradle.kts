@@ -82,6 +82,7 @@ dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    // T E S T   D E P E N D E N C I E S
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("io.projectreactor:reactor-test")
@@ -99,6 +100,7 @@ dependencies {
     testImplementation(libs.bundles.kotest)
     testImplementation("com.tngtech.archunit:archunit:1.4.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.apache.pdfbox:pdfbox:2.0.29")
 }
 
 dependencyManagement {
