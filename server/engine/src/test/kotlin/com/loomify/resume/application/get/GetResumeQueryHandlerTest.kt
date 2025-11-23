@@ -53,7 +53,7 @@ internal class GetResumeQueryHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["resume does not exist", "user is not authorized"])
-    fun `should throw ResumeNotFoundException when repository returns null`(scenario: String) =
+    fun `should throw ResumeNotFoundException when repository returns null`() =
         runTest {
             val resumeId = UUID.randomUUID()
             val userId = UUID.randomUUID()
