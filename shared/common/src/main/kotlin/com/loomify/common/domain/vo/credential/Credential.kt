@@ -139,6 +139,6 @@ value class CredentialValue(val value: String) {
     override fun toString(): String = value
 
     companion object {
-        private const val MAX_CREDENTIAL_LENGTH = 128
+        const val MAX_CREDENTIAL_LENGTH = 128
     }
 }
