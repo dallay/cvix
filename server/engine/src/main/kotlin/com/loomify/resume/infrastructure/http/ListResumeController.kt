@@ -41,10 +41,11 @@ class ListResumeController(
     @GetMapping("/resume")
     suspend fun listResumes(
         @Parameter(description = "Workspace ID") @RequestParam workspaceId: UUID,
-        @Parameter(description = "Maximum number of results (1-100)") @RequestParam(defaultValue = "50") @Min(
-            1,
-        ) @Max(100) limit:
-        Int,
+        @Parameter(description = "Maximum number of results (1-100)")
+        @RequestParam(defaultValue = "50")
+        @Min(1)
+        @Max(100)
+        limit: Int,
         @Parameter(description = "Cursor for pagination") @RequestParam(required = false) cursor: UUID?,
     ): ResponseEntity<ResumeDocumentResponses> {
         val userId = userIdFromToken()
