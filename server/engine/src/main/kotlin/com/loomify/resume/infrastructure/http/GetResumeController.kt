@@ -37,6 +37,7 @@ class GetResumeController(
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Resume retrieved successfully"),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
+        ApiResponse(responseCode = "403", description = "Forbidden"),
         ApiResponse(responseCode = "404", description = "Resume not found"),
     )
     @GetMapping("/resume/{id}")
