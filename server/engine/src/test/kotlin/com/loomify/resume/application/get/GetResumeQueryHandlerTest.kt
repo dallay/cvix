@@ -8,11 +8,11 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import java.util.UUID
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 @UnitTest
 internal class GetResumeQueryHandlerTest {
@@ -51,35 +51,21 @@ internal class GetResumeQueryHandlerTest {
 
     @Test
     fun `should throw ResumeNotFoundException when resume does not exist`() = runTest {
-        // Given
         val resumeId = UUID.randomUUID()
         val userId = UUID.randomUUID()
         val query = GetResumeQuery(id = resumeId, userId = userId)
-
         coEvery { resumeRepository.findById(eq(resumeId), eq(userId)) } returns null
-
-        // When / Then
-        assertThrows<ResumeNotFoundException> {
-            getResumeQueryHandler.handle(query)
-        }
-
+        assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
         coVerify { resumeRepository.findById(eq(resumeId), eq(userId)) }
     }
 
     @Test
     fun `should throw ResumeNotFoundException when user is not authorized`() = runTest {
-        // Given
         val resumeId = UUID.randomUUID()
         val unauthorizedUserId = UUID.randomUUID()
         val query = GetResumeQuery(id = resumeId, userId = unauthorizedUserId)
-
         coEvery { resumeRepository.findById(eq(resumeId), eq(unauthorizedUserId)) } returns null
-
-        // When / Then
-        assertThrows<ResumeNotFoundException> {
-            getResumeQueryHandler.handle(query)
-        }
-
+        assertFailsWith<ResumeNotFoundException> { getResumeQueryHandler.handle(query) }
         coVerify { resumeRepository.findById(eq(resumeId), eq(unauthorizedUserId)) }
     }
 }
