@@ -25,20 +25,20 @@ This action scans Docker images for vulnerabilities using Trivy and uploads SARI
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `image-ref` | Docker image reference to scan | Yes | - |
-| `report-name` | Name for the security report file | Yes | - |
-| `category` | SARIF category for GitHub Security tab | Yes | - |
-| `severity` | Comma-separated list of severities to scan for | No | 'HIGH,CRITICAL' |
-| `fail-on-error` | Whether to fail the pipeline if scan fails | No | 'false' |
+| Parameter       | Description                                    | Required | Default         |
+|-----------------|------------------------------------------------|----------|-----------------|
+| `image-ref`     | Docker image reference to scan                 | Yes      | -               |
+| `report-name`   | Name for the security report file              | Yes      | -               |
+| `category`      | SARIF category for GitHub Security tab         | Yes      | -               |
+| `severity`      | Comma-separated list of severities to scan for | No       | 'HIGH,CRITICAL' |
+| `fail-on-error` | Whether to fail the pipeline if scan fails     | No       | 'false'         |
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
+| Output        | Description                                          |
+|---------------|------------------------------------------------------|
 | `scan-result` | Result of the security scan (success, failed, error) |
-| `sarif-file` | Path to the generated SARIF file |
+| `sarif-file`  | Path to the generated SARIF file                     |
 
 ## Integration with Docker Composition Actions
 

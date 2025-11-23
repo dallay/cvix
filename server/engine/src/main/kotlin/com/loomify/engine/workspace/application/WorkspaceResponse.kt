@@ -16,10 +16,10 @@ data class WorkspaceResponse(
 ) : Response {
     companion object {
         fun from(workspace: Workspace) = WorkspaceResponse(
-            id = workspace.id.value.toString(),
+            id = workspace.id.id.toString(),
             name = workspace.name,
             description = workspace.description,
-            ownerId = workspace.ownerId.value.toString(),
+            ownerId = workspace.ownerId.id.toString(),
             createdAt = workspace.createdAt.toString(),
             updatedAt = workspace.updatedAt?.toString(),
         )

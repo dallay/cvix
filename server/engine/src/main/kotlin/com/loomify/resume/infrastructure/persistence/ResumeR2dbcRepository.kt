@@ -31,7 +31,10 @@ class ResumeR2dbcRepository(
         val saved = resumeReactiveR2dbcRepository.save(entity)
 
         log.debug("Resume document saved with id: {}", saved.id)
-        return saved.toDomain()
+        return document.copy(
+            createdAt = saved.createdAt,
+            updatedAt = saved.updatedAt ?: saved.createdAt,
+        )
     }
 
     override suspend fun findById(id: UUID, userId: UUID): ResumeDocument? {
@@ -51,6 +54,11 @@ class ResumeR2dbcRepository(
         if (rowsAffected == 0L) {
             log.warn("No resume found to delete for id: {}, userId: {}", id, userId)
         }
+    }
+
+    override suspend fun deleteIfAuthorized(id: UUID, userId: UUID): Long {
+        log.debug("Attempting atomic delete for id: {}, userId: {}", id, userId)
+        return resumeReactiveR2dbcRepository.deleteByIdAndUserId(id, userId)
     }
 
     override suspend fun existsById(id: UUID, userId: UUID): Boolean {

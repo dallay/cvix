@@ -27,12 +27,14 @@ import type {
 export class SessionStorageResumeStorage implements ResumeStorage {
 	private readonly key = "cvix:resume";
 
+	constructor(private readonly storage: Storage = window.sessionStorage) {}
+
 	async save(
 		resume: Resume | PartialResume,
 	): Promise<PersistenceResult<Resume | PartialResume>> {
 		try {
 			const serialized = JSON.stringify(resume);
-			sessionStorage.setItem(this.key, serialized);
+			this.storage.setItem(this.key, serialized);
 
 			return {
 				data: resume,
@@ -48,7 +50,7 @@ export class SessionStorageResumeStorage implements ResumeStorage {
 
 	async load(): Promise<PersistenceResult<Resume | null>> {
 		try {
-			const data = sessionStorage.getItem(this.key);
+			const data = this.storage.getItem(this.key);
 
 			return {
 				data: data ? (JSON.parse(data) as Resume) : null,
@@ -64,7 +66,7 @@ export class SessionStorageResumeStorage implements ResumeStorage {
 
 	async clear(): Promise<void> {
 		try {
-			sessionStorage.removeItem(this.key);
+			this.storage.removeItem(this.key);
 		} catch (error) {
 			throw new Error(
 				`Failed to clear resume from session storage: ${error instanceof Error ? error.message : "Unknown error"}`,

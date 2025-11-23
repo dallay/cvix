@@ -59,8 +59,8 @@ class UpdateWorkspaceController(
             message = "Invalid UUID format",
         )
         id: String,
-        @Validated @RequestBody request: UpdateWorkspaceRequest
-    ): ResponseEntity<String> {
+        @Validated @RequestBody request: UpdateWorkspaceRequest,
+    ): ResponseEntity<UpdateWorkspaceResponse> {
         val safeId = sanitizePathVariable(id)
         log.debug("Updating workspace with ID: {}", safeId)
         dispatch(
@@ -70,7 +70,7 @@ class UpdateWorkspaceController(
                 request.description?.takeIf { it.isNotBlank() },
             ),
         )
-        return ResponseEntity.ok("Workspace updated successfully")
+        return ResponseEntity.ok(UpdateWorkspaceResponse("Workspace updated successfully."))
     }
 
     companion object {

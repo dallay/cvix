@@ -14,14 +14,14 @@ internal class FirstNameTest {
 
     @Test
     fun `should throw an exception when create a first name with empty value`() {
-        assertThrows(FirstNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             FirstName("")
         }
     }
 
     @Test
     fun `should throw an exception when create a first name with blank value`() {
-        assertThrows(FirstNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             FirstName(" ")
         }
     }
@@ -29,7 +29,7 @@ internal class FirstNameTest {
     @Test
     fun `should throw an exception when create a first name with length greater than 150`() {
         val firstName = (1..256).joinToString("") { "a" }
-        assertThrows(FirstNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             FirstName(firstName)
         }
     }

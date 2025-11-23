@@ -38,7 +38,8 @@ object AuthenticatedUser {
      * @return The authenticated user username or empty if the user is not authenticated
      * @throws UnknownAuthenticationException if the user uses an unknown authentication scheme
      */
-    fun optionalUsername(): Optional<Username> = authentication().map(::readPrincipal).flatMap(Username::of)
+    fun optionalUsername(): Optional<Username> = authentication().map(::readPrincipal)
+        .flatMap { usernameStr -> Optional.ofNullable(Username.of(usernameStr)) }
 
     /**
      * Read user principal from authentication

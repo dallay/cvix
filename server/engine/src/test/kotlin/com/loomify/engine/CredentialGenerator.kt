@@ -19,7 +19,7 @@ object CredentialGenerator {
         var attempts = 0
 
         do {
-            password = faker.internet().password(8, 80, true, true, true)
+            password = faker.credentials().password(8, 80, true, true, true)
             if (isPasswordValid(password)) {
                 return password
             }

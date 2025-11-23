@@ -54,12 +54,12 @@ internal class CreateWorkspaceCommandHandlerTest {
         coVerify {
             workspaceRepository.create(
                 withArg {
-                    assertEquals(workspaceId, it.id.value.toString())
+                    assertEquals(workspaceId, it.id.id.toString())
                     assertEquals(name, it.name)
                     assertEquals("A test workspace", it.description)
-                    assertEquals(ownerId, it.ownerId.value.toString())
+                    assertEquals(ownerId, it.ownerId.id.toString())
                     assertEquals(1, it.members.size) // Owner is added as a member
-                    assertEquals(ownerId, it.members.first().value.toString())
+                    assertEquals(ownerId, it.members.first().id.toString())
                 },
             )
         }

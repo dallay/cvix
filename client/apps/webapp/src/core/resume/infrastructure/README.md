@@ -2,7 +2,8 @@
 
 ## Description
 
-This layer contains all concrete infrastructure implementations for the Resume module, following **Clean Architecture** and **Hexagonal Architecture** principles.
+This layer contains all concrete infrastructure implementations for the Resume module, following *
+*Clean Architecture** and **Hexagonal Architecture** principles.
 
 ## Structure
 
@@ -43,10 +44,12 @@ See [DI_ARCHITECTURE.md](./DI_ARCHITECTURE.md) for complete details.
 
 ### 2. JSON Resume Validator
 
-Complete validator that complies with the [JSON Resume Schema](https://jsonresume.org/schema/) standard:
+Complete validator that complies with the [JSON Resume Schema](https://jsonresume.org/schema/)
+standard:
 
 ✅ Validates all resume sections
-✅ Validates formats: emails (RFC 5322), URLs (RFC 3986), dates (ISO 8601), country codes (ISO 3166-1)
+✅ Validates formats: emails (RFC 5322), URLs (RFC 3986), dates (ISO 8601), country codes (ISO
+3166-1)
 ✅ 15 unit tests with 100% coverage
 ✅ Type-safe with strict TypeScript
 
@@ -69,9 +72,9 @@ See [store/README.md](./store/README.md) for store details.
 ### Setup in `main.ts`
 
 ```typescript
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { setupResumeDI } from '@/core/resume/infrastructure/config'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
+import {setupResumeDI} from '@/core/resume/infrastructure/config'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -87,16 +90,16 @@ app.mount('#app')
 ### Usage in Components
 
 ```typescript
-import { useResumeStore } from '@/core/resume/infrastructure/store/resume.store'
+import {useResumeStore} from '@/core/resume/infrastructure/store/resume.store'
 
-const resume.store = useResumeStore()
+const resumeStore = useResumeStore()
 
 // Set a resume
 resumeStore.setResume({
-  basics: {
-    name: "John Doe",
-    email: "john@example.com",
-  },
+    basics: {
+        name: "John Doe",
+        email: "john@example.com",
+    },
 })
 
 // Automatic validation
@@ -108,19 +111,19 @@ console.log(errors) // true/false
 
 // Generate PDF
 async function downloadPDF() {
-  try {
-    const pdf = await resumeStore.generatePdf('en')
+    try {
+        const pdf = await resumeStore.generatePdf('en')
 
-    // Create download link
-    const url = URL.createObjectURL(pdf)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'resume.pdf'
-    link.click()
-    URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('Error generating PDF:', error)
-  }
+        // Create download link
+        const url = URL.createObjectURL(pdf)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'resume.pdf'
+        link.click()
+        URL.revokeObjectURL(url)
+    } catch (error) {
+        console.error('Error generating PDF:', error)
+    }
 }
 ```
 
@@ -158,11 +161,13 @@ async function downloadPDF() {
 
 ```typescript
 // ❌ BAD: Store depends on concrete implementation
-import { JsonResumeValidator } from './validation/JsonResumeValidator'
+import {JsonResumeValidator} from './validation/JsonResumeValidator'
+
 const validator = new JsonResumeValidator()
 
 // ✅ GOOD: Store depends on abstraction (interface)
-import type { ResumeValidator } from '../../domain/ResumeValidator'
+import type {ResumeValidator} from '../../domain/ResumeValidator'
+
 const validator = getValidator() // Injected via DI
 ```
 
@@ -184,9 +189,9 @@ pnpm --filter @loomify/webapp test:unit resume
 ### Coverage
 
 | Module              | Tests | Status |
-| ------------------- | ----- | ------ |
+|---------------------|-------|--------|
 | JsonResumeValidator | 15    | ✅ 100% |
-| resume.store         | 15    | ✅ 100% |
+| resume.store        | 15    | ✅ 100% |
 
 ## Extension
 
@@ -198,18 +203,18 @@ If you need an alternative validator implementation:
 
 ```typescript
 // infrastructure/validation/CustomResumeValidator.ts
-import type { Resume, ResumeValidator } from '../../domain'
+import type {Resume, ResumeValidator} from '../../domain'
 
 export class CustomResumeValidator implements ResumeValidator {
-  validate(resume: Resume | null): boolean {
-    // Your custom logic
-    return true
-  }
+    validate(resume: Resume | null): boolean {
+        // Your custom logic
+        return true
+    }
 
-  validateWithErrors(resume: Resume | null): string[] {
-    // Your custom logic
-    return []
-  }
+    validateWithErrors(resume: Resume | null): string[] {
+        // Your custom logic
+        return []
+    }
 }
 ```
 
@@ -217,10 +222,10 @@ export class CustomResumeValidator implements ResumeValidator {
 
 ```typescript
 // infrastructure/config/di.ts
-import { CustomResumeValidator } from '../validation/CustomResumeValidator'
+import {CustomResumeValidator} from '../validation/CustomResumeValidator'
 
 export function setupResumeDI(app: App): void {
-  app.provide(RESUME_VALIDATOR_KEY, new CustomResumeValidator())
+    app.provide(RESUME_VALIDATOR_KEY, new CustomResumeValidator())
 }
 ```
 
@@ -235,7 +240,7 @@ To add more injectable services:
 ```typescript
 // infrastructure/di/keys.ts
 export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
-  Symbol('ResumeGenerator')
+        Symbol('ResumeGenerator')
 ```
 
 **2. Register in configuration:**
@@ -243,8 +248,8 @@ export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
 ```typescript
 // infrastructure/config/di.ts
 export function setupResumeDI(app: App): void {
-  app.provide(RESUME_VALIDATOR_KEY, new JsonResumeValidator())
-  app.provide(RESUME_GENERATOR_KEY, new AiResumeGenerator())
+    app.provide(RESUME_VALIDATOR_KEY, new JsonResumeValidator())
+    app.provide(RESUME_GENERATOR_KEY, new AiResumeGenerator())
 }
 ```
 
@@ -252,11 +257,11 @@ export function setupResumeDI(app: App): void {
 
 ```typescript
 function getGenerator(): ResumeGenerator {
-  const instance = getCurrentInstance()
-  if (instance?.appContext.provides[RESUME_GENERATOR_KEY as symbol]) {
-    return instance.appContext.provides[RESUME_GENERATOR_KEY as symbol]
-  }
-  return new DefaultResumeGenerator() // Fallback
+    const instance = getCurrentInstance()
+    if (instance?.appContext.provides[RESUME_GENERATOR_KEY as symbol]) {
+        return instance.appContext.provides[RESUME_GENERATOR_KEY as symbol]
+    }
+    return new DefaultResumeGenerator() // Fallback
 }
 ```
 

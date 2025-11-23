@@ -4,6 +4,7 @@ import com.loomify.common.domain.Service
 import com.loomify.common.domain.bus.query.QueryHandler
 import com.loomify.common.domain.vo.credential.Credential
 import com.loomify.common.domain.vo.credential.CredentialId
+import com.loomify.common.domain.vo.credential.CredentialValue
 import com.loomify.engine.authentication.application.query.AuthenticateUserQuery
 import com.loomify.engine.authentication.domain.AccessToken
 import com.loomify.engine.authentication.domain.Username
@@ -24,10 +25,9 @@ class AuthenticateUserQueryHandler(private val authenticator: UserAuthenticatorS
      * @return The response of the query.
      */
     override suspend fun handle(query: AuthenticateUserQuery): AccessToken {
-        val sanitizedEmail = query.email.replace("\n", "").replace("\r", "")
-        log.info("Authenticating user with email: {} (rememberMe: {})", sanitizedEmail, query.rememberMe)
+        log.info("Authenticating user (rememberMe: {})", query.rememberMe)
         val username = Username(query.email)
-        val password = Credential(CredentialId(UUID.randomUUID()), query.password)
+        val password = Credential(CredentialId(UUID.randomUUID()), CredentialValue(query.password))
         return authenticator.authenticate(username, password, query.rememberMe)
     }
     companion object {

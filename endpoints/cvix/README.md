@@ -24,17 +24,19 @@ Each endpoint needed its own script:
 
 ```javascript
 // In User Login.bru
-script:pre-request {
-  const jar = bru.cookies.jar();
-  const xsrfToken = bru.getEnvVar('xsrfToken');
-  jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+script:pre - request
+{
+    const jar = bru.cookies.jar();
+    const xsrfToken = bru.getEnvVar('xsrfToken');
+    jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
 }
 
 // In Create Workspace.bru
-script:pre-request {
-  const jar = bru.cookies.jar();
-  const xsrfToken = bru.getEnvVar('xsrfToken');
-  jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+script:pre - request
+{
+    const jar = bru.cookies.jar();
+    const xsrfToken = bru.getEnvVar('xsrfToken');
+    jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
 }
 
 // And so on for EVERY endpoint... 😫
@@ -45,14 +47,15 @@ script:pre-request {
 A single script in `collection.bru` that applies to **ALL endpoints**:
 
 ```javascript
-script:pre-request {
-  const xsrfToken = bru.getEnvVar('xsrfToken');
-  const url = bru.getEnvVar('url');
+script:pre - request
+{
+    const xsrfToken = bru.getEnvVar('xsrfToken');
+    const url = bru.getEnvVar('url');
 
-  if (xsrfToken && url) {
-    const jar = bru.cookies.jar();
-    jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
-  }
+    if (xsrfToken && url) {
+        const jar = bru.cookies.jar();
+        jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+    }
 }
 ```
 
@@ -113,33 +116,36 @@ headers {
 ### 2. Global Pre-Request Script
 
 ```javascript
-script:pre-request {
-  const xsrfToken = bru.getEnvVar('xsrfToken');
-  const url = bru.getEnvVar('url');
+script:pre - request
+{
+    const xsrfToken = bru.getEnvVar('xsrfToken');
+    const url = bru.getEnvVar('url');
 
-  if (xsrfToken && url) {
-    const jar = bru.cookies.jar();
-    jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
-  }
+    if (xsrfToken && url) {
+        const jar = bru.cookies.jar();
+        jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+    }
 }
 ```
 
-**Effect**: Before each request, ensures the XSRF-TOKEN cookie is in the Cookie Jar so it gets sent with the request.
+**Effect**: Before each request, ensures the XSRF-TOKEN cookie is in the Cookie Jar so it gets sent
+with the request.
 
 ### 3. Global Post-Response Script
 
 ```javascript
-script:post-response {
-  jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
-    if (cookie && cookie.value) {
-      const currentToken = bru.getEnvVar('xsrfToken');
+script:post - response
+{
+    jar.getCookie(url, 'XSRF-TOKEN').then(cookie => {
+        if (cookie && cookie.value) {
+            const currentToken = bru.getEnvVar('xsrfToken');
 
-      if (currentToken !== cookie.value) {
-        bru.setEnvVar('xsrfToken', cookie.value);
-        console.log('🔄 CSRF Token updated');
-      }
-    }
-  });
+            if (currentToken !== cookie.value) {
+                bru.setEnvVar('xsrfToken', cookie.value);
+                console.log('🔄 CSRF Token updated');
+            }
+        }
+    });
 }
 ```
 
@@ -213,7 +219,8 @@ graph TD
 
 ## �️ Endpoint Customization
 
-If a specific endpoint needs additional logic, you can add local scripts that **run after** the global ones:
+If a specific endpoint needs additional logic, you can add local scripts that **run after** the
+global ones:
 
 ```bru
 # In User Login.bru
@@ -286,23 +293,24 @@ GET /api/auth/csrf
 **Included script:**
 
 ```javascript
-script:post-response {
-  // ✅ CORRECT WAY: Use Bruno Cookie API
-  const jar = bru.cookies.jar();
-  const url = bru.getEnvVar('url');
+script:post - response
+{
+    // ✅ CORRECT WAY: Use Bruno Cookie API
+    const jar = bru.cookies.jar();
+    const url = bru.getEnvVar('url');
 
-  setTimeout(async () => {
-    const cookie = await jar.getCookie(url, 'XSRF-TOKEN');
+    setTimeout(async () => {
+        const cookie = await jar.getCookie(url, 'XSRF-TOKEN');
 
-    if (cookie && cookie.value) {
-      const xsrfToken = cookie.value;
-      bru.setEnvVar('xsrfToken', xsrfToken);
-      console.log('✅ CSRF Token saved:', xsrfToken);
+        if (cookie && cookie.value) {
+            const xsrfToken = cookie.value;
+            bru.setEnvVar('xsrfToken', xsrfToken);
+            console.log('✅ CSRF Token saved:', xsrfToken);
 
-      // Ensure cookie is sent in future requests
-      jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
-    }
-  }, 100);
+            // Ensure cookie is sent in future requests
+            jar.setCookie(url, 'XSRF-TOKEN', xsrfToken);
+        }
+    }, 100);
 }
 ```
 
@@ -327,14 +335,16 @@ X-XSRF-TOKEN: {{xsrfToken}}
 - The `pre-request` script verifies the token exists
 - The `post-response` script shows information about the result
 
+```json
 {
-  "email": "john.doe@loomify.com",
-  "password": "S3cr3tP@ssw0rd*123",
-  "rememberMe": false
+    "email": "john.doe@loomify.com",
+    "password": "S3cr3tP@ssw0rd*123",
+    "rememberMe": false
 }
 ```
 
 **What it does:**
+
 - Uses the token saved in `{{xsrfToken}}`
 - The `pre-request` script verifies the token exists
 - The `post-response` script shows information about the result
@@ -352,6 +362,7 @@ console.log('Current token:', bru.getEnvVar('xsrfToken'));
 ### Verify headers
 
 The `User Login` script automatically shows:
+
 - ✅ If the token is present before the request
 - 📋 Cookies received after login
 - ❌ Errors if something fails
@@ -365,18 +376,20 @@ The `User Login` script automatically shows:
 #### 2. Empty or undefined token
 
 **Solution**:
+
 - Verify the server is running on `http://localhost:8080`
 - Execute "Get CSRF Token" again
 - Check Bruno's console for extraction logs
 
 #### 3. Cookie not sent
 
-Bruno **does NOT send cookies automatically**. That's why we use the `X-XSRF-TOKEN` header with the variable.
+Bruno **does NOT send cookies automatically**. That's why we use the `X-XSRF-TOKEN` header with the
+variable.
 
 ## 🆚 Difference with Postman
 
 | Aspect         | Postman                | Bruno                       |
-| -------------- | ---------------------- | --------------------------- |
+|----------------|------------------------|-----------------------------|
 | **Cookies**    | Automatic management   | Manual via variables        |
 | **CSRF Token** | Auto cookie + header   | Manual header with variable |
 | **Scripts**    | Pre-request/Tests      | pre-request/post-response   |
@@ -388,23 +401,20 @@ Bruno **does NOT send cookies automatically**. That's why we use the `X-XSRF-TOK
 sequenceDiagram
     participant B as Bruno
     participant S as Server
-
     Note over B: 1. Get CSRF Token
-    B->>S: GET /api/auth/csrf
-    S->>B: Set-Cookie: XSRF-TOKEN=abc123...
+    B ->> S: GET /api/auth/csrf
+    S ->> B: Set-Cookie: XSRF-TOKEN=abc123...
     Note over B: Script saves in xsrfToken
-
     Note over B: 2. User Login
-    B->>S: POST /api/auth/login<br/>X-XSRF-TOKEN: {{xsrfToken}}
-    S->>B: 200 OK + Session cookies
-
+    B ->> S: POST /api/auth/login<br/>X-XSRF-TOKEN: {{xsrfToken}}
+    S ->> B: 200 OK + Session cookies
     Note over B: 3. Other authenticated requests
-    B->>S: Requests with X-XSRF-TOKEN
+    B ->> S: Requests with X-XSRF-TOKEN
 ```
 
 ## 📌 Important Endpoints
 
-### Authentication
+### Authentication - Related
 
 - 🔑 **Get CSRF Token** - Get token (execute first)
 - 🔐 **User Login** - Log in
@@ -432,9 +442,9 @@ sequenceDiagram
 ```javascript
 // In any Bruno script
 console.log('All variables:', {
-  xsrfToken: bru.getEnvVar('xsrfToken'),
-  url: bru.getEnvVar('url'),
-  keycloakUrl: bru.getEnvVar('keycloak-url')
+    xsrfToken: bru.getEnvVar('xsrfToken'),
+    url: bru.getEnvVar('url'),
+    keycloakUrl: bru.getEnvVar('keycloak-url')
 });
 ```
 
@@ -459,7 +469,8 @@ Set-Cookie: XSRF-TOKEN=....; Path=/; SameSite=Lax
 
 - [Spring Security CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)
 - [Bruno Documentation](https://docs.usebruno.com/)
-- Backend CSRF implementation: `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/filter/CookieCsrfFilter.kt`
+- Backend CSRF implementation:
+  `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/filter/CookieCsrfFilter.kt`
 
 ## 📚 Bruno Documentation
 
