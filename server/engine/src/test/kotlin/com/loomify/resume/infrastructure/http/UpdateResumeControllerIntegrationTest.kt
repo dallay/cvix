@@ -5,6 +5,7 @@ import com.loomify.resume.ResumeTestFixtures
 import com.loomify.resume.infrastructure.http.request.UpdateResumeRequest
 import java.util.*
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.jdbc.Sql
@@ -58,5 +59,10 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
             .bodyValue(invalidRequest)
             .exchange()
             .expectStatus().isBadRequest
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Bad Request")
+            .jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
+            .jsonPath("$.detail").isEqualTo("Failed to read HTTP message")
+            .jsonPath("$.instance").isEqualTo("/api/resume/$resumeId/update")
     }
 }

@@ -1,7 +1,13 @@
 package com.loomify.common.domain.vo.credential
 
 import com.loomify.common.domain.BaseId
-import java.util.UUID
+import com.loomify.common.domain.vo.credential.Credential.Companion.MIN_LENGTH
+import com.loomify.common.domain.vo.credential.Credential.Companion.charLowercase
+import com.loomify.common.domain.vo.credential.Credential.Companion.charNumbers
+import com.loomify.common.domain.vo.credential.Credential.Companion.charSpecial
+import com.loomify.common.domain.vo.credential.Credential.Companion.charUppercase
+import com.loomify.common.domain.vo.credential.Credential.Companion.charset
+import java.util.*
 
 /**
  * Credential representation in the domain layer of the application that is used to authenticate a user
@@ -88,9 +94,13 @@ data class Credential(
 data class CredentialId(override val id: UUID) : BaseId<UUID>(id)
 
 /**
- * Credential value representation in the domain layer of the application that is used to identify
- * the value of a credential
- * @see Credential for the credential type
+ * Password credential value representation with validation rules for secure passwords.
+ *
+ * **Note:** This value class is specifically designed for password credentials and enforces:
+ * - Minimum length of 8 characters
+ * - At least one digit, uppercase letter, lowercase letter, and special character
+ *
+ * Non-password credential types (API keys, tokens, etc.) should use a different value class.
  */
 @JvmInline
 value class CredentialValue(val value: String) {
