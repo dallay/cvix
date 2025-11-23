@@ -78,16 +78,14 @@ object ResumeMapper {
     fun Resume.toJson(): Json {
         return try {
             val jsonString = objectMapper.writeValueAsString(this)
-            // Validate it's valid JSON by parsing it back
-            objectMapper.readTree(jsonString)
-            Json.of(jsonString)
-        } catch (e: JsonProcessingException) {
-            throw IllegalStateException("Failed to serialize Resume to JSON: ${e.message}", e)
+            return Json.of(jsonString)
         } catch (e: JsonMappingException) {
             throw IllegalStateException(
                 "Invalid Resume structure for JSON serialization: ${e.message}",
                 e,
             )
+        } catch (e: JsonProcessingException) {
+            throw IllegalStateException("Failed to serialize Resume to JSON: ${e.message}", e)
         } catch (e: IllegalArgumentException) {
             throw IllegalStateException("Failed to create JSONB from Resume: ${e.message}", e)
         }
