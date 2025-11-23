@@ -68,7 +68,7 @@ class CreateResumeController(
             dispatch(command)
         } catch (e: CommandHandlerExecutionError) {
             log.error(
-                "Error creating workspace with ID: {}",
+                "Error creating resume/cv with ID: {}",
                 sanitizePathVariable(resumeId.toString()),
                 e,
             )

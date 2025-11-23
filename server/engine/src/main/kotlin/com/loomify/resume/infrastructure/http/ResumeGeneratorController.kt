@@ -50,15 +50,19 @@ class ResumeGeneratorController(
         ApiResponse(responseCode = "500", description = "Internal server error"),
         ApiResponse(responseCode = "504", description = "PDF generation timeout"),
     )
-    @PostMapping("/generate")
+    @PostMapping("/generate", produces = ["application/pdf"])
     suspend fun generateResume(
         @Valid @Validated @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange
     ): ResponseEntity<ByteArray> {
         // Validate payload size (FR-015: reject requests exceeding 100KB)
         val contentLength = exchange.request.headers.contentLength
-        if (contentLength > MAX_BYTES_SUPPORTED) {
-            throw ResponseStatusException(
+        when {
+            contentLength == -1L -> throw ResponseStatusException(
+                HttpStatus.LENGTH_REQUIRED,
+                "Content-Length header is required for payload size enforcement (FR-015).",
+            )
+            contentLength > MAX_BYTES_SUPPORTED -> throw ResponseStatusException(
                 HttpStatus.PAYLOAD_TOO_LARGE,
                 "Request payload too large: $contentLength bytes. Maximum allowed: 102400 bytes (100KB)",
             )
@@ -93,7 +97,7 @@ class ResumeGeneratorController(
         // Await the result of dispatch (should be suspend)
         val inputStream = dispatch(command)
         val pdfBytes = withContext(Dispatchers.IO) {
-            inputStream.readBytes()
+            inputStream.use { it.readBytes() }
         }
         val generationTimeMs = System.currentTimeMillis() - startTime
 
