@@ -5,15 +5,16 @@ value class Email(val value: String) {
     init {
         require(value.isNotBlank()) { "Email cannot be blank" }
         require(value.length <= EMAIL_LEN) { "Email cannot exceed $EMAIL_LEN characters" }
-        require(value.matches(REGEX.toRegex())) { "Email is not valid: $value" }
+        require(REGEX.matches(value)) { "Email is not valid: $value" }
     }
 
     companion object {
         private const val EMAIL_LEN = 320
 
         @Suppress("MaximumLineLength", "MaxLineLength")
-        private const val REGEX =
-            "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+        private val REGEX = Regex(
+            "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+        )
 
         fun of(value: String): Email? = try {
             Email(value)
