@@ -1,5 +1,6 @@
 package com.loomify.resume.application.list
 
+import com.github.dockerjava.api.exception.UnauthorizedException
 import com.loomify.UnitTest
 import com.loomify.engine.workspace.application.security.WorkspaceAuthorizationService
 import com.loomify.resume.ResumeTestFixtures
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 @UnitTest
 internal class ListResumesQueryHandlerTest {
@@ -184,5 +186,24 @@ internal class ListResumesQueryHandlerTest {
                 isNull(),
             )
         }
+    }
+
+    @Test
+    fun `should fail when user lacks workspace access`() = runTest {
+        // Given
+        val userId = UUID.randomUUID()
+        val workspaceId = UUID.randomUUID()
+        val query = ListResumesQuery(userId, workspaceId, 50, null)
+
+        coEvery {
+            workspaceAuthorizationService.ensureAccess(any(UUID::class), any(UUID::class))
+        } throws UnauthorizedException("Access denied")
+
+        // When/Then
+        assertThrows<UnauthorizedException> {
+            listResumesQueryHandler.handle(query)
+        }
+
+        coVerify(exactly = 0) { resumeCatalog.listResumes(any(), any(), any(), any()) }
     }
 }

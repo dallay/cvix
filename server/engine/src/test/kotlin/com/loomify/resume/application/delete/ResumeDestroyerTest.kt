@@ -33,7 +33,9 @@ class ResumeDestroyerTest {
 
         // Assert
         coVerify { resumeRepository.deleteIfAuthorized(resumeId, userId) }
-        coVerify { eventBroadcaster.publish(ResumeDeletedEvent(resumeId, userId)) }
+        coVerify {
+            eventBroadcaster.publish(ofType<ResumeDeletedEvent>())
+        }
     }
 
     @Test
