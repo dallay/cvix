@@ -15,3 +15,5 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: --no-progress --exclude-path node_modules --exclude-path public/admin --exclude 'http://localhost' --exclude 'https://localhost' ./**/*.md
+          fail: true
+          output: lychee-report.md
