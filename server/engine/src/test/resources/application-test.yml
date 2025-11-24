@@ -1,3 +1,4 @@
+---
 # File: application-test.yml
 server:
   ssl:
@@ -13,9 +14,6 @@ spring:
   main:
     banner-mode: off
     allow-bean-definition-overriding: true
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
   security:
     oauth2:
       client:
@@ -54,3 +52,9 @@ testing:
   security:
     username: "john.doe@loomify.com"
     password: "S3cr3tP@ssw0rd*123"
+
+resume:
+  pdf:
+    docker:
+      # Increased to 120s for CI environments with slow Docker image pulls.
+      timeout-seconds: 120

@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.pdf
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerResponse
+import com.github.dockerjava.api.exception.NotFoundException
 import com.github.dockerjava.api.model.Bind
 import com.github.dockerjava.api.model.HostConfig
 import com.github.dockerjava.api.model.Volume
@@ -12,13 +13,16 @@ import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import jakarta.annotation.PostConstruct
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.nio.channels.AsynchronousCloseException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -40,6 +44,9 @@ class DockerPdfGenerator(
 
     // Semaphore to limit concurrent container executions
     private val concurrencySemaphore = Semaphore(properties.maxConcurrentContainers)
+
+    // Track if image has been pulled to avoid redundant pulls
+    private val imagePulled = AtomicBoolean(false)
 
     // Metrics
     private val containerCreatedCounter: Counter = meterRegistry.counter(
@@ -76,12 +83,36 @@ class DockerPdfGenerator(
         meterRegistry.gauge(
             "docker.container.concurrent.active",
             this,
-        ) { properties.maxConcurrentContainers - concurrencySemaphore.availablePermits().toDouble() }
+        ) {
+            properties.maxConcurrentContainers.toDouble() - concurrencySemaphore.availablePermits()
+                .toDouble()
+        }
 
         meterRegistry.gauge(
             "docker.container.concurrent.available",
             this,
         ) { concurrencySemaphore.availablePermits().toDouble() }
+    }
+
+    /**
+     * Pre-pull the Docker image during application startup to avoid timeouts during the first request.
+     * This runs asynchronously to not block application startup.
+     */
+    @PostConstruct
+    fun prePullDockerImage() {
+        Schedulers.boundedElastic().schedule {
+            try {
+                logger.info("Pre-pulling Docker image in background: ${properties.image}")
+                ensureDockerImage()
+                logger.info("Docker image pre-pull completed successfully")
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn(
+                    "Failed to pre-pull Docker image during startup. " +
+                        "Image will be pulled on first request: ${e.message}",
+                    e,
+                )
+            }
+        }
     }
 
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
@@ -132,6 +163,7 @@ class DockerPdfGenerator(
         // Create temporary directory for LaTeX compilation
         val tempDir = Files.createTempDirectory("resume-pdf-")
 
+        var containerId: String
         try {
             // Write LaTeX source to file
             val latexFile = tempDir.resolve(LATEX_FILE)
@@ -141,7 +173,7 @@ class DockerPdfGenerator(
             ensureDockerImage()
 
             // Create and run Docker container
-            val containerId = createContainer(tempDir)
+            containerId = createContainer(tempDir)
 
             try {
                 // Start container
@@ -167,8 +199,14 @@ class DockerPdfGenerator(
                 logger.debug("Successfully generated PDF (${pdfBytes.size} bytes)")
 
                 return ByteArrayInputStream(pdfBytes)
+            } catch (e: AsynchronousCloseException) {
+                logger.error("Docker connection closed prematurely during PDF generation", e)
+                throw PdfGenerationException(
+                    "Docker connection closed prematurely. " +
+                        "Consider increasing Docker resource limits or debugging container lifecycle.",
+                    e,
+                )
             } finally {
-                // Cleanup: Remove container
                 cleanupContainer(containerId)
             }
         } finally {
@@ -188,8 +226,10 @@ class DockerPdfGenerator(
             error is LaTeXInjectionException -> error
             error is java.util.concurrent.TimeoutException ->
                 pdfGenerationTimeoutException
+
             error.message?.contains("timeout", ignoreCase = true) == true ->
                 pdfGenerationTimeoutException
+
             else -> {
                 val msg = "Failed to generate PDF: ${error.message}"
                 PdfGenerationException(msg, error)
@@ -198,23 +238,81 @@ class DockerPdfGenerator(
     }
 
     private fun ensureDockerImage() {
+        // Fast path: if image has been verified, skip the check
+        if (imagePulled.get()) {
+            return
+        }
+
+        // Check if image exists
         try {
             dockerClient.inspectImageCmd(properties.image).exec()
             logger.debug("Docker image already available: ${properties.image}")
-        } catch (_: com.github.dockerjava.api.exception.NotFoundException) {
+            imagePulled.set(true)
+            return
+        } catch (_: NotFoundException) {
             // Image not found locally, pull it
+        }
+
+        // Pull the image (synchronized to prevent multiple threads from pulling simultaneously)
+        synchronized(imagePulled) {
+            // Double-check in case another thread just pulled it
             try {
-                logger.info("Pulling Docker image: ${properties.image}")
+                dockerClient.inspectImageCmd(properties.image).exec()
+                logger.debug("Docker image verified (pulled by another thread): ${properties.image}")
+                imagePulled.set(true)
+                return
+            } catch (_: NotFoundException) {
+                // Still not available, proceed with pull
+            }
+
+            try {
+                logger.info("Pulling Docker image: ${properties.image} (this may take several minutes)")
                 dockerClient.pullImageCmd(properties.image)
                     .start()
                     .awaitCompletion(PULL_TIMEOUT_MIN, TimeUnit.MINUTES)
+                logger.info("Docker image pull completed: ${properties.image}")
+                imagePulled.set(true)
             } catch (ie: InterruptedException) {
                 Thread.currentThread().interrupt()
                 throw PdfGenerationException("Interrupted while pulling Docker image", ie)
+            } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
+                handleAsyncException(e)
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
                 throw PdfGenerationException("Failed to pull Docker image: ${properties.image}", de)
             }
         }
+    }
+
+    private fun handleAsyncException(e: RuntimeException) {
+        // Handle AsynchronousCloseException wrapped in RuntimeException during image pull
+        val cause = e.cause
+        if (cause is AsynchronousCloseException) {
+            logger.warn("Docker connection closed during image pull, retrying inspection", e)
+            // Retry inspection - image might have been pulled by another thread
+            try {
+                dockerClient.inspectImageCmd(properties.image).exec()
+                logger.info("Docker image verified after interrupted pull: ${properties.image}")
+                imagePulled.set(true)
+                return
+            } catch (_: NotFoundException) {
+                throw PdfGenerationException(
+                    "Docker image pull was interrupted and image is not available: ${properties.image}",
+                    e,
+                )
+            } catch (poolShutdown: IllegalStateException) {
+                // Connection pool was shut down during timeout - cannot verify image
+                logger.error(
+                    "Docker connection pool shut down during image pull verification: ${poolShutdown.message}",
+                    poolShutdown,
+                )
+                throw PdfGenerationException(
+                    "Docker image pull was interrupted and connection pool shut down. " +
+                        "The image may need to be pre-pulled or timeouts increased: ${properties.image}",
+                    e,
+                )
+            }
+        }
+        throw PdfGenerationException("Failed to pull Docker image: ${properties.image}", e)
     }
 
     private fun createContainer(tempDir: Path): String {
@@ -331,7 +429,10 @@ class DockerPdfGenerator(
                 Thread.currentThread().interrupt()
                 logger.debug("Interrupted while stopping container: $containerId", ie)
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
-                logger.debug("Failed to stop container (might already be stopped): $containerId", de)
+                logger.debug(
+                    "Failed to stop container (might already be stopped): $containerId",
+                    de,
+                )
             }
 
             // Remove container
@@ -364,9 +465,10 @@ class DockerPdfGenerator(
         private const val SECOND = 1_000
         private const val POLL_INTERVAL_MS = 100L
         private const val LOG_TIMEOUT_SEC = 5L
-        private const val PULL_TIMEOUT_MIN = 2L
-        private const val TIMEOUT_BUFFER_SECONDS = 5L
-        private const val SEMAPHORE_TIMEOUT_BUFFER = 10L
+        private const val PULL_TIMEOUT_MIN = 5L // Increased to 5 minutes for slow CI
+        private const val TIMEOUT_BUFFER_SECONDS =
+            60L // Increased to 60s to accommodate Docker image pulls in CI
+        private const val SEMAPHORE_TIMEOUT_BUFFER = 60L // Increased to 60s
         private const val STOP_TIMEOUT_SECONDS = 5
         private const val UNABLE_TO_RETRIEVE_LOGS = "Unable to retrieve logs"
     }
