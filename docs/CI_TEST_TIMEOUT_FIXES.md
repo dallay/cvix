@@ -81,7 +81,7 @@ caused by:
 
 ## Timeout Hierarchy (After Fix)
 
-```
+```text
 Test Method Timeout: 150 seconds
   └─> Application Generation: 120 seconds
       └─> Reactive Pipeline: 180 seconds (120 + 60 buffer)
@@ -125,9 +125,11 @@ Test Method Timeout: 150 seconds
 
 1.
 `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/http/ResumeGeneratorControllerIntegrationTest.kt`
+
 2. `server/engine/src/main/kotlin/com/loomify/resume/application/generate/PdfResumeGenerator.kt`
 3.
 `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorProperties.kt`
+
 4. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGenerator.kt`
 5. `server/engine/src/test/resources/application-test.yml` (NEW)
 
@@ -143,4 +145,3 @@ Test Method Timeout: 150 seconds
 - GitHub Actions workflow: `.github/workflows/*.yml` (no changes needed)
 - Docker resource allocation in CI (no changes needed currently)
 - Spring Boot test configuration: `application-test.yml` (updated)
-
