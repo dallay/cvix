@@ -175,7 +175,7 @@ class DockerPdfGenerator(
                 logger.error("Docker connection closed prematurely during PDF generation", e)
                 throw PdfGenerationException(
                     "Docker connection closed prematurely. " +
-                            "Consider increasing Docker resource limits or debugging container lifecycle.",
+                        "Consider increasing Docker resource limits or debugging container lifecycle.",
                     e,
                 )
             } finally {
