@@ -2,7 +2,6 @@ package com.loomify.engine.ratelimit.infrastructure.config
 
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.BucketConfiguration
-import io.github.bucket4j.Refill
 import org.slf4j.LoggerFactory
 
 /**
@@ -87,11 +86,12 @@ class BucketConfigurationStrategy(
      * @return A [Bandwidth] instance configured with the specified parameters.
      */
     private fun createBandwidth(limit: RateLimitProperties.BandwidthLimit): Bandwidth {
-        // Bucket4j v8 uses Bandwidth.classic() with Refill strategies
-        return Bandwidth.classic(
-            limit.capacity,
-            Refill.greedy(limit.refillTokens, limit.refillDuration),
-        )
+        // Updated to use Bucket4j v8 builder API (no deprecated methods)
+        return Bandwidth.builder()
+            .capacity(limit.capacity)
+            .refillGreedy(limit.refillTokens, limit.refillDuration)
+            .initialTokens(limit.capacity)
+            .build()
     }
 
     /**
