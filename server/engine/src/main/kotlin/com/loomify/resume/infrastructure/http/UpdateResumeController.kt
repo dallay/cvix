@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import java.net.URI
-import java.util.UUID
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -54,6 +54,8 @@ class UpdateResumeController(
         id: UUID,
         @Valid @Validated @RequestBody request: UpdateResumeRequest
     ): ResponseEntity<SimpleMessageResponse> {
+        val sanitizedId = sanitizePathVariable(id.toString())
+        log.debug("Update resume {}", sanitizedId)
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
@@ -70,16 +72,16 @@ class UpdateResumeController(
         try {
             dispatch(command)
         } catch (e: ResumeNotFoundException) {
-            log.warn("Resume not found for update: {}", id, e)
+            log.warn("Resume not found for update: {}", sanitizedId, e)
             return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating workspace with ID: {}", id, e)
+            log.error("Error creating resume with ID: {}", sanitizedId, e)
             throw e
         }
         return ResponseEntity
             .ok()
-            .location(URI.create("/api/resume/$id"))
-            .body(SimpleMessageResponse("Resume with ID $id updated successfully."))
+            .location(URI.create("/api/resume/$sanitizedId"))
+            .body(SimpleMessageResponse("Resume with ID $sanitizedId updated successfully."))
     }
 
     companion object {

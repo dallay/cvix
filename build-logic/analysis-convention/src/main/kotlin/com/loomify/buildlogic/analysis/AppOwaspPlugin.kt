@@ -14,6 +14,7 @@ private const val FAIL_BUILDS_ON_CVSS: Float = 11F // SET THIS TO A REASONABLE V
 private const val AUTO_UPDATE: Boolean = true // Enable auto-update of the NVD database
 private const val PURGE_DATABASE: Boolean = true // Enable purging of the database to fix corruption issues
 
+@Suppress("unused")
 internal class AppOwaspPlugin : ConventionPlugin {
     override fun Project.configure() {
         apply(plugin = "org.owasp.dependencycheck")
