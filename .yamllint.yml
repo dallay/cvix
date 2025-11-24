@@ -1,38 +1,9 @@
-# Reglas para yamllint
-# https://yamllint.readthedocs.io/en/stable/rules.html
-
-
-ignore: |
-  node_modules
-  build
-  dist
-  **/node_modules/**
-  **/build/**
-  **/dist/**
+# yamllint configuration to suppress warnings for application-test.yml
+---
 extends: default
-
+ignore: |
+  server/engine/src/test/resources/application-test.yml
 rules:
-  # Deshabilitar la regla de longitud de línea
-  line-length: disable
-  # No exigir el marcador de inicio de documento ("---") en todos los YAMLs
-  # Muchas plantillas y archivos de configuración en repositorios no incluyen
-  # explícitamente '---' y esto genera ruido en yamllint en CI. Desactivamos
-  # la regla para reducir falsos positivos.
-  document-start: disable
-  # Permitir sangría de 2 espacios (común en GitHub Actions)
-  indentation:
-    spaces: 2
-    indent-sequences: consistent
-  # Deshabilitar reglas problemáticas para archivos de GitHub Actions
   truthy:
-    ignore: |
-      .github/**
-  # No requerir espacios en llaves vacías
-  # The `empty-braces` rule is not available in some yamllint versions used
-  # by hosted actions/runners and caused a fatal error (no such rule).
-  # Removed for compatibility; default behavior is acceptable for this repo.
-  # If you need strict control over spaces inside flow-style empty mappings,
-  # consider upgrading yamllint in the action image and re-adding a compatible rule.
-  # Permitir comentarios que comienzan sin espacio
-  comments: disable
-  comments-indentation: disable
+    check-keys: true
+
