@@ -1,6 +1,7 @@
 package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.ControllerIntegrationTest
+import com.loomify.common.domain.presentation.SimpleMessageResponse
 import com.loomify.engine.workspace.WorkspaceStub
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -28,9 +29,8 @@ internal class UpdateWorkspaceControllerIntegrationTest : ControllerIntegrationT
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
-            .expectStatus().isOk
-            .expectBody(String::class.java)
-            .isEqualTo("Workspace updated successfully")
+            .expectStatus().isOk.expectBody(SimpleMessageResponse::class.java)
+            .isEqualTo(SimpleMessageResponse("Workspace updated successfully."))
     }
 
     @Test

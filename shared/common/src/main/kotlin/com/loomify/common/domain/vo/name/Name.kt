@@ -9,11 +9,6 @@ package com.loomify.common.domain.vo.name
  */
 data class Name(val firstName: FirstName, val lastName: LastName?) : Comparable<Name> {
 
-    constructor(firstName: String, lastName: String?) : this(
-        FirstName(firstName),
-        lastName?.let { LastName(it) },
-    )
-
     /**
      * Returns the full name of the user (first name + last name)
      * @return the full name of the user
@@ -28,4 +23,9 @@ data class Name(val firstName: FirstName, val lastName: LastName?) : Comparable<
     override operator fun compareTo(other: Name): Int = fullName().compareTo(other.fullName())
 
     override fun toString(): String = fullName()
+
+    companion object {
+        fun of(firstName: String, lastName: String?): Name =
+            Name(FirstName(firstName), lastName?.let { LastName(it) })
+    }
 }

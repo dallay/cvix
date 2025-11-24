@@ -2,6 +2,7 @@ package com.loomify.engine
 
 import com.loomify.common.domain.vo.credential.Credential
 import com.loomify.common.domain.vo.credential.CredentialId
+import com.loomify.common.domain.vo.credential.CredentialValue
 import java.util.*
 import net.datafaker.Faker
 
@@ -12,14 +13,14 @@ import net.datafaker.Faker
 object CredentialGenerator {
     private val faker = Faker()
     fun generate(password: String = generateValidPassword()): Credential =
-        Credential(CredentialId(UUID.randomUUID()), password)
+        Credential(CredentialId(UUID.randomUUID()), CredentialValue(password))
 
     fun generateValidPassword(maxAttempts: Int = 10): String {
         var password: String
         var attempts = 0
 
         do {
-            password = faker.internet().password(8, 80, true, true, true)
+            password = faker.credentials().password(8, 80, true, true, true)
             if (isPasswordValid(password)) {
                 return password
             }

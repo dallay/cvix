@@ -2,7 +2,6 @@ package com.loomify.engine.users.domain
 
 import com.loomify.UnitTest
 import com.loomify.common.domain.vo.credential.Credential
-import com.loomify.common.domain.vo.credential.CredentialType
 import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -35,7 +34,7 @@ internal class UserTest {
 
     @Test
     fun `should create a valid user with password`() {
-        val credential = Credential.create(password, CredentialType.PASSWORD)
+        val credential = Credential.create(password)
         val user = User(
             id = UUID.randomUUID(),
             email = emailOrUsername,

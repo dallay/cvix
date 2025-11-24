@@ -75,6 +75,8 @@ reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }
+## MDC for coroutines
+kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j", version = "1.10.2" }
 # External Libraries
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.21.2" }
@@ -135,7 +137,7 @@ spring-boot-sso = [
     "spring-security-oauth2-jose",
 ]
 jackson = ["jackson-annotations", "jackson-core", "jackson-databind", "jackson-module-kotlin"]
-kotlin-jvm = ["kotlin-reflect", "kotlinx-coroutines-reactor", "reactor-kotlin-extensions", "reflections"]
+kotlin-jvm = ["kotlin-reflect", "kotlinx-coroutines-reactor", "kotlinx-coroutines-slf4j", "reactor-kotlin-extensions", "reflections"]
 keycloak = [ "keycloak-admin-client"]
 kotest = ["kotest-assertions-core-jvm", "kotest-assertions-json", "kotest-runner-junit5", "kotest-testcontainers"]
 tetscontainers = ["testcontainers", "testcontainers-junit-jupiter", "testcontainers-keycloak"]

@@ -13,6 +13,7 @@ export const sharedVitestConfig = (dirname) =>
 				provider: "v8",
 				enabled: true,
 				reportsDirectory: "./coverage",
+				reporter: ["text", "json-summary", "lcov"],
 			},
 			reporters: [
 				"default",

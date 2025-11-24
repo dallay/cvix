@@ -13,7 +13,7 @@ A **Dependency Injection (DI)** pattern has been implemented using Vue's `provid
 
 ### Layer Structure
 
-```
+```text
 src/core/resume/
 ├── domain/                          # Domain Layer
 │   ├── Resume.ts                    # Entities
@@ -39,7 +39,7 @@ src/core/resume/
 
 ### Injection Flow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                        main.ts                              │
 │  ┌───────────────────────────────────────────────────────┐  │
@@ -182,11 +182,13 @@ If in the future you need to test with a mock validator, you could extend the ap
 ## Advantages of this Implementation
 
 ### 1. **Separation of Concerns**
+
 - The store does NOT know which concrete validator it uses
 - The validator implementation can change without touching the store
 
 ### 2. **Dependency Inversion Principle (SOLID)**
-```
+
+```text
 ┌──────────────────────────────┐
 │     resume.store.ts           │  ← Depends on abstraction
 │   (depends on interface)     │
@@ -206,14 +208,17 @@ If in the future you need to test with a mock validator, you could extend the ap
 ```
 
 ### 3. **Testability**
+
 - The store can be tested with the default validator
 - Easy to add mocks in the future if necessary
 
 ### 4. **Centralized Configuration**
+
 - All DI is configured in `setupResumeDI()`
 - Single place to change implementations
 
 ### 5. **Automatic Fallback**
+
 - If you forget to configure DI, the store still works
 - Uses `JsonResumeValidator` by default
 
@@ -222,6 +227,7 @@ If in the future you need to test with a mock validator, you could extend the ap
 ### Adding More Dependencies
 
 **1. Create new key:**
+
 ```typescript
 // di/keys.ts
 export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
@@ -229,6 +235,7 @@ export const RESUME_GENERATOR_KEY: InjectionKey<ResumeGenerator> =
 ```
 
 **2. Register in DI:**
+
 ```typescript
 // config/di.ts
 export function setupResumeDI(app: App): void {
@@ -238,31 +245,32 @@ export function setupResumeDI(app: App): void {
 ```
 
 **3. Consume in the store:**
+
 ```typescript
 // store/resume.store.ts
 function getGenerator(): ResumeGenerator {
-  const instance = getCurrentInstance();
-  if (instance?.appContext.provides[RESUME_GENERATOR_KEY as symbol]) {
-    return instance.appContext.provides[RESUME_GENERATOR_KEY as symbol];
-  }
-  return new DefaultResumeGenerator();
+    const instance = getCurrentInstance();
+    if (instance?.appContext.provides[RESUME_GENERATOR_KEY as symbol]) {
+        return instance.appContext.provides[RESUME_GENERATOR_KEY as symbol];
+    }
+    return new DefaultResumeGenerator();
 }
 
 export const useResumeStore = defineStore("resume", () => {
-  const validator = getValidator();
-  const generator = getGenerator();
-  // ...
+    const validator = getValidator();
+    const generator = getGenerator();
+    // ...
 });
 ```
 
 ## Comparison with Alternatives
 
-| Approach                           | Pros                                                          | Cons                                       |
-| ---------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
-| **DI with provide/inject** (current) | ✅ Clean Architecture<br>✅ Extensible<br>✅ Automatic fallback | ⚠️ Requires setup in main.ts                |
-| Direct import                      | ✅ Simple                                                      | ❌ Tight coupling<br>❌ Difficult testing   |
-| Factory pattern                    | ✅ Flexible                                                    | ❌ More boilerplate code                   |
-| Service Locator                    | ✅ Centralized                                                | ❌ Anti-pattern (hidden dependencies)      |
+| Approach                             | Pros                                                   | Cons                                 |
+|--------------------------------------|--------------------------------------------------------|--------------------------------------|
+| **DI with provide/inject** (current) | ✅ Clean Architecture ✅ Extensible ✅ Automatic fallback | ⚠️ Requires setup in main.ts         |
+| Direct import                        | ✅ Simple                                               | ❌ Tight coupling ❌ Difficult testing |
+| Factory pattern                      | ✅ Flexible                                             | ❌ More boilerplate code              |
+| Service Locator                      | ✅ Centralized                                          | ❌ Anti-pattern (hidden dependencies) |
 
 ## Best Practices
 
@@ -284,6 +292,7 @@ This DI architecture provides:
 - 🛡️ **Robustness**: Automatic fallbacks prevent errors
 
 The pattern is ready to scale when more features are added such as:
+
 - Resume generators (AI-powered)
 - Export services (PDF, DOCX)
 - Template engines

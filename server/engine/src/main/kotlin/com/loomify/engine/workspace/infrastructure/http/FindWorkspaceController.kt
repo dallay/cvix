@@ -2,7 +2,6 @@ package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
 import com.loomify.common.domain.bus.query.Response
-import com.loomify.engine.AppConstants.UUID_PATTERN
 import com.loomify.engine.workspace.application.find.FindWorkspaceQuery
 import com.loomify.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
@@ -10,7 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.constraints.Pattern
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -50,11 +49,7 @@ class FindWorkspaceController(
             schema = Schema(type = "string", format = "uuid"),
         )
         @PathVariable
-        @Pattern(
-            regexp = UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String
+        id: UUID,
     ): Response {
         log.debug("Finding workspace")
         val query = FindWorkspaceQuery(id)

@@ -37,8 +37,8 @@ internal class CreateWorkspaceCommandHandlerTest {
     @Test
     fun `should create workspace and publish event when handle is called`() = runTest {
         // Given
-        val workspaceId = UUID.randomUUID().toString()
-        val ownerId = UUID.randomUUID().toString()
+        val workspaceId = UUID.randomUUID()
+        val ownerId = UUID.randomUUID()
         val name = "Test Workspace"
         val command = CreateWorkspaceCommand(
             id = workspaceId,
@@ -54,12 +54,12 @@ internal class CreateWorkspaceCommandHandlerTest {
         coVerify {
             workspaceRepository.create(
                 withArg {
-                    assertEquals(workspaceId, it.id.value.toString())
+                    assertEquals(workspaceId, it.id.id)
                     assertEquals(name, it.name)
                     assertEquals("A test workspace", it.description)
-                    assertEquals(ownerId, it.ownerId.value.toString())
+                    assertEquals(ownerId, it.ownerId.id)
                     assertEquals(1, it.members.size) // Owner is added as a member
-                    assertEquals(ownerId, it.members.first().value.toString())
+                    assertEquals(ownerId, it.members.first().id)
                 },
             )
         }

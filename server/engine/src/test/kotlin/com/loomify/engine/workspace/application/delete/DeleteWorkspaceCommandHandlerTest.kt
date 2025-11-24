@@ -18,7 +18,7 @@ internal class DeleteWorkspaceCommandHandlerTest {
     private lateinit var repository: WorkspaceRepository
     private lateinit var destroyer: WorkspaceDestroyer
     private lateinit var deleteWorkspaceCommandHandler: DeleteWorkspaceCommandHandler
-    private lateinit var workspaceId: String
+    private lateinit var workspaceId: UUID
 
     @BeforeEach
     fun setUp() {
@@ -26,7 +26,7 @@ internal class DeleteWorkspaceCommandHandlerTest {
         repository = mockk()
         destroyer = WorkspaceDestroyer(repository, eventPublisher)
         deleteWorkspaceCommandHandler = DeleteWorkspaceCommandHandler(destroyer)
-        workspaceId = UUID.randomUUID().toString()
+        workspaceId = UUID.randomUUID()
 
         coEvery { repository.delete(any()) } returns Unit
         coEvery { eventPublisher.publish(any<WorkspaceDeletedEvent>()) } returns Unit
@@ -44,7 +44,7 @@ internal class DeleteWorkspaceCommandHandlerTest {
         coVerify {
             repository.delete(
                 withArg {
-                    assert(it.value.toString() == workspaceId)
+                    assert(it.id == workspaceId)
                 },
             )
         }

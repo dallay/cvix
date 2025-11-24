@@ -73,7 +73,7 @@ class KeycloakRepository(
                     email = email.value,
                     firstName = firstName?.value ?: "",
                     lastName = lastName?.value ?: "",
-                    password = credential.value,
+                    password = credential.credentialValue.value,
                 )
             } catch (exception: BusinessRuleValidationException) {
                 handleBusinessRuleException(exception, email, message)
@@ -103,7 +103,7 @@ class KeycloakRepository(
     ): String {
         val credentialRepresentation = CredentialRepresentation().apply {
             type = CredentialRepresentation.PASSWORD
-            value = credential.value
+            value = credential.credentialValue.value
         }
 
         log.debug(

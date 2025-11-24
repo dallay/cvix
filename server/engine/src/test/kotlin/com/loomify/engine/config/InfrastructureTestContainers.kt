@@ -6,6 +6,7 @@ import com.loomify.engine.authentication.infrastructure.mapper.AccessTokenRespon
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.*
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -70,6 +71,14 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
+
+        /**
+         * Unique suffix for test container names. Can be overridden via system property
+         * `tc.name.suffix` to support container reuse across test runs.
+         */
+        private val uniqueTestSuffix: String by lazy {
+            System.getProperty("tc.name.suffix") ?: UUID.randomUUID().toString()
+        }
         private const val ADMIN_USER: String = "admin"
         private const val ADMIN_PASSWORD: String = "secret"
         private const val REALM: String = "loomify"
@@ -85,7 +94,9 @@ abstract class InfrastructureTestContainers {
                 .withRealmImportFile("keycloak/demo-realm-test.json")
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
-                .withCreateContainerCmdModifier { cmd -> cmd.withName("keycloak-tests") }
+                .withCreateContainerCmdModifier { cmd ->
+                    cmd.withName("keycloak-tests-$uniqueTestSuffix")
+                }
                 .withNetwork(NETWORK)
 
         @JvmStatic
@@ -98,7 +109,9 @@ abstract class InfrastructureTestContainers {
             )
             waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
             withExposedPorts(*ports)
-            withCreateContainerCmdModifier { cmd -> cmd.withName("greenmail-tests") }
+            withCreateContainerCmdModifier { cmd ->
+                cmd.withName("greenmail-tests-$uniqueTestSuffix")
+            }
             withNetwork(NETWORK)
         }
 

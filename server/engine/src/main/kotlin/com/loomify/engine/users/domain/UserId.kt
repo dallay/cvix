@@ -12,7 +12,7 @@ import java.util.*
  * @see BaseId for more information about the base ID
  * @see UUID for more information about the UUID
  */
-class UserId(private val id: UUID) : BaseId<UUID>(id) {
+class UserId(override val id: UUID) : BaseId<UUID>(id) {
     /**
      * Constructs a new instance of the class with the specified ID.
      *

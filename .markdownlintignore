@@ -1,5 +1,5 @@
 .github/copilot-instructions.md
-.github/prompts/*speckit*
+.github/agents/**
 .specify/*
 CLAUDE.md
 GEMINI.md

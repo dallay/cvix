@@ -11,6 +11,21 @@ import java.util.UUID
  */
 interface ResumeRepository {
     /**
+     * Checks if a resume exists by its ID (regardless of user).
+     * @param id The resume ID
+     * @return true if the resume exists, false otherwise
+     */
+    suspend fun existsById(id: UUID): Boolean
+
+    /**
+     * Checks if a resume exists by its ID for a specific user (authorization enforced).
+     * @param id The resume ID
+     * @param userId The authenticated user ID
+     * @return true if the resume exists and is accessible by the user, false otherwise
+     */
+    suspend fun existsByIdForUser(id: UUID, userId: UUID): Boolean
+
+    /**
      * Saves a resume document (create or update).
      * @param document The resume document to save
      * @return The saved resume document
@@ -34,17 +49,17 @@ interface ResumeRepository {
     suspend fun findByUserIdAndWorkspaceId(userId: UUID, workspaceId: UUID): List<ResumeDocument>
 
     /**
-     * Deletes a resume document by ID.
+     * Deletes a resume document by ID for a specific user (authorization enforced).
      * @param id The resume ID
-     * @param userId The authenticated user ID (for authorization)
+     * @param userId The authenticated user ID
      */
-    suspend fun deleteById(id: UUID, userId: UUID)
+    suspend fun deleteByIdForUser(id: UUID, userId: UUID)
 
     /**
-     * Checks if a resume document exists.
+     * Deletes a resume document if it exists and the user is authorized.
      * @param id The resume ID
      * @param userId The authenticated user ID (for authorization)
-     * @return true if exists and authorized
+     * @return The number of rows affected (0 if not found or unauthorized)
      */
-    suspend fun existsById(id: UUID, userId: UUID): Boolean
+    suspend fun deleteIfAuthorized(id: UUID, userId: UUID): Long
 }

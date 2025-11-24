@@ -23,7 +23,7 @@ internal class GetAllWorkspaceControllerTest : ControllerTest() {
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        val query = AllWorkspaceByMemberQuery(userId.toString())
+        val query = AllWorkspaceByMemberQuery(userId)
         coEvery { mediator.send(eq(query)) } returns WorkspaceResponses.from(workspaces)
     }
 

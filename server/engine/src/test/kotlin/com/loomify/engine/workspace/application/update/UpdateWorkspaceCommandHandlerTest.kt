@@ -43,7 +43,7 @@ internal class UpdateWorkspaceCommandHandlerTest {
     fun `should update an workspace`() = runTest {
         // Given
         val command = UpdateWorkspaceCommand(
-            id = workspace.id.value.toString(),
+            id = workspace.id.id,
             name = workspace.name,
             description = workspace.description,
         )
@@ -56,8 +56,8 @@ internal class UpdateWorkspaceCommandHandlerTest {
             workspaceRepository.update(
                 withArg { updatedWorkspace ->
                     assertEquals(
-                        workspace.id.value.toString(),
-                        updatedWorkspace.id.value.toString(),
+                        workspace.id.id.toString(),
+                        updatedWorkspace.id.id.toString(),
                     )
                     assertEquals(workspace.name, updatedWorkspace.name)
                     assertEquals(workspace.description, updatedWorkspace.description)
@@ -68,8 +68,8 @@ internal class UpdateWorkspaceCommandHandlerTest {
                         "Owner should be added as a member",
                     )
                     assertEquals(
-                        workspace.ownerId.value.toString(),
-                        updatedWorkspace.members.first().value.toString(),
+                        workspace.ownerId.id.toString(),
+                        updatedWorkspace.members.first().id.toString(),
                     )
                 },
             )

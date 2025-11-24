@@ -57,7 +57,7 @@ object ResumeTemplateMapper {
             name = LatexEscaper.escape(basics.name.value),
             label = basics.label?.value?.let { LatexEscaper.escape(it) },
             image = basics.image?.value,
-            email = LatexEscaper.escape(basics.email.email),
+            email = LatexEscaper.escape(basics.email.value),
             phone = basics.phone?.value?.let { LatexEscaper.escape(it) },
             url = basics.url?.value, // handled by UrlRenderer if formatted
             summary = basics.summary?.value?.let { LatexEscaper.escape(it) },

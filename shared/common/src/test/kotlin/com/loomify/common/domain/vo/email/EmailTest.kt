@@ -1,6 +1,7 @@
 package com.loomify.common.domain.vo.email
 
-import com.loomify.common.domain.error.EmailNotValidException
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -10,7 +11,7 @@ internal class EmailTest {
     @Test
     fun `should create email`() {
         val email = Email("john.snow@gmail.com")
-        assertEquals("john.snow@gmail.com", email.email)
+        assertEquals("john.snow@gmail.com", email.value)
     }
 
     @Test
@@ -23,8 +24,7 @@ internal class EmailTest {
         )
 
         invalidEmails.forEach {
-            println("Email: $it")
-            assertThrows(EmailNotValidException::class.java) {
+            assertThrows(IllegalArgumentException::class.java) {
                 Email(it)
             }
         }
@@ -32,24 +32,51 @@ internal class EmailTest {
 
     @Test
     fun `should throw exception when email is empty`() {
-        assertThrows(EmailNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             Email("")
         }
     }
 
     @Test
-    fun `should throw exception when email is blank`() {
-        assertThrows(EmailNotValidException::class.java) {
-            Email(" ")
-        }
+    fun `should get null from blank email`() {
+        assertThat(Email.of(" ")).isNull()
     }
 
     @Test
-    fun `should throw exception when email length is greater than 255`() {
-        val email = "john.snow@${(1..256).joinToString("") { "a" }}.com"
-        assertThrows(EmailNotValidException::class.java) {
-            Email(email)
-        }
+    fun `should get email from actual email`() {
+        assertThat(Email.of("user@example.com")).isEqualTo(Email("user@example.com"))
+    }
+
+    @Test
+    fun `should get email value`() {
+        assertThat(Email("user@example.com").value).isEqualTo("user@example.com")
+    }
+
+    @Test
+    fun `should get null from invalid email`() {
+        assertThat(Email.of("invalid-email")).isNull()
+    }
+
+    @Test
+    fun `should throw exception when email is blank`() {
+        val instanceOf =
+            assertThatThrownBy { Email(" ") }.isInstanceOf(IllegalArgumentException::class.java)
+        instanceOf.hasMessage("Email cannot be blank")
+    }
+
+    @Test
+    fun `should throw exception when email is invalid`() {
+        val instanceOf = assertThatThrownBy { Email("invalid-email") }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        instanceOf.hasMessage("Email is not valid: invalid-email")
+    }
+
+    @Test
+    fun `should throw exception when email is too long`() {
+        val longEmail = "a".repeat(310) + "@example.com"
+        val instanceOf =
+            assertThatThrownBy { Email(longEmail) }.isInstanceOf(IllegalArgumentException::class.java)
+        instanceOf.hasMessage("Email cannot exceed 320 characters")
     }
 
     @Test
@@ -77,7 +104,7 @@ internal class EmailTest {
         )
 
         invalidEmails.forEach {
-            assertThrows(EmailNotValidException::class.java) {
+            assertThrows(IllegalArgumentException::class.java) {
                 Email(it)
             }
         }

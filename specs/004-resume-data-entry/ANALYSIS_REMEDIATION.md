@@ -16,12 +16,14 @@
 ### CRITICAL Issues Fixed ✅
 
 #### C1: TDD Constitution Violation
+
 - **Issue**: Constitution mandates TDD (tests BEFORE implementation) but [tasks.md](tasks.md) placed all tests in Phase 9 (Polish) with "TDD-optional approach"
 - **Resolution**: Documented justified exception in `plan.md` Complexity Tracking table
 - **Rationale**: Rapid prototyping for complex UI interactions requires stakeholder feedback before test investment. Tests added in polish phase to validate finalized behavior and meet coverage gates (80% backend, 75% frontend) before release.
 - **Status**: ✅ Exception documented, approach justified
 
 #### C8: Hexagonal Architecture Violation
+
 - **Issue**: Task T014 modified core `SecurityConfiguration.kt`, violating separation of concerns
 - **Resolution**: Updated T014 to create dedicated `ResumeSecurityConfig.kt` within resume module infrastructure layer
 - **Impact**: Maintains hexagonal boundaries, keeps resume-specific security configuration isolated
@@ -30,18 +32,21 @@
 ### HIGH Priority Issues Fixed ✅
 
 #### A5: Terminology Inconsistency (Basics vs PersonalInfo)
+
 - **Issue**: Task T008 referenced "Basics (PersonalInfo)" but data model consistently uses "Basics" per JSON Resume schema
 - **Resolution**: Updated T008 to rename PersonalInfo → Basics for alignment with JSON Resume standard
 - **Impact**: Eliminates confusion, ensures schema compliance
 - **Status**: ✅ Task updated with renaming directive
 
 #### C2: Missing Task for FR-046 (Auto-clear Validation Errors)
+
 - **Issue**: Requirement FR-046 "clear validation errors automatically when corrected" had zero tasks
 - **Resolution**: Added task T051a for reactive error clearing logic in ValidationErrorPanel
 - **Coverage**: FR-046 now has explicit implementation task
 - **Status**: ✅ Task T051a added
 
 #### A9: Missing Tasks for FR-076/077 (Server Persistence Features)
+
 - **Issue**: Server persistence retry logic (FR-076) and server-synced timestamp (FR-077) requirements lacked tasks
 - **Resolution**: Added 3 new subtasks:
   - **T067a**: Exponential backoff retry mechanism (1s → 30s max)
@@ -53,18 +58,21 @@
 ### MEDIUM Priority Improvements ✅
 
 #### A1: Duplication (FR-047 + FR-075)
+
 - **Issue**: Two autosave requirements with overlapping scope
 - **Resolution**: Consolidated in spec.md - FR-047 now covers local storage strategy, FR-075 covers server sync, added FR-074a for multi-tab sync
 - **Impact**: Clearer separation between local draft autosave (2s) and server persistence (2s idle / 10s max)
 - **Status**: ✅ Spec updated
 
 #### A2: Underspecified Accordion Default State
+
 - **Issue**: FR-003 didn't specify which sections should be expanded/collapsed on load
 - **Resolution**: Updated FR-003 and tasks T018/T032 to specify: "Basics expanded by default, all others collapsed"
 - **Impact**: Eliminates ambiguity for implementers
 - **Status**: ✅ Spec and tasks updated
 
 #### A3, A4: Ambiguous Performance Metrics
+
 - **Issue**: FR-067 and FR-068 lacked performance percentile specifications
 - **Resolution**:
   - FR-067: "within 150ms (p95 latency)"
@@ -73,18 +81,21 @@
 - **Status**: ✅ Spec updated
 
 #### A7: Ambiguous Template Fetch Timing
+
 - **Issue**: FR-078 "on entering... (or first template interaction)" was unclear
 - **Resolution**: Clarified to "once on PDF Generation screen load and cache for active session"
 - **Impact**: Clear implementation strategy
 - **Status**: ✅ Spec updated
 
 #### D2: Terminology Drift (ResumeToc vs ResumeForm)
+
 - **Issue**: Tasks inconsistently referenced "ResumeToc (ResumeForm)"
 - **Resolution**: Standardized on "ResumeToc" throughout (removed parenthetical references)
 - **Impact**: Consistent component naming
 - **Status**: ✅ Tasks updated in T018, T028, T032, T090
 
 #### U4: Edge Case Not Elevated to Requirement
+
 - **Issue**: Multi-tab conflict resolution was edge case, not formal requirement
 - **Resolution**: Added FR-074a for BroadcastChannel with last-write-wins strategy
 - **Impact**: Elevates critical sync behavior to formal requirement
@@ -119,21 +130,25 @@
 ### Optional Enhancements (Not Blocking)
 
 **C4**: Keyboard shortcut help panel
+
 - **Suggestion**: Add FR for "System SHOULD display keyboard shortcuts via ? key"
 - **Priority**: Low - nice-to-have UX enhancement
 - **Decision**: Defer to future iteration
 
 **U2**: Phone field original input preservation
+
 - **Suggestion**: Specify whether to store both E.164 normalized + original input
 - **Priority**: Low - implementation detail, can be decided during development
 - **Decision**: Defer to implementation phase
 
 **U3**: JSON size specification (100KB)
+
 - **Suggestion**: Clarify if minified or formatted JSON
-- **Priority**: Low - edge case for extremely large resumes
+- **Priority**: Low - edge case for large resumes (>100KB)
 - **Decision**: Assume minified, document in implementation
 
 **C5**: ETag conditional GET implementation
+
 - **Suggestion**: Add task for If-None-Match header handling
 - **Priority**: Low - optimization, not MVP-critical
 - **Decision**: Defer to performance optimization phase
@@ -169,18 +184,21 @@
 ## Next Steps
 
 ### Ready for Implementation ✅
+
 - All MVP-blocking issues resolved
 - Tasks.md ready for `/speckit.implement` command
 - Spec.md clarified and consolidated
 - Constitution compliance documented
 
 ### Recommended Pre-Implementation Actions
+
 1. Review Complexity Tracking exception for TDD approach with team
 2. Verify existing domain entities (PersonalInfo → Basics rename needed)
 3. Confirm user storage preference implementation in settings module
 4. Validate JSON Resume schema v1.0.0 is at documented location
 
 ### Post-MVP Considerations
+
 - Add keyboard shortcut help panel (C4)
 - Implement ETag conditional GET for template caching (C5)
 - Consider storing original phone input alongside E.164 (U2)
@@ -191,6 +209,7 @@
 ## Analysis Command Output Archive
 
 Full analysis report available in conversation history with:
+
 - 23 total findings across 4 severity levels
 - Coverage summary table (78 requirements mapped)
 - Constitution alignment check

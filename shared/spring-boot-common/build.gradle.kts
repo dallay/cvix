@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(project(":shared:common"))
+    implementation(libs.kotlinx.coroutines.slf4j)
     implementation(libs.spring.boot.starter.data.r2dbc)
     implementation(libs.commons.text)
     implementation(libs.spring.boot.starter.security)
@@ -14,6 +15,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
+    testImplementation(libs.bundles.kotest)
 }
 
 tasks.withType<Test> {

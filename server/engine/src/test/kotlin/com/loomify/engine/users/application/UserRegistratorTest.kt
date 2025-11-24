@@ -179,7 +179,7 @@ class UserRegistratorTest {
                 } returns mockCreatedUser
                 every { mockCreatedUser.pullDomainEvents() } returns listOf(userCreatedEvent)
                 every { mockCreatedUser.id } returns mockUserId
-                every { mockUserId.value } returns expectedUserId
+                every { mockUserId.id } returns expectedUserId
 
                 // When
                 val actualUserId = userRegistrator.registerNewUser(
@@ -278,7 +278,7 @@ class UserRegistratorTest {
             // When
             userRegistrator.registerNewUser(
                 email = Email(minimalUser.email.value),
-                credential = Credential.create(minimalUser.credentials.first().value),
+                credential = Credential.create(minimalUser.credentials.first().credentialValue.value),
                 firstName = FirstName(minimalUser.name?.firstName?.value ?: ""),
                 lastName = LastName(minimalUser.name?.lastName?.value ?: ""),
             )
@@ -304,7 +304,7 @@ class UserRegistratorTest {
             // When
             userRegistrator.registerNewUser(
                 email = Email(maximalUser.email.value),
-                credential = Credential.create(maximalUser.credentials.first().value),
+                credential = Credential.create(maximalUser.credentials.first().credentialValue.value),
                 firstName = FirstName(maximalUser.name?.firstName?.value ?: ""),
                 lastName = LastName(maximalUser.name?.lastName?.value ?: ""),
             )
@@ -334,7 +334,7 @@ class UserRegistratorTest {
             // When
             userRegistrator.registerNewUser(
                 email = Email(specialCharsUser.email.value),
-                credential = Credential.create(specialCharsUser.credentials.first().value),
+                credential = Credential.create(specialCharsUser.credentials.first().credentialValue.value),
                 firstName = FirstName(specialCharsUser.name?.firstName?.value ?: ""),
                 lastName = LastName(specialCharsUser.name?.lastName?.value ?: ""),
             )
@@ -358,7 +358,7 @@ class UserRegistratorTest {
             // When
             userRegistrator.registerNewUser(
                 email = Email(unicodeUser.email.value),
-                credential = Credential.create(unicodeUser.credentials.first().value),
+                credential = Credential.create(unicodeUser.credentials.first().credentialValue.value),
                 firstName = FirstName(unicodeUser.name?.firstName?.value ?: ""),
                 lastName = LastName(unicodeUser.name?.lastName?.value ?: ""),
             )
@@ -395,7 +395,7 @@ class UserRegistratorTest {
             } returns mockUser
             every { mockUser.pullDomainEvents() } returns emptyList()
             every { mockUser.id } returns mockUserId
-            every { mockUserId.value } returns expectedUserId
+            every { mockUserId.id } returns expectedUserId
 
             // When
             val actualUserId = registrator.registerNewUser(

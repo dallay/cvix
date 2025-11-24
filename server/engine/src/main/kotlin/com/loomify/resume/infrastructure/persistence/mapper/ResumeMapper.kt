@@ -1,11 +1,16 @@
 package com.loomify.resume.infrastructure.persistence.mapper
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.loomify.resume.domain.Resume
 import com.loomify.resume.domain.ResumeDocument
+import com.loomify.resume.domain.ResumeDocumentId
 import com.loomify.resume.infrastructure.persistence.entity.ResumeEntity
+import io.r2dbc.postgresql.codec.Json
 
 /**
  * Mapper between domain and infrastructure models.
@@ -17,16 +22,27 @@ import com.loomify.resume.infrastructure.persistence.entity.ResumeEntity
  */
 object ResumeMapper {
 
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+        registerModule(JavaTimeModule())
+        // Configure for proper JSON serialization
+        findAndRegisterModules()
+        // Don't fail on unknown properties when deserializing
+        configure(
+            com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+            false,
+        )
+        // Include non-null values only
+        setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+    }
 
     /**
      * Converts ResumeEntity (infrastructure) to ResumeDocument (domain).
      * Deserializes the JSONB data field into Resume and wraps it with metadata.
      */
     fun ResumeEntity.toDomain(): ResumeDocument {
-        val resumeContent: Resume = objectMapper.readValue(data)
+        val resumeContent: Resume = objectMapper.readValue(data.asString())
         return ResumeDocument(
-            id = id,
+            id = ResumeDocumentId(id),
             userId = userId,
             workspaceId = workspaceId,
             title = title,
@@ -44,11 +60,11 @@ object ResumeMapper {
      */
     fun ResumeDocument.toEntity(): ResumeEntity {
         return ResumeEntity(
-            id = id,
+            id = id.id,
             userId = userId,
             workspaceId = workspaceId,
             title = title,
-            data = content.toJsonString(),
+            data = content.toJson(),
             createdAt = createdAt,
             updatedAt = updatedAt,
             createdBy = createdBy,
@@ -57,7 +73,21 @@ object ResumeMapper {
     }
 
     /**
-     * Converts Resume (pure content) to JSON string for JSONB storage.
+     * Converts Resume (pure content) to Json type for JSONB storage.
      */
-    fun Resume.toJsonString(): String = objectMapper.writeValueAsString(this)
+    fun Resume.toJson(): Json {
+        return try {
+            val jsonString = objectMapper.writeValueAsString(this)
+            Json.of(jsonString)
+        } catch (e: JsonMappingException) {
+            throw IllegalStateException(
+                "Invalid Resume structure for JSON serialization: ${e.message}",
+                e,
+            )
+        } catch (e: JsonProcessingException) {
+            throw IllegalStateException("Failed to serialize Resume to JSON: ${e.message}", e)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalStateException("Failed to create JSONB from Resume: ${e.message}", e)
+        }
+    }
 }

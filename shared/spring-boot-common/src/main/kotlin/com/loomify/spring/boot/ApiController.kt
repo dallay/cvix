@@ -9,11 +9,15 @@ import com.loomify.common.domain.bus.query.QueryHandlerExecutionError
 import com.loomify.common.domain.bus.query.Response
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
+import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.util.HtmlUtils
 
 /**
  * Abstract base class for API controllers.
@@ -92,6 +96,39 @@ abstract class ApiController(
     }
 
     /**
+     * Retrieves the current user email from the JWT token attributes.
+     * If the authentication is not a JwtAuthenticationToken or the email claim is missing,
+     * this method returns null.
+     *
+     * @return The current user email from JWT token attributes, or null if not available.
+     */
+    protected suspend fun userEmail(): String? {
+        val authentication = ReactiveSecurityContextHolder.getContext()
+            .map { it.authentication }
+            .awaitSingleOrNull()
+
+        return when (authentication) {
+            is JwtAuthenticationToken -> authentication.tokenAttributes["email"] as? String
+            is UsernamePasswordAuthenticationToken -> null
+            else -> null
+        }
+    }
+
+    protected suspend fun userIdFromToken(): UUID {
+        val userId = try {
+            UUID.fromString(
+                userId() ?: throw ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Missing user ID in token",
+                ),
+            )
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user ID format in token", e)
+        }
+        return userId
+    }
+
+    /**
      * Validates a path variable against an allow-list regex (^[a-zA-Z0-9_-]+$)
      * to prevent path traversal and other injection attacks.
      *
@@ -104,7 +141,7 @@ abstract class ApiController(
         require(pathVariable.matches(regex)) {
             "Invalid path variable. Only alphanumeric characters, underscores, and hyphens are allowed."
         }
-        return URLEncoder.encode(pathVariable, "UTF-8")
+        return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
     }
 
     /**

@@ -1,7 +1,12 @@
 package com.loomify.common.domain.vo.credential
 
 import com.loomify.common.domain.BaseId
-import com.loomify.common.domain.BaseValidateValueObject
+import com.loomify.common.domain.vo.credential.Credential.Companion.MIN_LENGTH
+import com.loomify.common.domain.vo.credential.Credential.Companion.charLowercase
+import com.loomify.common.domain.vo.credential.Credential.Companion.charNumbers
+import com.loomify.common.domain.vo.credential.Credential.Companion.charSpecial
+import com.loomify.common.domain.vo.credential.Credential.Companion.charUppercase
+import com.loomify.common.domain.vo.credential.Credential.Companion.charset
 import java.util.*
 
 /**
@@ -10,44 +15,19 @@ import java.util.*
  */
 data class Credential(
     val id: CredentialId,
-    val credentialValue: String,
-    val type: CredentialType = CredentialType.PASSWORD
-) : BaseValidateValueObject<String>(credentialValue) {
-
-    /**
-     * Validates the value of the value object
-     * @param value the value to validate
-     */
-    override fun validate(value: String) {
-        if (value.isBlank()) {
-            throw CredentialException("Credential value cannot be blank")
-        }
-        if (value.length < MIN_LENGTH) {
-            throw CredentialException("Credential value must be at least $MIN_LENGTH characters")
-        }
-        // Password must have at least one number, one uppercase, one lowercase and one special character
-        if (!value.any { charNumbers.contains(it) }) {
-            throw CredentialException("The password must have at least one number")
-        }
-        if (!value.any { charUppercase.contains(it) }) {
-            throw CredentialException("The password must have at least one uppercase character")
-        }
-        if (!value.any { charLowercase.contains(it) }) {
-            throw CredentialException("The password must have at least one lowercase character")
-        }
-        if (!value.any { charSpecial.contains(it) }) {
-            throw CredentialException("The password must have at least one special character")
-        }
-    }
-
+    val credentialValue: CredentialValue,
+) {
     companion object {
+        private const val REQUIRED_TYPES = 4
         const val MIN_LENGTH = 8
-        private val charNumbers = '0'..'9'
-        private val charUppercase = 'A'..'Z'
-        private val charLowercase = 'a'..'z'
-        private val charSpecial = "!@#$%^&*()_+{}|:<>?".toList()
+        // expose the character sets so other value objects (in this file) can validate passwords
+        val charNumbers: CharRange = '0'..'9'
+        val charUppercase: CharRange = 'A'..'Z'
+        val charLowercase: CharRange = 'a'..'z'
+        val charSpecial: List<Char> = "!@#$%^&*()_+{}|:<>?".toList()
+
         // Updated charset to include special characters for better entropy
-        private val charset = charLowercase + charUppercase + charNumbers + charSpecial
+        val charset: List<Char> = charLowercase + charUppercase + charNumbers + charSpecial
 
         /**
          * Generates a random password with the following rules:
@@ -60,21 +40,20 @@ data class Credential(
          * @see charLowercase the list of lowercase characters
          * @see charSpecial the list of special characters
          * @see charset the list of all characters
-         * @see Random the random generator
-         * @see Random.nextInt to generate a random number
+         * @see kotlin.random.Random the random generator
+         * @see kotlin.random.Random.nextInt to generate a random number
          */
         fun generateRandomCredentialPassword(): String {
-            val passwordChars = mutableListOf<Char>()
+            val passwordChars = mutableListOf<Char>().apply {
+                add(charNumbers.random())
+                add(charUppercase.random())
+                add(charLowercase.random())
+                add(charSpecial.random())
+            }
 
-            // Ensure at least one of each required character type
-            passwordChars.add(charNumbers.random())
-            passwordChars.add(charUppercase.random())
-            passwordChars.add(charLowercase.random())
-            passwordChars.add(charSpecial.random())
-
-            // Fill the rest of the password with random characters from the full charset (including special chars)
-            val remainingLength = MIN_LENGTH + kotlin.random.Random.nextInt(MIN_LENGTH) - passwordChars.size
-            repeat(remainingLength) {
+            val minLen = maxOf(MIN_LENGTH, REQUIRED_TYPES)
+            val targetLength = minLen + kotlin.random.Random.nextInt(minLen)
+            repeat(targetLength - passwordChars.size) {
                 passwordChars.add(charset.random())
             }
 
@@ -82,19 +61,26 @@ data class Credential(
         }
 
         /**
-         * Creates a new credential with the given value and type
+         * Creates a new credential with the given value
          * @param credentialValue the value of the credential
-         * @param type the type of the credential (default is [CredentialType.PASSWORD])
-         * @return the created credential with the given value and type and a random id generated with [UUID.randomUUID]
+         * @return the created credential with the given value and a random id generated with [UUID.randomUUID]
          * @see UUID.randomUUID for the id generation
          * @see CredentialId for the id type
          * @see Credential for the credential type
-         * @see CredentialType for the available types
          */
         fun create(
-            credentialValue: String,
-            type: CredentialType = CredentialType.PASSWORD
-        ): Credential = Credential(CredentialId(UUID.randomUUID()), credentialValue, type)
+            credentialValue: String
+        ): Credential =
+            // use the secondary constructor which accepts a raw String
+            fromRaw(CredentialId(UUID.randomUUID()), credentialValue)
+
+        /**
+         * Creates a Credential from a raw String
+         * @param id the id of the credential
+         * @param raw the raw String value of the credential
+         * @return the created Credential
+         */
+        fun fromRaw(id: CredentialId, raw: String): Credential = Credential(id, CredentialValue(raw))
     }
 }
 
@@ -105,14 +91,54 @@ data class Credential(
  * @see Credential for the credential type
  * @see CredentialId for the id type
  */
-class CredentialId(id: UUID) : BaseId<UUID>(id)
+data class CredentialId(override val id: UUID) : BaseId<UUID>(id)
 
 /**
- * Credential type representation in the domain layer of the application that is used to identify the type of credential
- * @see Credential for the credential type
+ * Password credential value representation with validation rules for secure passwords.
+ *
+ * **Note:** This value class is specifically designed for password credentials and enforces:
+ * - Minimum length of 8 characters
+ * - At least one digit, uppercase letter, lowercase letter, and special character
+ *
+ * Non-password credential types (API keys, tokens, etc.) should use a different value class.
  */
-enum class CredentialType {
-    PASSWORD,
-    TOTP,
-    SECRET
+@JvmInline
+value class CredentialValue(val value: String) {
+    init {
+        if (value.isBlank()) throw CredentialException("Credential value cannot be blank")
+        if (value.length < MIN_LENGTH) {
+            throw CredentialException(
+                "Credential value must be at least $MIN_LENGTH characters",
+            )
+        }
+        if (value.length > MAX_CREDENTIAL_LENGTH) {
+            throw CredentialException(
+                "Credential value cannot exceed $MAX_CREDENTIAL_LENGTH characters",
+            )
+        }
+        if (!value.any { it in charNumbers }) {
+            throw CredentialException(
+                "The password must have at least one number",
+            )
+        }
+        if (!value.any { it in charUppercase }) {
+            throw CredentialException(
+                "The password must have at least one uppercase character",
+            )
+        }
+        if (!value.any { it in charLowercase }) {
+            throw CredentialException(
+                "The password must have at least one lowercase character",
+            )
+        }
+        if (!value.any { it in charSpecial }) {
+            throw CredentialException("The password must have at least one special character")
+        }
+    }
+
+    override fun toString(): String = "****"
+
+    companion object {
+        const val MAX_CREDENTIAL_LENGTH = 128
+    }
 }

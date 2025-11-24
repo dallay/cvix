@@ -21,7 +21,7 @@ internal class CreateWorkspaceControllerIntegrationTest : ControllerIntegrationT
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
     fun `should create a new workspace`() {
-        val ownerId = "efc4b2b8-08be-4020-93d5-f795762bf5c9"
+        val ownerId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
         val request: CreateWorkspaceRequest = WorkspaceStub.generateRequest(ownerId = ownerId)
         val id = UUID.randomUUID().toString()
         webTestClient.mutateWith(csrf()).put()

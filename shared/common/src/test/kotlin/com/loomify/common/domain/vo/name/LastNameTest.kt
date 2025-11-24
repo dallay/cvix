@@ -32,7 +32,7 @@ internal class LastNameTest {
         )
         invalidLastNames.forEach {
             println("Last Name: $it")
-            assertThrows(LastNameNotValidException::class.java) {
+            assertThrows(IllegalArgumentException::class.java) {
                 LastName(it)
             }
         }
@@ -40,14 +40,14 @@ internal class LastNameTest {
 
     @Test
     fun `should throw an exception when create a last name with empty value`() {
-        assertThrows(LastNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             LastName("")
         }
     }
 
     @Test
     fun `should throw an exception when create a last name with blank value`() {
-        assertThrows(LastNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             LastName(" ")
         }
     }
@@ -55,7 +55,7 @@ internal class LastNameTest {
     @Test
     fun `should throw an exception when create a last name with length greater than 150`() {
         val lastName = (1..256).joinToString("") { "a" }
-        assertThrows(LastNameNotValidException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             LastName(lastName)
         }
     }

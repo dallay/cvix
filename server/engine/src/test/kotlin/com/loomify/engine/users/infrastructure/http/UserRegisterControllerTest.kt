@@ -31,7 +31,7 @@ private const val ENDPOINT = "/api/auth/register"
 class UserRegisterControllerTest {
     private val faker = Faker()
     private val email = faker.internet().emailAddress()
-    private val password = faker.internet().password(8, 80, true, true, true)
+    private val password = faker.credentials().password(8, 80, true, true, true)
     private val firstname = faker.name().firstName()
     private val lastname = faker.name().lastName()
 

@@ -34,6 +34,14 @@ data class Workspace(
 ) : AggregateRoot<WorkspaceId>() {
 
     init {
+        val trimmedName = name.trim()
+        if (trimmedName.isEmpty()) {
+            throw WorkspaceException("Workspace name cannot be blank")
+        }
+        if (trimmedName.length > NAME_MAX_LENGTH) {
+            throw WorkspaceException("Workspace name must be at most $NAME_MAX_LENGTH characters long")
+        }
+        name = trimmedName
         // Owner is always a member
         members.add(ownerId)
     }
@@ -93,9 +101,9 @@ data class Workspace(
         // Record the workspace updated event
         record(
             WorkspaceUpdatedEvent(
-                id = this.id.value.toString(),
+                id = this.id.id.toString(),
                 workspaceName = this.name,
-                ownerId = this.ownerId.value.toString(),
+                ownerId = this.ownerId.id.toString(),
             ),
         )
     }
@@ -125,12 +133,14 @@ data class Workspace(
             isDefault: Boolean = false
         ): Workspace {
             val trimmedName = name.trim()
-            require(trimmedName.isNotEmpty()) { "Workspace name cannot be blank" }
-            require(trimmedName.length <= NAME_MAX_LENGTH) {
-                "Workspace name must be at most $NAME_MAX_LENGTH characters long"
+            if (trimmedName.isEmpty()) {
+                throw WorkspaceException("Workspace name cannot be blank")
             }
-            val workspaceId = WorkspaceId(id.toString())
-            val owner = UserId(ownerId.toString())
+            if (trimmedName.length > NAME_MAX_LENGTH) {
+                throw WorkspaceException("Workspace name must be at most $NAME_MAX_LENGTH characters long")
+            }
+            val workspaceId = WorkspaceId(id)
+            val owner = UserId(ownerId)
             val workspace = Workspace(
                 id = workspaceId,
                 name = trimmedName,
@@ -143,9 +153,9 @@ data class Workspace(
             // Record the workspace created event
             workspace.record(
                 WorkspaceCreatedEvent(
-                    id = workspace.id.value.toString(),
+                    id = workspace.id.id.toString(),
                     name = workspace.name,
-                    ownerId = workspace.ownerId.value.toString(),
+                    ownerId = workspace.ownerId.id.toString(),
                 ),
             )
 

@@ -4,6 +4,7 @@ import com.loomify.common.domain.Service
 import com.loomify.engine.users.domain.UserId
 import com.loomify.engine.workspace.application.WorkspaceResponses
 import com.loomify.engine.workspace.domain.WorkspaceFinderRepository
+import java.util.*
 import org.slf4j.LoggerFactory
 
 /**
@@ -21,9 +22,8 @@ class AllWorkspaceByMemberFinder(private val finder: WorkspaceFinderRepository) 
      * @throws Exception If an error occurs while finding all workspaces.
      * @return The [WorkspaceResponses] containing all workspaces.
      */
-    suspend fun findAll(userId: String): WorkspaceResponses {
-        require(userId.isNotBlank()) { "User ID cannot be blank" }
-        log.debug("Finding all workspaces for user with id: $userId")
+    suspend fun findAll(userId: UUID): WorkspaceResponses {
+        log.debug("Finding all workspaces for user with id: {}", userId)
         try {
             val workspaces = finder.findByMemberId(UserId(userId))
             return WorkspaceResponses.from(workspaces)

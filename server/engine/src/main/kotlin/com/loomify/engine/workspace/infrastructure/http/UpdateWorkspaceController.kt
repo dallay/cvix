@@ -1,7 +1,7 @@
 package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.AppConstants.UUID_PATTERN
+import com.loomify.common.domain.presentation.SimpleMessageResponse
 import com.loomify.engine.workspace.application.update.UpdateWorkspaceCommand
 import com.loomify.engine.workspace.infrastructure.http.request.UpdateWorkspaceRequest
 import com.loomify.spring.boot.ApiController
@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import jakarta.validation.constraints.Pattern
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -54,23 +54,16 @@ class UpdateWorkspaceController(
             schema = Schema(type = "string", format = "uuid"),
         )
         @PathVariable
-        @Pattern(
-            regexp = UUID_PATTERN,
-            message = "Invalid UUID format",
-        )
-        id: String,
-        @Validated @RequestBody request: UpdateWorkspaceRequest
-    ): ResponseEntity<String> {
-        val safeId = sanitizePathVariable(id)
-        log.debug("Updating workspace with ID: {}", safeId)
+        id: UUID,
+        @Validated @RequestBody request: UpdateWorkspaceRequest,
+    ): ResponseEntity<SimpleMessageResponse> {
+        log.debug("Updating workspace with ID: {}", id)
         dispatch(
             UpdateWorkspaceCommand(
-                safeId,
-                request.name,
-                request.description?.takeIf { it.isNotBlank() },
+                id, request.name, request.description?.takeIf { it.isNotBlank() },
             ),
         )
-        return ResponseEntity.ok("Workspace updated successfully")
+        return ResponseEntity.ok(SimpleMessageResponse("Workspace updated successfully."))
     }
 
     companion object {

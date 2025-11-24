@@ -2,7 +2,6 @@ package com.loomify.engine.users.domain
 
 import com.loomify.common.domain.AggregateRoot
 import com.loomify.common.domain.vo.credential.Credential
-import com.loomify.common.domain.vo.credential.CredentialType
 import com.loomify.common.domain.vo.email.Email
 import com.loomify.common.domain.vo.name.Name
 import com.loomify.engine.authentication.domain.Username
@@ -23,7 +22,6 @@ import java.util.*
  * @see Email for more information about the email
  * @see Name for more information about the name
  * @see Credential for more information about the credential
- * @see CredentialType for more information about the credential type
  * @created 2/7/23
  */
 data class User(
@@ -54,7 +52,7 @@ data class User(
         username = Username(email),
         email = Email(email),
         name = if (!firstName.isNullOrBlank() && !lastName.isNullOrBlank()) {
-            Name(
+            Name.of(
                 firstName,
                 lastName,
             )
@@ -80,7 +78,7 @@ data class User(
      * @param lastName The last name of the user.
      */
     fun updateName(firstName: String, lastName: String) {
-        name = Name(firstName, lastName)
+        name = Name.of(firstName, lastName)
     }
 
     companion object {
@@ -109,17 +107,14 @@ data class User(
                 firstName = firstName,
                 lastName = lastName,
                 credentials = mutableListOf(
-                    Credential.create(
-                        password,
-                        CredentialType.PASSWORD,
-                    ),
+                    Credential.create(password),
                 ),
             )
 
             // Record domain event when user is created
             user.record(
                 UserCreatedEvent(
-                    id = user.id.value.toString(),
+                    id = user.id.id,
                     email = user.email.value,
                     firstName = user.name?.firstName?.value,
                     lastName = user.name?.lastName?.value,

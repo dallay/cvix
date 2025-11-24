@@ -1,6 +1,7 @@
 package com.loomify.engine.workspace.infrastructure.http
 
 import com.loomify.ControllerTest
+import com.loomify.common.domain.presentation.SimpleMessageResponse
 import com.loomify.engine.workspace.WorkspaceStub
 import com.loomify.engine.workspace.application.update.UpdateWorkspaceCommand
 import com.loomify.engine.workspace.infrastructure.http.request.UpdateWorkspaceRequest
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test
 
 internal class UpdateWorkspaceControllerTest : ControllerTest() {
     private val workspace = WorkspaceStub.create()
-    private val id = UUID.randomUUID().toString()
+    private val id = UUID.randomUUID()
     private val command = UpdateWorkspaceCommand(
         id = id,
         name = workspace.name,
@@ -40,9 +41,8 @@ internal class UpdateWorkspaceControllerTest : ControllerTest() {
             .uri("/api/workspace/$id/update")
             .bodyValue(request)
             .exchange()
-            .expectStatus().isOk
-            .expectBody(String::class.java)
-            .isEqualTo("Workspace updated successfully")
+            .expectStatus().isOk.expectBody(SimpleMessageResponse::class.java)
+            .isEqualTo(SimpleMessageResponse("Workspace updated successfully."))
 
         val commandSlot = slot<UpdateWorkspaceCommand>()
         coVerify(exactly = 1) { mediator.send(capture(commandSlot)) }

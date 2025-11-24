@@ -34,7 +34,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     @Test
     fun `should create default workspace for new user`() = runTest {
         // Given
-        val userId = UUID.randomUUID().toString()
+        val userId = UUID.randomUUID()
         val firstname = faker.name().firstName()
         val lastname = faker.name().lastName()
         val userCreatedEvent = UserCreatedEvent(
@@ -66,7 +66,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     fun `should create default workspace with firstname only when lastname is null`() =
         runTest {
             // Given
-            val userId = UUID.randomUUID().toString()
+            val userId = UUID.randomUUID()
             val firstname = faker.name().firstName()
             val userCreatedEvent = UserCreatedEvent(
                 id = userId,
@@ -94,7 +94,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     fun `should create default workspace with lastname only when firstname is null`() =
         runTest {
             // Given
-            val userId = UUID.randomUUID().toString()
+            val userId = UUID.randomUUID()
             val lastname = faker.name().lastName()
             val userCreatedEvent = UserCreatedEvent(
                 id = userId,
@@ -122,7 +122,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     fun `should create default workspace with 'My Workspace' when both names are null`() =
         runTest {
             // Given
-            val userId = UUID.randomUUID().toString()
+            val userId = UUID.randomUUID()
             val userCreatedEvent = UserCreatedEvent(
                 id = userId,
                 email = faker.internet().emailAddress(),
@@ -149,7 +149,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     fun `should create default workspace with 'My Workspace' when both names contain only whitespace`() =
         runTest {
             // Given
-            val userId = UUID.randomUUID().toString()
+            val userId = UUID.randomUUID()
             val firstname = "   "
             val lastname = "  \t  \n  "
             val userCreatedEvent = UserCreatedEvent(
@@ -177,7 +177,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     @Test
     fun `should handle CommandHandlerExecutionError gracefully without throwing`() = runTest {
         // Given
-        val userId = UUID.randomUUID().toString()
+        val userId = UUID.randomUUID()
         val userCreatedEvent = UserCreatedEvent(
             id = userId,
             email = faker.internet().emailAddress(),
@@ -202,7 +202,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     @Test
     fun `should handle unexpected exceptions gracefully without throwing`() = runTest {
         // Given
-        val userId = UUID.randomUUID().toString()
+        val userId = UUID.randomUUID()
         val userCreatedEvent = UserCreatedEvent(
             id = userId,
             email = faker.internet().emailAddress(),
@@ -225,7 +225,7 @@ class CreateDefaultWorkspaceOnUserCreationTest {
     @Test
     fun `should trim whitespace from names when generating workspace name`() = runTest {
         // Given
-        val userId = UUID.randomUUID().toString()
+        val userId = UUID.randomUUID()
         val firstname = "  John  "
         val lastname = "  Doe  "
         val userCreatedEvent = UserCreatedEvent(

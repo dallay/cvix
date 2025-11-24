@@ -40,8 +40,8 @@ class CreateWorkspaceCommandHandler(
 
         log.debug("Creating workspace with name: ${command.name}, isDefault: ${command.isDefault}")
         try {
-            val workspaceId = UUID.fromString(command.id)
-            val ownerId = UUID.fromString(command.ownerId)
+            val workspaceId = command.id
+            val ownerId = command.ownerId
 
             val workspace = Workspace.create(
                 id = workspaceId,

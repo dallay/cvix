@@ -1,6 +1,8 @@
 package com.loomify.engine.workspace.infrastructure.http.request
 
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import java.util.UUID
 
 /**
  * This data class represents the request body for creating a workspace.
@@ -13,6 +15,6 @@ data class CreateWorkspaceRequest(
     @field:NotBlank(message = "Name is required")
     val name: String,
     val description: String? = null,
-    @field:NotBlank(message = "User Id is required")
-    val ownerId: String,
+    @field:NotNull(message = "User Id is required")
+    val ownerId: UUID,
 )

@@ -74,13 +74,16 @@ internal class BeanValidationTest {
                         ),
                     )
                         .`as`(errorMessage(method, parameter))
-                        .anyMatch { annotation: Annotation -> annotation.annotationClass.java == Validated::class.java }
+                        .anyMatch { annotation: Annotation ->
+                            annotation.annotationClass.java == Validated::class.java ||
+                                annotation.annotationClass.java == jakarta.validation.Valid::class.java
+                        }
                 }
         }
     }
 
     private fun errorMessage(method: Method, parameter: Parameter): String {
-        return "Missing @Validated annotation in " +
+        return "Missing @Validated or @Valid annotation in " +
             method.declaringClass.simpleName +
             " on method " +
             method.name +

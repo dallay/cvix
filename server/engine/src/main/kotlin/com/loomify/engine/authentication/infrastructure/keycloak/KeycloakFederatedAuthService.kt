@@ -36,7 +36,7 @@ class KeycloakFederatedAuthService(
         lastName: String,
         displayName: String
     ): Mono<UserInfo> {
-        logger.info("Finding or creating user for federated identity: provider=$provider, email=$email")
+        logger.info("Finding or creating user for federated identity: provider=$provider, email=***")
 
         // First, try to find user by federated identity
         return findUserByFederatedIdentity(provider, externalUserId)
@@ -96,7 +96,7 @@ class KeycloakFederatedAuthService(
         provider: String,
         externalUserId: String
     ): Mono<UserInfo> {
-        logger.info("Creating new user for federated identity: email=$email, provider=$provider")
+        logger.info("Creating new user for federated identity: email=***, provider=$provider")
 
         val userId = UUID.randomUUID()
         val fullName = displayName.ifEmpty { "$firstName $lastName".trim() }
