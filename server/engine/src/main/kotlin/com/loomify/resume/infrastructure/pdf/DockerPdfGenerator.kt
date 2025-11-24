@@ -13,6 +13,7 @@ import com.loomify.resume.domain.exception.PdfGenerationTimeoutException
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import jakarta.annotation.PostConstruct
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.channels.AsynchronousCloseException
@@ -21,6 +22,7 @@ import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -42,6 +44,9 @@ class DockerPdfGenerator(
 
     // Semaphore to limit concurrent container executions
     private val concurrencySemaphore = Semaphore(properties.maxConcurrentContainers)
+
+    // Track if image has been pulled to avoid redundant pulls
+    private val imagePulled = AtomicBoolean(false)
 
     // Metrics
     private val containerCreatedCounter: Counter = meterRegistry.counter(
@@ -86,6 +91,27 @@ class DockerPdfGenerator(
             "docker.container.concurrent.available",
             this,
         ) { concurrencySemaphore.availablePermits().toDouble() }
+    }
+
+    /**
+     * Pre-pull the Docker image during application startup to avoid timeouts during the first request.
+     * This runs asynchronously to not block application startup.
+     */
+    @PostConstruct
+    fun prePullDockerImage() {
+        Thread {
+            try {
+                logger.info("Pre-pulling Docker image in background: ${properties.image}")
+                ensureDockerImage()
+                logger.info("Docker image pre-pull completed successfully")
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn(
+                    "Failed to pre-pull Docker image during startup. " +
+                        "Image will be pulled on first request: ${e.message}",
+                    e,
+                )
+            }
+        }.start()
     }
 
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
@@ -211,22 +237,45 @@ class DockerPdfGenerator(
     }
 
     private fun ensureDockerImage() {
+        // Fast path: if image has been verified, skip the check
+        if (imagePulled.get()) {
+            return
+        }
+
+        // Check if image exists
         try {
             dockerClient.inspectImageCmd(properties.image).exec()
             logger.debug("Docker image already available: ${properties.image}")
+            imagePulled.set(true)
+            return
         } catch (_: NotFoundException) {
             // Image not found locally, pull it
+        }
+
+        // Pull the image (synchronized to prevent multiple threads from pulling simultaneously)
+        synchronized(imagePulled) {
+            // Double-check in case another thread just pulled it
             try {
-                logger.info("Pulling Docker image: ${properties.image}")
+                dockerClient.inspectImageCmd(properties.image).exec()
+                logger.debug("Docker image verified (pulled by another thread): ${properties.image}")
+                imagePulled.set(true)
+                return
+            } catch (_: NotFoundException) {
+                // Still not available, proceed with pull
+            }
+
+            try {
+                logger.info("Pulling Docker image: ${properties.image} (this may take several minutes)")
                 dockerClient.pullImageCmd(properties.image)
                     .start()
                     .awaitCompletion(PULL_TIMEOUT_MIN, TimeUnit.MINUTES)
+                logger.info("Docker image pull completed: ${properties.image}")
+                imagePulled.set(true)
             } catch (ie: InterruptedException) {
                 Thread.currentThread().interrupt()
                 throw PdfGenerationException("Interrupted while pulling Docker image", ie)
             } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
                 handleAsyncException(e)
-                return
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
                 throw PdfGenerationException("Failed to pull Docker image: ${properties.image}", de)
             }
@@ -242,6 +291,7 @@ class DockerPdfGenerator(
             try {
                 dockerClient.inspectImageCmd(properties.image).exec()
                 logger.info("Docker image verified after interrupted pull: ${properties.image}")
+                imagePulled.set(true)
                 return
             } catch (_: NotFoundException) {
                 throw PdfGenerationException(
