@@ -23,7 +23,7 @@ class DeleteWorkspaceCommandHandler(
      * @param command The command object containing the id of the workspace to be deleted.
      */
     override suspend fun handle(command: DeleteWorkspaceCommand) {
-        log.debug("Deleting workspace with id: ${command.id}")
+        log.debug("Deleting workspace with id: {}", command.id)
         workspaceDestroyer.delete(WorkspaceId(command.id))
     }
 
