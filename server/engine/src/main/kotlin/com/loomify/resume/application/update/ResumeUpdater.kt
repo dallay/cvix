@@ -38,7 +38,8 @@ class ResumeUpdater(
      * @param expectedUpdatedAt The expected last update timestamp (optimistic locking, nullable)
      *
      * @throws ResumeNotFoundException if the resume does not exist
-     * @throws com.loomify.resume.domain.exception.OptimisticLockException if the updatedAt timestamp does not match expectedUpdatedAt
+     * @throws com.loomify.resume.domain.exception.OptimisticLockException if the updatedAt timestamp
+     * does not match expectedUpdatedAt
      */
     suspend fun update(
         id: UUID,
