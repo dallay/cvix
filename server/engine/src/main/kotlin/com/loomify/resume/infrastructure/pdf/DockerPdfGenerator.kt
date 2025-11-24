@@ -2,6 +2,7 @@ package com.loomify.resume.infrastructure.pdf
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerResponse
+import com.github.dockerjava.api.exception.NotFoundException
 import com.github.dockerjava.api.model.Bind
 import com.github.dockerjava.api.model.HostConfig
 import com.github.dockerjava.api.model.Volume
@@ -223,10 +224,33 @@ class DockerPdfGenerator(
             } catch (ie: InterruptedException) {
                 Thread.currentThread().interrupt()
                 throw PdfGenerationException("Interrupted while pulling Docker image", ie)
+            } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
+                handleAsyncException(e)
+                return
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
                 throw PdfGenerationException("Failed to pull Docker image: ${properties.image}", de)
             }
         }
+    }
+
+    private fun handleAsyncException(e: RuntimeException) {
+        // Handle AsynchronousCloseException wrapped in RuntimeException during image pull
+        val cause = e.cause
+        if (cause is AsynchronousCloseException) {
+            logger.warn("Docker connection closed during image pull, retrying inspection", e)
+            // Retry inspection - image might have been pulled by another thread
+            try {
+                dockerClient.inspectImageCmd(properties.image).exec()
+                logger.info("Docker image verified after interrupted pull: ${properties.image}")
+                return
+            } catch (_: NotFoundException) {
+                throw PdfGenerationException(
+                    "Docker image pull was interrupted and image is not available: ${properties.image}",
+                    e,
+                )
+            }
+        }
+        throw PdfGenerationException("Failed to pull Docker image: ${properties.image}", e)
     }
 
     private fun createContainer(tempDir: Path): String {
@@ -379,9 +403,10 @@ class DockerPdfGenerator(
         private const val SECOND = 1_000
         private const val POLL_INTERVAL_MS = 100L
         private const val LOG_TIMEOUT_SEC = 5L
-        private const val PULL_TIMEOUT_MIN = 2L
-        private const val TIMEOUT_BUFFER_SECONDS = 5L
-        private const val SEMAPHORE_TIMEOUT_BUFFER = 10L
+        private const val PULL_TIMEOUT_MIN = 5L // Increased to 5 minutes for slow CI
+        private const val TIMEOUT_BUFFER_SECONDS =
+            30L // Increased to 30s to accommodate image pulls
+        private const val SEMAPHORE_TIMEOUT_BUFFER = 30L // Increased to 30s
         private const val STOP_TIMEOUT_SECONDS = 5
         private const val UNABLE_TO_RETRIEVE_LOGS = "Unable to retrieve logs"
     }

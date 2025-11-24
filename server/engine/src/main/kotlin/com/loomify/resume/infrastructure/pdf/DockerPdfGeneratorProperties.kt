@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class DockerPdfGeneratorProperties(
     val image: String = "texlive/texlive:TL2024-historic",
     val maxConcurrentContainers: Int = 10,
-    val timeoutSeconds: Long = 30,
+    val timeoutSeconds: Long = 60, // Increased to 60s for CI environments
     val memoryLimitMb: Long = 512,
     val cpuQuota: Double = 0.5
 )

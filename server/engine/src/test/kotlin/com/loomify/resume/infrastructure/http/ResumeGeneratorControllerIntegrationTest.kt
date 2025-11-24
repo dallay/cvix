@@ -23,7 +23,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
-    @Timeout(60) // Increased timeout to 60 seconds
+    @Timeout(150) // Increased to 150s to accommodate Docker image pulls in CI
     fun `should generate resume PDF successfully`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 
@@ -48,7 +48,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
-    @Timeout(60) // Increased timeout to 60 seconds
+    @Timeout(150) // Increased to 150s to accommodate Docker image pulls in CI
     fun `should generate resume with Spanish locale`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 

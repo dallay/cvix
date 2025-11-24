@@ -224,7 +224,8 @@ class PdfResumeGenerator(
         private val log: Logger = LoggerFactory.getLogger(PdfResumeGenerator::class.java)
 
         // Timeout for entire PDF generation pipeline (template render + PDF creation)
-        private const val GENERATION_TIMEOUT_MS = 30_000L // 30 seconds
+        // Increased to 120 seconds to accommodate CI environments and Docker image pulls
+        private const val GENERATION_TIMEOUT_MS = 120_000L // 120 seconds
 
         // Conversion constants
         private const val NANOS_TO_MILLIS = 1_000_000L
