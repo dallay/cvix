@@ -14,6 +14,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.nio.channels.AsynchronousCloseException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
@@ -76,7 +77,9 @@ class DockerPdfGenerator(
         meterRegistry.gauge(
             "docker.container.concurrent.active",
             this,
-        ) { properties.maxConcurrentContainers - concurrencySemaphore.availablePermits().toDouble() }
+        ) {
+            properties.maxConcurrentContainers - concurrencySemaphore.availablePermits().toDouble()
+        }
 
         meterRegistry.gauge(
             "docker.container.concurrent.available",
@@ -132,6 +135,7 @@ class DockerPdfGenerator(
         // Create temporary directory for LaTeX compilation
         val tempDir = Files.createTempDirectory("resume-pdf-")
 
+        var containerId: String
         try {
             // Write LaTeX source to file
             val latexFile = tempDir.resolve(LATEX_FILE)
@@ -141,7 +145,7 @@ class DockerPdfGenerator(
             ensureDockerImage()
 
             // Create and run Docker container
-            val containerId = createContainer(tempDir)
+            containerId = createContainer(tempDir)
 
             try {
                 // Start container
@@ -167,8 +171,14 @@ class DockerPdfGenerator(
                 logger.debug("Successfully generated PDF (${pdfBytes.size} bytes)")
 
                 return ByteArrayInputStream(pdfBytes)
+            } catch (e: AsynchronousCloseException) {
+                logger.error("Docker connection closed prematurely during PDF generation", e)
+                throw PdfGenerationException(
+                    "Docker connection closed prematurely. " +
+                            "Consider increasing Docker resource limits or debugging container lifecycle.",
+                    e,
+                )
             } finally {
-                // Cleanup: Remove container
                 cleanupContainer(containerId)
             }
         } finally {
@@ -188,8 +198,10 @@ class DockerPdfGenerator(
             error is LaTeXInjectionException -> error
             error is java.util.concurrent.TimeoutException ->
                 pdfGenerationTimeoutException
+
             error.message?.contains("timeout", ignoreCase = true) == true ->
                 pdfGenerationTimeoutException
+
             else -> {
                 val msg = "Failed to generate PDF: ${error.message}"
                 PdfGenerationException(msg, error)
@@ -331,7 +343,10 @@ class DockerPdfGenerator(
                 Thread.currentThread().interrupt()
                 logger.debug("Interrupted while stopping container: $containerId", ie)
             } catch (de: com.github.dockerjava.api.exception.DockerException) {
-                logger.debug("Failed to stop container (might already be stopped): $containerId", de)
+                logger.debug(
+                    "Failed to stop container (might already be stopped): $containerId",
+                    de,
+                )
             }
 
             // Remove container

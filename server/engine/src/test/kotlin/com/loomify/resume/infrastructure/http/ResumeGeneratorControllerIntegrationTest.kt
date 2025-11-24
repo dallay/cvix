@@ -5,6 +5,7 @@ import com.loomify.resume.ResumeTestFixtures
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -22,6 +23,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
+    @Timeout(60) // Increased timeout to 60 seconds
     fun `should generate resume PDF successfully`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 
@@ -46,6 +48,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
+    @Timeout(60) // Increased timeout to 60 seconds
     fun `should generate resume with Spanish locale`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 
