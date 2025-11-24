@@ -54,8 +54,8 @@ class UpdateResumeController(
         id: UUID,
         @Valid @Validated @RequestBody request: UpdateResumeRequest
     ): ResponseEntity<SimpleMessageResponse> {
-        val sanitizeId = sanitizePathVariable(id.toString())
-        log.debug("Update resume {}", sanitizeId)
+        val sanitizedId = sanitizePathVariable(id.toString())
+        log.debug("Update resume {}", sanitizedId)
         val userId = userIdFromToken()
 
         val workspaceId = request.workspaceId
@@ -72,16 +72,16 @@ class UpdateResumeController(
         try {
             dispatch(command)
         } catch (e: ResumeNotFoundException) {
-            log.warn("Resume not found for update: {}", sanitizeId, e)
+            log.warn("Resume not found for update: {}", sanitizedId, e)
             return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating workspace with ID: {}", sanitizeId, e)
+            log.error("Error creating resume with ID: {}", sanitizedId, e)
             throw e
         }
         return ResponseEntity
             .ok()
-            .location(URI.create("/api/resume/$sanitizeId"))
-            .body(SimpleMessageResponse("Resume with ID $sanitizeId updated successfully."))
+            .location(URI.create("/api/resume/$sanitizedId"))
+            .body(SimpleMessageResponse("Resume with ID $sanitizedId updated successfully."))
     }
 
     companion object {
