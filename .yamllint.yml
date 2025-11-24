@@ -1,6 +1,7 @@
-# yamllint configuration to suppress warnings for application-test.yml
+# yamllint configuration file
 ---
 extends: default
+# Note: application-test.yml is ignored because [specific reason: e.g., "it requires non-standard structure for CI overrides"]
 ignore: |
   server/engine/src/test/resources/application-test.yml
 rules:

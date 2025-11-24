@@ -84,7 +84,8 @@ class DockerPdfGenerator(
             "docker.container.concurrent.active",
             this,
         ) {
-            properties.maxConcurrentContainers - concurrencySemaphore.availablePermits().toDouble()
+            properties.maxConcurrentContainers.toDouble() - concurrencySemaphore.availablePermits()
+                .toDouble()
         }
 
         meterRegistry.gauge(
@@ -99,7 +100,7 @@ class DockerPdfGenerator(
      */
     @PostConstruct
     fun prePullDockerImage() {
-        Thread {
+        Schedulers.boundedElastic().schedule {
             try {
                 logger.info("Pre-pulling Docker image in background: ${properties.image}")
                 ensureDockerImage()
@@ -111,7 +112,7 @@ class DockerPdfGenerator(
                     e,
                 )
             }
-        }.start()
+        }
     }
 
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
