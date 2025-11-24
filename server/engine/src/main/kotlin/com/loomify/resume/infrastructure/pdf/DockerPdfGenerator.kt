@@ -256,7 +256,7 @@ class DockerPdfGenerator(
                 )
                 throw PdfGenerationException(
                     "Docker image pull was interrupted and connection pool shut down. " +
-                            "The image may need to be pre-pulled or timeouts increased: ${properties.image}",
+                        "The image may need to be pre-pulled or timeouts increased: ${properties.image}",
                     e,
                 )
             }
