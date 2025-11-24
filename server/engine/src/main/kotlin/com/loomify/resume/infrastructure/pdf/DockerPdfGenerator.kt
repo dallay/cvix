@@ -214,7 +214,7 @@ class DockerPdfGenerator(
         try {
             dockerClient.inspectImageCmd(properties.image).exec()
             logger.debug("Docker image already available: ${properties.image}")
-        } catch (_: com.github.dockerjava.api.exception.NotFoundException) {
+        } catch (_: NotFoundException) {
             // Image not found locally, pull it
             try {
                 logger.info("Pulling Docker image: ${properties.image}")
@@ -246,6 +246,17 @@ class DockerPdfGenerator(
             } catch (_: NotFoundException) {
                 throw PdfGenerationException(
                     "Docker image pull was interrupted and image is not available: ${properties.image}",
+                    e,
+                )
+            } catch (poolShutdown: IllegalStateException) {
+                // Connection pool was shut down during timeout - cannot verify image
+                logger.error(
+                    "Docker connection pool shut down during image pull verification: ${poolShutdown.message}",
+                    poolShutdown,
+                )
+                throw PdfGenerationException(
+                    "Docker image pull was interrupted and connection pool shut down. " +
+                            "The image may need to be pre-pulled or timeouts increased: ${properties.image}",
                     e,
                 )
             }
@@ -405,8 +416,8 @@ class DockerPdfGenerator(
         private const val LOG_TIMEOUT_SEC = 5L
         private const val PULL_TIMEOUT_MIN = 5L // Increased to 5 minutes for slow CI
         private const val TIMEOUT_BUFFER_SECONDS =
-            30L // Increased to 30s to accommodate image pulls
-        private const val SEMAPHORE_TIMEOUT_BUFFER = 30L // Increased to 30s
+            60L // Increased to 60s to accommodate Docker image pulls in CI
+        private const val SEMAPHORE_TIMEOUT_BUFFER = 60L // Increased to 60s
         private const val STOP_TIMEOUT_SECONDS = 5
         private const val UNABLE_TO_RETRIEVE_LOGS = "Unable to retrieve logs"
     }

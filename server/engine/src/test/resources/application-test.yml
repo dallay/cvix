@@ -54,3 +54,9 @@ testing:
   security:
     username: "john.doe@loomify.com"
     password: "S3cr3tP@ssw0rd*123"
+
+resume:
+  pdf:
+    docker:
+      timeout-seconds: 120  # Increased to 120s for CI environments with slow Docker image pulls
+
