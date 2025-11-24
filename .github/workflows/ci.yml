@@ -350,7 +350,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
@@ -387,7 +387,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
@@ -424,7 +424,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@2b51285047da2a48817f3522e8a152a7a241e252 # v3.4.0
+        uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
@@ -542,16 +542,18 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Changes Detection | ${{ needs.changes.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint Meta | ${{ needs.lint-meta.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint Markdown | ${{ needs.lint-markdown.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Backend Lint | ${{ needs.lint-backend.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Backend Pipeline | ${{ needs.backend-pipeline.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Frontend Lint | ${{ needs.lint-frontend.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Security Scans | ${{ needs.security-scans.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Coverage Verification | ${{ needs.coverage-verification.result }} |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## CI Pipeline Summary"
+            echo ""
+            echo "| Job | Status |"
+            echo "|-----|--------|"
+            echo "| Changes Detection | ${{ needs.changes.result }} |"
+            echo "| Lint Meta | ${{ needs.lint-meta.result }} |"
+            echo "| Lint Markdown | ${{ needs.lint-markdown.result }} |"
+            echo "| Backend Lint | ${{ needs.lint-backend.result }} |"
+            echo "| Backend Pipeline | ${{ needs.backend-pipeline.result }} |"
+            echo "| Frontend Lint | ${{ needs.lint-frontend.result }} |"
+            echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |"
+            echo "| Security Scans | ${{ needs.security-scans.result }} |"
+            echo "| Coverage Verification | ${{ needs.coverage-verification.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
