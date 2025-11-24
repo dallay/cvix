@@ -26,23 +26,47 @@ const faqItems = [
 ];
 ---
 
-<section class="bg-white dark:bg-gray-900">
-  <div class="py-24 px-4 md:px-10 lg:px-20 mx-auto max-w-screen-xl">
-    <h2 class="mb-16 text-5xl font-bold text-center text-gray-900 dark:text-white">
-      {t("faq.title")}
-    </h2>
-    <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+<section class="py-24 bg-background">
+  <div class="container mx-auto max-w-screen-xl px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+        {t("faq.title")}
+      </h2>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+        You might be wondering about a few things.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-6 max-w-3xl mx-auto">
       {
         faqItems.map((faq) => (
-          <details class="group bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <summary class="flex justify-between items-center cursor-pointer list-none">
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{faq.question}</h3>
-              <Icon
-                name="tabler:chevron-down"
-                class="w-6 h-6 text-gray-500 transition-transform group-open:rotate-180"
-              />
+          <details class="group bg-secondary/20 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:bg-secondary/40 open:bg-secondary/40">
+            <summary class="flex gap-6 cursor-pointer list-none items-start">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif font-bold text-lg mt-1">
+                Q
+              </div>
+              <div class="flex-grow">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-xl font-bold text-primary group-hover:text-primary/80 transition-colors">
+                    {faq.question}
+                  </h3>
+                  <Icon
+                    name="tabler:chevron-down"
+                    class="w-6 h-6 text-muted-foreground transition-transform duration-300 group-open:rotate-180 flex-shrink-0 ml-4"
+                  />
+                </div>
+                <div class="grid grid-rows-[0fr] group-open:grid-rows-[1fr] transition-all duration-300 ease-in-out">
+                  <div class="overflow-hidden">
+                    <div class="pt-4 flex gap-6">
+                      <div class="flex-shrink-0 w-8 h-8 rounded-full bg-transparent flex items-center justify-center font-serif font-bold text-lg text-muted-foreground">
+                        A
+                      </div>
+                      <p class="text-muted-foreground leading-relaxed text-lg">{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </summary>
-            <p class="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answer}</p>
           </details>
         ))
       }

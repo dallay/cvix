@@ -1,61 +1,64 @@
 ---
-import { Icon } from "astro-icon/components";
 import OptimizedPicture from "@/components/OptimizedPicture.astro";
-import { Badge } from "@/components/ui/badge";
 import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
 
 const astroLocale = Astro.currentLocale;
 let langToUse: Lang;
 
 if (astroLocale && LOCALES[astroLocale as Lang]) {
-	langToUse = astroLocale as Lang;
+  langToUse = astroLocale as Lang;
 } else {
-	langToUse = DEFAULT_LOCALE;
+  langToUse = DEFAULT_LOCALE;
 }
 const t = useTranslations(langToUse);
 
 import VideoPlaceholder from "@/assets/video-placeholder.png";
-import CTAEmail from "../ui/cta-email/CTAEmail.vue";
 ---
 
-<section class="py-24 md:py-26 lg:py-32 bg-background">
-  <div class="container mx-auto max-w-screen-xl px-4">
-    <!-- Badge centered above content -->
-    <div class="text-center mb-12">
-      <a href="#" class="inline-flex justify-between items-center py-1 px-1 pr-4 mb-7 text-sm text-muted-foreground bg-muted rounded-full hover:bg-muted/50 transition-colors" role="alert">
-        <Badge class="text-xs rounded-full px-4 py-1.5 mr-3">{t('hero.badge')}</Badge> <span class="text-sm font-medium">{t('hero.badge.text')}</span>
-        <Icon name="tabler:chevron-right" class="ml-2 h-4 w-4 text-muted-foreground" />
+<section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden">
+  <div class="container mx-auto max-w-screen-xl px-4 text-center">
+    <div
+      class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8"
+    >
+      <span class="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
+      {t("hero.badge.text")}
+    </div>
+
+    <h1
+      class="mx-auto mb-6 max-w-4xl text-5xl font-serif font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl leading-[1.1]"
+    >
+      {t("hero.title")}
+    </h1>
+
+    <p class="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
+      {t("hero.subtitle")}
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+      <a
+        href="#"
+        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
+      >
+        Create my resume
+      </a>
+      <a
+        href="#"
+        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-foreground transition-all bg-white border border-input rounded-full hover:bg-accent hover:text-accent-foreground"
+      >
+        View examples
       </a>
     </div>
 
-    <!-- Two column layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-      <!-- Left column: Content -->
-      <div class="text-center lg:text-left">
-        <h1 class="mb-6 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-6xl">
-          {t('hero.title')}
-        </h1>
-
-        <p class="mb-10 text-lg text-muted-foreground md:text-xl lg:text-2xl">
-          {t('hero.subtitle')}
-        </p>
-      <CTAEmail
-        emailPlaceholder={t('hero.email.placeholder')}
-        buttonText={t('hero.email.button')}
-        size="default"
-        alignment="left"
-        class="justify-center lg:justify-start"
+    <div class="relative mx-auto max-w-5xl">
+      <div
+        class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-20"
+      >
+      </div>
+      <OptimizedPicture
+        src={VideoPlaceholder}
+        alt={t("hero.mockup.alt")}
+        class="relative rounded-2xl shadow-2xl border border-border bg-background"
       />
-      </div>
-
-      <!-- Right column: Video/Mockup -->
-      <div class="order-first lg:order-last">
-        <OptimizedPicture
-          src={VideoPlaceholder}
-          alt={t('hero.mockup.alt')}
-          class="mx-auto rounded-2xl shadow-lg border border-border"
-        />
-      </div>
     </div>
   </div>
 </section>
