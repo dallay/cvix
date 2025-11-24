@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.web.reactive.server.WebTestClient
 
 internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest() {
     @Test
@@ -38,11 +39,33 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
 
     @Suppress("LongMethod")
     private fun verifyPersistence(id: String, workspaceId: String) {
-        webTestClient.mutateWith(csrf()).get()
+        val responseSpec = webTestClient.mutateWith(csrf()).get()
             .uri("/api/resume/$id")
             .exchange()
             .expectStatus().isOk
             .expectBody()
+
+        verifyMetadata(responseSpec, id, workspaceId)
+        verifyBasics(responseSpec)
+        verifyWork(responseSpec)
+        verifyVolunteer(responseSpec)
+        verifyEducation(responseSpec)
+        verifyAwards(responseSpec)
+        verifyCertificates(responseSpec)
+        verifyPublications(responseSpec)
+        verifySkills(responseSpec)
+        verifyLanguages(responseSpec)
+        verifyInterests(responseSpec)
+        verifyReferences(responseSpec)
+        verifyProjects(responseSpec)
+    }
+
+    private fun verifyMetadata(
+        responseSpec: WebTestClient.BodyContentSpec,
+        id: String,
+        workspaceId: String
+    ) {
+        responseSpec
             .jsonPath("$.id").isEqualTo(id)
             .jsonPath("$.userId").isEqualTo("efc4b2b8-08be-4020-93d5-f795762bf5c9")
             .jsonPath("$.workspaceId").isEqualTo(workspaceId)
@@ -51,7 +74,10 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.updatedBy").isEqualTo("efc4b2b8-08be-4020-93d5-f795762bf5c9")
             .jsonPath("$.createdAt").exists()
             .jsonPath("$.updatedAt").exists()
-            // content.basics
+    }
+
+    private fun verifyBasics(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.basics.name").isEqualTo("John Doe")
             .jsonPath("$.content.basics.label").isEqualTo("Software Engineer")
             .jsonPath("$.content.basics.image").isEqualTo("https://i.pravatar.cc/300")
@@ -60,13 +86,11 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.basics.url").isEqualTo("https://johndoe.dev")
             .jsonPath("$.content.basics.summary")
             .isEqualTo("Experienced software engineer with a passion for building scalable applications.")
-            // content.basics.location
             .jsonPath("$.content.basics.location.address").isEqualTo("123 Main St")
             .jsonPath("$.content.basics.location.postalCode").isEqualTo("12345")
             .jsonPath("$.content.basics.location.city").isEqualTo("San Francisco")
             .jsonPath("$.content.basics.location.countryCode").isEqualTo("US")
             .jsonPath("$.content.basics.location.region").isEqualTo("California")
-            // content.basics.profiles
             .jsonPath("$.content.basics.profiles[0].network").isEqualTo("LinkedIn")
             .jsonPath("$.content.basics.profiles[0].username").isEqualTo("johndoe")
             .jsonPath("$.content.basics.profiles[0].url")
@@ -74,7 +98,10 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.basics.profiles[1].network").isEqualTo("GitHub")
             .jsonPath("$.content.basics.profiles[1].username").isEqualTo("johndoe")
             .jsonPath("$.content.basics.profiles[1].url").isEqualTo("https://github.com/johndoe")
-            // work
+    }
+
+    private fun verifyWork(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.work[0].name").isEqualTo("ACME Corp")
             .jsonPath("$.content.work[0].position").isEqualTo("Software Engineer")
             .jsonPath("$.content.work[0].startDate").isEqualTo("2020-01-01")
@@ -83,7 +110,10 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.work[0].summary").isEqualTo("Developed scalable backend services.")
             .jsonPath("$.content.work[0].highlights[0]").isEqualTo("Led migration to Kotlin")
             .jsonPath("$.content.work[0].highlights[1]").isEqualTo("Implemented CI/CD pipeline")
-            // volunteer
+    }
+
+    private fun verifyVolunteer(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.volunteer[0].organization").isEqualTo("Open Source Org")
             .jsonPath("$.content.volunteer[0].position").isEqualTo("Contributor")
             .jsonPath("$.content.volunteer[0].url").isEqualTo("https://opensource.org")
@@ -93,7 +123,10 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .isEqualTo("Contributed to open source projects.")
             .jsonPath("$.content.volunteer[0].highlights[0]").isEqualTo("Fixed critical bugs")
             .jsonPath("$.content.volunteer[0].highlights[1]").isEqualTo("Reviewed PRs")
-            // education
+    }
+
+    private fun verifyEducation(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.education[0].institution").isEqualTo("MIT")
             .jsonPath("$.content.education[0].area").isEqualTo("Computer Science")
             .jsonPath("$.content.education[0].studyType").isEqualTo("Bachelor")
@@ -103,19 +136,28 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.education[0].url").isEqualTo("https://mit.edu")
             .jsonPath("$.content.education[0].courses[0]").isEqualTo("Algorithms")
             .jsonPath("$.content.education[0].courses[1]").isEqualTo("Distributed Systems")
-            // awards
+    }
+
+    private fun verifyAwards(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.awards[0].title").isEqualTo("Employee of the Year")
             .jsonPath("$.content.awards[0].date").isEqualTo("2022-12-01")
             .jsonPath("$.content.awards[0].awarder").isEqualTo("ACME Corp")
             .jsonPath("$.content.awards[0].summary")
             .isEqualTo("Recognized for outstanding performance.")
-            // certificates
+    }
+
+    private fun verifyCertificates(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.certificates[0].name").isEqualTo("AWS Certified Developer")
             .jsonPath("$.content.certificates[0].date").isEqualTo("2021-05-01")
             .jsonPath("$.content.certificates[0].url")
             .isEqualTo("https://aws.amazon.com/certification")
             .jsonPath("$.content.certificates[0].issuer").isEqualTo("Amazon")
-            // publications
+    }
+
+    private fun verifyPublications(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.publications[0].name").isEqualTo("Kotlin for Backend Development")
             .jsonPath("$.content.publications[0].publisher").isEqualTo("Tech Books")
             .jsonPath("$.content.publications[0].releaseDate").isEqualTo("2023-01-15")
@@ -123,7 +165,10 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .isEqualTo("https://techbooks.com/kotlin-backend")
             .jsonPath("$.content.publications[0].summary")
             .isEqualTo("A comprehensive guide to Kotlin in backend systems.")
-            // skills
+    }
+
+    private fun verifySkills(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.skills[0].name").isEqualTo("Kotlin")
             .jsonPath("$.content.skills[0].level").isEqualTo("Expert")
             .jsonPath("$.content.skills[0].keywords[0]").isEqualTo("Spring Boot")
@@ -134,20 +179,32 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.skills[1].keywords[0]").isEqualTo("Vue.js")
             .jsonPath("$.content.skills[1].keywords[1]").isEqualTo("Astro")
             .jsonPath("$.content.skills[1].keywords[2]").isEqualTo("Vite")
-            // languages
+    }
+
+    private fun verifyLanguages(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.languages[0].language").isEqualTo("English")
             .jsonPath("$.content.languages[0].fluency").isEqualTo("Native")
             .jsonPath("$.content.languages[1].language").isEqualTo("Spanish")
             .jsonPath("$.content.languages[1].fluency").isEqualTo("Professional")
-            // interests
+    }
+
+    private fun verifyInterests(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.interests[0].name").isEqualTo("Open Source")
             .jsonPath("$.content.interests[0].keywords[0]").isEqualTo("Kotlin")
             .jsonPath("$.content.interests[0].keywords[1]").isEqualTo("OSS")
             .jsonPath("$.content.interests[0].keywords[2]").isEqualTo("Community")
-            // references
+    }
+
+    private fun verifyReferences(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.references[0].name").isEqualTo("Jane Smith")
             .jsonPath("$.content.references[0].reference").isEqualTo("Former manager at ACME Corp.")
-            // projects
+    }
+
+    private fun verifyProjects(responseSpec: WebTestClient.BodyContentSpec) {
+        responseSpec
             .jsonPath("$.content.projects[0].name").isEqualTo("Resume Generator")
             .jsonPath("$.content.projects[0].description")
             .isEqualTo("A SaaS for generating professional resumes.")

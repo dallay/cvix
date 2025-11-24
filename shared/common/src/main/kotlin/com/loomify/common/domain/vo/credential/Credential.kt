@@ -106,9 +106,9 @@ data class CredentialId(override val id: UUID) : BaseId<UUID>(id)
 value class CredentialValue(val value: String) {
     init {
         if (value.isBlank()) throw CredentialException("Credential value cannot be blank")
-        if (value.length < Credential.MIN_LENGTH) {
+        if (value.length < MIN_LENGTH) {
             throw CredentialException(
-                "Credential value must be at least ${Credential.MIN_LENGTH} characters",
+                "Credential value must be at least $MIN_LENGTH characters",
             )
         }
         if (value.length > MAX_CREDENTIAL_LENGTH) {
@@ -116,27 +116,27 @@ value class CredentialValue(val value: String) {
                 "Credential value cannot exceed $MAX_CREDENTIAL_LENGTH characters",
             )
         }
-        if (!value.any { it in Credential.charNumbers }) {
+        if (!value.any { it in charNumbers }) {
             throw CredentialException(
                 "The password must have at least one number",
             )
         }
-        if (!value.any { it in Credential.charUppercase }) {
+        if (!value.any { it in charUppercase }) {
             throw CredentialException(
                 "The password must have at least one uppercase character",
             )
         }
-        if (!value.any { it in Credential.charLowercase }) {
+        if (!value.any { it in charLowercase }) {
             throw CredentialException(
                 "The password must have at least one lowercase character",
             )
         }
-        if (!value.any { it in Credential.charSpecial }) {
+        if (!value.any { it in charSpecial }) {
             throw CredentialException("The password must have at least one special character")
         }
     }
 
-    override fun toString(): String = value
+    override fun toString(): String = "****"
 
     companion object {
         const val MAX_CREDENTIAL_LENGTH = 128
