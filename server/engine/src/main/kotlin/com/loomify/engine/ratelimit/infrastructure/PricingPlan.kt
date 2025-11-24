@@ -9,22 +9,25 @@ import java.time.Duration
  */
 enum class PricingPlan {
     FREE {
-        override fun getLimit(): Bandwidth = Bandwidth.simple(
-            FREE_REFILL_TOKENS,
-            Duration.ofHours(REFILL_HOURS),
-        ).withInitialTokens(FREE_CAPACITY)
+        override fun getLimit(): Bandwidth = Bandwidth.builder()
+            .capacity(FREE_CAPACITY)
+            .refillGreedy(FREE_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS))
+            .initialTokens(FREE_CAPACITY)
+            .build()
     },
     BASIC {
-        override fun getLimit(): Bandwidth = Bandwidth.simple(
-            BASIC_REFILL_TOKENS,
-            Duration.ofHours(REFILL_HOURS),
-        ).withInitialTokens(BASIC_CAPACITY)
+        override fun getLimit(): Bandwidth = Bandwidth.builder()
+            .capacity(BASIC_CAPACITY)
+            .refillGreedy(BASIC_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS))
+            .initialTokens(BASIC_CAPACITY)
+            .build()
     },
     PROFESSIONAL {
-        override fun getLimit(): Bandwidth = Bandwidth.simple(
-            PROFESSIONAL_REFILL_TOKENS,
-            Duration.ofHours(REFILL_HOURS),
-        ).withInitialTokens(PROFESSIONAL_CAPACITY)
+        override fun getLimit(): Bandwidth = Bandwidth.builder()
+            .capacity(PROFESSIONAL_CAPACITY)
+            .refillGreedy(PROFESSIONAL_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS))
+            .initialTokens(PROFESSIONAL_CAPACITY)
+            .build()
     };
 
     abstract fun getLimit(): Bandwidth

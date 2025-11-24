@@ -86,9 +86,12 @@ class BucketConfigurationStrategy(
      * @return A [Bandwidth] instance configured with the specified parameters.
      */
     private fun createBandwidth(limit: RateLimitProperties.BandwidthLimit): Bandwidth {
-        // Bucket4j v8 uses a fluent API to build bandwidths
-        return Bandwidth.simple(limit.refillTokens, limit.refillDuration)
-            .withInitialTokens(limit.capacity)
+        // Updated to use Bucket4j v8 builder API (no deprecated methods)
+        return Bandwidth.builder()
+            .capacity(limit.capacity)
+            .refillGreedy(limit.refillTokens, limit.refillDuration)
+            .initialTokens(limit.capacity)
+            .build()
     }
 
     /**
