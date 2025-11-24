@@ -1,7 +1,6 @@
 package com.loomify.engine.ratelimit.infrastructure
 
 import io.github.bucket4j.Bandwidth
-import io.github.bucket4j.Refill
 import java.time.Duration
 
 /**
@@ -10,22 +9,22 @@ import java.time.Duration
  */
 enum class PricingPlan {
     FREE {
-        override fun getLimit(): Bandwidth = Bandwidth.classic(
-            FREE_CAPACITY,
-            Refill.intervally(FREE_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
-        )
+        override fun getLimit(): Bandwidth = Bandwidth.simple(
+            FREE_REFILL_TOKENS,
+            Duration.ofHours(REFILL_HOURS),
+        ).withInitialTokens(FREE_CAPACITY)
     },
     BASIC {
-        override fun getLimit(): Bandwidth = Bandwidth.classic(
-            BASIC_CAPACITY,
-            Refill.intervally(BASIC_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
-        )
+        override fun getLimit(): Bandwidth = Bandwidth.simple(
+            BASIC_REFILL_TOKENS,
+            Duration.ofHours(REFILL_HOURS),
+        ).withInitialTokens(BASIC_CAPACITY)
     },
     PROFESSIONAL {
-        override fun getLimit(): Bandwidth = Bandwidth.classic(
-            PROFESSIONAL_CAPACITY,
-            Refill.intervally(PROFESSIONAL_REFILL_TOKENS, Duration.ofHours(REFILL_HOURS)),
-        )
+        override fun getLimit(): Bandwidth = Bandwidth.simple(
+            PROFESSIONAL_REFILL_TOKENS,
+            Duration.ofHours(REFILL_HOURS),
+        ).withInitialTokens(PROFESSIONAL_CAPACITY)
     };
 
     abstract fun getLimit(): Bandwidth
