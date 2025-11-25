@@ -1,3 +1,4 @@
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { configDefaults, defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "./vite.config";
@@ -5,6 +6,12 @@ import viteConfig from "./vite.config";
 export default mergeConfig(
 	viteConfig,
 	defineConfig({
+		root: path.resolve(__dirname, "."),
+		resolve: {
+			alias: {
+				"@": path.resolve(__dirname, "src"),
+			},
+		},
 		test: {
 			environment: "jsdom",
 			exclude: [...configDefaults.exclude, "e2e/**"],

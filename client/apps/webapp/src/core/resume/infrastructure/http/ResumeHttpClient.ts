@@ -1,6 +1,6 @@
-import type { Resume } from "@/core/resume/domain/Resume.ts";
-import type { ResumeGenerator } from "@/core/resume/domain/ResumeGenerator.ts";
-import { BaseHttpClient } from "@/shared/BaseHttpClient.ts";
+import { BaseHttpClient } from "../../../../shared/BaseHttpClient";
+import type { Resume } from "../../domain/Resume.ts";
+import type { ResumeGenerator } from "../../domain/ResumeGenerator.ts";
 import { mapResumeToBackendRequest } from "./ResumeRequestMapper.ts";
 
 /**

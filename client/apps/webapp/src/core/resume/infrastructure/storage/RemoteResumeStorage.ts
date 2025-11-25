@@ -1,6 +1,5 @@
 import type { Resume } from "@/core/resume/domain/Resume";
 import type {
-	PartialResume,
 	PersistenceResult,
 	ResumeStorage,
 	StorageType,
@@ -8,7 +7,7 @@ import type {
 import {
 	type ResumeDocumentResponse,
 	ResumeHttpClient,
-} from "@/core/resume/infrastructure/http/ResumeHttpClient";
+} from "../http/ResumeHttpClient";
 
 /**
  * Configuration for remote storage with retry mechanism
@@ -28,6 +27,33 @@ export interface RemoteStorageConfig {
 
 	/** Optional resume ID (if not provided, a new UUID will be generated on save) */
 	resumeId?: string;
+}
+
+/**
+ * Type alias for HTTP errors with a response status (Axios-style)
+ */
+export type HttpErrorWithStatus = {
+	response: {
+		status: number;
+		[key: string]: unknown;
+	};
+	[key: string]: unknown;
+};
+
+/**
+ * Type guard for HTTP errors with a response status
+ */
+function isHttpErrorWithStatus(error: unknown): error is HttpErrorWithStatus {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"response" in error &&
+		typeof (error as { response: unknown }).response === "object" &&
+		(error as { response: object }).response !== null &&
+		"status" in (error as { response: { status: number } }).response &&
+		typeof (error as { response: { status: unknown } }).response.status ===
+			"number"
+	);
 }
 
 /**
@@ -62,6 +88,8 @@ export class RemoteResumeStorage implements ResumeStorage {
 	private retryCount = 0;
 	private lastServerTimestamp: string | null = null;
 	private currentResumeId: string | null = null;
+	private consecutiveFailures = 0;
+	private warningCallback: ((message: string) => void) | null = null;
 
 	constructor(
 		config: RemoteStorageConfig,
@@ -73,7 +101,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 			maxRetryDelay: config.maxRetryDelay ?? 30000,
 			maxRetries: config.maxRetries ?? 3,
 			workspaceId: config.workspaceId,
-			resumeId: config.resumeId,
+			resumeId: config.resumeId ?? crypto.randomUUID(),
 		};
 		this.currentResumeId = config.resumeId ?? null;
 	}
@@ -99,78 +127,56 @@ export class RemoteResumeStorage implements ResumeStorage {
 		return this.lastServerTimestamp;
 	}
 
-	private static hasStatus(
-		error: unknown,
-	): error is { response?: { status?: number } } {
-		return (
-			typeof error === "object" &&
-			error !== null &&
-			"response" in error &&
-			typeof (error as { response: unknown }).response === "object" &&
-			(error as { response: object }).response !== null &&
-			"status" in (error as { response: { status: number } }).response
-		);
+	/**
+	 * Register a callback to receive non-blocking warnings (e.g., after 3 consecutive failures)
+	 */
+	onWarning(cb: (message: string) => void) {
+		this.warningCallback = cb;
 	}
 
-	async save(
-		resume: Resume | PartialResume,
-	): Promise<PersistenceResult<Resume | PartialResume>> {
-		// Generate new UUID if we don't have one yet
-		if (!this.currentResumeId) {
-			this.currentResumeId = crypto.randomUUID();
-		}
-
-		// Track if we already confirmed the document does not exist (404)
+	async save(resume: Resume): Promise<PersistenceResult<Resume>> {
 		let knownNotFound = false;
-
-		const response = await this.withRetry(async () => {
-			// Try update first if we have an ID, otherwise create
-			if (this.currentResumeId) {
-				if (knownNotFound) {
-					// After a prior 404 we skip update attempts and go straight to creation
+		let response: ResumeDocumentResponse;
+		// Always try update first if resumeId is present
+		const resumeId = this.currentResumeId ?? this.config.resumeId;
+		const isCreate = !resumeId;
+		response = await this.withRetry(
+			async () => {
+				if (isCreate || knownNotFound) {
+					// Generate a new UUID for creation
+					const newId = resumeId ?? crypto.randomUUID();
+					this.currentResumeId = newId;
 					return await this.client.createResume(
-						this.currentResumeId,
+						newId,
 						this.config.workspaceId,
-						resume as Resume,
-						undefined, // title is optional
+						resume,
+						undefined,
 					);
 				}
-
+				// Try update first
 				try {
-					return await this.client.updateResume(
-						this.currentResumeId,
-						resume as Resume,
-						undefined, // title is optional
-					);
+					return await this.client.updateResume(resumeId!, resume, undefined);
 				} catch (error) {
-					// If update fails with 404, the resume doesn't exist yet, create it
-					if (
-						RemoteResumeStorage.hasStatus(error) &&
-						error.response?.status === 404
-					) {
+					if (isHttpErrorWithStatus(error) && error.response.status === 404) {
 						knownNotFound = true;
 						return await this.client.createResume(
-							this.currentResumeId,
+							resumeId!,
 							this.config.workspaceId,
-							resume as Resume,
-							undefined, // title is optional
+							resume,
+							undefined,
 						);
 					}
 					throw error;
 				}
-			}
-
-			// No ID yet, create new resume
-			if (!this.currentResumeId) {
-				throw new Error("Resume ID is required for creation");
-			}
-			return await this.client.createResume(
-				this.currentResumeId,
-				this.config.workspaceId,
-				resume as Resume,
-				undefined, // title is optional
-			);
-		}, "Save resume");
+			},
+			"Save resume",
+			(error) => {
+				if (!isHttpErrorWithStatus(error)) return false;
+				const status = error.response.status;
+				// Only retry transient errors: 5xx, 408, 429
+				return status >= 500 || status === 408 || status === 429;
+			},
+		);
 
 		// Store server timestamp and ID
 		this.lastServerTimestamp = response.updatedAt;
@@ -192,35 +198,27 @@ export class RemoteResumeStorage implements ResumeStorage {
 	}
 
 	async load(): Promise<PersistenceResult<Resume | null>> {
-		if (!this.currentResumeId && !this.config.resumeId) {
-			// No ID to load, return null
+		const id = this.currentResumeId;
+		if (!id) {
 			return {
 				data: null,
 				timestamp: new Date().toISOString(),
 				storageType: "remote",
 			};
 		}
-
-		const id = this.currentResumeId ?? this.config.resumeId;
-		if (!id) {
-			throw new Error("Resume ID is required for loading");
-		}
-
+		let attemptsUsed = 0;
 		try {
 			const response = await this.withRetry(
 				async () => this.client.getResume(id),
 				"Load resume",
 				(error) =>
-					!(
-						RemoteResumeStorage.hasStatus(error) &&
-						error.response?.status === 404
-					),
+					!(isHttpErrorWithStatus(error) && error.response.status === 404),
 			);
-
+			attemptsUsed = this.retryCount;
 			// Update our tracking
 			this.currentResumeId = response.id;
 			this.lastServerTimestamp = response.updatedAt;
-
+			this.retryCount = 0;
 			return {
 				data: this.mapResponseToResume(response),
 				timestamp: response.updatedAt ?? response.createdAt,
@@ -231,45 +229,44 @@ export class RemoteResumeStorage implements ResumeStorage {
 					workspaceId: response.workspaceId,
 					createdAt: response.createdAt,
 					updatedAt: response.updatedAt,
-					retryCount: this.retryCount,
+					retryCount: attemptsUsed,
 				},
 			};
 		} catch (error) {
 			// If resume not found, return null instead of throwing
-			if (
-				RemoteResumeStorage.hasStatus(error) &&
-				error.response?.status === 404
-			) {
+			if (isHttpErrorWithStatus(error) && error.response.status === 404) {
+				attemptsUsed = this.retryCount;
+				this.currentResumeId = null;
+				this.config.resumeId = undefined;
+				this.retryCount = 0;
 				return {
 					data: null,
 					timestamp: new Date().toISOString(),
 					storageType: "remote",
+					metadata: {
+						retryCount: attemptsUsed,
+					},
 				};
 			}
+			this.retryCount = 0;
 			throw error;
 		}
 	}
 
 	async clear(): Promise<void> {
-		if (!this.currentResumeId && !this.config.resumeId) {
-			// Nothing to clear
+		const id = this.currentResumeId;
+		if (!id) {
 			return;
 		}
-
-		const id = this.currentResumeId ?? this.config.resumeId;
-		if (!id) {
-			return; // Nothing to clear
-		}
-
 		await this.withRetry(
 			async () => this.client.deleteResume(id),
 			"Delete resume",
 		);
-
 		// Clear our tracking
 		this.currentResumeId = null;
 		this.lastServerTimestamp = null;
 		this.retryCount = 0;
+		this.config.resumeId = undefined;
 	}
 
 	type(): StorageType {
@@ -278,10 +275,11 @@ export class RemoteResumeStorage implements ResumeStorage {
 
 	/**
 	 * Calculate the next retry delay using exponential backoff
-	 * Formula: min(initialDelay * 2^retryCount, maxDelay)
+	 * Formula: min(initialDelay * 2^attempt, maxDelay)
 	 */
-	private calculateRetryDelay(): number {
-		const delay = this.config.initialRetryDelay * 2 ** this.retryCount;
+	private calculateRetryDelay(attempt: number): number {
+		// First retry is initialRetryDelay, then doubles each time, capped at maxRetryDelay
+		const delay = this.config.initialRetryDelay * 2 ** attempt;
 		return Math.min(delay, this.config.maxRetryDelay);
 	}
 
@@ -294,47 +292,57 @@ export class RemoteResumeStorage implements ResumeStorage {
 		shouldRetry?: (error: unknown, attempt: number) => boolean,
 	): Promise<T> {
 		let lastError: Error | null = null;
-
 		for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
 			try {
 				const result = await operation();
-				// Reset retry count on success
 				this.retryCount = 0;
+				this.consecutiveFailures = 0;
 				return result as T;
 			} catch (error) {
-				if (RemoteResumeStorage.hasStatus(error)) {
-					lastError = new Error(`HTTP error ${error.response?.status}`);
-				} else {
-					lastError =
-						error instanceof Error ? error : new Error("Unknown error");
+				// Only retry network errors, 5xx, 429, 408
+				let retryable = false;
+				if (!error || typeof error !== "object") {
+					retryable = false;
+				} else if (isHttpErrorWithStatus(error)) {
+					const status = error.response.status;
+					retryable = status >= 500 || status === 429 || status === 408;
+				} else if ((error as any).isAxiosError && !(error as any).response) {
+					// Network error (no response)
+					retryable = true;
 				}
-
-				this.retryCount = attempt + 1;
-
-				// If caller indicates we shouldn't retry this error, rethrow immediately
 				if (shouldRetry && !shouldRetry(error, attempt)) {
-					throw error;
+					retryable = false;
 				}
-
-				// Don't retry on the last attempt
-				if (attempt < this.config.maxRetries) {
-					const delay = this.calculateRetryDelay();
-					console.warn(
-						`[RemoteResumeStorage] ${operationName} failed (attempt ${attempt + 1}/${
-							this.config.maxRetries + 1
-						}). Retrying in ${delay}ms...`,
-						lastError,
+				if (!retryable || attempt === this.config.maxRetries) {
+					this.consecutiveFailures++;
+					if (this.consecutiveFailures >= 3 && this.warningCallback) {
+						this.warningCallback(
+							`[RemoteResumeStorage] ${operationName} failed ${this.consecutiveFailures} times. Please check your connection or try again later.`,
+						);
+					}
+					this.retryCount = 0;
+					throw lastError ?? error;
+				}
+				lastError = error instanceof Error ? error : new Error("Unknown error");
+				this.retryCount = attempt + 1;
+				this.consecutiveFailures++;
+				if (this.consecutiveFailures === 3 && this.warningCallback) {
+					this.warningCallback(
+						`[RemoteResumeStorage] ${operationName} failed 3 times. Please check your connection or try again later.`,
 					);
-
-					// Wait before retrying
-					await new Promise((resolve) => setTimeout(resolve, delay));
 				}
+				const delay = this.calculateRetryDelay(attempt);
+				console.warn(
+					`[RemoteResumeStorage] ${operationName} failed (attempt ${attempt + 1}/$${
+						this.config.maxRetries + 1
+					}). Retrying in ${delay}ms...`,
+					lastError,
+				);
+				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
-
-		// All retries exhausted
 		throw new Error(
-			`${operationName} failed after ${
+			`${operationName} failed after $${
 				this.config.maxRetries + 1
 			} attempts: ${lastError?.message}`,
 		);
