@@ -11,6 +11,6 @@ data class ReferenceDto(
     @field:Size(max = 100, message = "Name must not exceed 100 characters")
     val name: String,
 
-    @field:Size(max = 500, message = "Reference must not exceed 500 characters")
+    @field:Size(max = 800, message = "Reference must not exceed 800 characters")
     val reference: String? = null
 )

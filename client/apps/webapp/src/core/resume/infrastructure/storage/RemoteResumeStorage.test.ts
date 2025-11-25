@@ -1,15 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume";
-import type { ResumeHttpClient } from "@/core/resume/infrastructure/http/ResumeHttpClient";
+import {
+	type ResumeDocumentResponse,
+	ResumeHttpClient,
+} from "@/core/resume/infrastructure/http/ResumeHttpClient";
 import {
 	RemoteResumeStorage,
 	type RemoteStorageConfig,
 } from "./RemoteResumeStorage";
 
+vi.mock("@/core/resume/infrastructure/http/ResumeHttpClient");
+
 describe("RemoteResumeStorage", () => {
-	let mockClient: ResumeHttpClient;
 	let storage: RemoteResumeStorage;
 	let config: RemoteStorageConfig;
+	let mockClient: ResumeHttpClient;
 
 	const mockResume: Resume = {
 		basics: {
@@ -42,7 +47,7 @@ describe("RemoteResumeStorage", () => {
 		certificates: [],
 	};
 
-	const mockResponse = {
+	const mockResponse: ResumeDocumentResponse = {
 		id: "test-id",
 		userId: "user-id",
 		workspaceId: "workspace-id",
@@ -57,20 +62,14 @@ describe("RemoteResumeStorage", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
 
-		// Create a mock client matching the ResumeHttpClient API used by RemoteResumeStorage
-		mockClient = {
-			createResume: vi.fn(),
-			getResume: vi.fn(),
-			updateResume: vi.fn(),
-			deleteResume: vi.fn(),
-			// Other methods may exist but are not used in these tests
-		} as unknown as ResumeHttpClient;
+		mockClient = new ResumeHttpClient();
 
 		config = {
 			workspaceId: "workspace-id",
 			initialRetryDelay: 0,
 			maxRetryDelay: 0,
 			maxRetries: 2,
+			resumeId: undefined,
 		};
 
 		storage = new RemoteResumeStorage(config, mockClient);
@@ -78,9 +77,10 @@ describe("RemoteResumeStorage", () => {
 
 	describe("save", () => {
 		it("creates a new resume when update returns 404", async () => {
-			// Simulate update throwing 404 so createResume is used
-			(mockClient.updateResume as any).mockRejectedValueOnce({ status: 404 });
-			(mockClient.createResume as any).mockResolvedValueOnce(mockResponse);
+			vi.mocked(mockClient.updateResume).mockRejectedValue({
+				response: { status: 404 },
+			});
+			vi.mocked(mockClient.createResume).mockResolvedValue(mockResponse);
 
 			const result = await storage.save(mockResume);
 
@@ -92,17 +92,15 @@ describe("RemoteResumeStorage", () => {
 				undefined,
 			);
 
-			expect(result.data).toBe(mockResume);
+			expect(result.data).toEqual(mockResume);
 			expect(result.storageType).toBe("remote");
 			expect(storage.getResumeId()).toBe(mockResponse.id);
 		});
 
 		it("updates existing resume when ID exists", async () => {
-			// Start with an existing resume id
 			config.resumeId = "existing-id";
 			storage = new RemoteResumeStorage(config, mockClient);
-
-			(mockClient.updateResume as any).mockResolvedValueOnce(mockResponse);
+			vi.mocked(mockClient.updateResume).mockResolvedValue(mockResponse);
 
 			await storage.save(mockResume);
 
@@ -114,35 +112,27 @@ describe("RemoteResumeStorage", () => {
 		});
 
 		it("retries and succeeds after transient failure", async () => {
-			// For a new resume path, update will be attempted first and fail with 404, then create will be tried
-			(mockClient.updateResume as any).mockRejectedValueOnce({ status: 404 });
-
-			// Simulate transient failure on create then success
-			(mockClient.createResume as any)
+			vi.mocked(mockClient.updateResume).mockRejectedValue({
+				response: { status: 404 },
+			});
+			vi.mocked(mockClient.createResume)
 				.mockRejectedValueOnce(new Error("Network error"))
 				.mockResolvedValueOnce(mockResponse);
 
 			const result = await storage.save(mockResume);
 
-			expect(
-				(mockClient.createResume as any).mock.calls.length,
-			).toBeGreaterThanOrEqual(1);
-			expect(result.data).toBe(mockResume);
-			expect(storage.getRetryCount()).toBe(0); // Reset after success
+			expect(mockClient.createResume).toHaveBeenCalledTimes(2);
+			expect(result.data).toEqual(mockResume);
+			expect(storage.getRetryCount()).toBe(0);
 		});
 
 		it("throws after max retries exceeded", async () => {
-			// Force update to always fail (non-404) to trigger retries
-			(mockClient.updateResume as any).mockRejectedValue(
+			vi.mocked(mockClient.updateResume).mockRejectedValue(
 				new Error("Permanent failure"),
 			);
 
 			await expect(storage.save(mockResume)).rejects.toThrow(/failed after/);
-
-			// Should have attempted update (initial + retries)
-			expect(
-				(mockClient.updateResume as any).mock.calls.length,
-			).toBeGreaterThanOrEqual(1);
+			expect(mockClient.updateResume).toHaveBeenCalledTimes(3);
 		});
 	});
 
@@ -157,8 +147,7 @@ describe("RemoteResumeStorage", () => {
 		it("loads resume from server when id is provided", async () => {
 			config.resumeId = "test-id";
 			storage = new RemoteResumeStorage(config, mockClient);
-
-			(mockClient.getResume as any).mockResolvedValueOnce(mockResponse);
+			vi.mocked(mockClient.getResume).mockResolvedValue(mockResponse);
 
 			const result = await storage.load();
 
@@ -170,8 +159,9 @@ describe("RemoteResumeStorage", () => {
 		it("returns null on 404 instead of throwing", async () => {
 			config.resumeId = "non-existent-id";
 			storage = new RemoteResumeStorage(config, mockClient);
-
-			(mockClient.getResume as any).mockRejectedValueOnce({ status: 404 });
+			vi.mocked(mockClient.getResume).mockRejectedValue({
+				response: { status: 404 },
+			});
 
 			const result = await storage.load();
 
@@ -189,8 +179,7 @@ describe("RemoteResumeStorage", () => {
 		it("deletes resume from server when id exists", async () => {
 			config.resumeId = "test-id";
 			storage = new RemoteResumeStorage(config, mockClient);
-
-			(mockClient.deleteResume as any).mockResolvedValueOnce(undefined);
+			vi.mocked(mockClient.deleteResume).mockResolvedValue(undefined);
 
 			await storage.clear();
 
@@ -206,8 +195,10 @@ describe("RemoteResumeStorage", () => {
 		});
 
 		it("includes metadata in persistence result", async () => {
-			(mockClient.updateResume as any).mockRejectedValueOnce({ status: 404 });
-			(mockClient.createResume as any).mockResolvedValueOnce(mockResponse);
+			vi.mocked(mockClient.updateResume).mockRejectedValue({
+				response: { status: 404 },
+			});
+			vi.mocked(mockClient.createResume).mockResolvedValue(mockResponse);
 
 			const result = await storage.save(mockResume);
 

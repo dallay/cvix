@@ -14,7 +14,7 @@ data class BasicsDto(
     @field:Size(max = 100, message = "Name must not exceed 100 characters")
     val name: String,
 
-    @field:Size(max = 100, message = "Label must not exceed 100 characters")
+    @field:Size(max = 200, message = "Label must not exceed 200 characters")
     val label: String? = null,
 
     val image: String? = null,

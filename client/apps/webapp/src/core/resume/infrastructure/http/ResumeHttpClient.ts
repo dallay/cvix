@@ -120,6 +120,7 @@ export class ResumeHttpClient
 			{
 				headers: {
 					"Accept-Language": locale,
+					Accept: "application/pdf",
 				},
 				responseType: "blob",
 			},

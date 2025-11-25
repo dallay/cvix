@@ -113,12 +113,12 @@ class BasicsTest {
     @Test
     fun `should fail when job title exceeds max length`() {
         // Arrange
-        val longTitle = "a".repeat(101)
+        val longTitle = "a".repeat(201)
 
         // Act & Assert
         shouldThrow<IllegalArgumentException> {
             JobTitle(longTitle)
-        }.message shouldBe "Job title cannot exceed 100 characters"
+        }.message shouldBe "Job title cannot exceed 200 characters"
     }
 
     @Test

@@ -53,7 +53,7 @@ class ResumeGeneratorController(
     )
     @PostMapping("/generate", produces = ["application/pdf"])
     suspend fun generateResume(
-        @Valid @Validated @RequestBody request: GenerateResumeRequest,
+        @Valid @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange
     ): ResponseEntity<ByteArray> {
         // Validate payload size (FR-015: reject requests exceeding 100KB)
