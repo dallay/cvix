@@ -1,16 +1,23 @@
 ---
 import { type Lang, useTranslations } from "@/i18n";
+import {BASE_WEBAPP_URL} from "@/consts.ts";
 
 const lang = Astro.currentLocale as Lang;
 const t = useTranslations(lang);
 
-const templates = [
-  { name: t("templates.executive"), color: "bg-stone-100" },
-  { name: t("templates.creative"), color: "bg-rose-50" },
-  { name: t("templates.minimal"), color: "bg-white" },
-  { name: t("templates.modern"), color: "bg-slate-50" },
-];
+export interface TemplateShowcase {
+  id: string;
+  name: string;
+  url: string;
+  color: string;
+}
 
+const templates: TemplateShowcase[] = [
+      { id: "executive", name: t("templates.executive"), url: `${BASE_WEBAPP_URL}/templates/executive`, color: "bg-stone-100" },
+      { id: "creative", name: t("templates.creative"), url: `${BASE_WEBAPP_URL}/templates/creative`, color: "bg-rose-50" },
+      { id: "minimal", name: t("templates.minimal"), url: `${BASE_WEBAPP_URL}/templates/minimal`, color: "bg-white" },
+      { id: "modern", name: t("templates.modern"), url: `${BASE_WEBAPP_URL}/templates/modern`, color: "bg-slate-50" },
+    ];
 ---
 
 <section class="py-24 bg-secondary/30">
@@ -28,10 +35,9 @@ const templates = [
       {
         templates.map((template) => (
           <a
-            href={`/templates/${template.name.toLowerCase()}`}
+            href={template.url}
             class="group relative aspect-[1/1.4] rounded-lg shadow-lg overflow-hidden transition-transform hover:-translate-y-2 focus:-translate-y-2 duration-300 block focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label={t("template.showcase.useTemplate", { template: template.name })}
-            tabindex="0"
           >
             <div class={`w-full h-full ${template.color} p-4 flex flex-col text-slate-900`}>
               <div class="h-4 w-1/3 bg-current opacity-10 rounded mb-4" />
