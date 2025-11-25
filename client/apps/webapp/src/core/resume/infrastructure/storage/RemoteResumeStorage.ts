@@ -63,7 +63,7 @@ function isHttpErrorWithStatus(error: unknown): error is HttpErrorWithStatus {
 function isAxiosNetworkError(
 	error: unknown,
 ): error is { isAxiosError: true; response: undefined } {
-	if (typeof error !== "object" || error === null) {
+	if (!error || typeof error !== "object") {
 		return false;
 	}
 	return (
