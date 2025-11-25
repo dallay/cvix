@@ -1,20 +1,26 @@
 ---
+import { type Lang, useTranslations } from "@/i18n";
+
+const lang = Astro.currentLocale as Lang;
+const t = useTranslations(lang);
+
 const templates = [
-  { name: "Executive", color: "bg-stone-100" },
-  { name: "Creative", color: "bg-rose-50" },
-  { name: "Minimal", color: "bg-white" },
-  { name: "Modern", color: "bg-slate-50" },
+  { name: t("templates.executive"), color: "bg-stone-100" },
+  { name: t("templates.creative"), color: "bg-rose-50" },
+  { name: t("templates.minimal"), color: "bg-white" },
+  { name: t("templates.modern"), color: "bg-slate-50" },
 ];
+
 ---
 
 <section class="py-24 bg-secondary/30">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
-        Beautiful and unique <br /> resumes right out of the box
+      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 max-w-3xl mx-auto">
+        {t("template.showcase.heading")}
       </h2>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        Pick a template, enter your content, and get a professional resume in minutes.
+        {t("template.showcase.description")}
       </p>
     </div>
 
@@ -44,7 +50,7 @@ const templates = [
             </div>
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
               <span class="bg-primary text-primary-foreground px-4 py-2 rounded-full font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                Use {template.name}
+                {t("template.showcase.useTemplate", { template: template.name })}
               </span>
             </div>
           </div>
@@ -57,7 +63,7 @@ const templates = [
         href="#"
         class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary hover:bg-primary/90 md:py-4 md:text-lg md:px-10 transition-all shadow-lg hover:shadow-xl"
       >
-        View all templates
+        {t("template.showcase.viewAll")}
       </a>
     </div>
   </div>
