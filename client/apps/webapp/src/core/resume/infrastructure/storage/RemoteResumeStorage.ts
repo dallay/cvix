@@ -265,6 +265,8 @@ export class RemoteResumeStorage implements ResumeStorage {
 				this.currentResumeId = null;
 				this.config.resumeId = undefined;
 				this.retryCount = 0;
+				// Reset consecutiveFailures since 404 is a valid "no data" state, not a failure
+				this.consecutiveFailures = 0;
 				return {
 					data: null,
 					timestamp: new Date().toISOString(),
@@ -340,17 +342,22 @@ export class RemoteResumeStorage implements ResumeStorage {
 					retryable = false;
 				}
 				if (!retryable || attempt === this.config.maxRetries) {
-					this.consecutiveFailures++;
-					if (this.consecutiveFailures >= 3 && this.warningCallback) {
-						this.warningCallback(
-							`[RemoteResumeStorage] ${operationName} failed ${this.consecutiveFailures} times. Please check your connection or try again later.`,
-						);
+					// Only increment consecutiveFailures for retryable errors that exhausted retries
+					// Non-retryable errors (like 404) should not count as failures
+					if (retryable && attempt === this.config.maxRetries) {
+						this.consecutiveFailures++;
+						if (this.consecutiveFailures >= 3 && this.warningCallback) {
+							this.warningCallback(
+								`[RemoteResumeStorage] ${operationName} failed ${this.consecutiveFailures} times. Please check your connection or try again later.`,
+							);
+						}
 					}
 					this.retryCount = 0;
 					throw lastError ?? error;
 				}
 				lastError = error instanceof Error ? error : new Error("Unknown error");
 				this.retryCount = attempt + 1;
+				// Only increment consecutiveFailures for retryable errors during retry attempts
 				this.consecutiveFailures++;
 				if (this.consecutiveFailures === 3 && this.warningCallback) {
 					this.warningCallback(
