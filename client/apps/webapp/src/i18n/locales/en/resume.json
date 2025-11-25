@@ -169,7 +169,8 @@
 			"downloadJsonHint": "Download JSON Resume (Cmd/Ctrl+S)",
 			"validateJson": "Validate JSON Resume",
 			"validateJsonHint": "Validate JSON Resume format",
-			"preview": "Preview"
+			"preview": "Preview",
+			"resetForm": "Reset Form"
 		},
 		"actions": {
 			"add": "Add",

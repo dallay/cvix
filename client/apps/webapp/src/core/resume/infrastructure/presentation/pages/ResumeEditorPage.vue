@@ -50,9 +50,14 @@ const { importJson, exportJson, validateResume, validationErrors } =
 
 // Track if data has been modified since last save
 const hasUnsavedChanges = ref(false);
+const isInitialLoad = ref(true);
 watch(
 	resume,
 	() => {
+		if (isInitialLoad.value) {
+			isInitialLoad.value = false;
+			return;
+		}
 		hasUnsavedChanges.value = true;
 	},
 	{ deep: true },
@@ -354,12 +359,12 @@ function cancelReset() {
 
           <Button
               size="sm"
-              title="Clear all resume data"
+              :title="t('resume.buttons.resetFormHint')"
               variant="outline"
               @click="handleResetForm"
           >
             <RotateCcw class="h-4 w-4 mr-2"/>
-            Reset Form
+            {{ t('resume.buttons.resetForm') }}
           </Button>
 
           <Button
