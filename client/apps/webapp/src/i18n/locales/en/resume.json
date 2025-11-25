@@ -170,7 +170,8 @@
 			"validateJson": "Validate JSON Resume",
 			"validateJsonHint": "Validate JSON Resume format",
 			"preview": "Preview",
-			"resetForm": "Reset Form"
+			"resetForm": "Reset Form",
+			"resetFormHint": "Clear all resume data"
 		},
 		"actions": {
 			"add": "Add",

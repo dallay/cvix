@@ -1,5 +1,6 @@
 import type { Resume } from "@/core/resume/domain/Resume";
 import type {
+	PartialResume,
 	PersistenceResult,
 	ResumeStorage,
 	StorageType,
@@ -117,7 +118,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 			maxRetryDelay: config.maxRetryDelay ?? 30000,
 			maxRetries: config.maxRetries ?? 3,
 			workspaceId: config.workspaceId,
-			resumeId: config.resumeId ?? crypto.randomUUID(),
+			resumeId: config.resumeId,
 		};
 		this.currentResumeId = config.resumeId ?? null;
 	}
@@ -150,8 +151,16 @@ export class RemoteResumeStorage implements ResumeStorage {
 		this.warningCallback = cb;
 	}
 
-	async save(resume: Resume): Promise<PersistenceResult<Resume>> {
+	async save(
+		resume: Resume | PartialResume,
+	): Promise<PersistenceResult<Resume | PartialResume>> {
 		let knownNotFound = false;
+		// Validate: only full Resume objects are supported
+		if (!isFullResume(resume)) {
+			throw new Error(
+				"RemoteResumeStorage only supports saving complete Resume objects. Partial resumes are not allowed.",
+			);
+		}
 		// Always try update first if resumeId is present
 		const resumeId = this.currentResumeId ?? this.config.resumeId;
 		const isCreate = !resumeId;
@@ -159,8 +168,9 @@ export class RemoteResumeStorage implements ResumeStorage {
 			async () => {
 				if (isCreate || knownNotFound) {
 					// Generate a new UUID for creation
-					const newId = resumeId ?? crypto.randomUUID();
+					const newId = crypto.randomUUID();
 					this.currentResumeId = newId;
+					this.config.resumeId = newId;
 					return await this.client.createResume(
 						newId,
 						this.config.workspaceId,
@@ -196,6 +206,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 		// Store server timestamp and ID
 		this.lastServerTimestamp = response.updatedAt;
 		this.currentResumeId = response.id;
+		this.config.resumeId = response.id;
 
 		return {
 			data: resume,
@@ -348,7 +359,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 				}
 				const delay = this.calculateRetryDelay(attempt);
 				console.warn(
-					`[RemoteResumeStorage] ${operationName} failed (attempt ${attempt + 1}/$${
+					`[RemoteResumeStorage] ${operationName} failed (attempt ${attempt + 1}/${
 						this.config.maxRetries + 1
 					}). Retrying in ${delay}ms...`,
 					lastError,
@@ -357,7 +368,9 @@ export class RemoteResumeStorage implements ResumeStorage {
 			}
 		}
 		throw new Error(
-			`${operationName} failed after $${this.config.maxRetries + 1} attempts: ${lastError?.message}`,
+			`${operationName} failed after ${
+				this.config.maxRetries + 1
+			} attempts: ${lastError?.message}`,
 		);
 	}
 
@@ -367,4 +380,23 @@ export class RemoteResumeStorage implements ResumeStorage {
 	private mapResponseToResume(response: ResumeDocumentResponse): Resume {
 		return response.content;
 	}
+}
+
+// Helper to check if an object is a full Resume
+function isFullResume(obj: unknown): obj is Resume {
+	if (!obj || typeof obj !== "object") return false;
+	const requiredKeys = [
+		"basics",
+		"work",
+		"volunteer",
+		"education",
+		"awards",
+		"certificates",
+		"publications",
+		"skills",
+		"languages",
+		"interests",
+		"references",
+	];
+	return requiredKeys.every((key) => key in obj);
 }

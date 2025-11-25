@@ -169,7 +169,9 @@
 			"downloadJsonHint": "Descargar JSON del Currículum (Cmd/Ctrl+S)",
 			"validateJson": "Validar JSON del Currículum",
 			"validateJsonHint": "Validar formato JSON Resume",
-			"preview": "Vista Previa"
+			"preview": "Vista Previa",
+			"resetForm": "Restablecer formulario",
+			"resetFormHint": "Borrar todos los datos del currículum"
 		},
 		"actions": {
 			"add": "Agregar",
