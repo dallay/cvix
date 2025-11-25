@@ -1,0 +1,31 @@
+name: Link Checker
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  link-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore lychee cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: |
+            cache-lychee-
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --cache --max-cache-age 1d --exclude-path node_modules --exclude-path public/admin --exclude 'http://localhost' --exclude 'https://localhost' ./**/*.md
+      - name: Save lychee cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .lycheecache
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
