@@ -63,9 +63,10 @@ function isHttpErrorWithStatus(error: unknown): error is HttpErrorWithStatus {
 function isAxiosNetworkError(
 	error: unknown,
 ): error is { isAxiosError: true; response: undefined } {
+	if (typeof error !== "object" || error === null) {
+		return false;
+	}
 	return (
-		typeof error === "object" &&
-		error !== null &&
 		"isAxiosError" in error &&
 		error.isAxiosError === true &&
 		(!("response" in error) ||
@@ -357,13 +358,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 				}
 				lastError = error instanceof Error ? error : new Error("Unknown error");
 				this.retryCount = attempt + 1;
-				// Only increment consecutiveFailures for retryable errors during retry attempts
-				this.consecutiveFailures++;
-				if (this.consecutiveFailures === 3 && this.warningCallback) {
-					this.warningCallback(
-						`[RemoteResumeStorage] ${operationName} failed 3 times. Please check your connection or try again later.`,
-					);
-				}
 				const delay = this.calculateRetryDelay(attempt);
 				console.warn(
 					`[RemoteResumeStorage] ${operationName} failed (attempt ${attempt + 1}/${
@@ -404,6 +398,7 @@ function isFullResume(obj: unknown): obj is Resume {
 		"languages",
 		"interests",
 		"references",
+		"projects",
 	];
 	return requiredKeys.every((key) => key in obj);
 }
