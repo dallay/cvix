@@ -1,6 +1,6 @@
 import type {UIMultilingual} from "@i18n";
 
-export const footer: UIMultilingual= {
+export const footer: UIMultilingual = {
 	en: {
 		// Footer description
 		"footer.description":

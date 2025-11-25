@@ -13,44 +13,50 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
 const t = useTranslations(langToUse);
 
 import VideoPlaceholder from "@/assets/video-placeholder.png";
-import {BASE_WEBAPP_URL} from "@/consts.ts";
+import { BASE_WEBAPP_URL } from "@/consts.ts";
 ---
 
-<section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden">
+<section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden fade-in-section">
   <div class="container mx-auto max-w-screen-xl px-4 text-center">
     <div
-      class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8"
+      class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 fade-in-section delay-100"
     >
       <span class="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
       {t("hero.badge.text")}
     </div>
 
     <h1
-      class="mx-auto mb-6 max-w-4xl text-5xl font-serif font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl leading-[1.1]"
+      class="mx-auto mb-6 max-w-4xl text-5xl font-serif font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl leading-[1.1] fade-in-section delay-200"
     >
       {t("hero.title")}
     </h1>
 
-    <p class="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
+    <p
+      class="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl fade-in-section delay-300"
+    >
       {t("hero.subtitle")}
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+    <div
+      class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 fade-in-section delay-400"
+    >
       <a
         href={`${BASE_WEBAPP_URL}/resume/editor`}
-        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
+        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-primary-foreground transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
+        aria-label={t("hero.cta.primary")}
       >
         {t("hero.cta.primary")}
       </a>
       <a
         href="#"
-        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-foreground transition-all bg-white border border-input rounded-full hover:bg-accent hover:text-accent-foreground"
+        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-foreground transition-all bg-background border border-input rounded-full hover:bg-accent hover:text-accent-foreground"
+        aria-label={t("hero.cta.secondary")}
       >
         {t("hero.cta.secondary")}
       </a>
     </div>
 
-    <div class="relative mx-auto max-w-5xl">
+    <div class="relative mx-auto max-w-5xl fade-in-section delay-500">
       <div
         class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-20"
       >

@@ -4,37 +4,37 @@ import { DEFAULT_LOCALE, LOCALES, useTranslations, type Lang } from "@/i18n";
 import { BASE_WEBAPP_URL } from "@/consts";
 
 const astroLocale = Astro.currentLocale;
-const lang: Lang = astroLocale && LOCALES[astroLocale as Lang]
-  ? (astroLocale as Lang)
-  : DEFAULT_LOCALE;
+const lang: Lang =
+  astroLocale && LOCALES[astroLocale as Lang] ? (astroLocale as Lang) : DEFAULT_LOCALE;
 const t = useTranslations(lang);
 ---
 
-<section class="py-24 bg-secondary/30">
+<section class="py-24 bg-secondary/30 fade-in-section">
   <div class="container mx-auto max-w-7xl px-4 text-center">
     <div class="max-w-3xl mx-auto">
       <h2
-        class="text-4xl font-bold font-serif leading-tight text-foreground md:text-5xl mb-6"
+        class="text-4xl font-bold font-serif leading-tight text-foreground md:text-5xl mb-6 fade-in-section delay-100"
       >
         {t("cta.heading")}
       </h2>
-      <p class="text-xl text-muted-foreground mb-10">
+      <p class="text-xl text-muted-foreground mb-10 fade-in-section delay-200">
         {t("cta.description")}
       </p>
 
       <div
-        class="flex flex-col items-center justify-center gap-4 sm:flex-row"
+        class="flex flex-col items-center justify-center gap-4 sm:flex-row fade-in-section delay-300"
       >
         <a
           href={BASE_WEBAPP_URL}
-          class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-white shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
+          class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
+          aria-label={t("cta.button")}
         >
           {t("cta.button")}
         </a>
       </div>
 
       <p
-        class="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+        class="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground fade-in-section delay-400"
       >
         <Icon name="tabler:check" class="h-4 w-4 text-green-600" />
         {t("cta.microcopy")}

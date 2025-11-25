@@ -26,21 +26,25 @@ const faqItems = [
 ];
 ---
 
-<section class="py-24 bg-background">
+<section class="py-24 bg-background fade-in-section">
   <div class="container mx-auto max-w-screen-xl px-4">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+      <h2
+        class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 fade-in-section delay-100"
+      >
         {t("faq.title")}
       </h2>
-      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto fade-in-section delay-200">
         {t("faq.subtitle")}
       </p>
     </div>
 
     <div class="flex flex-col gap-6 max-w-3xl mx-auto">
       {
-        faqItems.map((faq) => (
-          <details class="group bg-secondary/20 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:bg-secondary/40 open:bg-secondary/40">
+        faqItems.map((faq, index) => (
+          <details
+            class={`group bg-secondary/20 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:bg-secondary/40 open:bg-secondary/40 fade-in-section delay-${(index + 3) * 100}`}
+          >
             <summary class="flex gap-6 cursor-pointer list-none items-start">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif font-bold text-lg mt-1">
                 Q
@@ -79,7 +83,8 @@ const faqItems = [
     /* Hide native marker in most browsers */
     list-style: none;
     /* Remove default marker in Safari/Chrome */
-    &::marker, &::-webkit-details-marker {
+    &::marker,
+    &::-webkit-details-marker {
       display: none;
       content: "";
       appearance: none;

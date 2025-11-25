@@ -13,38 +13,44 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
 const t = useTranslations(langToUse);
 ---
 
-<section class="py-24 bg-secondary/30">
+<section class="py-24 bg-secondary/30 fade-in-section">
   <div class="container mx-auto max-w-screen-xl px-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
       <!-- Content -->
       <div>
-        <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6 whitespace-pre-line">
+        <h2
+          class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6 whitespace-pre-line fade-in-section delay-100"
+        >
           {t("trustMetrics.heading")}
         </h2>
-        <p class="text-lg text-muted-foreground mb-8 leading-relaxed">
+        <p class="text-lg text-muted-foreground mb-8 leading-relaxed fade-in-section delay-200">
           {t("trustMetrics.subtitle")}
         </p>
 
-        <div class="space-y-6 mb-10">
+        <div class="space-y-6 mb-10 fade-in-section delay-300">
           <div class="flex items-start">
             <div
-              class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center mt-1"
+              class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center mt-1"
             >
               <Icon name="tabler:check" class="w-4 h-4" />
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-foreground">{t("trustMetrics.feature1.title")}</h3>
+              <h3 class="text-lg font-medium text-foreground">
+                {t("trustMetrics.feature1.title")}
+              </h3>
               <p class="text-muted-foreground">{t("trustMetrics.feature1.description")}</p>
             </div>
           </div>
           <div class="flex items-start">
             <div
-              class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center mt-1"
+              class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center mt-1"
             >
               <Icon name="tabler:check" class="w-4 h-4" />
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-foreground">{t("trustMetrics.feature2.title")}</h3>
+              <h3 class="text-lg font-medium text-foreground">
+                {t("trustMetrics.feature2.title")}
+              </h3>
               <p class="text-muted-foreground">{t("trustMetrics.feature2.description")}</p>
             </div>
           </div>
@@ -52,43 +58,51 @@ const t = useTranslations(langToUse);
 
         <a
           href="#"
-          class="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
+          class="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-primary-foreground transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25 fade-in-section delay-400"
+          aria-label="Check for ATS errors"
         >
           Check for ATS errors
         </a>
       </div>
 
       <!-- Image/Mockup -->
-      <div class="relative">
+      <div class="relative fade-in-section delay-500">
         <div
           class="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-50"
         >
         </div>
-        <div class="relative bg-white rounded-2xl shadow-xl border border-border p-6 md:p-8">
+        <div class="relative bg-card rounded-2xl shadow-xl border border-border p-6 md:p-8">
           <div class="flex items-center gap-4 mb-6 border-b border-border pb-4">
-            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-              <Icon name="tabler:robot" class="w-6 h-6 text-gray-500" />
+            <div class="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <Icon name="tabler:robot" class="w-6 h-6 text-muted-foreground" />
             </div>
             <div>
-              <div class="h-4 w-32 bg-gray-200 rounded mb-2"></div>
-              <div class="h-3 w-24 bg-gray-100 rounded"></div>
+              <div class="h-4 w-32 bg-muted rounded mb-2"></div>
+              <div class="h-3 w-24 bg-muted/70 rounded"></div>
             </div>
             <div
-              class="ml-auto px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full"
+              class="ml-auto px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium rounded-full"
             >
               {t("trustMetrics.mockup.score")}
             </div>
           </div>
           <div class="space-y-4">
-            <div class="h-4 w-full bg-gray-100 rounded"></div>
-            <div class="h-4 w-5/6 bg-gray-100 rounded"></div>
-            <div class="h-4 w-full bg-gray-100 rounded"></div>
-            <div class="h-4 w-4/6 bg-gray-100 rounded"></div>
+            <div class="h-4 w-full bg-muted rounded"></div>
+            <div class="h-4 w-5/6 bg-muted rounded"></div>
+            <div class="h-4 w-full bg-muted rounded"></div>
+            <div class="h-4 w-4/6 bg-muted rounded"></div>
           </div>
-          <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <div
+            class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800"
+          >
             <div class="flex gap-3">
-              <Icon name="tabler:info-circle" class="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p class="text-sm text-blue-800">{t("trustMetrics.mockup.message")}</p>
+              <Icon
+                name="tabler:info-circle"
+                class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+              />
+              <p class="text-sm text-blue-800 dark:text-blue-200">
+                {t("trustMetrics.mockup.message")}
+              </p>
             </div>
           </div>
         </div>
