@@ -337,6 +337,12 @@
 			},
 			"score": "Promedio",
 			"courses": "Cursos Relevantes"
+		},
+		"resetDialog": {
+			"title": "¿Restablecer el formulario?",
+			"description": "Esto borrará todos los datos del currículum del formulario y el almacenamiento. Esta acción no se puede deshacer. Asegúrate de descargar tu currículum primero si deseas conservarlo.",
+			"cancel": "Cancelar",
+			"reset": "Restablecer"
 		}
 	}
 }

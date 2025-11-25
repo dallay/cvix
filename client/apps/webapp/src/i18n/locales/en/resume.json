@@ -338,6 +338,12 @@
 			},
 			"score": "GPA",
 			"courses": "Relevant Courses"
+		},
+		"resetDialog": {
+			"title": "Reset form?",
+			"description": "This will clear all resume data from the form and storage. This action cannot be undone. Make sure to download your resume first if you want to keep it.",
+			"cancel": "Cancel",
+			"reset": "Reset"
 		}
 	}
 }

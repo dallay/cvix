@@ -57,6 +57,22 @@ function isHttpErrorWithStatus(error: unknown): error is HttpErrorWithStatus {
 }
 
 /**
+ * Type guard for Axios network errors (errors without a response)
+ */
+function isAxiosNetworkError(
+	error: unknown,
+): error is { isAxiosError: true; response: undefined } {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"isAxiosError" in error &&
+		error.isAxiosError === true &&
+		(!("response" in error) ||
+			(error as { response: unknown }).response === undefined)
+	);
+}
+
+/**
  * Remote storage implementation for resume persistence via REST API.
  *
  * This implementation provides server-side persistence with:
@@ -136,11 +152,10 @@ export class RemoteResumeStorage implements ResumeStorage {
 
 	async save(resume: Resume): Promise<PersistenceResult<Resume>> {
 		let knownNotFound = false;
-		let response: ResumeDocumentResponse;
 		// Always try update first if resumeId is present
 		const resumeId = this.currentResumeId ?? this.config.resumeId;
 		const isCreate = !resumeId;
-		response = await this.withRetry(
+		const response: ResumeDocumentResponse = await this.withRetry(
 			async () => {
 				if (isCreate || knownNotFound) {
 					// Generate a new UUID for creation
@@ -155,12 +170,12 @@ export class RemoteResumeStorage implements ResumeStorage {
 				}
 				// Try update first
 				try {
-					return await this.client.updateResume(resumeId!, resume, undefined);
+					return await this.client.updateResume(resumeId, resume, undefined);
 				} catch (error) {
 					if (isHttpErrorWithStatus(error) && error.response.status === 404) {
 						knownNotFound = true;
 						return await this.client.createResume(
-							resumeId!,
+							resumeId,
 							this.config.workspaceId,
 							resume,
 							undefined,
@@ -306,7 +321,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 				} else if (isHttpErrorWithStatus(error)) {
 					const status = error.response.status;
 					retryable = status >= 500 || status === 429 || status === 408;
-				} else if ((error as any).isAxiosError && !(error as any).response) {
+				} else if (isAxiosNetworkError(error)) {
 					// Network error (no response)
 					retryable = true;
 				}
@@ -342,9 +357,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 			}
 		}
 		throw new Error(
-			`${operationName} failed after $${
-				this.config.maxRetries + 1
-			} attempts: ${lastError?.message}`,
+			`${operationName} failed after $${this.config.maxRetries + 1} attempts: ${lastError?.message}`,
 		);
 	}
 

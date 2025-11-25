@@ -473,17 +473,19 @@ function cancelReset() {
     <AlertDialog v-model:open="showResetConfirmation">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Reset form?</AlertDialogTitle>
+          <AlertDialogTitle>{{ t('resume.resetDialog.title') }}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will clear all resume data from the form and storage. This action cannot be undone.
-            Make sure to download your resume first if you want to keep it.
+            {{ t('resume.resetDialog.description') }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel @click="cancelReset">Cancel</AlertDialogCancel>
+          <AlertDialogCancel @click="cancelReset">{{
+              t('resume.resetDialog.cancel')
+            }}
+          </AlertDialogCancel>
           <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                              @click="confirmReset">
-            Reset
+            {{ t('resume.resetDialog.reset') }}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
