@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import { type Lang, useTranslations } from "@/i18n";
+import { useTranslations, type Lang } from "@/i18n";
+import { BASE_WEBAPP_URL } from "@/consts";
 
 const lang = Astro.currentLocale as Lang;
 const t = useTranslations(lang);
@@ -9,24 +10,30 @@ const t = useTranslations(lang);
 <section class="py-24 bg-secondary/30">
   <div class="container mx-auto max-w-screen-xl px-4 text-center">
     <div class="max-w-3xl mx-auto">
-      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6 leading-tight">
+      <h2
+        class="text-4xl font-bold font-serif leading-tight text-foreground md:text-5xl mb-6"
+      >
         {t("cta.heading")}
       </h2>
       <p class="text-xl text-muted-foreground mb-10">
         {t("cta.description")}
       </p>
 
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div
+        class="flex flex-col items-center justify-center gap-4 sm:flex-row"
+      >
         <a
-          href="#"
-          class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25 min-w-[200px]"
+          href={BASE_WEBAPP_URL}
+          class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-white shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
         >
           {t("cta.button")}
         </a>
       </div>
 
-      <p class="mt-6 text-sm text-muted-foreground flex items-center justify-center gap-2">
-        <Icon name="tabler:check" class="w-4 h-4 text-green-600" />
+      <p
+        class="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+      >
+        <Icon name="tabler:check" class="h-4 w-4 text-green-600" />
         {t("cta.microcopy")}
       </p>
     </div>

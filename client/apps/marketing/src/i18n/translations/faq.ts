@@ -1,6 +1,7 @@
 export const faq = {
 	en: {
 		"faq.title": "Frequently Asked Questions",
+		"faq.subtitle": "You might be wondering about a few things.",
 		"faq.question1": "Do I need to know LaTeX?",
 		"faq.answer1":
 			"No, Civix generates the LaTeX for you. Simply fill out the form with your information and we'll handle all the technical details to create a professional resume.",
@@ -16,6 +17,7 @@ export const faq = {
 	},
 	es: {
 		"faq.title": "Preguntas Frecuentes",
+		"faq.subtitle": "Puede que te estés preguntando algunas cosas.",
 		"faq.question1": "¿Necesito saber LaTeX?",
 		"faq.answer1":
 			"No, Civix genera el LaTeX por ti. Simplemente completa el formulario con tu información y nosotros nos encargamos de todos los detalles técnicos para crear un CV profesional.",
