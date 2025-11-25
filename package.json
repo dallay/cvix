@@ -71,7 +71,6 @@
     "@types/node": "^24.10.1",
     "@vitest/ui": "^4.0.13",
     "lefthook": "^2.0.4",
-    "lychee": "^0.2.12",
     "npm-run-all2": "^8.0.4",
     "oxlint": "^1.29.0",
     "tsup": "^8.5.1",
@@ -83,7 +82,10 @@
   },
   "pnpm": {
     "overrides": {
-      "@loomify/docs>zod": "^3.23.8"
+      "@loomify/docs>zod": "^3.23.8",
+      "glob": "^10.5.0",
+      "@anthropic-ai/claude-code": "^2.0.31",
+      "js-yaml": "^4.1.1"
     }
   },
   "dependencies": {

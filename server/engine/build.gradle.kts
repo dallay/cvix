@@ -100,7 +100,7 @@ dependencies {
     testImplementation(libs.bundles.kotest)
     testImplementation("com.tngtech.archunit:archunit:1.4.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.apache.pdfbox:pdfbox:2.0.29")
+    testImplementation("org.apache.pdfbox:pdfbox:2.0.35")
 }
 
 dependencyManagement {
