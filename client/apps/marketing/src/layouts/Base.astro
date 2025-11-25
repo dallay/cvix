@@ -81,7 +81,7 @@ const localeDescription = description || t(SITE_DESCRIPTION);
     <LocaleHtmlHead />
   </head>
 
-  <body class="bg-white dark:bg-gray-900 scroll-smooth transition-colors duration-300 ease-in-out min-w-sm">
+  <body class="bg-background text-foreground scroll-smooth transition-colors duration-300 ease-in-out min-w-sm">
   <slot name="header">
     <LocaleSuggest />
     <Header />
@@ -95,5 +95,36 @@ const localeDescription = description || t(SITE_DESCRIPTION);
   <BackToTop />
 
   { import.meta.env.DEV && <style>:root { scroll-behavior: auto }</style> }
+  <script>
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target); // Only animate once
+        }
+      });
+    }, observerOptions);
+
+    document.addEventListener('astro:page-load', () => {
+      const sections = document.querySelectorAll('.fade-in-section');
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+    });
+
+    // Initial load for non-SPA navigation
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('.fade-in-section');
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+  </script>
   </body>
 </html>

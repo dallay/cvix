@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type { UIMultilingual } from "@i18n";
 
-export const howItWorks: Translations = {
+export const howItWorks: UIMultilingual = {
 	en: {
 		"howItWorks.title": "How It Works",
 		"howItWorks.subtitle":

@@ -5,8 +5,8 @@ import {
 	retrieveLocalizedString,
 	useTranslatedPath,
 	useTranslations,
-} from "../i18n";
-import type { Multilingual } from "../types";
+} from "@i18n";
+import type { Multilingual } from "@i18n";
 
 // Define mock function before vi.mock
 const mockShowDefaultLang = vi.fn().mockReturnValue(false);

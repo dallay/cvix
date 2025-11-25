@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type { UIMultilingual } from "@i18n";
 
-export const products: Translations = {
+export const products: UIMultilingual = {
 	en: {
 		"products.title": "Products",
 		"products.description": "Discover our innovative products.",
