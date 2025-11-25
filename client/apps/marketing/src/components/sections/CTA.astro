@@ -1,33 +1,44 @@
 ---
 import { Icon } from "astro-icon/components";
-import CtaDashboardMockup from "@/assets/cta-dashboard-mockup.svg";
-import CtaDashboardMockupDark from "@/assets/cta-dashboard-mockup-dark.svg";
-import Link from "@/components/Link.astro";
-import OptimizedPicture from "@/components/OptimizedPicture.astro";
-import { type Lang, useTranslations } from "@/i18n";
+import { DEFAULT_LOCALE, LOCALES, useTranslations, type Lang } from "@/i18n";
+import { BASE_WEBAPP_URL } from "@/consts";
 
-const lang = Astro.currentLocale as Lang;
+const astroLocale = Astro.currentLocale;
+const lang: Lang =
+  astroLocale && LOCALES[astroLocale as Lang] ? (astroLocale as Lang) : DEFAULT_LOCALE;
 const t = useTranslations(lang);
 ---
-<section class="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-  <div class="gap-8 items-center py-16 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-20 lg:px-6">
-    <div class="order-1">
-      <OptimizedPicture class="mx-auto rounded-2xl shadow-2xl w-full dark:hidden" src={CtaDashboardMockup} alt="Civix resume builder interface" />
-      <OptimizedPicture class="mx-auto rounded-2xl shadow-2xl w-full hidden dark:block" src={CtaDashboardMockupDark} alt="Civix resume builder interface" />
-    </div>
-    <div class="mt-4 md:mt-0 order-2">
-      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{t('cta.heading')}</h2>
-      <p class="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">{t('cta.description')}</p>
-      <div class="flex flex-col sm:flex-row gap-4 items-start">
-        <Link href="#" variant="default" class="inline-flex items-center">
-          {t('cta.button')}
-          <Icon name="tabler:arrow-right" class="ml-2 -mr-1 w-5 h-5" />
-        </Link>
-        <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-          <Icon name="tabler:check" class="w-4 h-4 mr-1 text-green-500" />
-          {t('cta.microcopy')}
-        </p>
+
+<section class="py-24 bg-secondary/30 fade-in-section">
+  <div class="container mx-auto max-w-7xl px-4 text-center">
+    <div class="max-w-3xl mx-auto">
+      <h2
+        class="text-4xl font-bold font-serif leading-tight text-foreground md:text-5xl mb-6 fade-in-section delay-100"
+      >
+        {t("cta.heading")}
+      </h2>
+      <p class="text-xl text-muted-foreground mb-10 fade-in-section delay-200">
+        {t("cta.description")}
+      </p>
+
+      <div
+        class="flex flex-col items-center justify-center gap-4 sm:flex-row fade-in-section delay-300"
+      >
+        <a
+          href={BASE_WEBAPP_URL}
+          class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
+          aria-label={t("cta.button")}
+        >
+          {t("cta.button")}
+        </a>
       </div>
+
+      <p
+        class="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground fade-in-section delay-400"
+      >
+        <Icon name="tabler:check" class="h-4 w-4 text-green-600" />
+        {t("cta.microcopy")}
+      </p>
     </div>
   </div>
 </section>

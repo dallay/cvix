@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const blog: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const blog: UIMultilingual = {
 	en: {
 		"blog.section.title": "Insights for modern creators",
 		"blog.section.subtitle":

@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const about: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const about: UIMultilingual = {
 	en: {
 		title: "About Us",
 		intro: "Welcome to our About page. Learn more about our project and team.",
