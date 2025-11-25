@@ -13,6 +13,7 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
 const t = useTranslations(langToUse);
 
 import VideoPlaceholder from "@/assets/video-placeholder.png";
+import {BASE_WEBAPP_URL} from "@/consts.ts";
 ---
 
 <section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden">
@@ -36,16 +37,16 @@ import VideoPlaceholder from "@/assets/video-placeholder.png";
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
       <a
-        href="#"
+        href={`${BASE_WEBAPP_URL}/resume/editor`}
         class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
       >
-        Create my resume
+        {t("hero.cta.primary")}
       </a>
       <a
         href="#"
         class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-foreground transition-all bg-white border border-input rounded-full hover:bg-accent hover:text-accent-foreground"
       >
-        View examples
+        {t("hero.cta.secondary")}
       </a>
     </div>
 
