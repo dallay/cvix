@@ -4,7 +4,7 @@ import FAQ from "@/components/sections/FAQ.astro";
 import Feature from "@/components/sections/Feature.astro";
 import Footer from "@/components/sections/Footer.astro";
 import Hero from "@/components/sections/Hero.astro";
-import HowItWorks from "@/components/sections/HowItWorks.astro";
+import TemplateShowcase from "@/components/sections/TemplateShowcase.astro";
 import TrustMetrics from "@/components/sections/TrustMetrics.astro";
 import { type Lang, LOCALES, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Base.astro";
@@ -13,41 +13,38 @@ const locale = Astro.currentLocale as Lang;
 const t = useTranslations(locale);
 
 export const getStaticPaths = () =>
-	Object.keys(LOCALES).map((lang) => ({
-		params: { lang },
-	}));
+  Object.keys(LOCALES).map((lang) => ({
+    params: { lang },
+  }));
 
 // SEO structured data for SoftwareApplication
 const structuredData = {
-	"@context": "https://schema.org",
-	"@type": "SoftwareApplication",
-	name: "Civix",
-	applicationCategory: "BusinessApplication",
-	description: t("home.description"),
-	operatingSystem: "Web Browser",
-	offers: {
-		"@type": "Offer",
-		price: "0",
-		priceCurrency: "USD",
-	},
-	aggregateRating: {
-		"@type": "AggregateRating",
-		ratingValue: "4.8",
-		ratingCount: "500",
-	},
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Civix",
+  applicationCategory: "BusinessApplication",
+  description: t("home.description"),
+  operatingSystem: "Web Browser",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    ratingCount: "500",
+  },
 };
 ---
 
-<Layout
-	title={t('home.title')}
-	description={t('home.description')}
->
-	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-	<Hero />
-	<Feature />
-	<HowItWorks />
-	<TrustMetrics />
-	<CTA />
-	<FAQ />
-	<Footer />
+<Layout title={t("home.title")} description={t("home.description")}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <Hero />
+  <TemplateShowcase />
+  <TrustMetrics />
+  <Feature />
+  <FAQ />
+  <CTA />
+  <Footer />
 </Layout>

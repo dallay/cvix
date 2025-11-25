@@ -9,7 +9,7 @@ import {
 	useForwardPropsEmits,
 } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "@/shared/utils/utils";
+import { cn } from "@/lib/utils";
 
 defineOptions({
 	inheritAttrs: false,

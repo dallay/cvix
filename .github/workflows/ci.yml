@@ -123,7 +123,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@db7ea3f7fb64b40888e1a1bb732dbc804f305023
+        uses: DavidAnson/markdownlint-cli2-action@e4bf40dee69f036098589e4b9dbb433098fda5d3
         with:
           fix: true
           globs: |
@@ -360,7 +360,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/backend
       - name: Build and push Docker image
-        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: .
           file: ./server/engine/Dockerfile
@@ -397,7 +397,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/marketing
       - name: Build and push Docker image
-        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: .
           file: ./client/apps/marketing/Dockerfile
@@ -434,7 +434,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/webapp
       - name: Build and push Docker image
-        uses: docker/build-push-action@2568b8ba147262c0116de8f3b23e00f3680873a6 # v6.0.0
+        uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
           context: .
           file: ./client/apps/webapp/Dockerfile

@@ -10,7 +10,7 @@ import { ui } from "./ui";
 
 /**
  * Helper to get the translation function
- * @param - The current language
+ * @param lang - The current language
  * @returns - The translation function
  */
 export function useTranslations(lang: Lang) {

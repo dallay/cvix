@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type { UIMultilingual } from "@i18n";
 
-export const privacyPolicy: Translations = {
+export const privacyPolicy: UIMultilingual = {
 	en: {
 		"privacyPolicy.title": "Privacy Policy",
 		"privacyPolicy.description": "Read our privacy policy.",
