@@ -123,7 +123,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@bfd3fdc8e281653c43afbfbf5f4b31bf25ba1109
+        uses: DavidAnson/markdownlint-cli2-action@db7ea3f7fb64b40888e1a1bb732dbc804f305023
         with:
           fix: true
           globs: |
@@ -355,7 +355,7 @@ jobs:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/backend
       - name: Build and push Docker image
@@ -392,7 +392,7 @@ jobs:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/marketing
       - name: Build and push Docker image
@@ -429,7 +429,7 @@ jobs:
           driver: docker-container
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d197551f4f28f1 # v5.5.1
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: ghcr.io/${{ github.repository_owner }}/loomify/webapp
       - name: Build and push Docker image
