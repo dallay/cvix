@@ -4,6 +4,7 @@ import Brand from "@/components/Brand.astro";
 import { type Lang, useTranslatedPath, useTranslations } from "@/i18n";
 import { footerNavLinks } from "@/models/menu/menu.constants";
 import { filterMenuItems } from "@/models/menu/menu.service";
+import FooterLinkList from "../FooterLinkList.astro";
 
 // Get the current language from Astro context
 const lang = (Astro.currentLocale as Lang) || "en";
@@ -39,69 +40,15 @@ const legalLinks = visibleFooterLinks.filter((link) =>
       <div class="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-3">
         <div>
           <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.company")}</h2>
-          <ul class="text-muted-foreground font-medium space-y-5">
-            {
-              companyLinks.map(
-                (link) =>
-                  link.type === "link" && (
-                    <li>
-                      <a
-                        href={translatePath(link.href)}
-                        class="hover:text-primary transition-colors"
-                        aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
-                        target={link.target as any}
-                      >
-                        {t(link.translationKey)}
-                      </a>
-                    </li>
-                  ),
-              )
-            }
-          </ul>
+          <FooterLinkList links={companyLinks} lang={lang} />
         </div>
         <div>
           <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.resources")}</h2>
-          <ul class="text-muted-foreground font-medium space-y-5">
-            {
-              resourceLinks.map(
-                (link) =>
-                  link.type === "link" && (
-                    <li>
-                      <a
-                        href={translatePath(link.href)}
-                        class="hover:text-primary transition-colors"
-                        aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
-                        target={link.target as any}
-                      >
-                        {t(link.translationKey)}
-                      </a>
-                    </li>
-                  ),
-              )
-            }
-          </ul>
+          <FooterLinkList links={resourceLinks} lang={lang} />
         </div>
         <div>
           <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.legal")}</h2>
-          <ul class="text-muted-foreground font-medium space-y-5">
-            {
-              legalLinks.map(
-                (link) =>
-                  link.type === "link" && (
-                    <li>
-                      <a
-                        href={translatePath(link.href)}
-                        class="hover:text-primary transition-colors"
-                        aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
-                        target={link.target as any}
-                      >
-                        {t(link.translationKey)}
-                      </a>
-                    </li>
-                  ),
-              )
-            }
-          </ul>
+          <FooterLinkList links={legalLinks} lang={lang} />
         </div>
       </div>
     </div>
