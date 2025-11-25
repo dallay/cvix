@@ -6,12 +6,27 @@ import viteConfig from "./vite.config";
 export default mergeConfig(
 	viteConfig,
 	defineConfig({
-		root: path.resolve(__dirname, "."),
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
+
+export default mergeConfig(
+	viteConfig,
+	defineConfig({
+		root: projectRoot,
 		resolve: {
 			alias: {
-				"@": path.resolve(__dirname, "src"),
+				"@": path.resolve(projectRoot, "src"),
 			},
 		},
+		test: {
+			environment: "jsdom",
+			exclude: [...configDefaults.exclude, "e2e/**"],
+			root: projectRoot,
+		},
+	}),
+);
 		test: {
 			environment: "jsdom",
 			exclude: [...configDefaults.exclude, "e2e/**"],
