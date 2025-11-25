@@ -180,6 +180,16 @@ describe("RemoteResumeStorage", () => {
 
 			expect(result.data).toBeNull();
 		});
+		it("throws on non-404 errors after retries", async () => {
+			config.resumeId = "test-id";
+			storage = new RemoteResumeStorage(config, mockClient);
+			(mockClient.getResume as ReturnType<typeof vi.fn>).mockRejectedValue({
+				response: { status: 500 },
+			});
+
+			await expect(storage.load()).rejects.toThrow();
+			expect(mockClient.getResume).toHaveBeenCalledTimes(3); // maxRetries + 1
+		});
 	});
 
 	describe("clear", () => {

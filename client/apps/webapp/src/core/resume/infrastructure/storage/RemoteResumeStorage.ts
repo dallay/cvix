@@ -342,20 +342,13 @@ export class RemoteResumeStorage implements ResumeStorage {
 				if (shouldRetry && !shouldRetry(error, attempt)) {
 					retryable = false;
 				}
-				if (!retryable || attempt === this.config.maxRetries) {
-					// Only increment consecutiveFailures for retryable errors that exhausted retries
-					// Non-retryable errors (like 404) should not count as failures
-					if (retryable && attempt === this.config.maxRetries) {
-						this.consecutiveFailures++;
-						if (this.consecutiveFailures >= 3 && this.warningCallback) {
-							this.warningCallback(
-								`[RemoteResumeStorage] ${operationName} failed ${this.consecutiveFailures} times. Please check your connection or try again later.`,
-							);
-						}
-					}
-					this.retryCount = 0;
-					throw lastError ?? error;
-				}
+				this.handleRetryFailure(
+					retryable,
+					attempt,
+					operationName,
+					lastError,
+					error,
+				);
 				lastError = error instanceof Error ? error : new Error("Unknown error");
 				this.retryCount = attempt + 1;
 				const delay = this.calculateRetryDelay(attempt);
@@ -374,6 +367,29 @@ export class RemoteResumeStorage implements ResumeStorage {
 			} attempts: ${lastError?.message}`,
 		);
 	}
+
+	private handleRetryFailure = (
+		retryable: boolean,
+		attempt: number,
+		operationName: string,
+		lastError: null | Error,
+		error: unknown,
+	) => {
+		if (!retryable || attempt === this.config.maxRetries) {
+			// Only increment consecutiveFailures for retryable errors that exhausted retries
+			// Non-retryable errors (like 404) should not count as failures
+			if (retryable && attempt === this.config.maxRetries) {
+				this.consecutiveFailures++;
+				if (this.consecutiveFailures >= 3 && this.warningCallback) {
+					this.warningCallback(
+						`[RemoteResumeStorage] ${operationName} failed ${this.consecutiveFailures} times. Please check your connection or try again later.`,
+					);
+				}
+			}
+			this.retryCount = 0;
+			throw lastError ?? error;
+		}
+	};
 
 	/**
 	 * Map backend response to domain Resume
