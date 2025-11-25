@@ -12,12 +12,37 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
   langToUse = DEFAULT_LOCALE;
 }
 const t = useTranslations(langToUse);
+
+const features = [
+  {
+    icon: "tabler:layout-dashboard",
+    titleKey: "features.guidedForm.title",
+    descKey: "features.guidedForm.description",
+  },
+  {
+    icon: "tabler:wand",
+    titleKey: "features.instantPDF.title",
+    descKey: "features.instantPDF.description",
+  },
+  {
+    icon: "tabler:shield-check",
+    titleKey: "features.privacy.title",
+    descKey: "features.privacy.description",
+  },
+  {
+    icon: "tabler:device-mobile",
+    titleKey: "features.mobileFirst.title",
+    descKey: "features.mobileFirst.description",
+  },
+];
 ---
 
 <section class="py-24 bg-background">
   <div class="container mx-auto max-w-screen-xl px-4">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+      <h2
+        class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4"
+      >
         {t("features.heading")}
       </h2>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -25,72 +50,28 @@ const t = useTranslations(langToUse);
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 max-w-5xl mx-auto">
-      <!-- Feature 1 -->
-      <div class="flex gap-6">
-        <div class="flex-shrink-0">
-          <div
-            class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"
-          >
-            <Icon name="tabler:layout-dashboard" class="w-8 h-8" />
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 max-w-5xl mx-auto"
+    >
+      {
+        features.map((feature) => (
+          <div class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <Icon name={feature.icon} class="w-8 h-8" />
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-foreground mb-2">
+                {t(feature.titleKey)}
+              </h3>
+              <p class="text-muted-foreground leading-relaxed">
+                {t(feature.descKey)}
+              </p>
+            </div>
           </div>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-foreground mb-2">{t("features.guidedForm.title")}</h3>
-          <p class="text-muted-foreground leading-relaxed">
-            {t("features.guidedForm.description")}
-          </p>
-        </div>
-      </div>
-
-      <!-- Feature 2 -->
-      <div class="flex gap-6">
-        <div class="flex-shrink-0">
-          <div
-            class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"
-          >
-            <Icon name="tabler:wand" class="w-8 h-8" />
-          </div>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-foreground mb-2">{t("features.instantPDF.title")}</h3>
-          <p class="text-muted-foreground leading-relaxed">
-            {t("features.instantPDF.description")}
-          </p>
-        </div>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="flex gap-6">
-        <div class="flex-shrink-0">
-          <div
-            class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"
-          >
-            <Icon name="tabler:shield-check" class="w-8 h-8" />
-          </div>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-foreground mb-2">{t("features.privacy.title")}</h3>
-          <p class="text-muted-foreground leading-relaxed">{t("features.privacy.description")}</p>
-        </div>
-      </div>
-
-      <!-- Feature 4 -->
-      <div class="flex gap-6">
-        <div class="flex-shrink-0">
-          <div
-            class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"
-          >
-            <Icon name="tabler:device-mobile" class="w-8 h-8" />
-          </div>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-foreground mb-2">{t("features.mobileFirst.title")}</h3>
-          <p class="text-muted-foreground leading-relaxed">
-            {t("features.mobileFirst.description")}
-          </p>
-        </div>
-      </div>
+        ))
+      }
     </div>
   </div>
 </section>
