@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const footer: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const footer: UIMultilingual= {
 	en: {
 		// Footer description
 		"footer.description":

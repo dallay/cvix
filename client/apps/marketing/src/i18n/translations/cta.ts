@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type { UIMultilingual } from "@i18n";
 
-export const cta: Translations = {
+export const cta: UIMultilingual = {
 	en: {
 		"cta.heading": "Ready to Create Your Professional Resume?",
 		"cta.description":

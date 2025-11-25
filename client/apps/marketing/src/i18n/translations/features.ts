@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const features: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const features: UIMultilingual = {
 	en: {
 		"features.heading": "Why Choose Civix",
 		"features.subheading":

@@ -1,4 +1,6 @@
-export const faq = {
+import type {UIMultilingual} from "@i18n";
+
+export const faq: UIMultilingual = {
 	en: {
 		"faq.title": "Frequently Asked Questions",
 		"faq.subtitle": "You might be wondering about a few things.",

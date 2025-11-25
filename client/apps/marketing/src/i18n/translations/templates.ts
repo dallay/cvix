@@ -1,9 +1,6 @@
-import type { UIDict } from "@i18n";
+import type {UIMultilingual} from "@i18n";
 
-export const templates: {
-  en: UIDict;
-  es: UIDict;
-} = {
+export const templates: UIMultilingual = {
   en: {
     "templates.executive": "Executive",
     "templates.creative": "Creative",

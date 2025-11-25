@@ -18,9 +18,8 @@ const t = useTranslations(langToUse);
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
       <!-- Content -->
       <div>
-        <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
-          Beat the bots! <br />
-          Resumes optimized for ATS
+        <h2 class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6 whitespace-pre-line">
+          {t("trustMetrics.heading")}
         </h2>
         <p class="text-lg text-muted-foreground mb-8 leading-relaxed">
           {t("trustMetrics.subtitle")}
@@ -34,10 +33,8 @@ const t = useTranslations(langToUse);
               <Icon name="tabler:check" class="w-4 h-4" />
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-foreground">ATS-friendly templates</h3>
-              <p class="text-muted-foreground">
-                Designed to be parsed correctly by Applicant Tracking Systems.
-              </p>
+              <h3 class="text-lg font-medium text-foreground">{t("trustMetrics.feature1.title")}</h3>
+              <p class="text-muted-foreground">{t("trustMetrics.feature1.description")}</p>
             </div>
           </div>
           <div class="flex items-start">
@@ -47,10 +44,8 @@ const t = useTranslations(langToUse);
               <Icon name="tabler:check" class="w-4 h-4" />
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-medium text-foreground">Keyword optimization</h3>
-              <p class="text-muted-foreground">
-                Get suggestions for keywords to include based on the job description.
-              </p>
+              <h3 class="text-lg font-medium text-foreground">{t("trustMetrics.feature2.title")}</h3>
+              <p class="text-muted-foreground">{t("trustMetrics.feature2.description")}</p>
             </div>
           </div>
         </div>
@@ -81,7 +76,7 @@ const t = useTranslations(langToUse);
             <div
               class="ml-auto px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full"
             >
-              98% Score
+              {t("trustMetrics.mockup.score")}
             </div>
           </div>
           <div class="space-y-4">
@@ -93,9 +88,7 @@ const t = useTranslations(langToUse);
           <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
             <div class="flex gap-3">
               <Icon name="tabler:info-circle" class="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p class="text-sm text-blue-800">
-                Your resume is optimized for ATS parsing. All sections are readable.
-              </p>
+              <p class="text-sm text-blue-800">{t("trustMetrics.mockup.message")}</p>
             </div>
           </div>
         </div>

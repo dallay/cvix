@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type { UIMultilingual } from "@i18n";
 
-export const contact: Translations = {
+export const contact: UIMultilingual = {
 	en: {
 		"contact.title": "Contact Us",
 		"contact.description": "Get in touch with our team.",
