@@ -73,3 +73,19 @@ const faqItems = [
     </div>
   </div>
 </section>
+
+<style>
+  summary {
+    /* Hide native marker in most browsers */
+    list-style: none;
+    /* Remove default marker in Safari/Chrome */
+    &::marker, &::-webkit-details-marker {
+      display: none;
+      content: "";
+      appearance: none;
+    }
+    /* Optional: adjust padding for alignment */
+    padding-left: 0;
+    margin-left: 0;
+  }
+</style>

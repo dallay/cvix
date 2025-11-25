@@ -56,8 +56,7 @@ const legalLinks = visibleFooterLinks.filter((link) =>
     <div class="sm:flex sm:items-center sm:justify-between">
       <span class="text-base text-muted-foreground sm:text-center">
         © {new Date().getFullYear()}
-        <a href={translatePath("/")} class="hover:underline">{t("footer.brand")}</a>. All Rights
-        Reserved.
+        <a href={translatePath("/")} class="hover:underline">{t("footer.brand")}</a>. {t("footer.allRightsReserved")}
       </span>
       <div class="flex mt-6 space-x-5 sm:justify-center sm:mt-0">
         <a

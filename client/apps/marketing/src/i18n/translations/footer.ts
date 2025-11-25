@@ -28,6 +28,7 @@ export const footer: UIMultilingual= {
 		"footer.aria.privacyPolicy": "Read our privacy policy",
 		"footer.termsOfUse": "Terms of Use",
 		"footer.aria.termsOfUse": "Read our terms of use",
+		"footer.allRightsReserved": "All rights reserved.",
 
 		// Brand name used in the footer
 		"footer.brand": "Loomify",
@@ -59,6 +60,7 @@ export const footer: UIMultilingual= {
 		"footer.aria.privacyPolicy": "Lee nuestra política de privacidad",
 		"footer.termsOfUse": "Términos de Uso",
 		"footer.aria.termsOfUse": "Lee nuestros términos de uso",
+    "footer.allRightsReserved": "Todos los derechos reservados.",
 
 		// Brand name used in the footer
 		"footer.brand": "Plantilla SaaS",

@@ -30,7 +30,7 @@ const templates = [
           <a
             href={`/templates/${template.name.toLowerCase()}`}
             class="group relative aspect-[1/1.4] rounded-lg shadow-lg overflow-hidden transition-transform hover:-translate-y-2 focus:-translate-y-2 duration-300 block focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            aria-label={t("templateShowcase.useTemplate", { template: template.name })}
+            aria-label={t("template.showcase.useTemplate", { template: template.name })}
             tabindex="0"
           >
             <div class={`w-full h-full ${template.color} p-4 flex flex-col text-slate-900`}>
@@ -55,7 +55,7 @@ const templates = [
             </div>
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 group-focus:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus:opacity-100">
               <span class="bg-primary text-primary-foreground px-4 py-2 rounded-full font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 group-focus:translate-y-0 transition-all duration-300">
-                {t("templateShowcase.useTemplate", { template: template.name })}
+                {t("template.showcase.useTemplate", { template: template.name })}
               </span>
             </div>
           </a>

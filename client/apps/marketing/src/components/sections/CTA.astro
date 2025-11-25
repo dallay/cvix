@@ -1,14 +1,17 @@
 ---
 import { Icon } from "astro-icon/components";
-import { useTranslations, type Lang } from "@/i18n";
+import { DEFAULT_LOCALE, LOCALES, useTranslations, type Lang } from "@/i18n";
 import { BASE_WEBAPP_URL } from "@/consts";
 
-const lang = Astro.currentLocale as Lang;
+const astroLocale = Astro.currentLocale;
+const lang: Lang = astroLocale && LOCALES[astroLocale as Lang]
+  ? (astroLocale as Lang)
+  : DEFAULT_LOCALE;
 const t = useTranslations(lang);
 ---
 
 <section class="py-24 bg-secondary/30">
-  <div class="container mx-auto max-w-screen-xl px-4 text-center">
+  <div class="container mx-auto max-w-7xl px-4 text-center">
     <div class="max-w-3xl mx-auto">
       <h2
         class="text-4xl font-bold font-serif leading-tight text-foreground md:text-5xl mb-6"
