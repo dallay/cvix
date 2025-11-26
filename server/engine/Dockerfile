@@ -16,6 +16,8 @@ COPY shared/common/*.gradle.kts /workspace/shared/common/
 COPY shared/spring-boot-common/*.gradle.kts /workspace/shared/spring-boot-common/
 COPY server/engine/build.gradle.kts /workspace/server/engine/
 
+COPY .git .git
+
 # Download dependencies (this layer will be cached unless build files change)
 RUN ./gradlew dependencies --no-daemon || true
 

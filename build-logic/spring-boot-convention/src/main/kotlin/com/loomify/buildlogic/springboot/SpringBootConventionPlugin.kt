@@ -28,6 +28,7 @@ class SpringBootConventionPlugin : ConventionPlugin {
         tasks.commonTasks()
 
         dependencies {
+            add(IMPLEMENTATION, platform("org.jetbrains.kotlin:kotlin-bom"))
             add(IMPLEMENTATION, catalogBundle("spring-boot"))
 
             add(IMPLEMENTATION, catalogBundle("kotlin-jvm"))
