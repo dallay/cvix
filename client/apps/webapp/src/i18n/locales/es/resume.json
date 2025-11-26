@@ -169,7 +169,9 @@
 			"downloadJsonHint": "Descargar JSON del Currículum (Cmd/Ctrl+S)",
 			"validateJson": "Validar JSON del Currículum",
 			"validateJsonHint": "Validar formato JSON Resume",
-			"preview": "Vista Previa"
+			"preview": "Vista Previa",
+			"resetForm": "Restablecer formulario",
+			"resetFormHint": "Borrar todos los datos del currículum"
 		},
 		"actions": {
 			"add": "Agregar",
@@ -337,6 +339,12 @@
 			},
 			"score": "Promedio",
 			"courses": "Cursos Relevantes"
+		},
+		"resetDialog": {
+			"title": "¿Restablecer el formulario?",
+			"description": "Esto borrará todos los datos del currículum del formulario y el almacenamiento. Esta acción no se puede deshacer. Asegúrate de descargar tu currículum primero si deseas conservarlo.",
+			"cancel": "Cancelar",
+			"reset": "Restablecer"
 		}
 	}
 }

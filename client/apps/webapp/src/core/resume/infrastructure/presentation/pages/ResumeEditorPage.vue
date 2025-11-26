@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMagicKeys } from "@vueuse/core";
-import { CheckCircle, Download, Upload } from "lucide-vue-next";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { CheckCircle, Download, RotateCcw, Upload } from "lucide-vue-next";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import {
@@ -27,21 +27,48 @@ import ResumePreview from "@/core/resume/infrastructure/presentation/components/
 import ValidationErrorPanel from "@/core/resume/infrastructure/presentation/components/ValidationErrorPanel.vue";
 import { useJsonResume } from "@/core/resume/infrastructure/presentation/composables/useJsonResume";
 import { useResumeForm } from "@/core/resume/infrastructure/presentation/composables/useResumeForm";
+import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const { t } = useI18n();
 const showPreview = ref(true);
 const showValidationPanel = ref(false);
 const showUploadConfirmation = ref(false);
+const showResetConfirmation = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const pendingFile = ref<File | null>(null);
 
 // Get the resume data from the form composable
-const { resume, loadResume: setResume } = useResumeForm();
+const { resume, loadResume: setResume, clearForm } = useResumeForm();
+
+// Get store for accessing storage timestamps
+const resumeStore = useResumeStore();
 
 // JSON Resume import/export
 const { importJson, exportJson, validateResume, validationErrors } =
 	useJsonResume();
+
+// Track if data has been modified since last save
+const hasUnsavedChanges = ref(false);
+const isInitialLoad = ref(true);
+watch(
+	resume,
+	() => {
+		if (isInitialLoad.value) {
+			isInitialLoad.value = false;
+			return;
+		}
+		hasUnsavedChanges.value = true;
+	},
+	{ deep: true },
+);
+
+// Format last saved timestamp
+const lastSavedText = computed(() => {
+	// TODO: Implement timestamp tracking when autosave/persistence is connected
+	// For now, return placeholder
+	return null;
+});
 
 // Prevent browser default Save dialog on Cmd/Ctrl+S
 function handleSaveShortcut(event: KeyboardEvent) {
@@ -52,12 +79,24 @@ function handleSaveShortcut(event: KeyboardEvent) {
 	}
 }
 
+// Warn user about unsaved changes before navigating away
+function handleBeforeUnload(event: BeforeUnloadEvent) {
+	if (hasUnsavedChanges.value && resume.value) {
+		// Modern browsers display a generic message, but we still need to set returnValue
+		event.preventDefault();
+		event.returnValue = "";
+		return "";
+	}
+}
+
 onMounted(() => {
 	window.addEventListener("keydown", handleSaveShortcut);
+	window.addEventListener("beforeunload", handleBeforeUnload);
 });
 
 onUnmounted(() => {
 	window.removeEventListener("keydown", handleSaveShortcut);
+	window.removeEventListener("beforeunload", handleBeforeUnload);
 });
 
 // Keyboard shortcuts
@@ -216,6 +255,55 @@ function handleJumpTo(section: string, path: string) {
 	console.log("Jump to:", section, path);
 	showValidationPanel.value = false;
 }
+
+/**
+ * Shows reset confirmation dialog
+ */
+function handleResetForm() {
+	if (!resume.value) {
+		toast({
+			title: "No data to reset",
+			description: "The form is already empty.",
+			variant: "default",
+		});
+		return;
+	}
+	showResetConfirmation.value = true;
+}
+
+/**
+ * Confirms and executes form reset
+ */
+async function confirmReset() {
+	showResetConfirmation.value = false;
+
+	try {
+		// Clear the form
+		clearForm();
+
+		// Clear storage
+		await resumeStore.clearStorage();
+
+		hasUnsavedChanges.value = false;
+
+		toast({
+			title: "Form reset",
+			description: "All resume data has been cleared.",
+			variant: "default",
+		});
+	} catch (error) {
+		toast({
+			title: "Reset failed",
+			description:
+				error instanceof Error ? error.message : "Failed to reset form",
+			variant: "destructive",
+		});
+	}
+}
+
+function cancelReset() {
+	showResetConfirmation.value = false;
+}
 </script>
 
 <template>
@@ -234,6 +322,11 @@ function handleJumpTo(section: string, path: string) {
 
         <!-- Utility Bar -->
         <div class="flex flex-wrap gap-2">
+          <!-- Last saved indicator -->
+          <div v-if="lastSavedText" class="flex items-center text-sm text-muted-foreground px-3">
+            {{ lastSavedText }}
+          </div>
+
           <Button
               variant="outline"
               size="sm"
@@ -262,6 +355,16 @@ function handleJumpTo(section: string, path: string) {
           >
             <CheckCircle class="h-4 w-4 mr-2" />
             {{ t('resume.buttons.validateJson') }}
+          </Button>
+
+          <Button
+              size="sm"
+              :title="t('resume.buttons.resetFormHint')"
+              variant="outline"
+              @click="handleResetForm"
+          >
+            <RotateCcw class="h-4 w-4 mr-2"/>
+            {{ t('resume.buttons.resetForm') }}
           </Button>
 
           <Button
@@ -361,6 +464,28 @@ function handleJumpTo(section: string, path: string) {
           <AlertDialogCancel @click="cancelUpload">Cancel</AlertDialogCancel>
           <AlertDialogAction @click="confirmUpload">
             Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <!-- Reset Confirmation Dialog -->
+    <AlertDialog v-model:open="showResetConfirmation">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ t('resume.resetDialog.title') }}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ t('resume.resetDialog.description') }}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="cancelReset">{{
+              t('resume.resetDialog.cancel')
+            }}
+          </AlertDialogCancel>
+          <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                             @click="confirmReset">
+            {{ t('resume.resetDialog.reset') }}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -169,7 +169,9 @@
 			"downloadJsonHint": "Download JSON Resume (Cmd/Ctrl+S)",
 			"validateJson": "Validate JSON Resume",
 			"validateJsonHint": "Validate JSON Resume format",
-			"preview": "Preview"
+			"preview": "Preview",
+			"resetForm": "Reset Form",
+			"resetFormHint": "Clear all resume data"
 		},
 		"actions": {
 			"add": "Add",
@@ -337,6 +339,12 @@
 			},
 			"score": "GPA",
 			"courses": "Relevant Courses"
+		},
+		"resetDialog": {
+			"title": "Reset form?",
+			"description": "This will clear all resume data from the form and storage. This action cannot be undone. Make sure to download your resume first if you want to keep it.",
+			"cancel": "Cancel",
+			"reset": "Reset"
 		}
 	}
 }

@@ -1,14 +1,23 @@
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { configDefaults, defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "./vite.config";
 
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
+
 export default mergeConfig(
 	viteConfig,
 	defineConfig({
+		root: projectRoot,
+		resolve: {
+			alias: {
+				"@": path.resolve(projectRoot, "src"),
+			},
+		},
 		test: {
 			environment: "jsdom",
 			exclude: [...configDefaults.exclude, "e2e/**"],
-			root: fileURLToPath(new URL("./", import.meta.url)),
+			root: projectRoot,
 			setupFiles: ["./vitest.setup.ts"],
 			coverage: {
 				provider: "v8",

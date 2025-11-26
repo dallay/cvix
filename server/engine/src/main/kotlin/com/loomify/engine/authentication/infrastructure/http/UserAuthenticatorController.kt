@@ -38,7 +38,7 @@ class UserAuthenticatorController(private val authenticateUserQueryHandler: Auth
         ApiResponse(responseCode = "401", description = "Unauthorized"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
-    @PostMapping(LOGIN_ROUTE)
+    @PostMapping(LOGIN_ROUTE, consumes = ["application/json"])
     suspend fun login(
         @Validated @RequestBody loginRequest: LoginRequest,
         response: ServerHttpResponse

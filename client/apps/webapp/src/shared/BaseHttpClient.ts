@@ -148,6 +148,9 @@ export class BaseHttpClient {
 	 */
 	private getCsrfTokenFromCookie(): string | null {
 		const name = "XSRF-TOKEN=";
+		if (typeof document === "undefined") {
+			return null;
+		}
 		const decodedCookie = decodeURIComponent(document.cookie);
 		const cookieArray = decodedCookie.split(";");
 

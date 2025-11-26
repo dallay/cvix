@@ -29,11 +29,11 @@ value class FullName(val value: String) {
 value class JobTitle(val value: String) {
     init {
         require(value.isNotBlank()) { "Job title cannot be blank" }
-        require(value.length <= MAX_JOBTITLE_LENGTH) { "Job title cannot exceed $MAX_JOBTITLE_LENGTH characters" }
+        require(value.length <= MAX_JOB_TITLE_LENGTH) { "Job title cannot exceed $MAX_JOB_TITLE_LENGTH characters" }
     }
 
     companion object {
-        private const val MAX_JOBTITLE_LENGTH = 100
+        private const val MAX_JOB_TITLE_LENGTH = 200
     }
 }
 
