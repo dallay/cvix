@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:21-jdk-jammy AS builder
+FROM eclipse-temurin:21.0.9_10-jdk-jammy AS builder
 
 WORKDIR /workspace
 
@@ -27,7 +27,7 @@ COPY server/engine/src /workspace/server/engine/src
 RUN ./gradlew :server:engine:bootJar --no-daemon
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21.0.9_10-jre-jammy
 
 # Create a non-root user
 RUN groupadd -r spring && useradd -r -g spring spring
