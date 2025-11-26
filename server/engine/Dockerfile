@@ -14,7 +14,7 @@ COPY build-logic /workspace/build-logic
 # Copy all subproject build files to leverage Docker layer caching
 COPY shared/common/*.gradle.kts /workspace/shared/common/
 COPY shared/spring-boot-common/*.gradle.kts /workspace/shared/spring-boot-common/
-COPY server/engine/engine.gradle.kts /workspace/server/engine/
+COPY server/engine/build.gradle.kts /workspace/server/engine/
 
 # Download dependencies (this layer will be cached unless build files change)
 RUN ./gradlew dependencies --no-daemon || true
