@@ -345,6 +345,25 @@
 			"description": "Esto borrará todos los datos del currículum del formulario y el almacenamiento. Esta acción no se puede deshacer. Asegúrate de descargar tu currículum primero si deseas conservarlo.",
 			"cancel": "Cancelar",
 			"reset": "Restablecer"
+		},
+		"pdfSelector": {
+			"templateLabel": "Plantilla",
+			"selectTemplate": "Selecciona una plantilla",
+			"optionsTitle": "Opciones de la plantilla",
+			"param": {
+				"color": "Color",
+				"font": "Fuente",
+				"layout": "Diseño"
+			}
+		},
+		"pdfPage": {
+			"backToEditor": "Volver al editor",
+			"title": "Generar PDF",
+			"download": "Descargar PDF",
+			"error": "{{error}}",
+			"generatingPreview": "Generando vista previa...",
+			"selectTemplate": "Selecciona una plantilla para generar la vista previa",
+			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo."
 		}
 	}
 }

@@ -345,6 +345,25 @@
 			"description": "This will clear all resume data from the form and storage. This action cannot be undone. Make sure to download your resume first if you want to keep it.",
 			"cancel": "Cancel",
 			"reset": "Reset"
+		},
+		"pdfSelector": {
+			"templateLabel": "Template",
+			"selectTemplate": "Select a template",
+			"optionsTitle": "Template Options",
+			"param": {
+				"color": "Color",
+				"font": "Font",
+				"layout": "Layout"
+			}
+		},
+		"pdfPage": {
+			"backToEditor": "Back to Editor",
+			"title": "Generate PDF",
+			"download": "Download PDF",
+			"error": "{{error}}",
+			"generatingPreview": "Generating preview...",
+			"selectTemplate": "Select a template to generate preview",
+			"unablePreview": "Unable to display PDF preview. Please download to view."
 		}
 	}
 }

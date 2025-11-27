@@ -127,6 +127,19 @@ export class ResumeHttpClient
 		);
 		return response.data;
 	}
+
+	/**
+	 * Get list of available resume templates
+	 * @returns Promise with list of templates
+	 */
+	async getTemplates(): Promise<
+		import("../../domain/TemplateMetadata").TemplateMetadata[]
+	> {
+		const response = await this.client.get<{
+			data: import("../../domain/TemplateMetadata").TemplateMetadata[];
+		}>("/templates");
+		return response.data.data;
+	}
 }
 
 // Export singleton instance

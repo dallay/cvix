@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useMagicKeys } from "@vueuse/core";
-import { CheckCircle, Download, RotateCcw, Upload } from "lucide-vue-next";
+import {
+	CheckCircle,
+	Download,
+	FileText,
+	RotateCcw,
+	Upload,
+} from "lucide-vue-next";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
@@ -365,6 +371,16 @@ function cancelReset() {
           >
             <RotateCcw class="h-4 w-4 mr-2"/>
             {{ t('resume.buttons.resetForm') }}
+          </Button>
+
+          <Button
+              size="sm"
+              title="Generate PDF"
+              variant="default"
+              @click="$router.push('/resume/pdf')"
+          >
+            <FileText class="h-4 w-4 mr-2"/>
+            Generate PDF
           </Button>
 
           <Button

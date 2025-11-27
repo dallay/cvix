@@ -3,8 +3,6 @@ package com.loomify.resume.infrastructure.persistence
 import com.loomify.resume.domain.TemplateMetadata
 import com.loomify.resume.domain.TemplateRepository
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 /**
  * In-memory stub implementation of TemplateRepository.
@@ -52,11 +50,25 @@ class InMemoryTemplateRepository : TemplateRepository {
         ),
     )
 
-    override fun findAll(): Flux<TemplateMetadata> = Flux.fromIterable(templates)
+    /**
+     * Retrieves all available templates.
+     * @return All template metadata
+     */
+    override suspend fun findAll(): List<TemplateMetadata> = templates
 
-    override fun findById(id: String): Mono<TemplateMetadata> =
-        Mono.justOrEmpty(templates.find { it.id == id })
+    /**
+     * Finds a template by ID.
+     * @param id The template ID
+     * @return The template metadata if found
+     */
+    override suspend fun findById(id: String): TemplateMetadata? =
+        templates.find { it.id == id }
 
-    override fun existsById(id: String): Mono<Boolean> =
-        Mono.just(templates.any { it.id == id })
+    /**
+     * Checks if a template exists.
+     * @param id The template ID
+     * @return true if the template exists
+     */
+    override suspend fun existsById(id: String): Boolean =
+        templates.any { it.id == id }
 }

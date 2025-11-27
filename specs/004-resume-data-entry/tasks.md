@@ -180,7 +180,9 @@ This is a monorepo with:
   `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts`
   with CRUD operations calling /api/resume endpoints (Implemented as RemoteResumeStorage with
   ResumeHttpClient CRUD operations ✓)
-- [ ] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt` with handler that validates and saves to repository (BACKEND: Requires implementation)
+- [X] T056 [US4] Create CreateResumeCommand in
+  `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt`
+  with handler that validates and saves to repository (BACKEND: Requires implementation)
 - [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
 - [X] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/UpdateResumeCommand.kt` with optimistic locking via updatedAt check ✓
 - [X] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/GetResumeQuery.kt` with handler that retrieves by ID and ownerId ✓
