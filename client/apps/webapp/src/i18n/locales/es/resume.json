@@ -362,7 +362,7 @@
 			"backToEditor": "Volver al editor",
 			"title": "Generar PDF",
 			"download": "Descargar PDF",
-			"error": "{{error}}",
+			"error": "{error}",
 			"generatingPreview": "Generando vista previa...",
 			"selectTemplate": "Selecciona una plantilla para generar la vista previa",
 			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo."

@@ -362,7 +362,7 @@
 			"backToEditor": "Back to Editor",
 			"title": "Generate PDF",
 			"download": "Download PDF",
-			"error": "{{error}}",
+			"error": "{error}",
 			"generatingPreview": "Generating preview...",
 			"selectTemplate": "Select a template to generate preview",
 			"unablePreview": "Unable to display PDF preview. Please download to view."
