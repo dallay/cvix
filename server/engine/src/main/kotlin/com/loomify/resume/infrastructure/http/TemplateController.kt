@@ -30,6 +30,8 @@ class TemplateController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "List of templates retrieved successfully"),
+        ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+        ApiResponse(responseCode = "403", description = "Forbidden - insufficient permissions"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
     @GetMapping
@@ -37,7 +39,8 @@ class TemplateController(
         @RequestParam(name = "limit", required = false) limit: Int?,
     ): ResponseEntity<TemplateMetadataResponses> {
         log.debug("Fetching templates with limit={}", limit)
-        val query = ListTemplatesQuery(limit ?: DEFAULT_TEMPLATE_LIMIT)
+        val effectiveLimit = (limit ?: DEFAULT_TEMPLATE_LIMIT).coerceIn(1, DEFAULT_TEMPLATE_LIMIT)
+        val query = ListTemplatesQuery(effectiveLimit)
         val templates = ask(query)
         return ResponseEntity.ok().body(templates)
     }
