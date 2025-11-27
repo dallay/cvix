@@ -171,7 +171,9 @@
 			"validateJsonHint": "Validate JSON Resume format",
 			"preview": "Preview",
 			"resetForm": "Reset Form",
-			"resetFormHint": "Clear all resume data"
+			"resetFormHint": "Clear all resume data",
+			"generatePdf": "Generate PDF",
+			"generatePdfHint": "Open PDF generation and download options"
 		},
 		"actions": {
 			"add": "Add",

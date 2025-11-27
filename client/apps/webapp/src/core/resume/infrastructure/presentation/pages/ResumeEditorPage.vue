@@ -9,6 +9,7 @@ import {
 } from "lucide-vue-next";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import {
 	AlertDialog,
@@ -37,6 +38,7 @@ import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store"
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const { t } = useI18n();
+const router = useRouter();
 const showPreview = ref(true);
 const showValidationPanel = ref(false);
 const showUploadConfirmation = ref(false);
@@ -375,12 +377,12 @@ function cancelReset() {
 
           <Button
               size="sm"
-              title="Generate PDF"
+              :title="t('resume.buttons.generatePdfHint')"
               variant="default"
-              @click="$router.push('/resume/pdf')"
+              @click="router.push('/resume/pdf')"
           >
             <FileText class="h-4 w-4 mr-2"/>
-            Generate PDF
+            {{ t('resume.buttons.generatePdf') }}
           </Button>
 
           <Button

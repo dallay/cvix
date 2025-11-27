@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { onScopeDispose, ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
 import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata";
 import { resumeHttpClient } from "../../http/ResumeHttpClient";
@@ -9,14 +9,20 @@ export function usePdf() {
 	const error = ref<string | null>(null);
 	const templates = ref<TemplateMetadata[]>([]);
 	const pdfUrl = ref<string | null>(null);
+	// Cleanup on scope disposal
+	onScopeDispose(() => {
+		if (pdfUrl.value) {
+			URL.revokeObjectURL(pdfUrl.value);
+		}
+	});
 
 	const fetchTemplates = async () => {
 		isLoadingTemplates.value = true;
 		error.value = null;
 		try {
 			templates.value = await resumeHttpClient.getTemplates();
-		} catch (e: any) {
-			error.value = e.message || "Failed to load templates";
+		} catch (e: unknown) {
+			error.value = e instanceof Error ? e.message : "Failed to load templates";
 		} finally {
 			isLoadingTemplates.value = false;
 		}
@@ -43,8 +49,8 @@ export function usePdf() {
 			const blob = await resumeHttpClient.generatePdf(resume);
 			pdfUrl.value = URL.createObjectURL(blob);
 			return blob;
-		} catch (e: any) {
-			error.value = e.message || "Failed to generate PDF";
+		} catch (e: unknown) {
+			error.value = e instanceof Error ? e.message : "Failed to generate PDF";
 			throw e;
 		} finally {
 			isGenerating.value = false;
@@ -58,7 +64,7 @@ export function usePdf() {
 		link.download = filename;
 		document.body.appendChild(link);
 		link.click();
-		document.body.removeChild(link);
+		link.remove(); // Use the modern remove() method on the node instead of calling removeChild on its parent
 		URL.revokeObjectURL(url);
 	};
 

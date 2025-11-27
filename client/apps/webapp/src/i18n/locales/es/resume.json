@@ -171,7 +171,9 @@
 			"validateJsonHint": "Validar formato JSON Resume",
 			"preview": "Vista Previa",
 			"resetForm": "Restablecer formulario",
-			"resetFormHint": "Borrar todos los datos del currículum"
+			"resetFormHint": "Borrar todos los datos del currículum",
+			"generatePdf": "Generar PDF",
+			"generatePdfHint": "Abrir opciones de generación y descarga de PDF"
 		},
 		"actions": {
 			"add": "Agregar",

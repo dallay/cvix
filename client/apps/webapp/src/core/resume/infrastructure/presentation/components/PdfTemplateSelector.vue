@@ -76,7 +76,7 @@ const templateSelectId = `template-select-${Math.random().toString(36).slice(2, 
 type PropertyWithEnum = SchemaProperty & { enum: (string | number)[] };
 
 function hasEnum(prop: SchemaProperty): prop is PropertyWithEnum {
-	return "enum" in prop && Array.isArray((prop as any).enum);
+	return "enum" in prop && Array.isArray(prop.enum);
 }
 
 function isNumberProperty(prop: SchemaProperty): prop is NumberProperty {
@@ -128,7 +128,9 @@ watch(
 watch(
 	() => props.modelValue.params,
 	(newParams) => {
-		params.value = { ...newParams };
+		if (JSON.stringify(newParams) !== JSON.stringify(params.value)) {
+			params.value = { ...newParams };
+		}
 	},
 	{ deep: true },
 );
@@ -159,7 +161,6 @@ watch(selectedTemplateId, (newId) => {
 			});
 		}
 		params.value = newParams;
-		emit("update:modelValue", { templateId: newId, params: newParams });
 	}
 });
 
@@ -167,10 +168,12 @@ watch(selectedTemplateId, (newId) => {
 watch(
 	params,
 	(newParams) => {
-		emit("update:modelValue", {
-			templateId: selectedTemplateId.value,
-			params: { ...newParams },
-		});
+		if (JSON.stringify(newParams) !== JSON.stringify(props.modelValue.params)) {
+			emit("update:modelValue", {
+				templateId: selectedTemplateId.value,
+				params: { ...newParams },
+			});
+		}
 	},
 	{ deep: true },
 );
@@ -219,8 +222,8 @@ watch(
             </SelectTrigger>
             <SelectContent>
               <SelectItem
-                  v-for="opt in prop.enum"
-                  :key="opt"
+                  v-for="(opt, index) in prop.enum"
+                  :key="index"
                   :value="String(opt)"
               >
                 {{ opt }}
