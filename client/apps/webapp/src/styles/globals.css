@@ -146,11 +146,11 @@
 /* Custom Scrollbar Styles */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: oklch(0.708 0 0 / 0.3) transparent;
+	scrollbar-color: oklch(from var(--ring) l c h / 0.3) transparent;
 }
 
 .dark * {
-	scrollbar-color: oklch(0.439 0 0 / 0.4) transparent;
+	scrollbar-color: oklch(from var(--ring) l c h / 0.4) transparent;
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */

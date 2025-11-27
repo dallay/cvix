@@ -19,7 +19,10 @@ class TemplateCatalog(private val templateRepository: TemplateRepository) {
     suspend fun listTemplates(limit: Int?): List<TemplateMetadata> {
         log.debug("Fetching templates with limit={}", limit)
         val templates = templateRepository.findAll()
-        return limit?.let { templates.take(it) } ?: templates
+        return limit
+            ?.takeIf { it > 0 }
+            ?.let { templates.take(it) }
+            ?: templates
     }
 
     companion object {

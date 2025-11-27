@@ -40,9 +40,9 @@ data class TemplateMetadataResponse(
 }
 
 /**
- * Represents a collection of resume document responses.
+ * Represents a collection of template metadata responses.
  *
- * @property data A list of `ResumeDocumentResponse` objects.
+ * @property data A list of `TemplateMetadataResponse` objects.
  */
 data class TemplateMetadataResponses(val data: List<TemplateMetadataResponse>) : Response {
     companion object {
