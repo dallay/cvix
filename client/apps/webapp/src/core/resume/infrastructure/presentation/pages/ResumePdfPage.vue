@@ -63,17 +63,21 @@ onMounted(async () => {
 	}
 });
 
-const handleGeneratePdf = async () => {
-	if (!resumeStore.resume || !selectedTemplate.value.templateId) return;
+const handleGeneratePdf = async (): Promise<Blob> => {
+	if (!resumeStore.resume || !selectedTemplate.value.templateId) {
+		return Promise.reject(new Error("No resume data or template selected"));
+	}
 
 	try {
-		await generatePdf(
+		const result = await generatePdf(
 			resumeStore.resume,
 			selectedTemplate.value.templateId,
 			selectedTemplate.value.params,
 		);
+		return result as Blob;
 	} catch (e) {
 		console.error("PDF generation failed", e);
+		throw e;
 	}
 };
 
@@ -91,28 +95,17 @@ watch(
 );
 
 const onDownload = async () => {
-	if (pdfUrl.value) {
-		// If we already have a URL, use it (assuming it matches current state)
-		// But to be safe and ensure we download exactly what's selected, we might want to regenerate or just download the blob.
-		// Since generatePdf returns the blob, we can use that.
-		// For now, let's use the existing blob if we're not generating.
+	if (!resumeStore.resume || !selectedTemplate.value.templateId) return;
 
-		// However, we need the blob object to download. usePdf exposes downloadPdf which takes a blob.
-		// But we only have pdfUrl exposed.
-		// Let's modify logic: if we have a valid preview, we can fetch the blob from the URL or re-generate.
-		// Re-generating ensures we get the latest.
-
-		await handleGeneratePdf();
-		// We need the blob. generatePdf returns it.
-		// Let's call it directly.
-		if (resumeStore.resume) {
-			const blob = await generatePdf(
-				resumeStore.resume,
-				selectedTemplate.value.templateId,
-				selectedTemplate.value.params,
-			);
-			downloadPdf(blob);
-		}
+	try {
+		const blob = await generatePdf(
+			resumeStore.resume,
+			selectedTemplate.value.templateId,
+			selectedTemplate.value.params,
+		);
+		downloadPdf(blob);
+	} catch (e) {
+		console.error("PDF download failed", e);
 	}
 };
 
