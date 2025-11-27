@@ -88,7 +88,7 @@ function isBooleanProperty(prop: SchemaProperty): prop is BooleanProperty {
 }
 
 // Convert internal value to string for form controls
-function toModelValue(val: ParamValue, _prop: SchemaProperty): string {
+function toModelValue(val: ParamValue): string {
 	if (val === undefined || val === null) return "";
 	return String(val);
 }
@@ -213,7 +213,7 @@ watch(
               t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
             }}</Label>
           <Select
-              :model-value="toModelValue(params[key], prop)"
+              :model-value="toModelValue(params[key])"
               @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
           >
             <SelectTrigger :id="String(key)">
@@ -249,7 +249,7 @@ watch(
             }}</Label>
           <Input
               :id="String(key)"
-              :model-value="toModelValue(params[key], prop)"
+              :model-value="toModelValue(params[key])"
               :type="isNumberProperty(prop) ? 'number' : 'text'"
               @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
           />

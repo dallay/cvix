@@ -41,7 +41,6 @@ internal class ListTemplatesQueryHandlerTest {
         result.data.size shouldBe 2
         result.data[0].id shouldBe "template1"
         result.data[1].id shouldBe "template2"
-        // coVerify on templateCatalog.listTemplates(query.limit)
         coVerify { templateCatalog.listTemplates(query.limit) }
     }
 }

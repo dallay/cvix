@@ -52,9 +52,7 @@ data class TemplateMetadataResponses(val data: List<TemplateMetadataResponse>) :
          * @param domains The list of domain TemplateMetadata objects
          * @return The corresponding TemplateMetadataResponses
          */
-        fun from(domains: List<TemplateMetadata>): TemplateMetadataResponses {
-            val responses = domains.map { TemplateMetadataResponse.from(it) }
-            return TemplateMetadataResponses(responses)
-        }
+        fun from(domains: List<TemplateMetadata>): TemplateMetadataResponses =
+            TemplateMetadataResponses(domains.map(TemplateMetadataResponse::from))
     }
 }

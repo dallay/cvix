@@ -8,8 +8,11 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -35,11 +38,13 @@ class TemplateController(
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
     @GetMapping
+    @Validated
     suspend fun listTemplates(
-        @RequestParam(name = "limit", required = false) limit: Int?,
+        @RequestParam(name = "limit", required = false)
+        @Min(1) @Max(50) limit: Int?,
     ): ResponseEntity<TemplateMetadataResponses> {
         log.debug("Fetching templates with limit={}", limit)
-        val effectiveLimit = (limit ?: DEFAULT_TEMPLATE_LIMIT).coerceIn(1, DEFAULT_TEMPLATE_LIMIT)
+        val effectiveLimit = limit ?: DEFAULT_TEMPLATE_LIMIT
         val query = ListTemplatesQuery(effectiveLimit)
         val templates = ask(query)
         return ResponseEntity.ok().body(templates)
