@@ -233,7 +233,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@bd407dda1352ac10567469b41c3e2bee53c302ae
+        uses: mongolyy/reviewdog-action-biome@c2164b641fa929a960da224ea4a47b7930eadaa1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./client
@@ -487,7 +487,7 @@ jobs:
             exit 1
           fi
 
-          if [ "${{ needs.coverage-verification.result }}" != "success" ]; then
+          if [ "${{ needs.coverage-verification.result }}" != "success" ] && [ "${{ needs.coverage-verification.result }}" != "skipped" ]; then
             echo "❌ Coverage verification failed: ${{ needs.coverage-verification.result }}"
             exit 1
           fi

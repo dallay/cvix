@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:21-jdk-jammy AS builder
+FROM eclipse-temurin:21.0.9_10-jdk-jammy AS builder
 
 WORKDIR /workspace
 
@@ -14,7 +14,7 @@ COPY build-logic /workspace/build-logic
 # Copy all subproject build files to leverage Docker layer caching
 COPY shared/common/*.gradle.kts /workspace/shared/common/
 COPY shared/spring-boot-common/*.gradle.kts /workspace/shared/spring-boot-common/
-COPY server/engine/engine.gradle.kts /workspace/server/engine/
+COPY server/engine/build.gradle.kts /workspace/server/engine/
 
 # Download dependencies (this layer will be cached unless build files change)
 RUN ./gradlew dependencies --no-daemon || true
@@ -27,7 +27,7 @@ COPY server/engine/src /workspace/server/engine/src
 RUN ./gradlew :server:engine:bootJar --no-daemon
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21.0.9_10-jre-jammy
 
 # Create a non-root user
 RUN groupadd -r spring && useradd -r -g spring spring
