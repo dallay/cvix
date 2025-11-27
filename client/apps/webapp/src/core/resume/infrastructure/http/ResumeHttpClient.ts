@@ -1,3 +1,4 @@
+import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata.ts";
 import { BaseHttpClient } from "../../../../shared/BaseHttpClient";
 import type { Resume } from "../../domain/Resume.ts";
 import type { ResumeGenerator } from "../../domain/ResumeGenerator.ts";
@@ -132,11 +133,9 @@ export class ResumeHttpClient
 	 * Get list of available resume templates
 	 * @returns Promise with list of templates
 	 */
-	async getTemplates(): Promise<
-		import("../../domain/TemplateMetadata").TemplateMetadata[]
-	> {
+	async getTemplates(): Promise<TemplateMetadata[]> {
 		const response = await this.client.get<{
-			data: import("../../domain/TemplateMetadata").TemplateMetadata[];
+			data: TemplateMetadata[];
 		}>("/templates");
 		return response.data.data;
 	}
