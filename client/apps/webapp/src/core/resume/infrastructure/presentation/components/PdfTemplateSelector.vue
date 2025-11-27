@@ -13,58 +13,108 @@ import {
 } from "@/components/ui/select";
 import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata";
 
+// JSON Schema Types
+interface SchemaPropertyBase {
+	description?: string;
+	default?: unknown;
+}
+
+interface StringProperty extends SchemaPropertyBase {
+	type: "string";
+	enum?: string[];
+}
+
+interface NumberProperty extends SchemaPropertyBase {
+	type: "number";
+	enum?: number[];
+}
+
+interface BooleanProperty extends SchemaPropertyBase {
+	type: "boolean";
+}
+
+interface EnumProperty extends SchemaPropertyBase {
+	enum: (string | number)[];
+	type?: "string" | "number";
+}
+
+type SchemaProperty =
+	| StringProperty
+	| NumberProperty
+	| BooleanProperty
+	| EnumProperty;
+
+interface JSONSchema {
+	properties?: Record<string, SchemaProperty>;
+}
+
+type ParamValue = string | number | boolean | undefined;
+
 interface Props {
 	templates: TemplateMetadata[];
 	modelValue: {
 		templateId: string;
-		params: Record<string, any>;
+		params: Record<string, ParamValue>;
 	};
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
 	"update:modelValue": [
-		value: { templateId: string; params: Record<string, any> },
+		value: { templateId: string; params: Record<string, ParamValue> },
 	];
 }>();
 
 const { t } = useI18n();
 
 const selectedTemplateId = ref(props.modelValue.templateId);
-const params = ref<Record<string, any>>({ ...props.modelValue.params });
+const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
-// Generate a stable-ish id for the main select per component instance for accessibility
 const templateSelectId = `template-select-${Math.random().toString(36).slice(2, 9)}`;
 
-// Helper: convert internal param value to string for form controls
-function toModelValue(val: unknown, _prop: any) {
+// Type guards
+type PropertyWithEnum = SchemaProperty & { enum: (string | number)[] };
+
+function hasEnum(prop: SchemaProperty): prop is PropertyWithEnum {
+	return "enum" in prop && Array.isArray((prop as any).enum);
+}
+
+function isNumberProperty(prop: SchemaProperty): prop is NumberProperty {
+	return prop.type === "number";
+}
+
+function isBooleanProperty(prop: SchemaProperty): prop is BooleanProperty {
+	return prop.type === "boolean";
+}
+
+// Convert internal value to string for form controls
+function toModelValue(val: ParamValue, _prop: SchemaProperty): string {
 	if (val === undefined || val === null) return "";
-	// numbers and booleans are converted to string for the UI
 	return String(val);
 }
 
-// Helper: coerce string value from UI back to typed param according to schema prop
-// biome-ignore lint/suspicious/noExplicitAny: AcceptableValue from reka-ui can be any type
-function fromModelValue(raw: any, prop: any) {
+// Coerce string from UI back to typed param
+function fromModelValue(raw: unknown, prop: SchemaProperty): ParamValue {
 	const strValue = raw == null ? "" : String(raw);
 	if (strValue === "") return undefined;
-	if (!prop) return strValue;
-	if (prop.type === "number") {
+
+	if (isNumberProperty(prop)) {
 		const n = Number(strValue);
 		return Number.isNaN(n) ? undefined : n;
 	}
-	// For enums, detect underlying type from first enum item
-	if (prop.enum && Array.isArray(prop.enum) && prop.enum.length > 0) {
+
+	if (hasEnum(prop) && prop.enum.length > 0) {
 		const first = prop.enum[0];
 		if (typeof first === "number") {
 			const n = Number(strValue);
 			return Number.isNaN(n) ? undefined : n;
 		}
 	}
+
 	return strValue;
 }
 
-// Watch for external changes to modelValue.templateId (e.g. initial selection from parent)
+// Sync external templateId changes
 watch(
 	() => props.modelValue.templateId,
 	(newId) => {
@@ -74,7 +124,7 @@ watch(
 	},
 );
 
-// Watch for external changes to modelValue.params (sync props -> local params)
+// Sync external params changes
 watch(
 	() => props.modelValue.params,
 	(newParams) => {
@@ -87,10 +137,10 @@ const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
 
-const schema = computed(() => {
+const schema = computed<JSONSchema | null>(() => {
 	if (!selectedTemplate.value?.paramsSchema) return null;
 	try {
-		return JSON.parse(selectedTemplate.value.paramsSchema);
+		return JSON.parse(selectedTemplate.value.paramsSchema) as JSONSchema;
 	} catch (e) {
 		console.error("Failed to parse template schema", e);
 		return null;
@@ -100,23 +150,20 @@ const schema = computed(() => {
 // Reset params when template changes
 watch(selectedTemplateId, (newId) => {
 	if (newId) {
-		// Initialize default values from schema
-		const newParams: Record<string, any> = {};
+		const newParams: Record<string, ParamValue> = {};
 		if (schema.value?.properties) {
-			Object.entries(schema.value.properties).forEach(
-				([key, prop]: [string, any]) => {
-					if (prop.default !== undefined) {
-						newParams[key] = prop.default;
-					}
-				},
-			);
+			Object.entries(schema.value.properties).forEach(([key, prop]) => {
+				if (prop.default !== undefined) {
+					newParams[key] = prop.default as ParamValue;
+				}
+			});
 		}
 		params.value = newParams;
 		emit("update:modelValue", { templateId: newId, params: newParams });
 	}
 });
 
-// Emit changes when params change
+// Emit params changes
 watch(
 	params,
 	(newParams) => {
@@ -152,23 +199,23 @@ watch(
       </p>
     </div>
 
-    <div v-if="schema && schema.properties" class="space-y-4 border-t pt-4">
+    <div v-if="schema?.properties" class="space-y-4 border-t pt-4">
       <h3 class="text-sm font-semibold">{{
           t('resume.pdfSelector.optionsTitle', 'Template Options')
         }}</h3>
       <div v-for="(prop, key) in schema.properties" :key="key" class="space-y-2">
         <!-- Enum Select -->
-        <div v-if="prop.enum" class="space-y-2">
+        <div v-if="hasEnum(prop)" class="space-y-2">
           <Label :for="String(key)">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || key)
+              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
             }}</Label>
           <Select
               :model-value="toModelValue(params[key], prop)"
-              @update:model-value="(val: any) => (params[key] = fromModelValue(val, prop))"
+              @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
           >
             <SelectTrigger :id="String(key)">
               <SelectValue
-                  :placeholder="t(`resume.pdfSelector.param.${key}`, prop.description || key)"/>
+                  :placeholder="t(`resume.pdfSelector.param.${key}`, prop.description || String(key))"/>
             </SelectTrigger>
             <SelectContent>
               <SelectItem
@@ -182,26 +229,26 @@ watch(
           </Select>
         </div>
         <!-- Boolean Checkbox -->
-        <div v-else-if="prop.type === 'boolean'" class="flex items-center space-x-2 py-2">
+        <div v-else-if="isBooleanProperty(prop)" class="flex items-center space-x-2 py-2">
           <Checkbox
               :id="String(key)"
-              :checked="params[key]"
+              :checked="Boolean(params[key])"
               @update:checked="(checked: boolean) => params[key] = checked"
           />
           <Label :for="String(key)" class="cursor-pointer">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || key)
+              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
             }}</Label>
         </div>
         <!-- String/Number Input -->
         <div v-else class="space-y-2">
           <Label :for="String(key)">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || key)
+              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
             }}</Label>
           <Input
               :id="String(key)"
               :model-value="toModelValue(params[key], prop)"
-              :type="prop.type === 'number' ? 'number' : 'text'"
-              @update:model-value="(val: any) => (params[key] = fromModelValue(val, prop))"
+              :type="isNumberProperty(prop) ? 'number' : 'text'"
+              @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
           />
         </div>
       </div>
