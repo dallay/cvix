@@ -20,4 +20,20 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
             .jsonPath("$.data[0].description")
             .isEqualTo("Engineering resume template (single-column focused for engineering profiles).")
     }
+
+    @Test
+    fun `should return 400 when limit is below minimum`() {
+        webTestClient.get()
+            .uri("/api/templates?limit=0")
+            .exchange()
+            .expectStatus().isBadRequest
+    }
+
+    @Test
+    fun `should return 400 when limit is above maximum`() {
+        webTestClient.get()
+            .uri("/api/templates?limit=51")
+            .exchange()
+            .expectStatus().isBadRequest
+    }
 }

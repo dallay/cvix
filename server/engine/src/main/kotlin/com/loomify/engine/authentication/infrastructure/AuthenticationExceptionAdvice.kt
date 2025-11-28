@@ -9,6 +9,9 @@ import com.loomify.engine.authentication.domain.error.NotAuthenticatedUserExcept
 import com.loomify.engine.authentication.domain.error.RateLimitExceededException
 import com.loomify.engine.authentication.domain.error.SessionNotFoundException
 import com.loomify.engine.authentication.domain.error.UnknownAuthenticationException
+import com.loomify.engine.controllers.DEFAULT_PRECEDENCE
+import com.loomify.engine.controllers.MESSAGE_KEY
+import com.loomify.engine.controllers.TIMESTAMP
 import java.time.Instant
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -20,10 +23,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.security.core.AuthenticationException as SpringAuthenticationException
-
-private const val DEFAULT_PRECEDENCE = 2000
-private const val MESSAGE_KEY = "message"
-private const val TIMESTAMP = "timestamp"
 
 /**
  * Handles rate limiting errors.

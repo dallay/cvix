@@ -1,0 +1,36 @@
+meta {
+  name: Get Template Metadata
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{url}}/api/templates?limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 10
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  description: "Fetches template metadata for curriculum templates. Supports pagination via the 'limit' query parameter."
+  request: "GET /api/templates?limit=10"
+  queryParameters: [
+    {
+      name: "limit",
+      type: "integer",
+      required: false,
+      description: "Maximum number of templates to return (max 50)."
+    }
+  ]
+  response: "200 OK: JSON array of template metadata objects. Each object contains id, name, description, and other relevant fields."
+  errorHandling: "400 Bad Request if 'limit' exceeds 50. Error response follows the standard error model: { error: { code, message, errors: [ { field, message } ] } }"
+  notes: "Authentication is required. Returns only templates accessible to the current user."
+}

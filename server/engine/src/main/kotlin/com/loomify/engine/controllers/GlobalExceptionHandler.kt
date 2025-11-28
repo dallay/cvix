@@ -10,7 +10,7 @@ import com.loomify.engine.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.loomify.engine.workspace.domain.WorkspaceAuthorizationException
 import java.net.URI
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -22,27 +22,6 @@ import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-
-private const val ERROR_PAGE = "https://loomify.com/errors"
-
-private const val TIMESTAMP = "timestamp"
-
-private const val ENTITY_NOT_FOUND = "Entity not found"
-
-private const val ERROR_CATEGORY = "errorCategory"
-
-private const val LOCALIZED_MESSAGE = "localizedMessage"
-
-private const val MESSAGE = "message"
-
-private const val TRACE_ID = "traceId"
-
-private const val MSG_AUTHENTICATION_FAILED = "error.authentication_failed"
-private const val MSG_ENTITY_NOT_FOUND = "error.entity_not_found"
-private const val MSG_BAD_REQUEST = "error.bad_request"
-private const val MSG_MISSING_COOKIE = "error.missing_cookie"
-private const val MSG_VALIDATION_ERROR = "error.validation_error"
-private const val MSG_INTERNAL_SERVER_ERROR = "error.internal_server_error"
 
 /**
  * This class provides a global exception handling mechanism for the application.
