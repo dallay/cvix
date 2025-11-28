@@ -16,4 +16,9 @@ export interface TemplateMetadata {
 	params?: TemplateParams;
 }
 
-export type ParamValue = string | number | bigint | Record<string, any> | null;
+export type ParamValue =
+	| string
+	| number
+	| bigint
+	| Record<string, unknown>
+	| null;

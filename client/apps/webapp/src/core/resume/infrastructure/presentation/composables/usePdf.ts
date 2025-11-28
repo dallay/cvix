@@ -8,7 +8,7 @@ import { resumeHttpClient } from "../../http/ResumeHttpClient";
 
 export function usePdf() {
 	const isGenerating = ref(false);
-	const isLoadingTemplates = ref(false);
+	const isLoadingTemplates = ref(true); // Start as true to prevent premature rendering
 	const error = ref<string | null>(null);
 	const templates = ref<TemplateMetadata[]>([]);
 	const pdfUrl = ref<string | null>(null);

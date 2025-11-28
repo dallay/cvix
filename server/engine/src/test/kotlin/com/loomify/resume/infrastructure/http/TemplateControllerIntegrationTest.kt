@@ -20,4 +20,34 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
             .jsonPath("$.data[0].description")
             .isEqualTo("Engineering resume template (single-column focused for engineering profiles).")
     }
+
+    @Test
+    fun `should return 400 when limit is below minimum`() {
+        webTestClient.get()
+            .uri("/api/templates?limit=0")
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("validation failed")
+            .jsonPath("$.detail")
+            .isEqualTo("Request parameter validation failed. Please check the provided values.")
+            .jsonPath("$.errors").isArray
+            .jsonPath("$.errors[0].field").isEqualTo("listTemplates.limit")
+            .jsonPath("$.message").isEqualTo("error.validation.failed")
+    }
+
+    @Test
+    fun `should return 400 when limit is above maximum`() {
+        webTestClient.get()
+            .uri("/api/templates?limit=51")
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("validation failed")
+            .jsonPath("$.detail")
+            .isEqualTo("Request parameter validation failed. Please check the provided values.")
+            .jsonPath("$.errors").isArray
+            .jsonPath("$.errors[0].field").isEqualTo("listTemplates.limit")
+            .jsonPath("$.message").isEqualTo("error.validation.failed")
+    }
 }
