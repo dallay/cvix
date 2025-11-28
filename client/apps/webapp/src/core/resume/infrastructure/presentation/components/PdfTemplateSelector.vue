@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isEqual } from "@loomify/utilities";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -61,11 +62,10 @@ watch(
 watch(
 	() => props.modelValue.params,
 	(newParams) => {
-		if (JSON.stringify(newParams) !== JSON.stringify(params.value)) {
+		if (!isEqual(newParams, params.value)) {
 			params.value = { ...newParams };
 		}
 	},
-	{ deep: true },
 );
 
 const selectedTemplate = computed(() =>
@@ -103,18 +103,14 @@ watch(selectedTemplateId, (newId) => {
 });
 
 // Emit params changes
-watch(
-	params,
-	(newParams) => {
-		if (JSON.stringify(newParams) !== JSON.stringify(props.modelValue.params)) {
-			emit("update:modelValue", {
-				templateId: selectedTemplateId.value,
-				params: { ...newParams },
-			});
-		}
-	},
-	{ deep: true },
-);
+watch(params, (newParams) => {
+	if (!isEqual(newParams, props.modelValue.params)) {
+		emit("update:modelValue", {
+			templateId: selectedTemplateId.value,
+			params: { ...newParams },
+		});
+	}
+});
 
 // Helper to safely cast param to string for Select
 const getParamString = (key: string): string => {
@@ -229,9 +225,9 @@ const updateParam = (key: string, value: unknown) => {
       <div v-if="selectedTemplate.params?.customParams" class="space-y-4 border-t pt-4">
         <h3 class="text-sm font-semibold">
           {{ t('resume.pdfSelector.optionsTitle', 'Template Options') }}</h3>
-        <div v-for="(_val, key) in selectedTemplate.params.customParams" :key="key"
+        <div v-for="(val, key) in selectedTemplate.params.customParams" :key="key"
              class="flex items-center space-x-2 py-2">
-          <!-- Simple boolean toggle for now as we don't have schema types -->
+          <!-- Simple boolean toggle for now as no schema types -->
           <Checkbox
               :id="String(key)"
               :checked="Boolean(params[key])"
