@@ -11,6 +11,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	SUPPORTED_COLORS,
+	SUPPORTED_FONTS,
+} from "@/core/resume/domain/TemplateConstants.ts";
 import type {
 	ParamValue,
 	TemplateMetadata,
@@ -38,16 +42,6 @@ const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
 const templateSelectId = `template-select-${crypto.randomUUID()}`;
 
-// Hardcoded options since backend doesn't provide them yet
-const SUPPORTED_FONTS = [
-	"Roboto",
-	"Open Sans",
-	"Lato",
-	"Montserrat",
-	"Merriweather",
-];
-const SUPPORTED_COLORS = ["blue", "green", "red", "purple", "orange", "gray"];
-
 // Sync external templateId changes
 watch(
 	() => props.modelValue.templateId,
@@ -72,35 +66,42 @@ const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
 
-// Reset params when template changes
-watch(selectedTemplateId, (newId) => {
-	if (newId) {
+// Accept all AcceptableValue types (string | number | bigint | null), ignore objects
+function onUserTemplateChange(
+	newId: string | number | bigint | null | Record<string, unknown>,
+) {
+	if (typeof newId === "object" && newId !== null) {
+		// Ignore object values, only process primitives
+		return;
+	}
+	let id = "";
+	if (typeof newId === "bigint" || typeof newId === "number") {
+		id = newId.toString();
+	} else if (typeof newId === "string") {
+		id = newId;
+	}
+	selectedTemplateId.value = id;
+	if (id) {
+		const template = props.templates.find((t) => t.id === id);
 		const newParams: Record<string, ParamValue> = {};
-		// Set defaults if available in template params
-		if (selectedTemplate.value?.params) {
-			const defaults = selectedTemplate.value.params;
+		if (template?.params) {
+			const defaults = template.params;
 			if (defaults.colorPalette) newParams.colorPalette = defaults.colorPalette;
 			if (defaults.fontFamily) newParams.fontFamily = defaults.fontFamily;
 			if (defaults.spacing) newParams.spacing = defaults.spacing;
 			if (defaults.density) newParams.density = defaults.density;
-
-			// Copy custom params defaults
 			if (defaults.customParams) {
 				Object.entries(defaults.customParams).forEach(([key, val]) => {
 					newParams[key] = val as ParamValue;
 				});
 			}
 		}
-
-		// Ensure locale is set if not already
-		if (!newParams.locale && selectedTemplate.value?.supportedLocales?.length) {
-			// Default to first supported locale (usually EN)
-			newParams.locale = selectedTemplate.value.supportedLocales[0];
+		if (!newParams.locale && template?.supportedLocales?.length) {
+			newParams.locale = template.supportedLocales[0];
 		}
-
 		params.value = newParams;
 	}
-});
+}
 
 // Emit params changes
 watch(params, (newParams) => {
@@ -128,7 +129,7 @@ const updateParam = (key: string, value: unknown) => {
   <div class="space-y-6">
     <div class="space-y-2">
       <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
-      <Select v-model="selectedTemplateId">
+      <Select v-model="selectedTemplateId" @update:model-value="onUserTemplateChange">
         <SelectTrigger :id="templateSelectId">
           <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
         </SelectTrigger>
