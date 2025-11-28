@@ -163,7 +163,7 @@ const updateParam = (key: string, value: unknown) => {
 		typeof value === "string" ||
 		typeof value === "number" ||
 		typeof value === "boolean" ||
-		value === "undefined"
+		value === undefined
 	) {
 		safeValue = value as ParamValue;
 	} else {
