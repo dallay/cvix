@@ -70,7 +70,7 @@ description: "How to run Loomify locally"
 Before requesting a review, ensure:
 
 - Code builds and tests pass locally.
-- Linting rules pass (`detekt`, ESLint, Prettier if applicable).
+- Linting rules pass (`detekt`, Biome if applicable).
 - Documentation updated if the change affects behavior or public APIs.
 - The PR description explains the reason and the change; link related issues.
 
