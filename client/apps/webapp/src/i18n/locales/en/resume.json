@@ -355,7 +355,8 @@
 			"param": {
 				"color": "Color",
 				"font": "Font",
-				"layout": "Layout"
+				"layout": "Layout",
+				"locale": "Language"
 			}
 		},
 		"pdfPage": {
