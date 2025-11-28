@@ -140,10 +140,12 @@ function onUserTemplateChange(newId: ParamValue) {
 // Emit params changes
 watch(params, (newParams) => {
 	if (!isEqual(newParams, props.modelValue.params)) {
+		const snapshot = { ...newParams };
 		emit("update:modelValue", {
 			templateId: selectedTemplateId.value,
-			params: { ...newParams },
+			params: snapshot,
 		});
+		emit("params:changed", snapshot);
 	}
 });
 
@@ -171,7 +173,6 @@ const updateParam = (key: string, value: unknown) => {
 		safeValue = "";
 	}
 	params.value[key] = safeValue;
-	emit("params:changed", { ...params.value });
 };
 </script>
 
