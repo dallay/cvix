@@ -36,7 +36,7 @@ const { t } = useI18n();
 const selectedTemplateId = ref(props.modelValue.templateId);
 const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
-const templateSelectId = `template-select-${Math.random().toString(36).slice(2, 9)}`;
+const templateSelectId = `template-select-${crypto.randomUUID()}`;
 
 // Hardcoded options since backend doesn't provide them yet
 const SUPPORTED_FONTS = [
