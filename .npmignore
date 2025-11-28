@@ -1,0 +1,28 @@
+# Ignore npm publish artifacts and build output
+node_modules/
+dist/
+build/
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore test coverage
+coverage/
+
+# Ignore pnpm store
+.pnpm-store/
+
+# Ignore frontend build artifacts
+client/**/dist/
+client/**/.output/
+client/**/.next/
+client/**/.astro/
+client/**/.svelte-kit/
+client/**/.cache/
+client/**/.parcel-cache/
+client/**/coverage/
+client/**/node_modules/
