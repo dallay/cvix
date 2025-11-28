@@ -21,7 +21,7 @@ class InMemoryTemplateRepository : TemplateRepository {
             description = "Engineering resume template (single-column focused for engineering profiles).",
             supportedLocales = listOf(Locale.EN, Locale.ES),
             previewUrl =
-                "https://placehold.co/300x600.png",
+            "https://placehold.co/300x600.png",
             params = TemplateParams(
                 colorPalette = "blue",
                 fontFamily = "Roboto",

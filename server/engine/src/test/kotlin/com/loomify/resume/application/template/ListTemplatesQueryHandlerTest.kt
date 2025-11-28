@@ -34,21 +34,21 @@ internal class ListTemplatesQueryHandlerTest {
         result.data[0].name shouldBe "Engineering Resume"
         result.data[0].version shouldBe "0.1.0"
         result.data[0].description shouldBe
-                "Engineering resume template (single-column focused for engineering profiles)."
+            "Engineering resume template (single-column focused for engineering profiles)."
         result.data[0].supportedLocales shouldBe listOf(Locale.EN, Locale.ES)
         result.data[0].params shouldBe engineering.params
         result.data[0].previewUrl shouldBe
-                "https://placehold.co/300x600.png"
+            "https://placehold.co/300x600.png"
 
         result.data[1].id shouldBe "modern"
         result.data[1].name shouldBe "Modern Resume"
         result.data[1].version shouldBe "0.1.0"
         result.data[1].description shouldBe
-                "Modern resume template (clean and professional design for various profiles)."
+            "Modern resume template (clean and professional design for various profiles)."
         result.data[1].supportedLocales shouldBe listOf(Locale.EN, Locale.ES)
         result.data[1].params shouldBe modern.params
         result.data[1].previewUrl shouldBe
-                "https://placehold.co/300x600.png"
+            "https://placehold.co/300x600.png"
 
         coVerify { templateCatalog.listTemplates(query.limit) }
     }
