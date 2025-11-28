@@ -1,0 +1,21 @@
+{
+  "id": "modern",
+  "name": "Modern Resume",
+  "version": "0.1.0",
+  "description": "Modern resume template (clean and professional design for various profiles).",
+  "supportedLocales": [
+    "EN",
+    "ES"
+  ],
+  "previewUrl": "https://placehold.co/300x600.png",
+  "params": {
+    "colorPalette": "blue",
+    "fontFamily": "Roboto",
+    "spacing": "normal",
+    "density": "comfortable",
+    "customParams": {
+      "includePhoto": true,
+      "highlightSkills": true
+    }
+  }
+}

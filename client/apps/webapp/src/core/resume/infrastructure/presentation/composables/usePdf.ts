@@ -1,6 +1,9 @@
 import { onScopeDispose, ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
-import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata";
+import type {
+	ParamValue,
+	TemplateMetadata,
+} from "@/core/resume/domain/TemplateMetadata";
 import { resumeHttpClient } from "../../http/ResumeHttpClient";
 
 export function usePdf() {
@@ -31,7 +34,7 @@ export function usePdf() {
 	const generatePdf = async (
 		resume: Resume,
 		_templateId: string,
-		_params: Record<string, any>,
+		_params: Record<string, ParamValue>,
 	) => {
 		isGenerating.value = true;
 		error.value = null;
@@ -46,7 +49,9 @@ export function usePdf() {
 			// Note: Backend currently doesn't support templateId/params in generate endpoint yet
 			// We are passing them but they might be ignored until backend is updated to use them
 			// For now, we just call the existing endpoint
-			const blob = await resumeHttpClient.generatePdf(resume);
+			// Extract locale from params, default to 'en' if not present
+			const locale = (_params.locale as "en" | "es") || "en";
+			const blob = await resumeHttpClient.generatePdf(resume, locale);
 			pdfUrl.value = URL.createObjectURL(blob);
 			return blob;
 		} catch (e: unknown) {
@@ -64,7 +69,7 @@ export function usePdf() {
 		link.download = filename;
 		document.body.appendChild(link);
 		link.click();
-		link.remove(); // Use the modern remove() method on the node instead of calling removeChild on its parent
+		link.remove();
 		URL.revokeObjectURL(url);
 	};
 

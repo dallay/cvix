@@ -2,7 +2,6 @@
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -11,44 +10,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata";
-
-// JSON Schema Types
-interface SchemaPropertyBase {
-	description?: string;
-	default?: unknown;
-}
-
-interface StringProperty extends SchemaPropertyBase {
-	type: "string";
-	enum?: string[];
-}
-
-interface NumberProperty extends SchemaPropertyBase {
-	type: "number";
-	enum?: number[];
-}
-
-interface BooleanProperty extends SchemaPropertyBase {
-	type: "boolean";
-}
-
-interface EnumProperty extends SchemaPropertyBase {
-	enum: (string | number)[];
-	type?: "string" | "number";
-}
-
-type SchemaProperty =
-	| StringProperty
-	| NumberProperty
-	| BooleanProperty
-	| EnumProperty;
-
-interface JSONSchema {
-	properties?: Record<string, SchemaProperty>;
-}
-
-type ParamValue = string | number | boolean | undefined;
+import type {
+	ParamValue,
+	TemplateMetadata,
+} from "@/core/resume/domain/TemplateMetadata";
 
 interface Props {
 	templates: TemplateMetadata[];
@@ -72,47 +37,15 @@ const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
 const templateSelectId = `template-select-${Math.random().toString(36).slice(2, 9)}`;
 
-// Type guards
-type PropertyWithEnum = SchemaProperty & { enum: (string | number)[] };
-
-function hasEnum(prop: SchemaProperty): prop is PropertyWithEnum {
-	return "enum" in prop && Array.isArray(prop.enum);
-}
-
-function isNumberProperty(prop: SchemaProperty): prop is NumberProperty {
-	return prop.type === "number";
-}
-
-function isBooleanProperty(prop: SchemaProperty): prop is BooleanProperty {
-	return prop.type === "boolean";
-}
-
-// Convert internal value to string for form controls
-function toModelValue(val: ParamValue): string {
-	if (val === undefined || val === null) return "";
-	return String(val);
-}
-
-// Coerce string from UI back to typed param
-function fromModelValue(raw: unknown, prop: SchemaProperty): ParamValue {
-	const strValue = raw == null ? "" : String(raw);
-	if (strValue === "") return undefined;
-
-	if (isNumberProperty(prop)) {
-		const n = Number(strValue);
-		return Number.isNaN(n) ? undefined : n;
-	}
-
-	if (hasEnum(prop) && prop.enum.length > 0) {
-		const first = prop.enum[0];
-		if (typeof first === "number") {
-			const n = Number(strValue);
-			return Number.isNaN(n) ? undefined : n;
-		}
-	}
-
-	return strValue;
-}
+// Hardcoded options since backend doesn't provide them yet
+const SUPPORTED_FONTS = [
+	"Roboto",
+	"Open Sans",
+	"Lato",
+	"Montserrat",
+	"Merriweather",
+];
+const SUPPORTED_COLORS = ["blue", "green", "red", "purple", "orange", "gray"];
 
 // Sync external templateId changes
 watch(
@@ -139,27 +72,32 @@ const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
 
-const schema = computed<JSONSchema | null>(() => {
-	if (!selectedTemplate.value?.paramsSchema) return null;
-	try {
-		return JSON.parse(selectedTemplate.value.paramsSchema) as JSONSchema;
-	} catch (e) {
-		console.error("Failed to parse template schema", e);
-		return null;
-	}
-});
-
 // Reset params when template changes
 watch(selectedTemplateId, (newId) => {
 	if (newId) {
 		const newParams: Record<string, ParamValue> = {};
-		if (schema.value?.properties) {
-			Object.entries(schema.value.properties).forEach(([key, prop]) => {
-				if (prop.default !== undefined) {
-					newParams[key] = prop.default as ParamValue;
-				}
-			});
+		// Set defaults if available in template params
+		if (selectedTemplate.value?.params) {
+			const defaults = selectedTemplate.value.params;
+			if (defaults.colorPalette) newParams.colorPalette = defaults.colorPalette;
+			if (defaults.fontFamily) newParams.fontFamily = defaults.fontFamily;
+			if (defaults.spacing) newParams.spacing = defaults.spacing;
+			if (defaults.density) newParams.density = defaults.density;
+
+			// Copy custom params defaults
+			if (defaults.customParams) {
+				Object.entries(defaults.customParams).forEach(([key, val]) => {
+					newParams[key] = val as ParamValue;
+				});
+			}
 		}
+
+		// Ensure locale is set if not already
+		if (!newParams.locale && selectedTemplate.value?.supportedLocales?.length) {
+			// Default to first supported locale (usually EN)
+			newParams.locale = selectedTemplate.value.supportedLocales[0];
+		}
+
 		params.value = newParams;
 	}
 });
@@ -177,6 +115,17 @@ watch(
 	},
 	{ deep: true },
 );
+
+// Helper to safely cast param to string for Select
+const getParamString = (key: string): string => {
+	const val = params.value[key];
+	return val === undefined || val === null ? "" : String(val);
+};
+
+// Helper to update param
+const updateParam = (key: string, value: unknown) => {
+	params.value[key] = value as ParamValue;
+};
 </script>
 
 <template>
@@ -197,64 +146,103 @@ watch(
           </SelectItem>
         </SelectContent>
       </Select>
-      <p v-if="selectedTemplate" class="text-xs text-muted-foreground">
+      <p v-if="selectedTemplate?.description" class="text-xs text-muted-foreground">
         {{ selectedTemplate.description }}
       </p>
     </div>
 
-    <div v-if="schema?.properties" class="space-y-4 border-t pt-4">
-      <h3 class="text-sm font-semibold">{{
-          t('resume.pdfSelector.optionsTitle', 'Template Options')
-        }}</h3>
-      <div v-for="(prop, key) in schema.properties" :key="key" class="space-y-2">
-        <!-- Enum Select -->
-        <div v-if="hasEnum(prop)" class="space-y-2">
-          <Label :for="String(key)">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
-            }}</Label>
-          <Select
-              :model-value="toModelValue(params[key])"
-              @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
-          >
-            <SelectTrigger :id="String(key)">
-              <SelectValue
-                  :placeholder="t(`resume.pdfSelector.param.${key}`, prop.description || String(key))"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                  v-for="(opt, index) in prop.enum"
-                  :key="index"
-                  :value="String(opt)"
-              >
-                {{ opt }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <!-- Boolean Checkbox -->
-        <div v-else-if="isBooleanProperty(prop)" class="flex items-center space-x-2 py-2">
+    <div v-if="selectedTemplate" class="space-y-4 border-t pt-4">
+      <h3 class="text-sm font-semibold">
+        {{ t('resume.pdfSelector.coreOptions', 'Appearance & Language') }}</h3>
+
+      <!-- Locale -->
+      <div v-if="selectedTemplate.supportedLocales?.length" class="space-y-2">
+        <Label for="locale">{{ t('resume.pdfSelector.param.locale', 'Language') }}</Label>
+        <Select
+            :model-value="getParamString('locale')"
+            @update:model-value="(val) => updateParam('locale', val)"
+        >
+          <SelectTrigger id="locale">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectLocale', 'Select language')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in selectedTemplate.supportedLocales"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Font Family -->
+      <div class="space-y-2">
+        <Label for="fontFamily">{{
+            t('resume.pdfSelector.param.fontFamily', 'Font Family')
+          }}</Label>
+        <Select
+            :model-value="getParamString('fontFamily')"
+            @update:model-value="(val) => updateParam('fontFamily', val)"
+        >
+          <SelectTrigger id="fontFamily">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectFont', 'Select font')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in SUPPORTED_FONTS"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="space-y-2">
+        <Label for="colorPalette">{{
+            t('resume.pdfSelector.param.colorPalette', 'Color Scheme')
+          }}</Label>
+        <Select
+            :model-value="getParamString('colorPalette')"
+            @update:model-value="(val) => updateParam('colorPalette', val)"
+        >
+          <SelectTrigger id="colorPalette">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectColor', 'Select color')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in SUPPORTED_COLORS"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Custom Params (if any in defaults) -->
+      <div v-if="selectedTemplate.params?.customParams" class="space-y-4 border-t pt-4">
+        <h3 class="text-sm font-semibold">
+          {{ t('resume.pdfSelector.optionsTitle', 'Template Options') }}</h3>
+        <div v-for="(_val, key) in selectedTemplate.params.customParams" :key="key"
+             class="flex items-center space-x-2 py-2">
+          <!-- Simple boolean toggle for now as we don't have schema types -->
           <Checkbox
               :id="String(key)"
               :checked="Boolean(params[key])"
-              @update:checked="(checked: boolean) => params[key] = checked"
+              @update:checked="(checked: boolean) => updateParam(String(key), checked)"
           />
-          <Label :for="String(key)" class="cursor-pointer">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
-            }}</Label>
-        </div>
-        <!-- String/Number Input -->
-        <div v-else class="space-y-2">
-          <Label :for="String(key)">{{
-              t(`resume.pdfSelector.param.${key}`, prop.description || String(key))
-            }}</Label>
-          <Input
-              :id="String(key)"
-              :model-value="toModelValue(params[key])"
-              :type="isNumberProperty(prop) ? 'number' : 'text'"
-              @update:model-value="(val: unknown) => (params[key] = fromModelValue(val, prop))"
-          />
+          <Label :for="String(key)" class="cursor-pointer capitalize">
+            {{ key.replace(/([A-Z])/g, ' $1').trim() }}
+          </Label>
         </div>
       </div>
+
     </div>
   </div>
 </template>

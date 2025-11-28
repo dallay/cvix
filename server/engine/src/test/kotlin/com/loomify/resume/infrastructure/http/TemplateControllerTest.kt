@@ -1,6 +1,7 @@
 package com.loomify.resume.infrastructure.http
 
 import com.loomify.ControllerTest
+import com.loomify.FixtureDataLoader
 import com.loomify.resume.application.TemplateMetadataResponse
 import com.loomify.resume.application.TemplateMetadataResponses
 import com.loomify.resume.application.template.ListTemplatesQuery
@@ -21,22 +22,11 @@ internal class TemplateControllerTest : ControllerTest() {
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        val templates = listOf(
-            TemplateMetadata(
-                id = "template1",
-                name = "Modern",
-                version = "1.0",
-                paramsSchema = "{}",
-                description = "Modern template",
-            ),
-            TemplateMetadata(
-                id = "template2",
-                name = "Classic",
-                version = "1.0",
-                paramsSchema = "{}",
-                description = "Classic template",
-            ),
-        )
+        val engineering: TemplateMetadata =
+            FixtureDataLoader.fromResource("data/json/template-metadata/engineering.json")
+        val modern: TemplateMetadata =
+            FixtureDataLoader.fromResource("data/json/template-metadata/modern.json")
+        val templates = listOf(engineering, modern)
         response = TemplateMetadataResponses(
             data = templates.map { TemplateMetadataResponse.from(it) },
         )
@@ -52,8 +42,38 @@ internal class TemplateControllerTest : ControllerTest() {
             .expectBody()
             .jsonPath("$.data").isArray
             .jsonPath("$.data.length()").isEqualTo(2)
-            .jsonPath("$.data[0].id").isEqualTo("template1")
-            .jsonPath("$.data[1].id").isEqualTo("template2")
+            .jsonPath("$.data[0].id").isEqualTo("engineering")
+            .jsonPath("$.data[0].name").isEqualTo("Engineering Resume")
+            .jsonPath("$.data[0].version").isEqualTo("0.1.0")
+            .jsonPath("$.data[0].description")
+            .isEqualTo("Engineering resume template (single-column focused for engineering profiles).")
+            .jsonPath("$.data[0].supportedLocales").isArray
+            .jsonPath("$.data[0].supportedLocales.length()").isEqualTo(2)
+            .jsonPath("$.data[0].supportedLocales[0]").isEqualTo("EN")
+            .jsonPath("$.data[0].supportedLocales[1]").isEqualTo("ES")
+            .jsonPath("$.data[0].previewUrl").isEqualTo("https://placehold.co/300x600.png")
+            .jsonPath("$.data[0].params.colorPalette").isEqualTo("blue")
+            .jsonPath("$.data[0].params.fontFamily").isEqualTo("Roboto")
+            .jsonPath("$.data[0].params.spacing").isEqualTo("normal")
+            .jsonPath("$.data[0].params.density").isEqualTo("comfortable")
+            .jsonPath("$.data[0].params.customParams.includePhoto").isEqualTo(true)
+            .jsonPath("$.data[0].params.customParams.highlightSkills").isEqualTo(true)
+            .jsonPath("$.data[1].id").isEqualTo("modern")
+            .jsonPath("$.data[1].name").isEqualTo("Modern Resume")
+            .jsonPath("$.data[1].version").isEqualTo("0.1.0")
+            .jsonPath("$.data[1].description")
+            .isEqualTo("Modern resume template (clean and professional design for various profiles).")
+            .jsonPath("$.data[1].supportedLocales").isArray
+            .jsonPath("$.data[1].supportedLocales.length()").isEqualTo(2)
+            .jsonPath("$.data[1].supportedLocales[0]").isEqualTo("EN")
+            .jsonPath("$.data[1].supportedLocales[1]").isEqualTo("ES")
+            .jsonPath("$.data[1].previewUrl").isEqualTo("https://placehold.co/300x600.png")
+            .jsonPath("$.data[1].params.colorPalette").isEqualTo("blue")
+            .jsonPath("$.data[1].params.fontFamily").isEqualTo("Roboto")
+            .jsonPath("$.data[1].params.spacing").isEqualTo("normal")
+            .jsonPath("$.data[1].params.density").isEqualTo("comfortable")
+            .jsonPath("$.data[1].params.customParams.includePhoto").isEqualTo(true)
+            .jsonPath("$.data[1].params.customParams.highlightSkills").isEqualTo(true)
 
         val querySlot = slot<ListTemplatesQuery>()
         coVerify(exactly = 1) { mediator.send(capture(querySlot)) }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping(value = ["/api/templates"], produces = ["application/vnd.api.v1+json"])
+@Validated
 class TemplateController(
     mediator: Mediator,
 ) : ApiController(mediator) {
@@ -33,12 +34,12 @@ class TemplateController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "List of templates retrieved successfully"),
+        ApiResponse(responseCode = "400", description = "Invalid request parameters"),
         ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
         ApiResponse(responseCode = "403", description = "Forbidden - insufficient permissions"),
         ApiResponse(responseCode = "500", description = "Internal server error"),
     )
     @GetMapping
-    @Validated
     suspend fun listTemplates(
         @RequestParam(name = "limit", required = false)
         @Min(1) @Max(50) limit: Int?,

@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Loader2 } from "lucide-vue-next";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import type { ParamValue } from "@/core/resume/domain/TemplateMetadata";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useResumeStore } from "../../store/resume.store";
 import PdfTemplateSelector from "../components/PdfTemplateSelector.vue";
@@ -25,7 +26,7 @@ const {
 
 const selectedTemplate = ref({
 	templateId: "",
-	params: {} as Record<string, any>,
+	params: {} as Record<string, ParamValue>,
 });
 
 const pdfPreviewUrl = computed(() => {
@@ -65,7 +66,7 @@ onMounted(async () => {
 
 const handleGeneratePdf = async (): Promise<Blob> => {
 	if (!resumeStore.resume || !selectedTemplate.value.templateId) {
-		return Promise.reject(new Error("No resume data or template selected"));
+		throw new Error("No resume data or template selected");
 	}
 
 	try {

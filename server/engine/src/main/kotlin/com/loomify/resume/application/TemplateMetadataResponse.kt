@@ -1,7 +1,9 @@
 package com.loomify.resume.application
 
 import com.loomify.common.domain.bus.query.Response
+import com.loomify.resume.domain.Locale
 import com.loomify.resume.domain.TemplateMetadata
+import com.loomify.resume.domain.TemplateParams
 
 /**
  * Response DTO for Template Metadata.
@@ -10,7 +12,9 @@ import com.loomify.resume.domain.TemplateMetadata
  * @param name Template name
  * @param version Template version
  * @param description Optional template description
- * @param paramsSchema JSON Schema for template parameters
+ * @param supportedLocales List of supported locales for this template
+ * @param previewUrl Optional URL to a preview image of the template
+ * @param params Optional template parameters for customization
  * @created 26/11/25
  */
 data class TemplateMetadataResponse(
@@ -18,7 +22,9 @@ data class TemplateMetadataResponse(
     val name: String,
     val version: String,
     val description: String? = null,
-    val paramsSchema: String? = null, // JSON Schema for template parameters
+    val supportedLocales: List<Locale> = emptyList(),
+    val previewUrl: String? = null,
+    val params: TemplateParams? = null
 ) : Response {
     companion object {
         /**
@@ -32,8 +38,10 @@ data class TemplateMetadataResponse(
                 id = domain.id,
                 name = domain.name,
                 version = domain.version,
-                paramsSchema = domain.paramsSchema,
                 description = domain.description,
+                supportedLocales = domain.supportedLocales,
+                previewUrl = domain.previewUrl,
+                params = domain.params,
             )
         }
     }

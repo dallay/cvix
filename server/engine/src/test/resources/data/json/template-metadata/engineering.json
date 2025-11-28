@@ -1,0 +1,21 @@
+{
+  "id": "engineering",
+  "name": "Engineering Resume",
+  "version": "0.1.0",
+  "description": "Engineering resume template (single-column focused for engineering profiles).",
+  "supportedLocales": [
+    "EN",
+    "ES"
+  ],
+  "previewUrl": "https://placehold.co/300x600.png",
+  "params": {
+    "colorPalette": "blue",
+    "fontFamily": "Roboto",
+    "spacing": "normal",
+    "density": "comfortable",
+    "customParams": {
+      "includePhoto": true,
+      "highlightSkills": true
+    }
+  }
+}
