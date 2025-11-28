@@ -1,0 +1,237 @@
+<script lang="ts" setup>
+import { isEqual } from "@loomify/utilities";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	SUPPORTED_COLORS,
+	SUPPORTED_FONTS,
+} from "@/core/resume/domain/TemplateConstants.ts";
+import type {
+	ParamValue,
+	TemplateMetadata,
+} from "@/core/resume/domain/TemplateMetadata";
+
+interface Props {
+	templates: TemplateMetadata[];
+	modelValue: {
+		templateId: string;
+		params: Record<string, ParamValue>;
+	};
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<{
+	"update:modelValue": [
+		value: { templateId: string; params: Record<string, ParamValue> },
+	];
+}>();
+
+const { t } = useI18n();
+
+const selectedTemplateId = ref(props.modelValue.templateId);
+const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
+
+const templateSelectId = `template-select-${crypto.randomUUID()}`;
+
+// Sync external templateId changes
+watch(
+	() => props.modelValue.templateId,
+	(newId) => {
+		if (newId !== selectedTemplateId.value) {
+			selectedTemplateId.value = newId;
+		}
+	},
+);
+
+// Sync external params changes
+watch(
+	() => props.modelValue.params,
+	(newParams) => {
+		if (!isEqual(newParams, params.value)) {
+			params.value = { ...newParams };
+		}
+	},
+);
+
+const selectedTemplate = computed(() =>
+	props.templates.find((t) => t.id === selectedTemplateId.value),
+);
+
+// Accept all AcceptableValue types (string | number | bigint | null), ignore objects
+function onUserTemplateChange(
+	newId: string | number | bigint | null | Record<string, unknown>,
+) {
+	if (typeof newId === "object" && newId !== null) {
+		// Ignore object values, only process primitives
+		return;
+	}
+	let id = "";
+	if (typeof newId === "bigint" || typeof newId === "number") {
+		id = newId.toString();
+	} else if (typeof newId === "string") {
+		id = newId;
+	}
+	selectedTemplateId.value = id;
+	if (id) {
+		const template = props.templates.find((t) => t.id === id);
+		const newParams: Record<string, ParamValue> = {};
+		if (template?.params) {
+			const defaults = template.params;
+			if (defaults.colorPalette) newParams.colorPalette = defaults.colorPalette;
+			if (defaults.fontFamily) newParams.fontFamily = defaults.fontFamily;
+			if (defaults.spacing) newParams.spacing = defaults.spacing;
+			if (defaults.density) newParams.density = defaults.density;
+			if (defaults.customParams) {
+				Object.entries(defaults.customParams).forEach(([key, val]) => {
+					newParams[key] = val as ParamValue;
+				});
+			}
+		}
+		if (!newParams.locale && template?.supportedLocales?.length) {
+			newParams.locale = template.supportedLocales[0] || "en";
+		}
+		params.value = newParams;
+	}
+}
+
+// Emit params changes
+watch(params, (newParams) => {
+	if (!isEqual(newParams, props.modelValue.params)) {
+		emit("update:modelValue", {
+			templateId: selectedTemplateId.value,
+			params: { ...newParams },
+		});
+	}
+});
+
+// Helper to safely cast param to string for Select
+const getParamString = (key: string): string => {
+	const val = params.value[key];
+	return val === undefined || val === null ? "" : String(val);
+};
+
+const updateParam = (key: string, value: ParamValue) => {
+	params.value[key] = value;
+};
+</script>
+
+<template>
+  <div class="space-y-6">
+    <div class="space-y-2">
+      <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
+      <Select
+          v-model="selectedTemplateId"
+          :disabled="templates.length === 0"
+          @update:model-value="onUserTemplateChange"
+      >
+        <SelectTrigger :id="templateSelectId">
+          <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
+        </SelectTrigger>
+        <SelectContent>
+          <template v-if="templates.length === 0">
+            <SelectItem disabled value="">
+              {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
+            </SelectItem>
+          </template>
+          <template v-else>
+            <SelectItem
+              v-for="template in templates"
+              :key="template.id"
+              :value="template.id"
+            >
+              {{ template.name }}
+            </SelectItem>
+          </template>
+        </SelectContent>
+      </Select>
+      <p v-if="selectedTemplate?.description" class="text-xs text-muted-foreground">
+        {{ selectedTemplate.description }}
+      </p>
+    </div>
+
+    <div v-if="selectedTemplate" class="space-y-4 border-t pt-4">
+      <h3 class="text-sm font-semibold">
+        {{ t('resume.pdfSelector.coreOptions', 'Appearance & Language') }}</h3>
+
+      <!-- Locale -->
+      <div v-if="selectedTemplate.supportedLocales?.length" class="space-y-2">
+        <Label for="locale">{{ t('resume.pdfSelector.param.locale', 'Language') }}</Label>
+        <Select
+            :model-value="getParamString('locale')"
+            @update:model-value="(val) => updateParam('locale', val)"
+        >
+          <SelectTrigger id="locale">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectLocale', 'Select language')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in selectedTemplate.supportedLocales"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Font Family -->
+      <div class="space-y-2">
+        <Label for="fontFamily">{{
+            t('resume.pdfSelector.param.fontFamily', 'Font Family')
+          }}</Label>
+        <Select
+            :model-value="getParamString('fontFamily')"
+            @update:model-value="(val) => updateParam('fontFamily', val)"
+        >
+          <SelectTrigger id="fontFamily">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectFont', 'Select font')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in SUPPORTED_FONTS"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="space-y-2">
+        <Label for="colorPalette">{{
+            t('resume.pdfSelector.param.colorPalette', 'Color Scheme')
+          }}</Label>
+        <Select
+            :model-value="getParamString('colorPalette')"
+            @update:model-value="(val) => updateParam('colorPalette', val)"
+        >
+          <SelectTrigger id="colorPalette">
+            <SelectValue :placeholder="t('resume.pdfSelector.selectColor', 'Select color')"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+                v-for="opt in SUPPORTED_COLORS"
+                :key="opt"
+                :value="opt"
+            >
+              {{ opt }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+
+    </div>
+  </div>
+</template>

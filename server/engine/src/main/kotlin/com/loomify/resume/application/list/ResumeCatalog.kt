@@ -7,7 +7,7 @@ import java.util.*
 import org.slf4j.LoggerFactory
 
 /**
- *
+ * Catalog service for managing resume documents.
  * @created 20/11/25
  */
 @Service

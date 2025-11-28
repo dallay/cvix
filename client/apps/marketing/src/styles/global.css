@@ -183,3 +183,42 @@
 .delay-300 { transition-delay: 300ms; }
 .delay-400 { transition-delay: 400ms; }
 .delay-500 { transition-delay: 500ms; }
+
+/* Custom Scrollbar Styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.55 0.2 260 / 0.2) transparent;
+}
+
+.dark * {
+  scrollbar-color: oklch(0.6 0.2 260 / 0.3) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: oklch(0.55 0.2 260 / 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.55 0.2 260 / 0.35);
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: oklch(0.6 0.2 260 / 0.3);
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.6 0.2 260 / 0.5);
+}

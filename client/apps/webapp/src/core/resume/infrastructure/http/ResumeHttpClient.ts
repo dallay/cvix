@@ -1,3 +1,4 @@
+import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata.ts";
 import { BaseHttpClient } from "../../../../shared/BaseHttpClient";
 import type { Resume } from "../../domain/Resume.ts";
 import type { ResumeGenerator } from "../../domain/ResumeGenerator.ts";
@@ -126,6 +127,17 @@ export class ResumeHttpClient
 			},
 		);
 		return response.data;
+	}
+
+	/**
+	 * Get list of available resume templates
+	 * @returns Promise with list of templates
+	 */
+	async getTemplates(): Promise<TemplateMetadata[]> {
+		const response = await this.client.get<{
+			data: TemplateMetadata[];
+		}>("/templates");
+		return response.data.data;
 	}
 }
 

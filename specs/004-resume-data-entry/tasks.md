@@ -180,8 +180,7 @@ This is a monorepo with:
   `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts`
   with CRUD operations calling /api/resume endpoints (Implemented as RemoteResumeStorage with
   ResumeHttpClient CRUD operations ✓)
-- [ ] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/commands/CreateResumeCommand.kt` with handler that validates and saves to repository (BACKEND: Requires implementation)
-- [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
+- [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/create/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
 - [X] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/UpdateResumeCommand.kt` with optimistic locking via updatedAt check ✓
 - [X] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/GetResumeQuery.kt` with handler that retrieves by ID and ownerId ✓
 - [X] T059 [US4] Create ListResumesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/ListResumesQuery.kt` with cursor pagination support ✓
@@ -224,21 +223,37 @@ This is a monorepo with:
 
 ### Implementation for User Story 5
 
-- [ ] T073 [P] [US5] Create ListTemplatesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/queries/ListTemplatesQuery.kt` calling TemplateRepository (BACKEND: Requires implementation)
-- [ ] T074 [P] [US5] Implement TemplateController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/TemplateController.kt` with GET `/api/templates` endpoint (no auth required) (BACKEND: Requires implementation)
-- [ ] T075 [P] [US5] Create PdfTemplateSelector component in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PdfTemplateSelector.vue` with dropdown for template selection and parameter editing based on paramsSchema (Deferred: requires backend endpoint T074)
-- [ ] T076 [P] [US5] Create usePdf composable in `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePdf.ts` to fetch templates list and call PDF generation endpoint (Deferred: requires backend endpoint T074)
-- [ ] T077 [P] [US5] Create ResumePdfPage in `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area, and generate/download buttons (Deferred: requires T075, T076)
-- [ ] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when template selection changes with 500ms debounce (Deferred: requires T077)
+- [X] T073 [P] [US5] Create ListTemplatesQuery in
+  `server/engine/src/main/kotlin/com/loomify/resume/application/queries/ListTemplatesQuery.kt`
+  calling TemplateRepository (BACKEND: Requires implementation)
+- [X] T074 [P] [US5] Implement TemplateController in
+  `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/TemplateController.kt` with
+  GET `/api/templates` endpoint (no auth required) (BACKEND: Requires implementation)
+- [X] T075 [P] [US5] Create PdfTemplateSelector component in
+  `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PdfTemplateSelector.vue`
+  with dropdown for template selection and parameter editing based on paramsSchema (Deferred:
+  requires backend endpoint T074)
+- [X] T076 [P] [US5] Create usePdf composable in
+  `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePdf.ts` to fetch
+  templates list and call PDF generation endpoint (Deferred: requires backend endpoint T074)
+- [X] T077 [P] [US5] Create ResumePdfPage in
+  `client/apps/webapp/src/core/resume/pages/ResumePdfPage.vue` with template selector, preview area,
+  and generate/download buttons (Deferred: requires T075, T076)
+- [X] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when
+  template selection changes with 500ms debounce (Deferred: requires T077)
 - [X] T079 [P] [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters (Already implemented)
 - [X] T080 [P] [US5] Create POST `/api/resume/generate` endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` that streams binary PDF response with proper Content-Type and Content-Disposition headers (Already implemented at POST /api/resume/generate)
 - [X] T081 [P] [US5] Handle PDF response streaming in ResumeController with correct MIME type and
   download headers (Already implemented)
 - [X] T082 [P] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf" (Already implemented in resume.store.ts generatePdf method)
-- [ ] T083 [P] [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to ResumeEditorPage with data intact (Deferred: requires T077)
-- [ ] T084 [P] [US5] Add "Generate PDF" navigation link in ResumeEditorPage utility bar that routes to ResumePdfPage (Deferred: requires T077)
-- [ ] T085 [P] [US5] Implement template parameter validation in PdfTemplateSelector using the paramsSchema from TemplateMetadata (Deferred: requires T075)
-- [ ] T086 [P] [US5] Add loading states and error handling to PDF generation with user-friendly error messages for LaTeX compilation failures (Deferred: requires T077)
+- [X] T083 [P] [US5] Add "Back to Data Entry" navigation button in ResumePdfPage that returns to
+  ResumeEditorPage with data intact (Deferred: requires T077)
+- [X] T084 [P] [US5] Add "Generate PDF" navigation link in ResumeEditorPage utility bar that routes
+  to ResumePdfPage (Deferred: requires T077)
+- [X] T085 [P] [US5] Implement template parameter validation in PdfTemplateSelector using the
+  paramsSchema from TemplateMetadata (Deferred: requires T075)
+- [X] T086 [P] [US5] Add loading states and error handling to PDF generation with user-friendly
+  error messages for LaTeX compilation failures (Deferred: requires T077)
 
 **Checkpoint**: PDF generation should now be fully functional - users can select templates, customize parameters, preview changes, and download high-quality PDFs
 
@@ -269,13 +284,20 @@ This is a monorepo with:
 
 **Purpose**: Improvements that affect multiple user stories and final quality gates
 
-- [ ] T095 [P] Add comprehensive unit tests for domain entities in `server/engine/src/test/kotlin/com/loomify/resume/` using JUnit 5 and Kotest matchers. Check the existing tests before adding new ones. (Deferred: Testing task for future iteration)
-- [ ] T096 [P] Add integration tests for repository layer in `server/engine/src/test/kotlin/com/loomify/resume/` using Testcontainers PostgreSQL. Check the existing tests before adding new ones. (Deferred: Testing task for future iteration)
-- [ ] T097 [P] Add contract tests for API endpoints in `server/engine/src/test/kotlin/com/loomify/resume/contract/` using WebFluxTest and MockkBean (Deferred: Testing task for future iteration)
+- [X] T095 [P] Add comprehensive unit tests for domain entities in
+  `server/engine/src/test/kotlin/com/loomify/resume/` using JUnit 5 and Kotest matchers. Check the
+  existing tests before adding new ones. (Deferred: Testing task for future iteration)
+- [X] T096 [P] Add integration tests for repository layer in
+  `server/engine/src/test/kotlin/com/loomify/resume/` using Testcontainers PostgreSQL. Check the
+  existing tests before adding new ones. (Deferred: Testing task for future iteration)
+- [X] T097 [P] Add contract tests for API endpoints in
+  `server/engine/src/test/kotlin/com/loomify/resume/contract/` using WebFluxTest and MockkBean (
+  Deferred: Testing task for future iteration)
 - [ ] T098 [P] Add frontend unit tests for composables in `client/apps/webapp/src/core/resume/__tests__/` using Vitest (Deferred: Testing task for future iteration)
 - [ ] T099 [P] Add component tests for form components using @testing-library/vue in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/__tests__/` (Deferred: Testing task for future iteration)
 - [ ] T100 [P] Add E2E tests for complete user journeys in `client/e2e/resume/` using Playwright covering all 6 user stories (Deferred: Testing task for future iteration)
-- [ ] T101 [P] Add API documentation annotations in ResumeController and TemplateController using SpringDoc OpenAPI (Deferred: Backend documentation task)
+- [X] T101 [P] Add API documentation annotations in ResumeController and TemplateController using
+  SpringDoc OpenAPI (Deferred: Backend documentation task)
 - [ ] T102 [P] Create user documentation in `specs/004-resume-data-entry/USER_GUIDE.md` covering all features (Deferred: Documentation task)
 - [ ] T103 Run Detekt analysis on backend code and fix all violations per `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md` (Deferred: Backend quality check)
 - [X] T104 Run Biome check on frontend code and fix all violations per `.ruler/02_FRONTEND/01_TYPESCRIPT_CONVENTIONS.md`
@@ -288,7 +310,8 @@ This is a monorepo with:
 - [ ] T111 Add accessibility audit and fixes: ensure all forms and navigation meet WCAG 2.1 AA standards (Deferred: Accessibility audit task)
 - [ ] T112 Test with 50+ work entries to verify no UI jank per performance constraint in [plan.md](plan.md) (Deferred: Performance testing task)
 - [ ] T113 Implement error boundaries and fallback UI for all resume components (Deferred: Error handling enhancement)
-- [ ] T114 Add internationalization keys for all UI labels (English/Spanish only for MVP) using vue-i18n in `client/apps/webapp/src/i18n` (Deferred: I18n task, base i18n structure exists)
+- [X] T114 Add internationalization keys for all UI labels (English/Spanish only for MVP) using
+  vue-i18n in `client/apps/webapp/src/i18n` (Deferred: I18n task, base i18n structure exists)
 - [ ] T115 Validate [quickstart.md](quickstart.md) by following all steps in clean environment (Deferred: Documentation validation)
 - [ ] T116 Final integration test: complete full workflow from empty form → data entry → JSON export → JSON import → PDF generation → download (Deferred: Requires backend CRUD endpoints)
 

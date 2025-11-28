@@ -1,10 +1,10 @@
 package com.loomify.resume.infrastructure.persistence
 
+import com.loomify.resume.domain.Locale
 import com.loomify.resume.domain.TemplateMetadata
+import com.loomify.resume.domain.TemplateParams
 import com.loomify.resume.domain.TemplateRepository
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 /**
  * In-memory stub implementation of TemplateRepository.
@@ -19,44 +19,41 @@ class InMemoryTemplateRepository : TemplateRepository {
             name = "Engineering Resume",
             version = "0.1.0",
             description = "Engineering resume template (single-column focused for engineering profiles).",
-            paramsSchema = """
-                {
-                  "type": "object",
-                  "properties": {
-                    "colorPalette": {
-                      "type": "string",
-                      "enum": ["black", "gray", "blue"],
-                      "default": "black",
-                      "description": "Primary color used for links and accents"
-                    },
-                    "fontFamily": {
-                      "type": "string",
-                      "enum": ["charter", "lmodern", "times"],
-                      "default": "charter",
-                      "description": "LaTeX font package to use"
-                    },
-                    "locale": {
-                      "type": "string",
-                      "default": "en",
-                      "description": "Locale used for i18n strings"
-                    },
-                    "includeLastUpdated": {
-                      "type": "boolean",
-                      "default": true,
-                      "description": "Whether to render the last-updated footer text"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-            """.trimIndent(),
+            supportedLocales = listOf(Locale.EN, Locale.ES),
+            previewUrl =
+            "https://placehold.co/300x600.png",
+            params = TemplateParams(
+                colorPalette = "blue",
+                fontFamily = "Roboto",
+                spacing = "normal",
+                density = "comfortable",
+                customParams = mapOf(
+                    "includePhoto" to true,
+                    "highlightSkills" to true,
+                ),
+            ),
         ),
     )
 
-    override fun findAll(): Flux<TemplateMetadata> = Flux.fromIterable(templates)
+    /**
+     * Retrieves all available templates.
+     * @return All template metadata
+     */
+    override suspend fun findAll(): List<TemplateMetadata> = templates
 
-    override fun findById(id: String): Mono<TemplateMetadata> =
-        Mono.justOrEmpty(templates.find { it.id == id })
+    /**
+     * Finds a template by ID.
+     * @param id The template ID
+     * @return The template metadata if found
+     */
+    override suspend fun findById(id: String): TemplateMetadata? =
+        templates.find { it.id == id }
 
-    override fun existsById(id: String): Mono<Boolean> =
-        Mono.just(templates.any { it.id == id })
+    /**
+     * Checks if a template exists.
+     * @param id The template ID
+     * @return true if the template exists
+     */
+    override suspend fun existsById(id: String): Boolean =
+        templates.any { it.id == id }
 }
