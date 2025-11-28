@@ -20,17 +20,17 @@ settings {
 }
 
 docs {
-  description: "Fetches template metadata for curriculum templates. Supports pagination via the 'limit' query parameter."
+  description: "Fetches template metadata for curriculum templates. Supports pagination via the 'limit' query parameter (integer, 1–50, default 10)."
   request: "GET /api/templates?limit=10"
   queryParameters: [
     {
       name: "limit",
       type: "integer",
       required: false,
-      description: "Maximum number of templates to return (max 50)."
+      description: "Number of templates to return (1–50, default 10)."
     }
   ]
   response: "200 OK: JSON array of template metadata objects. Each object contains id, name, description, and other relevant fields."
-  errorHandling: "400 Bad Request if 'limit' exceeds 50. Error response follows the standard error model: { error: { code, message, errors: [ { field, message } ] } }"
+  errorHandling: "400 Bad Request if 'limit' is less than 1 or greater than 50. Error response follows the standard error model: { error: { code, message, errors: [ { field, message } ] } }"
   notes: "Authentication is required. Returns only templates accessible to the current user."
 }

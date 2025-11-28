@@ -25,6 +25,8 @@ interface Props {
 		templateId: string;
 		params: Record<string, ParamValue>;
 	};
+	isLoading?: boolean;
+	error?: string;
 }
 
 const props = defineProps<Props>();
@@ -32,6 +34,7 @@ const emit = defineEmits<{
 	"update:modelValue": [
 		value: { templateId: string; params: Record<string, ParamValue> },
 	];
+	"params:changed": [params: Record<string, ParamValue>];
 }>();
 
 const { t } = useI18n();
@@ -65,41 +68,73 @@ const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
 
+// Helper: Validate if the input should be processed
+function isValidTemplateId(value: ParamValue): boolean {
+	if (value === null || value === "" || props.templates.length === 0) {
+		return false;
+	}
+	// Ignore object values, only process primitives
+	return typeof value !== "object";
+}
+
+// Helper: Convert input to string ID
+function convertToStringId(value: ParamValue): string {
+	if (typeof value === "bigint" || typeof value === "number") {
+		return value.toString();
+	}
+	if (typeof value === "string") {
+		return value;
+	}
+	return "";
+}
+
+// Helper: Build params from template defaults
+function buildTemplateParams(
+	template: TemplateMetadata | undefined,
+): Record<string, ParamValue> {
+	const newParams: Record<string, ParamValue> = {};
+
+	if (!template?.params) {
+		return newParams;
+	}
+
+	const defaults = template.params;
+
+	// Copy known params
+	if (defaults.colorPalette) newParams.colorPalette = defaults.colorPalette;
+	if (defaults.fontFamily) newParams.fontFamily = defaults.fontFamily;
+	if (defaults.spacing) newParams.spacing = defaults.spacing;
+	if (defaults.density) newParams.density = defaults.density;
+
+	// Copy custom params
+	if (defaults.customParams) {
+		Object.entries(defaults.customParams).forEach(([key, val]) => {
+			newParams[key] = val as ParamValue;
+		});
+	}
+
+	// Set default locale if not present
+	if (!newParams.locale && template.supportedLocales?.length) {
+		newParams.locale = template.supportedLocales[0] || "en";
+	}
+
+	return newParams;
+}
+
 // Accept all AcceptableValue types (string | number | bigint | null), ignore objects
-function onUserTemplateChange(
-	newId: string | number | bigint | null | Record<string, unknown>,
-) {
-	if (typeof newId === "object" && newId !== null) {
-		// Ignore object values, only process primitives
+function onUserTemplateChange(newId: ParamValue) {
+	if (!isValidTemplateId(newId)) {
 		return;
 	}
-	let id = "";
-	if (typeof newId === "bigint" || typeof newId === "number") {
-		id = newId.toString();
-	} else if (typeof newId === "string") {
-		id = newId;
+
+	const id = convertToStringId(newId);
+	if (!id) {
+		return;
 	}
+
 	selectedTemplateId.value = id;
-	if (id) {
-		const template = props.templates.find((t) => t.id === id);
-		const newParams: Record<string, ParamValue> = {};
-		if (template?.params) {
-			const defaults = template.params;
-			if (defaults.colorPalette) newParams.colorPalette = defaults.colorPalette;
-			if (defaults.fontFamily) newParams.fontFamily = defaults.fontFamily;
-			if (defaults.spacing) newParams.spacing = defaults.spacing;
-			if (defaults.density) newParams.density = defaults.density;
-			if (defaults.customParams) {
-				Object.entries(defaults.customParams).forEach(([key, val]) => {
-					newParams[key] = val as ParamValue;
-				});
-			}
-		}
-		if (!newParams.locale && template?.supportedLocales?.length) {
-			newParams.locale = template.supportedLocales[0] || "en";
-		}
-		params.value = newParams;
-	}
+	const template = props.templates.find((t) => t.id === id);
+	params.value = buildTemplateParams(template);
 }
 
 // Emit params changes
@@ -118,8 +153,25 @@ const getParamString = (key: string): string => {
 	return val === undefined || val === null ? "" : String(val);
 };
 
-const updateParam = (key: string, value: ParamValue) => {
-	params.value[key] = value;
+const updateParam = (key: string, value: unknown) => {
+	let safeValue: ParamValue;
+	if (value === null) {
+		safeValue = "";
+	} else if (typeof value === "bigint") {
+		safeValue = value.toString();
+	} else if (
+		typeof value === "string" ||
+		typeof value === "number" ||
+		typeof value === "boolean" ||
+		value === "undefined"
+	) {
+		safeValue = value as ParamValue;
+	} else {
+		// fallback for unsupported types
+		safeValue = "";
+	}
+	params.value[key] = safeValue;
+	emit("params:changed", { ...params.value });
 };
 </script>
 
@@ -129,23 +181,34 @@ const updateParam = (key: string, value: ParamValue) => {
       <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
       <Select
           v-model="selectedTemplateId"
-          :disabled="templates.length === 0"
+          :disabled="props.isLoading || templates.length === 0"
           @update:model-value="onUserTemplateChange"
+          aria-label="Resume template selector"
       >
         <SelectTrigger :id="templateSelectId">
           <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
         </SelectTrigger>
         <SelectContent>
-          <template v-if="templates.length === 0">
+          <template v-if="props.isLoading">
+            <SelectItem disabled value="">
+              {{ t('resume.pdfSelector.loading', 'Loading templates…') }}
+            </SelectItem>
+          </template>
+          <template v-else-if="props.error">
+            <SelectItem disabled value="">
+              {{ props.error }}
+            </SelectItem>
+          </template>
+          <template v-else-if="templates.length === 0">
             <SelectItem disabled value="">
               {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
             </SelectItem>
           </template>
           <template v-else>
             <SelectItem
-              v-for="template in templates"
-              :key="template.id"
-              :value="template.id"
+                v-for="template in templates"
+                :key="template.id"
+                :value="template.id"
             >
               {{ template.name }}
             </SelectItem>
@@ -167,6 +230,7 @@ const updateParam = (key: string, value: ParamValue) => {
         <Select
             :model-value="getParamString('locale')"
             @update:model-value="(val) => updateParam('locale', val)"
+            aria-label="Resume language selector"
         >
           <SelectTrigger id="locale">
             <SelectValue :placeholder="t('resume.pdfSelector.selectLocale', 'Select language')"/>
@@ -191,6 +255,7 @@ const updateParam = (key: string, value: ParamValue) => {
         <Select
             :model-value="getParamString('fontFamily')"
             @update:model-value="(val) => updateParam('fontFamily', val)"
+            aria-label="Resume font selector"
         >
           <SelectTrigger id="fontFamily">
             <SelectValue :placeholder="t('resume.pdfSelector.selectFont', 'Select font')"/>
@@ -215,6 +280,7 @@ const updateParam = (key: string, value: ParamValue) => {
         <Select
             :model-value="getParamString('colorPalette')"
             @update:model-value="(val) => updateParam('colorPalette', val)"
+            aria-label="Resume color selector"
         >
           <SelectTrigger id="colorPalette">
             <SelectValue :placeholder="t('resume.pdfSelector.selectColor', 'Select color')"/>
@@ -230,7 +296,6 @@ const updateParam = (key: string, value: ParamValue) => {
           </SelectContent>
         </Select>
       </div>
-
 
     </div>
   </div>

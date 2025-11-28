@@ -13,8 +13,6 @@ const val ERROR_CATEGORY = "errorCategory"
 
 const val LOCALIZED_MESSAGE = "localizedMessage"
 
-const val MESSAGE = "message"
-
 const val TRACE_ID = "traceId"
 
 const val MSG_AUTHENTICATION_FAILED = "error.authentication_failed"
