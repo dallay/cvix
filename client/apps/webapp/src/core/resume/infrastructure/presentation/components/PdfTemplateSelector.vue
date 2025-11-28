@@ -2,7 +2,6 @@
 import { isEqual } from "@loomify/utilities";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -97,7 +96,7 @@ function onUserTemplateChange(
 			}
 		}
 		if (!newParams.locale && template?.supportedLocales?.length) {
-			newParams.locale = template.supportedLocales[0];
+			newParams.locale = template.supportedLocales[0] || "en";
 		}
 		params.value = newParams;
 	}
@@ -119,9 +118,8 @@ const getParamString = (key: string): string => {
 	return val === undefined || val === null ? "" : String(val);
 };
 
-// Helper to update param
-const updateParam = (key: string, value: unknown) => {
-	params.value[key] = value as ParamValue;
+const updateParam = (key: string, value: ParamValue) => {
+	params.value[key] = value;
 };
 </script>
 
@@ -129,18 +127,29 @@ const updateParam = (key: string, value: unknown) => {
   <div class="space-y-6">
     <div class="space-y-2">
       <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
-      <Select v-model="selectedTemplateId" @update:model-value="onUserTemplateChange">
+      <Select
+          v-model="selectedTemplateId"
+          :disabled="templates.length === 0"
+          @update:model-value="onUserTemplateChange"
+      >
         <SelectTrigger :id="templateSelectId">
           <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem
+          <template v-if="templates.length === 0">
+            <SelectItem disabled value="">
+              {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
+            </SelectItem>
+          </template>
+          <template v-else>
+            <SelectItem
               v-for="template in templates"
               :key="template.id"
               :value="template.id"
-          >
-            {{ template.name }}
-          </SelectItem>
+            >
+              {{ template.name }}
+            </SelectItem>
+          </template>
         </SelectContent>
       </Select>
       <p v-if="selectedTemplate?.description" class="text-xs text-muted-foreground">
@@ -222,23 +231,6 @@ const updateParam = (key: string, value: unknown) => {
         </Select>
       </div>
 
-      <!-- Custom Params (if any in defaults) -->
-      <div v-if="selectedTemplate.params?.customParams" class="space-y-4 border-t pt-4">
-        <h3 class="text-sm font-semibold">
-          {{ t('resume.pdfSelector.optionsTitle', 'Template Options') }}</h3>
-        <div v-for="(val, key) in selectedTemplate.params.customParams" :key="key"
-             class="flex items-center space-x-2 py-2">
-          <!-- Simple boolean toggle for now as no schema types -->
-          <Checkbox
-              :id="String(key)"
-              :checked="Boolean(params[key])"
-              @update:checked="(checked: boolean) => updateParam(String(key), checked)"
-          />
-          <Label :for="String(key)" class="cursor-pointer capitalize">
-            {{ key.replace(/([A-Z])/g, ' $1').trim() }}
-          </Label>
-        </div>
-      </div>
 
     </div>
   </div>

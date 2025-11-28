@@ -50,7 +50,8 @@ export function usePdf() {
 			// We are passing them but they might be ignored until backend is updated to use them
 			// For now, we just call the existing endpoint
 			// Extract locale from params, default to 'en' if not present
-			const locale = (_params.locale as "en" | "es") || "en";
+			const rawLocale = _params.locale;
+			const locale: "en" | "es" = rawLocale === "es" ? "es" : "en";
 			const blob = await resumeHttpClient.generatePdf(resume, locale);
 			pdfUrl.value = URL.createObjectURL(blob);
 			return blob;
