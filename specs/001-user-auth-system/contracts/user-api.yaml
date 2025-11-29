@@ -12,7 +12,7 @@ info:
 servers:
   - url: http://localhost:8080/api
     description: Local development server
-  - url: https://api.loomify.com
+  - url: https://api.cvix.com
     description: Production server
 
 security:

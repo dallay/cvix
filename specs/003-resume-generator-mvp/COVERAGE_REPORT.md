@@ -108,7 +108,7 @@
 
 ## Domain Layer Coverage (Kotlin)
 
-**Package**: `com.loomify.resume.domain.**`
+**Package**: `com.cvix.resume.domain.**`
 **Requirement**: 100% coverage per Constitution
 
 ### Coverage by Sub-Package

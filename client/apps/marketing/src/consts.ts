@@ -1,7 +1,7 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-import type { Multilingual } from "@/i18n";
+import type {Multilingual} from "@/i18n";
 
 export const BRAND_NAME: string | Multilingual = "Loomify";
 export const SITE_TITLE: string | Multilingual = "Loomify";
@@ -24,7 +24,7 @@ const BASE_URL_PROD = "https://example.com";
 const BASE_DOCS_URL_LOCAL = "http://localhost:4321";
 const BASE_DOCS_URL_PROD = "https://example.com/docs";
 const BASE_WEBAPP_URL_LOCAL = "http://localhost:9876/";
-const BASE_WEBAPP_URL_PROD = "https://app.loomify.com"; // Placeholder for production webapp URL
+const BASE_WEBAPP_URL_PROD = "https://app.cvix.com"; // Placeholder for production webapp URL
 
 export const BASE_URL = import.meta.env.DEV ? BASE_URL_LOCAL : BASE_URL_PROD;
 export const BASE_DOCS_URL = import.meta.env.DEV

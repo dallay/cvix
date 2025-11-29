@@ -13,7 +13,11 @@
 
 ### Session 2025-11-01
 
-- Q: Should we reuse existing shared value objects (Email, Name) from `com.loomify.common.domain.vo`? → A: Reuse Email only - The shared Email VO provides RFC-compliant validation (320 char limit). The resume-specific name field renamed to `FullName` to avoid confusion, as JSON Resume uses unstructured single string (e.g., "John Doe") while shared Name VO expects structured firstName + lastName for user profiles.
+- Q: Should we reuse existing shared value objects (Email, Name) from `com.cvix.common.domain.vo`? →
+  A: Reuse Email only - The shared Email VO provides RFC-compliant validation (320 char limit). The
+  resume-specific name field renamed to `FullName` to avoid confusion, as JSON Resume uses
+  unstructured single string (e.g., "John Doe") while shared Name VO expects structured firstName +
+  lastName for user profiles.
 - Q: How should API versioning be implemented in the REST contract? → A: Header-based versioning - Use `API-Version: v1` header (not path-based `/v1`) to align with project standards. Added required `API-Version` header parameter and global `security: [bearerAuth]` requirement to OpenAPI spec to comply with CKV_OPENAPI_4 security policy.
 
 ### Session 2025-10-31
