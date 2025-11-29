@@ -1,0 +1,59 @@
+# NOTE: Scope
+# This .npmignore is maintained at the repository root. It is intended to control what is included
+# when publishing a package from the repository root (if you publish from the root). Individual
+# workspace packages (for example under `client/` or other package directories) should maintain
+# their own `.npmignore` files or use the `files` field in their `package.json` if they are
+# published separately. Keep this file focused on repository-wide exclusions.
+
+# Ignore TypeScript incremental build info
+*.tsbuildinfo
+
+# Ignore VCS and CI files (only add if you want these excluded from published packages)
+.git/
+.github/
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore npm publish artifacts and build output
+node_modules/
+dist/
+build/
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore test coverage
+coverage/
+
+# Ignore test directories
+test/
+tests/
+__tests__/
+spec/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore additional CI files
+.circleci/
+# Ignore pnpm store
+.pnpm-store/
+
+# Ignore frontend build artifacts
+# (Note: top-level 'dist/' and 'node_modules/' already cover these patterns)
+client/**/.output/
+client/**/.next/
+client/**/.astro/
+client/**/.svelte-kit/
+client/**/.cache/
+client/**/.parcel-cache/
+client/**/coverage/

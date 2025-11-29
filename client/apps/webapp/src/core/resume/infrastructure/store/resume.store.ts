@@ -101,6 +101,18 @@ export const useResumeStore = defineStore("resume", () => {
 	const storageError = ref<Error | null>(null);
 	const currentStorageType = ref<StorageType>(initialStorage.type());
 
+	// Navigation context for preview-to-form
+	const activeSection = ref<string | null>(null);
+	const highlightedEntry = ref<number | null>(null);
+
+	function setActiveSection(section: string | null) {
+		activeSection.value = section;
+	}
+
+	function setHighlightedEntry(index: number | null) {
+		highlightedEntry.value = index;
+	}
+
 	// Computed properties
 	/**
 	 * Indicates whether the current resume is valid according to JSON Resume Schema.
@@ -333,6 +345,8 @@ export const useResumeStore = defineStore("resume", () => {
 		isLoading,
 		storageError,
 		currentStorageType,
+		activeSection,
+		highlightedEntry,
 
 		// Computed
 		isValid,
@@ -351,5 +365,7 @@ export const useResumeStore = defineStore("resume", () => {
 		changeStorageStrategy,
 		importResume,
 		exportResume,
+		setActiveSection,
+		setHighlightedEntry,
 	};
 });

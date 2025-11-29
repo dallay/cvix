@@ -7,7 +7,7 @@ import {
 	RotateCcw,
 	Upload,
 } from "lucide-vue-next";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
@@ -312,6 +312,59 @@ async function confirmReset() {
 function cancelReset() {
 	showResetConfirmation.value = false;
 }
+
+// Ref to ResumeForm instance
+const resumeFormRef = ref();
+
+/**
+ * Handles navigation from preview to form section or entry
+ * @param section - section name
+ * @param entryIndex - optional array entry index
+ */
+function handlePreviewNavigate(section: string, entryIndex?: number) {
+	nextTick(() => {
+		const formEl = resumeFormRef.value?.$el;
+		if (!formEl) return;
+		const sectionMap: Record<string, string> = {
+			basics: "section-basics",
+			work: "section-work",
+			education: "section-education",
+			skills: "section-skills",
+			projects: "section-projects",
+			languages: "section-languages",
+			volunteer: "section-volunteer",
+			certificates: "section-certificates",
+			awards: "section-awards",
+			publications: "section-publications",
+			interests: "section-interests",
+			references: "section-references",
+		};
+		const refName = sectionMap[section];
+		if (!refName) return;
+		let target: HTMLElement | null = null;
+		// If entryIndex is provided, look for array entry
+		if (typeof entryIndex === "number") {
+			// Try to find entry by data-entry-id
+			target = formEl.querySelector(
+				`[ref='${refName}'] [data-entry-id='${entryIndex}']`,
+			);
+		}
+		// Fallback to section root
+		if (!target) {
+			target = formEl.querySelector(`[ref='${refName}']`);
+		}
+		if (target) {
+			target.scrollIntoView({ behavior: "smooth", block: "start" });
+			target.classList.add("section-highlight");
+			// Move focus to first input in section/entry
+			const input = target.querySelector("input, textarea, select, [tabindex]");
+			if (input) {
+				(input as HTMLElement).focus();
+			}
+			setTimeout(() => target.classList.remove("section-highlight"), 2000);
+		}
+	});
+}
 </script>
 
 <template>
@@ -445,7 +498,7 @@ function cancelReset() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResumeForm/>
+            <ResumeForm ref="resumeFormRef"/>
           </CardContent>
         </Card>
 
@@ -462,7 +515,7 @@ function cancelReset() {
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
-              <ResumePreview :data="resume"/>
+              <ResumePreview :data="resume" @navigate-section="handlePreviewNavigate"/>
             </div>
           </CardContent>
         </Card>
@@ -517,3 +570,10 @@ function cancelReset() {
     />
   </DashboardLayout>
 </template>
+
+<style scoped>
+.section-highlight {
+  box-shadow: 0 0 0 3px var(--accent);
+  transition: box-shadow 0.3s;
+}
+</style>
