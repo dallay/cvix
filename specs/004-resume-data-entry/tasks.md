@@ -303,6 +303,10 @@ This is a monorepo with:
 - [X] T104 Run Biome check on frontend code and fix all violations per `.ruler/02_FRONTEND/01_TYPESCRIPT_CONVENTIONS.md`
 - [ ] T105 Verify code coverage meets gates: backend 80%+ (domain 100%), frontend 75%+ using Kover and Vitest coverage (Deferred: Requires test implementation)
 - [ ] T106 Add security headers to ResumeController responses per `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Deferred: Backend security enhancement)
+- [X] T106 Add security headers to ResumeController responses per
+  `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Implemented: `ResumeResponseHeaders.kt`; controllers
+  updated: `CreateResumeController.kt`, `GetResumeController.kt`, `UpdateResumeController.kt`,
+  `ListResumeController.kt`, `DeleteResumeController.kt`)
 - [X] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing implementation in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/SecurityConfiguration.kt` and `server/engine/src/main/kotlin/com/loomify/engine/ratelimit.RateLimitingFilter` (Deferred: Backend security enhancement)
 - [X] T108 Add logging for all resume operations (create, update, delete, PDF generation) using structured logging (Deferred: Backend observability enhancement)
 - [X] T109 Optimize preview rendering performance: ensure updates complete within 150ms target using Chrome DevTools profiling (Implemented: debounced preview updates with 120ms delay in useResumeForm)

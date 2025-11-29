@@ -5,6 +5,7 @@ import com.loomify.engine.authentication.domain.Role
 import com.loomify.engine.authentication.infrastructure.csrf.SpaCsrfTokenRequestHandler
 import com.loomify.engine.authentication.infrastructure.filter.CookieCsrfFilter
 import com.loomify.engine.authentication.infrastructure.filter.JwtCookieOrHeaderFilter
+import com.loomify.engine.config.security.SecurityHeadersWebFilter
 import com.loomify.engine.ratelimit.infrastructure.RateLimitingFilter
 import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
@@ -150,6 +151,7 @@ class SecurityConfiguration(
             .addFilterAt(JwtCookieOrHeaderFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterBefore(rateLimitingFilter, SecurityWebFiltersOrder.HTTP_BASIC)
 //            .addFilterAfter(SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
+            .addFilterAfter(SecurityHeadersWebFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
             .redirectToHttps {
                     httpsRedirect ->
                 httpsRedirect.httpsRedirectWhen {
