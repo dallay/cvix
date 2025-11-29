@@ -10,6 +10,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import DatePicker from "@/components/ui/date-picker/DatePicker.vue";
 import type { Work } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();
@@ -81,6 +82,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
         variant="outline"
         size="sm"
         @click="addWorkExperience"
+        data-testid="add-work-experience"
       >
         <Plus class="h-4 w-4 mr-2" />
         {{ t('resume.actions.addWorkExperience') }}
@@ -139,11 +141,9 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
             <FieldLabel :for="`work-start-date-${workIndex}`">
               {{ t('resume.fields.startDate') }}
             </FieldLabel>
-            <Input
+            <DatePicker
               :id="`work-start-date-${workIndex}`"
               v-model="work.startDate"
-              type="date"
-              :placeholder="t('resume.placeholders.startDate')"
               :data-testid="`work-start-date-${workIndex}`"
             />
           </Field>
@@ -152,11 +152,9 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
             <FieldLabel :for="`work-end-date-${workIndex}`">
               {{ t('resume.fields.endDate') }}
             </FieldLabel>
-            <Input
+            <DatePicker
               :id="`work-end-date-${workIndex}`"
               v-model="work.endDate"
-              type="date"
-              :placeholder="t('resume.placeholders.endDate')"
               :data-testid="`work-end-date-${workIndex}`"
             />
           </Field>

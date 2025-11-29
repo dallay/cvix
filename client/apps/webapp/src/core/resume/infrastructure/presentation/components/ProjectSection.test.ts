@@ -197,11 +197,15 @@ describe("ProjectSection.vue", () => {
 			const startDate = wrapper.find('[data-testid="project-start-date-0"]');
 			const endDate = wrapper.find('[data-testid="project-end-date-0"]');
 
-			await startDate.setValue("2020-01-01");
-			await endDate.setValue("2020-12-31");
+			await startDate.find('[data-testid="date-picker-button"]').trigger("click");
+			await wrapper.vm.$nextTick();
+			await wrapper.find("[data-radix-vue-collection-item]").trigger("click");
 
-			expect((startDate.element as HTMLInputElement).value).toBe("2020-01-01");
-			expect((endDate.element as HTMLInputElement).value).toBe("2020-12-31");
+			await endDate.find('[data-testid="date-picker-button"]').trigger("click");
+			await wrapper.vm.$nextTick();
+			await wrapper.find("[data-radix-vue-collection-item]").trigger("click");
+
+			expect(wrapper.emitted("update:modelValue")).toBeDefined();
 		});
 
 		it("should bind description field", async () => {

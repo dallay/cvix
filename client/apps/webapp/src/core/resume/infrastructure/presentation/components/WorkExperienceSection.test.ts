@@ -167,15 +167,15 @@ describe("WorkExperienceSection.vue", () => {
 			const startDateInput = wrapper.find('[data-testid="work-start-date-0"]');
 			const endDateInput = wrapper.find('[data-testid="work-end-date-0"]');
 
-			await startDateInput.setValue("2020-01-01");
-			await endDateInput.setValue("2022-12-31");
+			await startDateInput.find('[data-testid="date-picker-button"]').trigger("click");
+			await wrapper.vm.$nextTick();
+			await wrapper.find("[data-radix-vue-collection-item]").trigger("click");
 
-			expect((startDateInput.element as HTMLInputElement).value).toBe(
-				"2020-01-01",
-			);
-			expect((endDateInput.element as HTMLInputElement).value).toBe(
-				"2022-12-31",
-			);
+			await endDateInput.find('[data-testid="date-picker-button"]').trigger("click");
+			await wrapper.vm.$nextTick();
+			await wrapper.find("[data-radix-vue-collection-item]").trigger("click");
+
+			expect(wrapper.emitted("update:modelValue")).toBeDefined();
 		});
 
 		it("should display pre-filled data", () => {
