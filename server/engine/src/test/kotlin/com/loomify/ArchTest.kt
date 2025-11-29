@@ -15,13 +15,15 @@ internal class ArchTest {
         "users",
         "authentication",
         "workspace",
+        "ratelimit",
+        "resume",
     )
 
     @BeforeEach
     fun setUp() {
         importedClasses = ClassFileImporter()
             .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackages("com.loomify.engine")
+            .importPackages("com.loomify")
     }
 
     @Test
@@ -30,12 +32,12 @@ internal class ArchTest {
         boundedContexts.forEach { context ->
             ArchRuleDefinition.noClasses()
                 .that()
-                .resideInAnyPackage("com.loomify.engine.$context.domain..")
+                .resideInAnyPackage("com.loomify.$context.domain..")
                 .should()
                 .dependOnClassesThat()
                 .resideInAnyPackage(
-                    "com.loomify.engine.$context.application..",
-                    "com.loomify.engine.$context.infrastructure..",
+                    "com.loomify.$context.application..",
+                    "com.loomify.$context.infrastructure..",
                 )
                 .because("The 'domain' package in '$context' should not depend on 'application' or 'infrastructure'")
                 .check(importedClasses)
@@ -48,10 +50,10 @@ internal class ArchTest {
         boundedContexts.forEach { context ->
             ArchRuleDefinition.noClasses()
                 .that()
-                .resideInAnyPackage("com.loomify.engine.$context.application..")
+                .resideInAnyPackage("com.loomify.$context.application..")
                 .should()
                 .dependOnClassesThat()
-                .resideInAnyPackage("com.loomify.engine.$context.infrastructure..")
+                .resideInAnyPackage("com.loomify.$context.infrastructure..")
                 .because("The 'application' package in '$context' should not depend on 'infrastructure'")
                 .check(importedClasses)
         }

@@ -1,6 +1,6 @@
 package com.loomify
 
-import com.loomify.engine.config.InfrastructureTestContainers
+import com.loomify.config.InfrastructureTestContainers
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

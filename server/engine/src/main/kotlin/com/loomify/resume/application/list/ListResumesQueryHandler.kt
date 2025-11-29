@@ -2,8 +2,8 @@ package com.loomify.resume.application.list
 
 import com.loomify.common.domain.Service
 import com.loomify.common.domain.bus.query.QueryHandler
-import com.loomify.engine.workspace.application.security.WorkspaceAuthorizationService
 import com.loomify.resume.application.ResumeDocumentResponses
+import com.loomify.workspace.application.security.WorkspaceAuthorizationService
 import org.slf4j.LoggerFactory
 
 /**

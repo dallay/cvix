@@ -1,7 +1,6 @@
 package com.loomify
 
-import com.loomify.engine.ReplaceCamelCase
-import com.loomify.engine.authentication.infrastructure.TestSecurityConfiguration
+import com.loomify.authentication.infrastructure.TestSecurityConfiguration
 import java.lang.annotation.Inherited
 import org.junit.jupiter.api.DisplayNameGeneration
 import org.junit.jupiter.api.Tag

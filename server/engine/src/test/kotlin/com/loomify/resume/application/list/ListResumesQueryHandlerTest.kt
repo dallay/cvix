@@ -2,8 +2,8 @@ package com.loomify.resume.application.list
 
 import com.github.dockerjava.api.exception.UnauthorizedException
 import com.loomify.UnitTest
-import com.loomify.engine.workspace.application.security.WorkspaceAuthorizationService
 import com.loomify.resume.ResumeTestFixtures
+import com.loomify.workspace.application.security.WorkspaceAuthorizationService
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

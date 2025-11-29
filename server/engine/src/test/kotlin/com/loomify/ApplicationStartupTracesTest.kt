@@ -3,7 +3,6 @@ package com.loomify
 import ch.qos.logback.classic.Logger
 import com.loomify.ApplicationStartupTraces.initApplication
 import com.loomify.ApplicationStartupTraces.of
-import com.loomify.engine.TestAppender
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
