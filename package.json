@@ -35,7 +35,7 @@
   "scripts": {
     "update-deps": "pnpm update -i -r --latest",
     "preinstall": "npx only-allow pnpm",
-    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
+    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && (command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply'); fi",
     "ruler:check": "ruler check",
     "ruler:apply": "ruler apply",
     "dev": "pnpm --recursive --parallel run dev",
@@ -60,7 +60,7 @@
     "backend:clean": "./gradlew clean",
     "start": "run-p backend:run dev",
     "test:all": "pnpm --recursive run test && pnpm run backend:test",
-    "precommit": "pnpm run ruler:apply"
+    "precommit": "(command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply')"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.7",

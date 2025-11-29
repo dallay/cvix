@@ -33,11 +33,23 @@ build/
 # Ignore test coverage
 coverage/
 
+# Ignore test directories
+test/
+tests/
+__tests__/
+spec/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore additional CI files
+.circleci/
 # Ignore pnpm store
 .pnpm-store/
 
 # Ignore frontend build artifacts
-client/**/dist/
+# (Note: top-level 'dist/' and 'node_modules/' already cover these patterns)
 client/**/.output/
 client/**/.next/
 client/**/.astro/
@@ -45,4 +57,3 @@ client/**/.svelte-kit/
 client/**/.cache/
 client/**/.parcel-cache/
 client/**/coverage/
-client/**/node_modules/
