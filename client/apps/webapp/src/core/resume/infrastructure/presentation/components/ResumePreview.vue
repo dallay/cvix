@@ -50,6 +50,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasWork"
           :title="t('resume.preview.sections.experience')"
           @click="emit('navigate-section', 'work')"
+          data-section="work"
         >
           <div class="space-y-4">
             <ResumePreviewWork
@@ -57,6 +58,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`work-${index}`"
               :work="work"
               @click.stop="emit('navigate-section', 'work', index)"
+              :data-section="'work'"
+              :data-entry-id="index"
             />
           </div>
         </ResumePreviewSection>
@@ -64,6 +67,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasEducation"
           :title="t('resume.preview.sections.education')"
           @click="emit('navigate-section', 'education')"
+          data-section="education"
         >
           <div class="space-y-4">
             <ResumePreviewEducation
@@ -71,6 +75,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`edu-${index}`"
               :education="edu"
               @click.stop="emit('navigate-section', 'education', index)"
+              :data-section="'education'"
+              :data-entry-id="index"
             />
           </div>
         </ResumePreviewSection>
@@ -85,6 +91,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasProjects"
           :title="t('resume.preview.sections.projects')"
           @click="emit('navigate-section', 'projects')"
+          data-section="projects"
         >
           <div class="space-y-4">
             <ResumePreviewProjects
@@ -92,6 +99,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`project-${index}`"
               :project="project"
               @click.stop="emit('navigate-section', 'projects', index)"
+              :data-section="'projects'"
+              :data-entry-id="index"
             />
           </div>
         </ResumePreviewSection>
@@ -106,6 +115,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasVolunteer"
           :title="t('resume.preview.sections.volunteer')"
           @click="emit('navigate-section', 'volunteer')"
+          data-section="volunteer"
         >
           <div class="space-y-4">
             <div
@@ -113,6 +123,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`volunteer-${index}`"
               class="space-y-1"
               @click.stop="emit('navigate-section', 'volunteer', index)"
+              :data-section="'volunteer'"
+              :data-entry-id="index"
             >
               <div class="flex justify-between items-baseline">
                 <h4 class="font-medium text-foreground">{{ vol.position }}</h4>
@@ -132,6 +144,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasCertificates"
           :title="t('resume.preview.sections.certificates')"
           @click="emit('navigate-section', 'certificates')"
+          data-section="certificates"
         >
           <div class="space-y-2">
             <div
@@ -139,6 +152,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`cert-${index}`"
               class="flex justify-between items-baseline"
               @click.stop="emit('navigate-section', 'certificates', index)"
+              :data-section="'certificates'"
+              :data-entry-id="index"
             >
               <div>
                 <h4 class="font-medium text-foreground">{{ cert.name }}</h4>
@@ -152,6 +167,7 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
           v-if="hasAwards"
           :title="t('resume.preview.sections.awards')"
           @click="emit('navigate-section', 'awards')"
+          data-section="awards"
         >
           <div class="space-y-3">
             <div
@@ -159,6 +175,8 @@ const hasAwards = computed(() => props.data.awards?.length > 0);
               :key="`award-${index}`"
               class="space-y-1"
               @click.stop="emit('navigate-section', 'awards', index)"
+              :data-section="'awards'"
+              :data-entry-id="index"
             >
               <div class="flex justify-between items-baseline">
                 <h4 class="font-medium text-foreground">{{ award.title }}</h4>

@@ -74,6 +74,7 @@ async function handleSubmit(event: Event) {
 			description: t("resume.toast.saveSuccess.description"),
 		});
 	} catch (error) {
+		console.error("Error submitting resume:", error);
 		toast.error(t("resume.toast.saveError.title"), {
 			description: t("resume.toast.saveError.description"),
 		});
@@ -98,6 +99,7 @@ async function handleGeneratePdf() {
 			description: t("resume.toast.pdfSuccess.description"),
 		});
 	} catch (error) {
+		console.error("Error generating PDF:", error);
 		toast.error(t("resume.toast.pdfError.title"), {
 			description:
 				generationError.value?.detail || t("resume.toast.pdfError.description"),

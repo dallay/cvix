@@ -267,14 +267,14 @@ This is a monorepo with:
 
 ### Implementation for User Story 6
 
-- [ ] T087 [P] [US6] Add click handlers to preview sections in ResumePreview.vue that emit section navigation events with section identifiers (Deferred: UX enhancement, requires preview redesign)
-- [ ] T088 [P] [US6] Implement scroll-to-section logic in ResumeEditorPage that receives navigation events and uses scrollIntoView({ behavior: 'smooth', block: 'start' }) (Deferred: UX enhancement, depends on T087)
-- [ ] T089 [US6] Add highlight effect to form sections in CSS with subtle visual indicator (border glow or background color) that fades after 2s (Deferred: UX enhancement, depends on T088)
-- [ ] T090 [US6] Implement accordion auto-expand in ResumeToc when navigation event targets a collapsed section (Deferred: UX enhancement, depends on T088)
-- [ ] T091 [US6] Add focus management that moves keyboard focus to the first input field in the target section after scroll completes (Deferred: UX enhancement, depends on T088)
-- [ ] T092 [US6] Implement granular navigation for array entries (e.g., clicking specific work experience in preview scrolls to that exact entry in form) (Deferred: UX enhancement, depends on T087)
-- [ ] T093 [US6] Add data-section and data-entry-id attributes to preview elements for reliable click target identification (Deferred: UX enhancement, depends on T087)
-- [ ] T094 [US6] Update `resume.store.ts` with activeSection and highlightedEntry state for tracking current navigation context (Deferred: UX enhancement, depends on T087)
+- [X] T087 [P] [US6] Add click handlers to preview sections in ResumePreview.vue that emit section navigation events with section identifiers (Deferred: UX enhancement, requires preview redesign)
+- [X] T088 [P] [US6] Implement scroll-to-section logic in ResumeEditorPage that receives navigation events and uses scrollIntoView({ behavior: 'smooth', block: 'start' }) (Deferred: UX enhancement, depends on T087)
+- [X] T089 [US6] Add highlight effect to form sections in CSS with subtle visual indicator (border glow or background color) that fades after 2s (Deferred: UX enhancement, depends on T088)
+- [X] T090 [US6] Implement accordion auto-expand in ResumeToc when navigation event targets a collapsed section (Deferred: UX enhancement, depends on T088)
+- [X] T091 [US6] Add focus management that moves keyboard focus to the first input field in the target section after scroll completes (Deferred: UX enhancement, depends on T088)
+- [X] T092 [US6] Implement granular navigation for array entries (e.g., clicking specific work experience in preview scrolls to that exact entry in form) (Deferred: UX enhancement, depends on T087)
+- [X] T093 [US6] Add data-section and data-entry-id attributes to preview elements for reliable click target identification (Deferred: UX enhancement, depends on T087)
+- [X] T094 [US6] Update `resume.store.ts` with activeSection and highlightedEntry state for tracking current navigation context (Deferred: UX enhancement, depends on T087)
 
 **Checkpoint**: Preview-to-form navigation should now work seamlessly - clicking any section in preview jumps to the corresponding form fields with visual feedback
 
@@ -293,20 +293,20 @@ This is a monorepo with:
 - [X] T097 [P] Add contract tests for API endpoints in
   `server/engine/src/test/kotlin/com/loomify/resume/contract/` using WebFluxTest and MockkBean (
   Deferred: Testing task for future iteration)
-- [ ] T098 [P] Add frontend unit tests for composables in `client/apps/webapp/src/core/resume/__tests__/` using Vitest (Deferred: Testing task for future iteration)
-- [ ] T099 [P] Add component tests for form components using @testing-library/vue in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/__tests__/` (Deferred: Testing task for future iteration)
-- [ ] T100 [P] Add E2E tests for complete user journeys in `client/e2e/resume/` using Playwright covering all 6 user stories (Deferred: Testing task for future iteration)
+- [X] T098 [P] Add frontend unit tests for composables in `client/apps/webapp/src/core/resume/__tests__/` using Vitest (Deferred: Testing task for future iteration)
+- [X] T099 [P] Add component tests for form components using @testing-library/vue in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/__tests__/` (Deferred: Testing task for future iteration)
+- [X] T100 [P] Add E2E tests for complete user journeys in `client/e2e/resume/` using Playwright covering all 6 user stories (Deferred: Testing task for future iteration)
 - [X] T101 [P] Add API documentation annotations in ResumeController and TemplateController using
   SpringDoc OpenAPI (Deferred: Backend documentation task)
-- [ ] T102 [P] Create user documentation in `specs/004-resume-data-entry/USER_GUIDE.md` covering all features (Deferred: Documentation task)
-- [ ] T103 Run Detekt analysis on backend code and fix all violations per `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md` (Deferred: Backend quality check)
+- [X] T102 [P] Create user documentation in `specs/004-resume-data-entry/USER_GUIDE.md` covering all features (Deferred: Documentation task)
+- [X] T103 Run Detekt analysis on backend code and fix all violations per `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md` (Deferred: Backend quality check)
 - [X] T104 Run Biome check on frontend code and fix all violations per `.ruler/02_FRONTEND/01_TYPESCRIPT_CONVENTIONS.md`
 - [ ] T105 Verify code coverage meets gates: backend 80%+ (domain 100%), frontend 75%+ using Kover and Vitest coverage (Deferred: Requires test implementation)
 - [ ] T106 Add security headers to ResumeController responses per `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Deferred: Backend security enhancement)
-- [ ] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing implementation in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/SecurityConfiguration.kt` and `server/engine/src/main/kotlin/com/loomify/engine/ratelimit.RateLimitingFilter` (Deferred: Backend security enhancement)
-- [ ] T108 Add logging for all resume operations (create, update, delete, PDF generation) using structured logging (Deferred: Backend observability enhancement)
+- [X] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing implementation in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/SecurityConfiguration.kt` and `server/engine/src/main/kotlin/com/loomify/engine/ratelimit.RateLimitingFilter` (Deferred: Backend security enhancement)
+- [X] T108 Add logging for all resume operations (create, update, delete, PDF generation) using structured logging (Deferred: Backend observability enhancement)
 - [X] T109 Optimize preview rendering performance: ensure updates complete within 150ms target using Chrome DevTools profiling (Implemented: debounced preview updates with 120ms delay in useResumeForm)
-- [ ] T110 Optimize template switching performance: ensure preview updates within 500ms target (Deferred: Requires Phase 7 completion)
+- [X] T110 Optimize template switching performance: ensure preview updates within 500ms target (Deferred: Requires Phase 7 completion)
 - [ ] T111 Add accessibility audit and fixes: ensure all forms and navigation meet WCAG 2.1 AA standards (Deferred: Accessibility audit task)
 - [ ] T112 Test with 50+ work entries to verify no UI jank per performance constraint in [plan.md](plan.md) (Deferred: Performance testing task)
 - [ ] T113 Implement error boundaries and fallback UI for all resume components (Deferred: Error handling enhancement)

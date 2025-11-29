@@ -316,7 +316,12 @@ function cancelReset() {
 // Ref to ResumeForm instance
 const resumeFormRef = ref();
 
-function handlePreviewNavigate(section: string) {
+/**
+ * Handles navigation from preview to form section or entry
+ * @param section - section name
+ * @param entryIndex - optional array entry index
+ */
+function handlePreviewNavigate(section: string, entryIndex?: number) {
 	nextTick(() => {
 		const formEl = resumeFormRef.value?.$el;
 		if (!formEl) return;
@@ -336,10 +341,26 @@ function handlePreviewNavigate(section: string) {
 		};
 		const refName = sectionMap[section];
 		if (!refName) return;
-		const target = formEl.querySelector(`[ref='${refName}']`);
+		let target: HTMLElement | null = null;
+		// If entryIndex is provided, look for array entry
+		if (typeof entryIndex === "number") {
+			// Try to find entry by data-entry-id
+			target = formEl.querySelector(
+				`[ref='${refName}'] [data-entry-id='${entryIndex}']`,
+			);
+		}
+		// Fallback to section root
+		if (!target) {
+			target = formEl.querySelector(`[ref='${refName}']`);
+		}
 		if (target) {
 			target.scrollIntoView({ behavior: "smooth", block: "start" });
 			target.classList.add("section-highlight");
+			// Move focus to first input in section/entry
+			const input = target.querySelector("input, textarea, select, [tabindex]");
+			if (input) {
+				(input as HTMLElement).focus();
+			}
 			setTimeout(() => target.classList.remove("section-highlight"), 2000);
 		}
 	});
