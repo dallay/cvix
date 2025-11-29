@@ -23,7 +23,7 @@ class SecurityHeadersWebFilter(
             ) {
                 headers.add(
                     "Content-Security-Policy",
-                    applicationSecurityProperties.contentSecurityPolicy
+                    applicationSecurityProperties.contentSecurityPolicy,
                 )
             }
             if (!headers.containsKey("X-Content-Type-Options")) {
