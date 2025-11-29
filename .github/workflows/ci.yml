@@ -233,7 +233,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@c2164b641fa929a960da224ea4a47b7930eadaa1
+        uses: mongolyy/reviewdog-action-biome@b4c782dce3ab3e02c475c3e2f798b7955f067cc8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: ./client
