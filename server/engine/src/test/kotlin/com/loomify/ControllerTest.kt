@@ -1,7 +1,7 @@
 package com.loomify
 
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.controllers.GlobalExceptionHandler
+import com.loomify.controllers.GlobalExceptionHandler
 import com.loomify.spring.boot.ApiController
 import io.mockk.every
 import io.mockk.mockk

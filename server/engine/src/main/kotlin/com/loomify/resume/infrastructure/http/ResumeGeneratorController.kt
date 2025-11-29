@@ -1,7 +1,7 @@
 package com.loomify.resume.infrastructure.http
 
+import com.loomify.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.common.domain.bus.Mediator
-import com.loomify.engine.authentication.infrastructure.ApplicationSecurityProperties
 import com.loomify.resume.application.generate.GenerateResumeCommand
 import com.loomify.resume.domain.Locale
 import com.loomify.resume.infrastructure.http.mapper.ResumeRequestMapper

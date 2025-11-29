@@ -481,7 +481,9 @@ Create language-specific template variables:
 
 **Existing Implementation**:
 
-The project already has **Bucket4j** implemented in the authentication module (`com.loomify.engine.ratelimit`). This is the **recommended approach** to maintain consistency across the codebase.
+The project already has **Bucket4j** implemented in the authentication module (
+`com.loomify.ratelimit`). This is the **recommended approach** to maintain consistency across the
+codebase.
 
 **Bucket4j Architecture** (already in use):
 

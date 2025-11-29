@@ -1,6 +1,5 @@
 package com.loomify
 
-import com.loomify.engine.AppConstants
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.*
