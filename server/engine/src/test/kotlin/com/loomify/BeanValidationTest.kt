@@ -76,7 +76,7 @@ internal class BeanValidationTest {
                         .`as`(errorMessage(method, parameter))
                         .anyMatch { annotation: Annotation ->
                             annotation.annotationClass.java == Validated::class.java ||
-                                    annotation.annotationClass.java == Valid::class.java
+                                annotation.annotationClass.java == Valid::class.java
                         }
                 }
         }

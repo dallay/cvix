@@ -39,7 +39,7 @@ open class LoggingAspect(private val env: Environment) {
      */
     @Pointcut(
         "within(com.loomify..*)" +
-                " || within(com.loomify..*)",
+            " || within(com.loomify..*)",
     )
     fun applicationPackagePointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.
