@@ -48,7 +48,7 @@ class CommandHandlerTest {
         assertNotNull(exception)
         assertEquals(
             "handler could not be found for com.cvix.spring.boot.NonExistCommand",
-            exception.message
+            exception.message,
         )
     }
 }
