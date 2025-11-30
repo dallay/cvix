@@ -52,8 +52,43 @@ interface UserResponse {
  * Extends BaseHttpClient with authentication-specific logic
  */
 export class AuthHttpClient extends BaseHttpClient {
-	constructor(baseURL = import.meta.env.VITE_API_BASE_URL || "/api") {
-		super({ baseURL });
+	/**
+	 * Construct the AuthHttpClient.
+	 * Reads only BACKEND_URL from environment variables.
+	 */
+	constructor(baseURL?: string) {
+		const envRecord = import.meta.env as unknown as Record<string, unknown>;
+		const backend = envRecord.BACKEND_URL as string | undefined;
+
+		// Prioritize explicit baseURL, fallback to BACKEND_URL, then default
+		const candidate = baseURL ?? backend ?? "/api";
+
+		// Ensure /api path is appended if needed
+		function ensureApiPath(urlCandidate: string): string {
+			try {
+				if (/^https?:\/\//i.test(urlCandidate)) {
+					const u = new URL(urlCandidate);
+					if (
+						u.pathname &&
+						u.pathname.split("/").filter(Boolean)[0] === "api"
+					) {
+						return urlCandidate.replace(/\/$/, "");
+					}
+					return new URL("/api", u.origin).toString().replace(/\/$/, "");
+				}
+				return urlCandidate;
+			} catch (err) {
+				console.warn(
+					"[AuthHttpClient] ensureApiPath parse failed for",
+					urlCandidate,
+					err,
+				);
+				return urlCandidate;
+			}
+		}
+
+		const resolvedBase = ensureApiPath(candidate);
+		super({ baseURL: resolvedBase });
 	}
 
 	/**

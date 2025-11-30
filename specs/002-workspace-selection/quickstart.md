@@ -213,7 +213,7 @@ Configure the backend API endpoint:
 
 ```bash
 # .env.local
-VITE_API_BASE_URL=http://localhost:8080/api
+BACKEND_URL=https://localhost:8443
 ```
 
 ### Local Storage

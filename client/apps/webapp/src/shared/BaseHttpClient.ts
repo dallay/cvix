@@ -51,8 +51,9 @@ export class BaseHttpClient {
 	protected readonly baseURL: string;
 
 	constructor(config: HttpClientConfig = {}) {
-		this.baseURL =
-			config.baseURL || import.meta.env.VITE_API_BASE_URL || "/api";
+		const envRecord = import.meta.env as unknown as Record<string, unknown>;
+		const backend = envRecord.BACKEND_URL as string | undefined;
+		this.baseURL = (config.baseURL || backend) ?? "/api";
 
 		this.client = axios.create({
 			baseURL: this.baseURL,
