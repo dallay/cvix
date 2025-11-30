@@ -22,32 +22,45 @@
 
 - [X] T011 [US1] Create registration form component in `client/apps/webapp/src/authentication/presentation/components/RegisterForm.vue`
 - [X] T012 [US1] Implement real-time validation logic using VeeValidate in `client/apps/webapp/src/authentication/domain/validators/auth.schema.ts`
-- [X] T013 [US1] Create `RegisterUserCommand` in `server/engine/src/main/kotlin/com/loomify/engine/users/application/register/RegisterUserCommand.kt`
-- [X] T014 [US1] Implement `RegisterUserCommandHandler` in `server/engine/src/main/kotlin/com/loomify/engine/users/application/register/RegisterUserCommandHandler.kt`
-- [X] T015 [US1] Add `/api/auth/register` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/users/infrastructure/http/UserRegisterController.kt`
-- [X] T016 [US1] Write integration tests for registration flow in `server/engine/src/test/kotlin/com/loomify/engine/users`
+- [X] T013 [US1] Create `RegisterUserCommand` in
+  `server/engine/src/main/kotlin/com/cvix/engine/users/application/register/RegisterUserCommand.kt`
+- [X] T014 [US1] Implement `RegisterUserCommandHandler` in
+  `server/engine/src/main/kotlin/com/cvix/engine/users/application/register/RegisterUserCommandHandler.kt`
+- [X] T015 [US1] Add `/api/auth/register` endpoint in
+  `server/engine/src/main/kotlin/com/cvix/engine/users/infrastructure/http/UserRegisterController.kt`
+- [X] T016 [US1] Write integration tests for registration flow in
+  `server/engine/src/test/kotlin/com/cvix/engine/users`
 
 ### Phase 4: User Story 2 - User Login with Email/Password (P1)
 
 - [X] T017 [US2] Create login form component in `client/apps/webapp/src/authentication/presentation/components/LoginForm.vue`
 - [X] T018 [US2] Implement login logic using Axios in `client/apps/webapp/src/authentication/infrastructure/http/AuthHttpClient.ts`
-- [X] T019 [US2] Create `LoginUserQuery` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/query/AuthenticateUserQuery.kt`
-- [X] T020 [US2] Implement `AuthenticateUserQueryHandler` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/AuthenticateUserQueryHandler.kt`
-- [X] T021 [US2] Add `/api/auth/login` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserAuthenticatorController.kt`
-- [X] T022 [US2] Write integration tests for login flow in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
+- [X] T019 [US2] Create `LoginUserQuery` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/query/AuthenticateUserQuery.kt`
+- [X] T020 [US2] Implement `AuthenticateUserQueryHandler` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/AuthenticateUserQueryHandler.kt`
+- [X] T021 [US2] Add `/api/auth/login` endpoint in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/infrastructure/http/UserAuthenticatorController.kt`
+- [X] T022 [US2] Write integration tests for login flow in
+  `server/engine/src/test/kotlin/com/cvix/engine/authentication`
 
 ### Phase 5: User Story 3 - Federated Identity Provider Login (P2)
 
 - [X] T023 [US3] Add federated login buttons to `LoginForm.vue`
-- [X] T024 [US3] Implement Keycloak OIDC integration for federated login in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/keycloak`
-- [X] T025 [US3] Write integration tests for federated login in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
+- [X] T024 [US3] Implement Keycloak OIDC integration for federated login in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/infrastructure/keycloak`
+- [X] T025 [US3] Write integration tests for federated login in
+  `server/engine/src/test/kotlin/com/cvix/engine/authentication`
 
 ### Phase 6: User Story 4 - Session Token Management and Refresh (P2)
 
 - [X] T026 [US4] Implement token refresh logic in `client/apps/webapp/src/authentication/infrastructure/http/AuthHttpClient.ts`
-- [X] T027 [US4] Create `RefreshTokenQuery` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/query/RefreshTokenQuery.kt`
-- [X] T028 [US4] Implement `RefreshTokenQueryHandler` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/RefreshTokenQueryHandler.kt`
-- [X] T029 [US4] Write integration tests for token refresh in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
+- [X] T027 [US4] Create `RefreshTokenQuery` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/query/RefreshTokenQuery.kt`
+- [X] T028 [US4] Implement `RefreshTokenQueryHandler` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/RefreshTokenQueryHandler.kt`
+- [X] T029 [US4] Write integration tests for token refresh in
+  `server/engine/src/test/kotlin/com/cvix/engine/authentication`
 
 ### Phase 7: User Story 5 - Session Recovery and Persistence (P3)
 
@@ -63,10 +76,14 @@
 
 - [X] T032 [US6] Create logout button component (integrated in DashboardPage.vue)
 - [X] T033 [US6] Implement logout logic in `client/apps/webapp/src/authentication/infrastructure/http/AuthHttpClient.ts`
-- [X] T034 [US6] Create `LogoutUserCommand` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/logout/UserLogoutCommand.kt`
-- [X] T035 [US6] Implement `LogoutUserCommandHandler` in `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/logout/UserLogoutCommandHandler.kt`
-- [X] T036 [US6] Add `/api/auth/logout` endpoint in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/http/UserLogoutController.kt`
-- [X] T037 [US6] Write integration tests for logout flow in `server/engine/src/test/kotlin/com/loomify/engine/authentication`
+- [X] T034 [US6] Create `LogoutUserCommand` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/logout/UserLogoutCommand.kt`
+- [X] T035 [US6] Implement `LogoutUserCommandHandler` in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/logout/UserLogoutCommandHandler.kt`
+- [X] T036 [US6] Add `/api/auth/logout` endpoint in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/infrastructure/http/UserLogoutController.kt`
+- [X] T037 [US6] Write integration tests for logout flow in
+  `server/engine/src/test/kotlin/com/cvix/engine/authentication`
 
 ### Final Phase: Polish & Cross-Cutting Concerns
 

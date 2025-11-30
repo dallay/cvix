@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired
 @IntegrationTest
 class KeycloakAuthenticatorRepositoryIntegrationTest : InfrastructureTestContainers() {
     // this user is created by default in Keycloak container (see demo-realm-test.json)
-    private val email = "john.doe@loomify.com"
+    private val email = "john.doe@cvix.com"
     private val username = "john.doe"
     private val password = "S3cr3tP@ssw0rd*123"
 

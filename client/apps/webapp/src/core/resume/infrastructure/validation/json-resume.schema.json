@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://loomify.com/schemas/json-resume-v1.0.0.json",
+	"$id": "https://cvix.com/schemas/json-resume-v1.0.0.json",
 	"additionalProperties": true,
 	"definitions": {
 		"iso8601": {

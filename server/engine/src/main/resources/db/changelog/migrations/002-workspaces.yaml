@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003-create-workspaces
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: workspaces
@@ -53,7 +53,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 004-create-workspace-members
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: workspace_members

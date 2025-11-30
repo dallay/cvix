@@ -119,8 +119,8 @@ interface WorkspaceState {
 
 ```typescript
 const STORAGE_KEYS = {
-  LAST_SELECTED_WORKSPACE: 'loomify:workspace:lastSelected',
-  WORKSPACE_CACHE: 'loomify:workspace:cache', // Optional: cache workspace list
+  LAST_SELECTED_WORKSPACE: 'cvix:workspace:lastSelected',
+  WORKSPACE_CACHE: 'cvix:workspace:cache', // Optional: cache workspace list
 } as const;
 ```
 

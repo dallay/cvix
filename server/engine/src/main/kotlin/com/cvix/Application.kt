@@ -22,12 +22,12 @@ import org.springframework.scheduling.annotation.EnableScheduling
         ),
     ],
 )
-class LoomifyApplication
+class Application
 
-private val log: Logger = LoggerFactory.getLogger(LoomifyApplication::class.java)
+private val log: Logger = LoggerFactory.getLogger(Application::class.java)
 
 fun main(args: Array<String>) {
-    val environment = runApplication<LoomifyApplication>(args = args).environment
+    val environment = runApplication<Application>(args = args).environment
     initApplication(environment)
 
     if (log.isInfoEnabled) {

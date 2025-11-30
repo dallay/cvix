@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 @Tag("integration")
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    classes = [LoomifyApplication::class, TestSecurityConfiguration::class],
+    classes = [Application::class, TestSecurityConfiguration::class],
 )
 @ActiveProfiles("test")
 annotation class IntegrationTest(@get:AliasFor(annotation = SpringBootTest::class) val properties: Array<String> = [])

@@ -53,7 +53,7 @@ internal class CreateWorkspaceControllerIntegrationTest : ControllerIntegrationT
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.type").isEqualTo("https://loomify.com/errors/bad-request")
+            .jsonPath("$.type").isEqualTo("https://cvix.com/errors/bad-request")
             .jsonPath("$.title").isEqualTo("Bad request")
             .jsonPath("$.status").isEqualTo(400)
             .jsonPath("$.detail").isEqualTo("Error creating workspace")

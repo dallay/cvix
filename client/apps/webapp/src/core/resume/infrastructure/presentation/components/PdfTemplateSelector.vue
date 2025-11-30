@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { isEqual } from "@loomify/utilities";
+import { isEqual } from "@cvix/utilities";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Label } from "@/components/ui/label";

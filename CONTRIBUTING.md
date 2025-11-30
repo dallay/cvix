@@ -1,4 +1,4 @@
-# Contributing to loomify
+# Contributing to cvix
 
 Thanks for your interest! This guide summarizes how to set up the environment, run tests, and open high-quality PRs.
 

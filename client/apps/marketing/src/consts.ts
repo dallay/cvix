@@ -3,8 +3,8 @@
 
 import type {Multilingual} from "@/i18n";
 
-export const BRAND_NAME: string | Multilingual = "Loomify";
-export const SITE_TITLE: string | Multilingual = "Loomify";
+export const BRAND_NAME: string | Multilingual = "ProFileTailors";
+export const SITE_TITLE: string | Multilingual = "ProFileTailors";
 
 export const SITE_DESCRIPTION: string | Multilingual = {
 	en: "Weekly tech news digest delivered every Friday, plus a comprehensive catalog of resources for developers and tech enthusiasts.",

@@ -68,7 +68,7 @@ specs/004-resume-data-entry/
 server/
 └── engine/
   └── src/
-    ├── main/kotlin/com/loomify/resume/
+    ├── main/kotlin/com/cvix/resume/
     │   ├── domain/               # Entities, value objects, ports
     │   ├── application/          # Use cases (CQRS)
     │   └── infrastructure/
@@ -76,7 +76,7 @@ server/
     │       ├── persistence/      # R2DBC repos, JSONB mapping
     │       ├── pdf/              # LaTeX template service adapter
     │       └── config/           # Beans, security
-    └── test/kotlin/com/loomify/resume/
+    └── test/kotlin/com/cvix/resume/
         ├── unit/
         ├── integration/
         └── contract/

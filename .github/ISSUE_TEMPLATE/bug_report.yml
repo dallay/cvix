@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible issue in loomify
+description: Report a reproducible issue in cvix
 title: "fix: [area] concise bug description"
 labels: ["type:bug", "needs-triage"]
 assignees: []

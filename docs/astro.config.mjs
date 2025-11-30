@@ -1,9 +1,9 @@
 // @ts-check
 
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import {readFileSync} from "node:fs";
+import {fileURLToPath} from "node:url";
 import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
+import {defineConfig} from "astro/config";
 import mermaid from "astro-mermaid";
 
 const patchedRoutingDataPath = fileURLToPath(
@@ -24,7 +24,7 @@ export default defineConfig({
 			autoTheme: true,
 		}),
 		starlight({
-			title: "Loomify",
+			title: "ProFileTailors",
 			logo: {
 				light: "./src/assets/light-isotype.svg",
 				dark: "./src/assets/dark-isotype.svg",
@@ -76,7 +76,7 @@ export default defineConfig({
 	vite: {
 		plugins: [
 			{
-				name: "loomify-starlight-404-patch",
+				name: "cvix-starlight-404-patch",
 				enforce: "pre",
 				load(id) {
 					const normalizedId = id.replaceAll("\\", "/");

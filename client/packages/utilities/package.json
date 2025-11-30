@@ -1,11 +1,11 @@
 {
-	"name": "@loomify/utilities",
+	"name": "@cvix/utilities",
 	"version": "0.0.1",
-	"description": "A collection of utilities for the Loomify",
+	"description": "A collection of utilities for the ProFileTailors",
 	"license": "MIT",
 	"type": "module",
 	"homepage": "https://example.com",
-	"author": "Loomify",
+	"author": "ProFileTailors",
 	"engines": {
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
@@ -29,7 +29,7 @@
 		"dist"
 	],
 	"keywords": [
-		"Loomify",
+		"ProFileTailors",
 		"utilities"
 	],
 	"repository": {
@@ -63,8 +63,8 @@
 	},
 	"devDependencies": {
 		"@internationalized/date": "^3.10.0",
-		"@loomify/config": "workspace:*",
-		"@loomify/tsconfig": "workspace:*",
+		"@cvix/config": "workspace:*",
+		"@cvix/tsconfig": "workspace:*",
     "@vitest/coverage-v8": "^4.0.14",
 		"npm-run-all2": "^8.0.4",
 		"rimraf": "^6.1.2",

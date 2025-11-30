@@ -1,6 +1,7 @@
 # Docker Composition Actions
 
-This directory contains specialized Docker composition actions for building and pushing Docker images for different application types in the loomify project.
+This directory contains specialized Docker composition actions for building and pushing Docker
+images for different application types in the cvix project.
 
 ## Available Actions
 

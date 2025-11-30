@@ -8,6 +8,9 @@ import type { PluginOption } from "vite";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
+// Make backend proxy target configurable via BACKEND_URL env var (fallback: http://localhost:8080)
+const backendTarget: string =
+	process.env.BACKEND_URL ?? "http://localhost:8080";
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [
@@ -35,7 +38,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		exclude: ["@loomify/utilities"],
+		exclude: ["@cvix/utilities"],
 	},
 	define: {
 		I18N_HASH: '"generated_hash"',
@@ -47,7 +50,7 @@ export default defineConfig({
 		port: 9876,
 		proxy: {
 			"/api": {
-				target: "http://localhost:8080",
+				target: backendTarget,
 				secure: false,
 				changeOrigin: true,
 				ws: true,
@@ -71,7 +74,7 @@ export default defineConfig({
 				},
 			},
 			"/actuator": {
-				target: "http://localhost:8080",
+				target: backendTarget,
 				secure: false,
 				changeOrigin: true,
 				cookieDomainRewrite: {
@@ -79,7 +82,7 @@ export default defineConfig({
 				},
 			},
 			"/oauth2": {
-				target: "http://localhost:8080",
+				target: backendTarget,
 				secure: false,
 				changeOrigin: true,
 				cookieDomainRewrite: {
@@ -87,7 +90,7 @@ export default defineConfig({
 				},
 			},
 			"/v3/api-docs": {
-				target: "http://localhost:8080",
+				target: backendTarget,
 				secure: false,
 				changeOrigin: true,
 				cookieDomainRewrite: {

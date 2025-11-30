@@ -57,7 +57,7 @@ interface WorkspaceSelectionPreference {
 **Storage**:
 
 - Persisted in browser local storage
-- Key: `loomify:workspace:lastSelected`
+- Key: `cvix:workspace:lastSelected`
 - Value: JSON serialized WorkspaceSelectionPreference
 
 **Validation Rules**:
@@ -273,7 +273,7 @@ interface ErrorResponse {
 
 ### Last Selected Workspace
 
-**Key**: `loomify:workspace:lastSelected`
+**Key**: `cvix:workspace:lastSelected`
 
 **Value**:
 

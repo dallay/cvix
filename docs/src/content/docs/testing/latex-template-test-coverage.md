@@ -9,7 +9,8 @@ This document describes the comprehensive test suite for LaTeX resume template r
 
 ## Test Suite Summary
 
-**Location**: `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
+**Location**:
+`server/engine/src/test/kotlin/com/cvix/resume/infrastructure/template/LatexTemplateRendererTest.kt`
 
 **Total Tests**: 9 test methods (13 test executions) covering all critical scenarios
 
@@ -114,7 +115,8 @@ This document describes the comprehensive test suite for LaTeX resume template r
 
 ### LaTeX Escaper
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/util/LatexEscaper.kt`
+**Location**:
+`server/engine/src/main/kotlin/com/cvix/resume/infrastructure/template/util/LatexEscaper.kt`
 
 Escapes all dangerous characters in user content:
 
@@ -148,7 +150,8 @@ Changed from nested math mode to simple text bullet:
 
 ### URL Renderer
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/renders/UrlRenderer.kt`
+**Location**:
+`server/engine/src/main/kotlin/com/cvix/resume/infrastructure/template/renders/UrlRenderer.kt`
 
 Handles URL escaping separately with format options:
 

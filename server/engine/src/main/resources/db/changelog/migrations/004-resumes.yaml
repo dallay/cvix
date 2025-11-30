@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 004-create-resumes-table
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: resumes

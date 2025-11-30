@@ -81,7 +81,7 @@ abstract class InfrastructureTestContainers {
         }
         private const val ADMIN_USER: String = "admin"
         private const val ADMIN_PASSWORD: String = "secret"
-        private const val REALM: String = "loomify"
+        private const val REALM: String = "cvix"
         private const val CLIENT_ID: String = "web_app"
         private const val ADMIN_CLI = "admin-cli"
         private const val ADMIN_REALM = "master"

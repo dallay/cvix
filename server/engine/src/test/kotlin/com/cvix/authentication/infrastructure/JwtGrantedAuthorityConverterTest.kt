@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.jose.jws.JwsAlgorithms
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
-private const val SUBJECT = "loomify"
+private const val SUBJECT = "cvix"
 
 @UnitTest
 @ExtendWith(SpringExtension::class)

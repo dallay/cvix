@@ -295,7 +295,7 @@ jobs:
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@2ba636726705b0f74f126ebeaacaf2ad4600b967
         with:
-          project: "Loomify-monorepo"
+          project: "ProFileTailors-monorepo"
           path: "."
           format: "HTML"
           args: >
@@ -358,7 +358,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
-          images: ghcr.io/${{ github.repository_owner }}/loomify/backend
+          images: ghcr.io/${{ github.repository_owner }}/cvix/backend
       - name: Build and push Docker image
         uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
@@ -395,7 +395,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
-          images: ghcr.io/${{ github.repository_owner }}/loomify/marketing
+          images: ghcr.io/${{ github.repository_owner }}/cvix/marketing
       - name: Build and push Docker image
         uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:
@@ -432,7 +432,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
-          images: ghcr.io/${{ github.repository_owner }}/loomify/webapp
+          images: ghcr.io/${{ github.repository_owner }}/cvix/webapp
       - name: Build and push Docker image
         uses: docker/build-push-action@c382f710d39a5bb4e430307530a720f50c2d3318 # v6.0.0
         with:

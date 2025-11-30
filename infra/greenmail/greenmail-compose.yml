@@ -3,7 +3,7 @@ services:
     image: greenmail/standalone:${GREENMAIL_VERSION}
     container_name: greenmail-${APP_NAME}
     environment:
-      - GREENMAIL_OPTS=-Dgreenmail.setup.test.all -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.auth.disabled -Dgreenmail.verbose -Dgreenmail.users=developer:secret@loomify.local
+      - GREENMAIL_OPTS=-Dgreenmail.setup.test.all -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.auth.disabled -Dgreenmail.verbose -Dgreenmail.users=developer:secret@cvix.local
     ports:
       - "3025:3025"   # SMTP
       - "3110:3110"   # POP3

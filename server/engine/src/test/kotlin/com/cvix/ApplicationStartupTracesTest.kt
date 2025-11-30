@@ -75,8 +75,8 @@ $SEPARATOR""",
     @Test
     fun shouldBuildTraceForEnvironmentWithApplicationName() {
         val environment = MockEnvironment()
-        environment.setProperty("spring.application.name", "loomify")
-        Assertions.assertThat(of(environment)).contains("  Application 'loomify' is running!")
+        environment.setProperty("spring.application.name", "cvix")
+        Assertions.assertThat(of(environment)).contains("  Application 'cvix' is running!")
     }
 
     @Test

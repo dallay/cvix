@@ -21,9 +21,9 @@ description: "Task list for Resume Data Entry Screen implementation"
 
 This is a monorepo with:
 
-- **Backend**: `server/engine/src/main/kotlin/com/loomify/resume/`
+- **Backend**: `server/engine/src/main/kotlin/com/cvix/resume/`
 - **Frontend**: `client/apps/webapp/src/core/resume/`
-- **Tests**: `server/engine/src/test/kotlin/com/loomify/resume/` and `client/e2e/`
+- **Tests**: `server/engine/src/test/kotlin/com/cvix/resume/` and `client/e2e/`
 
 ---
 
@@ -32,7 +32,8 @@ This is a monorepo with:
 **Purpose**: Project initialization and basic structure for resume feature
 
 - [X] T001 Create feature directory structure in `client/apps/webapp/src/core/resume/` with subdirectories: pages, components, stores, composables, types, validators
-- [X] T002 Create backend module structure in `server/engine/src/main/kotlin/com/loomify/resume/` with subdirectories: domain, application, infrastructure
+- [X] T002 Create backend module structure in `server/engine/src/main/kotlin/com/cvix/resume/` with
+  subdirectories: domain, application, infrastructure
 - [X] T003 [P] Download and pin JSON Resume schema v1.0.0 to `client/apps/webapp/src/core/resume/infrastructure/validation/json-resume.schema.json`. The version 1.0.0 is located at `docs/src/content/docs/json-resume/schema.json`
 - [X] T004 [P] Add frontend dependencies to `client/apps/webapp/package.json`: ajv@^8.0.0, ajv-formats@^3.0.0, ajv-errors@^3.0.0, libphonenumber-js@^1.10.0, idb-keyval@^6.2.0
 - [X] T005 [P] Add Liquibase migration script in `server/engine/src/main/resources/db/changelog/` to create resumes table with JSONB column
@@ -46,8 +47,14 @@ This is a monorepo with:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T007 Create Resume domain entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/Resume.kt` with all JSON Resume fields as Kotlin data classes
-- [X] T008 [P] Align existing value objects in `server/engine/src/main/kotlin/com/loomify/resume/domain/` with JSON Resume schema: ensure Basics, Profile, Work (WorkExperience), Education, Skill (SkillCategory), Project, Language, Certificate, Publication, Award, Volunteer, Reference match data-model.md specifications. Rename PersonalInfo to Basics for consistency with JSON Resume schema.
+- [X] T007 Create Resume domain entity in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/Resume.kt` with all JSON Resume fields as
+  Kotlin data classes
+- [X] T008 [P] Align existing value objects in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/` with JSON Resume schema: ensure Basics,
+  Profile, Work (WorkExperience), Education, Skill (SkillCategory), Project, Language, Certificate,
+  Publication, Award, Volunteer, Reference match data-model.md specifications. Rename PersonalInfo
+  to Basics for consistency with JSON Resume schema.
 
     ```text
     └── 📁domain
@@ -72,15 +79,27 @@ This is a monorepo with:
     └── WorkExperience.kt (align with Work model)
     ```
 
-- [X] T009 [P] Define ResumeRepository port interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/ResumeRepository.kt` with CRUD operations returning Mono/Flux
-- [X] T010 Implement R2DBC repository adapter in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/persistence/ResumeR2dbcRepository.kt` with JSONB mapping
+- [X] T009 [P] Define ResumeRepository port interface in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/ResumeRepository.kt` with CRUD operations
+  returning Mono/Flux
+- [X] T010 Implement R2DBC repository adapter in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/persistence/ResumeR2dbcRepository.kt`
+  with JSONB mapping
 - [X] T011 [P] Create TypeScript types in `client/apps/webapp/src/core/resume/domain/Resume.ts` matching JSON Resume schema (already exists ✓)
 - [X] T012 [P] Setup Ajv validator instance in `client/apps/webapp/src/core/resume/infrastructure/validation/JsonResumeValidator.ts` with schema loading and error formatting (already exists ✓)
 - [X] T013 Create base Pinia store in `client/apps/webapp/src/core/resume/infrastructure/store/resume.store.ts` with state structure for Resume type and loading/error states (already exists ✓)
-- [X] T014 Create dedicated ResumeSecurityConfig in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/config/ResumeSecurityConfig.kt` to configure security rules for /api/resume endpoints with JWT authentication, following Hexagonal Architecture by keeping resume-specific security configuration within the resume module (do not modify core SecurityConfiguration.kt)
-- [X] T015 Create TemplateMetadata domain entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateMetadata.kt`
-- [X] T016 [P] Define TemplateRepository port in `server/engine/src/main/kotlin/com/loomify/resume/domain/TemplateRepository.kt`
-- [X] T017 Create stub implementation in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/persistence/InMemoryTemplateRepository.kt` returning hardcoded template metadata list
+- [X] T014 Create dedicated ResumeSecurityConfig in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/config/ResumeSecurityConfig.kt` to
+  configure security rules for /api/resume endpoints with JWT authentication, following Hexagonal
+  Architecture by keeping resume-specific security configuration within the resume module (do not
+  modify core SecurityConfiguration.kt)
+- [X] T015 Create TemplateMetadata domain entity in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/TemplateMetadata.kt`
+- [X] T016 [P] Define TemplateRepository port in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/TemplateRepository.kt`
+- [X] T017 Create stub implementation in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/persistence/InMemoryTemplateRepository.kt`
+  returning hardcoded template metadata list
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -180,12 +199,24 @@ This is a monorepo with:
   `client/apps/webapp/src/core/resume/infrastructure/presentation/composables/usePersistence.ts`
   with CRUD operations calling /api/resume endpoints (Implemented as RemoteResumeStorage with
   ResumeHttpClient CRUD operations ✓)
-- [X] T056 [US4] Create CreateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/create/CreateResumeCommand.kt` with handler that validates and saves to repository ✓
-- [X] T057 [US4] Create UpdateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/UpdateResumeCommand.kt` with optimistic locking via updatedAt check ✓
-- [X] T058 [US4] Create GetResumeQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/GetResumeQuery.kt` with handler that retrieves by ID and ownerId ✓
-- [X] T059 [US4] Create ListResumesQuery in `server/engine/src/main/kotlin/com/loomify/resume/application/query/ListResumesQuery.kt` with cursor pagination support ✓
-- [X] T060 [US4] Create DeleteResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/DeleteResumeCommand.kt` with authorization check ✓
-- [X] T061 [US4] Implement ResumeCrudController in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeCrudController.kt` with POST /api/resume endpoint calling CreateResumeCommand ✓
+- [X] T056 [US4] Create CreateResumeCommand in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/create/CreateResumeCommand.kt` with
+  handler that validates and saves to repository ✓
+- [X] T057 [US4] Create UpdateResumeCommand in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/command/UpdateResumeCommand.kt` with
+  optimistic locking via updatedAt check ✓
+- [X] T058 [US4] Create GetResumeQuery in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/query/GetResumeQuery.kt` with handler
+  that retrieves by ID and ownerId ✓
+- [X] T059 [US4] Create ListResumesQuery in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/query/ListResumesQuery.kt` with cursor
+  pagination support ✓
+- [X] T060 [US4] Create DeleteResumeCommand in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/command/DeleteResumeCommand.kt` with
+  authorization check ✓
+- [X] T061 [US4] Implement ResumeCrudController in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/http/ResumeCrudController.kt` with
+  POST /api/resume endpoint calling CreateResumeCommand ✓
 - [X] T062 [US4] Add GET `/api/resume` endpoint to ResumeCrudController calling ListResumesQuery with pagination parameters ✓
 - [X] T063 [US4] Add GET `/api/resume/{id}` endpoint to ResumeCrudController calling GetResumeQuery with owner authorization ✓
 - [X] T064 [US4] Add PUT `/api/resume/{id}` endpoint to ResumeCrudController calling UpdateResumeCommand with optimistic locking ✓
@@ -224,10 +255,10 @@ This is a monorepo with:
 ### Implementation for User Story 5
 
 - [X] T073 [P] [US5] Create ListTemplatesQuery in
-  `server/engine/src/main/kotlin/com/loomify/resume/application/queries/ListTemplatesQuery.kt`
+  `server/engine/src/main/kotlin/com/cvix/resume/application/queries/ListTemplatesQuery.kt`
   calling TemplateRepository (BACKEND: Requires implementation)
 - [X] T074 [P] [US5] Implement TemplateController in
-  `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/TemplateController.kt` with
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/http/TemplateController.kt` with
   GET `/api/templates` endpoint (no auth required) (BACKEND: Requires implementation)
 - [X] T075 [P] [US5] Create PdfTemplateSelector component in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PdfTemplateSelector.vue`
@@ -241,8 +272,13 @@ This is a monorepo with:
   and generate/download buttons (Deferred: requires T075, T076)
 - [X] T078 [P] [US5] Implement template preview rendering in ResumePdfPage that updates when
   template selection changes with 500ms debounce (Deferred: requires T077)
-- [X] T079 [P] [US5] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt` that validates resume data and template parameters (Already implemented)
-- [X] T080 [P] [US5] Create POST `/api/resume/generate` endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/http/ResumeController.kt` that streams binary PDF response with proper Content-Type and Content-Disposition headers (Already implemented at POST /api/resume/generate)
+- [X] T079 [P] [US5] Create GenerateResumeCommand in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/command/GenerateResumeCommand.kt` that
+  validates resume data and template parameters (Already implemented)
+- [X] T080 [P] [US5] Create POST `/api/resume/generate` endpoint in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/http/ResumeController.kt` that
+  streams binary PDF response with proper Content-Type and Content-Disposition headers (Already
+  implemented at POST /api/resume/generate)
 - [X] T081 [P] [US5] Handle PDF response streaming in ResumeController with correct MIME type and
   download headers (Already implemented)
 - [X] T082 [P] Implement PDF download handling in `usePdf.ts` that triggers browser download with filename "resume.pdf" (Already implemented in resume.store.ts generatePdf method)
@@ -285,13 +321,13 @@ This is a monorepo with:
 **Purpose**: Improvements that affect multiple user stories and final quality gates
 
 - [X] T095 [P] Add comprehensive unit tests for domain entities in
-  `server/engine/src/test/kotlin/com/loomify/resume/` using JUnit 5 and Kotest matchers. Check the
+  `server/engine/src/test/kotlin/com/cvix/resume/` using JUnit 5 and Kotest matchers. Check the
   existing tests before adding new ones. (Deferred: Testing task for future iteration)
 - [X] T096 [P] Add integration tests for repository layer in
-  `server/engine/src/test/kotlin/com/loomify/resume/` using Testcontainers PostgreSQL. Check the
+  `server/engine/src/test/kotlin/com/cvix/resume/` using Testcontainers PostgreSQL. Check the
   existing tests before adding new ones. (Deferred: Testing task for future iteration)
 - [X] T097 [P] Add contract tests for API endpoints in
-  `server/engine/src/test/kotlin/com/loomify/resume/contract/` using WebFluxTest and MockkBean (
+  `server/engine/src/test/kotlin/com/cvix/resume/contract/` using WebFluxTest and MockkBean (
   Deferred: Testing task for future iteration)
 - [X] T098 [P] Add frontend unit tests for composables in `client/apps/webapp/src/core/resume/__tests__/` using Vitest (Deferred: Testing task for future iteration)
 - [X] T099 [P] Add component tests for form components using @testing-library/vue in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/__tests__/` (Deferred: Testing task for future iteration)
@@ -309,7 +345,11 @@ This is a monorepo with:
   `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Implemented: `ResumeResponseHeaders.kt`; controllers
   updated: `CreateResumeController.kt`, `GetResumeController.kt`, `UpdateResumeController.kt`,
   `ListResumeController.kt`, `DeleteResumeController.kt`)
-- [X] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing implementation in `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/SecurityConfiguration.kt` and `server/engine/src/main/kotlin/com/loomify/engine/ratelimit.RateLimitingFilter` (Deferred: Backend security enhancement)
+- [X] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing
+  implementation in
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/infrastructure/SecurityConfiguration.kt`
+  and `server/engine/src/main/kotlin/com/cvix/engine/ratelimit.RateLimitingFilter` (Deferred:
+  Backend security enhancement)
 - [X] T108 Add logging for all resume operations (create, update, delete, PDF generation) using structured logging (Deferred: Backend observability enhancement)
 - [X] T109 Optimize preview rendering performance: ensure updates complete within 150ms target using Chrome DevTools profiling (Implemented: debounced preview updates with 120ms delay in useResumeForm)
 - [X] T110 Optimize template switching performance: ensure preview updates within 500ms target (Deferred: Requires Phase 7 completion)

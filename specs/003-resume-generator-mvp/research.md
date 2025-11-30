@@ -731,7 +731,7 @@ class RateLimitingTest {
 **References**:
 
 - Bucket4j documentation: <https://bucket4j.com/>
-- Existing implementation: `server/engine/src/main/kotlin/com/loomify/engine/ratelimit/`
+- Existing implementation: `server/engine/src/main/kotlin/com/cvix/engine/ratelimit/`
 - RFC 6585 (HTTP 429): <https://tools.ietf.org/html/rfc6585#section-4>
 
 ---

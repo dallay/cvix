@@ -36,7 +36,7 @@ class SpringDocConfiguration(private val applicationSecurityProperties: Applicat
     @Value("\${application.version:undefined}")
     private val version: String? = null
 
-    @Value("\${application.name:loomify}")
+    @Value("\${application.name:cvix}")
     private val name: String? = null
 
     @Value("\${application.description:undefined}")

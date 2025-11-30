@@ -231,7 +231,7 @@ VITE_API_BASE_URL=/api
 Backend (already configured in `application.yml`):
 
 ```text
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:9080/realms/loomify
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:9080/realms/cvix
 ```
 
 ## Notes

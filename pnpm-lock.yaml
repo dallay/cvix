@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@loomify/docs>zod': ^3.23.8
+  '@cvix/docs>zod': ^3.23.8
   glob: ^10.5.0
   '@anthropic-ai/claude-code': ^2.0.31
   js-yaml: ^4.1.1
@@ -90,7 +90,7 @@ importers:
       '@iconify-json/tabler':
         specifier: ^1.2.23
         version: 1.2.23
-      '@loomify/utilities':
+      '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
       '@tailwindcss/vite':
@@ -148,7 +148,7 @@ importers:
         specifier: ^4.1.13
         version: 4.1.13
     devDependencies:
-      '@loomify/config':
+      '@cvix/config':
         specifier: workspace:*
         version: link:../../config
       '@tailwindcss/typography':
@@ -178,7 +178,7 @@ importers:
       '@internationalized/date':
         specifier: ^3.10.0
         version: 3.10.0
-      '@loomify/utilities':
+      '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
       '@tailwindcss/vite':
@@ -344,7 +344,7 @@ importers:
       '@codecov/vite-plugin':
         specifier: 1.9.1
         version: 1.9.1(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.20.6)(yaml@2.8.1))
-      '@loomify/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../packages/tsconfig
       '@tailwindcss/typography':
@@ -383,10 +383,10 @@ importers:
       '@internationalized/date':
         specifier: ^3.10.0
         version: 3.10.0
-      '@loomify/config':
+      '@cvix/config':
         specifier: workspace:*
         version: link:../../config
-      '@loomify/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@vitest/coverage-v8':

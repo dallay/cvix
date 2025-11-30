@@ -13,7 +13,7 @@ This document defines the domain entities, value objects, and relationships for 
 
 **Purpose**: Root entity representing a complete resume following JSON Resume schema.
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/ResumeData.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/ResumeData.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -87,7 +87,7 @@ data class ContentMetrics(
 
 **Purpose**: Basic personal information (JSON Resume `basics` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -189,7 +189,7 @@ data class SocialProfile(
 
 **Purpose**: Work history entry (JSON Resume `work[]` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/WorkExperience.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -277,7 +277,7 @@ value class Highlight(val value: String) {
 
 **Purpose**: Education history entry (JSON Resume `education[]` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Education.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -359,7 +359,7 @@ value class DegreeType(val value: String) {
 
 **Purpose**: Skill category with keywords (JSON Resume `skills[]` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/SkillCategory.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/SkillCategory.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -408,7 +408,7 @@ value class Skill(val value: String) {
 
 **Purpose**: Language proficiency (JSON Resume `languages[]` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Language.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Language.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -442,7 +442,7 @@ value class Fluency(val value: String) {
 
 **Purpose**: Personal/professional project (JSON Resume `projects[]` section).
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Project.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Project.kt`
 
 ```kotlin
 package com.cvix.resume.domain.model
@@ -485,7 +485,8 @@ value class ProjectDescription(val value: String) {
 
 **Purpose**: CQRS command encapsulating resume generation request.
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt`
+**Location**:
+`server/engine/src/main/kotlin/com/cvix/resume/application/command/GenerateResumeCommand.kt`
 
 ```kotlin
 package com.cvix.resume.application.command
@@ -531,7 +532,7 @@ data class GenerateResumeCommand(
 
 **Purpose**: Result of resume generation operation.
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/event/GeneratedDocument.kt`
+**Location**: `server/engine/src/main/kotlin/com/cvix/resume/domain/event/GeneratedDocument.kt`
 
 ```kotlin
 package com.cvix.resume.domain.event
@@ -583,7 +584,8 @@ data class GeneratedDocument(
 
 **Purpose**: Domain-specific exception hierarchy for resume generation failures.
 
-**Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
+**Location**:
+`server/engine/src/main/kotlin/com/cvix/resume/domain/exception/ResumeGenerationException.kt`
 
 ```kotlin
 package com.cvix.resume.domain.exception

@@ -96,14 +96,15 @@ docker compose ps
 
 ## Step 3: Configure Keycloak Realm
 
-The `loomify` realm is automatically imported on Keycloak startup from `infra/keycloak/realm-config/loomify-realm.json`.
+The `cvix` realm is automatically imported on Keycloak startup from
+`infra/keycloak/realm-config/cvix-realm.json`.
 
 ### Verify Realm Configuration
 
 1. Open Keycloak Admin Console: <http://localhost:9080/admin/>
 2. Login with `admin` / `secret`
-3. Select the **loomify** realm from the dropdown (top-left)
-4. Navigate to **Clients** → Verify `loomify-backend` and `loomify-webapp` clients exist
+3. Select the **cvix** realm from the dropdown (top-left)
+4. Navigate to **Clients** → Verify `cvix-backend` and `cvix-webapp` clients exist
 5. Navigate to **Users** → You can create test users here
 
 ### Create a Test User (Optional)
@@ -399,7 +400,7 @@ LIMIT 10;
 ### Keycloak Events
 
 1. Open Keycloak Admin Console: <http://localhost:9080/admin/>
-2. Select **loomify** realm
+2. Select **cvix** realm
 3. Navigate to **Events** → **Login events**
 4. View all authentication events (login, logout, token refresh, etc.)
 
@@ -446,7 +447,7 @@ Restart the backend: `./gradlew :server:engine:bootRun`
 
 1. Open Keycloak Admin Console: <http://localhost:9080/admin/>
 2. Click **Create Realm** (or use the dropdown)
-3. Click **Browse** → Select `infra/keycloak/realm-config/loomify-realm.json`
+3. Click **Browse** → Select `infra/keycloak/realm-config/cvix-realm.json`
 4. Click **Create**
 
 ### Issue: Token refresh fails with "REFRESH_TOKEN_REVOKED"
@@ -486,7 +487,8 @@ docker compose up -d keycloak postgresql maildev
 Now that you have the authentication system running locally:
 
 1. **Implement Frontend Components**: Build the login, registration, and session management UI components (see `client/apps/webapp/src/authentication/presentation/`)
-2. **Implement Backend Handlers**: Build the command/query handlers for authentication operations (see `server/engine/src/main/kotlin/com/loomify/engine/authentication/application/`)
+2. **Implement Backend Handlers**: Build the command/query handlers for authentication operations (
+   see `server/engine/src/main/kotlin/com/cvix/engine/authentication/application/`)
 3. **Write Tests**: Add unit and integration tests for all layers
 4. **Security Review**: Verify CSRF protection, rate limiting, and token security
 5. **Documentation**: Update API documentation with SpringDoc OpenAPI annotations
@@ -521,10 +523,10 @@ docker compose restart postgresql
 pnpm install
 
 # Run frontend dev server
-pnpm --filter @loomify/webapp dev
+pnpm --filter @cvix/webapp dev
 
 # Run frontend tests
-pnpm --filter @loomify/webapp test
+pnpm --filter @cvix/webapp test
 
 # Run frontend linting
 pnpm run check

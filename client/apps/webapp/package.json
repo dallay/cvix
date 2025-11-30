@@ -1,5 +1,5 @@
 {
-	"name": "@loomify/webapp",
+	"name": "@cvix/webapp",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
@@ -10,7 +10,7 @@
 		"dev": "vite",
 		"build": "run-p type-check \"build-only {@}\" --",
 		"preview": "vite preview",
-		"pretest": "pnpm --filter @loomify/utilities build",
+		"pretest": "pnpm --filter @cvix/utilities build",
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@internationalized/date": "^3.10.0",
-		"@loomify/utilities": "workspace:*",
+		"@cvix/utilities": "workspace:*",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/vue-table": "^8.21.3",
 		"@unovis/ts": "^1.6.2",

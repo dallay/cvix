@@ -141,7 +141,7 @@ tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
     imageName.set(
         providers.environmentVariable("IMAGE_NAME")
-            .orElse("ghcr.io/${rootProject.group}/loomify/backend:${rootProject.version}"),
+            .orElse("ghcr.io/${rootProject.group}/cvix/backend:${rootProject.version}"),
     )
     environment.set(
         mapOf(

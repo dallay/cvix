@@ -20,8 +20,8 @@ info:
     - Data Model: `specs/003-resume-generator-mvp/data-model.md`
   version: 1.0.0
   contact:
-    name: Loomify Support
-    email: support@loomify.com
+    name: ProFileTailors Support
+    email: support@cvix.com
 
 security:
   - bearerAuth: []

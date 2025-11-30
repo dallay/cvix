@@ -12,10 +12,10 @@ export const E2E_CONFIG = {
 
 	/** Keycloak authentication URL */
 	keycloakURL:
-		process.env.KEYCLOAK_URL || "http://localhost:9080/realms/loomify",
+      process.env.KEYCLOAK_URL || "http://localhost:9080/realms/cvix",
 
 	/** Keycloak client ID */
-	keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "loomify-client",
+  keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "cvix-client",
 
 	/** Test user IDs for different test scenarios */
 	testUsers: {

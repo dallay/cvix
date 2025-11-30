@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 
 @UnitTest
 internal class UserTest {
-    private val emailOrUsername = "test@loomify.com"
-    private val firstname = "loomify"
-    private val lastname = "loomify"
+    private val emailOrUsername = "test@cvix.com"
+    private val firstname = "cvix"
+    private val lastname = "cvix"
     private val password = "Th1sIsA$5tr0ngP@ssw0rd"
 
     @Test
@@ -25,8 +25,8 @@ internal class UserTest {
     @Test
     fun `should update user name`() {
         val user = User.create(UUID.randomUUID().toString(), emailOrUsername, firstname, lastname)
-        val newFirstName = "loomify"
-        val newLastName = "loomify"
+        val newFirstName = "cvix"
+        val newLastName = "cvix"
         user.updateName(newFirstName, newLastName)
         assertEquals(newFirstName, user.name?.firstName?.value)
         assertEquals(newLastName, user.name?.lastName?.value)

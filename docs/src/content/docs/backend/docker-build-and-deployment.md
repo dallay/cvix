@@ -5,7 +5,9 @@ description: Permanent documentation for backend Docker build and deployment str
 ---
 
 
-This document provides a permanent, unified reference for building, publishing, and deploying Docker images for the Loomify backend, including the rationale for standardizing the build approach across the monorepo.
+This document provides a permanent, unified reference for building, publishing, and deploying Docker
+images for the ProFileTailors backend, including the rationale for standardizing the build approach
+across the monorepo.
 
 ## Overview
 
@@ -102,8 +104,8 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```bash
 # Build with Docker
 cd $REPO_ROOT
-docker build -f server/engine/Dockerfile -t loomify/backend:local .
-docker run --rm -p 8080:8080 loomify/backend:local
+docker build -f server/engine/Dockerfile -t cvix/backend:local .
+docker run --rm -p 8080:8080 cvix/backend:local
 
 # Or use Gradle for local dev
 ./gradlew :server:engine:bootBuildImage
@@ -111,9 +113,9 @@ docker run --rm -p 8080:8080 loomify/backend:local
 
 ## Image Versioning
 
-- **SHA tag**: `ghcr.io/<owner>/loomify/backend:<commit-sha>`
-- **Latest tag**: `ghcr.io/<owner>/loomify/backend:latest`
-- **Semantic version**: `ghcr.io/<owner>/loomify/backend:<version>`
+- **SHA tag**: `ghcr.io/<owner>/cvix/backend:<commit-sha>`
+- **Latest tag**: `ghcr.io/<owner>/cvix/backend:latest`
+- **Semantic version**: `ghcr.io/<owner>/cvix/backend:<version>`
 
 ## Troubleshooting
 

@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 005-create-update-timestamp-function
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: false
@@ -17,7 +17,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 006-trigger-workspaces-updated-at
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: false
@@ -29,7 +29,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 007-trigger-workspace-members-updated-at
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: false

@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-enums
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: true
@@ -11,7 +11,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 002-create-users-table
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: users
@@ -43,7 +43,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 003-create-authority-table
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: authority
@@ -57,7 +57,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 004-create-user-authority-table
-      author: loomify
+      author: cvix
       changes:
         - createTable:
             tableName: user_authority
@@ -93,7 +93,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 005-load-authority-data
-      author: loomify
+      author: cvix
       changes:
         - loadData:
             file: db/changelog/data/authority.csv

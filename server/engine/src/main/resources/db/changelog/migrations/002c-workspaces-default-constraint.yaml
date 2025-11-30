@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002c-add-workspaces-is-default-column
-      author: loomify
+      author: cvix
       changes:
         - addColumn:
             tableName: workspaces
@@ -19,7 +19,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 002c-cleanup-workspaces-default
-      author: loomify
+      author: cvix
       changes:
         # Step 1: Ensure all workspaces have is_default set to false
         - sql:
@@ -41,7 +41,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 002c-add-workspace-default-constraint
-      author: loomify
+      author: cvix
       runInTransaction: false
       changes:
         - sql:
