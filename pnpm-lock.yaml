@@ -84,15 +84,15 @@ importers:
       '@astrojs/vue':
         specifier: ^5.1.3
         version: 5.1.3(@types/node@24.10.1)(astro@5.16.0(@types/node@24.10.1)(idb-keyval@6.2.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.0)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1))(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.0)(tsx@4.20.6)(vue@3.5.25(typescript@5.9.3))(yaml@2.8.1)
+      '@cvix/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@iconify-json/openmoji':
         specifier: ^1.2.17
         version: 1.2.17
       '@iconify-json/tabler':
         specifier: ^1.2.23
         version: 1.2.23
-      '@cvix/utilities':
-        specifier: workspace:*
-        version: link:../../packages/utilities
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -175,12 +175,12 @@ importers:
 
   client/apps/webapp:
     dependencies:
-      '@internationalized/date':
-        specifier: ^3.10.0
-        version: 3.10.0
       '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -289,7 +289,7 @@ importers:
         version: 4.0.14(vitest@4.0.14)
       '@vitest/eslint-plugin':
         specifier: ^1.5.0
-        version: 1.5.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.14)
+        version: 1.5.1(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.14)
       '@vue/eslint-config-typescript':
         specifier: ^14.6.0
         version: 14.6.0(eslint-plugin-vue@10.3.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.6.1))(vue-eslint-parser@10.2.0(eslint@9.34.0(jiti@2.6.1))))(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)
@@ -380,15 +380,15 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
     devDependencies:
-      '@internationalized/date':
-        specifier: ^3.10.0
-        version: 3.10.0
       '@cvix/config':
         specifier: workspace:*
         version: link:../../config
       '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@vitest/coverage-v8':
         specifier: ^4.0.14
         version: 4.0.14(vitest@4.0.14)
@@ -2615,8 +2615,8 @@ packages:
       '@vitest/browser':
         optional: true
 
-  '@vitest/eslint-plugin@1.5.0':
-    resolution: {integrity: sha512-j3uuIAPTYWYnSit9lspb08/EKsxEmGqjQf+Wpb1DQkxc+mMkhL58ZknDCgjYhY4Zu76oxZ0hVWTHlmRW0mJq5w==}
+  '@vitest/eslint-plugin@1.5.1':
+    resolution: {integrity: sha512-t49CNERe/YadnLn90NTTKJLKzs99xBkXElcoUTLodG6j1G0Q7jy3mXqqiHd3N5aryG2KkgOg4UAoGwgwSrZqKQ==}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: '>=8.57.0'
@@ -9514,7 +9514,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/eslint-plugin@1.5.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.14)':
+  '@vitest/eslint-plugin@1.5.1(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.14)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.48.0
       '@typescript-eslint/utils': 8.48.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)
