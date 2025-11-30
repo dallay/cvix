@@ -100,7 +100,7 @@ internal class BeanValidationTest {
     }
 
     companion object {
-        private const val ROOT_PACKAGE = "com.loomify"
+        private const val ROOT_PACKAGE = "com.cvix"
         private val EXCLUDED_CONTROLLERS = setOf(
             "ExceptionTranslatorTestController",
             "AccountExceptionResource",

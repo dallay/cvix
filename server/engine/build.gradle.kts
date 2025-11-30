@@ -6,7 +6,7 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "4.0.5"
 }
 
-group = "com.loomify"
+group = "com.cvix"
 version = "0.0.1-SNAPSHOT"
 
 java {

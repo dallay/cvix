@@ -9,7 +9,7 @@ logging:
     org.springframework.r2dbc: WARN
     org.springframework.security: WARN
     org.springframework.security.oauth2.client: WARN
-    com.loomify: WARN
+    com.cvix: WARN
 spring:
   main:
     banner-mode: off

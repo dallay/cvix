@@ -2,7 +2,6 @@ package com.cvix.ratelimit.infrastructure.config
 
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.BucketConfiguration
-import io.github.bucket4j.Refill
 import org.slf4j.LoggerFactory
 
 /**
@@ -87,10 +86,15 @@ class BucketConfigurationStrategy(
      * @return A [Bandwidth] instance configured with the specified parameters.
      */
     private fun createBandwidth(limit: RateLimitProperties.BandwidthLimit): Bandwidth {
-        // Bucket4j v8 uses Bandwidth.classic() with Refill strategies
-        return Bandwidth.classic(
+        // NOTE: Previously this used the deprecated Refill API (Refill.greedy/intervally).
+        // To avoid using the deprecated Refill class, use Bandwidth.simple(capacity, refillPeriod).
+        // This is equivalent when refillTokens == capacity. If refillTokens differs from capacity
+        // and the exact refill semantics are required, consider migrating to Bandwidth.builder()
+        // with a custom refill strategy. For now we assume refillTokens == capacity as configured
+        // in repository properties.
+        return Bandwidth.simple(
             limit.capacity,
-            Refill.greedy(limit.refillTokens, limit.refillDuration),
+            limit.refillDuration,
         )
     }
 

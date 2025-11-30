@@ -7,7 +7,7 @@ logging:
     org.springframework.r2dbc: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2.client: DEBUG
-    com.loomify: DEBUG
+    com.cvix: DEBUG
 spring:
   devtools:
     restart:

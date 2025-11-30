@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException
 import org.junit.jupiter.api.extension.ParameterResolver
 import org.slf4j.LoggerFactory
 
-private const val PACKAGE_NAME = "com.loomify"
+private const val PACKAGE_NAME = "com.cvix"
 
 class LogsSpy :
     BeforeEachCallback,
