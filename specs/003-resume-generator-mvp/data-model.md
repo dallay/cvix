@@ -16,7 +16,7 @@ This document defines the domain entities, value objects, and relationships for 
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/ResumeData.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 import java.util.UUID
 
@@ -90,9 +90,9 @@ data class ContentMetrics(
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
-import com.loomify.common.domain.vo.email.Email  // Reused from shared library
+import com.cvix.common.domain.vo.email.Email  // Reused from shared library
 
 /**
  * Personal information value object.
@@ -109,7 +109,7 @@ import com.loomify.common.domain.vo.email.Email  // Reused from shared library
 data class Basics(
     val fullName: FullName,
     val label: JobTitle?,
-    val email: Email,  // Reused from com.loomify.common.domain.vo.email
+    val email: Email,  // Reused from com.cvix.common.domain.vo.email
     val phone: PhoneNumber?,
     val url: Url?,
     val summary: Summary?,
@@ -179,7 +179,8 @@ data class SocialProfile(
 **Business Rules**:
 
 - BR-003: Full name and email are mandatory (JSON Resume spec)
-- BR-004: Email validation reuses shared `com.loomify.common.domain.vo.email.Email` (RFC-compliant, 320 char limit)
+- BR-004: Email validation reuses shared `com.cvix.common.domain.vo.email.Email` (RFC-compliant, 320
+  char limit)
 - BR-005: URLs must be valid HTTP/HTTPS format
 
 ---
@@ -191,7 +192,7 @@ data class SocialProfile(
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 import java.time.LocalDate
 import java.time.Period
@@ -279,7 +280,7 @@ value class Highlight(val value: String) {
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -361,7 +362,7 @@ value class DegreeType(val value: String) {
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/SkillCategory.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 /**
  * Skill category with associated keywords.
@@ -410,7 +411,7 @@ value class Skill(val value: String) {
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Language.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 /**
  * Language proficiency entry.
@@ -444,7 +445,7 @@ value class Fluency(val value: String) {
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Project.kt`
 
 ```kotlin
-package com.loomify.resume.domain.model
+package com.cvix.resume.domain.model
 
 /**
  * Project entry.
@@ -487,9 +488,9 @@ value class ProjectDescription(val value: String) {
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt`
 
 ```kotlin
-package com.loomify.resume.application.command
+package com.cvix.resume.application.command
 
-import com.loomify.resume.domain.model.ResumeData
+import com.cvix.resume.domain.model.ResumeData
 import java.util.Locale
 import java.util.UUID
 
@@ -533,7 +534,7 @@ data class GenerateResumeCommand(
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/event/GeneratedDocument.kt`
 
 ```kotlin
-package com.loomify.resume.domain.event
+package com.cvix.resume.domain.event
 
 import java.time.Instant
 import java.util.UUID
@@ -585,7 +586,7 @@ data class GeneratedDocument(
 **Location**: `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
 
 ```kotlin
-package com.loomify.resume.domain.exception
+package com.cvix.resume.domain.exception
 
 /**
  * Base exception for resume generation failures.

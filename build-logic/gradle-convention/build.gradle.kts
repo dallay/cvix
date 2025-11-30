@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.loomify.buildlogic.gradle"
+group = "com.cvix.buildlogic.gradle"
 version = extra["app.plugins.version"].toString()
 
 dependencies {
@@ -16,11 +16,11 @@ gradlePlugin {
     plugins {
         register("dependency-versions") {
             id = "app.dependency-versions"
-            implementationClass = "com.loomify.buildlogic.gradle.AppDependencyVersionsPlugin"
+            implementationClass = "com.cvix.buildlogic.gradle.AppDependencyVersionsPlugin"
         }
         register("kover") {
             id = "app.kover"
-            implementationClass = "com.loomify.buildlogic.gradle.AppKoverPlugin"
+            implementationClass = "com.cvix.buildlogic.gradle.AppKoverPlugin"
         }
     }
 }

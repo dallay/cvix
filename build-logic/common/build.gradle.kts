@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.loomify.buildlogic.common"
+group = "com.cvix.buildlogic.common"
 version = extra["app.plugins.version"].toString()
 
 dependencies {

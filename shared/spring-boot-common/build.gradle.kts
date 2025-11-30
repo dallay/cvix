@@ -1,4 +1,4 @@
-import com.loomify.buildlogic.common.extensions.implementation
+import com.cvix.buildlogic.common.extensions.implementation
 
 plugins {
     id("app.spring.boot.library.convention")

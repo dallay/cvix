@@ -27,9 +27,9 @@ security:
   - bearerAuth: []
 
 servers:
-  - url: https://api.loomify.com
+  - url: https://api.cvix.com
     description: Production
-  - url: https://staging-api.loomify.com
+  - url: https://staging-api.cvix.com
     description: Staging
   - url: http://localhost:8080/api
     description: Local Development
