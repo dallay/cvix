@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@loomify/docs>zod': ^3.23.8
+  '@loomify/docs>zod': ^4.0.0
   glob: ^10.5.0
   '@anthropic-ai/claude-code': ^2.0.31
   js-yaml: ^4.1.1
@@ -429,8 +429,8 @@ importers:
         specifier: ^0.34.5
         version: 0.34.5
       zod:
-        specifier: ^3.23.8
-        version: 3.25.76
+        specifier: ^4.0.0
+        version: 4.1.13
 
 packages:
 
