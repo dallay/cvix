@@ -84,15 +84,15 @@ importers:
       '@astrojs/vue':
         specifier: ^5.1.3
         version: 5.1.3(@types/node@24.10.1)(astro@5.16.0(@types/node@24.10.1)(idb-keyval@6.2.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.0)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1))(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.39.0)(tsx@4.20.6)(vue@3.5.25(typescript@5.9.3))(yaml@2.8.1)
+      '@cvix/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@iconify-json/openmoji':
         specifier: ^1.2.17
         version: 1.2.17
       '@iconify-json/tabler':
         specifier: ^1.2.23
         version: 1.2.23
-      '@cvix/utilities':
-        specifier: workspace:*
-        version: link:../../packages/utilities
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -175,12 +175,12 @@ importers:
 
   client/apps/webapp:
     dependencies:
-      '@internationalized/date':
-        specifier: ^3.10.0
-        version: 3.10.0
       '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -380,15 +380,15 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
     devDependencies:
-      '@internationalized/date':
-        specifier: ^3.10.0
-        version: 3.10.0
       '@cvix/config':
         specifier: workspace:*
         version: link:../../config
       '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@vitest/coverage-v8':
         specifier: ^4.0.14
         version: 4.0.14(vitest@4.0.14)
@@ -430,7 +430,7 @@ importers:
         version: 0.34.5
       zod:
         specifier: ^3.23.8
-        version: 3.25.76
+        version: 4.1.13
 
 packages:
 
