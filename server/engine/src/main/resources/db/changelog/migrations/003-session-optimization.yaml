@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003-optimize-session-queries
-      author: loomify
+      author: cvix
       comment: |
         Add indexes to optimize session management queries.
         These indexes support the authentication system's performance requirements:
@@ -114,7 +114,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 004-add-session-statistics-view
-      author: loomify
+      author: cvix
       comment: |
         Create a materialized view for session statistics to optimize
         dashboard queries and reduce load on the main sessions table.
@@ -141,7 +141,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 005-add-session-cleanup-function
-      author: loomify
+      author: cvix
       comment: |
         Add a database function to efficiently clean up expired sessions.
         This function can be called periodically to maintain database performance.
@@ -179,7 +179,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 006-add-rate-limiting-table
-      author: loomify
+      author: cvix
       comment: |
         Create a table for tracking rate limit attempts.
         This supports the rate limiting requirements (FR-010, FR-004).
@@ -259,7 +259,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 007-add-session-triggers
-      author: loomify
+      author: cvix
       comment: |
         Add triggers to automatically update session statistics and timestamps.
       changes:

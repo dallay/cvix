@@ -6,7 +6,7 @@
 echo "Sending test email to GreenMail..."
 
 # Email data
-FROM="test@loomify.local"
+FROM="test@cvix.local"
 TO="recipient@example.com"
 SUBJECT="Test email from script"
 BODY="This is a test email sent from the test-email.sh script"

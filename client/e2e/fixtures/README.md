@@ -149,8 +149,8 @@ const testUser = getTestUser("noDefault"); // or "default", "noWorkspace", "newU
 The fixtures use the following environment variables:
 
 - `API_BASE_URL`: Base URL for API calls (default: `http://localhost:8080/api`)
-- `KEYCLOAK_URL`: Keycloak realm URL (default: `http://localhost:9080/realms/loomify`)
-- `KEYCLOAK_CLIENT_ID`: Keycloak client ID (default: `loomify-client`)
+- `KEYCLOAK_URL`: Keycloak realm URL (default: `http://localhost:9080/realms/cvix`)
+- `KEYCLOAK_CLIENT_ID`: Keycloak client ID (default: `cvix-client`)
 
 You can set these in your Playwright configuration:
 
@@ -162,7 +162,7 @@ use: {
 
 // Set environment variables
 process.env.API_BASE_URL = 'http://localhost:8080/api';
-process.env.KEYCLOAK_URL = 'http://localhost:9080/realms/loomify';
+process.env.KEYCLOAK_URL = 'http://localhost:9080/realms/cvix';
 ```
 
 ### Best Practices

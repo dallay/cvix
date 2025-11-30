@@ -93,7 +93,7 @@ docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderS
 
 ### Code Configuration
 
-- **File**: `server/engine/src/test/kotlin/com/loomify/engine/config/InfrastructureTestContainers.kt`
+- **File**: `server/engine/src/test/kotlin/com/cvix/engine/config/InfrastructureTestContainers.kt`
 - **Scope**: Project-specific behavior
 - **Purpose**: Ensure clean CI/CD builds
 

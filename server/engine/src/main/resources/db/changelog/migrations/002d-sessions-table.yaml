@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002d-create-sessions-table
-      author: loomify
+      author: cvix
       comment: |
         Create sessions table to support authentication session management.
         This table stores user session data including:

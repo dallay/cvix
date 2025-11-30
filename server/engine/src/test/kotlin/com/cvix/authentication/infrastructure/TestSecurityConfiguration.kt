@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 
-private const val DOMAIN = "loomify.com"
+private const val DOMAIN = "cvix.com"
 private const val PROTOCOL = "https"
 private const val BASIC_URL = "$PROTOCOL://$DOMAIN"
 

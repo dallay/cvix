@@ -21,7 +21,8 @@ From the project root, run:
 docker compose up -d keycloak
 ```
 
-This starts Keycloak and automatically imports the pre-configured realm from `infra/keycloak/realm-config/loomify-realm.json`.
+This starts Keycloak and automatically imports the pre-configured realm from
+`infra/keycloak/realm-config/cvix-realm.json`.
 
 ### Accessing the Admin Console
 
@@ -33,7 +34,7 @@ This starts Keycloak and automatically imports the pre-configured realm from `in
 
 ## Realm Configuration
 
-The `loomify` realm is pre-configured with:
+The `cvix` realm is pre-configured with:
 
 - Client configurations for the backend and frontend.
 - User roles (`admin`, `user`).
@@ -49,7 +50,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:9080/realms/loomify
+          issuer-uri: http://keycloak:9080/realms/cvix
 ```
 
 ## Customizing Keycloak
@@ -59,13 +60,13 @@ If you make changes to the realm via the admin console, you must export the conf
 1. Execute the export command:
 
     ```bash
-    docker exec -it keycloak /opt/keycloak/bin/kc.sh export --realm loomify --file /tmp/loomify-realm.json
+    docker exec -it keycloak /opt/keycloak/bin/kc.sh export --realm cvix --file /tmp/cvix-realm.json
     ```
 
 2. Copy the file from the container to your local machine:
 
     ```bash
-    docker cp keycloak:/tmp/loomify-realm.json infra/keycloak/realm-config/loomify-realm.json
+    docker cp keycloak:/tmp/cvix-realm.json infra/keycloak/realm-config/cvix-realm.json
     ```
 
-3. Commit the updated `loomify-realm.json` file.
+3. Commit the updated `cvix-realm.json` file.

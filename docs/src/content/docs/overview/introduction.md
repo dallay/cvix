@@ -1,11 +1,11 @@
 ---
 title: "Overview"
-description: "Sample documentation page for the Loomify."
+description: "Sample documentation page for the ProFileTailors."
 ---
 
-## Overview — Loomify
+## Overview — ProFileTailors
 
-This is a sample documentation page for the Loomify (Loomify).
+This is a sample documentation page for the ProFileTailors (ProFileTailors).
 
 Contents:
 

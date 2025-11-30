@@ -239,7 +239,7 @@ class ResumeExceptionHandler(
     }
 
     companion object {
-        private const val ERROR_PAGE = "https://loomify.com/errors"
+        private const val ERROR_PAGE = "https://cvix.com/errors"
         private const val TIMESTAMP = "timestamp"
         private const val ERROR_CATEGORY = "errorCategory"
         private const val MESSAGE = "message"

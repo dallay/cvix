@@ -37,7 +37,7 @@ Notes:
 pnpm install
 
 # Launch the web app (only webapp)
-pnpm --filter @loomify/webapp dev
+pnpm --filter @cvix/webapp dev
 
 # Or start all dev servers configured
 pnpm run dev

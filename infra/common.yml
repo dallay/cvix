@@ -1,4 +1,4 @@
-name: common-loomify-infra
+name: common-cvix-infra
 
 networks:
   frontend:

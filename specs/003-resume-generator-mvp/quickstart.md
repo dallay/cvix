@@ -99,7 +99,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9080/realms/loomify
+          issuer-uri: http://localhost:9080/realms/cvix
 
 resume:
   pdf:
@@ -156,7 +156,7 @@ curl http://localhost:8080/actuator/health
 
 ```bash
 # Obtain JWT token from Keycloak (replace with your credentials)
-TOKEN=$(curl -s -X POST http://localhost:9080/realms/loomify/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:9080/realms/cvix/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=cvix-backend" \
   -d "username=test@example.com" \
@@ -203,7 +203,7 @@ pnpm dev
 **Verify frontend is running**:
 
 - Open browser: <http://localhost:9876>
-- You should see the Loomify dashboard
+- You should see the ProFileTailors dashboard
 - Navigate to "Resume Generator" (or `/resume/new`)
 
 ### 3. Test Resume Form UI
@@ -248,9 +248,9 @@ git branch --show-current
 
 Follow Hexagonal Architecture:
 
-- **Domain logic**: `server/engine/src/main/kotlin/com/loomify/resume/domain/`
-- **Application layer**: `server/engine/src/main/kotlin/com/loomify/resume/application/`
-- **Infrastructure**: `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/`
+- **Domain logic**: `server/engine/src/main/kotlin/com/cvix/resume/domain/`
+- **Application layer**: `server/engine/src/main/kotlin/com/cvix/resume/application/`
+- **Infrastructure**: `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/`
 
 **TDD Workflow** (mandatory):
 

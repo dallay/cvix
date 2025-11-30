@@ -1,4 +1,4 @@
-# Loomify SaaS Template Constitution
+# ProFileTailors SaaS Template Constitution
 
 <!--
 Sync Impact Report - Version 1.1.0 (Principles Refinement)

@@ -212,7 +212,7 @@ specs/003-resume-generator-mvp/
 **Backend** (Spring Boot + Kotlin):
 
 ```text
-server/engine/src/main/kotlin/com/loomify/resume/
+server/engine/src/main/kotlin/com/cvix/resume/
 ├── domain/
 │   ├── model/
 │   │   ├── ResumeData.kt           # Aggregate root
@@ -259,7 +259,7 @@ server/engine/src/main/resources/
     ├── messages.properties         # English i18n
     └── messages_es.properties      # Spanish i18n
 
-server/engine/src/test/kotlin/com/loomify/resume/
+server/engine/src/test/kotlin/com/cvix/resume/
 ├── domain/
 │   └── model/
 │       ├── ResumeDataTest.kt       # Unit tests

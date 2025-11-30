@@ -44,7 +44,8 @@ This repository is a starter kit aimed at engineering teams building subscriptio
 2. Install JS deps: `pnpm install` (root uses `pnpm` and enforces it via preinstall).
 3. Start infra (optional): `docker compose up -d postgresql keycloak greenmail`.
 4. Backend build & run: `./gradlew :server:engine:bootRun` or `./gradlew build` then `java -jar ...`.
-5. Frontend dev (example): `pnpm --filter @loomify/webapp dev` or run `pnpm run dev` to start all configured dev servers.
+5. Frontend dev (example): `pnpm --filter @cvix/webapp dev` or run `pnpm run dev` to start all
+   configured dev servers.
 
 Commands (copyable):
 
@@ -53,7 +54,7 @@ pnpm install
 docker compose up -d
 ./gradlew build
 ./gradlew :server:engine:bootRun
-pnpm --filter @loomify/webapp dev
+pnpm --filter @cvix/webapp dev
 ```
 
 ## Developer workflows

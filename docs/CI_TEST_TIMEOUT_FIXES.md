@@ -124,13 +124,15 @@ Test Method Timeout: 150 seconds
 ## Files Modified
 
 1.
-`server/engine/src/test/kotlin/com/loomify/resume/infrastructure/http/ResumeGeneratorControllerIntegrationTest.kt`
 
-2. `server/engine/src/main/kotlin/com/loomify/resume/application/generate/PdfResumeGenerator.kt`
+`server/engine/src/test/kotlin/com/cvix/resume/infrastructure/http/ResumeGeneratorControllerIntegrationTest.kt`
+
+2. `server/engine/src/main/kotlin/com/cvix/resume/application/generate/PdfResumeGenerator.kt`
 3.
-`server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorProperties.kt`
 
-4. `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGenerator.kt`
+`server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorProperties.kt`
+
+4. `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGenerator.kt`
 5. `server/engine/src/test/resources/application-test.yml` (NEW)
 
 ## Error Messages Handled

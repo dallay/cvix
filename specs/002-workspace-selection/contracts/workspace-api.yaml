@@ -4,7 +4,7 @@ info:
   description: API endpoints for workspace selection feature
   version: 1.0.0
   contact:
-    name: Loomify Team
+    name: ProFileTailors Team
 servers:
   - url: http://localhost:8080/api
     description: Local development server

@@ -1,13 +1,13 @@
 {
-	"name": "@loomify/tsconfig",
-	"description": "Shared TypeScript configurations for loomify",
+  "name": "@cvix/tsconfig",
+  "description": "Shared TypeScript configurations for cvix",
 	"version": "0.0.1",
 	"type": "module",
 	"license": "MIT",
-	"homepage": "https://loomify.tech",
-	"author": "loomify Team",
+  "homepage": "https://cvix.tech",
+  "author": "cvix Team",
 	"keywords": [
-		"loomify",
+    "cvix",
 		"tsconfig",
 		"typescript"
 	],

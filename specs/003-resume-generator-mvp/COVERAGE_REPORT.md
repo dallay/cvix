@@ -271,7 +271,7 @@ pnpm vitest run path/to/test.spec.ts
 ./gradlew koverHtmlReport
 
 # Find domain package in report
-grep -n "loomify.resume.domain" server/engine/build/reports/kover/html/index.html
+grep -n "cvix.resume.domain" server/engine/build/reports/kover/html/index.html
 ```
 
 ---

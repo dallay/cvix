@@ -31,7 +31,7 @@ export const footer: UIMultilingual = {
 		"footer.allRightsReserved": "All rights reserved.",
 
 		// Brand name used in the footer
-		"footer.brand": "Loomify",
+    "footer.brand": "ProFileTailors",
 	},
 	es: {
 		// Footer description

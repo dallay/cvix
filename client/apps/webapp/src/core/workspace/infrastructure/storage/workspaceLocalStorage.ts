@@ -10,7 +10,7 @@ interface StoredWorkspacePreference {
 /**
  * Storage key for workspace selection preference
  */
-export const STORAGE_KEY = "loomify:workspace:lastSelected";
+export const STORAGE_KEY = "cvix:workspace:lastSelected";
 
 /**
  * Saves the last selected workspace for a user

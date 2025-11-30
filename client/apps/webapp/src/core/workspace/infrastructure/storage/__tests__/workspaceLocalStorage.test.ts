@@ -145,7 +145,7 @@ describe("workspaceLocalStorage", () => {
 
 	describe("STORAGE_KEY", () => {
 		it("should use correct storage key", () => {
-			expect(STORAGE_KEY).toBe("loomify:workspace:lastSelected");
+			expect(STORAGE_KEY).toBe("cvix:workspace:lastSelected");
 		});
 	});
 });

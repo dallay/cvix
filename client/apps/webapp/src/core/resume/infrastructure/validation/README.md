@@ -109,7 +109,7 @@ This implementation follows the official JSON Resume Schema:
 Run the test suite:
 
 ```bash
-pnpm --filter @loomify/webapp test:unit JsonResumeValidator
+pnpm --filter @cvix/webapp test:unit JsonResumeValidator
 ```
 
 The test suite includes:

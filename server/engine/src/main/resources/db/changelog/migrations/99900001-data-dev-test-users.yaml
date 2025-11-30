@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 99900001-data-dev-test-users
-      author: loomify
+      author: cvix
       context: dev
       preConditions:
         - onFail: MARK_RAN

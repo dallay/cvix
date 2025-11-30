@@ -177,13 +177,13 @@ const validator = getValidator() // Injected via DI
 
 ```bash
 # Validator tests
-pnpm --filter @loomify/webapp test:unit JsonResumeValidator
+pnpm --filter @cvix/webapp test:unit JsonResumeValidator
 
 # Store tests
-pnpm --filter @loomify/webapp test:unit resume.store
+pnpm --filter @cvix/webapp test:unit resume.store
 
 # All resume tests
-pnpm --filter @loomify/webapp test:unit resume
+pnpm --filter @cvix/webapp test:unit resume
 ```
 
 ### Coverage

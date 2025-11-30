@@ -213,7 +213,7 @@ Configure the backend API endpoint:
 
 ```bash
 # .env.local
-VITE_API_BASE_URL=http://localhost:8080/api
+BACKEND_URL=https://localhost:8443
 ```
 
 ### Local Storage
@@ -221,13 +221,13 @@ VITE_API_BASE_URL=http://localhost:8080/api
 The feature uses local storage with the key:
 
 ```typescript
-const STORAGE_KEY = 'loomify:workspace:lastSelected'
+const STORAGE_KEY = 'cvix:workspace:lastSelected'
 ```
 
 To clear workspace selection:
 
 ```typescript
-localStorage.removeItem('loomify:workspace:lastSelected')
+localStorage.removeItem('cvix:workspace:lastSelected')
 ```
 
 ## Troubleshooting
@@ -258,7 +258,7 @@ localStorage.removeItem('loomify:workspace:lastSelected')
 2. Check storage key is correct:
 
    ```typescript
-   console.log(localStorage.getItem('loomify:workspace:lastSelected'))
+   console.log(localStorage.getItem('cvix:workspace:lastSelected'))
    ```
 
 3. Ensure `selectWorkspace()` completes successfully (no errors thrown)
