@@ -108,6 +108,7 @@ declare module 'vue' {
     ContextMenuSubContent: typeof import('./src/components/ui/context-menu/ContextMenuSubContent.vue')['default']
     ContextMenuSubTrigger: typeof import('./src/components/ui/context-menu/ContextMenuSubTrigger.vue')['default']
     ContextMenuTrigger: typeof import('./src/components/ui/context-menu/ContextMenuTrigger.vue')['default']
+    DatePicker: typeof import('./src/components/ui/date-picker/DatePicker.vue')['default']
     Dialog: typeof import('./src/components/ui/dialog/Dialog.vue')['default']
     DialogClose: typeof import('./src/components/ui/dialog/DialogClose.vue')['default']
     DialogContent: typeof import('./src/components/ui/dialog/DialogContent.vue')['default']

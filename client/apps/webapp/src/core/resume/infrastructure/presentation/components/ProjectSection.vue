@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import DatePicker from "@/components/ui/date-picker/DatePicker.vue";
 import type { Project } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();
@@ -95,6 +96,7 @@ const hasProjects = computed(() => projects.value.length > 0);
 					variant="outline"
 					size="sm"
 					@click="addProject"
+					data-testid="add-project"
 				>
 					<Plus class="h-4 w-4 mr-2" />
 					{{ t('resume.buttons.addProject') }}
@@ -159,10 +161,9 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-start-date-${projectIndex}`">
 									{{ t('resume.fields.startDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-start-date-${projectIndex}`"
 									v-model="project.startDate"
-									type="date"
 									:data-testid="`project-start-date-${projectIndex}`"
 									required
 								/>
@@ -172,10 +173,9 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-end-date-${projectIndex}`">
 									{{ t('resume.fields.endDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-end-date-${projectIndex}`"
 									v-model="project.endDate"
-									type="date"
 									:data-testid="`project-end-date-${projectIndex}`"
 									:disabled="isCurrent(project)"
 								/>
