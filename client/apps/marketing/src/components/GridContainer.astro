@@ -31,10 +31,10 @@ const { posts, ...attrs } = Astro.props;
   >
     {
       posts.map((post, index) => {
-        // If this would be the 7th item (index 6), insert the submit site element instead
-        // Keeping this logic but adapting styling if needed
+        const items = [];
+        // Insert CTA before the 7th item
         if (index === 6) {
-          return (
+          items.push(
             <li class="md:col-span-2 lg:col-span-3">
               <aside class="flex flex-col items-center gap-6 py-8 md:py-12 rounded-2xl bg-muted/50 border border-border/50">
                 <CtaNewsletterSubscription
@@ -44,11 +44,10 @@ const { posts, ...attrs } = Astro.props;
                   class="w-full max-w-2xl px-4"
                 />
               </aside>
-            </li>
+            </li>,
           );
         }
-
-        return (
+        items.push(
           <li>
             <ArticleCard
               image={post.cover}
@@ -58,8 +57,9 @@ const { posts, ...attrs } = Astro.props;
               article={post}
               class="h-full"
             />
-          </li>
+          </li>,
         );
+        return items;
       })
     }
   </ul>
