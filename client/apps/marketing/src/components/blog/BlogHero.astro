@@ -18,19 +18,19 @@ const { title, subtitle, class: className } = Astro.props;
 
   <div class="container px-4 mx-auto text-center">
     <div class="max-w-3xl mx-auto space-y-6">
-      <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-foreground animate-fade-in-up">
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-foreground hero-fade-in-up">
         {title}
       </h1>
 
       {
         subtitle && (
-          <p class="text-xl text-muted-foreground leading-relaxed animate-fade-in-up delay-100">
+          <p class="text-xl text-muted-foreground leading-relaxed hero-fade-in-up hero-delay-100">
             {subtitle}
           </p>
         )
       }
 
-      <div class="pt-8 animate-fade-in-up delay-200 flex justify-center">
+      <div class="pt-8 hero-fade-in-up hero-delay-200 flex justify-center">
         <slot />
       </div>
     </div>
@@ -38,17 +38,17 @@ const { title, subtitle, class: className } = Astro.props;
 </section>
 
 <style>
-  .animate-fade-in-up {
+  .hero-fade-in-up {
     animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
     transform: translateY(20px);
   }
 
-  .delay-100 {
+  .hero-delay-100 {
     animation-delay: 0.1s;
   }
 
-  .delay-200 {
+  .hero-delay-200 {
     animation-delay: 0.2s;
   }
 
