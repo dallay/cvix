@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { toast } from "vue-sonner";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@cvix/ui/components/ui/avatar";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -13,7 +9,11 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@cvix/ui/components/ui/dropdown-menu";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
 import PhGearLight from "~icons/ph/gear-light";
 import PhSignOutLight from "~icons/ph/sign-out-light";

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useI18n } from "vue-i18n";
-import { Button } from "@/components/ui/button";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@cvix/ui/components/ui/dropdown-menu";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import type { SupportedLocale } from "@/i18n";
 import { DEFAULT_LOCALE, LANGUAGES, setLocale } from "@/i18n";
 import PhGlobeLight from "~icons/ph/globe-light";

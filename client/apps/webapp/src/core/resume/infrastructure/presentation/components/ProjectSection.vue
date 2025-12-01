@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { Plus, Trash2 } from "lucide-vue-next";
-import { computed } from "vue";
-import { useI18n } from "vue-i18n";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@cvix/ui/components/ui/button";
+import { Checkbox } from "@cvix/ui/components/ui/checkbox";
 import {
 	Field,
 	FieldDescription,
@@ -11,9 +8,12 @@ import {
 	FieldLabel,
 	FieldLegend,
 	FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@cvix/ui/components/ui/field";
+import { Input } from "@cvix/ui/components/ui/input";
+import { Textarea } from "@cvix/ui/components/ui/textarea";
+import { Plus, Trash2 } from "lucide-vue-next";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import type { Project } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();

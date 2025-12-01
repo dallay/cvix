@@ -17,7 +17,7 @@ describe("getSiteUrl", () => {
 
 	it("should return production URL when CF_PAGES_URL is not set", () => {
 		const result = getSiteUrl();
-		expect(result).toBe("https://example.com");
+		expect(result).toBe("https://cvix.pages.dev");
 	});
 
 	it("should return CF_PAGES_URL when environment variable is set", () => {
@@ -40,6 +40,6 @@ describe("getSiteUrl", () => {
 		process.env.CF_PAGES_URL = "";
 
 		const result = getSiteUrl();
-		expect(result).toBe("https://example.com");
+		expect(result).toBe("https://cvix.pages.dev");
 	});
 });

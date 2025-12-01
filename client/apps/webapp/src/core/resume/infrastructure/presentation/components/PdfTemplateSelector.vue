@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import { isEqual } from "@cvix/utilities";
-import { computed, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { Label } from "@/components/ui/label";
+import { Label } from "@cvix/ui/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
+} from "@cvix/ui/components/ui/select";
+import { isEqual } from "@cvix/utilities";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import {
 	SUPPORTED_COLORS,
 	SUPPORTED_FONTS,

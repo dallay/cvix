@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { Loader2 } from "lucide-vue-next";
-import { ref } from "vue";
-import { useI18n } from "vue-i18n";
-import { toast } from "vue-sonner";
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
+} from "@cvix/ui/components/ui/accordion";
+import { Button } from "@cvix/ui/components/ui/button";
+import { Field, FieldGroup, FieldSet } from "@cvix/ui/components/ui/field";
+import { Loader2 } from "lucide-vue-next";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 import AwardSection from "@/core/resume/infrastructure/presentation/components/AwardSection.vue";
 import BasicsSection from "@/core/resume/infrastructure/presentation/components/BasicsSection.vue";
 import CertificateSection from "@/core/resume/infrastructure/presentation/components/CertificateSection.vue";

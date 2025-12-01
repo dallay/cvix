@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from "astro/types";
 import { Icon } from "astro-icon/components";
 import { getLocalePaths, type Lang, LOCALES, useTranslations } from "@/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@cvix/ui/lib/utils";
 
 interface Props extends HTMLAttributes<"label"> {
 	variant?: "text" | "flags";
