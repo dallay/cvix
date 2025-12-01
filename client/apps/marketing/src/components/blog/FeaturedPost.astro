@@ -6,6 +6,7 @@ import type Article from "@/models/article/article.model";
 import { cleanEntityId } from "@/utils/collection.entity";
 import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
 import OptimizedPicture from "../OptimizedPicture.astro";
+import {render} from "astro:content";
 
 interface Props {
   post: Article;
@@ -26,9 +27,7 @@ const hasValidImage = isImageMetadata(coverImage);
 
 const url = `/${currentLocale}/blog/${cleanEntityId(post.id)}`;
 
-// Calculate reading time estimate (rough: 200 words per minute)
-const wordCount = post.body?.split(/\s+/).length || 0;
-const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+const { remarkPluginFrontmatter } = await render(post.entry);
 ---
 
 <article
@@ -67,8 +66,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
           )
         }
         <span class="text-sm text-muted-foreground">
-          {readingTime}
-          {t("blog.minRead") || "min read"}
+          {t("blog.minRead", { min: remarkPluginFrontmatter.minutesRead})}
         </span>
       </div>
 

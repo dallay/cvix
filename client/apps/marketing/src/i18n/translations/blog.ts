@@ -31,7 +31,7 @@ export const blog: UIMultilingual = {
 		"blog.header.subtitle":
 			"Practical advice for building and growing your audience",
 		"blog.recentArticles": "Our Recent Articles",
-		"blog.minRead": "min read",
+		"blog.minRead": "{min} read",
 		"read.article": "Read article",
 	},
 	es: {
@@ -66,7 +66,7 @@ export const blog: UIMultilingual = {
 		"blog.header.subtitle":
 			"Consejos prácticos para construir y hacer crecer tu audiencia",
 		"blog.recentArticles": "Nuestros Artículos Recientes",
-		"blog.minRead": "min de lectura",
+		"blog.minRead": "{min} de lectura",
 		"read.article": "Leer artículo",
 	},
 };
