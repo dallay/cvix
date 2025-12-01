@@ -1,4 +1,15 @@
 <script setup lang="ts">
+import { Avatar, AvatarFallback } from "@cvix/ui/components/ui/avatar";
+import { Badge } from "@cvix/ui/components/ui/badge";
+import { Button } from "@cvix/ui/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@cvix/ui/components/ui/card";
+import { Progress } from "@cvix/ui/components/ui/progress";
 import {
 	Activity,
 	Clock,
@@ -8,17 +19,6 @@ import {
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner"; // Import toast from vue-sonner
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useAuthStore } from "../stores/authStore.ts";
 

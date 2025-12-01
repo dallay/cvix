@@ -1,5 +1,33 @@
 <script setup lang="ts">
 import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from "@cvix/ui/components/ui/avatar";
+import { Badge } from "@cvix/ui/components/ui/badge";
+import { Button } from "@cvix/ui/components/ui/button";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@cvix/ui/components/ui/collapsible";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
+	SidebarRail,
+} from "@cvix/ui/components/ui/sidebar";
+import {
 	Bell,
 	CalendarClock,
 	ChevronRight,
@@ -18,30 +46,6 @@ import type { Component } from "vue";
 import { computed, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
-	SidebarRail,
-} from "@/components/ui/sidebar";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
 import { WorkspaceSelector } from "@/core/workspace";
 import type { NavigationItem } from "@/shared/config/navigation";

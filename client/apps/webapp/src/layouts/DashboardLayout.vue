@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { SidebarInset, SidebarProvider } from "@cvix/ui/components/ui/sidebar";
 import { computed } from "vue";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/layouts/components/sidebar/AppSidebar.vue";
 import { getNavigationItems } from "@/shared/config/navigation";
 import AppHeader from "./components/AppHeader.vue";

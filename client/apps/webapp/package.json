@@ -26,8 +26,9 @@
 		"check": "run-p type-check lint"
 	},
 	"dependencies": {
-		"@internationalized/date": "^3.10.0",
+		"@cvix/ui": "workspace:*",
 		"@cvix/utilities": "workspace:*",
+		"@internationalized/date": "^3.10.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/vue-table": "^8.21.3",
 		"@unovis/ts": "^1.6.2",

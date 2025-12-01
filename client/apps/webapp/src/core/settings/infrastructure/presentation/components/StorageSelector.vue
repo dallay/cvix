@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Loader2 } from "lucide-vue-next";
-import { computed, ref } from "vue";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@cvix/ui/components/ui/alert";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@cvix/ui/components/ui/card";
+import { Label } from "@cvix/ui/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@cvix/ui/components/ui/radio-group";
+import { Loader2 } from "lucide-vue-next";
+import { computed, ref } from "vue";
 import type { StorageType } from "@/core/resume/domain/ResumeStorage";
 import {
 	createResumeStorage,

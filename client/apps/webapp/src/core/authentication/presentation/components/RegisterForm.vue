@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@cvix/ui/components/ui/alert";
+import { Button } from "@cvix/ui/components/ui/button";
+import { Checkbox } from "@cvix/ui/components/ui/checkbox";
 import {
 	FormControl,
 	FormDescription,
@@ -13,8 +9,12 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@cvix/ui/components/ui/form";
+import { Input } from "@cvix/ui/components/ui/input";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import {
 	type RegisterFormData,
 	registerSchema,

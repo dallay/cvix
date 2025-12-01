@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@cvix/ui/components/ui/dropdown-menu";
 import { useTheme } from "@/composables/useTheme";
 import PhMonitorLight from "~icons/ph/monitor-light";
 import PhMoonLight from "~icons/ph/moon-light";
