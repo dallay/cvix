@@ -1,9 +1,9 @@
 // @ts-check
 
-import {readFileSync} from "node:fs";
-import {fileURLToPath} from "node:url";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import starlight from "@astrojs/starlight";
-import {defineConfig} from "astro/config";
+import { defineConfig } from "astro/config";
 import mermaid from "astro-mermaid";
 
 const patchedRoutingDataPath = fileURLToPath(
@@ -16,6 +16,11 @@ const patchedStaticNotFoundPath = fileURLToPath(
 	new URL("./src/starlight-patches/static-404.astro", import.meta.url),
 );
 
+// Shared assets path
+const sharedAssetsPath = fileURLToPath(
+	new URL("../client/packages/assets/src", import.meta.url),
+);
+
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
@@ -26,8 +31,8 @@ export default defineConfig({
 		starlight({
 			title: "ProFileTailors",
 			logo: {
-				light: "./src/assets/light-isotype.svg",
-				dark: "./src/assets/dark-isotype.svg",
+				light: `${sharedAssetsPath}/logos/light-isotype.svg`,
+				dark: `${sharedAssetsPath}/logos/dark-isotype.svg`,
 			},
 			social: [
 				{
@@ -102,5 +107,10 @@ export default defineConfig({
 				},
 			},
 		],
+		resolve: {
+			alias: {
+				"@cvix/assets": sharedAssetsPath,
+			},
+		},
 	},
 });

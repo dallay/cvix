@@ -1,4 +1,4 @@
-import type {UIMultilingual} from "@i18n";
+import type { UIMultilingual } from "@i18n";
 
 export const blog: UIMultilingual = {
 	en: {
@@ -30,6 +30,9 @@ export const blog: UIMultilingual = {
 		"blog.header.title": "Creator Insights & Guides",
 		"blog.header.subtitle":
 			"Practical advice for building and growing your audience",
+		"blog.recentArticles": "Our Recent Articles",
+		"blog.minRead": "min read",
+		"read.article": "Read article",
 	},
 	es: {
 		"blog.section.title": "Ideas para creadores modernos",
@@ -62,5 +65,8 @@ export const blog: UIMultilingual = {
 		"blog.header.title": "Insights y Guías para Creadores",
 		"blog.header.subtitle":
 			"Consejos prácticos para construir y hacer crecer tu audiencia",
+		"blog.recentArticles": "Nuestros Artículos Recientes",
+		"blog.minRead": "min de lectura",
+		"read.article": "Leer artículo",
 	},
 };

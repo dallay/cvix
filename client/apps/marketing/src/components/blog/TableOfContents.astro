@@ -1,0 +1,36 @@
+---
+import type { MarkdownHeading } from "astro";
+import { cn } from "@cvix/ui/lib/utils";
+
+interface Props {
+  headings: MarkdownHeading[];
+  class?: string;
+}
+
+const { headings, class: className } = Astro.props;
+
+// Filter out h1 and ensure we only show h2 and h3
+const toc = headings.filter((heading) => heading.depth > 1 && heading.depth < 4);
+---
+
+{
+  toc.length > 0 && (
+    <nav class={cn("toc", className)} aria-label="Table of Contents">
+      <h2 class="font-semibold text-lg mb-4 text-foreground">Table of Contents</h2>
+      <ul class="space-y-2 text-sm">
+        {toc.map((heading) => (
+          <li
+            class={cn(
+              "transition-colors hover:text-primary",
+              heading.depth === 3 && "pl-4 text-muted-foreground",
+            )}
+          >
+            <a href={`#${heading.slug}`} class="block py-1">
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

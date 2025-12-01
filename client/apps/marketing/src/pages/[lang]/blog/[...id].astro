@@ -6,6 +6,8 @@ import CtaNewsletterSubscription from "@/components/CtaNewsletterSubscription.as
 import OptimizedPicture from "@/components/OptimizedPicture.astro";
 import PostFooter from "@/components/PostFooter.astro";
 import PostHeader from "@/components/PostHeader.astro";
+import ShareButtons from "@/components/blog/ShareButtons.astro";
+import TableOfContents from "@/components/blog/TableOfContents.astro";
 import { type Lang, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Article.astro";
 import { getArticles } from "@/models/article";
@@ -16,65 +18,115 @@ const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
 
 interface Props {
-	post: Article;
+  post: Article;
 }
 
 export async function getStaticPaths() {
-	const posts = await getArticles();
+  const posts = await getArticles();
 
-	return posts.map((post) => {
-		const [lang, ...id] = post.id.split("/");
-		return { params: { lang, id: id.join("/") || undefined }, props: { post } };
-	});
+  return posts.map((post) => {
+    const [lang, ...id] = post.id.split("/");
+    return { params: { lang, id: id.join("/") || undefined }, props: { post } };
+  });
 }
 
 const { post } = Astro.props;
 
 if (!post.entry) {
-	throw new Error(`No entry found for post: ${post.id}`);
+  throw new Error(`No entry found for post: ${post.id}`);
 }
 
-const { Content, remarkPluginFrontmatter } = await render(post.entry);
+const { Content, headings, remarkPluginFrontmatter } = await render(post.entry);
 
 // Prepare the cover image for rendering
-const coverImage = post.cover
-	? await prepareImageForOptimizedPicture(post.cover)
-	: undefined;
+const coverImage = post.cover ? await prepareImageForOptimizedPicture(post.cover) : undefined;
 
 function isImageMetadata(img: unknown): img is ImageMetadata {
-	return (
-		!!img &&
-		typeof img === "object" &&
-		"src" in img &&
-		"width" in img &&
-		"height" in img
-	);
+  return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
 }
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.title,
+  description: post.description,
+  image: coverImage && isImageMetadata(coverImage) ? coverImage.src : undefined,
+  datePublished: post.date,
+  author: {
+    "@type": "Person",
+    name: post.author?.name || "CVIX Team",
+  },
+};
 ---
 
 <Layout {...post} url={Astro.request.url} minutesRead={remarkPluginFrontmatter.minutesRead}>
-  <div class="container mx-auto px-4">
-    <PostHeader post={post} readingTime={remarkPluginFrontmatter.minutesRead} />
-    <div class="mx-auto prose lg:prose-xl dark:prose-invert">
-      {
-        isImageMetadata(coverImage) && (
-          <OptimizedPicture src={coverImage} alt={post.title} loading="eager" />
-        )
-      }
-      <Content />
-      <PostFooter post={post} />
-    </div>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-    <!-- Comment Area -->
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- Main Content -->
+      <article class="lg:col-span-8">
+        <PostHeader post={post} readingTime={remarkPluginFrontmatter.minutesRead} />
+
+        {
+          isImageMetadata(coverImage) && (
+            <div class="my-8 rounded-xl overflow-hidden shadow-md">
+              <OptimizedPicture src={coverImage} alt={post.title} loading="eager" class="w-full" />
+            </div>
+          )
+        }
+
+        <div
+          class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl"
+        >
+          <Content />
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-border">
+          <ShareButtons
+            url={Astro.request.url}
+            title={post.title}
+            description={post.description}
+            class="mb-8"
+          />
+          <PostFooter post={post} />
+        </div>
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="hidden lg:block lg:col-span-4 space-y-8">
+        <div class="sticky top-24 space-y-8">
+          <div class="p-6 bg-card rounded-xl border border-border shadow-sm">
+            <TableOfContents headings={headings} />
+          </div>
+
+          <div class="p-6 bg-muted/50 rounded-xl border border-border/50">
+            <h3 class="font-semibold text-lg mb-4">{t("cta.title")}</h3>
+            <p class="text-sm text-muted-foreground mb-6">{t("cta.description")}</p>
+            <CtaNewsletterSubscription
+              formId="sidebar-newsletter-form"
+              title=""
+              description=""
+              class="w-full"
+            />
+          </div>
+        </div>
+      </aside>
+    </div>
   </div>
-  <div
-    class="border-y border-y-secondary-foreground-light dark:border-y-secondary-foreground-dark mt-12"
-  >
-    <CtaNewsletterSubscription
-      formId="article-cta-newsletter-subscription-form"
-      title={t("cta.title")}
-      description={t("cta.description")}
-      class="my-10 py-5 mx-auto container px-4"
-    />
+
+  <div class="border-t border-border mt-20 bg-muted/30">
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-6">{t("cta.title")}</h2>
+        <p class="text-xl text-muted-foreground mb-8">{t("cta.description")}</p>
+        <CtaNewsletterSubscription
+          formId="article-bottom-newsletter-form"
+          title=""
+          description=""
+          class="max-w-md mx-auto"
+        />
+      </div>
+    </div>
   </div>
 </Layout>

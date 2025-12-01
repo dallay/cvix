@@ -48,6 +48,9 @@ export default defineConfig(({ mode }) => {
 				"@cvix/ui": fileURLToPath(
 					new URL("../../packages/ui/src", import.meta.url),
 				),
+				"@cvix/assets": fileURLToPath(
+					new URL("../../packages/assets/src", import.meta.url),
+				),
 				"~icons": "virtual:icons",
 			},
 		},

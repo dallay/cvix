@@ -1,39 +1,24 @@
 import type { ImageMetadata } from "astro";
 
-const load = async () => {
-	let images: Record<string, () => Promise<unknown>> | undefined;
-	try {
-		images = import.meta.glob(
-			"~/assets/images/**/*.{jpeg,jpg,png,tiff,webp,gif,svg,avif,JPEG,JPG,PNG,TIFF,WEBP,GIF,SVG,AVIF}",
-		);
-	} catch {
-		// continue regardless of error
-	}
-	return images;
-};
-
-let _images: Record<string, () => Promise<unknown>> | undefined;
-
-/** Fetch all local images from assets */
-export const fetchLocalImages = async () => {
-	_images = _images || (await load());
-	return _images;
-};
+// Glob patterns for image assets - using relative path from src
+const imageGlobs = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/images/**/*.{jpeg,jpg,png,tiff,webp,gif,svg,avif,JPEG,JPG,PNG,TIFF,WEBP,GIF,SVG,AVIF}",
+);
 
 /**
  * Find and resolve an image from the assets directory
- * @param imagePath - Path to the image (supports ~/assets/images/* or @/assets/images/* format)
+ * @param imagePath - Path to the image (supports ~/assets/images/*, @/assets/images/*, or src/assets/images/* format)
  * @returns ImageMetadata or the original path
  */
 export const findImage = async (
 	imagePath?: string | ImageMetadata | null,
 ): Promise<string | ImageMetadata | undefined | null> => {
-	// Not string
+	// Not string - return as-is (already resolved or null)
 	if (typeof imagePath !== "string") {
 		return imagePath;
 	}
 
-	// Absolute paths
+	// Absolute URLs - return as-is
 	if (
 		imagePath.startsWith("http://") ||
 		imagePath.startsWith("https://") ||
@@ -42,19 +27,35 @@ export const findImage = async (
 		return imagePath;
 	}
 
-	// Relative paths or not "~/assets/" or "@/assets/"
+	// Normalize path to /src/ format for glob lookup
+	let normalizedPath = imagePath;
+
 	if (
-		!imagePath.startsWith("~/assets/images") &&
-		!imagePath.startsWith("@/assets/images")
+		imagePath.startsWith("~/assets/") ||
+		imagePath.startsWith("@/assets/")
 	) {
+		normalizedPath = imagePath.replace(/^[~@]\//, "/src/");
+	} else if (imagePath.startsWith("src/assets/")) {
+		normalizedPath = `/${imagePath}`;
+	} else if (!imagePath.startsWith("/src/assets/")) {
+		// Path doesn't match expected patterns, return as-is
 		return imagePath;
 	}
 
-	const images = await fetchLocalImages();
-	// Convert both ~ and @ to /src/
-	const key = imagePath.replace(/^[~@]\//, "/src/");
+	// Try to find the image in the glob results
+	const imageLoader = imageGlobs[normalizedPath];
 
-	return images && typeof images[key] === "function"
-		? ((await images[key]()) as { default: ImageMetadata }).default
-		: null;
+	if (typeof imageLoader === "function") {
+		try {
+			const module = await imageLoader();
+			return module.default;
+		} catch (err) {
+			console.warn(`Failed to load image: ${normalizedPath}`, err);
+			return null;
+		}
+	}
+
+	// Image not found in glob results
+	console.warn(`Image not found in assets: ${normalizedPath}`);
+	return null;
 };
