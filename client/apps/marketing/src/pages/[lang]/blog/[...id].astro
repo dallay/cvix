@@ -41,9 +41,7 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post.entry);
 // Prepare the cover image for rendering
 const coverImage = post.cover ? await prepareImageForOptimizedPicture(post.cover) : undefined;
 
-function isImageMetadata(img: unknown): img is ImageMetadata {
-  return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
-}
+import { isImageMetadata } from "@/utils/image-utils";
 
 const schema = {
   "@context": "https://schema.org",

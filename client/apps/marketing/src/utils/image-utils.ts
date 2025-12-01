@@ -1,3 +1,9 @@
+/**
+ * Type guard for Astro ImageMetadata objects.
+ */
+export function isImageMetadata(img: unknown): img is ImageMetadata {
+	return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
+}
 import type { ImageMetadata } from "astro";
 import { findImage } from "@/utils/images";
 

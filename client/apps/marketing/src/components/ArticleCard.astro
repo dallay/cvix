@@ -59,9 +59,7 @@ const t = useTranslations(currentLocale);
 // Prepare the image for rendering
 const resolvedImage = image ? await prepareImageForOptimizedPicture(image) : undefined;
 
-function isImageMetadata(img: unknown): img is ImageMetadata {
-  return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
-}
+import { isImageMetadata } from "@/utils/image-utils";
 
 const hasValidImage = isImageMetadata(resolvedImage);
 ---
