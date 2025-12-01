@@ -4,5 +4,16 @@
  * Falls back to production URL for local development
  */
 export function getSiteUrl(): string {
-	return process.env.CF_PAGES_URL || "https://example.com";
+  const productionUrl = "https://cvix.pages.dev";
+  const candidates = [
+    process.env.SITE_URL,
+    process.env.CF_PAGES_URL,
+    productionUrl
+  ];
+  for (const url of candidates) {
+    if (url && url.trim() !== "") {
+      return url;
+    }
+  }
+  return productionUrl;
 }

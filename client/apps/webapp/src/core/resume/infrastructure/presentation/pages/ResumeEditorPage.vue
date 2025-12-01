@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { useMagicKeys } from "@vueuse/core";
-import { CheckCircle, Download, Upload } from "lucide-vue-next";
-import { onMounted, onUnmounted, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { toast } from "vue-sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -13,35 +8,75 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@cvix/ui/components/ui/alert-dialog";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
+} from "@cvix/ui/components/ui/card";
+import { useMagicKeys } from "@vueuse/core";
+import {
+	CheckCircle,
+	Download,
+	FileText,
+	RotateCcw,
+	Upload,
+} from "lucide-vue-next";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 import ResumeForm from "@/core/resume/infrastructure/presentation/components/ResumeForm.vue";
 import ResumePreview from "@/core/resume/infrastructure/presentation/components/ResumePreview.vue";
 import ValidationErrorPanel from "@/core/resume/infrastructure/presentation/components/ValidationErrorPanel.vue";
 import { useJsonResume } from "@/core/resume/infrastructure/presentation/composables/useJsonResume";
 import { useResumeForm } from "@/core/resume/infrastructure/presentation/composables/useResumeForm";
+import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const { t } = useI18n();
+const router = useRouter();
 const showPreview = ref(true);
 const showValidationPanel = ref(false);
 const showUploadConfirmation = ref(false);
+const showResetConfirmation = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const pendingFile = ref<File | null>(null);
 
 // Get the resume data from the form composable
-const { resume, loadResume: setResume } = useResumeForm();
+const { resume, loadResume: setResume, clearForm } = useResumeForm();
+
+// Get store for accessing storage timestamps
+const resumeStore = useResumeStore();
 
 // JSON Resume import/export
 const { importJson, exportJson, validateResume, validationErrors } =
 	useJsonResume();
+
+// Track if data has been modified since last save
+const hasUnsavedChanges = ref(false);
+const isInitialLoad = ref(true);
+watch(
+	resume,
+	() => {
+		if (isInitialLoad.value) {
+			isInitialLoad.value = false;
+			return;
+		}
+		hasUnsavedChanges.value = true;
+	},
+	{ deep: true },
+);
+
+// Format last saved timestamp
+const lastSavedText = computed(() => {
+	// TODO: Implement timestamp tracking when autosave/persistence is connected
+	// For now, return placeholder
+	return null;
+});
 
 // Prevent browser default Save dialog on Cmd/Ctrl+S
 function handleSaveShortcut(event: KeyboardEvent) {
@@ -52,12 +87,24 @@ function handleSaveShortcut(event: KeyboardEvent) {
 	}
 }
 
+// Warn user about unsaved changes before navigating away
+function handleBeforeUnload(event: BeforeUnloadEvent) {
+	if (hasUnsavedChanges.value && resume.value) {
+		// Modern browsers display a generic message, but we still need to set returnValue
+		event.preventDefault();
+		event.returnValue = "";
+		return "";
+	}
+}
+
 onMounted(() => {
 	window.addEventListener("keydown", handleSaveShortcut);
+	window.addEventListener("beforeunload", handleBeforeUnload);
 });
 
 onUnmounted(() => {
 	window.removeEventListener("keydown", handleSaveShortcut);
+	window.removeEventListener("beforeunload", handleBeforeUnload);
 });
 
 // Keyboard shortcuts
@@ -216,6 +263,108 @@ function handleJumpTo(section: string, path: string) {
 	console.log("Jump to:", section, path);
 	showValidationPanel.value = false;
 }
+
+/**
+ * Shows reset confirmation dialog
+ */
+function handleResetForm() {
+	if (!resume.value) {
+		toast({
+			title: "No data to reset",
+			description: "The form is already empty.",
+			variant: "default",
+		});
+		return;
+	}
+	showResetConfirmation.value = true;
+}
+
+/**
+ * Confirms and executes form reset
+ */
+async function confirmReset() {
+	showResetConfirmation.value = false;
+
+	try {
+		// Clear the form
+		clearForm();
+
+		// Clear storage
+		await resumeStore.clearStorage();
+
+		hasUnsavedChanges.value = false;
+
+		toast({
+			title: "Form reset",
+			description: "All resume data has been cleared.",
+			variant: "default",
+		});
+	} catch (error) {
+		toast({
+			title: "Reset failed",
+			description:
+				error instanceof Error ? error.message : "Failed to reset form",
+			variant: "destructive",
+		});
+	}
+}
+
+function cancelReset() {
+	showResetConfirmation.value = false;
+}
+
+// Ref to ResumeForm instance
+const resumeFormRef = ref();
+
+/**
+ * Handles navigation from preview to form section or entry
+ * @param section - section name
+ * @param entryIndex - optional array entry index
+ */
+function handlePreviewNavigate(section: string, entryIndex?: number) {
+	nextTick(() => {
+		const formEl = resumeFormRef.value?.$el;
+		if (!formEl) return;
+		const sectionMap: Record<string, string> = {
+			basics: "section-basics",
+			work: "section-work",
+			education: "section-education",
+			skills: "section-skills",
+			projects: "section-projects",
+			languages: "section-languages",
+			volunteer: "section-volunteer",
+			certificates: "section-certificates",
+			awards: "section-awards",
+			publications: "section-publications",
+			interests: "section-interests",
+			references: "section-references",
+		};
+		const refName = sectionMap[section];
+		if (!refName) return;
+		let target: HTMLElement | null = null;
+		// If entryIndex is provided, look for array entry
+		if (typeof entryIndex === "number") {
+			// Try to find entry by data-entry-id
+			target = formEl.querySelector(
+				`[ref='${refName}'] [data-entry-id='${entryIndex}']`,
+			);
+		}
+		// Fallback to section root
+		if (!target) {
+			target = formEl.querySelector(`[ref='${refName}']`);
+		}
+		if (target) {
+			target.scrollIntoView({ behavior: "smooth", block: "start" });
+			target.classList.add("section-highlight");
+			// Move focus to first input in section/entry
+			const input = target.querySelector("input, textarea, select, [tabindex]");
+			if (input) {
+				(input as HTMLElement).focus();
+			}
+			setTimeout(() => target.classList.remove("section-highlight"), 2000);
+		}
+	});
+}
 </script>
 
 <template>
@@ -234,6 +383,11 @@ function handleJumpTo(section: string, path: string) {
 
         <!-- Utility Bar -->
         <div class="flex flex-wrap gap-2">
+          <!-- Last saved indicator -->
+          <div v-if="lastSavedText" class="flex items-center text-sm text-muted-foreground px-3">
+            {{ lastSavedText }}
+          </div>
+
           <Button
               variant="outline"
               size="sm"
@@ -262,6 +416,26 @@ function handleJumpTo(section: string, path: string) {
           >
             <CheckCircle class="h-4 w-4 mr-2" />
             {{ t('resume.buttons.validateJson') }}
+          </Button>
+
+          <Button
+              size="sm"
+              :title="t('resume.buttons.resetFormHint')"
+              variant="outline"
+              @click="handleResetForm"
+          >
+            <RotateCcw class="h-4 w-4 mr-2"/>
+            {{ t('resume.buttons.resetForm') }}
+          </Button>
+
+          <Button
+              size="sm"
+              :title="t('resume.buttons.generatePdfHint')"
+              variant="default"
+              @click="router.push('/resume/pdf')"
+          >
+            <FileText class="h-4 w-4 mr-2"/>
+            {{ t('resume.buttons.generatePdf') }}
           </Button>
 
           <Button
@@ -324,7 +498,7 @@ function handleJumpTo(section: string, path: string) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResumeForm/>
+            <ResumeForm ref="resumeFormRef"/>
           </CardContent>
         </Card>
 
@@ -341,7 +515,7 @@ function handleJumpTo(section: string, path: string) {
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
-              <ResumePreview :data="resume"/>
+              <ResumePreview :data="resume" @navigate-section="handlePreviewNavigate"/>
             </div>
           </CardContent>
         </Card>
@@ -366,6 +540,28 @@ function handleJumpTo(section: string, path: string) {
       </AlertDialogContent>
     </AlertDialog>
 
+    <!-- Reset Confirmation Dialog -->
+    <AlertDialog v-model:open="showResetConfirmation">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ t('resume.resetDialog.title') }}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ t('resume.resetDialog.description') }}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="cancelReset">{{
+              t('resume.resetDialog.cancel')
+            }}
+          </AlertDialogCancel>
+          <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                             @click="confirmReset">
+            {{ t('resume.resetDialog.reset') }}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
     <!-- Validation Error Panel -->
     <ValidationErrorPanel
         v-model:open="showValidationPanel"
@@ -374,3 +570,10 @@ function handleJumpTo(section: string, path: string) {
     />
   </DashboardLayout>
 </template>
+
+<style scoped>
+.section-highlight {
+  box-shadow: 0 0 0 3px var(--accent);
+  transition: box-shadow 0.3s;
+}
+</style>

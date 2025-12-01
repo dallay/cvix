@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { SheetDescription } from "@components/ui/sheet";
+import { SheetDescription } from "@cvix/ui";
 import { Menu } from "lucide-vue-next";
 import { ref } from "vue";
-import { Button } from "@/components/ui/button";
 import {
 	Sheet,
 	SheetContent,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@cvix/ui";
 import { type Lang, useTranslatedPath, useTranslations } from "@/i18n";
 import type { MenuItem } from "@/models/menu/menu.type";
+import {Button} from "@cvix/ui";
 
 const props = defineProps<{
 	menuItems: MenuItem[];

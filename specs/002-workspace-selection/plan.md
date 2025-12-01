@@ -200,7 +200,7 @@ client/apps/webapp/src/
 client/e2e/
 └── workspace-selection.spec.ts             # E2E tests for workspace selection flows
 
-server/engine/src/main/kotlin/com/loomify/engine/workspace/
+server/engine/src/main/kotlin/com/cvix/engine/workspace/
 └── (READ-ONLY - Backend already implemented, no changes needed)
 ```
 

@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.2.21"
-springBoot = "3.5.7"
+springBoot = "3.5.8"
 springdoc = "2.8.14"
 junit = "5.14.1"
 klint-plugin = "12.3.0"
@@ -16,10 +16,10 @@ kotest = "5.9.1"
 testcontainers = "1.21.3"
 testcontainers-keycloak = "3.4.0"
 jsonwebtoken = "0.13.0"
-cucumber = "7.31.0"
+cucumber = "7.32.0"
 apacheCommon = "1.14.0"
 jackson = "2.18.0"
-springSecurity = "6.5.6"
+springSecurity = "6.5.7"
 bucket4j = "8.10.1"
 stringtemplate = "4.3.4"
 docker-java = "3.7.0"
@@ -44,7 +44,7 @@ gradle-frontend = { module = "org.siouan:frontend-jdk17", version.ref = "fronten
 
 # Detekt
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.28" }
 detekt-compose2 = { module = "ru.kode:detekt-rules-compose", version = "1.4.0" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
@@ -113,7 +113,7 @@ kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotl
 #frontend-gradle-plugin = { id = "org.siouan.frontend-jdk17", version.ref = "frontend-gradle-plugin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springManagement" }
-gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.3" }
+gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.4" }
 
 [bundles]
 spring-boot = [

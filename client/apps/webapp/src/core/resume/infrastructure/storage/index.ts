@@ -14,4 +14,8 @@ export {
 } from "./factory";
 export { IndexedDBResumeStorage } from "./IndexedDBResumeStorage";
 export { LocalStorageResumeStorage } from "./LocalStorageResumeStorage";
+export {
+	RemoteResumeStorage,
+	type RemoteStorageConfig,
+} from "./RemoteResumeStorage";
 export { SessionStorageResumeStorage } from "./SessionStorageResumeStorage";

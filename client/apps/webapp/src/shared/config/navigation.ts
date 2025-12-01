@@ -37,7 +37,7 @@ const navigationItems: NavigationItem[] = [
 	{
 		label: "Support",
 		icon: "support",
-		to: "https://loomify.io/support",
+		to: "https://cvix.io/support",
 		external: true,
 	},
 ];

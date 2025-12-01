@@ -1,7 +1,7 @@
 {
-	"name": "Loomify",
-	"short_name": "Loomify",
-	"description": "Loomify Landing Page",
+  "name": "ProFileTailors",
+  "short_name": "ProFileTailors",
+  "description": "ProFileTailors Landing Page",
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#ffffff",

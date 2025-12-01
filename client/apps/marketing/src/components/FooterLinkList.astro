@@ -1,0 +1,34 @@
+---
+import Link from "./Link.astro";
+import { type Lang, useTranslatedPath, useTranslations } from "@/i18n";
+import type { MenuItem } from "@/models/menu";
+
+interface Props {
+  links: MenuItem[];
+  lang: Lang;
+}
+
+const { links, lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<ul class="text-muted-foreground font-medium space-y-5">
+  {
+    links.map(
+      (link) =>
+        link.type === "link" && (
+          <li>
+            <Link
+              href={translatePath(link.href)}
+              aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
+              target={link.target}
+            >
+              {t(link.translationKey)}
+            </Link>
+          </li>
+        ),
+    )
+  }
+</ul>
+

@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { AlertCircle, CheckCircle2, ChevronRight } from "lucide-vue-next";
-import { computed } from "vue";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import {
+	Alert,
+	AlertDescription,
+	AlertTitle,
+} from "@cvix/ui/components/ui/alert";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@/components/ui/sheet";
+} from "@cvix/ui/components/ui/sheet";
+import { AlertCircle, CheckCircle2, ChevronRight } from "lucide-vue-next";
+import { computed } from "vue";
 
 import type {
 	GroupedErrors,

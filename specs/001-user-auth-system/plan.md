@@ -87,7 +87,7 @@ client/apps/webapp/src/authentication/
 **Backend Structure (implementada):**
 
 ```text
-server/engine/src/main/kotlin/com/loomify/engine/authentication/
+server/engine/src/main/kotlin/com/cvix/engine/authentication/
 ├── domain/
 │   ├── AccessToken.kt
 │   ├── AuthoritiesConstants.kt

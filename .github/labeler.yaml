@@ -41,8 +41,7 @@ type:chore:
           - 'config/**'
           - 'scripts/**'
           - '.editorconfig'
-          - '.prettier*'
-          - '.eslintrc*'
+          - '*biome.json'
 
 type:test:
   - changed-files:

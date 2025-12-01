@@ -88,7 +88,7 @@
 			"label": "Software Engineer",
 			"image": "https://example.com/profile.jpg",
 			"imageHint": "Upload a professional portrait",
-			"email": "{'maria.garcia@loomify.com'}",
+			"email": "{'maria.garcia@cvix.com'}",
 			"phone": "+1 555 123 4567",
 			"url": "https://mariagarcia.com",
 			"network": "LinkedIn, GitHub, Twitter, etc.",
@@ -169,7 +169,11 @@
 			"downloadJsonHint": "Download JSON Resume (Cmd/Ctrl+S)",
 			"validateJson": "Validate JSON Resume",
 			"validateJsonHint": "Validate JSON Resume format",
-			"preview": "Preview"
+			"preview": "Preview",
+			"resetForm": "Reset Form",
+			"resetFormHint": "Clear all resume data",
+			"generatePdf": "Generate PDF",
+			"generatePdfHint": "Open PDF generation and download options"
 		},
 		"actions": {
 			"add": "Add",
@@ -337,6 +341,32 @@
 			},
 			"score": "GPA",
 			"courses": "Relevant Courses"
+		},
+		"resetDialog": {
+			"title": "Reset form?",
+			"description": "This will clear all resume data from the form and storage. This action cannot be undone. Make sure to download your resume first if you want to keep it.",
+			"cancel": "Cancel",
+			"reset": "Reset"
+		},
+		"pdfSelector": {
+			"templateLabel": "Template",
+			"selectTemplate": "Select a template",
+			"optionsTitle": "Template Options",
+			"param": {
+				"color": "Color",
+				"font": "Font",
+				"layout": "Layout",
+				"locale": "Language"
+			}
+		},
+		"pdfPage": {
+			"backToEditor": "Back to Editor",
+			"title": "Generate PDF",
+			"download": "Download PDF",
+			"error": "{error}",
+			"generatingPreview": "Generating preview...",
+			"selectTemplate": "Select a template to generate preview",
+			"unablePreview": "Unable to display PDF preview. Please download to view."
 		}
 	}
 }

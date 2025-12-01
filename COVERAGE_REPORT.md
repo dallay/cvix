@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document provides a comprehensive overview of the test coverage status for the Loomify backend application.
+This document provides a comprehensive overview of the test coverage status for the ProFileTailors
+backend application.
 
 ## Current Coverage Status
 

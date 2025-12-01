@@ -163,29 +163,29 @@
 -- CREATE POLICY subscriber_policy ON subscribers
 --   FOR SELECT TO PUBLIC
 --   USING (
---   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   workspace_id = current_setting('cvix.current_workspace')::uuid
 --   );
 --
 -- CREATE POLICY form_policy ON forms
 --   FOR SELECT TO PUBLIC
 --   USING (
---   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   workspace_id = current_setting('cvix.current_workspace')::uuid
 --   );
 --
 -- CREATE POLICY tags_policy ON tags
 --   FOR SELECT TO PUBLIC
 --   USING (
---   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   workspace_id = current_setting('cvix.current_workspace')::uuid
 --   );
 --
 -- CREATE POLICY workspace_policy ON workspaces
 --   FOR SELECT TO PUBLIC
 --   USING (
---   id = current_setting('loomify.current_workspace')::uuid
+--   id = current_setting('cvix.current_workspace')::uuid
 --   );
 --
 -- CREATE POLICY workspace_members_policy ON workspace_members
 --   FOR SELECT TO PUBLIC
 --   USING (
---   workspace_id = current_setting('loomify.current_workspace')::uuid
+--   workspace_id = current_setting('cvix.current_workspace')::uuid
 --   );

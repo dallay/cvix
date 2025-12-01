@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 008-enable-rls-workspaces
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: false
@@ -9,12 +9,12 @@ databaseChangeLog:
               ALTER TABLE workspaces ENABLE ROW LEVEL SECURITY;
               CREATE POLICY workspace_access_policy ON workspaces
               FOR ALL TO PUBLIC
-              USING (id = current_setting('loomify.current_workspace')::uuid)
-              WITH CHECK (id = current_setting('loomify.current_workspace')::uuid);
+              USING (id = current_setting('cvix.current_workspace')::uuid)
+              WITH CHECK (id = current_setting('cvix.current_workspace')::uuid);
 
   - changeSet:
       id: 009-enable-rls-workspace-members
-      author: loomify
+      author: cvix
       changes:
         - sql:
             splitStatements: false
@@ -22,5 +22,5 @@ databaseChangeLog:
               ALTER TABLE workspace_members ENABLE ROW LEVEL SECURITY;
               CREATE POLICY workspace_members_access_policy ON workspace_members
               FOR ALL TO PUBLIC
-              USING (workspace_id = current_setting('loomify.current_workspace')::uuid)
-              WITH CHECK (workspace_id = current_setting('loomify.current_workspace')::uuid);
+              USING (workspace_id = current_setting('cvix.current_workspace')::uuid)
+              WITH CHECK (workspace_id = current_setting('cvix.current_workspace')::uuid);

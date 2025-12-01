@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const error: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const error: UIMultilingual = {
 	en: {
 		"404.title": "Page Not Found",
 		"404.message":

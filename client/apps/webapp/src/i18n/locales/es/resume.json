@@ -88,7 +88,7 @@
 			"label": "Ingeniera de Software",
 			"image": "https://example.com/profile.jpg",
 			"imageHint": "Sube un retrato profesional",
-			"email": "{'maria.garcia@loomify.com'}",
+			"email": "{'maria.garcia@cvix.com'}",
 			"phone": "+34 612 345 678",
 			"url": "https://mariagarcia.com",
 			"network": "LinkedIn, GitHub, Twitter, etc.",
@@ -169,7 +169,11 @@
 			"downloadJsonHint": "Descargar JSON del Currículum (Cmd/Ctrl+S)",
 			"validateJson": "Validar JSON del Currículum",
 			"validateJsonHint": "Validar formato JSON Resume",
-			"preview": "Vista Previa"
+			"preview": "Vista Previa",
+			"resetForm": "Restablecer formulario",
+			"resetFormHint": "Borrar todos los datos del currículum",
+			"generatePdf": "Generar PDF",
+			"generatePdfHint": "Abrir opciones de generación y descarga de PDF"
 		},
 		"actions": {
 			"add": "Agregar",
@@ -337,6 +341,32 @@
 			},
 			"score": "Promedio",
 			"courses": "Cursos Relevantes"
+		},
+		"resetDialog": {
+			"title": "¿Restablecer el formulario?",
+			"description": "Esto borrará todos los datos del currículum del formulario y el almacenamiento. Esta acción no se puede deshacer. Asegúrate de descargar tu currículum primero si deseas conservarlo.",
+			"cancel": "Cancelar",
+			"reset": "Restablecer"
+		},
+		"pdfSelector": {
+			"templateLabel": "Plantilla",
+			"selectTemplate": "Selecciona una plantilla",
+			"optionsTitle": "Opciones de la plantilla",
+			"param": {
+				"color": "Color",
+				"font": "Fuente",
+				"layout": "Diseño",
+				"locale": "Idioma"
+			}
+		},
+		"pdfPage": {
+			"backToEditor": "Volver al editor",
+			"title": "Generar PDF",
+			"download": "Descargar PDF",
+			"error": "{error}",
+			"generatingPreview": "Generando vista previa...",
+			"selectTemplate": "Selecciona una plantilla para generar la vista previa",
+			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo."
 		}
 	}
 }

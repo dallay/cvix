@@ -1,11 +1,12 @@
 ---
 title: "Contributing"
-description: "Guidelines for contributing to the Loomify project and documentation."
+description: "Guidelines for contributing to the ProFileTailors project and documentation."
 ---
 
-## Contributing to Loomify
+## Contributing to ProFileTailors
 
-Thank you for considering contributing to Loomify! This page explains how to report issues, propose changes, and contribute code or documentation.
+Thank you for considering contributing to ProFileTailors! This page explains how to report issues,
+propose changes, and contribute code or documentation.
 
 ## Ways to contribute
 
@@ -58,7 +59,7 @@ pnpm --filter client... test
 ```md
 ---
 title: "Quick Start"
-description: "How to run Loomify locally"
+description: "How to run ProFileTailors locally"
 ---
 ```
 
@@ -70,7 +71,7 @@ description: "How to run Loomify locally"
 Before requesting a review, ensure:
 
 - Code builds and tests pass locally.
-- Linting rules pass (`detekt`, ESLint, Prettier if applicable).
+- Linting rules pass (`detekt`, Biome if applicable).
 - Documentation updated if the change affects behavior or public APIs.
 - The PR description explains the reason and the change; link related issues.
 
@@ -94,4 +95,5 @@ Please follow the project's Code of Conduct in `CODE_OF_CONDUCT.md` when interac
 
 ---
 
-Thank you — your contributions make Loomify better for everyone. If you want, I can add a PR template or a small CONTRIBUTING checklist file at the repo root.
+Thank you — your contributions make ProFileTailors better for everyone. If you want, I can add a PR
+template or a small CONTRIBUTING checklist file at the repo root.

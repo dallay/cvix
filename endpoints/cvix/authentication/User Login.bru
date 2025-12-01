@@ -12,11 +12,13 @@ post {
 
 headers {
   X-XSRF-TOKEN: {{xsrfToken}}
+  Content-Type: application/json
+  Accept: application/vnd.api.v1+json
 }
 
 body:json {
   {
-      "email": "john.doe@loomify.com",
+      "email": "john.doe@cvix.com",
       "password": "S3cr3tP@ssw0rd*123",
       "rememberMe": false
   }

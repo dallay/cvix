@@ -51,8 +51,9 @@ export class BaseHttpClient {
 	protected readonly baseURL: string;
 
 	constructor(config: HttpClientConfig = {}) {
-		this.baseURL =
-			config.baseURL || import.meta.env.VITE_API_BASE_URL || "/api";
+		const envRecord = import.meta.env as unknown as Record<string, unknown>;
+		const backend = envRecord.BACKEND_URL as string | undefined;
+		this.baseURL = (config.baseURL || backend) ?? "/api";
 
 		this.client = axios.create({
 			baseURL: this.baseURL,
@@ -148,6 +149,9 @@ export class BaseHttpClient {
 	 */
 	private getCsrfTokenFromCookie(): string | null {
 		const name = "XSRF-TOKEN=";
+		if (typeof document === "undefined") {
+			return null;
+		}
 		const decodedCookie = decodeURIComponent(document.cookie);
 		const cookieArray = decodedCookie.split(";");
 

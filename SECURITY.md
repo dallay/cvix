@@ -1,6 +1,6 @@
 # Security Policy
 
-Thank you for helping keep loomify secure.
+Thank you for helping keep cvix secure.
 
 ## Reporting a vulnerability
 

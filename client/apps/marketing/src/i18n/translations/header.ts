@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const header: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const header: UIMultilingual = {
 	en: {
 		"header.cta": "Get Started",
 		"header.cta.description": "Start your free trial today.",

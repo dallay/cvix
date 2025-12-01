@@ -1,6 +1,7 @@
 # Infrastructure Services
 
-This directory contains the infrastructure configuration for the loomify application, including database, authentication, email testing, and SSL certificate management.
+This directory contains the infrastructure configuration for the cvix application, including
+database, authentication, email testing, and SSL certificate management.
 
 ## Services
 

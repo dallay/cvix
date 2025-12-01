@@ -7,7 +7,7 @@ logging:
     org.springframework.r2dbc: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2.client: DEBUG
-    com.loomify: DEBUG
+    com.cvix: DEBUG
 spring:
   devtools:
     restart:
@@ -20,8 +20,8 @@ spring:
 springdoc:
   show-actuator: true
 application:
-  name: Loomify
-  description: Example Loomify application used for local development.
+  name: ProFileTailors
+  description: Example ProFileTailors application used for local development.
   version: 0.0.1-SNAPSHOT
   display-ribbon-on-profiles: dev
   security:
@@ -29,7 +29,7 @@ application:
       base-url: ${OAUTH2_SERVER_URL:http://localhost:9080}
       server-url: ${application.security.oauth2.base-url}
       issuer-uri: ${application.security.oauth2.base-url}/realms/${application.security.oauth2.realm}
-      realm: ${REALM:Loomify}
+      realm: ${REALM:ProFileTailors}
       client-id: ${CLIENT_ID:web_app}
       client-secret: ${CLIENT_SECRET:web_app}
       admin-client-id: ${ADMIN_CLIENT_ID:admin-cli}

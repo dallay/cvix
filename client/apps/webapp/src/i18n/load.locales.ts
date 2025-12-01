@@ -1,3 +1,4 @@
+import { deepmerge } from "@cvix/utilities";
 import type {
 	LocaleMessage,
 	LocaleMessageObject,
@@ -32,8 +33,6 @@ function flattenKeys(
 	}
 	return result;
 }
-
-import { deepmerge } from "@loomify/utilities";
 
 /**
  * In-memory cache for merged locale message objects.

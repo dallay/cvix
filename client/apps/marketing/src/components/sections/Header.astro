@@ -5,11 +5,11 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
 import { BASE_URL } from "@/consts";
 import { type Lang, useTranslations } from "@/i18n";
 import LocaleSelect from "@/i18n/components/LocaleSelect.astro";
-import { cn } from "@/lib/utils";
+import { cn } from "@cvix/ui/lib/utils";
 import { headerMenuItems } from "@/models/menu";
 import MobileMenuButton from "../MobileMenuButton.vue";
 import NavMenus from "../NavMenus.vue";
-import { buttonVariants } from "../ui/button";
+import {buttonVariants} from "@cvix/ui";
 
 const lang = Astro.currentLocale as Lang;
 const t = useTranslations(lang);

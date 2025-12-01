@@ -268,7 +268,7 @@ vars {
   xsrfToken:                          # ← Filled automatically
   url: http://localhost:8080
   keycloak-url: http://localhost:9080
-  realm: loomify
+  realm: cvix
   scope: openid
 }
 ```
@@ -323,7 +323,7 @@ POST /api/auth/login
 X-XSRF-TOKEN: {{xsrfToken}}
 
 {
-  "email": "john.doe@loomify.com",
+  "email": "john.doe@cvix.com",
   "password": "S3cr3tP@ssw0rd*123",
   "rememberMe": false
 }
@@ -337,7 +337,7 @@ X-XSRF-TOKEN: {{xsrfToken}}
 
 ```json
 {
-    "email": "john.doe@loomify.com",
+    "email": "john.doe@cvix.com",
     "password": "S3cr3tP@ssw0rd*123",
     "rememberMe": false
 }
@@ -470,7 +470,7 @@ Set-Cookie: XSRF-TOKEN=....; Path=/; SameSite=Lax
 - [Spring Security CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)
 - [Bruno Documentation](https://docs.usebruno.com/)
 - Backend CSRF implementation:
-  `server/engine/src/main/kotlin/com/loomify/engine/authentication/infrastructure/filter/CookieCsrfFilter.kt`
+  `server/engine/src/main/kotlin/com/cvix/engine/authentication/infrastructure/filter/CookieCsrfFilter.kt`
 
 ## 📚 Bruno Documentation
 

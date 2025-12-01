@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import { toast } from "vue-sonner";
-import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
-import UserNav from "@/components/UserNav.vue";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -12,9 +6,15 @@ import {
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "@cvix/ui/components/ui/breadcrumb";
+import { Separator } from "@cvix/ui/components/ui/separator";
+import { SidebarTrigger } from "@cvix/ui/components/ui/sidebar";
+import { storeToRefs } from "pinia";
+import { computed, ref } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
+import UserNav from "@/components/UserNav.vue";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore.ts";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 

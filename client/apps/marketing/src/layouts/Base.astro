@@ -52,7 +52,7 @@ const localeDescription = description || t(SITE_DESCRIPTION);
     <!-- icon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon alternate" sizes="64x64" type="image/png" href="/favicon.png">
-    <link rel="icon" sizes="192x192" href="/android-chrome.png" />
+    <link rel="icon" sizes="192x192" href="/android-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="color-scheme" content="light dark" />
@@ -62,7 +62,7 @@ const localeDescription = description || t(SITE_DESCRIPTION);
     <meta property="og:title" content={localeTitle} />
     <meta property="og:site_name" content={localeTitle} />
     <meta property="og:description" content={localeDescription} />
-  <meta property="og:image" content={ogImage ? String(ogImage) : Astro.site + "ogp.png"} />
+    <meta property="og:image" content={ogImage ? String(ogImage) : Astro.site + "ogp.png"} />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:locale" content={LOCALES[locale].lang || locale} />
     <meta name="twitter:card" content="summary" />
@@ -81,7 +81,7 @@ const localeDescription = description || t(SITE_DESCRIPTION);
     <LocaleHtmlHead />
   </head>
 
-  <body class="bg-white dark:bg-gray-900 scroll-smooth transition-colors duration-300 ease-in-out min-w-sm">
+  <body class="bg-background text-foreground scroll-smooth transition-colors duration-300 ease-in-out min-w-sm">
   <slot name="header">
     <LocaleSuggest />
     <Header />
@@ -95,5 +95,36 @@ const localeDescription = description || t(SITE_DESCRIPTION);
   <BackToTop />
 
   { import.meta.env.DEV && <style>:root { scroll-behavior: auto }</style> }
+  <script>
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target); // Only animate once
+        }
+      });
+    }, observerOptions);
+
+    document.addEventListener('astro:page-load', () => {
+      const sections = document.querySelectorAll('.fade-in-section');
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+    });
+
+    // Initial load for non-SPA navigation
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('.fade-in-section');
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+  </script>
   </body>
 </html>

@@ -14,12 +14,10 @@ Quick guidelines to keep the repository consistent.
 
 ## Code formatting
 
-- Kotlin: follow the rules in `detekt.yml`.
-- JS/TS: follow `prettier` and `eslint` where applicable.
+ JS/TS: follow Biome and ESLint where applicable.
 
 ## Commits and PRs
 
-- Use semantic commit prefixes (e.g., feat, fix, chore).
 - Add a clear PR description and reference related issues.
 
 ## Tests

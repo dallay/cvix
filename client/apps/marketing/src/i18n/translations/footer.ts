@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const footer: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const footer: UIMultilingual = {
 	en: {
 		// Footer description
 		"footer.description":
@@ -31,9 +28,10 @@ export const footer: {
 		"footer.aria.privacyPolicy": "Read our privacy policy",
 		"footer.termsOfUse": "Terms of Use",
 		"footer.aria.termsOfUse": "Read our terms of use",
+		"footer.allRightsReserved": "All rights reserved.",
 
 		// Brand name used in the footer
-		"footer.brand": "Loomify",
+    "footer.brand": "ProFileTailors",
 	},
 	es: {
 		// Footer description
@@ -62,6 +60,7 @@ export const footer: {
 		"footer.aria.privacyPolicy": "Lee nuestra política de privacidad",
 		"footer.termsOfUse": "Términos de Uso",
 		"footer.aria.termsOfUse": "Lee nuestros términos de uso",
+    "footer.allRightsReserved": "Todos los derechos reservados.",
 
 		// Brand name used in the footer
 		"footer.brand": "Plantilla SaaS",

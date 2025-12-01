@@ -1,6 +1,6 @@
-import type { Translations } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const termsOfUse: Translations = {
+export const termsOfUse: UIMultilingual = {
 	en: {
 		"termsOfUse.title": "Terms of Use",
 		"termsOfUse.description": "Review our terms of use.",

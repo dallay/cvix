@@ -1,9 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const home: {
-	en: UIDict;
-	es: UIDict;
-} = {
+export const home: UIMultilingual = {
 	en: {
 		"home.title": "Civix — Professional resumes in 60 seconds",
 		"home.description":

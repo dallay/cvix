@@ -10,7 +10,7 @@ plugins {
     id("app.kover")
     id("app.owasp.dependency.check")
 }
-group = rootProject.findProperty("group")?.toString() ?: "com.loomify"
+group = rootProject.findProperty("group")?.toString() ?: "com.cvix"
 version = rootProject.findProperty("version")?.toString() ?: "0.0.1-SNAPSHOT"
 
 repositories {

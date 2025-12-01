@@ -1,6 +1,6 @@
-import { resolve } from "node:path";
-import { sharedViteConfig } from "@loomify/config/vite.config.shared";
-import { defineConfig, mergeConfig } from "vite";
+import {resolve} from "node:path";
+import {sharedViteConfig} from "@cvix/config/vite.config.shared";
+import {defineConfig, mergeConfig} from "vite";
 import dts from "vite-plugin-dts"; // 1. Importa el plugin
 
 /** @type {import('vite').UserConfig} */

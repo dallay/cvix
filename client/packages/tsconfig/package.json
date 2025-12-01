@@ -1,13 +1,13 @@
 {
-	"name": "@loomify/tsconfig",
-	"description": "Shared TypeScript configurations for loomify",
+  "name": "@cvix/tsconfig",
+  "description": "Shared TypeScript configurations for cvix",
 	"version": "0.0.1",
 	"type": "module",
 	"license": "MIT",
-	"homepage": "https://loomify.tech",
-	"author": "loomify Team",
+  "homepage": "https://cvix.tech",
+  "author": "cvix Team",
 	"keywords": [
-		"loomify",
+    "cvix",
 		"tsconfig",
 		"typescript"
 	],
@@ -15,7 +15,7 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
 	},
-	"packageManager": "pnpm@10.22.0",
+	"packageManager": "pnpm@10.24.0",
 	"files": [
 		"tsconfig.base.json",
 		"tsconfig.node.json",

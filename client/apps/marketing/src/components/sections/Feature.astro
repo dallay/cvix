@@ -7,60 +7,65 @@ const astroLocale = Astro.currentLocale;
 let langToUse: Lang;
 
 if (astroLocale && LOCALES[astroLocale as Lang]) {
-	langToUse = astroLocale as Lang;
+  langToUse = astroLocale as Lang;
 } else {
-	langToUse = DEFAULT_LOCALE;
+  langToUse = DEFAULT_LOCALE;
 }
 const t = useTranslations(langToUse);
+
+const features = [
+  {
+    icon: "tabler:layout-dashboard",
+    titleKey: "features.guidedForm.title",
+    descKey: "features.guidedForm.description",
+  },
+  {
+    icon: "tabler:wand",
+    titleKey: "features.instantPDF.title",
+    descKey: "features.instantPDF.description",
+  },
+  {
+    icon: "tabler:shield-check",
+    titleKey: "features.privacy.title",
+    descKey: "features.privacy.description",
+  },
+  {
+    icon: "tabler:device-mobile",
+    titleKey: "features.mobileFirst.title",
+    descKey: "features.mobileFirst.description",
+  },
+];
 ---
-<section class="bg-white dark:bg-gray-900 py-12 sm:py-16 lg:py-20">
-  <div class="px-4 mx-auto max-w-screen-xl">
-    <div class="max-w-screen-md mx-auto mb-8 text-center lg:mb-12">
-      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{t('features.heading')}</h2>
-      <p class="text-gray-500 sm:text-xl dark:text-gray-400">{t('features.subheading')}</p>
-    </div>
-    
-    <!-- Key Value Props (3 main features) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-      <div class="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <Icon name="tabler:file-type-pdf" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.latexQuality.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.latexQuality.description')}</p>
-      </div>
-      <div class="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <Icon name="tabler:bolt" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.instantPDF.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.instantPDF.description')}</p>
-      </div>
-      <div class="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <Icon name="tabler:shield-lock" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.privacy.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.privacy.description')}</p>
-      </div>
+
+<section class="py-24 bg-background fade-in-section">
+  <div class="container mx-auto max-w-screen-xl px-4">
+    <div class="text-center mb-16">
+      <h2
+        class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 fade-in-section delay-100"
+      >
+        {t("features.heading")}
+      </h2>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto fade-in-section delay-200">
+        {t("features.subheading")}
+      </p>
     </div>
 
-    <!-- Detailed Features (4 features) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div class="flex flex-col items-center text-center p-6">
-        <Icon name="tabler:forms" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.guidedForm.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.guidedForm.description')}</p>
-      </div>
-      <div class="flex flex-col items-center text-center p-6">
-        <Icon name="tabler:template" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.modernTemplate.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.modernTemplate.description')}</p>
-      </div>
-      <div class="flex flex-col items-center text-center p-6">
-        <Icon name="tabler:download" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.secureExport.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.secureExport.description')}</p>
-      </div>
-      <div class="flex flex-col items-center text-center p-6">
-        <Icon name="tabler:device-mobile" class="w-12 h-12 mb-4 text-primary-600" />
-        <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{t('features.mobileFirst.title')}</h3>
-        <p class="text-gray-500 dark:text-gray-400">{t('features.mobileFirst.description')}</p>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 max-w-5xl mx-auto">
+      {
+        features.map((feature, index) => (
+          <div class={`flex gap-6 fade-in-section delay-${(index + 1) * 100}`}>
+            <div class="flex-shrink-0">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <Icon name={feature.icon} class="w-8 h-8" />
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-foreground mb-2">{t(feature.titleKey)}</h3>
+              <p class="text-muted-foreground leading-relaxed">{t(feature.descKey)}</p>
+            </div>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>

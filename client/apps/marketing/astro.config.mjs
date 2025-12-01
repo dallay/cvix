@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from "node:url";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
@@ -56,6 +57,9 @@ export default defineConfig({
 		resolve: {
 			alias: {
 				"~": "/src",
+				"@cvix/ui": fileURLToPath(
+					new URL("../../packages/ui/src", import.meta.url),
+				),
 			},
 		},
 	},

@@ -1,6 +1,6 @@
-import type { UIDict } from "../types";
+import type {UIMultilingual} from "@i18n";
 
-export const theme: { en: UIDict; es: UIDict } = {
+export const theme: UIMultilingual = {
 	en: {
 		"theme.toggle.button": "Toggle Theme",
 		"theme.toggle.tooltip": "Toggle between light and dark theme",

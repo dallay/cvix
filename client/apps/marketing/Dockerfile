@@ -28,7 +28,7 @@ COPY client/packages ./client/packages/
 COPY client/apps/marketing ./client/apps/marketing/
 
 # Build utilities package first
-RUN pnpm --filter @loomify/utilities build
+RUN pnpm --filter @cvix/utilities build
 
 # Build the landing page with environment-specific configuration
 ARG BUILD_ENV=production

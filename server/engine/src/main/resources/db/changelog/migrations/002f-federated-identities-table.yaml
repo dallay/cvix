@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002f-create-federated-identities-table
-      author: loomify
+      author: cvix
       comment: |
         Create federated_identities table to support federated authentication.
         This table stores links between local users and their federated identity provider accounts.

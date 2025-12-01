@@ -76,7 +76,7 @@ client/apps/webapp/src/authentication/
     └── stores/authStore.ts            # Pinia state management
 
 Backend (Hexagonal Architecture + CQRS):
-server/engine/src/main/kotlin/com/loomify/engine/
+server/engine/src/main/kotlin/com/cvix/engine/
 ├── authentication/
 │   ├── domain/                        # Core domain logic
 │   ├── application/                   # Commands & queries

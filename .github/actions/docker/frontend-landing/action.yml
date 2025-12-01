@@ -109,7 +109,7 @@ runs:
     - name: Extract metadata for Docker
       id: meta
       # Pinned to v5 commit hash for security
-      uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893  # v5
+      uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051  # v5
       with:
         images: |
           ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
@@ -180,7 +180,7 @@ runs:
           COPY client/apps/marketing ./client/apps/marketing/
 
           # Build utilities package first
-          RUN pnpm --filter @loomify/utilities build
+          RUN pnpm --filter @cvix/utilities build
 
           # Build the landing page with environment-specific configuration
           ARG BUILD_ENV=production

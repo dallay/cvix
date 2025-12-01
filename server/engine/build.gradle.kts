@@ -6,7 +6,7 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "4.0.5"
 }
 
-group = "com.loomify"
+group = "com.cvix"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -27,7 +27,7 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2024.0.2"
-extra["springModulithVersion"] = "1.4.4"
+extra["springModulithVersion"] = "1.4.5"
 
 dependencies {
     // L O C A L   D E P E N D E N C I E S
@@ -141,7 +141,7 @@ tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
     imageName.set(
         providers.environmentVariable("IMAGE_NAME")
-            .orElse("ghcr.io/${rootProject.group}/loomify/backend:${rootProject.version}"),
+            .orElse("ghcr.io/${rootProject.group}/cvix/backend:${rootProject.version}"),
     )
     environment.set(
         mapOf(

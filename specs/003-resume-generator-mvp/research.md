@@ -481,7 +481,9 @@ Create language-specific template variables:
 
 **Existing Implementation**:
 
-The project already has **Bucket4j** implemented in the authentication module (`com.loomify.engine.ratelimit`). This is the **recommended approach** to maintain consistency across the codebase.
+The project already has **Bucket4j** implemented in the authentication module (
+`com.cvix.ratelimit`). This is the **recommended approach** to maintain consistency across the
+codebase.
 
 **Bucket4j Architecture** (already in use):
 
@@ -729,7 +731,7 @@ class RateLimitingTest {
 **References**:
 
 - Bucket4j documentation: <https://bucket4j.com/>
-- Existing implementation: `server/engine/src/main/kotlin/com/loomify/engine/ratelimit/`
+- Existing implementation: `server/engine/src/main/kotlin/com/cvix/engine/ratelimit/`
 - RFC 6585 (HTTP 429): <https://tools.ietf.org/html/rfc6585#section-4>
 
 ---

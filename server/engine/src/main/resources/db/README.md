@@ -1,6 +1,6 @@
-# loomify – Database Schema
+# cvix – Database Schema
 
-This document defines the conventions, practices, and structure of the loomify project's database.
+This document defines the conventions, practices, and structure of the cvix project's database.
 
 ---
 
@@ -190,7 +190,7 @@ CREATE TYPE subscriber_status AS ENUM ('ENABLED', 'DISABLED', 'BLOCKLISTED');
 - **Strict naming conventions** for files and constraints.
 - **Multi-tenancy via `workspace_id`**, reinforced with RLS.
 - **Row-level security policies (RLS)** controlled by
-  `current_setting('loomify.current_workspace')`.
+  `current_setting('cvix.current_workspace')`.
 - **Hybrid permission model**: combines workspace-local roles (`workspace_members.role`) and global
   authorities (`user_authority`).
 - **Global roles from Keycloak groups** are stored in `authority` and joined via `user_authority`.

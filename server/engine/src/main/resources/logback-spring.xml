@@ -13,8 +13,8 @@
     </encoder>
   </appender>
 
-  <!-- Definir logger para el paquete com.loomify -->
-  <logger name="com.loomify" level="DEBUG" additivity="false">
+  <!-- Definir logger para el paquete com.cvix -->
+  <logger additivity="false" level="DEBUG" name="com.cvix">
     <appender-ref ref="CONSOLE"/>
   </logger>
 

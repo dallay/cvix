@@ -1,4 +1,4 @@
-# Loomify Monorepo Makefile Help
+# ProFileTailors Monorepo Makefile Help
 
 Usage: make [command]
 

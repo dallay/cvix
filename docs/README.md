@@ -1,6 +1,7 @@
-# Loomify Docs (Astro + Starlight)
+# ProFileTailors Docs (Astro + Starlight)
 
-This README explains how to run, edit, and contribute to the documentation site for the Loomify.
+This README explains how to run, edit, and contribute to the documentation site for the
+ProFileTailors.
 
 ## What this is
 
@@ -33,7 +34,7 @@ Example frontmatter at the top of a markdown file:
 ```md
 ---
 title: "Quick Start"
-description: "How to get the Loomify running locally"
+description: "How to get the ProFileTailors running locally"
 ---
 ```
 

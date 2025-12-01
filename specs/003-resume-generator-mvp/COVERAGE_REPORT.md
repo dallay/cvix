@@ -108,7 +108,7 @@
 
 ## Domain Layer Coverage (Kotlin)
 
-**Package**: `com.loomify.resume.domain.**`
+**Package**: `com.cvix.resume.domain.**`
 **Requirement**: 100% coverage per Constitution
 
 ### Coverage by Sub-Package
@@ -271,7 +271,7 @@ pnpm vitest run path/to/test.spec.ts
 ./gradlew koverHtmlReport
 
 # Find domain package in report
-grep -n "loomify.resume.domain" server/engine/build/reports/kover/html/index.html
+grep -n "cvix.resume.domain" server/engine/build/reports/kover/html/index.html
 ```
 
 ---

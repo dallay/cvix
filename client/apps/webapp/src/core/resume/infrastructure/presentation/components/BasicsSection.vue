@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 import {
 	Field,
 	FieldDescription,
@@ -7,9 +6,10 @@ import {
 	FieldLabel,
 	FieldLegend,
 	FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@cvix/ui/components/ui/field";
+import { Input } from "@cvix/ui/components/ui/input";
+import { Textarea } from "@cvix/ui/components/ui/textarea";
+import { useI18n } from "vue-i18n";
 import type { Basics } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();

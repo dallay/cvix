@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute } from "vue-router";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@cvix/ui/components/ui/card";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@cvix/ui/components/ui/tabs";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { StorageSelector } from "@/core/settings";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 

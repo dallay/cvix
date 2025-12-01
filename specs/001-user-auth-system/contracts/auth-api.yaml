@@ -7,12 +7,12 @@ info:
   version: 1.0.0
   contact:
     name: Platform Team
-    email: platform@loomify.com
+    email: platform@cvix.com
 
 servers:
   - url: http://localhost:8080/api
     description: Local development server
-  - url: https://api.loomify.com
+  - url: https://api.cvix.com
     description: Production server
 
 security:

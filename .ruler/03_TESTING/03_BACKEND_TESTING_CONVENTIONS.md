@@ -44,7 +44,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import com.loomify.UnitTest
+import com.cvix.UnitTest
 
 @UnitTest
 class UserServiceTest {

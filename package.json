@@ -1,21 +1,21 @@
 {
-  "name": "loomify",
+  "name": "cvix",
   "version": "1.0.0",
-  "description": "loomify Monorepo",
+  "description": "cvix Monorepo",
   "private": true,
   "type": "module",
   "license": "MIT",
-  "homepage": "https://loomify.tech",
-  "author": "loomify Team",
+  "homepage": "https://cvix.tech",
+  "author": "cvix Team",
   "keywords": [
-    "loomify",
+    "cvix",
     "monorepo"
   ],
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.24.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/dallay/cvix.git",
@@ -35,18 +35,18 @@
   "scripts": {
     "update-deps": "pnpm update -i -r --latest",
     "preinstall": "npx only-allow pnpm",
-    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
+    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && (command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply'); fi",
     "ruler:check": "ruler check",
     "ruler:apply": "ruler apply",
     "dev": "pnpm --recursive --parallel run dev",
-    "dev:landing": "pnpm --filter @loomify/marketing dev",
-    "dev:web": "pnpm --filter @loomify/webapp dev",
-    "dev:docs": "pnpm --filter @loomify/docs dev",
+    "dev:landing": "pnpm --filter @cvix/marketing dev",
+    "dev:web": "pnpm --filter @cvix/webapp dev",
+    "dev:docs": "pnpm --filter @cvix/docs dev",
     "build": "pnpm --recursive run build",
-    "build:landing": "pnpm --filter @loomify/marketing build",
-    "preview:landing": "pnpm --filter @loomify/marketing preview",
-    "build:web": "pnpm --filter @loomify/webapp build",
-    "build:docs": "pnpm --filter @loomify/docs build",
+    "build:landing": "pnpm --filter @cvix/marketing build",
+    "preview:landing": "pnpm --filter @cvix/marketing preview",
+    "build:web": "pnpm --filter @cvix/webapp build",
+    "build:docs": "pnpm --filter @cvix/docs build",
     "test": "pnpm --recursive run test",
     "test:ui": "pnpm --recursive run test:ui",
     "test:coverage": "pnpm --recursive run test:coverage",
@@ -60,29 +60,29 @@
     "backend:clean": "./gradlew clean",
     "start": "run-p backend:run dev",
     "test:all": "pnpm --recursive run test && pnpm run backend:test",
-    "precommit": "pnpm run ruler:apply"
+    "precommit": "(command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply')"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.7",
+    "@biomejs/biome": "^2.3.8",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@eslint/json": "^0.14.0",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.57.0",
     "@types/node": "^24.10.1",
-    "@vitest/ui": "^4.0.13",
+    "@vitest/ui": "^4.0.14",
     "lefthook": "^2.0.4",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.29.0",
+    "oxlint": "^1.30.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.4",
+    "vite": "^7.2.6",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.13"
+    "vitest": "^4.0.14"
   },
   "pnpm": {
     "overrides": {
-      "@loomify/docs>zod": "^3.23.8",
+      "@cvix/docs>zod": "^3.23.8",
       "glob": "^10.5.0",
       "@anthropic-ai/claude-code": "^2.0.31",
       "js-yaml": "^4.1.1"

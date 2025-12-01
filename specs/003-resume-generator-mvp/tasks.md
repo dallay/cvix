@@ -15,8 +15,8 @@
 
 ## Path Conventions
 
-- Backend: `server/engine/src/main/kotlin/com/loomify/resume/`
-- Backend tests: `server/engine/src/test/kotlin/com/loomify/resume/`
+- Backend: `server/engine/src/main/kotlin/com/cvix/resume/`
+- Backend tests: `server/engine/src/test/kotlin/com/cvix/resume/`
 - Frontend: `client/apps/webapp/src/resume/`
 - Frontend tests: `client/apps/webapp/src/__tests__/resume/`
 - Resources: `server/engine/src/main/resources/`
@@ -28,10 +28,13 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [X] T001 Create domain package structure in `server/engine/src/main/kotlin/com/loomify/resume/domain/`
-- [X] T002 Create application package structure in `server/engine/src/main/kotlin/com/loomify/resume/application/`
-- [X] T003 Create infrastructure package structure in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/`
-- [X] T004 [P] Create test directory structure in `server/engine/src/test/kotlin/com/loomify/resume/`
+- [X] T001 Create domain package structure in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/`
+- [X] T002 Create application package structure in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/`
+- [X] T003 Create infrastructure package structure in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/`
+- [X] T004 [P] Create test directory structure in `server/engine/src/test/kotlin/com/cvix/resume/`
 - [X] T005 [P] Create frontend feature structure in `client/apps/webapp/src/resume/`
 - [X] T006 [P] Add StringTemplate 4 dependency to `server/engine/build.gradle.kts`
 - [X] T007 [P] Pull TeX Live Docker image and verify availability (see quickstart.md)
@@ -47,14 +50,22 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T011 [P] Use reusable Email value object in shared common library (`com.loomify.common.domain.vo.email`)
-- [X] T012 [P] Create domain exception hierarchy in `server/engine/src/main/kotlin/com/loomify/resume/domain/exception/ResumeGenerationException.kt`
-- [X] T013 [P] Define PdfGeneratorPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/PdfGeneratorPort.kt`
-- [X] T014 [P] Define TemplateRendererPort interface in `server/engine/src/main/kotlin/com/loomify/resume/domain/port/TemplateRendererPort.kt`
-- [X] T015 [P] Create Docker configuration class in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerConfiguration.kt`
-- [X] T016 [P] Create StringTemplate configuration in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/StringTemplateConfiguration.kt`
-- [X] T017 [P] Create GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/GlobalExceptionHandler.kt`
-- [X] T018 [P] Create ErrorResponse DTO in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/ErrorResponse.kt`
+- [X] T011 [P] Use reusable Email value object in shared common library (
+  `com.cvix.common.domain.vo.email`)
+- [X] T012 [P] Create domain exception hierarchy in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/exception/ResumeGenerationException.kt`
+- [X] T013 [P] Define PdfGeneratorPort interface in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/port/PdfGeneratorPort.kt`
+- [X] T014 [P] Define TemplateRendererPort interface in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/port/TemplateRendererPort.kt`
+- [X] T015 [P] Create Docker configuration class in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerConfiguration.kt`
+- [X] T016 [P] Create StringTemplate configuration in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/template/StringTemplateConfiguration.kt`
+- [X] T017 [P] Create GlobalExceptionHandler in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/GlobalExceptionHandler.kt`
+- [X] T018 [P] Create ErrorResponse DTO in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/dto/ErrorResponse.kt`
 - [X] T019 Create base LaTeX template structure (English) in `server/engine/src/main/resources/templates/resume/resume-template-en.tex`
 - [X] T020 Create base LaTeX template structure (Spanish) in `server/engine/src/main/resources/templates/resume/resume-template-es.tex`
 - [X] T021 [P] Create English i18n messages in `server/engine/src/main/resources/messages/messages.properties`
@@ -64,8 +75,11 @@
 - [X] T025 [P] Add English translations in `client/apps/webapp/src/i18n/locales/en/resume.json`
 - [X] T026 [P] Add Spanish translations in `client/apps/webapp/src/i18n/locales/es/resume.json`
 - [X] T027A [P] Configure Bucket4j dependencies in `server/engine/engine.gradle.kts` (reuse from auth module per plan.md)
-- [X] T027 [P] Implement rate limiter interface and strategy in domain layer (depends on T016) in `server/engine/src/main/kotlin/com/loomify/engine/ratelimit/domain/RateLimiter.kt`
-- [X] T027B [P] Implement @RateLimiting annotation pattern on resume endpoints (10 requests/minute per spec.md) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [X] T027 [P] Implement rate limiter interface and strategy in domain layer (depends on T016) in
+  `server/engine/src/main/kotlin/com/cvix/engine/ratelimit/domain/RateLimiter.kt`
+- [X] T027B [P] Implement @RateLimiting annotation pattern on resume endpoints (10 requests/minute
+  per spec.md) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
 
 **CRITICAL**: Per Constitution Principle II, tests MUST be written BEFORE implementation code. All tests below should FAIL initially.
 
@@ -85,18 +99,27 @@
 
 #### Unit Tests (Backend) - Write FIRST, verify they FAIL
 
-- [X] T028 [P] [US1] Unit test for ResumeData validation logic (must have work/education/skills) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/ResumeDataTest.kt`
-- [X] T029 [P] [US1] Unit test for WorkExperience date validation (endDate >= startDate) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/WorkExperienceTest.kt`
-- [X] T030 [P] [US1] Unit test for Education date validation in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/EducationTest.kt`
-- [X] T031 [P] [US1] Unit test for Basics value object validations (name, email) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/BasicsTest.kt`
-- [X] T032 [P] [US1] Unit test for SkillCategory validation (must have keywords) in `server/engine/src/test/kotlin/com/loomify/resume/domain/model/SkillCategoryTest.kt`
-- [X] T033 [P] [US1] Unit test for GenerateResumeCommandHandler orchestration logic in `server/engine/src/test/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandlerTest.kt`
+- [X] T028 [P] [US1] Unit test for ResumeData validation logic (must have work/education/skills) in
+  `server/engine/src/test/kotlin/com/cvix/resume/domain/model/ResumeDataTest.kt`
+- [X] T029 [P] [US1] Unit test for WorkExperience date validation (endDate >= startDate) in
+  `server/engine/src/test/kotlin/com/cvix/resume/domain/model/WorkExperienceTest.kt`
+- [X] T030 [P] [US1] Unit test for Education date validation in
+  `server/engine/src/test/kotlin/com/cvix/resume/domain/model/EducationTest.kt`
+- [X] T031 [P] [US1] Unit test for Basics value object validations (name, email) in
+  `server/engine/src/test/kotlin/com/cvix/resume/domain/model/BasicsTest.kt`
+- [X] T032 [P] [US1] Unit test for SkillCategory validation (must have keywords) in
+  `server/engine/src/test/kotlin/com/cvix/resume/domain/model/SkillCategoryTest.kt`
+- [X] T033 [P] [US1] Unit test for GenerateResumeCommandHandler orchestration logic in
+  `server/engine/src/test/kotlin/com/cvix/resume/application/handler/GenerateResumeCommandHandlerTest.kt`
 
 #### Integration Tests (Backend) - Write FIRST, verify they FAIL
 
-- [X] T034 [P] [US1] Integration test for ResumeController POST /api/resume endpoint (@WebFluxTest) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
-- [X] T035 [P] [US1] Integration test for DockerPdfGeneratorAdapter with Testcontainers in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
-- [X] T036 [P] [US1] Integration test for LatexTemplateRenderer with sample data in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRendererTest.kt`
+- [X] T034 [P] [US1] Integration test for ResumeController POST /api/resume endpoint (@WebFluxTest)
+  in `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/web/ResumeControllerTest.kt`
+- [X] T035 [P] [US1] Integration test for DockerPdfGeneratorAdapter with Testcontainers in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
+- [X] T036 [P] [US1] Integration test for LatexTemplateRenderer with sample data in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/template/LatexTemplateRendererTest.kt`
 
 #### Component Tests (Frontend) - Write FIRST, verify they FAIL
 
@@ -110,50 +133,94 @@
 
 #### Domain Layer (Backend)
 
-- [X] T040 [P] [US1] Create FullName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T041 [P] [US1] Create JobTitle value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T042 [P] [US1] Create PhoneNumber value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T043 [P] [US1] Create Url value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T044 [P] [US1] Create Summary value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T045 [P] [US1] Create Location and SocialProfile data classes in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T046 [US1] Create Basics value object (depends on T040-T045) in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Basics.kt`
-- [X] T047 [P] [US1] Create CompanyName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
-- [X] T048 [P] [US1] Create Highlight value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
-- [X] T049 [US1] Create WorkExperience entity with validation and formatPeriod logic in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/WorkExperience.kt`
-- [X] T050 [P] [US1] Create InstitutionName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
-- [X] T051 [P] [US1] Create FieldOfStudy value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
-- [X] T052 [P] [US1] Create DegreeType value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
-- [X] T053 [US1] Create Education entity with validation and formatPeriod logic in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Education.kt`
-- [X] T054 [P] [US1] Create SkillCategoryName value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/SkillCategory.kt`
-- [X] T055 [P] [US1] Create Skill value object in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/SkillCategory.kt`
-- [X] T056 [US1] Create SkillCategory entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/SkillCategory.kt`
-- [X] T057 [P] [US1] Create Language entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Language.kt`
-- [X] T058 [P] [US1] Create Project entity in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/Project.kt`
-- [X] T059 [US1] Create ContentMetrics data class in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/ResumeData.kt`
-- [X] T060 [US1] Create ResumeData aggregate root with validation (depends on T046, T049, T053, T056-T058) in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/ResumeData.kt`
-- [X] T061 [US1] Create GeneratedDocument domain event in `server/engine/src/main/kotlin/com/loomify/resume/domain/event/GeneratedDocument.kt`
+- [X] T040 [P] [US1] Create FullName value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T041 [P] [US1] Create JobTitle value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T042 [P] [US1] Create PhoneNumber value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T043 [P] [US1] Create Url value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T044 [P] [US1] Create Summary value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T045 [P] [US1] Create Location and SocialProfile data classes in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T046 [US1] Create Basics value object (depends on T040-T045) in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Basics.kt`
+- [X] T047 [P] [US1] Create CompanyName value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/WorkExperience.kt`
+- [X] T048 [P] [US1] Create Highlight value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/WorkExperience.kt`
+- [X] T049 [US1] Create WorkExperience entity with validation and formatPeriod logic in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/WorkExperience.kt`
+- [X] T050 [P] [US1] Create InstitutionName value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Education.kt`
+- [X] T051 [P] [US1] Create FieldOfStudy value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Education.kt`
+- [X] T052 [P] [US1] Create DegreeType value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Education.kt`
+- [X] T053 [US1] Create Education entity with validation and formatPeriod logic in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Education.kt`
+- [X] T054 [P] [US1] Create SkillCategoryName value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/SkillCategory.kt`
+- [X] T055 [P] [US1] Create Skill value object in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/SkillCategory.kt`
+- [X] T056 [US1] Create SkillCategory entity in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/SkillCategory.kt`
+- [X] T057 [P] [US1] Create Language entity in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Language.kt`
+- [X] T058 [P] [US1] Create Project entity in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/Project.kt`
+- [X] T059 [US1] Create ContentMetrics data class in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/ResumeData.kt`
+- [X] T060 [US1] Create ResumeData aggregate root with validation (depends on T046, T049, T053,
+  T056-T058) in `server/engine/src/main/kotlin/com/cvix/resume/domain/model/ResumeData.kt`
+- [X] T061 [US1] Create GeneratedDocument domain event in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/event/GeneratedDocument.kt`
 
 #### Application Layer (Backend)
 
-- [X] T062 [US1] Create GenerateResumeCommand in `server/engine/src/main/kotlin/com/loomify/resume/application/command/GenerateResumeCommand.kt`
-- [X] T063 [US1] Implement GenerateResumeCommandHandler with CQRS pattern (depends on T062, port interfaces, domain entities) in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
+- [X] T062 [US1] Create GenerateResumeCommand in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/command/GenerateResumeCommand.kt`
+- [X] T063 [US1] Implement GenerateResumeCommandHandler with CQRS pattern (depends on T062, port
+  interfaces, domain entities) in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/handler/GenerateResumeCommandHandler.kt`
 
 #### Infrastructure Layer (Backend)
 
-- [X] T064 [US1] Implement LatexTemplateRenderer adapter using StringTemplate 4 with escapeLatex() utility (depends on T014) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRenderer.kt`
-- [X] T065 [US1] Implement LaTeX injection prevention - escapeLatex() function for special chars (\, {, }, $, &, %, #, _, ^, ~) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/template/LatexTemplateRenderer.kt`
-- [X] T066 [US1] Implement DockerPdfGeneratorAdapter base with Docker Java Library (depends on T013, T015) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T067 [US1] Add Docker security restrictions (--read-only, --no-new-privileges, --security-opt=no-new-privileges:true) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T068 [US1] Add Docker network isolation (restricted network access) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T069 [US1] Implement container lifecycle management and cleanup logic in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T070 [US1] Add semaphore-based concurrency throttling (max 10 containers) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T071 [US1] Implement 10-second timeout handling in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T072 [US1] Add Docker resource limits (512MB memory, 0.5 CPU) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T073 [US1] Create GenerateResumeRequest DTO in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/GenerateResumeRequest.kt`
-- [X] T074 [US1] Implement ResumeController POST /api/resume endpoint with JWT auth (depends on T063, T073) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [X] T075 [US1] Add Content-Disposition, Content-Length, X-Generation-Time-Ms headers to response in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [X] T076 [US1] Add Accept-Language header handling for locale selection in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [X] T077 [US1] Add API-Version header validation in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [X] T064 [US1] Implement LatexTemplateRenderer adapter using StringTemplate 4 with escapeLatex()
+  utility (depends on T014) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/template/LatexTemplateRenderer.kt`
+- [X] T065 [US1] Implement LaTeX injection prevention - escapeLatex() function for special
+  chars (\, {, }, $, &, %, #, _, ^, ~) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/template/LatexTemplateRenderer.kt`
+- [X] T066 [US1] Implement DockerPdfGeneratorAdapter base with Docker Java Library (depends on T013,
+  T015) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T067 [US1] Add Docker security restrictions (--read-only, --no-new-privileges,
+  --security-opt=no-new-privileges:true) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T068 [US1] Add Docker network isolation (restricted network access) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T069 [US1] Implement container lifecycle management and cleanup logic in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T070 [US1] Add semaphore-based concurrency throttling (max 10 containers) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T071 [US1] Implement 10-second timeout handling in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T072 [US1] Add Docker resource limits (512MB memory, 0.5 CPU) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T073 [US1] Create GenerateResumeRequest DTO in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/dto/GenerateResumeRequest.kt`
+- [X] T074 [US1] Implement ResumeController POST /api/resume endpoint with JWT auth (depends on
+  T063, T073) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
+- [X] T075 [US1] Add Content-Disposition, Content-Length, X-Generation-Time-Ms headers to response
+  in `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
+- [X] T076 [US1] Add Accept-Language header handling for locale selection in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
+- [X] T077 [US1] Add API-Version header validation in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
 
 #### LaTeX Template (Backend)
 
@@ -206,11 +273,16 @@
 - [X] T091 [US2] Add validation error messages to all form sections in `client/apps/webapp/src/resume/components/EducationSection.vue`
 - [X] T092 [US2] Add validation error messages to all form sections in `client/apps/webapp/src/resume/components/SkillsSection.vue`
 - [X] T093 [US2] Implement date range validation (startDate <= endDate) in `client/apps/webapp/src/resume/schemas/resumeSchema.ts`
-- [X] T094 [US2] Add backend validation with Spring Validation annotations in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/dto/GenerateResumeRequest.kt`
-- [X] T095 [US2] Create custom validator for resume content requirement (at least one of: work, education, skills) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/validation/ResumeDataValidator.kt`
-- [X] T096 [US2] Update GlobalExceptionHandler to handle validation errors (HTTP 400) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/GlobalExceptionHandler.kt`
+- [X] T094 [US2] Add backend validation with Spring Validation annotations in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/dto/GenerateResumeRequest.kt`
+- [X] T095 [US2] Create custom validator for resume content requirement (at least one of: work,
+  education, skills) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/validation/ResumeDataValidator.kt`
+- [X] T096 [US2] Update GlobalExceptionHandler to handle validation errors (HTTP 400) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/GlobalExceptionHandler.kt`
 - [X] T097 [US2] Add localized validation error messages to i18n files in `server/engine/src/main/resources/messages/messages.properties` and `messages_es.properties`
-- [X] T098 [US2] Implement payload size validation (<100KB) in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [X] T098 [US2] Implement payload size validation (<100KB) in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
 
 **Checkpoint**: User Story 2 complete - Form validation prevents bad submissions and guides users to fix errors
 
@@ -263,15 +335,20 @@
 
 ### Implementation for User Story 5
 
-- [X] T112 [US5] Add error handling for LaTeX compilation errors (HTTP 422) in GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeExceptionHandler.kt`
-- [X] T113 [US5] Add error handling for timeout errors (HTTP 504) in GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeExceptionHandler.kt`
-- [X] T114 [US5] Add error handling for Docker execution errors (HTTP 500) in GlobalExceptionHandler in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeExceptionHandler.kt`
+- [X] T112 [US5] Add error handling for LaTeX compilation errors (HTTP 422) in
+  GlobalExceptionHandler in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeExceptionHandler.kt`
+- [X] T113 [US5] Add error handling for timeout errors (HTTP 504) in GlobalExceptionHandler in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeExceptionHandler.kt`
+- [X] T114 [US5] Add error handling for Docker execution errors (HTTP 500) in GlobalExceptionHandler
+  in `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeExceptionHandler.kt`
 - [X] T115 [US5] Create user-friendly error messages (no technical details exposed) in i18n files in `server/engine/src/main/resources/messages/messages.properties` and `messages_es.properties`
 - [X] T116 [US5] Add error state management to Pinia store in `client/apps/webapp/src/resume/stores/resume.store.ts`
 - [X] T117 [US5] Create ErrorDisplay component with retry button in `client/apps/webapp/src/resume/components/ErrorDisplay.vue`
 - [X] T118 [US5] Implement retry logic that preserves form data in `client/apps/webapp/src/resume/composables/useResumeGeneration.ts`
 - [X] T119 [US5] Add specific error messages for different failure types (timeout, compilation, Docker) in `client/apps/webapp/src/resume/components/ErrorDisplay.vue`
-- [X] T120 [US5] Add structured logging for errors with anonymized identifiers in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
+- [X] T120 [US5] Add structured logging for errors with anonymized identifiers in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/handler/GenerateResumeCommandHandler.kt`
 
 **Checkpoint**: User Story 5 complete - Users can recover from errors without losing data
 
@@ -281,17 +358,26 @@
 
 **Purpose**: Enforce rate limits and security requirements across all user stories
 
-- [X] T121 Implement rate limiting endpoint decorator using Bucket4j in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [X] T122 Add HTTP 429 response with Retry-After, X-RateLimit-* headers in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/GlobalExceptionHandler.kt`
+- [X] T121 Implement rate limiting endpoint decorator using Bucket4j in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
+- [X] T122 Add HTTP 429 response with Retry-After, X-RateLimit-* headers in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/GlobalExceptionHandler.kt`
 - [X] T123 Add rate limit exceeded error messages (localized) in `server/engine/src/main/resources/messages/messages.properties` and `messages_es.properties`
 - [X] T124 Display rate limit error with countdown timer on frontend in `client/apps/webapp/src/resume/components/ErrorDisplay.vue`
-- [X] T125 Add audit logging for all generation attempts in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
+- [X] T125 Add audit logging for all generation attempts in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/handler/GenerateResumeCommandHandler.kt`
 - [X] T133 Configure HTTPS termination and enforce HSTS header (Strict-Transport-Security) in production environment configuration
-- [X] T134 Set core security headers in controller responses: Content-Security-Policy (baseline), X-Content-Type-Options, X-Frame-Options, Referrer-Policy in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
-- [X] T135 Add integration test to verify security headers present on resume endpoints in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/web/ResumeControllerTest.kt`
-- [X] T136 Add test to verify PDFs are not persisted (stream-only, no disk writes) in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
-- [X] T137 Add test to verify temp file cleanup on success and failure paths in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
-- [X] T138 Verify Docker adapter enforces 10s timeout and surfaces timeout errors to metrics/logs in `server/engine/src/test/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
+- [X] T134 Set core security headers in controller responses: Content-Security-Policy (baseline),
+  X-Content-Type-Options, X-Frame-Options, Referrer-Policy in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
+- [X] T135 Add integration test to verify security headers present on resume endpoints in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/web/ResumeControllerTest.kt`
+- [X] T136 Add test to verify PDFs are not persisted (stream-only, no disk writes) in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
+- [X] T137 Add test to verify temp file cleanup on success and failure paths in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
+- [X] T138 Verify Docker adapter enforces 10s timeout and surfaces timeout errors to metrics/logs in
+  `server/engine/src/test/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapterTest.kt`
 
 ---
 
@@ -305,10 +391,15 @@
 - API endpoints: 200ms p95 (per Constitution VI)
 
 - [X] T126 [P] Add Spring Boot Actuator health endpoint for resume service in `server/engine/src/main/resources/application.yml`
-- [X] T127 [P] Add Docker availability check to health endpoint in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerHealthIndicator.kt`
-- [X] T128 [P] Add Prometheus metrics for PDF generation (count, duration, errors) using Micrometer - target: 8s in `server/engine/src/main/kotlin/com/loomify/resume/application/handler/GenerateResumeCommandHandler.kt`
-- [X] T129 [P] Add metrics for Docker container lifecycle events in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
-- [X] T130 [P] Add correlation IDs to all log statements in `server/engine/src/main/kotlin/com/loomify/resume/infrastructure/web/ResumeController.kt`
+- [X] T127 [P] Add Docker availability check to health endpoint in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerHealthIndicator.kt`
+- [X] T128 [P] Add Prometheus metrics for PDF generation (count, duration, errors) using
+  Micrometer - target: 8s in
+  `server/engine/src/main/kotlin/com/cvix/resume/application/handler/GenerateResumeCommandHandler.kt`
+- [X] T129 [P] Add metrics for Docker container lifecycle events in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/pdf/DockerPdfGeneratorAdapter.kt`
+- [X] T130 [P] Add correlation IDs to all log statements in
+  `server/engine/src/main/kotlin/com/cvix/resume/infrastructure/web/ResumeController.kt`
 - [X] T131 [P] Add Micrometer SLO metric for API p95 latency ≤200ms (excluding PDF step); create Prometheus alert at 200ms warn/250ms critical
 - [X] T132 [P] Expose error-rate metric (failures/total) with Prometheus counter; create alert when error rate >3%
 - [X] T139 [P] Add external uptime monitoring probe for 99.5% uptime SLO; document operator runbook for incidents
@@ -325,11 +416,12 @@
 - [X] T143 [P] Add integration tests to verify semantic labels, keyboard focus order, ARIA roles, and screen reader text in `client/apps/webapp/src/__tests__/features/resume/`
 - [X] T144 [P] Document supported browsers (past 2 years) and add browser compatibility matrix to README
 - [X] T145 [P] Add test to verify double-submit debounce/throttle (frontend) and concurrent request handling (backend)
-- [X] T146 [P] Add KDoc documentation to all domain entities in `server/engine/src/main/kotlin/com/loomify/resume/domain/model/`
+- [X] T146 [P] Add KDoc documentation to all domain entities in
+  `server/engine/src/main/kotlin/com/cvix/resume/domain/model/`
 - [X] T147 [P] Add JSDoc documentation to TypeScript types in `client/apps/webapp/src/resume/types/Resume.ts`
 - [X] T148 [P] Generate OpenAPI documentation from SpringDoc annotations in `server/engine/build.gradle.kts`
 - [X] T149 Update main README.md with resume generator feature documentation in `README.md`
-- [X] T150 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/loomify/resume/`
+- [X] T150 Run Detekt and fix any violations in `server/engine/src/main/kotlin/com/cvix/resume/`
 - [X] T151 Run Biome and fix any violations in `client/apps/webapp/src/resume/`
 - [X] T152 Validate quickstart.md by following all setup steps in `specs/003-resume-generator-mvp/quickstart.md`
 - [X] T153 Test with all three example payloads (software-engineer, project-manager, minimal) and verify PDF output quality
@@ -345,7 +437,9 @@
 - [X] T154 E2E test for complete resume generation flow (Playwright) in `client/e2e/resume-generation.spec.ts` - Run against staging environment per Constitution Principle II
 - [X] T155 Verify 80% backend test coverage using Kover report - **PASSED**: 84.5% instruction coverage, 83.8% line coverage
 - [X] T156 Verify 75% frontend test coverage using Vitest coverage report - **FAILED**: 59.34% statement coverage, 59.04% line coverage (needs 15.66% more)
-- [X] T157 Verify 100% domain layer coverage (server/engine/src/main/kotlin/com/loomify/resume/domain/**) using Kover filtered report - **FAILED**: 83.5% coverage (needs 16.5% more)
+- [X] T157 Verify 100% domain layer coverage (
+  server/engine/src/main/kotlin/com/cvix/resume/domain/**) using Kover filtered report - **FAILED**:
+  83.5% coverage (needs 16.5% more)
 
 ---
 

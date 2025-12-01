@@ -1,7 +1,7 @@
 # ====================================================================================
-# LOOMIFY MAKEFILE
+# CVIX MAKEFILE
 #
-# This Makefile provides a centralized set of commands for managing the loomify
+# This Makefile provides a centralized set of commands for managing the cvix
 # monorepo. It simplifies the development workflow by offering a consistent
 # interface for common tasks like dependency management, building, testing, and
 # running applications.
@@ -20,9 +20,9 @@ SHELL := /bin/bash
 PNPM := pnpm
 
 # Project specific variables
-CLIENT_LANDING_FILTER := --filter @loomify/marketing
-CLIENT_WEBAPP_FILTER := --filter @loomify/webapp
-CLIENT_DOCS_FILTER := --filter @loomify/docs
+CLIENT_LANDING_FILTER := --filter @cvix/marketing
+CLIENT_WEBAPP_FILTER := --filter @cvix/webapp
+CLIENT_DOCS_FILTER := --filter @cvix/docs
 
 # ------------------------------------------------------------------------------------
 # HELP

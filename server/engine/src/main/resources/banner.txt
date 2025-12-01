@@ -6,8 +6,8 @@ ${AnsiColor.MAGENTA}██║     ██║   ██║██║   ██║█�
 ${AnsiColor.MAGENTA}███████╗╚██████╔╝╚██████╔╝██║ ╚═╝ ██║██║${AnsiColor.RED}██║        ██║
 ${AnsiColor.MAGENTA}╚══════╝ ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝${AnsiColor.RED}╚═╝        ╚═╝
 ${AnsiColor.BRIGHT_WHITE}╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
-${AnsiColor.BRIGHT_YELLOW}:: ⭐  loomify 🚀  ⭐ ::${AnsiColor.BRIGHT_CYAN}  Running Spring Boot ${spring-boot.version} ::
-${AnsiColor.BRIGHT_GREEN}:: https://www.loomify.com ::
+${AnsiColor.BRIGHT_YELLOW}:: ⭐  cvix 🚀  ⭐ ::${AnsiColor.BRIGHT_CYAN}  Running Spring Boot ${spring-boot.version} ::
+${AnsiColor.BRIGHT_GREEN}:: https://www.cvix.com ::
 ${AnsiColor.BRIGHT_CYAN}:: Powered by Spring Boot ::
 ${AnsiColor.BRIGHT_MAGENTA}:: Started at: [36m${start.time}[35m | Environment: [36m${env}[35m ::
 ${AnsiColor.BRIGHT_WHITE}╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝

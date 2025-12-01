@@ -1,6 +1,6 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
-rootProject.name = "Loomify"
+rootProject.name = "ProFileTailors"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

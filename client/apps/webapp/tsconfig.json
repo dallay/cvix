@@ -14,7 +14,9 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@cvix/ui": ["../../packages/ui/src/index.ts"],
+			"@cvix/ui/*": ["../../packages/ui/src/*"]
 		},
 		"strict": true,
 		"forceConsistentCasingInFileNames": true

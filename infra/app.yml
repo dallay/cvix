@@ -1,11 +1,11 @@
-name: loomify
+name: cvix
 include:
   - ./infra/common.yml
   - ./infra/postgresql/postgresql-compose.yml
   - ./infra/keycloak/keycloak-compose.yml
 services:
   web:
-    image: n4t5u/loomify:latest
+    image: n4t5u/cvix:latest
     ports:
       - '8080:8080'
     environment:

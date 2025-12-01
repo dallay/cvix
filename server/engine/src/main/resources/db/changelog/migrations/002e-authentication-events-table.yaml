@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 002e-create-authentication-events-table
-      author: loomify
+      author: cvix
       comment: |
         Create authentication_events table to support authentication audit logging.
         This table stores all authentication events including:

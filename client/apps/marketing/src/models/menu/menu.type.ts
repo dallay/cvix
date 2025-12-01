@@ -10,7 +10,7 @@ export interface MenuBase {
 export interface LinkMenuItem extends MenuBase {
 	type: "link";
 	href: string;
-	target?: string;
+  target?: '_blank' | '_self' | '_parent' | '_top';
 }
 
 // Menu item with children (dropdown)

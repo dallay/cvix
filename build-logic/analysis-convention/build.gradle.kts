@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.loomify.buildlogic.analysis"
+group = "com.cvix.buildlogic.analysis"
 version = extra["app.plugins.version"].toString()
 
 dependencies {
@@ -15,11 +15,11 @@ gradlePlugin {
     plugins {
         register("detekt") {
             id = "app.detekt"
-            implementationClass = "com.loomify.buildlogic.analysis.AppDetektPlugin"
+            implementationClass = "com.cvix.buildlogic.analysis.AppDetektPlugin"
         }
         register("owasp-dependency-check") {
             id = "app.owasp.dependency.check"
-            implementationClass = "com.loomify.buildlogic.analysis.AppOwaspPlugin"
+            implementationClass = "com.cvix.buildlogic.analysis.AppOwaspPlugin"
         }
     }
 }

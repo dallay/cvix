@@ -4,13 +4,13 @@ info:
   description: API endpoints for workspace selection feature
   version: 1.0.0
   contact:
-    name: Loomify Team
+    name: ProFileTailors Team
 servers:
   - url: http://localhost:8080/api
     description: Local development server
-  - url: https://api.loomify.dev/api
+  - url: https://api.cvix.dev/api
     description: Development server
-  - url: https://api.loomify.com
+  - url: https://api.cvix.com
     description: Production server
 
 security:

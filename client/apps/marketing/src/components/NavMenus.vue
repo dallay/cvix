@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
+import { Button } from "@cvix/ui/components/ui/button";
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -7,7 +7,7 @@ import {
 	NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+} from "@cvix/ui/components/ui/navigation-menu";
 
 import { type Lang, useTranslatedPath, useTranslations } from "@/i18n";
 import type { MenuItem } from "@/models/menu/menu.type";

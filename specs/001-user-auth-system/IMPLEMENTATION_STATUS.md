@@ -225,13 +225,13 @@ The backend already has comprehensive implementation:
 Frontend (`.env` or Vite config):
 
 ```text
-VITE_API_BASE_URL=/api
+API_BASE_URL=$BACKEND_URL/api
 ```
 
 Backend (already configured in `application.yml`):
 
 ```text
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:9080/realms/loomify
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:9080/realms/cvix
 ```
 
 ## Notes

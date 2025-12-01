@@ -15,13 +15,13 @@ export default defineConfig({
 			"**/dist/**",
 			"**/cypress/**",
 			"**/.{idea,git,cache,output,temp}/**",
-			"**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*",
+			"**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint}.config.*",
 			"**/components.d.ts",
 		],
 		setupFiles: ["./vitest.setup.ts"],
 		coverage: {
 			provider: "v8", // or 'istanbul'
-			reporter: ["text"], // 'lcov' is not supported by 'v8'
+			reporter: ["text", "lcov", "html"],
 			reportsDirectory: "./coverage",
 			include: ["src/**/*.{js,ts,vue,jsx,tsx}"], // Adjust as needed
 			exclude: [

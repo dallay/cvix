@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuShortcut,
+	DropdownMenuTrigger,
+} from "@cvix/ui/components/ui/dropdown-menu";
+import {
 	AlertCircle,
 	Building2,
 	ChevronsUpDown,
@@ -9,14 +17,6 @@ import {
 } from "lucide-vue-next";
 import type { Component } from "vue";
 import { computed, ref } from "vue";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuShortcut,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useWorkspaceSelection } from "@/core/workspace";
 
 interface Props {

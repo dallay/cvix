@@ -9,7 +9,7 @@ logging:
     org.springframework.r2dbc: WARN
     org.springframework.security: WARN
     org.springframework.security.oauth2.client: WARN
-    com.loomify: WARN
+    com.cvix: WARN
 spring:
   main:
     banner-mode: off
@@ -50,7 +50,7 @@ spring:
             type: "PKCS12"
 testing:
   security:
-    username: "john.doe@loomify.com"
+    username: "john.doe@cvix.com"
     password: "S3cr3tP@ssw0rd*123"
 
 resume:
