@@ -7,10 +7,10 @@ interface Props {
   class?: string;
 }
 
-const { headings, class: className } = Astro.props;
+const { headings, class: className } = Astro.props as Props;
 
-// Filter out h1 and ensure we only show h2 and h3
-const toc = headings.filter((heading) => heading.depth > 1 && heading.depth < 4);
+// Defensive default for headings
+const toc = (headings ?? []).filter((heading) => heading.depth > 1 && heading.depth < 4);
 ---
 
 {
