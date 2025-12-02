@@ -46,8 +46,24 @@ const value = computed({
 		// Parse string date to DateValue
 		if (typeof props.modelValue === "string" && props.modelValue) {
 			try {
-				const [year, month, day] = props.modelValue.split("-").map(Number)
-				if (year && month && day) {
+				const parts = props.modelValue.split("-")
+				if (parts.length !== 3) return undefined
+				
+				const year = Number.parseInt(parts[0] ?? "", 10)
+				const month = Number.parseInt(parts[1] ?? "", 10)
+				const day = Number.parseInt(parts[2] ?? "", 10)
+				
+				// Validate date components are valid numbers and within reasonable ranges
+				if (
+					!Number.isNaN(year) &&
+					!Number.isNaN(month) &&
+					!Number.isNaN(day) &&
+					year > 0 &&
+					month >= 1 &&
+					month <= 12 &&
+					day >= 1 &&
+					day <= 31
+				) {
 					return new CalendarDate(year, month, day)
 				}
 			} catch (e) {
