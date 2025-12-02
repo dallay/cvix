@@ -79,14 +79,8 @@ export default defineConfig(({ mode }) => {
 						proxy.on("error", (err, _req, _res) => {
 							console.error("proxy error", err);
 						});
-						proxy.on("proxyRes", (proxyRes, _req, _res) => {
-							// Log Set-Cookie headers from backend
-							if (proxyRes.headers["set-cookie"]) {
-								console.log(
-									"Set-Cookie headers from backend:",
-									proxyRes.headers["set-cookie"],
-								);
-							}
+						proxy.on("proxyRes", (_proxyRes, _req, _res) => {
+							// console logging removed to avoid leaking headers in dev output
 						});
 					},
 				},

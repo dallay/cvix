@@ -47,15 +47,7 @@ const schema = {
   headline: post.title,
   description: post.description,
   image: coverImage && isImageMetadata(coverImage) ? coverImage.src : undefined,
-  datePublished:
-    post.date instanceof Date
-      ? post.date.toISOString()
-      : typeof post.date === "string"
-        ? (() => {
-            const d = new Date(post.date);
-            return isNaN(d.getTime()) ? undefined : d.toISOString();
-          })()
-        : undefined,
+  datePublished: post.date,
   author: {
     "@type": "Person",
     name: post.author?.name || "CVIX Team",
