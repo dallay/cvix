@@ -21,7 +21,7 @@ services:
       - backend
 
   landing:
-    image: ghcr.io/dallay/cvix/landing:latest
+    image: ghcr.io/dallay/cvix/marketing:latest
     environment:
       PUBLIC_BASE_URL_PROD: ${PUBLIC_BASE_URL_PROD}
       PUBLIC_BASE_DOCS_URL_PROD: ${PUBLIC_BASE_DOCS_URL_PROD}
