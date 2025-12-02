@@ -20,23 +20,45 @@ inputs:
     description: 'Fail CI if Codecov upload fails'
     required: false
     default: 'false'
+  verbose:
+    description: 'Enable verbose output for debugging'
+    required: false
+    default: 'false'
   slug:
     description: 'Codecov slug'
     required: false
     default: 'dallay/cvix'
 
+outputs:
+  upload-failed:
+    description: 'Whether the Codecov upload failed'
+    value: ${{ steps.status.outputs.upload-failed }}
+
 runs:
   using: "composite"
   steps:
     - name: Upload coverage to Codecov
-      # Pinned to v4 commit hash for security
+      id: codecov
+      # Pinned to v5 commit hash for security
       uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7  # v5
       if: inputs.codecov-token != ''
+      continue-on-error: true
       with:
         files: ${{ inputs.files }}
         flags: ${{ inputs.flags }}
         name: ${{ inputs.name }}
         fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
+        verbose: ${{ inputs.verbose }}
         slug: ${{ inputs.slug }}
       env:
         CODECOV_TOKEN: ${{ inputs.codecov-token }}
+
+    - name: Set upload status
+      id: status
+      shell: bash
+      run: |
+        if [ "${{ steps.codecov.outcome }}" == "failure" ]; then
+          echo "upload-failed=true" >> $GITHUB_OUTPUT
+        else
+          echo "upload-failed=false" >> $GITHUB_OUTPUT
+        fi
