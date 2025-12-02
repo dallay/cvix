@@ -12,6 +12,7 @@ import Layout from "@/layouts/Article.astro";
 import { getArticles } from "@/models/article";
 import type Article from "@/models/article/article.model";
 import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
+import { isImageMetadata } from "@/utils/image-utils";
 
 const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
@@ -39,8 +40,6 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post.entry);
 
 // Prepare the cover image for rendering
 const coverImage = post.cover ? await prepareImageForOptimizedPicture(post.cover) : undefined;
-
-import { isImageMetadata } from "@/utils/image-utils";
 
 const schema = {
   "@context": "https://schema.org",
@@ -72,6 +71,90 @@ const schema = {
       <!-- Main Content -->
       <article class="lg:col-span-8">
         <PostHeader post={post} readingTime={remarkPluginFrontmatter.minutesRead} />
+
+        <!-- Mobile TOC - visible only on mobile/tablet -->
+        {
+          headings && headings.length > 0 && (
+            <div class="block lg:hidden mb-8 border border-border rounded-xl bg-card overflow-hidden">
+              <button
+                type="button"
+                id="mobile-toc-toggle"
+                class="w-full flex items-center justify-between p-4 text-left font-semibold text-foreground hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+                aria-expanded="false"
+                aria-controls="mobile-toc-content"
+              >
+                <span class="text-base">{t("blog.tableOfContents")}</span>
+                <svg
+                  class="w-5 h-5 transition-transform duration-200"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <div
+                id="mobile-toc-content"
+                class="hidden p-4 pt-0 border-t border-border"
+                aria-labelledby="mobile-toc-toggle"
+              >
+                <TableOfContents headings={headings} lang={currentLocale} />
+              </div>
+            </div>
+          )
+        }
+
+        <script>
+          // Mobile TOC toggle functionality
+          document.addEventListener("DOMContentLoaded", () => {
+            const toggleButton = document.getElementById("mobile-toc-toggle");
+            const tocContent = document.getElementById("mobile-toc-content");
+
+            if (toggleButton && tocContent) {
+              toggleButton.addEventListener("click", () => {
+                const isExpanded = toggleButton.getAttribute("aria-expanded") === "true";
+                const newState = !isExpanded;
+
+                // Update ARIA state
+                toggleButton.setAttribute("aria-expanded", String(newState));
+
+                // Toggle content visibility
+                tocContent.classList.toggle("hidden");
+
+                // Rotate chevron icon
+                const icon = toggleButton.querySelector("svg");
+                if (icon) {
+                  icon.style.transform = newState ? "rotate(180deg)" : "rotate(0deg)";
+                }
+
+                // Set focus to first link when opening
+                if (newState) {
+                  const firstLink = tocContent.querySelector("a");
+                  if (firstLink) {
+                    // Small delay to ensure content is visible
+                    setTimeout(() => {
+                      (firstLink as HTMLElement).focus();
+                    }, 100);
+                  }
+                }
+              });
+
+              // Allow keyboard users to close TOC with Escape
+              tocContent.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                  toggleButton.click();
+                  toggleButton.focus();
+                }
+              });
+            }
+          });
+        </script>
 
         {
           isImageMetadata(coverImage) && (
