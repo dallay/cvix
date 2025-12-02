@@ -1,7 +1,7 @@
 {
   "name": "ProFileTailors",
   "short_name": "ProFileTailors",
-  "description": "ProFileTailors Landing Page",
+  "description": "ProFileTailors Professional Resume Builder Web Application",
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#ffffff",
