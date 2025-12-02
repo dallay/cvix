@@ -33,8 +33,11 @@ export function __resetSiteUrlCache(): void {
  * Do NOT call this from browser/client bundles; process.env is not available in client-side code.
  * For client-side URL access, use {@link getBaseUrl}, {@link getDocsUrl}, or {@link getWebappUrl} which use import.meta.env.
  *
- * Uses CF_PAGES_URL environment variable when available (Cloudflare Pages)
- * Falls back to production URL for local development
+ * Environment variable precedence:
+ *   1. Tries SITE_URL first
+ *   2. Then CF_PAGES_URL
+ *   3. Otherwise uses the default production URL ("https://cvix.pages.dev")
+ * All values are normalized (trimmed, validated, trailing slashes removed). If normalization fails, the default production URL is returned.
  * @returns A valid, normalized site URL
  */
 export function getSiteUrl(): string {
@@ -75,11 +78,12 @@ export function getBaseUrl(): string {
     return import.meta.env.PUBLIC_BASE_URL_LOCAL || defaultLocal;
   }
 
-  const defaultProd = normalizeSiteUrl(
-    import.meta.env.PUBLIC_SITE_URL,
+  const explicitProd = import.meta.env.PUBLIC_BASE_URL_PROD;
+  const normalizedProd = normalizeSiteUrl(
+    explicitProd,
     "https://cvix.pages.dev"
   );
-  return import.meta.env.PUBLIC_BASE_URL_PROD || defaultProd;
+  return normalizedProd;
 }
 
 /**
@@ -122,6 +126,10 @@ export function getWebappUrl(): string {
     return import.meta.env.PUBLIC_BASE_WEBAPP_URL_LOCAL || defaultLocal;
   }
 
-  const defaultProd = "https://app.cvix.pages.dev";
-  return import.meta.env.PUBLIC_BASE_WEBAPP_URL_PROD || defaultProd;
+  const explicitProd = import.meta.env.PUBLIC_BASE_WEBAPP_URL_PROD;
+  const normalizedProd = normalizeSiteUrl(
+    explicitProd,
+    "https://app.cvix.pages.dev"
+  );
+  return normalizedProd;
 }
