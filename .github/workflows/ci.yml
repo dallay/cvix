@@ -300,10 +300,10 @@ jobs:
           frontend_failed="${{ needs.frontend-pipeline.outputs.codecov-failed }}"
 
           if [ "$backend_failed" == "true" ] || [ "$frontend_failed" == "true" ]; then
-            echo "should-comment=true" >> $GITHUB_OUTPUT
+            echo "should-comment=true" >> "$GITHUB_OUTPUT"
             echo "⚠️ Codecov upload failed for one or more pipelines"
           else
-            echo "should-comment=false" >> $GITHUB_OUTPUT
+            echo "should-comment=false" >> "$GITHUB_OUTPUT"
             echo "✅ All Codecov uploads succeeded"
           fi
 
@@ -348,7 +348,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd    # v5
 
       - name: Dependency Review
         if: github.event_name == 'pull_request'
