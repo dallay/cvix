@@ -1,3 +1,19 @@
+/**
+ * Normalize and validate a site URL
+ * @internal
+ * @param url - The URL to normalize
+ * @param fallback - Fallback URL if the input is invalid
+ * @returns A valid, normalized URL without trailing slashes
+ */
+function normalizeSiteUrl(url: string | undefined, fallback: string): string {
+  if (!url) return fallback;
+  const trimmed = url.trim();
+  if (trimmed && /^https?:\/\/.+/.test(trimmed)) {
+    return trimmed.replace(/\/+$/, "");
+  }
+  return fallback;
+}
+
 // Memoize the site URL to avoid repeated environment variable lookups
 let cachedSiteUrl: string | undefined;
 
@@ -10,7 +26,13 @@ export function __resetSiteUrlCache(): void {
 }
 
 /**
- * Utility to get the site URL for Astro configuration
+ * Utility to get the site URL for Astro configuration (server-side only)
+ *
+ * @remarks
+ * This function uses Node.js process.env and is intended for server-side/SSR use only (e.g., astro.config.ts or build-time code).
+ * Do NOT call this from browser/client bundles; process.env is not available in client-side code.
+ * For client-side URL access, use {@link getBaseUrl}, {@link getDocsUrl}, or {@link getWebappUrl} which use import.meta.env.
+ *
  * Uses CF_PAGES_URL environment variable when available (Cloudflare Pages)
  * Falls back to production URL for local development
  * @returns A valid, normalized site URL
@@ -21,17 +43,16 @@ export function getSiteUrl(): string {
   }
 
   const productionUrl = "https://cvix.pages.dev";
-  const candidates: (string|undefined)[] = [
+  const candidates: (string | undefined)[] = [
     process.env.SITE_URL,
     process.env.CF_PAGES_URL,
   ];
 
   for (const url of candidates) {
     if (url) {
-      const trimmed = url.trim();
-      // Validate it's a proper URL format
-      if (trimmed && /^https?:\/\/.+/.test(trimmed)) {
-        cachedSiteUrl = trimmed.replace(/\/+$/, ""); // Remove trailing slashes
+      const normalized = normalizeSiteUrl(url, productionUrl);
+      if (normalized !== productionUrl) {
+        cachedSiteUrl = normalized;
         return cachedSiteUrl;
       }
     }
@@ -54,7 +75,10 @@ export function getBaseUrl(): string {
     return import.meta.env.PUBLIC_BASE_URL_LOCAL || defaultLocal;
   }
 
-  const defaultProd = import.meta.env.PUBLIC_SITE_URL || "https://cvix.pages.dev";
+  const defaultProd = normalizeSiteUrl(
+    import.meta.env.PUBLIC_SITE_URL,
+    "https://cvix.pages.dev"
+  );
   return import.meta.env.PUBLIC_BASE_URL_PROD || defaultProd;
 }
 
@@ -77,9 +101,12 @@ export function getDocsUrl(): string {
     return explicitUrl;
   }
 
-  // Fallback: append /docs to the site URL
-  const site = import.meta.env.PUBLIC_SITE_URL || "https://cvix.pages.dev";
-  return `${site.replace(/\/+$/, "")}/docs`;
+  // Fallback: append /docs to the normalized site URL
+  const site = normalizeSiteUrl(
+    import.meta.env.PUBLIC_SITE_URL,
+    "https://cvix.pages.dev"
+  );
+  return `${site}/docs`;
 }
 
 /**
