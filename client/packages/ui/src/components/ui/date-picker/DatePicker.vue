@@ -64,10 +64,11 @@ const value = computed({
 					day >= 1 &&
 					day <= 31
 				) {
+					// CalendarDate constructor validates day is valid for the given month/year
 					return new CalendarDate(year, month, day)
 				}
 			} catch (e) {
-				console.error("Error parsing date:", e)
+				console.error(`Error parsing date value "${props.modelValue}":`, e)
 			}
 		}
 		
