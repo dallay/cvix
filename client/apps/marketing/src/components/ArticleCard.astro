@@ -45,13 +45,17 @@ const description = propDescription || article?.description || "";
 const url = propUrl || article?.url || article?.slug || article?._id || "#";
 const image = propImage || article?.image || null;
 const authorName = article?.author?.name || "CVIX Team";
-const date = article?.date
-  ? new Date(article.date).toLocaleDateString(Astro.currentLocale, {
+let date = "";
+if (article?.date) {
+  const parsed = new Date(article.date);
+  if (!Number.isNaN(parsed.getTime())) {
+    date = parsed.toLocaleDateString(Astro.currentLocale, {
       day: "numeric",
       month: "short",
       year: "numeric",
-    })
-  : "";
+    });
+  }
+}
 
 const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);

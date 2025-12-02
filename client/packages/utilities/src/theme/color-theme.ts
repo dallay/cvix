@@ -71,7 +71,6 @@ export const loadTheme = (
 
 	// Create new event handler and store reference
 	themeChangeHandler = ((event: CustomEvent<ThemeChangedEventDetail>) => {
-		console.log("🚨 Theme changed", event.detail.isDark);
 		const isDark = event.detail.isDark;
 		document.documentElement.classList.toggle(darkThemeClass, isDark);
 		localStorage.setItem(key, isDark ? darkThemeClass : lightThemeClass);
