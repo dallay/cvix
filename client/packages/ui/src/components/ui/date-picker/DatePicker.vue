@@ -3,7 +3,7 @@ import type { DateValue } from "@internationalized/date"
 import { CalendarIcon } from "lucide-vue-next"
 import type { HTMLAttributes } from "vue"
 import { computed } from "vue"
-import { DateFormatter, getLocalTimeZone } from "@internationalized/date"
+import { CalendarDate, DateFormatter, getLocalTimeZone } from "@internationalized/date"
 import { Calendar } from "../calendar"
 import { Button } from "../button"
 import {
@@ -48,7 +48,6 @@ const value = computed({
 			try {
 				const [year, month, day] = props.modelValue.split("-").map(Number)
 				if (year && month && day) {
-					const { CalendarDate } = require("@internationalized/date")
 					return new CalendarDate(year, month, day)
 				}
 			} catch (e) {
