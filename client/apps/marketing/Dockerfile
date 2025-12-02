@@ -17,6 +17,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY client/config/package.json ./client/config/
 COPY client/packages/tsconfig/package.json ./client/packages/tsconfig/
 COPY client/packages/utilities/package.json ./client/packages/utilities/
+COPY client/packages/ui/package.json ./client/packages/ui/
 COPY client/apps/marketing/package.json ./client/apps/marketing/
 
 # Install dependencies
