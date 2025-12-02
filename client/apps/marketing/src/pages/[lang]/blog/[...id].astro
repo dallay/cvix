@@ -11,8 +11,7 @@ import { type Lang, useTranslations } from "@/i18n";
 import Layout from "@/layouts/Article.astro";
 import { getArticles } from "@/models/article";
 import type Article from "@/models/article/article.model";
-import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
-import { isImageMetadata } from "@/utils/image-utils";
+import { prepareImageForOptimizedPicture, isImageMetadata } from "@/utils/image-utils";
 
 const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
@@ -171,7 +170,7 @@ const schema = {
       <aside class="hidden lg:block lg:col-span-4 space-y-8">
         <div class="sticky top-24 space-y-8">
           <div class="p-6 bg-card rounded-xl border border-border shadow-sm">
-            <TableOfContents headings={headings} />
+            <TableOfContents headings={headings} lang={currentLocale} />
           </div>
 
           <div class="p-6 bg-muted/50 rounded-xl border border-border/50">
