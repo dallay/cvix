@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -139,12 +140,10 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
             <FieldLabel :for="`work-start-date-${workIndex}`">
               {{ t('resume.fields.startDate') }}
             </FieldLabel>
-            <Input
+            <DatePicker
               :id="`work-start-date-${workIndex}`"
               v-model="work.startDate"
-              type="date"
               :placeholder="t('resume.placeholders.startDate')"
-              :data-testid="`work-start-date-${workIndex}`"
             />
           </Field>
 
@@ -152,12 +151,10 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
             <FieldLabel :for="`work-end-date-${workIndex}`">
               {{ t('resume.fields.endDate') }}
             </FieldLabel>
-            <Input
+            <DatePicker
               :id="`work-end-date-${workIndex}`"
               v-model="work.endDate"
-              type="date"
               :placeholder="t('resume.placeholders.endDate')"
-              :data-testid="`work-end-date-${workIndex}`"
             />
           </Field>
         </FieldGroup>

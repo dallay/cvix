@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
 import { Checkbox } from "@cvix/ui/components/ui/checkbox";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -159,12 +160,10 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-start-date-${projectIndex}`">
 									{{ t('resume.fields.startDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-start-date-${projectIndex}`"
 									v-model="project.startDate"
-									type="date"
-									:data-testid="`project-start-date-${projectIndex}`"
-									required
+									:placeholder="t('resume.placeholders.startDate')"
 								/>
 							</Field>
 
@@ -172,11 +171,10 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-end-date-${projectIndex}`">
 									{{ t('resume.fields.endDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-end-date-${projectIndex}`"
 									v-model="project.endDate"
-									type="date"
-									:data-testid="`project-end-date-${projectIndex}`"
+									:placeholder="t('resume.placeholders.endDate')"
 									:disabled="isCurrent(project)"
 								/>
 							</Field>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -174,12 +175,10 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 								<FieldLabel :for="`education-start-date-${educationIndex}`">
 									{{ t('resume.fields.startDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`education-start-date-${educationIndex}`"
 									v-model="education.startDate"
-									type="date"
-									:data-testid="`education-start-date-${educationIndex}`"
-									required
+									:placeholder="t('resume.placeholders.startDate')"
 								/>
 							</Field>
 
@@ -187,11 +186,10 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 								<FieldLabel :for="`education-end-date-${educationIndex}`">
 									{{ t('resume.fields.endDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`education-end-date-${educationIndex}`"
 									v-model="education.endDate"
-									type="date"
-									:data-testid="`education-end-date-${educationIndex}`"
+									:placeholder="t('resume.placeholders.endDate')"
 								/>
 							</Field>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -99,12 +100,10 @@ const hasAwards = computed(() => awards.value.length > 0);
 								<FieldLabel :for="`award-date-${awardIndex}`">
 									{{ t('resume.fields.date') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`award-date-${awardIndex}`"
 									v-model="award.date"
-									type="date"
-									:data-testid="`award-date-${awardIndex}`"
-									required
+									:placeholder="t('resume.placeholders.date')"
 								/>
 							</Field>
 						</div>
