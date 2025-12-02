@@ -79,11 +79,10 @@ export function getBaseUrl(): string {
   }
 
   const explicitProd = import.meta.env.PUBLIC_BASE_URL_PROD;
-  const normalizedProd = normalizeSiteUrl(
-    explicitProd,
-    "https://cvix.pages.dev"
+  return normalizeSiteUrl(
+      explicitProd,
+      "https://cvix.pages.dev"
   );
-  return normalizedProd;
 }
 
 /**
@@ -127,9 +126,8 @@ export function getWebappUrl(): string {
   }
 
   const explicitProd = import.meta.env.PUBLIC_BASE_WEBAPP_URL_PROD;
-  const normalizedProd = normalizeSiteUrl(
-    explicitProd,
-    "https://app.cvix.pages.dev"
+  return normalizeSiteUrl(
+      explicitProd,
+      "https://app.cvix.pages.dev"
   );
-  return normalizedProd;
 }
