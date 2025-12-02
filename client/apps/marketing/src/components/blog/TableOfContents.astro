@@ -1,13 +1,16 @@
 ---
 import type { MarkdownHeading } from "astro";
 import { cn } from "@cvix/ui/lib/utils";
+import { type Lang, useTranslations } from "@/i18n";
 
 interface Props {
   headings: MarkdownHeading[];
   class?: string;
+  lang?: Lang;
 }
 
-const { headings, class: className } = Astro.props as Props;
+const { headings, class: className, lang = "en" } = Astro.props as Props;
+const t = useTranslations(lang);
 
 // Defensive default for headings
 const toc = (headings ?? []).filter((heading) => heading.depth > 1 && heading.depth < 4);
@@ -15,8 +18,8 @@ const toc = (headings ?? []).filter((heading) => heading.depth > 1 && heading.de
 
 {
   toc.length > 0 && (
-    <nav class={cn("toc", className)} aria-label="Table of Contents">
-      <h2 class="font-semibold text-lg mb-4 text-foreground">Table of Contents</h2>
+    <nav class={cn("toc", className)} aria-label={t("blog.tableOfContents")}>
+      <h2 class="font-semibold text-lg mb-4 text-foreground">{t("blog.tableOfContents")}</h2>
       <ul class="space-y-2 text-sm">
         {toc.map((heading) => (
           <li

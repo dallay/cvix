@@ -2,6 +2,7 @@ import type { UIMultilingual } from "@i18n";
 
 export const blog: UIMultilingual = {
 	en: {
+		"blog.tableOfContents": "Table of Contents",
 		"blog.section.title": "Insights for modern creators",
 		"blog.section.subtitle":
 			"Explore ideas, guides and strategies to grow your audience, monetize your content and automate your workflow.",
@@ -35,6 +36,7 @@ export const blog: UIMultilingual = {
 		"read.article": "Read article",
 	},
 	es: {
+		"blog.tableOfContents": "Tabla de contenidos",
 		"blog.section.title": "Ideas para creadores modernos",
 		"blog.section.subtitle":
 			"Descubre guías, estrategias y aprendizajes para hacer crecer tu audiencia, monetizar tu contenido y automatizar tu flujo de trabajo.",
