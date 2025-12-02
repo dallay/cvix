@@ -2,6 +2,13 @@ import type { ImageMetadata } from "astro";
 import { findImage } from "@/utils/images";
 
 /**
+ * Type guard for Astro ImageMetadata objects.
+ */
+export function isImageMetadata(img: unknown): img is ImageMetadata {
+	return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
+}
+
+/**
  * Returns true when the provided path refers to a local asset file
  * (relative path inside the source tree) and not an absolute/public or remote URL.
  */

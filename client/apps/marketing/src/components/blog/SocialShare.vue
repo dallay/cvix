@@ -7,7 +7,7 @@
         class="inline-flex items-center px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         :aria-label="t('blog.share.twitter')"
       >
-        <Icon name="tabler:brand-x" class="w-4 h-4 mr-2" />
+        <Twitter class="w-4 h-4 mr-2" />
         X
       </button>
       
@@ -16,7 +16,7 @@
         class="inline-flex items-center px-3 py-2 text-sm bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
         :aria-label="t('blog.share.linkedin')"
       >
-        <Icon name="tabler:brand-linkedin" class="w-4 h-4 mr-2" />
+        <Linkedin class="w-4 h-4 mr-2" />
         LinkedIn
       </button>
       
@@ -25,7 +25,7 @@
         class="inline-flex items-center px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
         :aria-label="t('blog.share.facebook')"
       >
-        <Icon name="tabler:brand-facebook" class="w-4 h-4 mr-2" />
+        <Facebook class="w-4 h-4 mr-2" />
         Facebook
       </button>
       
@@ -34,7 +34,8 @@
         class="inline-flex items-center px-3 py-2 text-sm bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         :aria-label="t('blog.share.copy')"
       >
-        <Icon :name="copied ? 'tabler:check' : 'tabler:copy'" class="w-4 h-4 mr-2" />
+        <Check v-if="copied" class="w-4 h-4 mr-2" />
+        <Copy v-else class="w-4 h-4 mr-2" />
         {{ copied ? t('blog.share.copied') : t('blog.share.copy') }}
       </button>
     </div>
@@ -42,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from "astro-icon/components";
+import { Twitter, Linkedin, Facebook, Copy, Check } from "lucide-vue-next";
 import { ref } from "vue";
 import { type Lang, useTranslations } from "@/i18n";
 

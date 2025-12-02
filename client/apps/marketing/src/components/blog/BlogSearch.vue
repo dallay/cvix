@@ -1,7 +1,7 @@
 <template>
   <div class="relative w-full max-w-lg">
     <div class="relative">
-      <Icon name="tabler:search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+      <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
       <input
         v-model="searchQuery"
         type="text"
@@ -18,7 +18,7 @@
         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
         :aria-label="t('blog.search.clear')"
       >
-        <Icon name="tabler:x" class="w-4 h-4" />
+        <X class="w-4 h-4" />
       </button>
     </div>
     
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from "astro-icon/components";
+import { Search, X } from "lucide-vue-next";
 import { computed, ref, watch } from "vue";
 import { type Lang, useTranslations } from "@/i18n";
 import type Article from "@/models/article/article.model";
@@ -87,13 +87,4 @@ watch(
 		}
 	},
 );
-</script>
-</template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'BlogSearch'
-})
 </script>

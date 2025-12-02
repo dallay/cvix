@@ -48,6 +48,9 @@ export default defineConfig(({ mode }) => {
 				"@cvix/ui": fileURLToPath(
 					new URL("../../packages/ui/src", import.meta.url),
 				),
+				"@cvix/assets": fileURLToPath(
+					new URL("../../packages/assets/src", import.meta.url),
+				),
 				"~icons": "virtual:icons",
 			},
 		},
@@ -75,15 +78,6 @@ export default defineConfig(({ mode }) => {
 					configure: (proxy, _options) => {
 						proxy.on("error", (err, _req, _res) => {
 							console.error("proxy error", err);
-						});
-						proxy.on("proxyRes", (proxyRes, _req, _res) => {
-							// Log Set-Cookie headers from backend
-							if (proxyRes.headers["set-cookie"]) {
-								console.log(
-									"Set-Cookie headers from backend:",
-									proxyRes.headers["set-cookie"],
-								);
-							}
 						});
 					},
 				},

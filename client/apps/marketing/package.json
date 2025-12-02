@@ -47,6 +47,7 @@
 		"@astrojs/rss": "^4.0.14",
 		"@astrojs/sitemap": "^3.6.0",
 		"@astrojs/vue": "^5.1.3",
+		"@cvix/assets": "workspace:*",
 		"@cvix/ui": "workspace:*",
 		"@cvix/utilities": "workspace:*",
 		"@iconify-json/openmoji": "^1.2.17",
