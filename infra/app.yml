@@ -4,8 +4,30 @@ include:
   - ./infra/postgresql/postgresql-compose.yml
   - ./infra/keycloak/keycloak-compose.yml
 services:
-  web:
-    image: n4t5u/cvix:latest
+  landing:
+    image: ghcr.io/dallay/cvix/landing:latest
+    ports:
+      - '443:443'
+    environment:
+      REACT_APP_BACKEND_URL: http://backend:8080
+      REACT_APP_KEYCLOAK_URL: http://keycloak:8080/auth
+      REACT_APP_KEYCLOAK_REALM: cvix
+      REACT_APP_KEYCLOAK_CLIENT_ID: cvix-frontend
+    networks:
+      - frontend
+  frontend:
+    image: ghcr.io/dallay/cvix/webapp:latest
+    ports:
+      - '80:80'
+    environment:
+      REACT_APP_BACKEND_URL: http://backend:8080
+      REACT_APP_KEYCLOAK_URL: http://keycloak:8080/auth
+      REACT_APP_KEYCLOAK_REALM: cvix
+      REACT_APP_KEYCLOAK_CLIENT_ID: cvix-frontend
+    networks:
+      - frontend
+  backend:
+    image: ghcr.io/dallay/cvix/engine:latest
     ports:
       - '8080:8080'
     environment:
