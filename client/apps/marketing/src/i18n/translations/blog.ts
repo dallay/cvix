@@ -33,7 +33,7 @@ export const blog: UIMultilingual = {
 			"Practical advice for building and growing your audience",
 		"blog.recentArticles": "Our Recent Articles",
 		"blog.minRead": "{min} read",
-		"read.article": "Read article",
+		"blog.read.article": "Read article",
 	},
 	es: {
 		"blog.tableOfContents": "Tabla de contenidos",
@@ -69,6 +69,6 @@ export const blog: UIMultilingual = {
 			"Consejos prácticos para construir y hacer crecer tu audiencia",
 		"blog.recentArticles": "Nuestros Artículos Recientes",
 		"blog.minRead": "{min} de lectura",
-		"read.article": "Leer artículo",
+		"blog.read.article": "Leer artículo",
 	},
 };
