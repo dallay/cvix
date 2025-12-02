@@ -2,7 +2,7 @@ import type { ImageMetadata } from "astro";
 
 // Glob patterns for image assets - using relative path from src
 const imageGlobs = import.meta.glob<{ default: ImageMetadata }>(
-	"/src/assets/images/**/*.{jpeg,jpg,png,tiff,webp,gif,svg,avif,JPEG,JPG,PNG,TIFF,WEBP,GIF,SVG,AVIF}",
+	"/src/assets/**/*.{jpeg,jpg,png,tiff,webp,gif,svg,avif,JPEG,JPG,PNG,TIFF,WEBP,GIF,SVG,AVIF}",
 );
 
 /**

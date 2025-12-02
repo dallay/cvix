@@ -61,10 +61,13 @@ copy them during the build process:
 ```json
 {
   "scripts": {
-    "sync:assets": "cp -r ../../packages/assets/public/* ./public/"
+    "sync:assets:posix": "cp -r ../../packages/assets/public/* ./public/",
+    "sync:assets": "cpx \"../../packages/assets/public/**/*\" ./public/"
   }
 }
 ```
+
+> Note: The `cp` command works on macOS/Linux. For Windows or cross-platform, use [`cpx`](https://www.npmjs.com/package/cpx) or [`cpy-cli`](https://www.npmjs.com/package/cpy-cli). Adjust the source path for your app's directory structure.
 
 Or use a Vite plugin like `vite-plugin-static-copy`.
 
@@ -87,13 +90,15 @@ export default defineConfig({
     resolve: {
       alias: {
         "@cvix/assets": fileURLToPath(
-          new URL("../../packages/assets/src", import.meta.url)
+          new URL("<path to packages/assets/src>", import.meta.url)
         ),
       },
     },
   },
 });
 ```
+
+> ⚠️ The relative path must be adjusted per app. For example, in marketing: '../../packages/assets/src', in docs: '../client/packages/assets/src'. Use the correct path from your config file to `packages/assets/src`.
 
 ### Vite (webapp)
 
