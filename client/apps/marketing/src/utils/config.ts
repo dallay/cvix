@@ -1,64 +1,100 @@
+// Memoize the site URL to avoid repeated environment variable lookups
+let cachedSiteUrl: string | undefined;
+
+/**
+ * Reset the memoized site URL cache (for testing purposes only)
+ * @internal
+ */
+export function __resetSiteUrlCache(): void {
+  cachedSiteUrl = undefined;
+}
+
 /**
  * Utility to get the site URL for Astro configuration
  * Uses CF_PAGES_URL environment variable when available (Cloudflare Pages)
  * Falls back to production URL for local development
+ * @returns A valid, normalized site URL
  */
 export function getSiteUrl(): string {
+  if (cachedSiteUrl) {
+    return cachedSiteUrl;
+  }
+
   const productionUrl = "https://cvix.pages.dev";
-  const candidates = [
+  const candidates: (string|undefined)[] = [
     process.env.SITE_URL,
     process.env.CF_PAGES_URL,
-    productionUrl
   ];
+
   for (const url of candidates) {
-    if (url && url.trim() !== "") {
-      return url;
+    if (url) {
+      const trimmed = url.trim();
+      // Validate it's a proper URL format
+      if (trimmed && /^https?:\/\/.+/.test(trimmed)) {
+        cachedSiteUrl = trimmed.replace(/\/+$/, ""); // Remove trailing slashes
+        return cachedSiteUrl;
+      }
     }
   }
-  return productionUrl;
+
+  cachedSiteUrl = productionUrl;
+  return cachedSiteUrl;
 }
 
 /**
  * Get the base URL for the marketing/landing site
  * Uses environment variables with fallback to defaults
+ * @returns Marketing site URL
  */
 export function getBaseUrl(): string {
   const isDev = import.meta.env.DEV;
   const defaultLocal = "http://localhost:4321";
-  const defaultProd = getSiteUrl();
 
   if (isDev) {
-    return process.env.BASE_URL_LOCAL || defaultLocal;
+    return import.meta.env.PUBLIC_BASE_URL_LOCAL || defaultLocal;
   }
-  return process.env.BASE_URL_PROD || defaultProd;
+
+  const defaultProd = import.meta.env.PUBLIC_SITE_URL || "https://cvix.pages.dev";
+  return import.meta.env.PUBLIC_BASE_URL_PROD || defaultProd;
 }
 
 /**
  * Get the base URL for the documentation site
  * Uses environment variables with fallback to defaults
+ * @returns Documentation site URL (subdomain or path-based)
  */
 export function getDocsUrl(): string {
   const isDev = import.meta.env.DEV;
   const defaultLocal = "http://localhost:4321";
-  const defaultProd = `https://docs.${getSiteUrl().replace(/^https?:\/\//, "")}`;
 
   if (isDev) {
-    return process.env.BASE_DOCS_URL_LOCAL || defaultLocal;
+    return import.meta.env.PUBLIC_BASE_DOCS_URL_LOCAL || defaultLocal;
   }
-  return process.env.BASE_DOCS_URL_PROD || defaultProd;
+
+  // In production, prefer explicit env var or derive from site URL
+  const explicitUrl = import.meta.env.PUBLIC_BASE_DOCS_URL_PROD;
+  if (explicitUrl) {
+    return explicitUrl;
+  }
+
+  // Fallback: append /docs to the site URL
+  const site = import.meta.env.PUBLIC_SITE_URL || "https://cvix.pages.dev";
+  return `${site.replace(/\/+$/, "")}/docs`;
 }
 
 /**
  * Get the base URL for the web application
  * Uses environment variables with fallback to defaults
+ * @returns Web application URL
  */
 export function getWebappUrl(): string {
   const isDev = import.meta.env.DEV;
   const defaultLocal = "http://localhost:9876";
-  const defaultProd = "https://app.cvix.pages.dev";
 
   if (isDev) {
-    return process.env.BASE_WEBAPP_URL_LOCAL || defaultLocal;
+    return import.meta.env.PUBLIC_BASE_WEBAPP_URL_LOCAL || defaultLocal;
   }
-  return process.env.BASE_WEBAPP_URL_PROD || defaultProd;
+
+  const defaultProd = "https://app.cvix.pages.dev";
+  return import.meta.env.PUBLIC_BASE_WEBAPP_URL_PROD || defaultProd;
 }
