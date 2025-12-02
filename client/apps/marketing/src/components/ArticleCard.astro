@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "astro/types";
 import { Icon } from "astro-icon/components";
 import { type Lang, useTranslations } from "@/i18n";
 import { cn } from "@cvix/ui/lib/utils";
-import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
+import { prepareImageForOptimizedPicture, isImageMetadata } from "@/utils/image-utils";
 import OptimizedPicture from "./OptimizedPicture.astro";
 
 type Article = {
@@ -58,9 +58,6 @@ const t = useTranslations(currentLocale);
 
 // Prepare the image for rendering
 const resolvedImage = image ? await prepareImageForOptimizedPicture(image) : undefined;
-
-import { isImageMetadata } from "@/utils/image-utils";
-
 const hasValidImage = isImageMetadata(resolvedImage);
 ---
 

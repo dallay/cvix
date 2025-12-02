@@ -31,8 +31,8 @@ export default defineConfig({
 		starlight({
 			title: "ProFileTailors",
 			logo: {
-				light: `${sharedAssetsPath}/logos/light-isotype.svg`,
-				dark: `${sharedAssetsPath}/logos/dark-isotype.svg`,
+				light: './src/assets/light-isotype.svg',
+				dark: './src/assets/dark-isotype.svg',
 			},
 			social: [
 				{
