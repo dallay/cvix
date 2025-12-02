@@ -79,9 +79,6 @@ export default defineConfig(({ mode }) => {
 						proxy.on("error", (err, _req, _res) => {
 							console.error("proxy error", err);
 						});
-						proxy.on("proxyRes", (_proxyRes, _req, _res) => {
-							// console logging removed to avoid leaking headers in dev output
-						});
 					},
 				},
 				"/actuator": {

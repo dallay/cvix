@@ -48,8 +48,12 @@ if (post.entry) {
             class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
           />
         ) : (
-          <div class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary/10 to-primary/5">
-            <Icon name="tabler:photo" class="w-16 h-16 text-muted-foreground/50" />
+          <div class="flex items-center justify-center h-full w-full bg-linear-to-br from-primary/10 to-primary/5">
+            <Icon
+              name="tabler:photo"
+              class="w-16 h-16 text-muted-foreground/50"
+              aria-hidden="true"
+            />
           </div>
         )
       }
