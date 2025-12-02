@@ -71,7 +71,7 @@ const hasValidImage = isImageMetadata(resolvedImage);
 >
   <a
     href={url}
-    class="flex flex-col h-full focus:outline-none"
+    class="flex flex-col h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     aria-label={`${t("blog.read.article")}: ${title}`}
   >
     <div class="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-muted mb-4">

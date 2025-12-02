@@ -4,7 +4,7 @@ import { type Lang, useTranslations } from "@/i18n";
 import { cn } from "@cvix/ui/lib/utils";
 import type Article from "@/models/article/article.model";
 import { cleanEntityId } from "@/utils/collection.entity";
-import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
+import { prepareImageForOptimizedPicture, isImageMetadata } from "@/utils/image-utils";
 import OptimizedPicture from "../OptimizedPicture.astro";
 import { render } from "astro:content";
 
@@ -18,10 +18,6 @@ const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
 
 const coverImage = post.cover ? await prepareImageForOptimizedPicture(post.cover) : undefined;
-
-function isImageMetadata(img: unknown): img is ImageMetadata {
-  return !!img && typeof img === "object" && "src" in img && "width" in img && "height" in img;
-}
 
 const hasValidImage = isImageMetadata(coverImage);
 
