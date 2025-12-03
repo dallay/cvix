@@ -12,13 +12,22 @@
 - Prefer `type` over `interface` for defining object shapes, unless you need declaration merging.
 - Always provide explicit types for function arguments and return values.
 - Avoid `any` at all costs. Use `unknown` for values where the type is truly unknown and perform type-checking.
+- Use TypeScript utility types (`Partial`, `Pick`, `Omit`, `Record`, etc.) to compose and transform types for better reusability and clarity.
 
 ## Naming Conventions
 
-- **Files**: `kebab-case.ts`
-- **Types/Interfaces**: `PascalCase`
-- **Variables/Functions**: `camelCase`
-- **Constants**: `UPPER_SNAKE_CASE`
+All naming conventions in the frontend codebase (inside `client/`) follow these rules:
+
+- **Files**: Use `kebab-case.ts` for all TypeScript files (e.g., `user-profile-card.ts`). Vue components use `PascalCase.vue` (e.g., `UserProfileCard.vue`).
+- **Directories**: Use `kebab-case` (e.g., `user-profile/`, `resume-generator/`).
+- **Types/Interfaces**: Use `PascalCase` (e.g., `UserProfile`, `ResumeData`).
+- **Variables/Functions**: Use `camelCase` (e.g., `userProfile`, `getResumeData`).
+- **Constants**: Use `UPPER_SNAKE_CASE` (e.g., `MAX_RESUME_LENGTH`).
+- **Composables**: Use `useXxx` prefix in `camelCase` (e.g., `useResumeForm.ts`).
+- **Stores (Pinia)**: Use `useXxxStore` in `camelCase` (e.g., `useUserStore.ts`).
+- **Components**: Use `PascalCase.vue` (e.g., `ResumePreview.vue`).
+
+These conventions ensure consistency, readability, and easy navigation in the monorepo frontend structure.
 
 ## Functions
 

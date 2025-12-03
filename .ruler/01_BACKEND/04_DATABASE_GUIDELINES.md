@@ -5,7 +5,7 @@
 ## UUID Strategy
 
 - **Version**: Use UUID version 4 (randomly generated) for all primary keys.
-- **Generation**: Use `java.util.UUID.randomUUID()` in the application layer to generate UUIDs.
+- **Generation**: Prefer client-side UUID generation (offline first, e.g., using `crypto.randomUUID()` in browsers or equivalent in mobile/desktop). The application layer may generate UUIDs (e.g., `java.util.UUID.randomUUID()`) only in specific cases where client-side generation is not possible or not desirable (e.g., system jobs, migrations, legacy integrations).
 - **Storage**: Store UUIDs in the database as a native `UUID` type in PostgreSQL. This is efficient for storage and indexing.
 - **Usage**: Use UUIDs as the primary keys for all database tables and as the external identifiers in APIs.
 

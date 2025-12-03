@@ -51,3 +51,47 @@
 - Embrace structured concurrency. Launch coroutines within a `CoroutineScope` (e.g., `viewModelScope`, `lifecycleScope`).
 - Mark functions that perform long-running or I/O-bound work with `suspend`.
 - Use `Flow` for reactive streams of data.
+
+## Additional Conventions
+
+### Import Ordering
+
+- Order imports: standard library first, then third-party, then project-specific.
+- Remove unused imports automatically (IDE or linter).
+
+### Documentation
+
+- Use KDoc for all public classes, functions, and properties, especially in shared modules.
+- Document non-obvious business logic and public APIs.
+
+### Logging
+
+- Use SLF4J for logging (`logger.info { ... }`).
+- Prefer structured logging for important events.
+- Avoid logging sensitive data.
+
+### Annotation Usage
+
+- Use custom annotations for DI, validation, or configuration only when necessary.
+- Document custom annotations and their intended usage.
+
+### Immutability
+
+- Prefer immutable data structures (`val`, immutable collections).
+- Avoid mutable state in shared and domain modules.
+
+### Code Review
+
+- All Kotlin code must follow the [Code Review Guidelines](../00_GENERAL/06_CODE_REVIEW_GUIDELINES.md).
+- Address all review comments before merging.
+
+### Deprecation
+
+- Mark deprecated code with the `@Deprecated` annotation and provide a replacement or migration path.
+- Remove deprecated code after one release cycle unless otherwise justified.
+
+### Performance
+
+- Avoid unnecessary object allocations and boxing.
+- Use inline functions for small, performance-critical utilities.
+- Profile and optimize hot paths as needed.

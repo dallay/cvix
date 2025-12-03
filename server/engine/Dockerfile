@@ -12,15 +12,16 @@ COPY build.gradle.kts /workspace/
 COPY build-logic /workspace/build-logic
 
 # Copy all subproject build files to leverage Docker layer caching
-COPY shared/common/*.gradle.kts /workspace/shared/common/
-COPY shared/spring-boot-common/*.gradle.kts /workspace/shared/spring-boot-common/
+COPY shared/common/build.gradle.kts /workspace/shared/common/
+COPY shared/spring-boot-common/build.gradle.kts /workspace/shared/spring-boot-common/
 COPY server/engine/build.gradle.kts /workspace/server/engine/
 
 # Download dependencies (this layer will be cached unless build files change)
 RUN ./gradlew dependencies --no-daemon || true
 
-# Copy source code
-COPY shared /workspace/shared
+# Copy source code for all modules
+COPY shared/common/src /workspace/shared/common/src
+COPY shared/spring-boot-common/src /workspace/shared/spring-boot-common/src
 COPY server/engine/src /workspace/server/engine/src
 
 # Build the application

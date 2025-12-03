@@ -12,7 +12,7 @@
 - **API Documentation**: SpringDoc OpenAPI 2.6.0
 - **Database Migrations**: Liquibase
 - **Testing**: JUnit 5, Kotest, Testcontainers, MockK
-- **Build Tool**: Gradle 8.x with Kotlin DSL
+- **Build Tool**: Gradle 9.x with Kotlin DSL
 
 ## Frontend Stack
 
@@ -21,7 +21,7 @@
 - **Styling**: TailwindCSS 4.1.11
 - **State Management**: Pinia 3.0.3
 - **Form Validation**: Vee-Validate with Zod schemas
-- **UI Components**: Reka UI, Lucide icons
+- **UI Components**: Reka UI, Lucide icons, vue-shadcn UI components
 - **Build Tool**: Vite 7.0.4
 - **Package Manager**: pnpm 10.13.1 (monorepo with workspaces)
 
@@ -34,7 +34,7 @@
 ## Code Quality & Testing
 
 - **Linting**: Biome for JavaScript/TypeScript, Detekt for Kotlin
-- **Testing**: Vitest for frontend, JUnit/Kotest for backend
+- **Testing**: Vitest for frontend (unit test) and Playwright (e2e), JUnit/Kotest for backend
 - **Coverage**: Kover for Kotlin, Vitest coverage for frontend
 - **Security**: OWASP Dependency Check
 - **Git Hooks**: Lefthook for Git-hooks management
