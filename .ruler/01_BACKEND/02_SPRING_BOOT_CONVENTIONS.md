@@ -161,44 +161,45 @@ class DatabaseHealthIndicator(
 }
 ```
 
+
 ## Database Migrations (Liquibase)
 
-- Estructura estándar:
+- **Standard structure:**
 
 ```text
 📁db
  └── 📁changelog
-     ├── 📁data
-     │   ├── authority.csv
-     │   ├── federated_identities_dev.csv
-     │   ├── user_authority_dev.csv
-     │   ├── users_dev.csv
-     │   ├── workspace_members_dev.csv
-     │   ├── workspaces_dev.csv
-     ├── 📁migrations
-     │   ├── 001-initial-schema.yaml
-     │   ├── 002-workspaces.yaml
-     │   ├── 002a-workspaces-triggers.yaml
-     │   ├── 002b-workspaces-rls.yaml
-     │   ├── 002c-workspaces-default-constraint.yaml
-     │   ├── 002d-sessions-table.yaml
-     │   ├── 002e-authentication-events-table.yaml
-     │   ├── 002f-federated-identities-table.yaml
-     │   ├── 003-session-optimization.yaml
-     │   ├── 004-resumes.yaml
-     │   ├── 99900001-data-dev-test-users.yaml
-     ├── master.yaml
-     └── README.md
+   ├── 📁data
+   │   ├── authority.csv
+   │   ├── federated_identities_dev.csv
+   │   ├── user_authority_dev.csv
+   │   ├── users_dev.csv
+   │   ├── workspace_members_dev.csv
+   │   ├── workspaces_dev.csv
+   ├── 📁migrations
+   │   ├── 001-initial-schema.yaml
+   │   ├── 002-workspaces.yaml
+   │   ├── 002a-workspaces-triggers.yaml
+   │   ├── 002b-workspaces-rls.yaml
+   │   ├── 002c-workspaces-default-constraint.yaml
+   │   ├── 002d-sessions-table.yaml
+   │   ├── 002e-authentication-events-table.yaml
+   │   ├── 002f-federated-identities-table.yaml
+   │   ├── 003-session-optimization.yaml
+   │   ├── 004-resumes.yaml
+   │   ├── 99900001-data-dev-test-users.yaml
+   ├── master.yaml
+   └── README.md
 ```
 
-- El archivo `master.yaml` incluye todos los cambios y datos en orden de ejecución.
-- Los cambios se organizan por número y tema, usando sufijos para variantes (ej: triggers, rls, constraints).
-- Los datos de desarrollo y test se ubican en `changelog/data/` y se cargan solo en entornos no productivos.
-- Nunca modificar un archivo de migración ya aplicado en producción; crear uno nuevo para cada cambio.
-- Usar archivos YAML para migraciones y CSV para datos masivos.
-- Documentar cada migración relevante en `README.md` dentro de `changelog`.
-- Probar las migraciones en una base de datos limpia y en entornos de staging antes de producción.
-- Mantener los cambios pequeños, atómicos y con nombres descriptivos.
+- The `master.yaml` file includes all changes and data in execution order.
+- Changes are organized by number and topic, using suffixes for variants (e.g., triggers, rls, constraints).
+- Development and test data are located in `changelog/data/` and are loaded only in non-production environments.
+- Never modify a migration file that has already been applied in production; always create a new file for each change.
+- Use YAML files for migrations and CSV files for bulk data.
+- Document each relevant migration in the `README.md` inside `changelog`.
+- Test migrations on a clean database and in staging environments before production.
+- Keep changes small, atomic, and use descriptive names.
 
 ## CORS Configuration
 
