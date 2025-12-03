@@ -18,6 +18,8 @@ const props = withDefaults(
 		modelValue?: string | DateValue
 		placeholder?: string
 		disabled?: boolean
+		required?: boolean
+		name?: string
 		class?: HTMLAttributes["class"]
 		id?: string
 	}>(),
@@ -37,22 +39,22 @@ const df = new DateFormatter("en-US", {
 const value = computed({
 	get: () => {
 		if (!props.modelValue) return undefined
-		
+
 		// If it's already a DateValue object, return it
 		if (typeof props.modelValue === "object" && "calendar" in props.modelValue) {
 			return props.modelValue as DateValue
 		}
-		
+
 		// Parse string date to DateValue
 		if (typeof props.modelValue === "string" && props.modelValue) {
 			try {
 				const parts = props.modelValue.split("-")
 				if (parts.length !== 3) return undefined
-				
+
 				const year = Number.parseInt(parts[0] ?? "", 10)
 				const month = Number.parseInt(parts[1] ?? "", 10)
 				const day = Number.parseInt(parts[2] ?? "", 10)
-				
+
 				// Validate date components are valid numbers and within reasonable ranges
 				if (
 					!Number.isNaN(year) &&
@@ -71,7 +73,7 @@ const value = computed({
 				console.error(`Error parsing date value "${props.modelValue}":`, e)
 			}
 		}
-		
+
 		return undefined
 	},
 	set: (val) => {
@@ -79,7 +81,7 @@ const value = computed({
 			emits("update:modelValue", undefined)
 			return
 		}
-		
+
 		// Convert DateValue to string format (YYYY-MM-DD)
 		const year = val.year
 		const month = String(val.month).padStart(2, "0")
@@ -98,6 +100,18 @@ const displayValue = computed(() => {
 
 <template>
 	<Popover>
+		<!-- Hidden input to participate in native form validation -->
+		<input
+			v-if="props.id || props.name"
+			:type="'text'"
+			:id="props.id"
+			:name="props.name"
+			:value="value ? `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}` : ''"
+			:required="props.required"
+			class="sr-only absolute opacity-0 pointer-events-none h-0 w-0 p-0 m-0"
+			aria-hidden="true"
+			readonly
+		/>
 		<PopoverTrigger as-child>
 			<Button
 				variant="outline"
@@ -109,6 +123,7 @@ const displayValue = computed(() => {
 					)
 				"
 				:disabled="disabled"
+				:aria-required="props.required ? 'true' : undefined"
 			>
 				<CalendarIcon class="mr-2 h-4 w-4" />
 				{{ displayValue }}

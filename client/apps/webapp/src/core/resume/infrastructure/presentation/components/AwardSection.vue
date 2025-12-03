@@ -102,9 +102,11 @@ const hasAwards = computed(() => awards.value.length > 0);
 								</FieldLabel>
 								<DatePicker
 									:id="`award-date-${awardIndex}`"
+									:name="`award-date-${awardIndex}`"
 									v-model="award.date"
 									:placeholder="t('resume.placeholders.date')"
 									:data-testid="`award-date-${awardIndex}`"
+									required
 								/>
 							</Field>
 						</div>
