@@ -72,10 +72,10 @@ describe("ResumeForm.vue", () => {
 		vi.clearAllMocks();
 	});
 
-	const mountComponent = () => {
+	const mountComponent = (customI18n = createTestI18n()) => {
 		return mount(ResumeForm, {
 			global: {
-				plugins: [createTestI18n()],
+				plugins: [customI18n],
 				stubs: {
 					BasicsSection: true,
 					ProfilesField: true,
@@ -298,26 +298,7 @@ describe("ResumeForm.vue", () => {
 		it("should render buttons in Spanish when locale is changed", async () => {
 			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mount(ResumeForm, {
-				global: {
-					plugins: [i18n],
-					stubs: {
-						BasicsSection: true,
-						ProfilesField: true,
-						WorkExperienceSection: true,
-						VolunteerSection: true,
-						EducationSection: true,
-						AwardSection: true,
-						CertificateSection: true,
-						PublicationSection: true,
-						SkillSection: true,
-						LanguageSection: true,
-						InterestSection: true,
-						ReferenceSection: true,
-						ProjectSection: true,
-					},
-				},
-			});
+			const wrapper = mountComponent(i18n);
 
 			const submitButton = wrapper.find('button[type="submit"]');
 			expect(submitButton.text()).toBe("Enviar");
@@ -334,26 +315,7 @@ describe("ResumeForm.vue", () => {
 		it("should show Spanish error messages when locale is es", async () => {
 			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mount(ResumeForm, {
-				global: {
-					plugins: [i18n],
-					stubs: {
-						BasicsSection: true,
-						ProfilesField: true,
-						WorkExperienceSection: true,
-						VolunteerSection: true,
-						EducationSection: true,
-						AwardSection: true,
-						CertificateSection: true,
-						PublicationSection: true,
-						SkillSection: true,
-						LanguageSection: true,
-						InterestSection: true,
-						ReferenceSection: true,
-						ProjectSection: true,
-					},
-				},
-			});
+			const wrapper = mountComponent(i18n);
 			const resumeStore = useResumeStore();
 
 			// Mock validation to return false
