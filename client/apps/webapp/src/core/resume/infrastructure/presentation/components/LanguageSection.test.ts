@@ -1,43 +1,8 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { createI18n } from "vue-i18n";
 import type { Language } from "@/core/resume/domain/Resume";
+import { createTestI18n } from "@/test-utils/i18n-helper";
 import LanguageSection from "./LanguageSection.vue";
-
-const createTestI18n = () =>
-	createI18n({
-		legacy: false,
-		locale: "en",
-		messages: {
-			en: {
-				resume: {
-					actions: {
-						descriptions: {
-							languages: "Add languages you speak",
-						},
-						labels: {
-							language: "Language #{number}",
-						},
-						empty: {
-							languages: "No languages added yet",
-						},
-						addFirstLanguage: "Add your first language",
-					},
-					buttons: {
-						addLanguage: "Add Language",
-					},
-					fields: {
-						language: "Language",
-						fluency: "Fluency",
-					},
-					placeholders: {
-						language: "English",
-						fluency: "Native speaker",
-					},
-				},
-			},
-		},
-	});
 
 describe("LanguageSection.vue", () => {
 	const mountComponent = (languages: Language[] = []) => {
