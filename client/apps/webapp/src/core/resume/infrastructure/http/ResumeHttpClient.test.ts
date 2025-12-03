@@ -115,22 +115,23 @@ describe("ResumeHttpClient", () => {
 
 	beforeEach(() => {
 		client = new ResumeHttpClient();
+
+		// Spy on the client methods after construction
 		getSpy = vi.fn();
 		postSpy = vi.fn();
 		putSpy = vi.fn();
 		deleteSpy = vi.fn();
 
-		// Override axios instance methods
-		// biome-ignore lint/suspicious/noExplicitAny: overriding internal axios instance for testing
+		// Replace the client methods with spies
+		// biome-ignore lint/suspicious/noExplicitAny: Testing requires accessing protected client
 		(client as any).client.get = getSpy;
-		// biome-ignore lint/suspicious/noExplicitAny: overriding internal axios instance for testing
+		// biome-ignore lint/suspicious/noExplicitAny: Testing requires accessing protected client
 		(client as any).client.post = postSpy;
-		// biome-ignore lint/suspicious/noExplicitAny: overriding internal axios instance for testing
+		// biome-ignore lint/suspicious/noExplicitAny: Testing requires accessing protected client
 		(client as any).client.put = putSpy;
-		// biome-ignore lint/suspicious/noExplicitAny: overriding internal axios instance for testing
+		// biome-ignore lint/suspicious/noExplicitAny: Testing requires accessing protected client
 		(client as any).client.delete = deleteSpy;
 	});
-
 	describe("generatePdf", () => {
 		it("posts mapped payload to /resume/generate with locale header", async () => {
 			postSpy.mockResolvedValue({
@@ -159,7 +160,7 @@ describe("ResumeHttpClient", () => {
 			expect(config.responseType).toBe("blob");
 		});
 
-		it("generates PDF with default English locale", async () => {
+		it("omits Accept-Language header when locale is not provided", async () => {
 			postSpy.mockResolvedValue({
 				data: new Blob([new Uint8Array([1])], { type: "application/pdf" }),
 			});

@@ -139,7 +139,7 @@ describe("usePdf", () => {
 		});
 
 		it("should set isLoadingTemplates to true during fetch", async () => {
-			let resolvePromise: (value: TemplateMetadata[]) => void;
+			let resolvePromise!: (value: TemplateMetadata[]) => void;
 			const pendingPromise = new Promise<TemplateMetadata[]>((resolve) => {
 				resolvePromise = resolve;
 			});
@@ -152,9 +152,8 @@ describe("usePdf", () => {
 
 			expect(isLoadingTemplates.value).toBe(true);
 
-			resolvePromise!(mockTemplates);
+			resolvePromise(mockTemplates);
 			await fetchPromise;
-
 			expect(isLoadingTemplates.value).toBe(false);
 		});
 
@@ -249,7 +248,7 @@ describe("usePdf", () => {
 		});
 
 		it("should set isGenerating to true during generation", async () => {
-			let resolvePromise: (value: Blob) => void;
+			let resolvePromise!: (value: Blob) => void;
 			const pendingPromise = new Promise<Blob>((resolve) => {
 				resolvePromise = resolve;
 			});
@@ -262,9 +261,8 @@ describe("usePdf", () => {
 
 			expect(isGenerating.value).toBe(true);
 
-			resolvePromise!(mockPdfBlob);
+			resolvePromise(mockPdfBlob);
 			await genPromise;
-
 			expect(isGenerating.value).toBe(false);
 		});
 

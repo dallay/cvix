@@ -269,7 +269,7 @@ describe("useJsonResume", () => {
 
 			const grouped = groupErrors(errors);
 
-			expect(grouped["General"]).toHaveLength(1);
+			expect(grouped.General).toHaveLength(1);
 		});
 
 		it("should handle empty errors array", () => {

@@ -155,8 +155,9 @@ describe("useAutosave", () => {
 
 			await save(mockResume);
 
-			// The broadcast should have updated the other ref
-			// Note: In actual implementation, the timestamp comparison may prevent update
+			// Verify the broadcast was received by checking the other ref
+			// Use a future timestamp to ensure the update is accepted
+			expect(otherResumeRef.value).toEqual(mockResume);
 		});
 	});
 

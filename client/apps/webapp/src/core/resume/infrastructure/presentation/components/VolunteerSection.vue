@@ -183,7 +183,8 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 								:locale="locale"
 								:data-testid="`volunteer-start-date-${volunteerIndex}`"
 							/>
-						</Field>						<Field>
+						</Field>
+            <Field>
 							<FieldLabel :for="`volunteer-end-date-${volunteerIndex}`">
 								{{ t('resume.fields.endDate') }}
 							</FieldLabel>
