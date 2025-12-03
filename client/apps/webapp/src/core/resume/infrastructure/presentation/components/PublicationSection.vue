@@ -16,7 +16,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Publication } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const publications = defineModel<Publication[]>({
 	default: () => [],
@@ -121,6 +121,7 @@ const hasPublications = computed(() => publications.value.length > 0);
 									:id="`publication-release-date-${pubIndex}`"
 									v-model="publication.releaseDate"
 									:placeholder="t('resume.placeholders.releaseDate')"
+									:locale="locale"
 									:data-testid="`publication-release-date-${pubIndex}`"
 								/>
 							</Field>

@@ -22,26 +22,40 @@ const props = withDefaults(
 		name?: string
 		class?: HTMLAttributes["class"]
 		id?: string
+		/** Locale for date formatting and calendar display (e.g., "en-US", "es-ES"). Falls back to navigator.language or "en-US". */
+		locale?: string
 	}>(),
 	{
 		placeholder: "Pick a date",
 	},
 )
 
-const emits = defineEmits<{
-	"update:modelValue": [value: string | undefined]
+const emit = defineEmits<{
+	(e: 'update:modelValue', value: string | undefined): void
+	(e: 'validation-error', payload: { value: string | undefined, message: string }): void
 }>()
 
-const df = new DateFormatter("en-US", {
-	dateStyle: "long",
+const resolvedLocale = computed(() => {
+	return props.locale || (typeof navigator !== "undefined" && navigator.language) || "en-US"
 })
 
+const df = computed(() => new DateFormatter(resolvedLocale.value, {
+	dateStyle: "long",
+}))
+
+import { ref, watch } from "vue"
+
+const errorMessage = ref<string | null>(null)
 const value = computed({
 	get: () => {
-		if (!props.modelValue) return undefined
+		if (!props.modelValue) {
+			errorMessage.value = null
+			return undefined
+		}
 
 		// If it's already a DateValue object, return it
 		if (typeof props.modelValue === "object" && "calendar" in props.modelValue) {
+			errorMessage.value = null
 			return props.modelValue as DateValue
 		}
 
@@ -49,7 +63,12 @@ const value = computed({
 		if (typeof props.modelValue === "string" && props.modelValue) {
 			try {
 				const parts = props.modelValue.split("-")
-				if (parts.length !== 3) return undefined
+				if (parts.length !== 3) {
+					const message = "Invalid date format"
+					errorMessage.value = message
+					emit("validation-error", { value: props.modelValue, message })
+					return undefined
+				}
 
 				const year = Number.parseInt(parts[0] ?? "", 10)
 				const month = Number.parseInt(parts[1] ?? "", 10)
@@ -66,19 +85,42 @@ const value = computed({
 					day >= 1 &&
 					day <= 31
 				) {
-					// CalendarDate constructor validates day is valid for the given month/year
-					return new CalendarDate(year, month, day)
+					try {
+						// CalendarDate constructor validates day is valid for the given month/year
+						const date = new CalendarDate(year, month, day)
+						errorMessage.value = null
+						return date
+					} catch (e: any) {
+						const message = e instanceof Error ? e.message : "Invalid date"
+						errorMessage.value = message
+						emit("validation-error", { value: props.modelValue, message })
+						// eslint-disable-next-line no-console
+						console.warn("Invalid date:", props.modelValue, e)
+						return undefined
+					}
+				} else {
+					const message = "Date components out of range"
+					errorMessage.value = message
+					emit("validation-error", { value: props.modelValue, message })
+					return undefined
 				}
-			} catch (e) {
+			} catch (e: any) {
+				const message = e instanceof Error ? e.message : "Error parsing date"
+				errorMessage.value = message
+				emit("validation-error", { value: props.modelValue, message })
+				// eslint-disable-next-line no-console
 				console.error(`Error parsing date value "${props.modelValue}":`, e)
+				return undefined
 			}
 		}
 
+		errorMessage.value = null
 		return undefined
 	},
 	set: (val) => {
 		if (!val) {
-			emits("update:modelValue", undefined)
+			errorMessage.value = null
+			emit("update:modelValue", undefined)
 			return
 		}
 
@@ -86,13 +128,26 @@ const value = computed({
 		const year = val.year
 		const month = String(val.month).padStart(2, "0")
 		const day = String(val.day).padStart(2, "0")
-		emits("update:modelValue", `${year}-${month}-${day}`)
+		errorMessage.value = null
+		emit("update:modelValue", `${year}-${month}-${day}`)
 	},
 })
 
+// Watch for modelValue changes to clear error if value becomes valid
+watch(
+	() => props.modelValue,
+	() => {
+		if (value.value) {
+			errorMessage.value = null
+		}
+	}
+)
+
+defineExpose({ errorMessage })
+
 const displayValue = computed(() => {
 	if (value.value) {
-		return df.format(value.value.toDate(getLocalTimeZone()))
+		return df.value.format(value.value.toDate(getLocalTimeZone()))
 	}
 	return props.placeholder
 })
@@ -130,7 +185,7 @@ const displayValue = computed(() => {
 			</Button>
 		</PopoverTrigger>
 		<PopoverContent class="w-auto p-0">
-			<Calendar v-model="value" initial-focus />
+			<Calendar v-model="value" :locale="resolvedLocale" initial-focus />
 		</PopoverContent>
 	</Popover>
 </template>

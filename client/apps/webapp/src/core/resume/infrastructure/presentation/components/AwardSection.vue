@@ -16,7 +16,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Award } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const awards = defineModel<Award[]>({
 	default: () => [],
@@ -105,6 +105,7 @@ const hasAwards = computed(() => awards.value.length > 0);
 									:name="`award-date-${awardIndex}`"
 									v-model="award.date"
 									:placeholder="t('resume.placeholders.date')"
+									:locale="locale"
 									:data-testid="`award-date-${awardIndex}`"
 									required
 								/>
