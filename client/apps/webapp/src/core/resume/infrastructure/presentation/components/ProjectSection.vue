@@ -17,7 +17,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Project } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const projects = defineModel<Project[]>({
 	default: () => [],
@@ -164,6 +164,8 @@ const hasProjects = computed(() => projects.value.length > 0);
 									:id="`project-start-date-${projectIndex}`"
 									v-model="project.startDate"
 									:placeholder="t('resume.placeholders.startDate')"
+									:locale="locale"
+									:data-testid="`project-start-date-${projectIndex}`"
 								/>
 							</Field>
 
@@ -175,7 +177,9 @@ const hasProjects = computed(() => projects.value.length > 0);
 									:id="`project-end-date-${projectIndex}`"
 									v-model="project.endDate"
 									:placeholder="t('resume.placeholders.endDate')"
+									:locale="locale"
 									:disabled="isCurrent(project)"
+									:data-testid="`project-end-date-${projectIndex}`"
 								/>
 							</Field>
 						</div>

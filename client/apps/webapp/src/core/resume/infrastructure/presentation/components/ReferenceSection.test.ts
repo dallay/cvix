@@ -4,8 +4,6 @@ import type { Reference } from "@/core/resume/domain/Resume";
 import { createTestI18n } from "@/test-utils/i18n-helper";
 import ReferenceSection from "./ReferenceSection.vue";
 
-const i18n = createTestI18n();
-
 describe("ReferenceSection.vue", () => {
 	const mountComponent = (references: Reference[] = []) => {
 		return mount(ReferenceSection, {
@@ -13,7 +11,7 @@ describe("ReferenceSection.vue", () => {
 				modelValue: references,
 			},
 			global: {
-				plugins: [i18n],
+				plugins: [createTestI18n()],
 			},
 		});
 	};

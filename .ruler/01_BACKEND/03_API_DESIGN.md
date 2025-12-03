@@ -35,7 +35,7 @@ Use standard HTTP status codes:
 
 - Use JSON for all request and response bodies.
 - Use camelCase for all JSON property names.
-- Version the API via the URL (e.g., `/api/users`).
+- Version the API via the header with `Accept` and `Content-Type` (e.g., `application/vnd.api.v1+json`).
 
 ## Error Handling
 
@@ -43,16 +43,17 @@ Use a consistent error format for all error responses:
 
 ```json
 {
-  "error": {
-    "code": "invalid_request",
-    "message": "The request was invalid.",
-    "errors": [
-      {
-        "field": "email",
-        "message": "The email address is invalid."
-      }
-    ]
-  }
+  "type": "https://example.com/problems/invalid-request",
+  "title": "Invalid Request",
+  "status": 400,
+  "detail": "The request was invalid.",
+  "instance": "/api/users",
+  "errors": [
+    {
+      "field": "email",
+      "message": "The email address is invalid."
+    }
+  ]
 }
 ```
 

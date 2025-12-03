@@ -22,8 +22,7 @@ coverage/
 *.class
 bin/
 
-# Git
-.git/
+# Git metadata files (keep .git/ for gradle-git-properties plugin in backend builds)
 .gitignore
 .gitattributes
 

@@ -1,10 +1,10 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { Resume } from "@/core/resume/domain/Resume";
 import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
+import { createTestI18n } from "@/test-utils/i18n-helper";
 import ResumeForm from "./ResumeForm.vue";
 
 // Mock vue-sonner
@@ -34,90 +34,6 @@ globalThis.confirm = vi.fn(() => true);
 // Mock URL.createObjectURL and revokeObjectURL
 globalThis.URL.createObjectURL = vi.fn(() => "blob:mock-url");
 globalThis.URL.revokeObjectURL = vi.fn();
-
-// Create a minimal i18n instance for testing
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				form: {
-					submit: "Submit",
-					saving: "Saving...",
-					cancel: "Cancel",
-					generatePdf: "Generate PDF",
-					generating: "Generating...",
-					confirmClear: "Are you sure you want to clear all form data?",
-				},
-				toast: {
-					validationError: {
-						title: "Validation Error",
-						description: "Please check all required fields.",
-					},
-					saveSuccess: {
-						title: "Success",
-						description: "Resume saved successfully!",
-					},
-					saveError: {
-						title: "Error",
-						description: "Failed to save resume.",
-					},
-					pdfSuccess: {
-						title: "PDF Generated",
-						description: "Your resume has been generated successfully!",
-					},
-					pdfError: {
-						title: "Generation Failed",
-						description: "Failed to generate PDF.",
-					},
-					formCleared: {
-						title: "Form Cleared",
-						description: "All form data has been reset.",
-					},
-				},
-			},
-		},
-		es: {
-			resume: {
-				form: {
-					submit: "Enviar",
-					saving: "Guardando...",
-					cancel: "Cancelar",
-					generatePdf: "Generar PDF",
-					generating: "Generando...",
-					confirmClear: "¿Estás seguro de que quieres borrar todos los datos?",
-				},
-				toast: {
-					validationError: {
-						title: "Error de Validación",
-						description: "Por favor, verifica todos los campos requeridos.",
-					},
-					saveSuccess: {
-						title: "Éxito",
-						description: "¡Currículum guardado exitosamente!",
-					},
-					saveError: {
-						title: "Error",
-						description: "Error al guardar el currículum.",
-					},
-					pdfSuccess: {
-						title: "PDF Generado",
-						description: "¡Tu currículum ha sido generado exitosamente!",
-					},
-					pdfError: {
-						title: "Generación Fallida",
-						description: "Error al generar el PDF.",
-					},
-					formCleared: {
-						title: "Formulario Limpiado",
-						description: "Todos los datos han sido reiniciados.",
-					},
-				},
-			},
-		},
-	},
-});
 
 const createMockResume = (): Resume => ({
 	basics: {
@@ -156,10 +72,10 @@ describe("ResumeForm.vue", () => {
 		vi.clearAllMocks();
 	});
 
-	const mountComponent = () => {
+	const mountComponent = (customI18n = createTestI18n()) => {
 		return mount(ResumeForm, {
 			global: {
-				plugins: [i18n],
+				plugins: [customI18n],
 				stubs: {
 					BasicsSection: true,
 					ProfilesField: true,
@@ -380,8 +296,9 @@ describe("ResumeForm.vue", () => {
 		});
 
 		it("should render buttons in Spanish when locale is changed", async () => {
+			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mountComponent();
+			const wrapper = mountComponent(i18n);
 
 			const submitButton = wrapper.find('button[type="submit"]');
 			expect(submitButton.text()).toBe("Enviar");
@@ -396,8 +313,9 @@ describe("ResumeForm.vue", () => {
 		});
 
 		it("should show Spanish error messages when locale is es", async () => {
+			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mountComponent();
+			const wrapper = mountComponent(i18n);
 			const resumeStore = useResumeStore();
 
 			// Mock validation to return false
@@ -413,9 +331,6 @@ describe("ResumeForm.vue", () => {
 					description: "Por favor, verifica todos los campos requeridos.",
 				}),
 			);
-
-			// Reset locale
-			i18n.global.locale.value = "en";
 		});
 	});
 
