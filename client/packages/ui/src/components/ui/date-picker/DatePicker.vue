@@ -2,7 +2,7 @@
 import type { DateValue } from "@internationalized/date"
 import { CalendarIcon } from "lucide-vue-next"
 import type { HTMLAttributes } from "vue"
-import { computed } from "vue"
+import { computed, ref, watch } from "vue"
 import { CalendarDate, DateFormatter, getLocalTimeZone } from "@internationalized/date"
 import { Calendar } from "../calendar"
 import { Button } from "../button"
@@ -42,8 +42,6 @@ const resolvedLocale = computed(() => {
 const df = computed(() => new DateFormatter(resolvedLocale.value, {
 	dateStyle: "long",
 }))
-
-import { ref, watch } from "vue"
 
 const errorMessage = ref<string | null>(null)
 const value = computed({
