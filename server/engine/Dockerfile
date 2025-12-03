@@ -55,6 +55,10 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
   CMD bash -c 'echo > /dev/tcp/localhost/8080' || exit 1
 
+# Copy Git metadata (required for gradle-git-properties plugin)
+COPY .git /workspace/.git
+
+
 # Set JVM options for containerized environment
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom"
 
