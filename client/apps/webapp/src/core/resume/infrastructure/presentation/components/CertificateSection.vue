@@ -103,6 +103,7 @@ const hasCertificates = computed(() => certificates.value.length > 0);
 									:id="`certificate-date-${certIndex}`"
 									v-model="certificate.date"
 									:placeholder="t('resume.placeholders.date')"
+									:data-testid="`certificate-date-${certIndex}`"
 								/>
 							</Field>
 						</div>

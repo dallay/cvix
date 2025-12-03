@@ -180,6 +180,7 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 									:id="`volunteer-start-date-${volunteerIndex}`"
 									v-model="volunteer.startDate"
 									:placeholder="t('resume.placeholders.startDate')"
+									:data-testid="`volunteer-start-date-${volunteerIndex}`"
 								/>
 							</Field>
 
@@ -192,6 +193,7 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 									v-model="volunteer.endDate"
 									:placeholder="t('resume.placeholders.endDate')"
 									:disabled="isCurrent(volunteer)"
+									:data-testid="`volunteer-end-date-${volunteerIndex}`"
 								/>
 							</Field>
 						</div>

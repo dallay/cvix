@@ -164,6 +164,7 @@ const hasProjects = computed(() => projects.value.length > 0);
 									:id="`project-start-date-${projectIndex}`"
 									v-model="project.startDate"
 									:placeholder="t('resume.placeholders.startDate')"
+									:data-testid="`project-start-date-${projectIndex}`"
 								/>
 							</Field>
 
@@ -176,6 +177,7 @@ const hasProjects = computed(() => projects.value.length > 0);
 									v-model="project.endDate"
 									:placeholder="t('resume.placeholders.endDate')"
 									:disabled="isCurrent(project)"
+									:data-testid="`project-end-date-${projectIndex}`"
 								/>
 							</Field>
 						</div>

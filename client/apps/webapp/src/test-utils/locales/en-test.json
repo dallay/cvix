@@ -14,7 +14,8 @@
 			},
 			"empty": {
 				"references": "No references added yet",
-				"awards": "No awards added yet"
+				"awards": "No awards added yet",
+				"courses": "No courses added yet"
 			},
 			"addFirstReference": "Add your first reference",
 			"addFirstAward": "Add your first award"
@@ -52,7 +53,9 @@
 			"referenceText": "Jane was a pleasure to work with...",
 			"awardTitle": "Best Developer Award",
 			"awarder": "Company Name",
-			"awardSummary": "Description of the award"
+			"awardSummary": "Description of the award",
+			"startDate": "2020-01-01",
+			"endDate": "2021-01-01"
 		}
 	}
 }

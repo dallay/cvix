@@ -121,6 +121,7 @@ const hasPublications = computed(() => publications.value.length > 0);
 									:id="`publication-release-date-${pubIndex}`"
 									v-model="publication.releaseDate"
 									:placeholder="t('resume.placeholders.releaseDate')"
+									:data-testid="`publication-release-date-${pubIndex}`"
 								/>
 							</Field>
 

@@ -4,39 +4,40 @@ import { createI18n } from "vue-i18n";
 import type { Skill } from "@/core/resume/domain/Resume";
 import SkillSection from "./SkillSection.vue";
 
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				actions: {
-					descriptions: {
-						skills: "Add your skills",
+const createTestI18n = () =>
+	createI18n({
+		legacy: false,
+		locale: "en",
+		messages: {
+			en: {
+				resume: {
+					actions: {
+						descriptions: {
+							skills: "Add your skills",
+						},
+						labels: {
+							skill: "Skill #{number}",
+							keyword: "Keyword #{number}",
+						},
 					},
-					labels: {
-						skill: "Skill #{number}",
-						keyword: "Keyword #{number}",
+					buttons: {
+						addSkill: "Add Skill",
+						addKeyword: "Add Keyword",
 					},
-				},
-				buttons: {
-					addSkill: "Add Skill",
-					addKeyword: "Add Keyword",
-				},
-				fields: {
-					skillName: "Skill Name",
-					level: "Proficiency Level",
-					keywords: "Keywords",
-				},
-				placeholders: {
-					skillName: "Programming",
-					level: "Expert",
-					keyword: "JavaScript",
+					fields: {
+						skillName: "Skill Name",
+						level: "Proficiency Level",
+						keywords: "Keywords",
+					},
+					placeholders: {
+						skillName: "Programming",
+						level: "Expert",
+						keyword: "JavaScript",
+					},
 				},
 			},
 		},
-	},
-});
+	});
 
 describe("SkillSection.vue", () => {
 	const mountComponent = (skills: Skill[] = []) => {
@@ -45,7 +46,7 @@ describe("SkillSection.vue", () => {
 				modelValue: skills,
 			},
 			global: {
-				plugins: [i18n],
+				plugins: [createTestI18n()],
 			},
 		});
 	};

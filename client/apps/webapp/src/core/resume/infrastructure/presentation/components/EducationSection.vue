@@ -179,6 +179,7 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 									:id="`education-start-date-${educationIndex}`"
 									v-model="education.startDate"
 									:placeholder="t('resume.placeholders.startDate')"
+									:data-testid="`education-start-date-${educationIndex}`"
 								/>
 							</Field>
 
@@ -190,6 +191,7 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 									:id="`education-end-date-${educationIndex}`"
 									v-model="education.endDate"
 									:placeholder="t('resume.placeholders.endDate')"
+									:data-testid="`education-end-date-${educationIndex}`"
 								/>
 							</Field>
 

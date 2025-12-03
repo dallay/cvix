@@ -36,88 +36,104 @@ globalThis.URL.createObjectURL = vi.fn(() => "blob:mock-url");
 globalThis.URL.revokeObjectURL = vi.fn();
 
 // Create a minimal i18n instance for testing
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				form: {
-					submit: "Submit",
-					saving: "Saving...",
-					cancel: "Cancel",
-					generatePdf: "Generate PDF",
-					generating: "Generating...",
-					confirmClear: "Are you sure you want to clear all form data?",
+const createTestI18n = () =>
+	createI18n({
+		legacy: false,
+		locale: "en",
+		messages: {
+			en: {
+				resume: {
+					form: {
+						submit: "Submit",
+						saving: "Saving...",
+						cancel: "Cancel",
+						generatePdf: "Generate PDF",
+						generating: "Generating...",
+						confirmClear: "Are you sure you want to clear all form data?",
+					},
+					toast: {
+						validationError: {
+							title: "Validation Error",
+							description: "Please check all required fields.",
+						},
+						saveSuccess: {
+							title: "Success",
+							description: "Resume saved successfully!",
+						},
+						saveError: {
+							title: "Error",
+							description: "Failed to save resume.",
+						},
+						pdfSuccess: {
+							title: "PDF Generated",
+							description: "Your resume has been generated successfully!",
+						},
+						pdfError: {
+							title: "Generation Failed",
+							description: "Failed to generate PDF.",
+						},
+						formCleared: {
+							title: "Form Cleared",
+							description: "All form data has been reset.",
+						},
+					},
+					sections: {
+						personalInfo: "Personal Information",
+						workExperience: "Work Experience",
+						education: "Education",
+						skills: "Skills",
+						projects: "Projects",
+						languages: "Languages",
+						volunteer: "Volunteer",
+						certificates: "Certificates",
+						awards: "Awards",
+						publications: "Publications",
+						interests: "Interests",
+						references: "References",
+					},
 				},
-				toast: {
-					validationError: {
-						title: "Validation Error",
-						description: "Please check all required fields.",
+			},
+			es: {
+				resume: {
+					form: {
+						submit: "Enviar",
+						saving: "Guardando...",
+						cancel: "Cancelar",
+						generatePdf: "Generar PDF",
+						generating: "Generando...",
+						confirmClear:
+							"¿Estás seguro de que quieres borrar todos los datos?",
 					},
-					saveSuccess: {
-						title: "Success",
-						description: "Resume saved successfully!",
-					},
-					saveError: {
-						title: "Error",
-						description: "Failed to save resume.",
-					},
-					pdfSuccess: {
-						title: "PDF Generated",
-						description: "Your resume has been generated successfully!",
-					},
-					pdfError: {
-						title: "Generation Failed",
-						description: "Failed to generate PDF.",
-					},
-					formCleared: {
-						title: "Form Cleared",
-						description: "All form data has been reset.",
+					toast: {
+						validationError: {
+							title: "Error de Validación",
+							description: "Por favor, verifica todos los campos requeridos.",
+						},
+						saveSuccess: {
+							title: "Éxito",
+							description: "¡Currículum guardado exitosamente!",
+						},
+						saveError: {
+							title: "Error",
+							description: "Error al guardar el currículum.",
+						},
+						pdfSuccess: {
+							title: "PDF Generado",
+							description: "¡Tu currículum ha sido generado exitosamente!",
+						},
+						pdfError: {
+							title: "Generación Fallida",
+							description: "Error al generar el PDF.",
+						},
+						formCleared: {
+							title: "Formulario Limpiado",
+							description: "Todos los datos han sido reiniciados.",
+						},
 					},
 				},
 			},
 		},
-		es: {
-			resume: {
-				form: {
-					submit: "Enviar",
-					saving: "Guardando...",
-					cancel: "Cancelar",
-					generatePdf: "Generar PDF",
-					generating: "Generando...",
-					confirmClear: "¿Estás seguro de que quieres borrar todos los datos?",
-				},
-				toast: {
-					validationError: {
-						title: "Error de Validación",
-						description: "Por favor, verifica todos los campos requeridos.",
-					},
-					saveSuccess: {
-						title: "Éxito",
-						description: "¡Currículum guardado exitosamente!",
-					},
-					saveError: {
-						title: "Error",
-						description: "Error al guardar el currículum.",
-					},
-					pdfSuccess: {
-						title: "PDF Generado",
-						description: "¡Tu currículum ha sido generado exitosamente!",
-					},
-					pdfError: {
-						title: "Generación Fallida",
-						description: "Error al generar el PDF.",
-					},
-					formCleared: {
-						title: "Formulario Limpiado",
-						description: "Todos los datos han sido reiniciados.",
-					},
-				},
-			},
-		},
-	},
-});
+	});
 
 const createMockResume = (): Resume => ({
 	basics: {
@@ -159,7 +175,7 @@ describe("ResumeForm.vue", () => {
 	const mountComponent = () => {
 		return mount(ResumeForm, {
 			global: {
-				plugins: [i18n],
+				plugins: [createTestI18n()],
 				stubs: {
 					BasicsSection: true,
 					ProfilesField: true,
@@ -380,8 +396,28 @@ describe("ResumeForm.vue", () => {
 		});
 
 		it("should render buttons in Spanish when locale is changed", async () => {
+			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mountComponent();
+			const wrapper = mount(ResumeForm, {
+				global: {
+					plugins: [i18n],
+					stubs: {
+						BasicsSection: true,
+						ProfilesField: true,
+						WorkExperienceSection: true,
+						VolunteerSection: true,
+						EducationSection: true,
+						AwardSection: true,
+						CertificateSection: true,
+						PublicationSection: true,
+						SkillSection: true,
+						LanguageSection: true,
+						InterestSection: true,
+						ReferenceSection: true,
+						ProjectSection: true,
+					},
+				},
+			});
 
 			const submitButton = wrapper.find('button[type="submit"]');
 			expect(submitButton.text()).toBe("Enviar");
@@ -396,8 +432,28 @@ describe("ResumeForm.vue", () => {
 		});
 
 		it("should show Spanish error messages when locale is es", async () => {
+			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
-			const wrapper = mountComponent();
+			const wrapper = mount(ResumeForm, {
+				global: {
+					plugins: [i18n],
+					stubs: {
+						BasicsSection: true,
+						ProfilesField: true,
+						WorkExperienceSection: true,
+						VolunteerSection: true,
+						EducationSection: true,
+						AwardSection: true,
+						CertificateSection: true,
+						PublicationSection: true,
+						SkillSection: true,
+						LanguageSection: true,
+						InterestSection: true,
+						ReferenceSection: true,
+						ProjectSection: true,
+					},
+				},
+			});
 			const resumeStore = useResumeStore();
 
 			// Mock validation to return false
@@ -413,9 +469,6 @@ describe("ResumeForm.vue", () => {
 					description: "Por favor, verifica todos los campos requeridos.",
 				}),
 			);
-
-			// Reset locale
-			i18n.global.locale.value = "en";
 		});
 	});
 

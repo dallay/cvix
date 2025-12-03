@@ -144,6 +144,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
               :id="`work-start-date-${workIndex}`"
               v-model="work.startDate"
               :placeholder="t('resume.placeholders.startDate')"
+              :data-testid="`work-start-date-${workIndex}`"
             />
           </Field>
 
@@ -155,6 +156,7 @@ const hasWorkExperiences = computed(() => workExperiences.value.length > 0);
               :id="`work-end-date-${workIndex}`"
               v-model="work.endDate"
               :placeholder="t('resume.placeholders.endDate')"
+              :data-testid="`work-end-date-${workIndex}`"
             />
           </Field>
         </FieldGroup>

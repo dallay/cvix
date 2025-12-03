@@ -3,6 +3,9 @@ FROM eclipse-temurin:21.0.9_10-jdk-jammy AS builder
 
 WORKDIR /workspace
 
+# Copy Git metadata (required for gradle-git-properties plugin)
+COPY .git /workspace/.git
+
 # Copy gradle wrapper and configuration files
 COPY gradle /workspace/gradle
 COPY gradlew /workspace/

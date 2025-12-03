@@ -104,6 +104,7 @@ const hasAwards = computed(() => awards.value.length > 0);
 									:id="`award-date-${awardIndex}`"
 									v-model="award.date"
 									:placeholder="t('resume.placeholders.date')"
+									:data-testid="`award-date-${awardIndex}`"
 								/>
 							</Field>
 						</div>
