@@ -101,9 +101,11 @@ const hasCertificates = computed(() => certificates.value.length > 0);
 								</FieldLabel>
 								<DatePicker
 									:id="`certificate-date-${certIndex}`"
+									:name="`certificate-date-${certIndex}`"
 									v-model="certificate.date"
 									:placeholder="t('resume.placeholders.date')"
 									:data-testid="`certificate-date-${certIndex}`"
+									required
 								/>
 							</Field>
 						</div>
