@@ -9,22 +9,6 @@
 
     Example:
 
-    ```vue
-    <script setup lang="ts">
-    import { ref, computed } from 'vue';
-
-    const count = ref(0);
-    const doubled = computed(() => count.value * 2);
-
-    const increment = () => {
-      count.value++;
-    }
-    </script>
-
-    <template>
-      <button @click="increment">Count: {{ count }} (Doubled: {{ doubled }})</button>
-    </template>
-    ```
 
 - Name components using `PascalCase` (e.g., `UserProfileCard.vue`).
 - Define props using `defineProps()` and provide defaults with `withDefaults()`.
