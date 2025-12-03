@@ -2,6 +2,16 @@
 
 > This document outlines the conventions for working with the Astro framework, primarily for the marketing site.
 
+## Overview
+
+Astro is an all-in-one web framework for building content-focused, high-performance websites:
+
+- **Island Architecture**: Uses server-first design to reduce client-side JavaScript overhead and ship high-performance websites.
+- **Content-Focused**: Built-in features like content collections and Markdown support make it excellent for blogs, marketing, and e-commerce sites.
+- **HTML-First**: The `.astro` templating syntax provides powerful server rendering in a format that follows HTML standards.
+- **Framework Agnostic**: Supports React, Vue, Svelte, Preact, and Solid through official integrations.
+- **Powered by Vite**: Fast development server with built-in JavaScript and CSS bundling.
+
 ## Project Structure
 
 - Use the default `src/pages`, `src/components`, and `src/layouts` directories.
@@ -34,3 +44,19 @@
 
 - Use the `<Head>` component to inject dynamic meta tags, canonical URLs, and `og:` tags.
 - Use structured data (JSON-LD) for relevant content types like articles.
+
+## Documentation Resources
+
+When working with Astro, refer to these official documentation sets:
+
+- [Abridged documentation](https://docs.astro.build/llms-small.txt): Compact version with essential content.
+- [Complete documentation](https://docs.astro.build/llms-full.txt): Full documentation for comprehensive reference.
+- [API Reference](https://docs.astro.build/_llms-txt/api-reference.txt): Structured descriptions of Astro's APIs.
+- [How-to Recipes](https://docs.astro.build/_llms-txt/how-to-recipes.txt): Guided examples for adding features.
+- [Build a Blog Tutorial](https://docs.astro.build/_llms-txt/build-a-blog-tutorial.txt): Step-by-step guide to building a basic blog.
+- [Deployment Guides](https://docs.astro.build/_llms-txt/deployment-guides.txt): Recipes for deploying to different services.
+- [CMS Guides](https://docs.astro.build/_llms-txt/cms-guides.txt): Integration recipes for content management systems.
+- [Backend Services](https://docs.astro.build/_llms-txt/backend-services.txt): Integration advice for Firebase, Sentry, Supabase, etc.
+- [Migration Guides](https://docs.astro.build/_llms-txt/migration-guides.txt): Advice on migrating from other tools to Astro.
+- [Additional Guides](https://docs.astro.build/_llms-txt/additional-guides.txt): E-commerce, authentication, testing, and digital asset management.
+- [The Astro Blog](https://astro.build/blog/): Latest news about Astro development.

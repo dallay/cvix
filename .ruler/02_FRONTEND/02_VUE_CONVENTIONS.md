@@ -4,7 +4,12 @@
 
 ## Component Conventions
 
-- Use the `<script setup lang="ts"> </script>` syntax for all components.
+- Prefer the Composition API with TypeScript for all Vue components.
+- Use the `<script setup lang="ts">` block for concise, type-safe code.
+
+    Example:
+
+
 - Name components using `PascalCase` (e.g., `UserProfileCard.vue`).
 - Define props using `defineProps()` and provide defaults with `withDefaults()`.
 - Explicitly declare all emitted events with `defineEmits()`.
@@ -23,7 +28,7 @@
 
 ## UI Components
 
-- Use **Shadcn-Vue** as the primary UI component library (`src/components/ui`). Use the components as provided, customizing styles via props or CSS variables.
+- Use **Shadcn-Vue** as the primary UI component library, now located in `client/packages/ui`. Use the components as provided, customizing styles via props or CSS variables.
 - Create custom components only when necessary (e.g., for unique functionality or complex interactions).
 - Prefer composing functionality with slots over complex props.
 - Ensure all interactive components are accessible (a11y).
@@ -66,6 +71,29 @@ const { handleSubmit, validateField } = useForm<FormData>({
   </FormField>
 </template>
 ```
+
+## Testing
+
+- Use **Vitest** and **@testing-library/vue** for unit and integration tests of components and composables.
+- Write tests for all critical logic, forms, and UI flows. Place test files alongside the component using `.spec.ts` or `.test.ts` suffixes.
+
+## Accessibility (a11y)
+
+- Always use semantic HTML elements and ARIA attributes where needed.
+- Prefer user-facing locators (roles, labels, text) for E2E and component tests.
+- Ensure keyboard navigation and focus management in interactive components.
+- Use tools like axe-core or Playwright's accessibility snapshot for audits.
+
+## Props and Events Documentation
+
+- Document complex props and events using JSDoc comments above the `<script setup>` block or in composables.
+- For reusable components, provide clear prop types and event signatures in code and README if needed.
+
+## UI Extension
+
+- To extend or customize UI components from `client/packages/ui`, prefer composition (slots, wrappers) over direct modification.
+- If you need new variants or behaviors, create a new component in your app and wrap the base UI component, passing props and slots as needed.
+- Document any custom UI extensions in the relevant domain README or code comments.
 
 This ensures users aren't frustrated by validation errors appearing while they're still typing, and prevents vee-validate from switching to "aggressive" mode after the first validation.
 

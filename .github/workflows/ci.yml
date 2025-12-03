@@ -171,6 +171,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, lint-backend]
     if: needs.changes.outputs.backend == 'true' && needs.lint-backend.result == 'success'
+    outputs:
+      codecov-failed: ${{ steps.codecov.outputs.upload-failed }}
     env:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
@@ -189,12 +191,14 @@ jobs:
           files: |
             **/build/test-results/**/*.xml
       - name: Upload coverage to Codecov
+        id: codecov
         uses: ./.github/actions/codecov
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/reports/kover/report.xml
           flags: backend
           name: codecov-backend
+          verbose: "true"
       - name: Upload build artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
@@ -245,6 +249,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, lint-frontend]
     if: needs.changes.outputs.frontend == 'true' && needs.lint-frontend.result == 'success'
+    outputs:
+      codecov-failed: ${{ steps.codecov.outputs.upload-failed }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
@@ -254,15 +260,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Build
         run: pnpm build
-      - name: Test
-        run: pnpm test
+      - name: Test with Coverage
+        run: pnpm test:coverage
       - name: Upload coverage to Codecov
+        id: codecov
         uses: ./.github/actions/codecov
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
+          files: client/**/coverage/lcov.info
           flags: frontend
           name: codecov-frontend
+          verbose: "true"
       - name: Upload build artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
@@ -272,6 +280,62 @@ jobs:
             client/marketing/dist/
             client/docs/dist/
           retention-days: 7
+
+  # ============================================================================
+  # Codecov Status Comment - Posts sticky comment on coverage upload issues
+  # ============================================================================
+  codecov-status:
+    name: Codecov Status
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && always()
+    needs: [backend-pipeline, frontend-pipeline]
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Check Codecov upload status
+        id: check
+        run: |
+          # Check if any codecov uploads failed
+          backend_failed="${{ needs.backend-pipeline.outputs.codecov-failed }}"
+          frontend_failed="${{ needs.frontend-pipeline.outputs.codecov-failed }}"
+
+          if [ "$backend_failed" == "true" ] || [ "$frontend_failed" == "true" ]; then
+            echo "should-comment=true" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Codecov upload failed for one or more pipelines"
+          else
+            echo "should-comment=false" >> "$GITHUB_OUTPUT"
+            echo "✅ All Codecov uploads succeeded"
+          fi
+
+      - name: Post sticky comment on failure
+        if: steps.check.outputs.should-comment == 'true'
+        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728 # v2.9.1
+        with:
+          header: codecov-status
+          message: |
+            ## ⚠️ Codecov Coverage Upload Issue
+
+            Coverage reports failed to upload to Codecov. This does not block the PR, but coverage data may be incomplete.
+
+            **Possible causes:**
+            - Coverage files not found at expected paths
+            - Codecov service temporarily unavailable
+            - Token or configuration issues
+
+            **What to do:**
+            - Check the CI logs for detailed error messages
+            - Verify coverage files are generated in the correct locations
+            - Re-run the workflow if this appears to be a transient issue
+
+            ---
+            <sub>This is an automated message. It will be updated if the issue is resolved.</sub>
+
+      - name: Remove sticky comment on success
+        if: steps.check.outputs.should-comment == 'false'
+        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728 # v2.9.1
+        with:
+          header: codecov-status
+          delete: true
 
   # ============================================================================
   # Security & Compliance - Run in parallel
@@ -284,7 +348,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd    # v5
 
       - name: Dependency Review
         if: github.event_name == 'pull_request'
@@ -358,7 +422,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
-          images: ghcr.io/${{ github.repository_owner }}/cvix/backend
+          images: ghcr.io/${{ github.repository_owner }}/cvix/engine
       - name: Build and push Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:

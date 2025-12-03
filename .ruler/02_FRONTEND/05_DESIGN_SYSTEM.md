@@ -33,7 +33,7 @@ All colors are defined using the OKLCH color space for better perceptual uniform
 #### Status Colors
 
 - **`--destructive`**: Destructive actions and errors
-- **`--destructive-foreground`**: Text for destructive actions
+- **`--destructive-foreground`**: Text for destructive actions (note: this is not explicitly defined in CSS, uses primary-foreground)
 - **`--muted`**: Muted background for subtle elements
 - **`--muted-foreground`**: Text for muted elements
 
@@ -48,8 +48,15 @@ All colors are defined using the OKLCH color space for better perceptual uniform
 - **`--sidebar`**: Sidebar background
 - **`--sidebar-foreground`**: Sidebar text color
 - **`--sidebar-primary`**: Sidebar primary action color
+- **`--sidebar-primary-foreground`**: Text on sidebar primary elements
 - **`--sidebar-accent`**: Sidebar hover/active states
+- **`--sidebar-accent-foreground`**: Text on sidebar accent elements
 - **`--sidebar-border`**: Sidebar borders and separators
+- **`--sidebar-ring`**: Sidebar focus ring color
+
+#### Chart Colors
+
+- **`--chart-1`** through **`--chart-5`**: Predefined colors for data visualization, maintaining consistency across charts
 
 ## Usage in Tailwind CSS
 
@@ -80,12 +87,14 @@ The design system automatically adapts to dark mode via the `.dark` class on the
 
 In dark mode, colors follow this lightness hierarchy:
 
-1. **Background** (`oklch(0.145 0 0)`) - Darkest, base layer
-2. **Card/Popover** (`oklch(0.18 0 0)`) - Slightly elevated
-3. **Secondary/Muted/Border** (`oklch(0.22 0 0)`) - Interactive surfaces
-4. **Foreground** (`oklch(0.985 0 0)`) - Text, brightest
+1. **Background** (`oklch(0.141 0.005 285.823)`) - Darkest, base layer
+2. **Card/Popover** (`oklch(0.21 0.006 285.885)`) - Slightly elevated surfaces
+3. **Secondary/Muted/Accent** (`oklch(0.274 0.006 286.033)`) - Interactive surfaces
+4. **Border** (`oklch(1 0 0 / 10%)`) - Subtle borders with opacity
+5. **Input** (`oklch(1 0 0 / 15%)`) - Input backgrounds with opacity
+6. **Foreground** (`oklch(0.985 0 0)`) - Text, brightest
 
-This creates a subtle, cohesive depth hierarchy throughout the UI.
+This creates a subtle, cohesive depth hierarchy throughout the UI with clear visual separation between layers.
 
 ## Layout Components
 
@@ -145,7 +154,7 @@ Main content areas use `bg-background`:
 
 ### Buttons
 
-Use the `Button` component from `@/components/ui/button` which automatically uses the design tokens:
+Use the `Button` component from `client/packages/ui` which automatically uses the design tokens:
 
 ```vue
 <Button variant="default">Primary Action</Button>
@@ -193,5 +202,28 @@ If you need to add new colors:
 ## References
 
 - Color definitions: `client/apps/webapp/src/styles/globals.css`
-- UI Components: `client/apps/webapp/src/components/ui/`
+- UI Components: `client/packages/ui/src/components/`
 - Layout components: `client/apps/webapp/src/layouts/components/`
+
+## Additional Features
+
+### Custom Scrollbars
+
+The design system includes custom scrollbar styling that adapts to light and dark modes:
+
+- Scrollbars use design tokens for consistency (`--background`, `--muted`, `--border`)
+- Smooth transitions on hover for better UX
+- Narrower scrollbars on mobile devices (8px vs 12px)
+- Specialized styling for code blocks
+- Full support for both WebKit and Firefox
+
+### Border Radius
+
+The system provides a consistent border radius scale:
+
+- **`--radius-sm`**: Small radius (base - 4px)
+- **`--radius-md`**: Medium radius (base - 2px)
+- **`--radius-lg`**: Large radius (base value, 0.65rem)
+- **`--radius-xl`**: Extra large radius (base + 4px)
+
+Use these via Tailwind: `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`
