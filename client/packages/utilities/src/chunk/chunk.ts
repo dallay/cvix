@@ -17,7 +17,13 @@ export function chunk<T>(input: T[], size: number): T[][] {
 			arr.push([item]);
 		} else {
 			// Add to the last chunk
-			arr[arr.length - 1].push(item);
+			const lastChunk = arr[arr.length - 1];
+			if (!lastChunk) {
+				arr.push([item]);
+				return arr;
+			}
+
+			lastChunk.push(item);
 		}
 		return arr;
 	}, []);

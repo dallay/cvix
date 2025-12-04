@@ -25,19 +25,24 @@ export function orderBy<T>(
 	}
 	return [...array].sort((a, b) => {
 		for (let i = 0; i < keys.length; i++) {
-			const aValue = a[keys[i]];
-			const bValue = b[keys[i]];
+			const key = keys[i];
+			const order = orders[i] ?? "asc";
+
+			if (!key) continue;
+
+			const aValue = a[key];
+			const bValue = b[key];
 
 			// Handle null/undefined values
 			if (aValue === null || aValue === undefined) {
-				return orders[i] === "asc" ? -1 : 1;
+				return order === "asc" ? -1 : 1;
 			}
 			if (bValue === null || bValue === undefined) {
-				return orders[i] === "asc" ? 1 : -1;
+				return order === "asc" ? 1 : -1;
 			}
 
-			if (aValue > bValue) return orders[i] === "asc" ? 1 : -1;
-			if (aValue < bValue) return orders[i] === "asc" ? -1 : 1;
+			if (aValue > bValue) return order === "asc" ? 1 : -1;
+			if (aValue < bValue) return order === "asc" ? -1 : 1;
 		}
 		return 0;
 	});

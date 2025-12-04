@@ -9,6 +9,8 @@
 			"@/*": ["./src/*"],
 			"@cvix/ui": ["../../packages/ui/src/index.ts"],
 			"@cvix/ui/*": ["../../packages/ui/src/*"],
+			"@cvix/utilities": ["../../packages/utilities/src/index.ts"],
+			"@cvix/utilities/*": ["../../packages/utilities/src/*"],
 			"~/*": ["./src/*"],
 			"@i18n": ["./src/i18n/index.ts"],
 			"@lib/*": ["./src/lib/*"],

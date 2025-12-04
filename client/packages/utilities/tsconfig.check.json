@@ -1,0 +1,14 @@
+{
+	"extends": "@cvix/tsconfig/tsconfig.base.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"target": "ES2022",
+		"lib": ["es2022", "dom"],
+		"noEmit": true
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist/**"]
+}

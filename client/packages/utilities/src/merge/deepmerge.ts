@@ -1,3 +1,19 @@
+type MergeableObject = Record<string | symbol, unknown>;
+
+interface DeepMergeOptions {
+	clone?: boolean;
+	arrayMerge?: (target: unknown[], source: unknown[], options: DeepMergeOptions) => unknown[];
+	isMergeableObject?: (value: unknown) => value is MergeableObject;
+	customMerge?: (key: string | symbol) => DeepMergeFn | undefined;
+	cloneUnlessOtherwiseSpecified?: (value: unknown, options: DeepMergeOptions) => unknown;
+}
+
+type DeepMergeFn = (
+	target: unknown,
+	source: unknown,
+	options?: DeepMergeOptions,
+) => unknown;
+
 /**
  * Determines if a value is a mergeable object (plain object, not array).
  * @param val Value to check
@@ -77,8 +93,8 @@ const getMergeFunction = (
 const getEnumerableOwnPropertySymbols = (target: object): symbol[] =>
 	Object.getOwnPropertySymbols
 		? Object.getOwnPropertySymbols(target).filter((s) =>
-				Object.prototype.propertyIsEnumerable.call(target, s),
-			)
+			Object.prototype.propertyIsEnumerable.call(target, s),
+		)
 		: [];
 
 /**
@@ -176,27 +192,31 @@ const mergeObject = (
  */
 export const deepmerge: DeepMergeFn & {
 	all: (array: unknown[], options?: DeepMergeOptions) => unknown;
-} = (target, source, options = {}) => {
-	options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-	options.isMergeableObject =
-		options.isMergeableObject || defaultIsMergeableObject;
-	options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
+} = (
+	target: unknown,
+	source: unknown,
+	options: DeepMergeOptions = {},
+) => {
+		options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+		options.isMergeableObject =
+			options.isMergeableObject || defaultIsMergeableObject;
+		options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
 
-	const sourceIsArray = Array.isArray(source);
-	const targetIsArray = Array.isArray(target);
+		const sourceIsArray = Array.isArray(source);
+		const targetIsArray = Array.isArray(target);
 
-	if (sourceIsArray !== targetIsArray) {
-		return cloneUnlessOtherwiseSpecified(source, options);
-	}
+		if (sourceIsArray !== targetIsArray) {
+			return cloneUnlessOtherwiseSpecified(source, options);
+		}
 
-	return sourceIsArray
-		? options.arrayMerge(target as unknown[], source as unknown[], options)
-		: mergeObject(
+		return sourceIsArray
+			? options.arrayMerge(target as unknown[], source as unknown[], options)
+			: mergeObject(
 				target as MergeableObject,
 				source as MergeableObject,
 				options,
 			);
-};
+	};
 
 /**
  * Deeply merges all items in an array into a single object or array.
