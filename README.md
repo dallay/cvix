@@ -152,10 +152,7 @@ docker pull docker.io/dallay/cvix-marketing:latest
 docker pull docker.io/dallay/cvix-engine:1.2.3
 ```
 
-**Available Tags:**
-
 **Available Tags (GHCR & Docker Hub):**
-
 | Tag      | Description                                  |
 | -------- | -------------------------------------------- |
 | `latest` | Rolling tag, always points to newest release |
