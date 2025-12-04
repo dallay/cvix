@@ -10,7 +10,7 @@
  * Example: node scripts/update-gradle-version.mjs 1.2.3
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
