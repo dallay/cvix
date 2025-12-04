@@ -52,4 +52,10 @@ describe("randomElement", () => {
 		// We should have at least 2 different results after multiple calls
 		expect(results.size).toBeGreaterThan(1);
 	});
+
+	it("should handle edge case with sparse array", () => {
+		const array = [1];
+		const element = randomElement(array);
+		expect(element).toBe(1);
+	});
 });

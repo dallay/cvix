@@ -73,4 +73,64 @@ describe("deepmerge", () => {
 		const result = deepmerge(a, b);
 		expect(result).not.toHaveProperty("constructor");
 	});
+
+	it("does not mutate the options object", () => {
+		const a = { foo: 1 };
+		const b = { bar: 2 };
+		const options = { clone: true };
+		const originalOptions = { ...options };
+
+		deepmerge(a, b, options);
+
+		expect(options).toEqual(originalOptions);
+		expect(options).not.toHaveProperty("arrayMerge");
+		expect(options).not.toHaveProperty("isMergeableObject");
+		expect(options).not.toHaveProperty("cloneUnlessOtherwiseSpecified");
+	});
+
+	it("does not mutate options when reused across multiple deepmerge calls", () => {
+		const options = {
+			clone: true,
+		};
+		const originalOptions = { ...options };
+
+		const a1 = { x: { y: 1 } };
+		const b1 = { x: { z: 2 } };
+		deepmerge(a1, b1, options);
+
+		const a2 = { foo: [1, 2] };
+		const b2 = { foo: [3, 4] };
+		deepmerge(a2, b2, options);
+
+		expect(options).toEqual(originalOptions);
+		expect(Object.keys(options)).toEqual(Object.keys(originalOptions));
+	});
+
+	it("respects custom options without mutation", () => {
+		const a = { list: [1, 2] };
+		const b = { list: [3, 4] };
+		const customArrayMerge = (_target: unknown[], source: unknown[]) => source;
+		const options = { arrayMerge: customArrayMerge };
+		const originalOptions = { ...options };
+
+		const result = deepmerge(a, b, options);
+
+		expect(result).toEqual({ list: [3, 4] });
+		expect(options).toEqual(originalOptions);
+		expect(options.arrayMerge).toBe(customArrayMerge);
+	});
+
+	it("deepmerge.all throws error when first argument is not an array", () => {
+		expect(() => deepmerge.all({} as unknown[]))
+			.toThrow("first argument should be an array");
+	});
+
+	it("deepmerge.all merges multiple arrays", () => {
+		const result = deepmerge.all([
+			{ a: 1 },
+			{ b: 2 },
+			{ c: 3 }
+		]);
+		expect(result).toEqual({ a: 1, b: 2, c: 3 });
+	});
 });

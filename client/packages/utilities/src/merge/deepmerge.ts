@@ -197,24 +197,26 @@ export const deepmerge: DeepMergeFn & {
 	source: unknown,
 	options: DeepMergeOptions = {},
 ) => {
-		options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-		options.isMergeableObject =
-			options.isMergeableObject || defaultIsMergeableObject;
-		options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
+		const opts: DeepMergeOptions = {
+			arrayMerge: options.arrayMerge ?? defaultArrayMerge,
+			isMergeableObject: options.isMergeableObject ?? defaultIsMergeableObject,
+			cloneUnlessOtherwiseSpecified,
+			...options,
+		};
 
 		const sourceIsArray = Array.isArray(source);
 		const targetIsArray = Array.isArray(target);
 
 		if (sourceIsArray !== targetIsArray) {
-			return cloneUnlessOtherwiseSpecified(source, options);
+			return cloneUnlessOtherwiseSpecified(source, opts);
 		}
 
 		return sourceIsArray
-			? options.arrayMerge(target as unknown[], source as unknown[], options)
+			? opts.arrayMerge!(target as unknown[], source as unknown[], opts)
 			: mergeObject(
 				target as MergeableObject,
 				source as MergeableObject,
-				options,
+				opts,
 			);
 	};
 
