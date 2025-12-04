@@ -29,4 +29,14 @@ describe("chunk", () => {
 		const result = chunk(["a", "b", "c", "d"], 1);
 		expect(result).toEqual([["a"], ["b"], ["c"], ["d"]]);
 	});
+
+	it("should handle chunk size equal to array length", () => {
+		const result = chunk(["a", "b", "c"], 3);
+		expect(result).toEqual([["a", "b", "c"]]);
+	});
+
+	it("should handle numeric arrays", () => {
+		const result = chunk([1, 2, 3, 4, 5], 2);
+		expect(result).toEqual([[1, 2], [3, 4], [5]]);
+	});
 });

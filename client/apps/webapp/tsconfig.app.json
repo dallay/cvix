@@ -21,6 +21,8 @@
 			"@/*": ["./src/*"],
 			"@cvix/ui": ["../../packages/ui/src/index.ts"],
 			"@cvix/ui/*": ["../../packages/ui/src/*"],
+			"@cvix/utilities": ["../../packages/utilities/src/index.ts"],
+			"@cvix/utilities/*": ["../../packages/utilities/src/*"],
 			"@cvix/assets": ["../../packages/assets/src/index.ts"],
 			"@cvix/assets/*": ["../../packages/assets/src/*"]
 		}

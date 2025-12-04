@@ -50,8 +50,8 @@
 		"build:all": "run-s build:types build:vite",
 		"build": "run-s build:all",
 		"preview": "vite preview",
-		"check:tsc": "tsc --noEmit --skipLibCheck",
-		"check": "pnpm run check:tsc",
+		"check:tsc": "tsc --project tsconfig.check.json --noEmit --skipLibCheck",
+		"check": "pnpm run clean:types && pnpm run check:tsc",
 		"format": "biome format . --write",
 		"clean": "rimraf dist coverage",
 		"test": "vitest",
@@ -65,13 +65,13 @@
 		"@internationalized/date": "^3.10.0",
 		"@cvix/config": "workspace:*",
 		"@cvix/tsconfig": "workspace:*",
-    "@vitest/coverage-v8": "^4.0.14",
+		"@vitest/coverage-v8": "^4.0.14",
 		"npm-run-all2": "^8.0.4",
 		"rimraf": "^6.1.2",
 		"typescript": "^5.9.3",
-    "vite": "^7.2.6",
+		"vite": "^7.2.6",
 		"vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.0.14"
+		"vitest": "^4.0.14"
 	},
 	"publishConfig": {
 		"access": "public"
