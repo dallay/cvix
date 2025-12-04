@@ -63,7 +63,7 @@ make test-all
 This project uses a `Makefile` to streamline common development tasks. Below is a list of the main commands (28 targets) and what they actually invoke in the repository:
 
 | Command                        | Description                                                                   |
-|--------------------------------|-------------------------------------------------------------------------------|
+| ------------------------------ | ----------------------------------------------------------------------------- |
 | `make install`                 | Install JavaScript workspace dependencies (`pnpm install`).                   |
 | `make update-deps`             | Update JS dependencies to their latest versions via pnpm scripts.             |
 | `make prepare`                 | Prepare the development environment (runs `pnpm prepare`).                    |
@@ -110,6 +110,55 @@ See these folders at the repository root:
 - **[Docker Deployment Guide](docs/DOCKER_DEPLOYMENT.md)** — Complete guide for building and deploying Docker images to GHCR
 - **[Contributing Guide](CONTRIBUTING.md)** — Development workflow and contribution guidelines
 - **[Security Policy](SECURITY.md)** — Security practices and vulnerability reporting
+
+## Release & Versioning
+
+This project uses **Semantic Versioning** with automated releases powered by [semantic-release](https://semantic-release.gitbook.io/).
+
+### How It Works
+
+1. **Conventional Commits** trigger version bumps:
+   - `feat:` → Minor version (1.0.0 → 1.1.0)
+   - `fix:` → Patch version (1.0.0 → 1.0.1)
+   - `feat!:` or `BREAKING CHANGE:` → Major version (1.0.0 → 2.0.0)
+
+2. **Automatic on merge to `main`**:
+   - Version calculated from commit history
+   - `CHANGELOG.md` generated
+   - Git tag created
+   - GitHub Release published
+   - Docker images pushed to registries
+
+### Docker Images
+
+Images are published to both **GitHub Container Registry** and **Docker Hub**:
+
+```bash
+# Pull from GHCR
+docker pull ghcr.io/dallay/cvix-engine:latest
+docker pull ghcr.io/dallay/cvix-webapp:latest
+docker pull ghcr.io/dallay/cvix-marketing:latest
+
+# Pull specific version
+docker pull ghcr.io/dallay/cvix-engine:1.2.3
+```
+
+**Available Tags:**
+
+| Tag      | Description                                  |
+| -------- | -------------------------------------------- |
+| `latest` | Rolling tag, always points to newest release |
+| `x.y.z`  | Semantic version (e.g., `1.2.3`)             |
+| `vX`     | Major version (e.g., `v1`)                   |
+| `<sha>`  | Git commit SHA (immutable)                   |
+
+### Manual Release (dry-run)
+
+Test what version would be released without actually releasing:
+
+```bash
+pnpm release:dry-run
+```
 
 ## Development Guidelines
 
