@@ -1,8 +1,8 @@
-name: cvix
+name: ${APP_NAME}
 include:
-  - ./infra/common.yml
-  - ./infra/postgresql/postgresql-compose.yml
-  - ./infra/keycloak/keycloak-compose.yml
+  - ./common.yml
+  - ./postgresql/postgresql-compose.yml
+  - ./keycloak/keycloak-compose.yml
 services:
   traefik:
     image: traefik:v3.0
@@ -23,6 +23,7 @@ services:
   landing:
     image: ghcr.io/dallay/cvix/marketing:latest
     environment:
+      # Public/front-facing URLs (used at build/runtime by the marketing image)
       PUBLIC_BASE_URL_PROD: ${PUBLIC_BASE_URL_PROD}
       PUBLIC_BASE_DOCS_URL_PROD: ${PUBLIC_BASE_DOCS_URL_PROD}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
@@ -38,7 +39,10 @@ services:
   frontend:
     image: ghcr.io/dallay/cvix/webapp:latest
     environment:
+      # Frontend runtime configuration
       BACKEND_URL: ${BACKEND_URL}
+      # Optional: public url for the webapp if needed by the image
+      PUBLIC_BASE_WEBAPP_URL_PROD: ${PUBLIC_BASE_WEBAPP_URL_PROD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
@@ -50,25 +54,64 @@ services:
   backend:
     image: ghcr.io/dallay/cvix/engine:latest
     environment:
+      # Database (R2DBC)
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+
+      # Spring profile / server URLs
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       OAUTH2_SERVER_URL: ${OAUTH2_SERVER_URL}
+
+      # Keycloak / Auth configuration
+      # Realm and client used by the application to validate tokens
+      REALM: ${REALM}
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
+
+      # Admin / test helpers (admin realm client used by infra tasks/tests)
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_REALM: ${ADMIN_REALM}
       ADMIN_REALM_USERNAME: ${ADMIN_REALM_USERNAME}
       ADMIN_REALM_PASSWORD: ${ADMIN_REALM_PASSWORD}
+
+      # Keycloak host references (docker/compose integration)
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KC_HOSTNAME: ${KC_HOSTNAME}
+
+      # CORS configuration (comma-separated values supported)
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       CORS_ALLOWED_METHODS: ${CORS_ALLOWED_METHODS}
       CORS_ALLOWED_HEADERS: ${CORS_ALLOWED_HEADERS}
       CORS_EXPOSED_HEADERS: ${CORS_EXPOSED_HEADERS}
       CORS_ALLOW_CREDENTIALS: ${CORS_ALLOW_CREDENTIALS}
       CORS_MAX_AGE: ${CORS_MAX_AGE}
+
+      # Host & app-level flags
       HOSTNAME: ${HOSTNAME}
+      PERSIST_LATEX_FILES: ${PERSIST_LATEX_FILES}
+
+      # Email / Notification (development & production)
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME}
+
+      # PDF Generation (resume/document rendering)
+      PDF_DOCKER_IMAGE: ${PDF_DOCKER_IMAGE}
+      PDF_MAX_CONCURRENT_CONTAINERS: ${PDF_MAX_CONCURRENT_CONTAINERS}
+      PDF_TIMEOUT_SECONDS: ${PDF_TIMEOUT_SECONDS}
+      PDF_MEMORY_LIMIT_MB: ${PDF_MEMORY_LIMIT_MB}
+      PDF_CPU_QUOTA: ${PDF_CPU_QUOTA}
+
+      # Optional SSL/keystore references (if your image uses them)
+      SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
+      SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
+      SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"

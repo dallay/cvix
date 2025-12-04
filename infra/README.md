@@ -3,6 +3,54 @@
 This directory contains the infrastructure configuration for the cvix application, including
 database, authentication, email testing, and SSL certificate management.
 
+## Quick Start
+
+### 1. Set Up Environment Variables
+
+Before running any Docker Compose commands, you need to create a `.env` file in this directory (`infra/`):
+
+```bash
+cd infra/
+cp .env.example .env
+```
+
+Then edit `.env` and adjust the values for your environment (database credentials, URLs, API keys, etc.).
+
+**Important**: The `.env` file is automatically loaded by Docker Compose and is gitignored to prevent accidental commits of sensitive data.
+
+### 2. Run Docker Compose
+
+From the `infra/` directory, start all services:
+
+```bash
+docker-compose -f app.yml up -d
+```
+
+This command will:
+- Load all environment variables from `.env`
+- Start PostgreSQL, Keycloak, and other services
+- Include all referenced compose files (`common.yml`, `postgresql/`, `keycloak/`, etc.)
+
+### 3. Verify Services
+
+Check that services are running:
+
+```bash
+docker-compose -f app.yml ps
+```
+
+## Environment Variables
+
+All services are configured via environment variables defined in `.env`. Key variables include:
+
+- **Database**: `POSTGRESQL_USER`, `POSTGRESQL_PASSWORD`, `DATABASE_URL`
+- **Keycloak**: `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KC_HOSTNAME`
+- **Backend**: `BACKEND_URL`, `OAUTH2_SERVER_URL`, `CORS_ALLOWED_ORIGINS`
+- **Email**: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
+- **PDF Generation**: `PDF_DOCKER_IMAGE`, `PDF_MAX_CONCURRENT_CONTAINERS`, etc.
+
+For a complete list of variables and their descriptions, see `.env.example`.
+
 ## Services
 
 ### PostgreSQL Database
