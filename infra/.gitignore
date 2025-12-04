@@ -4,6 +4,10 @@
 # Docker Compose data volumes
 data/
 
+# Docker secrets - NEVER commit to version control
+secrets/*.txt
+secrets/.env
+
 # IDE / Editor files
 .vscode/
 .idea/
