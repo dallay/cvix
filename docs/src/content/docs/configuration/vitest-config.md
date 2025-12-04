@@ -96,7 +96,9 @@ vitest run --coverage --project=utilities
 ## Benefits of Centralized Configuration
 
 1. **Single Source of Truth**: Global options (reporters, coverage) defined once in root config
-2. **No Duplication**: Projects inherit common settings via `extends: true`
+2. **No Duplication**: Projects inherit common settings by being referenced
+   from the root `test.projects` array, so they don’t need to redefine
+   reporters or coverage.
 3. **Selective Testing**: Run tests for specific projects without running all tests
 4. **Parallel Execution**: Vitest can run project tests in parallel for better CI performance
 5. **Unified Tooling**: Single Vitest instance manages all test suites
