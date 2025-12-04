@@ -1,4 +1,6 @@
-import { resolve } from "node:path";
+
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { defineProject } from "vitest/config";
 
 /**
@@ -6,6 +8,9 @@ import { defineProject } from "vitest/config";
  * Projects automatically inherit global options (reporters, coverage) from root vitest.config.ts.
  * This config provides Node library-specific overrides.
  */
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+
 export default defineProject({
     test: {
         // Project-specific identification
@@ -19,7 +24,7 @@ export default defineProject({
     },
     resolve: {
         alias: {
-            "@": resolve(__dirname, "./src"),
+            "@": resolve(projectRoot, "./src"),
         },
     },
 });
