@@ -1,0 +1,52 @@
+{
+	"resume": {
+		"form": {
+			"submit": "Enviar",
+			"saving": "Guardando...",
+			"cancel": "Cancelar",
+			"generatePdf": "Generar PDF",
+			"generating": "Generando...",
+			"confirmClear": "¿Estás seguro de que quieres borrar todos los datos?"
+		},
+		"toast": {
+			"validationError": {
+				"title": "Error de Validación",
+				"description": "Por favor, verifica todos los campos requeridos."
+			},
+			"saveSuccess": {
+				"title": "Éxito",
+				"description": "¡Currículum guardado exitosamente!"
+			},
+			"saveError": {
+				"title": "Error",
+				"description": "Error al guardar el currículum."
+			},
+			"pdfSuccess": {
+				"title": "PDF Generado",
+				"description": "¡Tu currículum ha sido generado exitosamente!"
+			},
+			"pdfError": {
+				"title": "Generación Fallida",
+				"description": "Error al generar el PDF."
+			},
+			"formCleared": {
+				"title": "Formulario Limpiado",
+				"description": "Todos los datos han sido reiniciados."
+			}
+		},
+		"sections": {
+			"personalInfo": "Información Personal",
+			"workExperience": "Experiencia Laboral",
+			"education": "Educación",
+			"skills": "Habilidades",
+			"projects": "Proyectos",
+			"languages": "Idiomas",
+			"volunteer": "Voluntariado",
+			"certificates": "Certificados",
+			"awards": "Premios",
+			"publications": "Publicaciones",
+			"interests": "Intereses",
+			"references": "Referencias"
+		}
+	}
+}

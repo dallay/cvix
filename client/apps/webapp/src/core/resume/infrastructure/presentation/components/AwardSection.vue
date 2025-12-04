@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -15,7 +16,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Award } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const awards = defineModel<Award[]>({
 	default: () => [],
@@ -99,10 +100,12 @@ const hasAwards = computed(() => awards.value.length > 0);
 								<FieldLabel :for="`award-date-${awardIndex}`">
 									{{ t('resume.fields.date') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`award-date-${awardIndex}`"
+									:name="`award-date-${awardIndex}`"
 									v-model="award.date"
-									type="date"
+									:placeholder="t('resume.placeholders.date')"
+									:locale="locale"
 									:data-testid="`award-date-${awardIndex}`"
 									required
 								/>

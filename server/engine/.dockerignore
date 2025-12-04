@@ -20,8 +20,7 @@ src/test/
 *.md
 docs/
 
-# Git
-.git/
+# Git metadata files (keep .git/ for gradle-git-properties)
 .gitignore
 .gitattributes
 
@@ -43,3 +42,6 @@ temp/
 *.bak
 *.swp
 *~
+
+# Note: .git/ is NOT excluded because the gradle-git-properties plugin
+# needs access to Git metadata during the build process

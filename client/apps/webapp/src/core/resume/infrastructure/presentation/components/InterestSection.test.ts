@@ -4,41 +4,42 @@ import { createI18n } from "vue-i18n";
 import type { Interest } from "@/core/resume/domain/Resume";
 import InterestSection from "./InterestSection.vue";
 
-const i18n = createI18n({
-	legacy: false,
-	locale: "en",
-	messages: {
-		en: {
-			resume: {
-				actions: {
-					descriptions: {
-						interests: "Add your interests and hobbies",
+const createTestI18n = () =>
+	createI18n({
+		legacy: false,
+		locale: "en",
+		messages: {
+			en: {
+				resume: {
+					actions: {
+						descriptions: {
+							interests: "Add your interests and hobbies",
+						},
+						labels: {
+							interest: "Interest #{number}",
+						},
+						empty: {
+							interests: "No interests added yet",
+							keywords: "No keywords added yet",
+						},
+						addFirstInterest: "Add your first interest",
 					},
-					labels: {
-						interest: "Interest #{number}",
+					buttons: {
+						addInterest: "Add Interest",
+						addKeyword: "Add Keyword",
 					},
-					empty: {
-						interests: "No interests added yet",
-						keywords: "No keywords added yet",
+					fields: {
+						interestName: "Interest Name",
+						keywords: "Keywords",
 					},
-					addFirstInterest: "Add your first interest",
-				},
-				buttons: {
-					addInterest: "Add Interest",
-					addKeyword: "Add Keyword",
-				},
-				fields: {
-					interestName: "Interest Name",
-					keywords: "Keywords",
-				},
-				placeholders: {
-					interestName: "Photography",
-					keyword: "Landscape",
+					placeholders: {
+						interestName: "Photography",
+						keyword: "Landscape",
+					},
 				},
 			},
 		},
-	},
-});
+	});
 
 describe("InterestSection.vue", () => {
 	const mountComponent = (interests: Interest[] = []) => {
@@ -47,7 +48,7 @@ describe("InterestSection.vue", () => {
 				modelValue: interests,
 			},
 			global: {
-				plugins: [i18n],
+				plugins: [createTestI18n()],
 			},
 		});
 	};

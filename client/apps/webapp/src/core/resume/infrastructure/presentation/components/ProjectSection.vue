@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
 import { Checkbox } from "@cvix/ui/components/ui/checkbox";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -16,7 +17,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Project } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const projects = defineModel<Project[]>({
 	default: () => [],
@@ -159,12 +160,12 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-start-date-${projectIndex}`">
 									{{ t('resume.fields.startDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-start-date-${projectIndex}`"
 									v-model="project.startDate"
-									type="date"
+									:placeholder="t('resume.placeholders.startDate')"
+									:locale="locale"
 									:data-testid="`project-start-date-${projectIndex}`"
-									required
 								/>
 							</Field>
 
@@ -172,12 +173,13 @@ const hasProjects = computed(() => projects.value.length > 0);
 								<FieldLabel :for="`project-end-date-${projectIndex}`">
 									{{ t('resume.fields.endDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`project-end-date-${projectIndex}`"
 									v-model="project.endDate"
-									type="date"
-									:data-testid="`project-end-date-${projectIndex}`"
+									:placeholder="t('resume.placeholders.endDate')"
+									:locale="locale"
 									:disabled="isCurrent(project)"
+									:data-testid="`project-end-date-${projectIndex}`"
 								/>
 							</Field>
 						</div>

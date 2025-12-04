@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
 import { Checkbox } from "@cvix/ui/components/ui/checkbox";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -16,7 +17,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Volunteer } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const volunteers = defineModel<Volunteer[]>({
 	default: () => [],
@@ -171,31 +172,31 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 						</Field>
 
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<Field>
-								<FieldLabel :for="`volunteer-start-date-${volunteerIndex}`">
-									{{ t('resume.fields.startDate') }}
-								</FieldLabel>
-								<Input
-									:id="`volunteer-start-date-${volunteerIndex}`"
-									v-model="volunteer.startDate"
-									type="date"
-									:data-testid="`volunteer-start-date-${volunteerIndex}`"
-									required
-								/>
-							</Field>
-
-							<Field>
-								<FieldLabel :for="`volunteer-end-date-${volunteerIndex}`">
-									{{ t('resume.fields.endDate') }}
-								</FieldLabel>
-								<Input
-									:id="`volunteer-end-date-${volunteerIndex}`"
-									v-model="volunteer.endDate"
-									type="date"
-									:data-testid="`volunteer-end-date-${volunteerIndex}`"
-									:disabled="isCurrent(volunteer)"
-								/>
-							</Field>
+						<Field>
+							<FieldLabel :for="`volunteer-start-date-${volunteerIndex}`">
+								{{ t('resume.fields.startDate') }}
+							</FieldLabel>
+							<DatePicker
+								:id="`volunteer-start-date-${volunteerIndex}`"
+								v-model="volunteer.startDate"
+								:placeholder="t('resume.placeholders.startDate')"
+								:locale="locale"
+								:data-testid="`volunteer-start-date-${volunteerIndex}`"
+							/>
+						</Field>
+            <Field>
+							<FieldLabel :for="`volunteer-end-date-${volunteerIndex}`">
+								{{ t('resume.fields.endDate') }}
+							</FieldLabel>
+							<DatePicker
+								:id="`volunteer-end-date-${volunteerIndex}`"
+								v-model="volunteer.endDate"
+								:placeholder="t('resume.placeholders.endDate')"
+								:locale="locale"
+								:disabled="isCurrent(volunteer)"
+								:data-testid="`volunteer-end-date-${volunteerIndex}`"
+							/>
+						</Field>
 						</div>
 
 						<div class="flex items-center gap-2">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -14,7 +15,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Certificate } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const certificates = defineModel<Certificate[]>({
 	default: () => [],
@@ -98,10 +99,12 @@ const hasCertificates = computed(() => certificates.value.length > 0);
 								<FieldLabel :for="`certificate-date-${certIndex}`">
 									{{ t('resume.fields.date') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`certificate-date-${certIndex}`"
+									:name="`certificate-date-${certIndex}`"
 									v-model="certificate.date"
-									type="date"
+									:placeholder="t('resume.placeholders.date')"
+									:locale="locale"
 									:data-testid="`certificate-date-${certIndex}`"
 									required
 								/>

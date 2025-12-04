@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -14,7 +15,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Education } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const educationEntries = defineModel<Education[]>({
 	default: () => [],
@@ -174,12 +175,12 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 								<FieldLabel :for="`education-start-date-${educationIndex}`">
 									{{ t('resume.fields.startDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`education-start-date-${educationIndex}`"
 									v-model="education.startDate"
-									type="date"
+									:placeholder="t('resume.placeholders.startDate')"
+									:locale="locale"
 									:data-testid="`education-start-date-${educationIndex}`"
-									required
 								/>
 							</Field>
 
@@ -187,10 +188,11 @@ const hasEducation = computed(() => educationEntries.value.length > 0);
 								<FieldLabel :for="`education-end-date-${educationIndex}`">
 									{{ t('resume.fields.endDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`education-end-date-${educationIndex}`"
 									v-model="education.endDate"
-									type="date"
+									:placeholder="t('resume.placeholders.endDate')"
+									:locale="locale"
 									:data-testid="`education-end-date-${educationIndex}`"
 								/>
 							</Field>

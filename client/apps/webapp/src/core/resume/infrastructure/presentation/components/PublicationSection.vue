@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@cvix/ui/components/ui/button";
+import { DatePicker } from "@cvix/ui/components/ui/date-picker";
 import {
 	Field,
 	FieldDescription,
@@ -15,7 +16,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Publication } from "@/core/resume/domain/Resume";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const publications = defineModel<Publication[]>({
 	default: () => [],
@@ -116,12 +117,12 @@ const hasPublications = computed(() => publications.value.length > 0);
 								<FieldLabel :for="`publication-release-date-${pubIndex}`">
 									{{ t('resume.fields.releaseDate') }}
 								</FieldLabel>
-								<Input
+								<DatePicker
 									:id="`publication-release-date-${pubIndex}`"
 									v-model="publication.releaseDate"
-									type="date"
+									:placeholder="t('resume.placeholders.releaseDate')"
+									:locale="locale"
 									:data-testid="`publication-release-date-${pubIndex}`"
-									required
 								/>
 							</Field>
 

@@ -4,26 +4,32 @@
 			"descriptions": {
 				"education": "Add your education history",
 				"references": "Add professional references",
-				"awards": "Add your awards and honors"
+				"awards": "Add your awards and honors",
+				"languages": "Add languages you speak"
 			},
 			"labels": {
 				"education": "Education #{number}",
 				"course": "Course #{number}",
 				"reference": "Reference #{number}",
-				"award": "Award #{number}"
+				"award": "Award #{number}",
+				"language": "Language #{number}"
 			},
 			"empty": {
 				"references": "No references added yet",
-				"awards": "No awards added yet"
+				"awards": "No awards added yet",
+				"courses": "No courses added yet",
+				"languages": "No languages added yet"
 			},
 			"addFirstReference": "Add your first reference",
-			"addFirstAward": "Add your first award"
+			"addFirstAward": "Add your first award",
+			"addFirstLanguage": "Add your first language"
 		},
 		"buttons": {
 			"addEducation": "Add Education",
 			"addCourse": "Add Course",
 			"addReference": "Add Reference",
-			"addAward": "Add Award"
+			"addAward": "Add Award",
+			"addLanguage": "Add Language"
 		},
 		"fields": {
 			"institution": "Institution",
@@ -39,7 +45,9 @@
 			"awardTitle": "Award Title",
 			"date": "Date",
 			"awarder": "Awarder",
-			"summary": "Summary"
+			"summary": "Summary",
+			"language": "Language",
+			"fluency": "Fluency"
 		},
 		"placeholders": {
 			"institution": "University Name",
@@ -52,7 +60,59 @@
 			"referenceText": "Jane was a pleasure to work with...",
 			"awardTitle": "Best Developer Award",
 			"awarder": "Company Name",
-			"awardSummary": "Description of the award"
+			"awardSummary": "Description of the award",
+			"startDate": "2020-01-01",
+			"endDate": "2021-01-01",
+			"language": "English",
+			"fluency": "Native speaker"
+		},
+		"form": {
+			"submit": "Submit",
+			"saving": "Saving...",
+			"cancel": "Cancel",
+			"generatePdf": "Generate PDF",
+			"generating": "Generating...",
+			"confirmClear": "Are you sure you want to clear all form data?"
+		},
+		"toast": {
+			"validationError": {
+				"title": "Validation Error",
+				"description": "Please check all required fields."
+			},
+			"saveSuccess": {
+				"title": "Success",
+				"description": "Resume saved successfully!"
+			},
+			"saveError": {
+				"title": "Error",
+				"description": "Failed to save resume."
+			},
+			"pdfSuccess": {
+				"title": "PDF Generated",
+				"description": "Your resume has been generated successfully!"
+			},
+			"pdfError": {
+				"title": "Generation Failed",
+				"description": "Failed to generate PDF."
+			},
+			"formCleared": {
+				"title": "Form Cleared",
+				"description": "All form data has been reset."
+			}
+		},
+		"sections": {
+			"personalInfo": "Personal Information",
+			"workExperience": "Work Experience",
+			"education": "Education",
+			"skills": "Skills",
+			"projects": "Projects",
+			"languages": "Languages",
+			"volunteer": "Volunteer",
+			"certificates": "Certificates",
+			"awards": "Awards",
+			"publications": "Publications",
+			"interests": "Interests",
+			"references": "References"
 		}
 	}
 }
