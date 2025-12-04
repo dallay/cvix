@@ -23,10 +23,12 @@ for secret in \
 
 do
   secret_file="/run/secrets/$secret"
-  if [ -f "$secret_file" ]; then
-    # Strip CRs to handle Windows/CI CRLF line endings in secret files
-    export "$secret"="$(cat "$secret_file" | tr -d '\r')"
+  if [ ! -f "$secret_file" ]; then
+    echo "ERROR: Required Docker secret '$secret' not found at $secret_file" >&2
+    exit 1
   fi
+  # Strip CRs from secrets created on Windows/Git or CI systems that use CRLF line endings
+  export "$secret"="$(cat "$secret_file" | tr -d '\r')"
 done
 
 exec java $JAVA_OPTS -jar app.jar "$@"
