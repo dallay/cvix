@@ -53,11 +53,15 @@ if [ -z "$APP_YML_SECRETS" ]; then
 fi
 
 echo "Secrets in docker-entrypoint.sh:"
-echo "$ENTRYPOINT_SECRETS" | sed 's/^/  - /'
+while IFS= read -r secret; do
+  [ -n "$secret" ] && echo "  - $secret"
+done <<< "$ENTRYPOINT_SECRETS"
 echo ""
 
 echo "Secrets in infra/app.yml:"
-echo "$APP_YML_SECRETS" | sed 's/^/  - /'
+while IFS= read -r secret; do
+  [ -n "$secret" ] && echo "  - $secret"
+done <<< "$APP_YML_SECRETS"
 echo ""
 
 # Compare the two lists
@@ -68,10 +72,14 @@ else
   echo "❌ FAILURE: Secrets mismatch detected!"
   echo ""
   echo "Secrets only in docker-entrypoint.sh:"
-  comm -23 <(echo "$ENTRYPOINT_SECRETS") <(echo "$APP_YML_SECRETS") | sed 's/^/  - /'
+  comm -23 <(echo "$ENTRYPOINT_SECRETS") <(echo "$APP_YML_SECRETS") | while IFS= read -r secret; do
+    [ -n "$secret" ] && echo "  - $secret"
+  done
   echo ""
   echo "Secrets only in infra/app.yml:"
-  comm -13 <(echo "$ENTRYPOINT_SECRETS") <(echo "$APP_YML_SECRETS") | sed 's/^/  - /'
+  comm -13 <(echo "$ENTRYPOINT_SECRETS") <(echo "$APP_YML_SECRETS") | while IFS= read -r secret; do
+    [ -n "$secret" ] && echo "  - $secret"
+  done
   echo ""
   echo "Please update both files to include the same set of secrets."
   echo "See server/engine/docker-entrypoint.sh and infra/app.yml"
