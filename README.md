@@ -142,15 +142,26 @@ docker pull ghcr.io/dallay/cvix-marketing:latest
 # Pull specific version
 docker pull ghcr.io/dallay/cvix-engine:1.2.3
 ```
+```bash
+# Pull from Docker Hub
+docker pull docker.io/dallay/cvix-engine:latest
+docker pull docker.io/dallay/cvix-webapp:latest
+docker pull docker.io/dallay/cvix-marketing:latest
+
+# Pull specific version
+docker pull docker.io/dallay/cvix-engine:1.2.3
+```
 
 **Available Tags:**
+
+**Available Tags (GHCR & Docker Hub):**
 
 | Tag      | Description                                  |
 | -------- | -------------------------------------------- |
 | `latest` | Rolling tag, always points to newest release |
 | `x.y.z`  | Semantic version (e.g., `1.2.3`)             |
 | `vX`     | Major version (e.g., `v1`)                   |
-| `<sha>`  | Git commit SHA (immutable)                   |
+| `<sha>`  | Git commit SHA (immutable, GHCR only)        |
 
 ### Manual Release (dry-run)
 

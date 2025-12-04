@@ -76,20 +76,29 @@ const workspacePackages = [
 
 for (const pkgPath of workspacePackages) {
 	const fullPath = resolve(rootDir, pkgPath);
+	if (!existsSync(fullPath)) {
+		console.log(`⏭️ Skipped ${pkgPath} (not found)`);
+		continue;
+	}
+
+	let pkg;
 	try {
 		const pkgContent = readFileSync(fullPath, "utf8");
-		const pkg = JSON.parse(pkgContent);
+		pkg = JSON.parse(pkgContent);
+	} catch (error) {
+		console.error(`❌ Error reading/parsing ${pkgPath}: ${error.message}`);
+		process.exit(1);
+	}
 
-		// Only update if this is not a private package with version 0.0.0
-		// (which indicates it should inherit from root)
-		if (pkg.version && pkg.version !== "0.0.0") {
+	if (pkg.version && pkg.version !== "0.0.0") {
+		try {
 			pkg.version = version;
 			writeFileSync(fullPath, `${JSON.stringify(pkg, null, "\t")}\n`, "utf8");
 			console.log(`✅ Updated ${pkgPath} to version ${version}`);
+		} catch (error) {
+			console.error(`❌ Error writing ${pkgPath}: ${error.message}`);
+			process.exit(1);
 		}
-	} catch {
-		// Package file doesn't exist or can't be parsed, skip silently
-		console.log(`⏭️ Skipped ${pkgPath} (not found or parse error)`);
 	}
 }
 
