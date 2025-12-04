@@ -60,6 +60,10 @@
     "backend:clean": "./gradlew clean",
     "start": "run-p backend:run dev",
     "test:all": "pnpm --recursive run test && pnpm run backend:test",
+    "test:project": "vitest --project",
+    "test:webapp": "vitest --project=webapp",
+    "test:marketing": "vitest --project=marketing",
+    "test:utilities": "vitest --project=utilities",
     "precommit": "(command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply')"
   },
   "devDependencies": {

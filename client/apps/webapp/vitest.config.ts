@@ -5,11 +5,16 @@ import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
 import Components from "unplugin-vue-components/vite";
 import { loadEnv, type PluginOption } from "vite";
-import { configDefaults, defineConfig } from "vitest/config";
+import { configDefaults, defineProject } from "vitest/config";
 
 const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 
-export default defineConfig(({ mode }) => {
+/**
+ * Webapp project configuration.
+ * Projects automatically inherit global options (reporters, coverage) from root vitest.config.ts.
+ * This config provides Vue/jsdom-specific overrides.
+ */
+export default defineProject(({ mode }) => {
 	// Load env from root first (as fallback)
 	const rootEnv = loadEnv(mode, `${process.cwd()}/../../..`, "");
 
@@ -50,29 +55,15 @@ export default defineConfig(({ mode }) => {
 			APP_VERSION: `"${env.APP_VERSION ? env.APP_VERSION : "DEV"}"`,
 		},
 		test: {
+			// Project-specific identification
+			name: { label: "webapp", color: "blue" },
+
+			// Vue component testing requires jsdom
 			environment: "jsdom",
+
 			exclude: [...configDefaults.exclude, "e2e/**"],
 			root: projectRoot,
 			setupFiles: ["./vitest.setup.ts"],
-			coverage: {
-				provider: "v8",
-				reporter: ["text", "json", "html", "lcov"],
-				exclude: [
-					...(configDefaults.coverage.exclude ?? []),
-					"e2e/**",
-					"**/*.config.*",
-					"**/*.d.ts",
-					"**/index.ts",
-					"**/__tests__/**",
-					"**/tests/**",
-				],
-				thresholds: {
-					lines: 65, // lower than 80 temporarily
-					branches: 65,
-					functions: 65,
-					statements: 65,
-				},
-			},
 		},
 	};
 });

@@ -1,29 +1,22 @@
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+/**
+ * Marketing site project configuration.
+ * Projects automatically inherit global options (reporters, coverage) from root vitest.config.ts.
+ * This config provides Astro/Node-specific overrides.
+ */
+export default defineProject({
 	test: {
-		globals: true,
+		// Project-specific identification
+		name: { label: "marketing", color: "cyan" },
+
+		// Astro SSR testing requires Node environment
 		environment: "node",
+
 		include: ["**/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 		exclude: ["node_modules", "dist", ".idea", ".git", ".cache"],
 		setupFiles: ["./vitest.setup.ts"],
-		coverage: {
-			// Add this section
-			provider: "v8", // or 'istanbul'
-			reporter: ["text", "lcov"], // Ensure lcov is present
-			reportsDirectory: "./coverage", // Default is 'coverage'
-			include: ["src/**/*.{js,ts,vue,jsx,tsx}"], // Adjust as needed
-			exclude: [
-				// Optional: exclude files if necessary
-				"src/env.d.ts",
-				"src/consts.ts",
-				"src/content.config.ts",
-				"src/pages/robots.txt.ts", // Example: if this is auto-generated or not testable
-				"src/**/__tests__/**", // Test files themselves
-				"src/i18n/**", // if i18n setup is not directly tested
-			],
-		},
 	},
 	resolve: {
 		alias: {

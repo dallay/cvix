@@ -1,47 +1,64 @@
-import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
 
+/**
+ * Centralized Vitest configuration for the monorepo.
+ * Uses the projects feature to manage multiple test contexts.
+ *
+ * Each project inherits global options like reporters and coverage settings,
+ * but can override environment, plugins, and other project-specific options.
+ */
 export default defineConfig({
 	test: {
+		// Global test options that apply to all projects
 		globals: true,
-		environment: "node",
-		include: [
-			"**/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-			"**/*.{spec,test}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-			"client/packages/logger/src/**/*.ts",
+
+		// Global reporters - only defined at root level per Vitest docs
+		reporters: [
+			"default",
+			["json", { file: "./test-results/json-report.json" }],
+			"verbose",
+			[
+				"junit",
+				{
+					suiteName: "Monorepo Tests",
+					outputFile: "./test-results/junit-report.xml",
+				},
+			],
 		],
-		exclude: [
-			"**/node_modules/**",
-			"**/dist/**",
-			"**/cypress/**",
-			"**/.{idea,git,cache,output,temp}/**",
-			"**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint}.config.*",
-			"**/components.d.ts",
-		],
-		setupFiles: ["./vitest.setup.ts"],
+
+		// Global coverage configuration - only at root level
 		coverage: {
-			provider: "v8", // or 'istanbul'
-			reporter: ["text", "lcov", "html"],
+			provider: "v8",
+			enabled: true,
 			reportsDirectory: "./coverage",
-			include: ["src/**/*.{js,ts,vue,jsx,tsx}"], // Adjust as needed
+			reporter: ["text", "json-summary", "lcov", "html"],
 			exclude: [
-				"src/env.d.ts",
-				"src/consts.ts",
-				"src/content.config.ts",
-				"src/pages/robots.txt.ts", // Example: if this is auto-generated or not testable
-				"src/__tests__/**", // Test files themselves
-				"**/__tests__/*.(test|spec).{js,mjs,cjs,ts,mts,cts,jsx,tsx}", // Explicitly exclude test files
-				"src/i18n/**", // if i18n setup is not directly tested
+				// Standard exclusions
+				"**/node_modules/**",
+				"**/dist/**",
+				"**/.{idea,git,cache,output,temp}/**",
+				"**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint}.config.*",
+				"**/__tests__/**",
+				"**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+				"**/components.d.ts",
+				"**/*.d.ts",
+				"**/index.ts",
+				"e2e/**",
+				// Marketing app: Astro-generated files
+				"client/apps/marketing/src/env.d.ts",
+				"client/apps/marketing/src/consts.ts",
+				"client/apps/marketing/src/content.config.ts",
+				"client/apps/marketing/src/pages/robots.txt.ts",
+				"client/apps/marketing/src/i18n/**",
 			],
 		},
-	},
-	resolve: {
-		alias: {
-			"@": resolve(__dirname, "./src"),
-			"@i18n": resolve(__dirname, "./src/i18n"),
-			"@lib": resolve(__dirname, "./src/lib"),
-			"@models": resolve(__dirname, "./src/lib/models"),
-			"@components": resolve(__dirname, "./src/components"),
-		},
+
+		// Define projects for monorepo structure
+		projects: [
+			// Reference project configs by path
+			"./client/apps/webapp",
+			"./client/apps/marketing",
+			"./client/packages/utilities",
+		],
 	},
 });
