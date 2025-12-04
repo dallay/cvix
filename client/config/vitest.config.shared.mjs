@@ -22,8 +22,8 @@ export const sharedVitestConfig = (dirname) =>
 		test: {
 			globals: true,
 			include: ["**/__tests__/**/*.spec.{ts,js}", "**/*.spec.{ts,js}"],
-			exclude: ["tests/e2e/**/*..spec.e2e.{ts,js}"],
-			match: ["**/__tests__/**/*..spec.{ts,js}"],
+			exclude: ["tests/e2e/**/*.spec.e2e.{ts,js}"],
+			match: ["**/__tests__/**/*.spec.{ts,js}"],
 			// Note: coverage and reporters are now managed centrally in root config
 		},
 		plugins: [tsconfigPaths()],

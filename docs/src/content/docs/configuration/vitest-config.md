@@ -114,8 +114,8 @@ Root vitest.config.ts
 │   ├── Auto-inherits: globals, reporters, coverage
 │   └── Overrides: environment=node, name, setupFiles
 └── Project: utilities
-    ├── Auto-inherits: globals, reporters, coverage
-    └── Overrides: environment=node, name, setupFiles
+  ├── Auto-inherits: globals, reporters, coverage
+  └── Overrides: environment=node, name
 ```
 
 **Important**: Coverage configuration is **only supported at the root level**. Project-specific coverage excludes must be added to the root `coverage.exclude` array with appropriate path prefixes.
