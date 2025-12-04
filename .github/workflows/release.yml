@@ -67,12 +67,14 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## 🔍 Change Detection Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Component | Changed |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Frontend  | ${{ steps.filter.outputs.frontend }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Backend   | ${{ steps.filter.outputs.backend }} |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🔍 Change Detection Results"
+            echo ""
+            echo "| Component | Changed |"
+            echo "|-----------|---------|"
+            echo "| Frontend  | ${{ steps.filter.outputs.frontend }} |"
+            echo "| Backend   | ${{ steps.filter.outputs.backend }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Semantic Release - Version calculation and release creation
@@ -149,19 +151,21 @@ jobs:
       - name: Release Summary
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
-          echo "## 🚀 New Release Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Version  | ${{ steps.semantic.outputs.new_release_version }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Git Tag  | ${{ steps.semantic.outputs.new_release_git_tag }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Major    | ${{ steps.semantic.outputs.new_release_major_version }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Minor    | ${{ steps.semantic.outputs.new_release_minor_version }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Patch    | ${{ steps.semantic.outputs.new_release_patch_version }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Components Updated" >> $GITHUB_STEP_SUMMARY
-          echo "- Frontend: ${{ needs.detect-changes.outputs.frontend }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Backend: ${{ needs.detect-changes.outputs.backend }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🚀 New Release Published"
+            echo ""
+            echo "| Property | Value |"
+            echo "|----------|-------|"
+            echo "| Version  | ${{ steps.semantic.outputs.new_release_version }} |"
+            echo "| Git Tag  | ${{ steps.semantic.outputs.new_release_git_tag }} |"
+            echo "| Major    | ${{ steps.semantic.outputs.new_release_major_version }} |"
+            echo "| Minor    | ${{ steps.semantic.outputs.new_release_minor_version }} |"
+            echo "| Patch    | ${{ steps.semantic.outputs.new_release_patch_version }} |"
+            echo ""
+            echo "### Components Updated"
+            echo "- Frontend: ${{ needs.detect-changes.outputs.frontend }}"
+            echo "- Backend: ${{ needs.detect-changes.outputs.backend }}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - Backend (Multi-Registry)
@@ -244,12 +248,14 @@ jobs:
 
       - name: Docker Image Summary
         run: |
-          echo "## 🐳 Backend Docker Images Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Tags" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🐳 Backend Docker Images Published"
+            echo ""
+            echo "### Tags"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - Marketing Site (Multi-Registry)
@@ -314,12 +320,14 @@ jobs:
 
       - name: Docker Image Summary
         run: |
-          echo "## 🐳 Marketing Docker Images Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Tags" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🐳 Marketing Docker Images Published"
+            echo ""
+            echo "### Tags"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - WebApp (Multi-Registry)
@@ -384,12 +392,14 @@ jobs:
 
       - name: Docker Image Summary
         run: |
-          echo "## 🐳 WebApp Docker Images Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Tags" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🐳 WebApp Docker Images Published"
+            echo ""
+            echo "### Tags"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Release Summary
@@ -406,27 +416,29 @@ jobs:
     steps:
       - name: Generate Summary
         run: |
-          echo "# 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Version: ${{ needs.semantic-release.outputs.new_release_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Component Status" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Semantic Release | ✅ ${{ needs.semantic-release.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Backend Docker | ${{ needs.docker-backend.result == 'success' && '✅' || needs.docker-backend.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-backend.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Marketing Docker | ${{ needs.docker-marketing.result == 'success' && '✅' || needs.docker-marketing.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-marketing.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| WebApp Docker | ${{ needs.docker-webapp.result == 'success' && '✅' || needs.docker-webapp.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-webapp.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Docker Image Registries" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **GitHub Container Registry**: \`ghcr.io/${{ github.repository_owner }}/cvix-*\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Docker Hub**: \`docker.io/\$DOCKERHUB_USERNAME/cvix-*\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Available Tags" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- \`latest\` - Rolling tag for main branch" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ needs.semantic-release.outputs.new_release_version }}\` - Semantic version" >> $GITHUB_STEP_SUMMARY
-          echo "- \`v${{ needs.semantic-release.outputs.new_release_major_version }}\` - Major version tag" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "# 🎉 Release Summary"
+            echo ""
+            echo "## Version: ${{ needs.semantic-release.outputs.new_release_version }}"
+            echo ""
+            echo "### Component Status"
+            echo ""
+            echo "| Component | Status |"
+            echo "|-----------|--------|"
+            echo "| Semantic Release | ✅ ${{ needs.semantic-release.result }} |"
+            echo "| Backend Docker | ${{ needs.docker-backend.result == 'success' && '✅' || needs.docker-backend.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-backend.result }} |"
+            echo "| Marketing Docker | ${{ needs.docker-marketing.result == 'success' && '✅' || needs.docker-marketing.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-marketing.result }} |"
+            echo "| WebApp Docker | ${{ needs.docker-webapp.result == 'success' && '✅' || needs.docker-webapp.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.docker-webapp.result }} |"
+            echo ""
+            echo "### Docker Image Registries"
+            echo ""
+            echo "- **GitHub Container Registry**: \`ghcr.io/${{ github.repository_owner }}/cvix-*\`"
+            echo "- **Docker Hub**: \`docker.io/\$DOCKERHUB_USERNAME/cvix-*\`"
+            echo ""
+            echo "### Available Tags"
+            echo ""
+            echo "- \`latest\` - Rolling tag for main branch"
+            echo "- \`${{ needs.semantic-release.outputs.new_release_version }}\` - Semantic version"
+            echo "- \`v${{ needs.semantic-release.outputs.new_release_major_version }}\` - Major version tag"
+          } >> "$GITHUB_STEP_SUMMARY"
           echo "- \`${{ github.sha }}\` - Git SHA (immutable)" >> $GITHUB_STEP_SUMMARY
