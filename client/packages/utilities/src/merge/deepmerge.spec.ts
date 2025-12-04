@@ -125,7 +125,7 @@ describe("deepmerge", () => {
 			.toThrow("first argument should be an array");
 	});
 
-	it("deepmerge.all merges multiple arrays", () => {
+	it("deepmerge.all merges multiple objects", () => {
 		const result = deepmerge.all([
 			{ a: 1 },
 			{ b: 2 },
