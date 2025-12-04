@@ -43,7 +43,7 @@ jobs:
       should_release: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -95,34 +95,16 @@ jobs:
       backend_changed: ${{ needs.detect-changes.outputs.backend }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Set pnpm store path
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Verify commit analyzer
         run: |
@@ -131,7 +113,7 @@ jobs:
 
       - name: Run Semantic Release
         id: semantic
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         with:
           dry_run: ${{ inputs.dry_run }}
           branches: |
@@ -177,16 +159,14 @@ jobs:
     if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.backend_changed == 'true'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.semantic-release.outputs.new_release_git_tag }}
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Java and Gradle
+        uses: ./.github/actions/setup/java
         with:
-          distribution: temurin
           java-version: "21"
-          cache: gradle
 
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon
@@ -267,7 +247,7 @@ jobs:
     if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.frontend_changed == 'true'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.semantic-release.outputs.new_release_git_tag }}
 
@@ -339,7 +319,7 @@ jobs:
     if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.frontend_changed == 'true'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.semantic-release.outputs.new_release_git_tag }}
 
