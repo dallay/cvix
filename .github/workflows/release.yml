@@ -441,4 +441,4 @@ jobs:
             echo "- \`${{ needs.semantic-release.outputs.new_release_version }}\` - Semantic version"
             echo "- \`v${{ needs.semantic-release.outputs.new_release_major_version }}\` - Major version tag"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "- \`${{ github.sha }}\` - Git SHA (immutable)" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ github.sha }}\` - Git SHA (immutable)" >> "$GITHUB_STEP_SUMMARY"
