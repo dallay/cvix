@@ -67,13 +67,13 @@ services:
       # Realm and client used by the application to validate tokens
       REALM: ${REALM}
       CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
+      # CLIENT_SECRET is now provided via Docker secret (see secrets: block below)
 
       # Admin / test helpers (admin realm client used by infra tasks/tests)
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_REALM: ${ADMIN_REALM}
       ADMIN_REALM_USERNAME: ${ADMIN_REALM_USERNAME}
-      ADMIN_REALM_PASSWORD: ${ADMIN_REALM_PASSWORD}
+      # ADMIN_REALM_PASSWORD is now provided via Docker secret (see secrets: block below)
 
       # Keycloak host references (docker/compose integration)
       KEYCLOAK_URL: ${KEYCLOAK_URL}
@@ -92,11 +92,10 @@ services:
       PERSIST_LATEX_FILES: ${PERSIST_LATEX_FILES}
 
       # Email / Notification (development & production)
-      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      # SENDGRID_API_KEY is now provided via Docker secret (see secrets: block below)
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      # SMTP_USERNAME and SMTP_PASSWORD are now provided via Docker secrets (see secrets: block below)
       SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
       SMTP_FROM_NAME: ${SMTP_FROM_NAME}
 
@@ -109,9 +108,16 @@ services:
 
       # Optional SSL/keystore references (if your image uses them)
       SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
-      SSL_KEYSTORE_PASSWORD: ${SSL_KEYSTORE_PASSWORD}
+      # SSL_KEYSTORE_PASSWORD is now provided via Docker secret (see secrets: block below)
       SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
 
+    secrets:
+      - client_secret
+      - admin_realm_password
+      - sendgrid_api_key
+      - smtp_username
+      - smtp_password
+      - ssl_keystore_password
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
@@ -120,3 +126,22 @@ services:
     networks:
       - frontend
       - backend
+
+#
+# Docker secrets definitions for sensitive values
+# These secrets must be created and provisioned in your deployment pipeline or Docker Compose setup.
+# Each secret will be mounted as a file in /run/secrets/SECRET_NAME inside the container.
+# Ensure strict file permissions and access controls for any temporary secret files.
+secrets:
+  client_secret:
+    file: ./secrets/client_secret.txt
+  admin_realm_password:
+    file: ./secrets/admin_realm_password.txt
+  sendgrid_api_key:
+    file: ./secrets/sendgrid_api_key.txt
+  smtp_username:
+    file: ./secrets/smtp_username.txt
+  smtp_password:
+    file: ./secrets/smtp_password.txt
+  ssl_keystore_password:
+    file: ./secrets/ssl_keystore_password.txt
