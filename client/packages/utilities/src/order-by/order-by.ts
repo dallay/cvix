@@ -28,7 +28,7 @@ export function orderBy<T>(
       const key = keys[i];
       const order = orders[i];
 
-      if (!key) continue;
+       const aValue = a[key];
 
       const aValue = a[key];
       const bValue = b[key];
