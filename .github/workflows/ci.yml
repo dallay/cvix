@@ -140,6 +140,18 @@ jobs:
           config: .markdownlint.json
 
   # ============================================================================
+  # Secrets Synchronization Check
+  # ============================================================================
+  verify-secrets:
+    name: Verify Secrets Synchronization
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Verify Docker secrets are synchronized
+        run: make verify-secrets
+
+  # ============================================================================
   # Backend Pipeline - Conditional execution based on changes
   # ============================================================================
   lint-backend:
@@ -348,7 +360,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd    # v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
       - name: Dependency Review
         if: github.event_name == 'pull_request'
@@ -519,6 +531,7 @@ jobs:
       - changes
       - lint-meta
       - lint-markdown
+      - verify-secrets
       - lint-backend
       - backend-pipeline
       - lint-frontend
@@ -543,6 +556,11 @@ jobs:
 
           if [ "${{ needs.lint-markdown.result }}" != "success" ]; then
             echo "❌ Markdown linting failed: ${{ needs.lint-markdown.result }}"
+            exit 1
+          fi
+
+          if [ "${{ needs.verify-secrets.result }}" != "success" ]; then
+            echo "❌ Secrets synchronization failed: ${{ needs.verify-secrets.result }}"
             exit 1
           fi
 
