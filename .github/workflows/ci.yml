@@ -405,118 +405,73 @@ jobs:
           configuration-path: .github/labeler.yaml
 
   # ============================================================================
-  # Docker Image Publishing - Only on main branch push
+  # Docker Image Build Verification - Build only, no push (push handled by release.yml)
   # ============================================================================
-  docker-backend:
-    name: Build & Push Docker (Backend)
+  docker-build-backend:
+    name: Docker Build Verification (Backend)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend == 'true'
+    if: needs.changes.outputs.backend == 'true'
     needs: [changes, backend-pipeline, coverage-verification]
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Setup Java
         uses: ./.github/actions/setup/java
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/cvix/engine
-      - name: Build and push Docker image
+      - name: Build Docker image (no push)
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: ./server/engine/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          tags: cvix-engine:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  docker-marketing:
-    name: Build & Push Docker (Marketing)
+  docker-build-marketing:
+    name: Docker Build Verification (Marketing)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.frontend == 'true'
     needs: [changes, frontend-pipeline]
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/cvix/marketing
-      - name: Build and push Docker image
+      - name: Build Docker image (no push)
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: ./client/apps/marketing/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          tags: cvix-marketing:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  docker-webapp:
-    name: Build & Push Docker (WebApp)
+  docker-build-webapp:
+    name: Docker Build Verification (WebApp)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.frontend == 'true'
     needs: [changes, frontend-pipeline]
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
         with:
           driver: docker-container
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/cvix/webapp
-      - name: Build and push Docker image
+      - name: Build Docker image (no push)
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: ./client/apps/webapp/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          tags: cvix-webapp:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -538,6 +493,9 @@ jobs:
       - frontend-pipeline
       - security-scans
       - coverage-verification
+      - docker-build-backend
+      - docker-build-marketing
+      - docker-build-webapp
     steps:
       - name: Check job results
         run: |
@@ -639,4 +597,7 @@ jobs:
             echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |"
             echo "| Security Scans | ${{ needs.security-scans.result }} |"
             echo "| Coverage Verification | ${{ needs.coverage-verification.result }} |"
+            echo "| Docker Build Backend | ${{ needs.docker-build-backend.result }} |"
+            echo "| Docker Build Marketing | ${{ needs.docker-build-marketing.result }} |"
+            echo "| Docker Build WebApp | ${{ needs.docker-build-webapp.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
