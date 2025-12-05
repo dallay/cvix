@@ -36,12 +36,13 @@ value class Highlight(val value: String) {
  *
  * ## Date Handling
  * - Dates stored as ISO-8601 strings (YYYY-MM-DD), parsed via [LocalDate]
- * - `endDate = null` signals ongoing employment (current role)
- * - Enforces chronological integrity: end date ≥ start date
+ * - `endDate = null` or empty string (`""`) signals ongoing employment (current role)
+ * - Enforces chronological integrity: end date ≥ start date (when end date is provided)
  *
  * ## Validation Rules
  * - `startDate`: Must parse as valid ISO-8601 date
- * - `endDate`: If present, must parse and be ≥ `startDate`
+ * - `endDate`: If present and non-empty, must parse and be ≥ `startDate`
+ * - Empty strings are treated the same as null (ongoing employment)
  * - Throws [IllegalArgumentException] on chronology violations
  * - Throws [java.time.format.DateTimeParseException] on malformed date strings
  *
@@ -62,10 +63,23 @@ value class Highlight(val value: String) {
  * }
  * ```
  *
+ * ## Example with Ongoing Employment
+ * ```json
+ * {
+ *   "name": "GFT",
+ *   "position": "System Analyst | Senior Software Engineer",
+ *   "url": "https://gft.com",
+ *   "startDate": "2023-03-14",
+ *   "endDate": "",
+ *   "summary": "Currently working as System Analyst...",
+ *   "highlights": [...]
+ * }
+ * ```
+ *
  * @property name Validated company name (max 100 chars, non-empty)
  * @property position Job title value object with validation
  * @property startDate ISO-8601 employment start date (required)
- * @property endDate ISO-8601 employment end date (null = current role)
+ * @property endDate ISO-8601 employment end date (null or empty = current role)
  * @property location Geographic location string (optional)
  * @property summary Concise role description (optional)
  * @property highlights Key achievements list (optional, validated)
@@ -87,7 +101,9 @@ data class WorkExperience(
     init {
         val start = LocalDate.parse(startDate)
 
-        endDate?.let {
+        // Treat both null and empty string as "ongoing employment"
+        val validEndDate = endDate?.takeIf { it.isNotBlank() }
+        validEndDate?.let {
             val end = LocalDate.parse(it)
             require(!end.isBefore(start)) {
                 "End date ($it) must be on or after start date ($startDate)"
@@ -96,25 +112,35 @@ data class WorkExperience(
     }
 
     /**
-     * Calculates the duration of employment in years (as Double).
-     * Returns fractional years for more accurate duration.
+     * Compute the employment duration in years, expressed as a fractional Double.
+     *
+     * If `endDate` is null or blank the current date is used (ongoing employment).
+     * `startDate` and `endDate` must be ISO-8601 date strings; invalid formats will throw `DateTimeParseException`.
+     *
+     * @return The duration in years as a `Double`, calculated using 365.25 days per year (fractional years allowed).
      */
     fun durationInYears(): Double {
         val start = LocalDate.parse(startDate)
-        val end = endDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
+        val validEndDate = endDate?.takeIf { it.isNotBlank() }
+        val end = validEndDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
         val days = ChronoUnit.DAYS.between(start, end)
         return days / DAYS_PER_YEAR // Account for leap years
     }
 
     /**
-     * Formats the employment period for display.
-     * Format: "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present"
-     * @param locale Locale object for language-specific formatting
+     * Format the employment period as "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present".
+     *
+     * Uses the localized "Present" label when `endDate` is null or blank.
+     *
+     * @param locale Locale to use when localizing the "Present" label.
+     * @return The period string in the form `YYYY-MM-DD -- END`, where END is the end date or the
+     * localized "Present" label.
      */
     fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
         val resourceBundle = ResourceBundle.getBundle("messages.messages", locale)
         val presentLabel = resourceBundle.getString("present")
-        val end = endDate ?: presentLabel
+        val validEndDate = endDate?.takeIf { it.isNotBlank() }
+        val end = validEndDate ?: presentLabel
         return "$startDate -- $end"
     }
 
