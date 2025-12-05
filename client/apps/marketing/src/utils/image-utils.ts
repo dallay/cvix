@@ -37,7 +37,7 @@ export function isLocalImage(imagePath: string): boolean {
 async function safeFindImage(path: string): Promise<ImageMetadata | null> {
   try {
     const meta = await findImage(path);
-    return (meta as ImageMetadata) ?? null;
+    return isImageMetadata(meta) ? meta : null;
   } catch (err) {
     // Non-fatal: callers can fall back to the original string
     console.warn(
