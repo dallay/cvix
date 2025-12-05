@@ -174,6 +174,7 @@ describe("mapResumeToBackendRequest", () => {
 			endDate: "2023-12-31",
 			summary: "Led development of core features",
 			url: "https://techcorp.com",
+			highlights: ["Improved performance by 50%"],
 		});
 
 		expect(result.education).toHaveLength(1);

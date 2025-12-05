@@ -236,11 +236,11 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       libphonenumber-js:
-        specifier: ^1.12.30
+        specifier: ^1.12.31
         version: 1.12.31
       lucide-vue-next:
-        specifier: ^0.555.0
-        version: 0.555.0(vue@3.5.25(typescript@5.9.3))
+        specifier: ^0.556.0
+        version: 0.556.0(vue@3.5.25(typescript@5.9.3))
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
@@ -294,7 +294,7 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.21.0)(yaml@2.8.1))(vue@3.5.25(typescript@5.9.3))
       '@vitest/coverage-v8':
-        specifier: ^4.0.14
+        specifier: ^4.0.15
         version: 4.0.15(vitest@4.0.15)
       '@vue/eslint-config-typescript':
         specifier: ^14.6.0
@@ -336,7 +336,7 @@ importers:
         specifier: ^8.0.5
         version: 8.0.5(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.39.0)(tsx@4.21.0)(yaml@2.8.1))(vue@3.5.25(typescript@5.9.3))
       vitest:
-        specifier: ^4.0.14
+        specifier: ^4.0.15
         version: 4.0.15(@types/node@24.10.1)(@vitest/ui@4.0.15)(happy-dom@20.0.11)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(msw@2.10.4(@types/node@24.10.1)(typescript@5.9.3))(terser@5.39.0)(tsx@4.21.0)(yaml@2.8.1)
       vitest-axe:
         specifier: ^0.1.0
@@ -5341,6 +5341,11 @@ packages:
 
   lucide-vue-next@0.555.0:
     resolution: {integrity: sha512-7hczPsiMD/y+VNLpal5Q5Wv09kQxlHS0l/cM1xagrd+MA3i5umMm+PUXqllvsbgwAl3PHv27fo59h4PN02GM5A==}
+    peerDependencies:
+      vue: '>=3.0.1'
+
+  lucide-vue-next@0.556.0:
+    resolution: {integrity: sha512-JvdCM2smkWrMDhkfD/FpZiWekkbWD6MZLstIFx/FOVZgULrnMr5hegCB9LlTdgllEFnQYQs8hhHC1WYcAV9HTA==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -13411,6 +13416,10 @@ snapshots:
       yallist: 4.0.0
 
   lucide-vue-next@0.555.0(vue@3.5.25(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.25(typescript@5.9.3)
+
+  lucide-vue-next@0.556.0(vue@3.5.25(typescript@5.9.3)):
     dependencies:
       vue: 3.5.25(typescript@5.9.3)
 

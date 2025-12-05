@@ -10,7 +10,7 @@
 		"dev": "vite",
 		"build": "run-p type-check \"build-only {@}\" --",
 		"preview": "vite preview",
-		"pretest": "pnpm --filter @cvix/utilities build",
+		"pretest": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build",
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
@@ -23,7 +23,9 @@
 		"lint:biome": "biome check . --write",
 		"lint": "run-s lint:*",
 		"clean": "rm -rf dist node_modules .vitest .cache",
-		"check": "run-p type-check lint"
+		"check": "run-p type-check lint",
+		"predev": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build",
+		"prebuild": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build"
 	},
 	"dependencies": {
 		"@cvix/assets": "workspace:*",
@@ -41,8 +43,8 @@
 		"axios": "^1.13.2",
 		"embla-carousel-vue": "^8.6.0",
 		"idb-keyval": "^6.2.2",
-		"libphonenumber-js": "^1.12.30",
-		"lucide-vue-next": "^0.555.0",
+		"libphonenumber-js": "^1.12.31",
+		"lucide-vue-next": "^0.556.0",
 		"pinia": "^3.0.4",
 		"reka-ui": "^2.6.1",
 		"tailwindcss": "^4.1.17",
@@ -62,7 +64,7 @@
 		"@types/jsdom": "^27.0.0",
 		"@types/node": "^24.10.1",
 		"@vitejs/plugin-vue": "^6.0.2",
-		"@vitest/coverage-v8": "^4.0.14",
+		"@vitest/coverage-v8": "^4.0.15",
 		"@vue/eslint-config-typescript": "^14.6.0",
 		"@vue/test-utils": "^2.4.6",
 		"@vue/tsconfig": "^0.8.1",
@@ -76,7 +78,7 @@
 		"unplugin-vue-components": "^30.0.0",
 		"vite": "^7.2.6",
 		"vite-plugin-vue-devtools": "^8.0.5",
-		"vitest": "^4.0.14",
+		"vitest": "^4.0.15",
 		"vitest-axe": "^0.1.0",
 		"vue-tsc": "^3.1.5"
 	}

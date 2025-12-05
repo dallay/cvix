@@ -185,6 +185,10 @@ export function mapResumeToBackendRequest(
 						endDate: work.endDate || undefined,
 						summary: work.summary || undefined,
 						url: normalizeOptionalString(work.url),
+						highlights:
+							work.highlights && work.highlights.length > 0
+								? Array.from(work.highlights)
+								: undefined,
 					}))
 				: undefined,
 		education:
