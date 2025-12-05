@@ -1,6 +1,6 @@
 # 1.0.0 (2025-12-05)
 
-### ⚠ BREAKING CHANGES
+## ⚠ BREAKING CHANGES
 
 * Tests need to be updated to work with new template loading
 
@@ -189,13 +189,6 @@ Fallback to English if the specified locale's resource bundle is not found
 * ratify constitution v1.0.0 (code quality, testing, UX, performance principles) ([#331](https://github.com/dallay/cvix/issues/331)) ([42b8b35](https://github.com/dallay/cvix/commit/42b8b355b935f4a0191238911d9cefbf672b25bc))
 * Tasks for entering screen resume data and generating PDFs on the screen ([#213](https://github.com/dallay/cvix/issues/213)) ([4e145fe](https://github.com/dallay/cvix/commit/4e145fe818106c20e364ac7d611db6e403e5fd1e))
 * update terminology and clarify specifications in plan, spec, and tasks documents ([#216](https://github.com/dallay/cvix/issues/216)) ([543c91d](https://github.com/dallay/cvix/commit/543c91d5353bd34b32b275787a6b7cdbd8176959))
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
