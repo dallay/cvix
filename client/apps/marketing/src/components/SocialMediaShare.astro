@@ -10,86 +10,120 @@ const locale = Astro.currentLocale as Lang;
 const t = useTranslations(locale);
 
 interface Props extends HTMLAttributes<"div"> {
-	title: string;
-	description: string;
-	tags?: string[];
-	url?: string;
+  title: string;
+  description: string;
+  tags?: string[];
+  url?: string;
 }
 
 const {
-	title,
-	description,
-	tags = [],
-	url = Astro.request.url,
-	class: className,
-	...attrs
+  title,
+  description,
+  tags = [],
+  url = Astro.request.url,
+  class: className,
+  ...attrs
 } = Astro.props;
 
 const socialMediaLinkShare: {
-	name: string;
-	url: string;
-	icon: string | "tabler:world";
+  name: string;
+  url: string;
+  icon: string | "tabler:world";
 }[] = [
-	{
-		name: "𝕏 (aka Twitter)",
-		url: `https://x.com/intent/tweet?url=${url}&text=${title}${tags.length ? `&hashtags=${tags.join(",")}` : ""}`,
-		icon: "tabler:brand-x",
-	},
-	{
-		name: "Facebook",
-		url: `https://www.facebook.com/sharer.php?u=${url}`,
-		icon: "tabler:brand-facebook",
-	},
-	{
-		name: "LinkedIn",
-		url: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-		icon: "tabler:brand-linkedin",
-	},
-	{
-		name: "Reddit",
-		url: `https://reddit.com/submit?url=${url}&title=${title}`,
-		icon: "tabler:brand-reddit",
-	},
-	{
-		name: "Telegram",
-		url: `https://t.me/share/url?url=${url}&text=${description}`,
-		icon: "tabler:brand-telegram",
-	},
-	{
-		name: "WhatsApp",
-		url: `https://api.whatsapp.com/send?text=${title}%20${url}`,
-		icon: "tabler:brand-whatsapp",
-	},
-	{
-		name: "Email",
-		url: `mailto:?subject=${title}&body=${description}%20${url}`,
-		icon: "tabler:mail",
-	},
+  {
+    name: "𝕏 (aka Twitter)",
+    url: `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(
+      title,
+    )}${tags.length ? `&hashtags=${encodeURIComponent(tags.join(","))}` : ""}`,
+    icon: "tabler:brand-x",
+  },
+  {
+    name: "Facebook",
+    url: `https://www.facebook.com/sharer.php?u=${encodeURIComponent(url)}`,
+    icon: "tabler:brand-facebook",
+  },
+  {
+    name: "LinkedIn",
+    url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+    icon: "tabler:brand-linkedin",
+  },
+  {
+    name: "Reddit",
+    url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(
+      title,
+    )}`,
+    icon: "tabler:brand-reddit",
+  },
+  {
+    name: "Telegram",
+    url: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(
+      description,
+    )}`,
+    icon: "tabler:brand-telegram",
+  },
+  {
+    name: "WhatsApp",
+    url: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(
+      url,
+    )}`,
+    icon: "tabler:brand-whatsapp",
+  },
+  {
+    name: "Email",
+    url: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(
+      description,
+    )}%20${encodeURIComponent(url)}`,
+    icon: "tabler:mail",
+  },
 ];
 ---
 
 <div class="flex items-center gap-3 not-prose w-full" {...attrs}>
-	<span
-		class="text-gray-500 dark:text-gray-400 font-inter text-xs tracking-widest uppercase leading-[140%] rounded"
-	>
-		{t("share")}
-	</span>
-	<SocialLinks
-		class={cn(`flex items-center justify-center w-full max-w-fit gap-4`, className)}
-		socials={socialMediaLinkShare}
-	>
-			<IconButton
-				id="copy-url-button"
-				aria-label={t("copy.link")}
-				title={t("copy.link")}
-				class="text-gray-900 dark:text-white opacity-80 hover:opacity-100 transition-opacity cursor-pointer py-2 px-0"
-				type="button"
-			>
-				<Icon name="tabler:copy" class="size-5" id="copy-icon" />
-				<Icon name="tabler:check" class="size-5 hidden" id="copied-icon" />
-			</IconButton>
-	</SocialLinks>
+  <span
+    class="text-gray-500 dark:text-gray-400 font-inter text-xs tracking-widest uppercase leading-[140%] rounded"
+  >
+    {t("share")}
+  </span>
+  <SocialLinks
+    class={cn(`flex items-center justify-center w-full max-w-fit gap-4`, className)}
+    socials={socialMediaLinkShare}
+  >
+    <IconButton
+      data-copy-url-button
+      data-copy-url={url}
+      aria-label={t("copy.link")}
+      title={t("copy.link")}
+      class="text-gray-900 dark:text-white opacity-80 hover:opacity-100 transition-opacity cursor-pointer py-2 px-0"
+      type="button"
+    >
+      <Icon name="tabler:copy" class="size-5" data-copy-icon />
+      <Icon name="tabler:check" class="size-5 hidden" data-copied-icon />
+    </IconButton>
+  </SocialLinks>
 </div>
 
-<!-- External copy-to-clipboard script to avoid inline-scripting edge cases during build -->
-<script type="module" is:inline src="/scripts/copy-url.js"></script>
+<script>
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as Element).closest("[data-copy-url-button]");
+    if (!button) return;
+
+    const urlToCopy = (button as HTMLElement).getAttribute("data-copy-url") ?? window.location.href;
+
+    const copyIcon = button.querySelector("[data-copy-icon]");
+    const copiedIcon = button.querySelector("[data-copied-icon]");
+
+    try {
+      await navigator.clipboard.writeText(urlToCopy);
+
+      copyIcon?.classList.add("hidden");
+      copiedIcon?.classList.remove("hidden");
+
+      setTimeout(() => {
+        copyIcon?.classList.remove("hidden");
+        copiedIcon?.classList.add("hidden");
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+    }
+  });
+</script>

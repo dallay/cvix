@@ -11,7 +11,7 @@ plugins {
     id("app.owasp.dependency.check")
 }
 group = rootProject.findProperty("group")?.toString() ?: "com.cvix"
-version = rootProject.findProperty("version")?.toString() ?: "0.0.1-SNAPSHOT"
+version = rootProject.findProperty("version")?.toString() ?: "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()

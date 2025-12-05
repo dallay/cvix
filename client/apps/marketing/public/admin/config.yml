@@ -4,9 +4,9 @@ logo_url: /favicon.svg
 
 backend:
   name: github
-  repo: example/example-repo
+  repo: dallay/cvix
   branch: main
-  base_url: https://example.com/
+  base_url: https://sveltia-cms-auth.yunielacosta738.workers.dev/
 
 publish_mode: editorial_workflow
 

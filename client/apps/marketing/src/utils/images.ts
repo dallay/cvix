@@ -19,24 +19,26 @@ export const findImage = async (
 	}
 
 	// Absolute URLs - return as-is
-	if (
-		imagePath.startsWith("http://") ||
-		imagePath.startsWith("https://") ||
-		imagePath.startsWith("/")
-	) {
+	if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
 		return imagePath;
 	}
 
 	// Normalize path to /src/ format for glob lookup
 	let normalizedPath = imagePath;
 
-	if (
+	if (imagePath.startsWith("/client/apps/marketing/src/assets/")) {
+		// Support full monorepo path format
+		normalizedPath = imagePath.replace("/client/apps/marketing", "");
+	} else if (
 		imagePath.startsWith("~/assets/") ||
 		imagePath.startsWith("@/assets/")
 	) {
 		normalizedPath = imagePath.replace(/^[~@]\//, "/src/");
 	} else if (imagePath.startsWith("src/assets/")) {
 		normalizedPath = `/${imagePath}`;
+	} else if (imagePath.startsWith("/") && !imagePath.startsWith("/src/assets/")) {
+		// Other absolute paths (like /public/) - return as-is
+		return imagePath;
 	} else if (!imagePath.startsWith("/src/assets/")) {
 		// Path doesn't match expected patterns, return as-is
 		return imagePath;

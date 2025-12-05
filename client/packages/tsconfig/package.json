@@ -1,13 +1,13 @@
 {
-  "name": "@cvix/tsconfig",
-  "description": "Shared TypeScript configurations for cvix",
-	"version": "0.0.1",
+	"name": "@cvix/tsconfig",
+	"description": "Shared TypeScript configurations for cvix",
+	"version": "0.1.0",
 	"type": "module",
 	"license": "MIT",
-  "homepage": "https://cvix.tech",
-  "author": "cvix Team",
+	"homepage": "https://cvix.tech",
+	"author": "cvix Team",
 	"keywords": [
-    "cvix",
+		"cvix",
 		"tsconfig",
 		"typescript"
 	],

@@ -2,17 +2,17 @@
 import { render } from "astro:content";
 import { Badge } from "@cvix/ui/components/ui/badge";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@cvix/ui/components/ui/card";
 import { type Lang, useTranslations } from "@/i18n";
 import type Article from "@/models/article/article.model";
 import { cleanEntityId } from "@/utils/collection.entity";
-import { prepareImageForOptimizedPicture } from "@/utils/image-utils";
+import { prepareImageForOptimizedPicture, isValidImage, isExternalUrl } from "@/utils/image-utils";
 import AuthorAvatarAstro from "./AuthorCard.astro";
 import FormattedDate from "./FormattedDate.astro";
 import Link from "./Link.astro";
@@ -20,7 +20,7 @@ import OptimizedPicture from "./OptimizedPicture.astro";
 import ReadingTime from "./ReadingTime.astro";
 
 export interface Props {
-	article: Article;
+  article: Article;
 }
 
 const { article } = Astro.props;
@@ -29,23 +29,14 @@ const t = useTranslations(lang);
 
 const blogUrl = `/blog/${cleanEntityId(article.id).toLowerCase()}`;
 if (!article.entry) {
-	throw new Error(`No entry found for article: ${article.id}`);
+  throw new Error(`No entry found for article: ${article.id}`);
 }
 const { remarkPluginFrontmatter } = await render(article.entry);
 
 // Prepare the cover image for rendering
-const coverImage = article.cover
-	? await prepareImageForOptimizedPicture(article.cover)
-	: undefined;
-function isImageMetadata(img: unknown): img is ImageMetadata {
-	return (
-		!!img &&
-		typeof img === "object" &&
-		"src" in img &&
-		"width" in img &&
-		"height" in img
-	);
-}
+const coverImage = article.cover ? await prepareImageForOptimizedPicture(article.cover) : undefined;
+const hasValidImage = isValidImage(coverImage);
+const hasExternalImage = isExternalUrl(coverImage);
 ---
 
 <Card
@@ -53,17 +44,28 @@ function isImageMetadata(img: unknown): img is ImageMetadata {
 >
   <a href={blogUrl} class="block">
     {
-      isImageMetadata(coverImage) && (
+      hasValidImage && (
         <div class="w-full h-48 md:h-56 overflow-hidden">
-          <OptimizedPicture
-            src={coverImage}
-            alt={`Cover image for "${article.title}" article`}
-            width={800}
-            height={450}
-            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            formats={["avif", "webp"]}
-            loading="lazy"
-          />
+          {hasExternalImage ? (
+            <img
+              src={coverImage as string}
+              alt={`Cover image for "${article.title}" article`}
+              width={800}
+              height={450}
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <OptimizedPicture
+              src={coverImage}
+              alt={`Cover image for "${article.title}" article`}
+              width={800}
+              height={450}
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              formats={["avif", "webp"]}
+              loading="lazy"
+            />
+          )}
         </div>
       )
     }
