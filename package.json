@@ -93,6 +93,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@cvix/docs>zod": "^3.23.8",
       "glob": "^10.5.0",
       "@anthropic-ai/claude-code": "^2.0.31",
       "js-yaml": "^4.1.1"
