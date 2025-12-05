@@ -161,7 +161,6 @@ class DatabaseHealthIndicator(
 }
 ```
 
-
 ## Database Migrations (Liquibase)
 
 - **Standard structure:**

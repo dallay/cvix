@@ -27,6 +27,7 @@ docker-compose -f app.yml up -d
 ```
 
 This command will:
+
 - Load all environment variables from `.env`
 - Start PostgreSQL, Keycloak, and other services
 - Include all referenced compose files (`common.yml`, `postgresql/`, `keycloak/`, etc.)

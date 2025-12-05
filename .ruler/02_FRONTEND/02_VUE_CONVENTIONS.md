@@ -9,7 +9,6 @@
 
     Example:
 
-
 - Name components using `PascalCase` (e.g., `UserProfileCard.vue`).
 - Define props using `defineProps()` and provide defaults with `withDefaults()`.
 - Explicitly declare all emitted events with `defineEmits()`.

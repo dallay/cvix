@@ -1,4 +1,4 @@
-## 1.0.0 (2025-12-05)
+# 1.0.0 (2025-12-05)
 
 ### ⚠ BREAKING CHANGES
 
@@ -6,15 +6,16 @@
 
 * fix(resume): 🐛 change ST4 delimiters from $ to @ to avoid LaTeX conflicts
 
-- Change delimiters in StringTemplateConfiguration from '$' to '@'
-- Update resume-template-en.st to use @ delimiters
-- Update resume-template-es.st to use @ delimiters
-- Update README.md with explanation of @ delimiter choice
+* Change delimiters in StringTemplateConfiguration from '$' to '@'
+* Update resume-template-en.st to use @ delimiters
+* Update resume-template-es.st to use @ delimiters
+* Update README.md with explanation of @ delimiter choice
 
 This fixes ST4 parsing errors caused by LaTeX syntax conflicts:
-- $ is heavily used in LaTeX for math mode
-- ST4 was unable to parse templates due to ambiguity between LaTeX $ and ST4 $
-- Using @ as delimiter avoids this conflict completely
+
+* $ is heavily used in LaTeX for math mode
+* ST4 was unable to parse templates due to ambiguity between LaTeX $ and ST4 $
+* Using @ as delimiter avoids this conflict completely
 
 Error fixed: 'mismatched input' at line 43:100 in template
 
@@ -39,8 +40,8 @@ Replace manual escaping with LatexEscaper utility for cleaner code
 
 * feat(template): ✨ enhance TemplateValidator with comprehensive LaTeX injection detection
 
-- Expanded DANGEROUS_PATTERN to include additional LaTeX commands.
-- Improved validation coverage by adding tests for all user-controlled fields in ResumeData.
+* Expanded DANGEROUS_PATTERN to include additional LaTeX commands.
+* Improved validation coverage by adding tests for all user-controlled fields in ResumeData.
 
 * feat(docker): ✨ update TeX Live Docker image to TL2024-historic
 
@@ -200,33 +201,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Workspace Selection Feature** - Complete frontend implementation for workspace selection functionality
-  - Automatic workspace loading on user login (loads last selected or default workspace)
-  - Manual workspace selection through an enhanced dropdown selector component
-  - Workspace state management using Pinia with local storage persistence
-  - Loading and error states with visual feedback
-  - Retry logic with exponential backoff for failed workspace loads (3 attempts: 1s, 2s, 4s delays)
-  - 5-minute cache TTL for workspace data to optimize performance
-  - Comprehensive test coverage (>75%) across domain, application, and presentation layers
-  - ARIA labels and keyboard navigation support for accessibility
-  - Integration with existing authentication system (Keycloak OAuth2/OIDC)
+* **Workspace Selection Feature** - Complete frontend implementation for workspace selection functionality
+  * Automatic workspace loading on user login (loads last selected or default workspace)
+  * Manual workspace selection through an enhanced dropdown selector component
+  * Workspace state management using Pinia with local storage persistence
+  * Loading and error states with visual feedback
+  * Retry logic with exponential backoff for failed workspace loads (3 attempts: 1s, 2s, 4s delays)
+  * 5-minute cache TTL for workspace data to optimize performance
+  * Comprehensive test coverage (>75%) across domain, application, and presentation layers
+  * ARIA labels and keyboard navigation support for accessibility
+  * Integration with existing authentication system (Keycloak OAuth2/OIDC)
 
 ### Technical Details
 
-- **Domain Layer**: Pure TypeScript business logic with value objects (WorkspaceId, WorkspaceName) and selection service
-- **Application Layer**: Composables (`useWorkspaceSelection`, `useWorkspaceLoader`) for orchestrating workspace operations
-- **Infrastructure Layer**: Pinia store for state management, HTTP client for API integration, local storage adapter for persistence
-- **Presentation Layer**: Vue.js components with Shadcn-Vue UI components (WorkspaceSelector, WorkspaceSelectorItem)
-- **Testing**: Unit tests (Vitest), integration tests, E2E tests (Playwright) with 94% domain coverage, 100% application coverage
+* **Domain Layer**: Pure TypeScript business logic with value objects (WorkspaceId, WorkspaceName) and selection service
+* **Application Layer**: Composables (`useWorkspaceSelection`, `useWorkspaceLoader`) for orchestrating workspace operations
+* **Infrastructure Layer**: Pinia store for state management, HTTP client for API integration, local storage adapter for persistence
+* **Presentation Layer**: Vue.js components with Shadcn-Vue UI components (WorkspaceSelector, WorkspaceSelectorItem)
+* **Testing**: Unit tests (Vitest), integration tests, E2E tests (Playwright) with 94% domain coverage, 100% application coverage
 
 ### Changed
 
-- Enhanced workspace selector component with improved UX and visual feedback
-- Updated router with navigation guard for automatic workspace loading on login
+* Enhanced workspace selector component with improved UX and visual feedback
+* Updated router with navigation guard for automatic workspace loading on login
 
 ### Fixed
 
-- Resolved 13 Biome linting warnings (noExplicitAny, noUselessConstructor)
+* Resolved 13 Biome linting warnings (noExplicitAny, noUselessConstructor)
 
 ---
 
@@ -234,10 +235,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Initial Release
 
-- Base SaaS template with Spring Boot + Kotlin backend
-- Vue.js 3 frontend with TypeScript
-- Authentication system with Keycloak
-- PostgreSQL database with Liquibase migrations
-- Docker Compose infrastructure setup
-- CI/CD with GitHub Actions
-- Comprehensive documentation and development tools
+* Base SaaS template with Spring Boot + Kotlin backend
+* Vue.js 3 frontend with TypeScript
+* Authentication system with Keycloak
+* PostgreSQL database with Liquibase migrations
+* Docker Compose infrastructure setup
+* CI/CD with GitHub Actions
+* Comprehensive documentation and development tools
