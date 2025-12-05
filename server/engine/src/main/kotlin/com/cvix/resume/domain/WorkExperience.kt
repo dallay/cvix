@@ -112,9 +112,12 @@ data class WorkExperience(
     }
 
     /**
-     * Calculates the duration of employment in years (as Double).
-     * Returns fractional years for more accurate duration.
-     * Treats null or empty endDate as ongoing employment (uses current date).
+     * Compute the employment duration in years, expressed as a fractional Double.
+     *
+     * If `endDate` is null or blank the current date is used (ongoing employment).
+     * `startDate` and `endDate` must be ISO-8601 date strings; invalid formats will throw `DateTimeParseException`.
+     *
+     * @return The duration in years as a `Double`, calculated using 365.25 days per year (fractional years allowed).
      */
     fun durationInYears(): Double {
         val start = LocalDate.parse(startDate)
@@ -125,10 +128,12 @@ data class WorkExperience(
     }
 
     /**
-     * Formats the employment period for display.
-     * Format: "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present"
-     * Treats null or empty endDate as ongoing employment.
-     * @param locale Locale object for language-specific formatting
+     * Format the employment period as "YYYY-MM-DD -- YYYY-MM-DD" or "YYYY-MM-DD -- Present".
+     *
+     * Uses the localized "Present" label when `endDate` is null or blank.
+     *
+     * @param locale Locale to use when localizing the "Present" label.
+     * @return The period string in the form `YYYY-MM-DD -- END`, where END is the end date or the localized "Present" label.
      */
     fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
         val resourceBundle = ResourceBundle.getBundle("messages.messages", locale)
