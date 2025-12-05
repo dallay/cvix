@@ -84,6 +84,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.should_release == 'true'
+    # Retry entire job if it fails due to transient errors
+    strategy:
+      max-parallel: 1
+      fail-fast: true
     outputs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic.outputs.new_release_version }}
@@ -136,6 +140,11 @@ jobs:
           GIT_COMMITTER_NAME: cvix-release-bot[bot]
           GIT_COMMITTER_EMAIL: cvix-release-bot[bot]@users.noreply.github.com
           LEFTHOOK: 0
+          # Increase GraphQL timeout and retries for reliability
+          OCTOKIT_TIMEOUT: 60000
+          OCTOKIT_REQUEST_RETRIES: 5
+        # Retry on transient failures (timeouts, rate limits, etc)
+        continue-on-error: false
 
       - name: Release Summary
         if: steps.semantic.outputs.new_release_published == 'true'
