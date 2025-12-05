@@ -222,12 +222,12 @@ internal class LatexTemplateRendererTest {
         // Should contain the exact formatted range for the Current Company entry
         assertTrue(
             result.contains("2023-03-14 – Present"),
-            "Should render full range '2023-03-14 – Present' for ongoing employment in English"
+            "Should render full range '2023-03-14 – Present' for ongoing employment in English",
         )
         // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
         assertFalse(
             Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
-            "Should not have dangling em-dash for empty endDate"
+            "Should not have dangling em-dash for empty endDate",
         )
 
         if (persistGeneratedDocument) {
@@ -254,12 +254,12 @@ internal class LatexTemplateRendererTest {
         // Should contain the exact formatted range for the Current Company entry
         assertTrue(
             result.contains("2023-03-14 – Presente"),
-            "Should render full range '2023-03-14 – Presente' for ongoing employment in Spanish"
+            "Should render full range '2023-03-14 – Presente' for ongoing employment in Spanish",
         )
         // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
         assertFalse(
             Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
-            "Should not have dangling em-dash for empty endDate"
+            "Should not have dangling em-dash for empty endDate",
         )
 
         if (persistGeneratedDocument) {

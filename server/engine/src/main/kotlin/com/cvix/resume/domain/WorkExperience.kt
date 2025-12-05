@@ -133,7 +133,8 @@ data class WorkExperience(
      * Uses the localized "Present" label when `endDate` is null or blank.
      *
      * @param locale Locale to use when localizing the "Present" label.
-     * @return The period string in the form `YYYY-MM-DD -- END`, where END is the end date or the localized "Present" label.
+     * @return The period string in the form `YYYY-MM-DD -- END`, where END is the end date or the
+     * localized "Present" label.
      */
     fun formatPeriod(locale: Locale = Locale.ENGLISH): String {
         val resourceBundle = ResourceBundle.getBundle("messages.messages", locale)
