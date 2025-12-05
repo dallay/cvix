@@ -20,6 +20,7 @@ import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.test.assertFalse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -218,15 +219,15 @@ internal class LatexTemplateRendererTest {
 
         // Assert
         assertValidLatexStructure(result)
-        // Should contain "2023-03-14 – Present" for the Current Company entry
+        // Should contain the exact formatted range for the Current Company entry
         assertTrue(
-            result.contains("2023-03-14") && result.contains("Present"),
-            "Should render empty endDate as 'Present' in English",
+            result.contains("2023-03-14 – Present"),
+            "Should render full range '2023-03-14 – Present' for ongoing employment in English"
         )
-        // Should NOT have a dangling em-dash (2023-03-14 –)
-        assertTrue(
-            !result.contains("2023-03-14 –\\"),
-            "Should not have dangling em-dash for empty endDate",
+        // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
+        assertFalse(
+            Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
+            "Should not have dangling em-dash for empty endDate"
         )
 
         if (persistGeneratedDocument) {
@@ -250,10 +251,15 @@ internal class LatexTemplateRendererTest {
 
         // Assert
         assertValidLatexStructure(result)
-        // Should contain "2023-03-14 – Presente" for the Current Company entry
+        // Should contain the exact formatted range for the Current Company entry
         assertTrue(
-            result.contains("2023-03-14") && result.contains("Presente"),
-            "Should render empty endDate as 'Presente' in Spanish",
+            result.contains("2023-03-14 – Presente"),
+            "Should render full range '2023-03-14 – Presente' for ongoing employment in Spanish"
+        )
+        // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
+        assertFalse(
+            Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
+            "Should not have dangling em-dash for empty endDate"
         )
 
         if (persistGeneratedDocument) {
