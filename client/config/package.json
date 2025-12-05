@@ -1,13 +1,13 @@
 {
-  "name": "@cvix/config",
-  "description": "cvix shared configuration",
-	"version": "0.0.1",
+	"name": "@cvix/config",
+	"description": "cvix shared configuration",
+	"version": "0.1.0",
 	"type": "module",
 	"license": "MIT",
-  "homepage": "https://cvix.tech",
-  "author": "cvix Team",
+	"homepage": "https://cvix.tech",
+	"author": "cvix Team",
 	"keywords": [
-    "cvix",
+		"cvix",
 		"config"
 	],
 	"engines": {
@@ -36,15 +36,15 @@
 	},
 	"devDependencies": {
 		"@codecov/vite-plugin": "1.9.1",
-    "@cvix/tsconfig": "workspace:*",
+		"@cvix/tsconfig": "workspace:*",
 		"@tailwindcss/typography": "^0.5.19",
 		"postcss": "^8.5.6",
-    "stylelint": "^16.26.0",
+		"stylelint": "^16.26.0",
 		"stylelint-config-standard-scss": "^16.0.0",
 		"stylelint-order": "^7.0.0",
 		"tailwindcss": "^4.1.17",
 		"vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.14"
+		"vitest": "^4.0.14"
 	},
 	"publishConfig": {
 		"access": "public"
