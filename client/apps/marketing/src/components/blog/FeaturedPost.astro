@@ -4,7 +4,12 @@ import { type Lang, useTranslations } from "@/i18n";
 import { cn } from "@cvix/ui/lib/utils";
 import type Article from "@/models/article/article.model";
 import { cleanEntityId } from "@/utils/collection.entity";
-import { prepareImageForOptimizedPicture, isImageMetadata } from "@/utils/image-utils";
+import {
+  prepareImageForOptimizedPicture,
+  isImageMetadata,
+  isExternalUrl,
+  isValidImage,
+} from "@/utils/image-utils";
 import OptimizedPicture from "../OptimizedPicture.astro";
 import { render } from "astro:content";
 
@@ -19,7 +24,8 @@ const t = useTranslations(currentLocale);
 
 const coverImage = post.cover ? await prepareImageForOptimizedPicture(post.cover) : undefined;
 
-const hasValidImage = isImageMetadata(coverImage);
+const hasValidImage = isValidImage(coverImage);
+const hasExternalImage = isExternalUrl(coverImage);
 
 const url = `/${currentLocale}/blog/${cleanEntityId(post.id)}`;
 
@@ -41,12 +47,21 @@ if (post.entry) {
     <div class="relative aspect-video lg:aspect-auto lg:min-h-[400px] overflow-hidden bg-muted">
       {
         hasValidImage ? (
-          <OptimizedPicture
-            src={coverImage}
-            alt={post.title}
-            loading="eager"
-            class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-          />
+          hasExternalImage ? (
+            <img
+              src={coverImage as string}
+              alt={post.title}
+              loading="eager"
+              class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          ) : (
+            <OptimizedPicture
+              src={coverImage}
+              alt={post.title}
+              loading="eager"
+              class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          )
         ) : (
           <div class="flex items-center justify-center h-full w-full bg-linear-to-br from-primary/10 to-primary/5">
             <Icon
