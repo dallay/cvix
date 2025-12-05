@@ -79,7 +79,14 @@ object ResumeTemplateMapper {
             },
         )
 
-    private fun mapWork(work: WorkExperience): WorkExperienceTemplateModel =
+    /**
+         * Converts a WorkExperience into a template-friendly WorkExperienceTemplateModel.
+         *
+         * Textual fields are escaped for LaTeX; optional fields remain null when absent.
+         *
+         * @return A WorkExperienceTemplateModel where name, position, location, summary, and highlights are LaTeX-escaped, `endDate` is set to null when the source is blank, and `url` is passed through as provided.
+         */
+        private fun mapWork(work: WorkExperience): WorkExperienceTemplateModel =
         WorkExperienceTemplateModel(
             name = LatexEscaper.escape(work.name.value),
             position = LatexEscaper.escape(work.position.value),
@@ -91,7 +98,14 @@ object ResumeTemplateMapper {
             url = work.url?.value,
         )
 
-    private fun mapEducation(edu: Education): EducationTemplateModel =
+    /**
+         * Converts an Education domain model into an EducationTemplateModel for template rendering,
+         * unwrapping value classes, escaping user-visible text for LaTeX, and normalizing blank end dates to null.
+         *
+         * @param edu The domain Education instance to convert.
+         * @return An EducationTemplateModel with escaped string fields and a null endDate when the source end date is blank.
+         */
+        private fun mapEducation(edu: Education): EducationTemplateModel =
         EducationTemplateModel(
             institution = LatexEscaper.escape(edu.institution.value),
             area = edu.area?.value?.let { LatexEscaper.escape(it) },
@@ -149,7 +163,13 @@ object ResumeTemplateMapper {
             summary = award.summary?.let { LatexEscaper.escape(it) },
         )
 
-    private fun mapVolunteer(vol: Volunteer): VolunteerTemplateModel =
+    /**
+         * Maps a domain Volunteer to a template-friendly VolunteerTemplateModel.
+         *
+         * @param vol The domain Volunteer to convert.
+         * @return A VolunteerTemplateModel where text fields are escaped for LaTeX, `startDate` is an empty string when absent, `endDate` is `null` when blank, and optional `summary` and `highlights` are escaped when present.
+         */
+        private fun mapVolunteer(vol: Volunteer): VolunteerTemplateModel =
         VolunteerTemplateModel(
             organization = LatexEscaper.escape(vol.organization),
             position = LatexEscaper.escape(vol.position),
