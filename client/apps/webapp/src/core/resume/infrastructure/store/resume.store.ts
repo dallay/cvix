@@ -280,6 +280,7 @@ export const useResumeStore = defineStore("resume", () => {
 	/**
 	 * Switches the active resume storage implementation and optionally migrates the current resume to it.
 	 *
+	 * @param newStorage - The new ResumeStorage implementation to switch to
 	 * @param migrateData - If `true`, saves the current resume to `newStorage` before switching
 	 * @throws Propagates any error encountered while migrating data or updating the storage strategy
 	 */
@@ -333,7 +334,7 @@ export const useResumeStore = defineStore("resume", () => {
 			return structuredClone(resume.value);
 		}
 		// Fallback for environments without structuredClone
-		return JSON.parse(JSON.stringify(resume.value));
+		return structuredClone(resume.value);
 	}
 
 	return {
