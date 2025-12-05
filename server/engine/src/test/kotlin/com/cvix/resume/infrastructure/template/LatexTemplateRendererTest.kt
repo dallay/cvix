@@ -20,6 +20,7 @@ import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import kotlin.test.assertFalse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -198,6 +199,71 @@ internal class LatexTemplateRendererTest {
 
         if (persistGeneratedDocument) {
             persistOutput("null-fields-resume", result)
+        }
+    }
+
+    /**
+     * Test rendering with empty endDate (current employment).
+     * Validates that empty endDate strings are treated as ongoing employment
+     * and render "Present" (or locale-specific equivalent).
+     */
+    @Test
+    fun `should render empty endDate as Present in English`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "en")
+
+        // Assert
+        assertValidLatexStructure(result)
+        // Should contain the exact formatted range for the Current Company entry
+        assertTrue(
+            result.contains("2023-03-14 – Present"),
+            "Should render full range '2023-03-14 – Present' for ongoing employment in English",
+        )
+        // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
+        assertFalse(
+            Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
+            "Should not have dangling em-dash for empty endDate",
+        )
+
+        if (persistGeneratedDocument) {
+            persistOutput("null-fields-resume-en", result)
+        }
+    }
+
+    /**
+     * Test rendering with empty endDate in Spanish.
+     * Validates locale-specific "Presente" rendering.
+     */
+    @Test
+    fun `should render empty endDate as Presente in Spanish`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "es")
+
+        // Assert
+        assertValidLatexStructure(result)
+        // Should contain the exact formatted range for the Current Company entry
+        assertTrue(
+            result.contains("2023-03-14 – Presente"),
+            "Should render full range '2023-03-14 – Presente' for ongoing employment in Spanish",
+        )
+        // Optionally, ensure no unlabelled dangling em-dash (e.g., '2023-03-14 –' followed by whitespace/newline)
+        assertFalse(
+            Regex("""2023-03-14 –\s*\n""").containsMatchIn(result),
+            "Should not have dangling em-dash for empty endDate",
+        )
+
+        if (persistGeneratedDocument) {
+            persistOutput("null-fields-resume-es", result)
         }
     }
 

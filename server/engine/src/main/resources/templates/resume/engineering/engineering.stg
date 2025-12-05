@@ -1,3 +1,7 @@
+formatDateRange(startDate, endDate, i18n) ::= <<
+<startDate><if(endDate)> – <endDate><else> – <i18n.("present")><endif>
+>>
+
 baseResume(resumeData, i18n, locale, lastUpdated) ::= <<
  <! This is a CV/Resume template using StringTemplate.
     For more information on StringTemplate, refer to the official documentation at:
@@ -249,13 +253,13 @@ preamble(basics, i18n, locale, lastUpdated) ::= <<
 education(educationList, i18n) ::= <<
 % Education Section
     \section{<i18n.("section.education")>}
-<educationList:{edu|<educationEntry(edu)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+<educationList:{edu|<educationEntry(edu, i18n)>}; separator="\n\n    \\vspace{0.2 cm}\n">
 >>
 
-educationEntry(edu) ::= <<
+educationEntry(edu, i18n) ::= <<
 
     \begin{twocolentry}{
-        <edu.startDate> – <edu.endDate>
+        <formatDateRange(edu.startDate, edu.endDate, i18n)>
     }
         \textbf{<edu.institution>}<if(edu.studyType)>, <edu.studyType><endif><if(edu.area)> in <edu.area><endif><if(edu.url)> (\href{<edu.url>}{link})<endif>\end{twocolentry}
 
@@ -270,13 +274,13 @@ educationEntry(edu) ::= <<
 experience(workList, i18n) ::= <<
 % Experience Section
     \section{<i18n.("section.experience")>}
-<workList:{work|<workEntry(work)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+<workList:{work|<workEntry(work, i18n)>}; separator="\n\n    \\vspace{0.2 cm}\n">
 >>
 
-workEntry(work) ::= <<
+workEntry(work, i18n) ::= <<
 
     \begin{twocolentry}{
-        <work.startDate> – <work.endDate>
+        <formatDateRange(work.startDate, work.endDate, i18n)>
     }
         \textbf{<work.position>}, <work.name> -- <work.url>\end{twocolentry}
 
@@ -407,13 +411,13 @@ awardEntry(award) ::= <<
 volunteer(volunteerList, i18n) ::= <<
 % Volunteer Experience Section
     \section{<i18n.("section.volunteer")>}
-<volunteerList:{vol|<volunteerEntry(vol)>}; separator="\n\n    \\vspace{0.2 cm}\n">
+<volunteerList:{vol|<volunteerEntry(vol, i18n)>}; separator="\n\n    \\vspace{0.2 cm}\n">
 >>
 
-volunteerEntry(vol) ::= <<
+volunteerEntry(vol, i18n) ::= <<
 
     \begin{twocolentry}{
-        <vol.startDate> – <vol.endDate>
+        <formatDateRange(vol.startDate, vol.endDate, i18n)>
     }
         \textbf{<vol.position>}, <vol.organization><if(vol.url)> (\href{<vol.url>}{link})<endif>\end{twocolentry}
 
