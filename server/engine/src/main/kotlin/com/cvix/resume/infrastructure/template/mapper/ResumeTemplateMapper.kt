@@ -84,7 +84,7 @@ object ResumeTemplateMapper {
             name = LatexEscaper.escape(work.name.value),
             position = LatexEscaper.escape(work.position.value),
             startDate = work.startDate,
-            endDate = work.endDate,
+            endDate = work.endDate?.takeIf { it.isNotBlank() }, // Normalize empty strings to null
             location = work.location?.let(LatexEscaper::escape),
             summary = work.summary?.let { LatexEscaper.escape(it) },
             highlights = work.highlights?.map { LatexEscaper.escape(it.value) },
@@ -97,7 +97,7 @@ object ResumeTemplateMapper {
             area = edu.area?.value?.let { LatexEscaper.escape(it) },
             studyType = edu.studyType?.value?.let { LatexEscaper.escape(it) },
             startDate = edu.startDate,
-            endDate = edu.endDate,
+            endDate = edu.endDate?.takeIf { it.isNotBlank() }, // Normalize empty strings to null
             score = edu.score?.let(LatexEscaper::escape),
             url = edu.url?.value,
             courses = edu.courses?.map { LatexEscaper.escape(it) },
@@ -155,7 +155,8 @@ object ResumeTemplateMapper {
             position = LatexEscaper.escape(vol.position),
             url = vol.url?.value,
             startDate = vol.startDate?.let(LatexEscaper::escape) ?: "",
-            endDate = vol.endDate?.let(LatexEscaper::escape),
+            endDate = vol.endDate?.takeIf { it.isNotBlank() }
+                ?.let(LatexEscaper::escape), // Normalize empty strings to null
             summary = vol.summary?.let { LatexEscaper.escape(it) },
             highlights = vol.highlights?.map { LatexEscaper.escape(it) },
         )

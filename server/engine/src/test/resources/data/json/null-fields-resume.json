@@ -17,6 +17,18 @@
       "endDate": null,
       "summary": null,
       "highlights": null
+    },
+    {
+      "name": "Current Company",
+      "position": "Current Position",
+      "url": null,
+      "startDate": "2023-03-14",
+      "endDate": "",
+      "summary": null,
+      "highlights": [
+        "Achievement 1",
+        "Achievement 2"
+      ]
     }
   ],
   "education": [
@@ -50,4 +62,3 @@
   "references": [],
   "projects": []
 }
-

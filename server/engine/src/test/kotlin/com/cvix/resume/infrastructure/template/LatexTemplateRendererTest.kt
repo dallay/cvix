@@ -202,6 +202,66 @@ internal class LatexTemplateRendererTest {
     }
 
     /**
+     * Test rendering with empty endDate (current employment).
+     * Validates that empty endDate strings are treated as ongoing employment
+     * and render "Present" (or locale-specific equivalent).
+     */
+    @Test
+    fun `should render empty endDate as Present in English`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "en")
+
+        // Assert
+        assertValidLatexStructure(result)
+        // Should contain "2023-03-14 – Present" for the Current Company entry
+        assertTrue(
+            result.contains("2023-03-14") && result.contains("Present"),
+            "Should render empty endDate as 'Present' in English",
+        )
+        // Should NOT have a dangling em-dash (2023-03-14 –)
+        assertTrue(
+            !result.contains("2023-03-14 –\\"),
+            "Should not have dangling em-dash for empty endDate",
+        )
+
+        if (persistGeneratedDocument) {
+            persistOutput("null-fields-resume-en", result)
+        }
+    }
+
+    /**
+     * Test rendering with empty endDate in Spanish.
+     * Validates locale-specific "Presente" rendering.
+     */
+    @Test
+    fun `should render empty endDate as Presente in Spanish`() {
+        // Arrange
+        val resumeJsonData: GenerateResumeRequest =
+            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+        val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
+
+        // Act
+        val result = renderer.render(resumeData, "es")
+
+        // Assert
+        assertValidLatexStructure(result)
+        // Should contain "2023-03-14 – Presente" for the Current Company entry
+        assertTrue(
+            result.contains("2023-03-14") && result.contains("Presente"),
+            "Should render empty endDate as 'Presente' in Spanish",
+        )
+
+        if (persistGeneratedDocument) {
+            persistOutput("null-fields-resume-es", result)
+        }
+    }
+
+    /**
      * Parameterized test to verify dangerous LaTeX commands are blocked.
      * Security test to prevent LaTeX injection attacks.
      */
