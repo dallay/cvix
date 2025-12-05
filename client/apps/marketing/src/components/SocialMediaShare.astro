@@ -32,37 +32,47 @@ const socialMediaLinkShare: {
 }[] = [
   {
     name: "𝕏 (aka Twitter)",
-    url: `https://x.com/intent/tweet?url=${url}&text=${title}${tags.length ? `&hashtags=${tags.join(",")}` : ""}`,
+    url: `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(
+      title,
+    )}${tags.length ? `&hashtags=${encodeURIComponent(tags.join(","))}` : ""}`,
     icon: "tabler:brand-x",
   },
   {
     name: "Facebook",
-    url: `https://www.facebook.com/sharer.php?u=${url}`,
+    url: `https://www.facebook.com/sharer.php?u=${encodeURIComponent(url)}`,
     icon: "tabler:brand-facebook",
   },
   {
     name: "LinkedIn",
-    url: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+    url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
     icon: "tabler:brand-linkedin",
   },
   {
     name: "Reddit",
-    url: `https://reddit.com/submit?url=${url}&title=${title}`,
+    url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(
+      title,
+    )}`,
     icon: "tabler:brand-reddit",
   },
   {
     name: "Telegram",
-    url: `https://t.me/share/url?url=${url}&text=${description}`,
+    url: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(
+      description,
+    )}`,
     icon: "tabler:brand-telegram",
   },
   {
     name: "WhatsApp",
-    url: `https://api.whatsapp.com/send?text=${title}%20${url}`,
+    url: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(
+      url,
+    )}`,
     icon: "tabler:brand-whatsapp",
   },
   {
     name: "Email",
-    url: `mailto:?subject=${title}&body=${description}%20${url}`,
+    url: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(
+      description,
+    )}%20${encodeURIComponent(url)}`,
     icon: "tabler:mail",
   },
 ];

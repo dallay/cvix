@@ -4,7 +4,7 @@ logo_url: /favicon.svg
 
 backend:
   name: github
-  repo: dallay/hatchgrid
+  repo: dallay/cvix
   branch: main
   base_url: https://sveltia-cms-auth.yunielacosta738.workers.dev/
 
