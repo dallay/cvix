@@ -9,5 +9,12 @@ export function randomElement<T>(array: Array<T>): T {
 	if (array.length === 0) {
 		throw new Error("Cannot get random element from an empty array");
 	}
-	return array[Math.floor(Math.random() * array.length)];
+
+	const element = array[Math.floor(Math.random() * array.length)];
+
+	if (element === undefined) {
+		throw new Error("Random selection failed");
+	}
+
+	return element;
 }

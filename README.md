@@ -2,7 +2,8 @@
 
 ![ProFileTailors Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
 
-A production-ready SaaS starter template and monorepo for building subscription web apps (backend: Spring Boot + Kotlin, frontend: Vite/Astro/Vue).
+A production-ready SaaS starter template and monorepo for building subscription web apps (backend:
+Spring Boot + Kotlin, frontend: Vite/Astro/Vue).
 
 ## Badges
 
@@ -20,7 +21,8 @@ A production-ready SaaS starter template and monorepo for building subscription 
 
 ## Quick overview
 
-- Monorepo: frontend apps in `client/`, backend services in `server/`, shared Kotlin libs in `shared/`.
+- Monorepo: frontend apps in `client/`, backend services in `server/`, shared Kotlin libs in
+  `shared/`.
 - Backend: Spring Boot (Kotlin), R2DBC, Liquibase, Testcontainers.
 - Frontend: Vite + Vue 3, Astro landing, Tailwind CSS, PNPM workspaces.
 
@@ -60,7 +62,8 @@ make test-all
 
 ## Available Commands
 
-This project uses a `Makefile` to streamline common development tasks. Below is a list of the main commands (28 targets) and what they actually invoke in the repository:
+This project uses a `Makefile` to streamline common development tasks. Below is a list of the main
+commands (28 targets) and what they actually invoke in the repository:
 
 | Command                        | Description                                                                   |
 |--------------------------------|-------------------------------------------------------------------------------|
@@ -107,29 +110,94 @@ See these folders at the repository root:
 
 ### Additional Documentation
 
-- **[Docker Deployment Guide](docs/DOCKER_DEPLOYMENT.md)** — Complete guide for building and deploying Docker images to GHCR
+- **[Docker Deployment Guide](docs/DOCKER_DEPLOYMENT.md)** — Complete guide for building and
+  deploying Docker images to GHCR
 - **[Contributing Guide](CONTRIBUTING.md)** — Development workflow and contribution guidelines
 - **[Security Policy](SECURITY.md)** — Security practices and vulnerability reporting
+
+## Release & Versioning
+
+This project uses **Semantic Versioning** with automated releases powered
+by [semantic-release](https://semantic-release.gitbook.io/).
+
+### How It Works
+
+1. **Conventional Commits** trigger version bumps:
+    - `feat:` → Minor version (1.0.0 → 1.1.0)
+    - `fix:` → Patch version (1.0.0 → 1.0.1)
+    - `feat!:` or `BREAKING CHANGE:` → Major version (1.0.0 → 2.0.0)
+
+2. **Automatic on merge to `main`**:
+    - Version calculated from commit history
+    - `CHANGELOG.md` generated
+    - Git tag created
+    - GitHub Release published
+    - Docker images pushed to registries
+
+### Docker Images
+
+Images are published to both **GitHub Container Registry** and **Docker Hub**:
+
+```bash
+# Pull from GHCR
+docker pull ghcr.io/dallay/cvix-engine:latest
+docker pull ghcr.io/dallay/cvix-webapp:latest
+docker pull ghcr.io/dallay/cvix-marketing:latest
+
+# Pull specific version
+docker pull ghcr.io/dallay/cvix-engine:1.2.3
+```
+
+```bash
+# Pull from Docker Hub
+docker pull docker.io/dallay/cvix-engine:latest
+docker pull docker.io/dallay/cvix-webapp:latest
+docker pull docker.io/dallay/cvix-marketing:latest
+
+# Pull specific version
+docker pull docker.io/dallay/cvix-engine:1.2.3
+```
+
+**Available Tags (GHCR & Docker Hub):**
+
+| Tag      | Description                                  |
+|----------|----------------------------------------------|
+| `latest` | Rolling tag, always points to newest release |
+| `x.y.z`  | Semantic version (e.g., `1.2.3`)             |
+| `vX`     | Major version (e.g., `v1`)                   |
+| `<sha>`  | Git commit SHA (immutable, GHCR only)        |
+
+### Manual Release (dry-run)
+
+Test what version would be released without actually releasing:
+
+```bash
+pnpm release:dry-run
+```
 
 ## Development Guidelines
 
 ### Testing with Testcontainers
 
-The backend integration tests use [Testcontainers](https://testcontainers.com/) to spin up real PostgreSQL, Keycloak, and GreenMail containers.
+The backend integration tests use [Testcontainers](https://testcontainers.com/) to spin up real
+PostgreSQL, Keycloak, and GreenMail containers.
 
 **Local Development Setup:**
 
-For faster test execution during development, you can enable container reuse by creating/editing `~/.testcontainers.properties`:
+For faster test execution during development, you can enable container reuse by creating/editing
+`~/.testcontainers.properties`:
 
 ```properties
 testcontainers.reuse.enable=true
 ```
 
-With this setting, containers will persist between test runs, speeding up subsequent executions significantly.
+With this setting, containers will persist between test runs, speeding up subsequent executions
+significantly.
 
 **Managing Test Containers:**
 
-When using container reuse, test containers may remain running after tests complete. To clean them up:
+When using container reuse, test containers may remain running after tests complete. To clean them
+up:
 
 ```bash
 # Clean up all test containers
@@ -149,12 +217,15 @@ docker rm -f keycloak-tests greenmail-tests
 
 ### Resume Generator MVP
 
-A professional resume generation system that converts user-submitted form data into beautifully formatted PDF resumes.
+A professional resume generation system that converts user-submitted form data into beautifully
+formatted PDF resumes.
 
 **Key Capabilities:**
 
-- 📝 **Web-Based Form**: Intuitive Vue.js form for entering resume data (personal info, work experience, education, skills)
-- 🎨 **Professional LaTeX Templates**: Adaptive templates that adjust layout based on your experience level
+- 📝 **Web-Based Form**: Intuitive Vue.js form for entering resume data (personal info, work
+  experience, education, skills)
+- 🎨 **Professional LaTeX Templates**: Adaptive templates that adjust layout based on your experience
+  level
 - 🌐 **Bilingual Support**: Generate resumes in English or Spanish
 - 📱 **Mobile-Friendly**: Responsive design works on desktop and mobile browsers
 - ⚡ **Fast Generation**: PDF ready in under 8 seconds (p95)
@@ -212,7 +283,7 @@ Grafana dashboard: `infra/grafana/dashboards/resume-generator-sla.json`
 The Resume Generator is tested and supported on the following browsers (last 2 major versions):
 
 | Browser          | Desktop | Mobile | Notes                  |
-| ---------------- | ------- | ------ | ---------------------- |
+|------------------|---------|--------|------------------------|
 | Chrome/Edge      | ✅       | ✅      | Chromium 120+          |
 | Firefox          | ✅       | ✅      | Firefox 121+           |
 | Safari           | ✅       | ✅      | Safari 17+ (macOS/iOS) |
@@ -255,7 +326,8 @@ For detailed accessibility information, see: `client/apps/webapp/src/resume/docs
 
 ## Contributing
 
-We follow Conventional Commits. See `CONTRIBUTING.md` and the `.ruler/` docs for repo conventions. Pre-commit hooks are installed by `lefthook` in the `prepare` script.
+We follow Conventional Commits. See `CONTRIBUTING.md` and the `.ruler/` docs for repo conventions.
+Pre-commit hooks are installed by `lefthook` in the `prepare` script.
 
 If you open a PR, ensure the CI passes (lint, tests, detekt) and keep PRs small and focused.
 

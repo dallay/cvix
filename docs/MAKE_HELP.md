@@ -25,6 +25,7 @@ Available commands:
   lint                     Lint all applications.
   lint-strict              Lint all applications in strict mode.
   check                    Run all checks.
+  verify-secrets           Verify Docker secrets synchronization between entrypoint and compose files.
   clean                    Clean all applications.
   backend-build            Build the backend.
   backend-run              Run the backend.

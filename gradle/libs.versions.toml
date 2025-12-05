@@ -3,7 +3,7 @@ kotlin = "2.2.21"
 springBoot = "3.5.8"
 springdoc = "2.8.14"
 junit = "5.14.1"
-klint-plugin = "12.3.0"
+klint-plugin = "14.0.1"
 detekt = "1.23.8"
 owasp = "12.1.9"
 asciidoctor = "4.0.5"
@@ -71,7 +71,7 @@ jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-core", vers
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.2.3" }
+reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.3.0" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }

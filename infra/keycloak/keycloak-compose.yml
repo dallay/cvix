@@ -14,7 +14,7 @@ services:
       - KC_HTTP_ENABLED=true
       - KC_DB=postgres
       - KC_DB_USERNAME=${POSTGRESQL_USER}
-      - KC_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - KC_DB_PASSWORD=${POSTGRESQL_PASSWORD}
       - KC_DB_URL=jdbc:postgresql://postgresql:5432/keycloak
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}

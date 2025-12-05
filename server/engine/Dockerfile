@@ -39,8 +39,13 @@ RUN groupadd -r spring && useradd -r -g spring spring
 # Set working directory
 WORKDIR /app
 
+
 # Copy the built jar from the builder stage
 COPY --from=builder /workspace/server/engine/build/libs/*.jar app.jar
+
+# Copy entrypoint script for Docker secrets -> env bridge
+COPY server/engine/docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Change ownership to non-root user
 RUN chown -R spring:spring /app
@@ -59,5 +64,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
 # Set JVM options for containerized environment
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom"
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Run the application via entrypoint script that loads Docker secrets
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

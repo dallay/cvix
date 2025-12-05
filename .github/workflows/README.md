@@ -2,6 +2,52 @@
 
 This document explains how the CI/CD workflows are configured to work with GitHub branch protection rules.
 
+## Workflows Overview
+
+| Workflow            | Trigger                 | Purpose                                   |
+| ------------------- | ----------------------- | ----------------------------------------- |
+| `ci.yml`            | PR & Push to main       | Run tests, linting, build verification    |
+| `release.yml`       | Push to main/beta/alpha | Semantic versioning and Docker publishing |
+| `codeql.yml`        | Schedule & PR           | Security analysis                         |
+| `cleanup-cache.yml` | PR close                | Clean up workflow caches                  |
+
+## Release Workflow (`release.yml`)
+
+Handles automated semantic versioning and multi-registry Docker deployments.
+
+### Features
+
+- **Semantic Versioning**: Analyzes conventional commits to determine version bumps
+- **Path-Based Triggers**: Only releases components that have changed
+- **Multi-Registry Deployment**: Publishes to both GHCR and Docker Hub
+- **Automated Changelog**: Generates release notes from commits
+
+### Docker Image Tags
+
+| Tag      | Description                 |
+| -------- | --------------------------- |
+| `latest` | Rolling tag for main branch |
+| `x.y.z`  | Full semantic version       |
+| `vX`     | Major version tag           |
+| `<sha>`  | Git commit SHA (immutable)  |
+
+### Required Secrets
+
+For Docker Hub deployment, configure these repository secrets:
+
+- `DOCKERHUB_USERNAME`: Your Docker Hub username
+- `DOCKERHUB_TOKEN`: Docker Hub access token
+
+GHCR uses the built-in `GITHUB_TOKEN` automatically.
+
+### Manual Dry Run
+
+To test release without publishing:
+
+1. Go to Actions → Release workflow
+2. Click "Run workflow"
+3. Check "Perform a dry run"
+
 ## Problem Solved
 
 GitHub branch protection rules require specific status checks to pass before merging. When workflows use `paths` filters to only run on relevant changes, they don't execute at all for unrelated changes, causing PRs to wait indefinitely for status checks that will never appear.

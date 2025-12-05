@@ -36,5 +36,11 @@ export default function offsetDate(
 		),
 	);
 
-	return newDate.toISOString().split("T")[0];
+	const [isoDate] = newDate.toISOString().split("T");
+
+	if (!isoDate) {
+		throw new Error("Unable to format date");
+	}
+
+	return isoDate;
 }
