@@ -27,8 +27,10 @@ permissions:
   id-token: write
 
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+  # Use dedicated concurrency group for releases to prevent queueing behind PR workflows
+  # Only main releases get the high-priority group; other branches use per-branch groups
+  group: ${{ github.ref == 'refs/heads/main' && 'release-priority-main' || format('release-{0}', github.ref) }}
+  cancel-in-progress: true
 
 jobs:
   # ============================================================================
