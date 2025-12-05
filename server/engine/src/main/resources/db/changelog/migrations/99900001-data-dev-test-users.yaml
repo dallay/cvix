@@ -9,7 +9,7 @@ databaseChangeLog:
             tableName: users
       changes:
         - loadData:
-            file: db/changelog/data/users_dev.csv
+            file: db/changelog/data/dev/users_dev.csv
             separator: ";"
             tableName: users
             usePreparedStatements: true
@@ -18,7 +18,7 @@ databaseChangeLog:
               - column: {name: email, type: string}
               - column: {name: full_name, type: string}
         - loadData:
-            file: db/changelog/data/user_authority_dev.csv
+            file: db/changelog/data/dev/user_authority_dev.csv
             separator: ";"
             tableName: user_authority
             usePreparedStatements: true
@@ -26,7 +26,7 @@ databaseChangeLog:
               - column: {name: user_id, type: uuid}
               - column: {name: authority_name, type: string}
         - loadData:
-            file: db/changelog/data/workspaces_dev.csv
+            file: db/changelog/data/dev/workspaces_dev.csv
             separator: ";"
             tableName: workspaces
             usePreparedStatements: true
@@ -41,7 +41,7 @@ databaseChangeLog:
               - column: {name: updated_at, type: datetime}
               - column: {name: is_default, type: boolean}
         - loadData:
-            file: db/changelog/data/workspace_members_dev.csv
+            file: db/changelog/data/dev/workspace_members_dev.csv
             separator: ";"
             tableName: workspace_members
             usePreparedStatements: false
@@ -52,7 +52,7 @@ databaseChangeLog:
               - column: {name: created_at, type: datetime}
               - column: {name: updated_at, type: datetime}
         - loadData:
-            file: db/changelog/data/federated_identities_dev.csv
+            file: db/changelog/data/dev/federated_identities_dev.csv
             separator: ";"
             tableName: federated_identities
             usePreparedStatements: true

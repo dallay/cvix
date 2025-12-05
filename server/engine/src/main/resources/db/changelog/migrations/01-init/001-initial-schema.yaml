@@ -96,7 +96,7 @@ databaseChangeLog:
       author: cvix
       changes:
         - loadData:
-            file: db/changelog/data/authority.csv
+            file: db/changelog/data/seed/authority.csv
             separator: ";"
             tableName: authority
             usePreparedStatements: true
