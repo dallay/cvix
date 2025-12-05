@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/dallay/cvix/compare/v1.1.0...v1.2.0) (2025-12-05)
+
+### ✨ Features
+
+* enhance resume mapping to include highlights and update dependencies ([#379](https://github.com/dallay/cvix/issues/379)) ([40cd257](https://github.com/dallay/cvix/commit/40cd2572968d0ac9cbfa4950dabeb83fc9e2db0d))
+
 ## [1.1.0](https://github.com/dallay/cvix/compare/v1.0.0...v1.1.0) (2025-12-05)
 
 ### ✨ Features
