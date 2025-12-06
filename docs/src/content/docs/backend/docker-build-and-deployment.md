@@ -64,7 +64,7 @@ Previously, the backend used Gradle's `bootBuildImage` (Cloud Native Buildpacks)
 
 ```dockerfile
 # Builder stage
-FROM eclipse-temurin:21-jdk-jammy AS builder
+FROM eclipse-temurin:25-jdk-jammy AS builder
 WORKDIR /workspace
 COPY gradle* settings.gradle.kts build.gradle.kts build-logic ...
 RUN ./gradlew dependencies --no-daemon || true
@@ -72,7 +72,7 @@ COPY shared/ server/engine/src ...
 RUN ./gradlew :server:engine:bootJar --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:25-jre-jammy
 WORKDIR /app
 COPY --from=builder /workspace/server/engine/build/libs/*.jar app.jar
 USER spring:spring

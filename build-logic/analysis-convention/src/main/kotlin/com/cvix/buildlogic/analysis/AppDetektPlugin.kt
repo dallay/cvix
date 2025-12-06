@@ -1,6 +1,5 @@
 package com.cvix.buildlogic.analysis
 
-import com.cvix.buildlogic.common.AppConfiguration
 import com.cvix.buildlogic.common.ConventionPlugin
 import com.cvix.buildlogic.common.extensions.catalogLib
 import com.cvix.buildlogic.common.extensions.detekt
@@ -22,7 +21,9 @@ internal class AppDetektPlugin : ConventionPlugin {
             ignoreFailures = false
             autoCorrect = true
             buildUponDefaultConfig = true
-            jvmTarget = AppConfiguration.jvmTargetStr
+            // Detekt JVM target workaround: using centralized constant (see AppConfiguration.DETEKT_JVM_TARGET)
+            // When upgrading Detekt version in gradle/libs.versions.toml, check if JVM target 24+ is supported
+            jvmTarget = com.cvix.buildlogic.common.AppConfiguration.DETEKT_JVM_TARGET
             setSource(
                 fileTree(projectDir).matching {
                     include("**/*.kt", "**/*.kts")

@@ -12,7 +12,7 @@ export const sharedViteConfig = (dirname) => ({
 	plugins: [
 		codecovVitePlugin({
 			enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-			bundleName: "saasTemplateUI",
+			bundleName: "cvix",
 			uploadToken: process.env.CODECOV_TOKEN,
 		}),
 	],
