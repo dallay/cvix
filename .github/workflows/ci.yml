@@ -137,6 +137,7 @@ jobs:
             !node_modules/**
             !dist/**
             !build/**
+            !CHANGELOG.md
           config: .markdownlint.json
 
   # ============================================================================
