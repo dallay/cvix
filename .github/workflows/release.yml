@@ -184,7 +184,7 @@ jobs:
       - name: Setup Java and Gradle
         uses: ./.github/actions/setup/java
         with:
-          java-version: "21"
+          java-version: "25"
 
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon
