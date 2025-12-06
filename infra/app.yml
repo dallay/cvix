@@ -21,7 +21,7 @@ services:
       - backend
 
   landing:
-    image: ghcr.io/dallay/cvix/marketing:main
+    image: ghcr.io/dallay/cvix-marketing:latest
     environment:
       # Public/front-facing URLs (used at build/runtime by the marketing image)
       PUBLIC_BASE_URL_PROD: ${PUBLIC_BASE_URL_PROD}
@@ -37,7 +37,7 @@ services:
       - frontend
 
   frontend:
-    image: ghcr.io/dallay/cvix/webapp:main
+    image: ghcr.io/dallay/cvix-webapp:latest
     environment:
       # Frontend runtime configuration
       BACKEND_URL: ${BACKEND_URL}
@@ -52,7 +52,7 @@ services:
       - frontend
 
   backend:
-    image: ghcr.io/dallay/cvix/engine:main
+    image: ghcr.io/dallay/cvix-engine:latest
     environment:
       # Database (R2DBC)
       DATABASE_URL: ${DATABASE_URL}

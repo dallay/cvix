@@ -21,10 +21,9 @@ internal class AppDetektPlugin : ConventionPlugin {
             ignoreFailures = false
             autoCorrect = true
             buildUponDefaultConfig = true
-            // Note: Detekt 1.23.8 doesn't support JVM target 24 yet
-            // Using JVM 22 (maximum supported) is safe as Detekt only analyzes code
-            // When Detekt 2.0.0 stable is released, we can upgrade to use JVM target 24
-            jvmTarget = "22"
+            // Detekt JVM target workaround: using centralized constant (see AppConfiguration.DETEKT_JVM_TARGET)
+            // When upgrading Detekt version in gradle/libs.versions.toml, check if JVM target 24+ is supported
+            jvmTarget = com.cvix.buildlogic.common.AppConfiguration.DETEKT_JVM_TARGET
             setSource(
                 fileTree(projectDir).matching {
                     include("**/*.kt", "**/*.kts")
