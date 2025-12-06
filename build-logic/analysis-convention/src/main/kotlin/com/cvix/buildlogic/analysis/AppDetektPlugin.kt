@@ -1,6 +1,5 @@
 package com.cvix.buildlogic.analysis
 
-import com.cvix.buildlogic.common.AppConfiguration
 import com.cvix.buildlogic.common.ConventionPlugin
 import com.cvix.buildlogic.common.extensions.catalogLib
 import com.cvix.buildlogic.common.extensions.detekt
@@ -22,7 +21,10 @@ internal class AppDetektPlugin : ConventionPlugin {
             ignoreFailures = false
             autoCorrect = true
             buildUponDefaultConfig = true
-            jvmTarget = AppConfiguration.jvmTargetStr
+            // Note: Detekt 1.23.8 doesn't support JVM target 24 yet
+            // Using JVM 22 (maximum supported) is safe as Detekt only analyzes code
+            // When Detekt 2.0.0 stable is released, we can upgrade to use JVM target 24
+            jvmTarget = "22"
             setSource(
                 fileTree(projectDir).matching {
                     include("**/*.kt", "**/*.kts")
