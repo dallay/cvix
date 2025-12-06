@@ -161,34 +161,14 @@ if (Date.now() - data.timestamp > TTL_MS) {
 
 ### 6. Section Ordering
 
-**Question**: How to maintain standard resume section order (FR-009)?
+**Question**: How should section order be managed?
 
-**Decision**: Define static section order constant; UI and PDF generation iterate in this order
+**Decision**: Not applicable. The backend hardcodes section order in the LaTeX template (`engineering.stg`).
 
 **Rationale**:
 
-- Standard resume order is well-established (Personal → Work → Education → Skills → Projects → Certs)
-- Order should not change based on toggle sequence
-- Simple array constant ensures consistency
-
-**Implementation**:
-
-```typescript
-export const SECTION_ORDER = [
-  'personalDetails',
-  'work',
-  'education',
-  'skills',
-  'projects',
-  'certifications',
-  'volunteer',
-  'awards',
-  'publications',
-  'languages',
-  'interests',
-  'references'
-] as const;
-```
+- Current implementation does not support reordering
+- Future support for reordering can be considered if needed
 
 ### 7. Empty Section Handling
 
@@ -257,7 +237,7 @@ watch(visibility.work.items, (items) => {
 
 **Rationale**:
 
-- Constitution requires keyboard accessibility for all interactive elements
+- WCAG 2.1 Level AA requires keyboard accessibility for all interactive elements
 - Toggle pattern should support Enter/Space to activate
 - Focus indicators must be visible
 - Screen reader must announce state (expanded/collapsed, checked/unchecked)

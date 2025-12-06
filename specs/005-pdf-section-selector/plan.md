@@ -23,12 +23,11 @@ API, Pinia 3.0.3, TailwindCSS 4.1.11 (frontend)
 persistence)
 **Testing**: JUnit 5, Kotest, Testcontainers (backend), Vitest, @testing-library/vue, Playwright (
 frontend)
-**Target Platform**: Web application (Chrome, Firefox, Safari, Edge), responsive from 768px to
-2560px
+**Target Platform**: Web application (Chrome, Firefox, Safari, Edge), responsive from 768px to 2560px (tablet and larger devices only)
 **Project Type**: Web (monorepo with backend + frontend)
-**Performance Goals**: Section toggle UI response < 1 second, PDF generation with filtered content
+**Performance Goals**: Section toggle UI response < 100ms, PDF generation with filtered content
 maintains existing p95 < 500ms
-**Constraints**: Preference persistence for 30+ days, mobile-responsive (768px minimum), maintain
+**Constraints**: Preference persistence for 30+ days, mobile-responsive (tablet+ starting at 768px minimum), maintain
 existing API backward compatibility
 **Scale/Scope**: Single feature within existing Resume module, affects ~5 frontend components, ~3
 backend modifications
@@ -133,5 +132,9 @@ existing API contracts.
 > No constitution violations requiring justification.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|--------------------------------------|
+| --------- | ---------- | ------------------------------------ |
 | N/A       | N/A        | N/A                                  |
+
+## 4. SectionType (Enum)
+
+**Note**: Section ordering is hardcoded in the backend LaTeX template (`engineering.stg`).

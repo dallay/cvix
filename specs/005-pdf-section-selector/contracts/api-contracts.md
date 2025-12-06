@@ -169,11 +169,16 @@ interface ItemToggleListEmits {
 
 **Value Schema**:
 
-```json
-{
-  "visibility": "SectionVisibility",
-  "savedAt": "number",
-  "version": 1
+```typescript
+interface SectionVisibilityStorage {
+  visibility: {
+    work: { enabled: boolean; items: boolean[] };
+    education: { enabled: boolean; items: boolean[] };
+    skills: { enabled: boolean; items: boolean[] };
+    // Add other sections as needed
+  };
+  savedAt: number; // Unix timestamp in milliseconds
+  version: 1; // Schema version
 }
 ```
 
@@ -214,7 +219,7 @@ interface SectionVisibilityStorage {
 ### Vue Events (Component to Parent)
 
 | Component         | Event        | Payload         | Description                               |
-|-------------------|--------------|-----------------|-------------------------------------------|
+| ----------------- | ------------ | --------------- | ----------------------------------------- |
 | SectionTogglePill | `toggle`     | none            | User clicked to toggle section visibility |
 | SectionTogglePill | `expand`     | none            | User clicked to expand/collapse item list |
 | ItemToggleList    | `toggleItem` | `index: number` | User toggled specific item                |
@@ -226,9 +231,18 @@ interface SectionVisibilityStorage {
 watch(
         () => visibilityStore.visibility,
         (newVisibility) => {
-            // Re-filter resume and update preview
-            const filtered = filterResume(resume, newVisibility);
-            previewStore.setFilteredResume(filtered);
+            if (!newVisibility) return; // Early return guard for falsy visibility
+
+            try {
+                // Re-filter resume and update preview
+                const filtered = filterResume(resume, newVisibility);
+                previewStore.setFilteredResume(filtered);
+            } catch (error) {
+                console.error('Error updating preview:', error);
+                // Recovery action: clear preview or surface user-facing error
+                previewStore.setFilteredResume(null);
+                toast.error('Failed to update preview. Please try again.');
+            }
         },
         {deep: true}
 );
