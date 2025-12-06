@@ -12,6 +12,41 @@
 
 ---
 
+## Phase 0: Prerequisite Validation (GATE)
+
+**Purpose**: Verify all required design artifacts exist and are signed off before implementation begins.
+**Blocker**: Phase 1 MUST NOT start until all required artifacts pass validation.
+
+### Required Artifacts (must exist and be finalized)
+
+| Artifact | Location                                 | Sign-off By               | Status     |
+| -------- | ---------------------------------------- | ------------------------- | ---------- |
+| spec.md  | `specs/005-pdf-section-selector/spec.md` | Product Owner / Tech Lead | ☐ Verified |
+| plan.md  | `specs/005-pdf-section-selector/plan.md` | Tech Lead                 | ☐ Verified |
+
+### Optional Artifacts (must exist OR be explicitly marked deferred)
+
+| Artifact      | Location                                       | Status                 |
+| ------------- | ---------------------------------------------- | ---------------------- |
+| research.md   | `specs/005-pdf-section-selector/research.md`   | ☐ Present / ☐ Deferred |
+| data-model.md | `specs/005-pdf-section-selector/data-model.md` | ☐ Present / ☐ Deferred |
+| contracts/    | `specs/005-pdf-section-selector/contracts/`    | ☐ Present / ☐ Deferred |
+
+### Validation Task
+
+- [ ] T000 **Prerequisite Validation** - Validate design artifacts before implementation:
+  1. Verify `spec.md` exists and contains Status: Draft → **Approved** or **Ready for Implementation**
+  2. Verify `plan.md` exists and Constitution Check shows **PASS**
+  3. Verify `research.md` exists (Complete status) OR document reason for deferral
+  4. Verify `data-model.md` exists with all entity definitions OR document reason for deferral
+  5. Verify `contracts/` directory contains `api-contracts.md` and `component-contracts.md` OR document reason for deferral
+  6. Flag any missing/incomplete items and **block Phase 1** until resolved
+  7. Record sign-off in this file by checking boxes above
+
+**Checkpoint**: All required artifacts verified. Phase 1 may proceed.
+
+---
+
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Ensure working environment and dependencies are ready.
@@ -56,7 +91,14 @@
 **Independent Test**: Visual inspection of pills shows correct active/inactive/hover/focus states and a11y roles.
 
 - [ ] T013 [P] [US2] Build `SectionTogglePill.vue` with primary/outline variants, checkmark icon, hover/focus styles in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePill.vue`
-- [ ] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled, hasData, expanded) and keyboard handling per WCAG in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`
+- [ ] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled, hasData, expanded) and implement full accessibility audit in `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`:
+    - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
+    - Verify focus management (roving focus/aria-activedescendant if used)
+    - Ensure correct ARIA roles, labels, and states for screen readers
+    - Check color contrast for all pill states (enabled, disabled, hover, focus)
+    - Run automated accessibility tools (axe, pa11y)
+    - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
+    - Document all findings and required remediations
 - [ ] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in `SectionTogglePanel.vue`
 
 **Checkpoint**: Visual states and accessibility confirmed for section pills.
@@ -102,7 +144,7 @@
 - [ ] T031 Write E2E test: toggle section visibility, verify live preview updates in `client/e2e/resume-pdf-section-selector.spec.ts`
 - [ ] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
 - [ ] T033 Write E2E test: toggle preferences, refresh page, verify persistence
-- [ ] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints
+- [ ] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints (toggle all sections and items at each breakpoint, confirm layout stability and pill wrapping per T015; do not limit to smoke test)
 
 **Checkpoint**: All Constitution II testing requirements met.
 
@@ -126,12 +168,14 @@
 - **Testing (Phase 7)**: Depends on Phases 3-6 completion; can run in parallel with Polish.
 
 ### User Story Dependencies
+
 - **US1**: Depends on Phase 2; no other story dependencies.
 - **US2**: Depends on Phase 2; can run parallel with US1 UI once store is stubbed.
 - **US3**: Depends on Phase 2; builds on US1 store/filter; can start after store scaffolding exists.
 - **US4**: Depends on Phase 2; light touches on domain/panel/filter to ensure order.
 
 ### Parallel Opportunities
+
 - Phase 2: T004 and T005 can run in parallel; T006 can start after T003.
 - US1: T007/T008 (store + persistence) can run parallel; T009 can proceed once store signatures are known.
 - US2: T013/T014 parallel (component + wiring), then T015.
@@ -145,4 +189,3 @@
 - **MVP first**: Complete Phases 1–3 to deliver section-level toggling with persistence and PDF alignment.
 - **Incremental**: Add US2 visual clarity, then US3 item-level control, then US4 ordering confirmation.
 - **Validate after each story**: Ensure preview/PDF match visibility, persistence works, and accessibility remains intact.
-

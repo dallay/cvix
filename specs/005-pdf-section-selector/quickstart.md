@@ -15,7 +15,7 @@
 ### 1. Start Development Environment
 
 ```bash
-# Clone and checkout feature branch
+# Enter project directory and checkout feature branch
 cd cvix
 git checkout 005-pdf-section-selector
 
@@ -102,7 +102,7 @@ Resume).
 ## Key Files to Create/Modify
 
 | File                                                 | Action | Priority |
-|------------------------------------------------------|--------|----------|
+| ---------------------------------------------------- | ------ | -------- |
 | `domain/SectionVisibility.ts`                        | CREATE | P1       |
 | `application/ResumeSectionFilterService.ts`          | CREATE | P1       |
 | `infrastructure/storage/SectionVisibilityStorage.ts` | CREATE | P1       |
