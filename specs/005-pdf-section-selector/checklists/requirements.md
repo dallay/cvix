@@ -33,4 +33,4 @@
 
 - All validation items passed on first review
 - Feature is ready for `/speckit.clarify` or `/speckit.plan`
-- Design reference: Figma mockup at https://www.figma.com/design/RdLso6u4iuoulszrHaaraY/cvix?node-id=1-2
+- Design reference: Figma mockup at <https://www.figma.com/design/RdLso6u4iuoulszrHaaraY/cvix?node-id=1-2>
