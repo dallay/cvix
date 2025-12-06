@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/dallay/cvix/compare/v1.2.0...v1.2.1) (2025-12-06)
+
+### 🐛 Bug Fixes
+
+* **deps:** update dependency org.junit.jupiter:junit-jupiter-api to v6 ([#349](https://github.com/dallay/cvix/issues/349)) ([ce7c944](https://github.com/dallay/cvix/commit/ce7c944f10edad86758b464ebe5b667219a6ed36))
+
 ## [1.2.0](https://github.com/dallay/cvix/compare/v1.1.0...v1.2.0) (2025-12-05)
 
 ### ✨ Features
