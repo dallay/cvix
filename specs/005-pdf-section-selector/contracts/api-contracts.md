@@ -170,7 +170,7 @@ interface ItemToggleListEmits {
 **Value Schema**:
 
 ```typescript
-interface SectionVisibilityStorage {
+interface SectionVisibilityStorageData {
   visibility: {
     work: { enabled: boolean; items: boolean[] };
     education: { enabled: boolean; items: boolean[] };
