@@ -16,7 +16,7 @@
 
 ```bash
 # Clone and checkout feature branch
-cd /Users/acosta/Dev/cvix
+cd cvix
 git checkout 005-pdf-section-selector
 
 # Install dependencies

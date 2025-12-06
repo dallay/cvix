@@ -17,7 +17,7 @@ As a user preparing my resume for a specific job application, I want to select w
 
 **Acceptance Scenarios**:
 
-1. **Given** I am on the Resume Preview screen with my complete resume data, **When** I view the "Visible Sections" area, **Then** I see toggleable pills for each available section (Personal Details, Work Experience, Education, Skills, Projects, Certifications)
+1. **Given** I am on the Resume Preview screen with my complete resume data, **When** I view the "Visible Sections" area, **Then** I see toggleable pills for each available section (Personal Details, Work Experience, Education, Skills, Projects, Certifications, Volunteer, Awards, Publications, Languages, Interests, References)
 
 2. **Given** all sections are visible by default, **When** I click on an active (purple) section pill, **Then** the section becomes inactive (white/gray) and immediately disappears from the live preview
 
