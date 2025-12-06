@@ -63,13 +63,13 @@ As a user, I want to select which specific items within each section to include 
 
 3. **Given** I am viewing items within an expanded section, **When** I disable a specific item (e.g., one particular job), **Then** that item is excluded from the live preview and PDF export while other items in the section remain visible
 
-3. **Given** the Personal Details section is expanded, **When** I view the selectable fields, **Then** I can individually toggle: profile image, email address, phone number, and location
+4. **Given** the Personal Details section is expanded, **When** I view the selectable fields, **Then** I can individually toggle: profile image, email address, phone number, and location
 
-4. **Given** I have multiple work experiences, **When** I disable one specific job entry, **Then** only that job disappears from the preview, and the remaining jobs stay visible
+5. **Given** I have multiple work experiences, **When** I disable one specific job entry, **Then** only that job disappears from the preview, and the remaining jobs stay visible
 
-5. **Given** I have disabled all items within a section, **When** I view the section pill, **Then** it automatically becomes inactive (or shows a warning that no items are selected)
+6. **Given** I have disabled all items within a section, **When** I view the section pill, **Then** it automatically becomes inactive (or shows a warning that no items are selected)
 
-6. **Given** I have customized item visibility within sections, **When** I refresh the page, **Then** my item-level selections are preserved
+7. **Given** I have customized item visibility within sections, **When** I refresh the page, **Then** my item-level selections are preserved
 
 ---
 
@@ -105,6 +105,7 @@ As a user, I want the sections in my PDF to maintain a logical order so that my 
 ### Functional Requirements
 
 #### Section-Level Controls
+
 - **FR-001**: System MUST display a "Visible Sections" control panel above the resume preview showing all available resume sections as toggleable pills
 - **FR-002**: System MUST allow users to enable/disable resume sections by clicking on section pills
 - **FR-003**: System MUST visually distinguish between enabled sections (purple/primary filled pill with checkmark) and disabled sections (white/outlined pill without checkmark)
@@ -116,6 +117,7 @@ As a user, I want the sections in my PDF to maintain a logical order so that my 
 - **FR-009**: System MUST maintain standard resume section ordering regardless of toggle order
 
 #### Item-Level Controls Within Sections
+
 - **FR-010**: System MUST allow users to expand sections by clicking on section pills, displaying an item list inline directly below the pill in the "Visible Sections" area
 - **FR-011**: System MUST provide individual toggle controls for each item within a section (e.g., each job in Work Experience, each degree in Education)
 - **FR-012**: System MUST allow users to individually toggle Personal Details fields: profile image, email address, phone number, and location
