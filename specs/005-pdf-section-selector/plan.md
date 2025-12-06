@@ -3,47 +3,63 @@
 **Branch**: `005-pdf-section-selector` | **Date**: 2025-12-06 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/005-pdf-section-selector/spec.md`
 
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+**Note**: This template is filled in by the `/speckit.plan` command. See
+`.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-Redesign the PDF Generator screen to allow users to select which sections and individual items appear in the final PDF resume. This enables users to tailor their resume content for specific job applications without modifying source data. The implementation involves adding toggleable section pills above the preview area, with expandable item-level controls, real-time preview updates, and preference persistence.
+Redesign the PDF Generator screen to allow users to select which sections and individual items
+appear in the final PDF resume. This enables users to tailor their resume content for specific job
+applications without modifying source data. The implementation involves adding toggleable section
+pills above the preview area, with expandable item-level controls, real-time preview updates, and
+preference persistence.
 
 ## Technical Context
 
 **Language/Version**: Kotlin 2.0.20 (backend), TypeScript 5.x (frontend)
-**Primary Dependencies**: Spring Boot 3.3.4 with WebFlux (backend), Vue.js 3.5.17 with Composition API, Pinia 3.0.3, TailwindCSS 4.1.11 (frontend)
-**Storage**: PostgreSQL with R2DBC (backend), SessionStorage/LocalStorage (frontend preference persistence)
-**Testing**: JUnit 5, Kotest, Testcontainers (backend), Vitest, @testing-library/vue, Playwright (frontend)
-**Target Platform**: Web application (Chrome, Firefox, Safari, Edge), responsive from 768px to 2560px
+**Primary Dependencies**: Spring Boot 3.3.4 with WebFlux (backend), Vue.js 3.5.17 with Composition
+API, Pinia 3.0.3, TailwindCSS 4.1.11 (frontend)
+**Storage**: PostgreSQL with R2DBC (backend), SessionStorage/LocalStorage (frontend preference
+persistence)
+**Testing**: JUnit 5, Kotest, Testcontainers (backend), Vitest, @testing-library/vue, Playwright (
+frontend)
+**Target Platform**: Web application (Chrome, Firefox, Safari, Edge), responsive from 768px to
+2560px
 **Project Type**: Web (monorepo with backend + frontend)
-**Performance Goals**: Section toggle UI response < 1 second, PDF generation with filtered content maintains existing p95 < 500ms
-**Constraints**: Preference persistence for 30+ days, mobile-responsive (768px minimum), maintain existing API backward compatibility
-**Scale/Scope**: Single feature within existing Resume module, affects ~5 frontend components, ~3 backend modifications
+**Performance Goals**: Section toggle UI response < 1 second, PDF generation with filtered content
+maintains existing p95 < 500ms
+**Constraints**: Preference persistence for 30+ days, mobile-responsive (768px minimum), maintain
+existing API backward compatibility
+**Scale/Scope**: Single feature within existing Resume module, affects ~5 frontend components, ~3
+backend modifications
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 ### I. Code Quality First ✅
+
 - **Compliance**: Will follow Kotlin/TypeScript conventions per `.ruler/` docs
 - **Static Analysis**: Detekt (Kotlin), Biome (TypeScript) will be applied
 - **Immutability**: Section preferences will use immutable data structures
 - **Documentation**: All new public APIs will have JSDoc/KDoc
 
 ### II. Testing Standards ✅
+
 - **Unit Tests**: Section preference logic, filter functions, Vue components
 - **Integration Tests**: Store ↔ LocalStorage, API ↔ filtered resume generation
 - **E2E Tests**: Full user flow for section toggling and PDF export
 - **Naming**: `should toggle section visibility when clicking pill`
 
 ### III. User Experience Consistency ✅
+
 - **Design System**: Uses semantic tokens (`--primary`, `--muted`, etc.) per Figma design
 - **Keyboard Accessible**: All toggle pills will be keyboard navigable
 - **Form Validation**: Manual validation on blur pattern maintained
 - **i18n**: All labels wrapped with `$t()` function
 
 ### IV. Performance Requirements ✅
+
 - **UI Response**: Toggle actions will update UI in < 100ms (reactive Vue)
 - **API Response**: Filtered resume generation maintains p95 < 500ms
 - **No Blocking**: Frontend-only filtering, no blocking operations
@@ -107,12 +123,15 @@ server/engine/src/main/kotlin/com/cvix/resume/
         └── (no changes - API contract unchanged)
 ```
 
-**Structure Decision**: Web application (Option 2) - Monorepo with frontend and backend. The section filtering is implemented entirely on the frontend to provide instant visual feedback. The backend receives pre-filtered resume data for PDF generation, maintaining backward compatibility with existing API contracts.
+**Structure Decision**: Web application (Option 2) - Monorepo with frontend and backend. The section
+filtering is implemented entirely on the frontend to provide instant visual feedback. The backend
+receives pre-filtered resume data for PDF generation, maintaining backward compatibility with
+existing API contracts.
 
 ## Complexity Tracking
 
 > No constitution violations requiring justification.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-| --------- | ---------- | ------------------------------------ |
+|-----------|------------|--------------------------------------|
 | N/A       | N/A        | N/A                                  |

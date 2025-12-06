@@ -1,7 +1,7 @@
 {
   "name": "cvix",
   "version": "1.2.1",
-  "description": "cvix Monorepo",
+  "description": "cvix monorepo",
   "private": true,
   "type": "module",
   "license": "MIT",

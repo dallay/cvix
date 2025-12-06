@@ -5,7 +5,9 @@
 
 ## Overview
 
-This document defines the data models for managing section and item visibility preferences in the PDF Section Selector feature. All models are frontend-only (TypeScript) as the filtering logic is implemented client-side.
+This document defines the data models for managing section and item visibility preferences in the
+PDF Section Selector feature. All models are frontend-only (TypeScript) as the filtering logic is
+implemented client-side.
 
 ## Entities
 
@@ -21,53 +23,55 @@ This document defines the data models for managing section and item visibility p
  * Controls which sections and items appear in the PDF export.
  */
 export interface SectionVisibility {
-  /** Unique identifier for the resume these preferences apply to */
-  resumeId: string;
+    /** Unique identifier for the resume these preferences apply to */
+    resumeId: string;
 
-  /** Personal details section (always enabled, individual fields toggleable) */
-  personalDetails: PersonalDetailsVisibility;
+    /** Personal details section (always enabled, individual fields toggleable) */
+    personalDetails: PersonalDetailsVisibility;
 
-  /** Work experience section visibility */
-  work: ArraySectionVisibility;
+    /** Work experience section visibility */
+    work: ArraySectionVisibility;
 
-  /** Education section visibility */
-  education: ArraySectionVisibility;
+    /** Education section visibility */
+    education: ArraySectionVisibility;
 
-  /** Skills section visibility */
-  skills: ArraySectionVisibility;
+    /** Skills section visibility */
+    skills: ArraySectionVisibility;
 
-  /** Projects section visibility */
-  projects: ArraySectionVisibility;
+    /** Projects section visibility */
+    projects: ArraySectionVisibility;
 
-  /** Certifications section visibility */
-  certifications: ArraySectionVisibility;
+    /** Certifications section visibility */
+    certifications: ArraySectionVisibility;
 
-  /** Volunteer experience section visibility */
-  volunteer: ArraySectionVisibility;
+    /** Volunteer experience section visibility */
+    volunteer: ArraySectionVisibility;
 
-  /** Awards section visibility */
-  awards: ArraySectionVisibility;
+    /** Awards section visibility */
+    awards: ArraySectionVisibility;
 
-  /** Publications section visibility */
-  publications: ArraySectionVisibility;
+    /** Publications section visibility */
+    publications: ArraySectionVisibility;
 
-  /** Languages section visibility */
-  languages: ArraySectionVisibility;
+    /** Languages section visibility */
+    languages: ArraySectionVisibility;
 
-  /** Interests section visibility */
-  interests: ArraySectionVisibility;
+    /** Interests section visibility */
+    interests: ArraySectionVisibility;
 
-  /** References section visibility */
-  references: ArraySectionVisibility;
+    /** References section visibility */
+    references: ArraySectionVisibility;
 }
 ```
 
 **Validation Rules**:
+
 - `resumeId` must be a non-empty string
 - `personalDetails.enabled` is always `true` (enforced at type level)
 - At least one array section should have enabled items for PDF generation
 
 **Relationships**:
+
 - 1:1 with Resume (preferences are resume-specific)
 - Contains 1 PersonalDetailsVisibility
 - Contains 11 ArraySectionVisibility instances
@@ -87,14 +91,14 @@ export interface SectionVisibility {
  * Individual fields can be toggled except for name (FR-013).
  */
 export interface PersonalDetailsVisibility {
-  /** Always true - Personal Details cannot be disabled */
-  readonly enabled: true;
+    /** Always true - Personal Details cannot be disabled */
+    readonly enabled: true;
 
-  /** Whether the section is expanded to show field toggles */
-  expanded: boolean;
+    /** Whether the section is expanded to show field toggles */
+    expanded: boolean;
 
-  /** Individual field visibility */
-  fields: PersonalDetailsFieldVisibility;
+    /** Individual field visibility */
+    fields: PersonalDetailsFieldVisibility;
 }
 
 /**
@@ -102,35 +106,43 @@ export interface PersonalDetailsVisibility {
  * Note: 'name' is always visible and not included here.
  */
 export interface PersonalDetailsFieldVisibility {
-  /** Profile image visibility */
-  image: boolean;
+    /** Profile image visibility */
+    image: boolean;
 
-  /** Email address visibility */
-  email: boolean;
+    /** Email address visibility */
+    email: boolean;
 
-  /** Phone number visibility */
-  phone: boolean;
+    /** Phone number visibility */
+    phone: boolean;
 
-  /** Location/address visibility */
-  location: boolean;
+    /** Location/address visibility */
+    location: {
+        address: boolean;
+        postalCode: boolean;
+        city: boolean;
+        countryCode: boolean;
+        region: boolean;
+    };
 
-  /** Professional summary visibility */
-  summary: boolean;
+    /** Professional summary visibility */
+    summary: boolean;
 
-  /** Website URL visibility */
-  url: boolean;
+    /** Website URL visibility */
+    url: boolean;
 
-  /** Social profiles visibility */
-  profiles: boolean;
+    /** Social profiles visibility */
+    profiles: { [profile: string]: boolean };
 }
 ```
 
 **Validation Rules**:
+
 - `enabled` is always `true` (type-enforced)
 - Name field is implicitly always visible
 - All `fields` properties default to `true`
 
 **State Transitions**:
+
 - `expanded`: false → true (on pill click)
 - `expanded`: true → false (on pill click again)
 - Individual field: true → false → true (on field toggle)
@@ -139,7 +151,8 @@ export interface PersonalDetailsFieldVisibility {
 
 ### 3. ArraySectionVisibility
 
-**Purpose**: Visibility model for sections containing arrays of items (work experience, education, etc.).
+**Purpose**: Visibility model for sections containing arrays of items (work experience, education,
+etc.).
 
 **Location**: `client/apps/webapp/src/core/resume/domain/SectionVisibility.ts`
 
@@ -149,27 +162,29 @@ export interface PersonalDetailsFieldVisibility {
  * Used for Work Experience, Education, Skills, Projects, etc.
  */
 export interface ArraySectionVisibility {
-  /** Whether the entire section is enabled */
-  enabled: boolean;
+    /** Whether the entire section is enabled */
+    enabled: boolean;
 
-  /** Whether the section is expanded to show item toggles */
-  expanded: boolean;
+    /** Whether the section is expanded to show item toggles */
+    expanded: boolean;
 
-  /**
-   * Visibility state for each item in the section.
-   * Index corresponds to item index in the resume array.
-   * true = visible, false = hidden
-   */
-  items: boolean[];
+    /**
+     * Visibility state for each item in the section.
+     * Index corresponds to item index in the resume array.
+     * true = visible, false = hidden
+     */
+    items: boolean[];
 }
 ```
 
 **Validation Rules**:
+
 - When `enabled` is `false`, section is hidden regardless of `items`
 - When all `items` are `false`, `enabled` should auto-set to `false` (FR-017)
 - `items` array length should match corresponding resume section length
 
 **State Transitions**:
+
 - `enabled`: true → false (on section pill click or all items disabled)
 - `enabled`: false → true (on section pill click, enables all items)
 - `expanded`: false → true → false (on section pill click when enabled)
@@ -189,19 +204,19 @@ export interface ArraySectionVisibility {
  * Order defines standard resume section ordering (FR-009).
  */
 export const SECTION_TYPES = [
-  'personalDetails',
-  'work',
-  'education',
-  'skills',
-  'projects',
-  'certifications',
-  'volunteer',
-  'awards',
-  'publications',
-  'languages',
-  'interests',
-  'references',
-] as const;
+            'personalDetails',
+            'work',
+            'education',
+            'skills',
+            'projects',
+            'certifications',
+            'volunteer',
+            'awards',
+            'publications',
+            'languages',
+            'interests',
+            'references',
+        ] as const;
 
 export type SectionType = typeof SECTION_TYPES[number];
 
@@ -224,20 +239,20 @@ export type ArraySectionType = Exclude<SectionType, 'personalDetails'>;
  * Metadata for rendering a section toggle pill.
  */
 export interface SectionMetadata {
-  /** Section type identifier */
-  type: SectionType;
+    /** Section type identifier */
+    type: SectionType;
 
-  /** Internationalized display label key */
-  labelKey: string;
+    /** Internationalized display label key */
+    labelKey: string;
 
-  /** Whether the section has data in the resume */
-  hasData: boolean;
+    /** Whether the section has data in the resume */
+    hasData: boolean;
 
-  /** Number of items in the section (0 for personalDetails) */
-  itemCount: number;
+    /** Number of items in the section (0 for personalDetails) */
+    itemCount: number;
 
-  /** Number of currently visible items */
-  visibleItemCount: number;
+    /** Number of currently visible items */
+    visibleItemCount: number;
 }
 ```
 
@@ -247,7 +262,8 @@ export interface SectionMetadata {
 
 **Purpose**: Wrapper for persisting visibility preferences with metadata.
 
-**Location**: `client/apps/webapp/src/core/resume/infrastructure/storage/SectionVisibilityStorage.ts`
+**Location**:
+`client/apps/webapp/src/core/resume/infrastructure/storage/SectionVisibilityStorage.ts`
 
 ```typescript
 /**
@@ -255,14 +271,14 @@ export interface SectionMetadata {
  * Stored in localStorage with TTL enforcement.
  */
 export interface StoredSectionVisibility {
-  /** The visibility preferences */
-  visibility: SectionVisibility;
+    /** The visibility preferences */
+    visibility: SectionVisibility;
 
-  /** Unix timestamp when preferences were last saved */
-  savedAt: number;
+    /** Unix timestamp when preferences were last saved */
+    savedAt: number;
 
-  /** Schema version for migration support */
-  version: number;
+    /** Schema version for migration support */
+    version: number;
 }
 
 /**
@@ -294,47 +310,53 @@ export const VISIBILITY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
  * @returns Default SectionVisibility with all content visible
  */
 export function createDefaultVisibility(
-  resumeId: string,
-  resume: Resume
+        resumeId: string,
+        resume: Resume
 ): SectionVisibility {
-  return {
-    resumeId,
-    personalDetails: {
-      enabled: true,
-      expanded: false,
-      fields: {
-        image: true,
-        email: true,
-        phone: true,
-        location: true,
-        summary: true,
-        url: true,
-        profiles: true,
-      },
-    },
-    work: createArrayVisibility(resume.work.length),
-    education: createArrayVisibility(resume.education.length),
-    skills: createArrayVisibility(resume.skills.length),
-    projects: createArrayVisibility(resume.projects.length),
-    certifications: createArrayVisibility(resume.certificates.length),
-    volunteer: createArrayVisibility(resume.volunteer.length),
-    awards: createArrayVisibility(resume.awards.length),
-    publications: createArrayVisibility(resume.publications.length),
-    languages: createArrayVisibility(resume.languages.length),
-    interests: createArrayVisibility(resume.interests.length),
-    references: createArrayVisibility(resume.references.length),
-  };
+    return {
+        resumeId,
+        personalDetails: {
+            enabled: true,
+            expanded: false,
+            fields: {
+                image: true,
+                email: true,
+                phone: true,
+                location: {
+                    address: true,
+                    postalCode: true,
+                    city: true,
+                    countryCode: true,
+                    region: true,
+                },
+                summary: true,
+                url: true,
+                profiles: {}, // All profiles enabled by default
+            },
+        },
+        work: createArrayVisibility(resume.work.length),
+        education: createArrayVisibility(resume.education.length),
+        skills: createArrayVisibility(resume.skills.length),
+        projects: createArrayVisibility(resume.projects.length),
+        certifications: createArrayVisibility(resume.certificates.length),
+        volunteer: createArrayVisibility(resume.volunteer.length),
+        awards: createArrayVisibility(resume.awards.length),
+        publications: createArrayVisibility(resume.publications.length),
+        languages: createArrayVisibility(resume.languages.length),
+        interests: createArrayVisibility(resume.interests.length),
+        references: createArrayVisibility(resume.references.length),
+    };
 }
 
 /**
  * Creates default visibility for an array section.
  */
 function createArrayVisibility(itemCount: number): ArraySectionVisibility {
-  return {
-    enabled: itemCount > 0,
-    expanded: false,
-    items: Array(itemCount).fill(true),
-  };
+    return {
+        enabled: itemCount > 0,
+        expanded: false,
+        items: Array(itemCount).fill(true),
+    };
 }
 ```
 
@@ -352,23 +374,23 @@ The filtering service produces a new Resume object with hidden sections/items re
  * Returns a new Resume object containing only visible content.
  */
 export function filterResume(
-  resume: Resume,
-  visibility: SectionVisibility
+        resume: Resume,
+        visibility: SectionVisibility
 ): Resume {
-  return {
-    basics: filterBasics(resume.basics, visibility.personalDetails),
-    work: filterArray(resume.work, visibility.work),
-    education: filterArray(resume.education, visibility.education),
-    skills: filterArray(resume.skills, visibility.skills),
-    projects: filterArray(resume.projects, visibility.projects),
-    certificates: filterArray(resume.certificates, visibility.certifications),
-    volunteer: filterArray(resume.volunteer, visibility.volunteer),
-    awards: filterArray(resume.awards, visibility.awards),
-    publications: filterArray(resume.publications, visibility.publications),
-    languages: filterArray(resume.languages, visibility.languages),
-    interests: filterArray(resume.interests, visibility.interests),
-    references: filterArray(resume.references, visibility.references),
-  };
+    return {
+        basics: filterBasics(resume.basics, visibility.personalDetails),
+        work: filterArray(resume.work, visibility.work),
+        education: filterArray(resume.education, visibility.education),
+        skills: filterArray(resume.skills, visibility.skills),
+        projects: filterArray(resume.projects, visibility.projects),
+        certificates: filterArray(resume.certificates, visibility.certifications),
+        volunteer: filterArray(resume.volunteer, visibility.volunteer),
+        awards: filterArray(resume.awards, visibility.awards),
+        publications: filterArray(resume.publications, visibility.publications),
+        languages: filterArray(resume.languages, visibility.languages),
+        interests: filterArray(resume.interests, visibility.interests),
+        references: filterArray(resume.references, visibility.references),
+    };
 }
 ```
 
@@ -376,11 +398,11 @@ export function filterResume(
 
 ## Entity Relationship Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                          SectionVisibility                               │
+│                          SectionVisibility                              │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ resumeId: string                                                         │
+│ resumeId: string                                                        │
 │ personalDetails: PersonalDetailsVisibility ────────────────────┐        │
 │ work: ArraySectionVisibility ──────────────────────────────────┤        │
 │ education: ArraySectionVisibility ─────────────────────────────┤        │
@@ -398,11 +420,11 @@ export function filterResume(
                               │ 1:1 (stored in localStorage)
                               ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      StoredSectionVisibility                             │
+│                      StoredSectionVisibility                            │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ visibility: SectionVisibility                                            │
-│ savedAt: number (Unix timestamp)                                         │
-│ version: number                                                          │
+│ visibility: SectionVisibility                                           │
+│ savedAt: number (Unix timestamp)                                        │
+│ version: number                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────┐    ┌─────────────────────────────────┐
@@ -414,10 +436,16 @@ export function filterResume(
 │   image: boolean                │    └─────────────────────────────────┘
 │   email: boolean                │
 │   phone: boolean                │
-│   location: boolean             │
+│   location: {                   │
+│            address: true,       │
+│            postalCode: true,    │
+│            city: true,          │
+│            countryCode: true,   │
+│            region: true,        │
+│               }                 │
 │   summary: boolean              │
 │   url: boolean                  │
-│   profiles: boolean             │
+│   profiles:  {}                 │
 └─────────────────────────────────┘
 ```
 
@@ -425,10 +453,10 @@ export function filterResume(
 
 ## State Machine: Section Toggle
 
-```
+```text
                     ┌──────────────────────────────────────┐
                     │                                      │
-    ┌───────────────▼───────────────┐    click pill       │
+    ┌───────────────▼───────────────┐    click pill        │
     │                               │    (when disabled)   │
     │    DISABLED                   │──────────────────────┘
     │    (enabled: false)           │
@@ -462,16 +490,19 @@ export function filterResume(
 ## Index/Key Strategy
 
 **localStorage Key Format**:
-```
+
+```text
 cvix-section-visibility-{resumeId}
 ```
 
 **Example**:
-```
+
+```text
 cvix-section-visibility-550e8400-e29b-41d4-a716-446655440000
 ```
 
 This ensures:
+
 - Unique preferences per resume
 - Easy debugging/inspection in browser DevTools
 - Namespace collision prevention with `cvix-` prefix

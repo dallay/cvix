@@ -5,7 +5,7 @@
 
 ## Component Hierarchy
 
-```
+```text
 ResumePdfPage.vue
 ├── DashboardLayout.vue (existing)
 ├── SectionTogglePanel.vue (NEW)
@@ -25,6 +25,7 @@ ResumePdfPage.vue
 **Location**: `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`
 
 **Template Structure**:
+
 ```vue
 <template>
   <div class="space-y-4">
@@ -66,6 +67,7 @@ ResumePdfPage.vue
 ```
 
 **Props**:
+
 ```typescript
 interface Props {
   resume: Resume;
@@ -74,6 +76,7 @@ interface Props {
 ```
 
 **Emits**:
+
 ```typescript
 interface Emits {
   (e: 'toggle-section', section: SectionType): void;
@@ -92,6 +95,7 @@ interface Emits {
 **Location**: `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePill.vue`
 
 **Template Structure**:
+
 ```vue
 <template>
   <div class="flex flex-col">
@@ -149,6 +153,7 @@ interface Emits {
 ```
 
 **Props**:
+
 ```typescript
 interface Props {
   label: string;
@@ -162,6 +167,7 @@ interface Props {
 ```
 
 **Emits**:
+
 ```typescript
 interface Emits {
   (e: 'toggle'): void;
@@ -170,6 +176,7 @@ interface Emits {
 ```
 
 **Behavior**:
+
 - Click on pill toggles `enabled` state (emits `toggle`)
 - If enabled, click expands/collapses item list (emits `expand`)
 - Disabled pills show tooltip on hover
@@ -184,6 +191,7 @@ interface Emits {
 **Location**: `client/apps/webapp/src/core/resume/infrastructure/presentation/components/ItemToggleList.vue`
 
 **Template Structure**:
+
 ```vue
 <template>
   <div class="space-y-1 border-l-2 border-muted pl-3">
@@ -216,6 +224,7 @@ interface Emits {
 ```
 
 **Props**:
+
 ```typescript
 interface Props {
   sectionType: ArraySectionType | 'personalDetails';
@@ -228,6 +237,7 @@ interface Props {
 ```
 
 **Emits**:
+
 ```typescript
 interface Emits {
   (e: 'toggle-item', index: number): void;
@@ -243,6 +253,7 @@ interface Emits {
 **Location**: `client/apps/webapp/src/core/resume/infrastructure/presentation/components/PersonalDetailsFieldList.vue`
 
 **Template Structure**:
+
 ```vue
 <template>
   <div class="space-y-1 border-l-2 border-muted pl-3">
@@ -280,6 +291,7 @@ interface Emits {
 ```
 
 **Props**:
+
 ```typescript
 interface Props {
   fields: PersonalDetailsFieldVisibility;
@@ -287,6 +299,7 @@ interface Props {
 ```
 
 **Emits**:
+
 ```typescript
 interface Emits {
   (e: 'toggle-field', field: keyof PersonalDetailsFieldVisibility): void;
