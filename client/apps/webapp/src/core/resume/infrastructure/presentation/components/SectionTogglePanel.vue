@@ -41,6 +41,18 @@ const { t } = useI18n();
 /**
  * Prepares items for the ItemToggleList component.
  */
+/**
+ * Helper to safely access ArraySectionVisibility for a given section type.
+ */
+const getArraySectionVisibility = (
+	section: SectionType,
+): ArraySectionVisibility | null => {
+	if (section === "personalDetails") return null;
+	return props.visibility[
+		section as keyof Omit<SectionVisibility, "personalDetails">
+	] as ArraySectionVisibility;
+};
+
 const getItemsForSection = (section: SectionType) => {
 	if (section === "personalDetails") {
 		const fields = props.visibility.personalDetails.fields;
@@ -80,7 +92,8 @@ const getItemsForSection = (section: SectionType) => {
 		return [];
 	}
 
-	const vis = props.visibility[section] satisfies ArraySectionVisibility;
+	const vis = getArraySectionVisibility(section);
+	if (!vis) return [];
 	return items.map((item, index) => ({
 		label:
 			item.name ||
@@ -89,7 +102,6 @@ const getItemsForSection = (section: SectionType) => {
 			item.title ||
 			item.language ||
 			item.interest ||
-			item.name ||
 			`${section} #${index + 1}`,
 		sublabel:
 			item.company ||
@@ -142,34 +154,34 @@ const handleToggleItem = (section: SectionType, index: number) => {
         </template>
 
         <!-- Array Sections -->
-        <template v-else>
-          <Collapsible
-            class="w-full"
-            :open="(visibility[section.type] as any).expanded"
-          >
-            <div class="flex gap-2 flex-wrap items-center">
-              <SectionTogglePill
-                :label="t(section.labelKey)"
-                :enabled="(visibility[section.type] as any).enabled"
-                :has-data="section.hasData"
-                :expanded="(visibility[section.type] as any).expanded"
-                :visible-count="section.visibleItemCount"
-                :total-count="section.itemCount"
-                :disabled-tooltip="
-                  !section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined
-                "
-                @toggle="handleToggleSection(section.type as SectionType)"
-                @expand="handleExpandSection(section.type as SectionType)"
-              />
-            </div>
-            <CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
-              <ItemToggleList
-                :items="getItemsForSection(section.type as SectionType)"
-                @toggle-item="(index) => handleToggleItem(section.type as SectionType, index)"
-              />
-            </CollapsibleContent>
-          </Collapsible>
-        </template>
+				<template v-else>
+					<Collapsible
+						class="w-full"
+						:open="getArraySectionVisibility(section.type)?.expanded"
+					>
+						<div class="flex gap-2 flex-wrap items-center">
+							<SectionTogglePill
+								:label="t(section.labelKey)"
+								:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
+								:has-data="section.hasData"
+								:expanded="getArraySectionVisibility(section.type)?.expanded"
+								:visible-count="section.visibleItemCount"
+								:total-count="section.itemCount"
+								:disabled-tooltip="
+									!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined
+								"
+								@toggle="handleToggleSection(section.type)"
+								@expand="handleExpandSection(section.type)"
+							/>
+						</div>
+						<CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
+							<ItemToggleList
+								:items="getItemsForSection(section.type)"
+								@toggle-item="(index) => handleToggleItem(section.type, index)"
+							/>
+						</CollapsibleContent>
+					</Collapsible>
+				</template>
       </template>
     </div>
   </div>

@@ -15,6 +15,8 @@ private const val FAIL_BUILDS_ON_CVSS: Float = 11F // SET THIS TO A REASONABLE V
 private const val AUTO_UPDATE: Boolean = true // Enable auto-update of the NVD database
 private const val PURGE_DATABASE: Boolean = true // Enable purging of the database to fix corruption issues
 
+private const val DEFAULT_DELAY = 1000
+
 @Suppress("unused")
 internal class AppOwaspPlugin : ConventionPlugin {
     override fun Project.configure() {
@@ -109,10 +111,17 @@ internal class AppOwaspPlugin : ConventionPlugin {
         if (delayValue != null) {
             val delayInt = delayValue.toIntOrNull()
             if (delayInt != null) {
-                nvd {
-                    delay.set(delayInt)
+                if (delayInt <= 0) {
+                    println("⚠️ [NVD_API_DELAY] must be positive. Got: $delayInt ms. Defaulting to 1000ms.")
+                    nvd {
+                        delay.set(DEFAULT_DELAY)
+                    }
+                } else {
+                    nvd {
+                        delay.set(delayInt)
+                    }
+                    println("✅ [NVD_API_DELAY] loaded from environment: $delayInt ms.")
                 }
-                println("✅ [NVD_API_DELAY] loaded from environment: $delayInt ms.")
             } else {
                 println("⚠️ [NVD_API_DELAY] is set but is not a valid integer: '$delayValue'.")
                 println("   Defaulting to 1000ms.")

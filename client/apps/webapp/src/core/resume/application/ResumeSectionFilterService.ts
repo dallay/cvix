@@ -87,7 +87,9 @@ export class ResumeSectionFilterService {
 			return [];
 		}
 
-		// Filter items based on their visibility flags
+		// Filter items based on their visibility flags.
+		// Items without a corresponding visibility entry (e.g., newly added)
+		// are shown by default (undefined !== false).
 		return items.filter((_, index) => {
 			return visibility.items[index] !== false;
 		});

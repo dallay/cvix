@@ -229,3 +229,20 @@ function createProfilesVisibility(
 	});
 	return result;
 }
+
+/**
+ * Returns the number of visible items in an array section.
+ */
+export function countVisibleItems(visibility: ArraySectionVisibility): number {
+	if (!visibility.enabled) {
+		return 0;
+	}
+	return visibility.items.filter((visible) => visible).length;
+}
+
+/**
+ * Returns true if the section has at least one visible item.
+ */
+export function hasVisibleItems(visibility: ArraySectionVisibility): boolean {
+	return countVisibleItems(visibility) > 0;
+}
