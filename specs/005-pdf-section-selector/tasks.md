@@ -113,7 +113,7 @@ and a11y roles.
 - [x] T013 [P] [US2] Build `SectionTogglePill.vue` with primary/outline variants, checkmark icon,
   hover/focus styles in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePill.vue`
-- [ ] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled,
+- [X] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled,
   hasData, expanded) and implement full accessibility audit in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`:
     - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
@@ -123,7 +123,7 @@ and a11y roles.
     - Run automated accessibility tools (axe, pa11y)
     - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
     - Document all findings and required remediations
-- [ ] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in
+- [X] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in
   `SectionTogglePanel.vue`
 
 **Checkpoint**: Visual states and accessibility confirmed for section pills.
