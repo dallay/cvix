@@ -19,7 +19,10 @@
 			"languages": "Idiomas",
 			"interests": "Intereses y Pasatiempos",
 			"references": "Referencias",
-			"projects": "Proyectos"
+			"projects": "Proyectos",
+			"personalDetails": "Detalles Personales",
+			"work": "Experiencia Laboral",
+			"certifications": "Certificaciones"
 		},
 		"fields": {
 			"name": "Nombre Completo",
@@ -366,7 +369,23 @@
 			"error": "{error}",
 			"generatingPreview": "Generando vista previa...",
 			"selectTemplate": "Selecciona una plantilla para generar la vista previa",
-			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo."
+			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo.",
+			"visibleSections": "Secciones Visibles",
+			"noDataAvailable": "No hay datos disponibles"
+		},
+		"basics": {
+			"image": "Foto de Perfil",
+			"email": "Correo Electrónico",
+			"phone": "Teléfono",
+			"location": "Ubicación",
+			"address": "Dirección",
+			"postalCode": "Código Postal",
+			"city": "Ciudad",
+			"countryCode": "País",
+			"region": "Región",
+			"summary": "Resumen Profesional",
+			"url": "Sitio Web",
+			"profiles": "Perfiles Sociales"
 		}
 	}
 }
