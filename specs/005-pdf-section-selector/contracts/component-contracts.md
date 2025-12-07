@@ -10,7 +10,8 @@ ResumePdfPage.vue
 ├── DashboardLayout.vue (existing)
 ├── SectionTogglePanel.vue (NEW)
 │   ├── SectionTogglePill.vue (NEW) × N sections
-│   │   └── ItemToggleList.vue (NEW) - when expanded
+│   │   ├── ItemToggleList.vue (NEW) - for array sections [work, education, skills, ...]
+│   │   └── PersonalDetailsFieldList.vue (NEW) - for Personal Details fields [email, phone, location, ...]
 │   └── AddCustomSectionButton.vue (NEW - optional P2)
 ├── PdfTemplateSelector.vue (existing)
 └── ResumePreview.vue (MODIFIED - uses filtered resume)
@@ -55,10 +56,15 @@ ResumePdfPage.vue
         @expand="emit('expand-section', section.type)"
       >
         <ItemToggleList
-          v-if="getExpanded(section.type)"
+          v-if="getExpanded(section.type) && section.type !== 'personalDetails'"
           :section-type="section.type"
           :items="getItems(section.type)"
           @toggle-item="(i) => emit('toggle-item', section.type, i)"
+        />
+        <PersonalDetailsFieldList
+          v-else-if="getExpanded(section.type) && section.type === 'personalDetails'"
+          :fields="visibility.personalDetails.fields"
+          @toggle-field="(field) => emit('toggle-field', field)"
         />
       </SectionTogglePill>
     </div>
@@ -143,7 +149,7 @@ interface Emits {
     </button>
 
     <!-- Expandable item list slot -->
-    <Collapsible v-model:open="isExpanded">
+    <Collapsible :open="expanded" @update:open="$emit('expand')">
       <CollapsibleContent class="mt-2 ml-4">
         <slot />
       </CollapsibleContent>
@@ -181,6 +187,7 @@ interface Emits {
 - If enabled, click expands/collapses item list (emits `expand`)
 - Disabled pills show tooltip on hover
 - Keyboard: Space/Enter activates toggle
+- **Expansion state is parent-controlled**: Component is stateless for expansion; the parent (SectionTogglePanel) owns and manages the `expanded` state via prop, and responds to `expand` events to update state
 
 ---
 
@@ -296,6 +303,22 @@ interface Emits {
 interface Props {
   fields: PersonalDetailsFieldVisibility;
 }
+
+/**
+ * toggleableFields is a computed property derived from the fields prop.
+ * It is an array of objects: { key: keyof PersonalDetailsFieldVisibility, labelKey: string }
+ * The component or parent must provide a mapping from field keys to i18n label keys.
+ * Example:
+ * const toggleableFields = [
+ *   { key: 'email', labelKey: 'resume.fields.email' },
+ *   { key: 'phone', labelKey: 'resume.fields.phone' },
+ *   { key: 'location', labelKey: 'resume.fields.location' },
+ *   { key: 'image', labelKey: 'resume.fields.image' },
+ *   { key: 'summary', labelKey: 'resume.fields.summary' },
+ *   { key: 'url', labelKey: 'resume.fields.url' },
+ *   { key: 'profiles', labelKey: 'resume.fields.profiles' },
+ * ];
+ */
 ```
 
 **Emits**:

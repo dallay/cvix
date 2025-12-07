@@ -101,18 +101,19 @@ Resume).
 
 ## Key Files to Create/Modify
 
-| File                                                 | Action | Priority |
-| ---------------------------------------------------- | ------ | -------- |
-| `domain/SectionVisibility.ts`                        | CREATE | P1       |
-| `application/ResumeSectionFilterService.ts`          | CREATE | P1       |
-| `infrastructure/storage/SectionVisibilityStorage.ts` | CREATE | P1       |
-| `infrastructure/store/section-visibility.store.ts`   | CREATE | P1       |
-| `presentation/components/SectionTogglePill.vue`      | CREATE | P1       |
-| `presentation/components/ItemToggleList.vue`         | CREATE | P1       |
-| `presentation/components/SectionTogglePanel.vue`     | CREATE | P1       |
-| `presentation/pages/ResumePdfPage.vue`               | MODIFY | P1       |
-| i18n locale files                                    | MODIFY | P1       |
-| E2E tests                                            | CREATE | P2       |
+| File                                                                                                   | Action | Priority |
+| ------------------------------------------------------------------------------------------------------ | ------ | -------- |
+| client/apps/webapp/src/core/resume/domain/SectionVisibility.ts                                         | CREATE | P1       |
+| client/apps/webapp/src/core/resume/application/ResumeSectionFilterService.ts                           | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/storage/SectionVisibilityStorage.ts                  | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/store/section-visibility.store.ts                    | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePill.vue        | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/presentation/components/ItemToggleList.vue           | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue       | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/presentation/components/PersonalDetailsFieldList.vue | CREATE | P1       |
+| client/apps/webapp/src/core/resume/infrastructure/presentation/pages/ResumePdfPage.vue                 | MODIFY | P1       |
+| client/apps/webapp/src/i18n/locale files                                                               | MODIFY | P1       |
+| client/apps/webapp/src/core/resume/e2e tests                                                           | CREATE | P2       |
 
 ## Testing Commands
 
@@ -129,8 +130,13 @@ pnpm --filter webapp test:e2e
 # Type checking
 pnpm --filter webapp typecheck
 
-# Lint
-pnpm check
+# Lint, format, and type-check (recommended before PR)
+pnpm check # Runs Biome lint, Biome format, and TypeScript type-checks for all frontend packages. This is the recommended pre-PR command. It ensures code style, formatting, and type safety. Run this before opening a pull request.
+
+# Additional commands (if needed)
+pnpm lint   # Runs only lint checks (Biome)
+pnpm format # Runs only formatting (Biome)
+pnpm test   # Runs all tests (unit, integration)
 ```
 
 ## Design Reference

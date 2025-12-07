@@ -57,7 +57,7 @@ await generatePdf(filteredResume, templateId, params);
 ```typescript
 interface UseSectionVisibilityStore {
     // State
-    visibility: Ref<SectionVisibility | null>;
+    visibility: Ref<SectionVisibility>;
     isLoading: Ref<boolean>;
     error: Ref<Error | null>;
 
@@ -93,15 +93,20 @@ interface SectionTogglePanelProps {
 
     /** Current visibility preferences */
     visibility: SectionVisibility;
+}
 
-    /** Callback when section is toggled */
-    onToggleSection: (section: SectionType) => void;
+interface SectionTogglePanelEmits {
+    /** Emitted when section is toggled */
+    (e: 'toggle-section', section: SectionType): void;
 
-    /** Callback when item within section is toggled */
-    onToggleItem: (section: ArraySectionType, index: number) => void;
+    /** Emitted when section is expanded/collapsed */
+    (e: 'expand-section', section: SectionType): void;
 
-    /** Callback when Personal Details field is toggled */
-    onToggleField: (field: keyof PersonalDetailsFieldVisibility) => void;
+    /** Emitted when item within section is toggled */
+    (e: 'toggle-item', section: ArraySectionType, index: number): void;
+
+    /** Emitted when Personal Details field is toggled */
+    (e: 'toggle-field', field: keyof PersonalDetailsFieldVisibility): void;
 }
 ```
 
@@ -175,10 +180,17 @@ interface SectionVisibilityStorageData {
     work: { enabled: boolean; items: boolean[] };
     education: { enabled: boolean; items: boolean[] };
     skills: { enabled: boolean; items: boolean[] };
-    // Add other sections as needed
+    projects: { enabled: boolean; items: boolean[] };
+    certificates: { enabled: boolean; items: boolean[] };
+    volunteer: { enabled: boolean; items: boolean[] };
+    awards: { enabled: boolean; items: boolean[] };
+    publications: { enabled: boolean; items: boolean[] };
+    languages: { enabled: boolean; items: boolean[] };
+    interests: { enabled: boolean; items: boolean[] };
+    references: { enabled: boolean; items: boolean[] };
   };
   savedAt: number; // Unix timestamp in milliseconds
-  version: 1; // Schema version
+  version: 1; // Schema version (increment on breaking changes; stale versions cleared on load)
 }
 ```
 
@@ -196,6 +208,8 @@ interface SectionVisibilityStorage {
     /**
      * Load visibility preferences for a resume.
      * Returns null if no preferences exist or TTL expired.
+     * TTL is 30 days from savedAt timestamp; expired preferences are auto-cleared on load.
+     * Schema version mismatches result in cleared stale data and null return.
      * @param resumeId - Unique resume identifier
      */
     load(resumeId: string): SectionVisibility | null;
@@ -246,6 +260,25 @@ watch(
         },
         {deep: true}
 );
+
+// Watch for all items toggled off to auto-disable section (FR-017)
+watch(
+        () => visibilityStore.visibility,
+        (newVisibility, oldVisibility) => {
+            if (!newVisibility) return;
+            for (const section of Object.keys(newVisibility)) {
+                const vis = newVisibility[section];
+                if (vis && Array.isArray(vis.items) && vis.items.length > 0) {
+                    const allOff = vis.items.every((v) => v === false);
+                    if (allOff && vis.enabled) {
+                        vis.enabled = false; // Auto-disable section
+                        // Optionally emit event or show warning
+                    }
+                }
+            }
+        },
+        {deep: true}
+);
 ```
 
 ## i18n Keys Contract
@@ -269,17 +302,18 @@ watch(
   "resume.sections.volunteer": "Volunteer",
   "resume.sections.awards": "Awards",
   "resume.sections.publications": "Publications",
-  "resume.sections.languages": "Languages",
-  "resume.sections.interests": "Interests",
-  "resume.sections.references": "References",
+  "resume.fields.name": "Name", // Added for PersonalDetailsFieldList
 
   // Personal Details fields
-  "resume.fields.image": "Profile Image",
   "resume.fields.email": "Email",
   "resume.fields.phone": "Phone",
   "resume.fields.location": "Location",
+  "resume.fields.image": "Profile Image",
   "resume.fields.summary": "Summary",
   "resume.fields.url": "Website",
-  "resume.fields.profiles": "Social Profiles"
+  "resume.fields.profiles": "Profiles",
+
+  // PDF Page UI labels
+  "resume.pdfPage.alwaysVisible": "Always visible" // Added for always-visible label
 }
 ```
