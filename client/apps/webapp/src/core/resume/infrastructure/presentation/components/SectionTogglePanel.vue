@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 
 import type { Resume } from "@/core/resume/domain/Resume";
 import type {
+	ArraySectionType,
 	ArraySectionVisibility,
 	SectionMetadata,
 	SectionType,
@@ -32,7 +33,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
 	(event: "toggle-section", section: SectionType): void;
 	(event: "expand-section", section: SectionType): void;
-	(event: "toggle-item", section: SectionType, index: number): void;
+	(event: "toggle-item", section: ArraySectionType, index: number): void;
 	(event: "toggle-field", field: string): void;
 }>();
 
@@ -121,8 +122,27 @@ const handleExpandSection = (section: SectionType) => {
 	emit("expand-section", section);
 };
 
-const handleToggleItem = (section: SectionType, index: number) => {
+const handleToggleItem = (section: ArraySectionType, index: number) => {
 	emit("toggle-item", section, index);
+};
+
+/**
+ * Maps personalDetails field indices to field names for emit.
+ */
+const personalDetailsFieldMap = [
+	"image",
+	"email",
+	"phone",
+	"location",
+	"summary",
+	"url",
+] as const;
+
+const handleTogglePersonalDetailsField = (index: number) => {
+	const field = personalDetailsFieldMap[index];
+	if (field) {
+		emit("toggle-field", field);
+	}
 };
 </script>
 
@@ -147,7 +167,7 @@ const handleToggleItem = (section: SectionType, index: number) => {
             <CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
               <ItemToggleList
                 :items="getItemsForSection(section.type)"
-                @toggle-item="(index) => handleToggleItem(section.type, index)"
+                @toggle-item="handleTogglePersonalDetailsField"
               />
             </CollapsibleContent>
           </Collapsible>
@@ -177,7 +197,7 @@ const handleToggleItem = (section: SectionType, index: number) => {
 						<CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
 							<ItemToggleList
 								:items="getItemsForSection(section.type)"
-								@toggle-item="(index) => handleToggleItem(section.type, index)"
+								@toggle-item="(index) => handleToggleItem(section.type as ArraySectionType, index)"
 							/>
 						</CollapsibleContent>
 					</Collapsible>

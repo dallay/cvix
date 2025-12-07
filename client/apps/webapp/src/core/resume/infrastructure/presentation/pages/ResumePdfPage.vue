@@ -115,13 +115,12 @@ watch(
 
 // Watch for visibility changes to regenerate preview
 watch(
-	() => visibilityStore.visibility,
-	() => {
-		if (selectedTemplate.value.templateId) {
+	() => visibilityStore.filteredResume,
+	(filteredResume) => {
+		if (selectedTemplate.value.templateId && filteredResume) {
 			debouncedGenerate();
 		}
 	},
-	{ deep: true },
 );
 
 const onDownload = async () => {
@@ -150,8 +149,8 @@ const handleExpandSection = (section: SectionType) => {
 	visibilityStore.toggleSectionExpanded(section);
 };
 
-const handleToggleItem = (section: string, index: number) => {
-	visibilityStore.toggleItem(section as unknown as ArraySectionType, index);
+const handleToggleItem = (section: ArraySectionType, index: number) => {
+	visibilityStore.toggleItem(section, index);
 };
 
 const handleToggleField = (field: string) => {
