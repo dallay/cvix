@@ -234,7 +234,7 @@ interface Emits {
 
 ```typescript
 interface Props {
-  sectionType: ArraySectionType | 'personalDetails';
+  sectionType: ArraySectionType;
   items: Array<{
     label: string;
     sublabel?: string;
