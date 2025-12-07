@@ -19,7 +19,10 @@
 			"languages": "Languages",
 			"interests": "Interests and Hobbies",
 			"references": "References",
-			"projects": "Projects"
+			"projects": "Projects",
+			"personalDetails": "Personal Details",
+			"work": "Work Experience",
+			"certifications": "Certifications"
 		},
 		"fields": {
 			"name": "Full Name",
@@ -366,7 +369,23 @@
 			"error": "{error}",
 			"generatingPreview": "Generating preview...",
 			"selectTemplate": "Select a template to generate preview",
-			"unablePreview": "Unable to display PDF preview. Please download to view."
+			"unablePreview": "Unable to display PDF preview. Please download to view.",
+			"visibleSections": "Visible Sections",
+			"noDataAvailable": "No data available"
+		},
+		"basics": {
+			"image": "Profile Photo",
+			"email": "Email",
+			"phone": "Phone",
+			"location": "Location",
+			"address": "Address",
+			"postalCode": "Postal Code",
+			"city": "City",
+			"countryCode": "Country",
+			"region": "Region",
+			"summary": "Professional Summary",
+			"url": "Website",
+			"profiles": "Social Profiles"
 		}
 	}
 }
