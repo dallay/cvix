@@ -169,7 +169,7 @@ export const useSectionVisibilityStore = defineStore(
 				sectionVis.items[index] = !sectionVis.items[index];
 
 				// Auto-disable section if all items are disabled (FR-017)
-				const hasVisibleItems = sectionVis.items.some((v: boolean) => v);
+				const hasVisibleItems = sectionVis.items.some(Boolean);
 				if (!hasVisibleItems && sectionVis.enabled) {
 					sectionVis.enabled = false;
 					sectionVis.expanded = false;
@@ -185,29 +185,34 @@ export const useSectionVisibilityStore = defineStore(
 			if (field === "name") return; // Name always visible (FR-013)
 
 			const fields = visibility.value.personalDetails.fields;
+
+			// Handle simple boolean fields
+			const simpleFields = [
+				"image",
+				"email",
+				"phone",
+				"summary",
+				"url",
+			] as const;
+			if (simpleFields.includes(field as (typeof simpleFields)[number])) {
+				const key = field as (typeof simpleFields)[number];
+				fields[key] = !fields[key];
+				return;
+			}
+
 			if (field === "location") {
 				// Location is a nested object
 				const location = fields.location;
-				const currentState = Object.values(location).some((v) => v);
+				const currentState = Object.values(location).some(Boolean);
 				Object.keys(location).forEach((key) => {
 					location[key as keyof typeof location] = !currentState;
 				});
 			} else if (field === "profiles") {
 				// Profiles are a map
-				const currentState = Object.values(fields.profiles).some((v) => v);
+				const currentState = Object.values(fields.profiles).some(Boolean);
 				Object.keys(fields.profiles).forEach((key) => {
 					fields.profiles[key] = !currentState;
 				});
-			} else if (field === "image") {
-				fields.image = !fields.image;
-			} else if (field === "email") {
-				fields.email = !fields.email;
-			} else if (field === "phone") {
-				fields.phone = !fields.phone;
-			} else if (field === "summary") {
-				fields.summary = !fields.summary;
-			} else if (field === "url") {
-				fields.url = !fields.url;
 			}
 		}
 
