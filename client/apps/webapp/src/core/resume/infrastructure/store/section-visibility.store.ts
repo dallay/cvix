@@ -1,3 +1,4 @@
+import { useDebounceFn } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import { ResumeSectionFilterService } from "@/core/resume/application/ResumeSectionFilterService";
@@ -227,11 +228,19 @@ export const useSectionVisibilityStore = defineStore(
 		/**
 		 * Watch for changes and persist to storage.
 		 */
+		const debouncedSave = useDebounceFn((vis: SectionVisibility) => {
+			sectionVisibilityStorage.save(vis);
+		}, 300);
+
 		watch(
 			() => visibility.value,
 			(newVisibility) => {
 				if (newVisibility) {
-					sectionVisibilityStorage.save(newVisibility);
+					debouncedSave(newVisibility)
+						.then((r) => r)
+						.catch((e) => {
+							console.error("Failed to save section visibility:", e);
+						});
 				}
 			},
 			{ deep: true },
