@@ -155,10 +155,10 @@ reflect selections; auto-disable when all items off.
 **Independent Test**: Generate PDF after various toggles; sections appear in fixed order per
 `engineering.stg`.
 
-- [ ] T020 [US4] Lock `SECTION_TYPES` ordering to match backend template and annotate linkage to
+- [x] T020 [US4] Lock `SECTION_TYPES` ordering to match backend template and annotate linkage to
   `server/engine/src/main/resources/templates/resume/engineering/engineering.stg` in
   `SectionVisibility.ts`
-- [ ] T021 [US4] Keep rendering/filtering logic using `SECTION_TYPES` sequence and prevent drag/drop
+- [x] T021 [US4] Keep rendering/filtering logic using `SECTION_TYPES` sequence and prevent drag/drop
   or reorder affordances in `SectionTogglePanel.vue` and `ResumeSectionFilterService.ts`
 
 **Checkpoint**: Section ordering remains fixed and aligned with backend template.
@@ -169,18 +169,18 @@ reflect selections; auto-disable when all items off.
 
 **Purpose**: Fulfill Constitution II Testing Standards - unit, integration, and E2E coverage.
 
-- [ ] T025 [P] Write unit tests for `createDefaultVisibility` and filter functions in
+- [x] T025 [P] Write unit tests for `createDefaultVisibility` and filter functions in
   `client/apps/webapp/src/core/resume/domain/SectionVisibility.spec.ts`
-- [ ] T026 [P] Write unit tests for `filterResume` service covering all section types and edge cases
+- [x] T026 [P] Write unit tests for `filterResume` service covering all section types and edge cases
   in `client/apps/webapp/src/core/resume/application/ResumeSectionFilterService.spec.ts`
-- [ ] T027 [P] Write unit tests for store actions (toggle, expand, persist) in
+- [x] T027 [P] Write unit tests for store actions (toggle, expand, persist) in
   `client/apps/webapp/src/core/resume/infrastructure/store/section-visibility.store.spec.ts`
 - [ ] T028 [P] Write component tests for SectionTogglePill (enabled/disabled/hover states, a11y)
-  using @testing-library/vue
+  using @testing-library/vue - ⚠️ Test file created but requires cleanup setup between tests
 - [ ] T029 [P] Write component tests for SectionTogglePanel (renders pills, emits events) using
-  @testing-library/vue
+  @testing-library/vue - ⚠️ Deferred: Requires mount setup with Pinia store and i18n
 - [ ] T030 [P] Write component tests for ItemToggleList (item toggles, field toggles for Personal
-  Details)
+  Details) - ⚠️ Deferred: Requires mount setup similar to T029
 - [ ] T031 Write E2E test: toggle section visibility, verify live preview updates in
   `client/e2e/resume-pdf-section-selector.spec.ts`
 - [ ] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
@@ -200,8 +200,8 @@ reflect selections; auto-disable when all items off.
 - [x] T022 [P] Add required i18n keys for sections, fields, and toasts in
   `client/apps/webapp/src/i18n/` locale files
 - [x] T023 Run lint/typecheck in `cvix/client/apps/webapp` (`pnpm check` and
-  `pnpm --filter webapp typecheck`)
-- [ ] T024 Update `quickstart.md` with any deviations (if any) and confirm localStorage TTL/version
+  `pnpm --filter webapp typecheck`) - ✅ Linting warnings fixed
+- [x] T024 Update `quickstart.md` with any deviations (if any) and confirm localStorage TTL/version
   notes in `cvix/specs/005-pdf-section-selector/quickstart.md`
 
 ---

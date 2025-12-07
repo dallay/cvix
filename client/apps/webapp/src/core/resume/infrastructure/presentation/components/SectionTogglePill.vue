@@ -128,7 +128,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
     @click="handleClick"
     @keydown="handleKeyDown"
   >
-    <span v-if="enabled && !isDisabledDueToNoData" class="flex-shrink-0">
+    <span v-if="enabled && !isDisabledDueToNoData" class="shrink-0">
       <span
         class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center"
       >

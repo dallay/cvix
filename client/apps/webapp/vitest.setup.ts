@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import { config } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { expect } from "vitest";
@@ -172,3 +173,10 @@ setActivePinia(pinia);
 
 // Add Pinia to global plugins
 config.global.plugins = [i18n, pinia];
+
+// Mock ResizeObserver for tooltip components
+globalThis.ResizeObserver = class ResizeObserver {
+	observe() {}
+	unobserve() {}
+	disconnect() {}
+};

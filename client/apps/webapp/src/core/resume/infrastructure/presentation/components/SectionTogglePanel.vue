@@ -1,4 +1,20 @@
 <script setup lang="ts">
+/**
+ * SectionTogglePanel Component
+ *
+ * Renders resume section toggle pills in a fixed, non-reorderable list.
+ * Section order is determined by SECTION_TYPES and matches the backend template.
+ *
+ * ⚠️ SECTION ORDER PRESERVATION (FR-009, US4):
+ * - Sections are rendered in the order provided by the metadata prop (derived from SECTION_TYPES)
+ * - NO drag-and-drop affordances (draggable, handle icons, etc.)
+ * - NO reorder controls (up/down arrows, move buttons, etc.)
+ * - NO sortable/draggable libraries (VueDraggable, SortableJS, etc.)
+ * - Order is locked to match backend template (engineering.stg)
+ *
+ * See: client/apps/webapp/src/core/resume/domain/SectionVisibility.ts (SECTION_TYPES)
+ * See: specs/005-pdf-section-selector/plan.md (FR-009)
+ */
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -24,7 +40,7 @@ interface Props {
 	/** Current visibility preferences */
 	visibility: SectionVisibility;
 
-	/** Section metadata for rendering */
+	/** Section metadata for rendering (in SECTION_TYPES order) */
 	metadata: SectionMetadata[];
 }
 
@@ -152,7 +168,7 @@ const handleTogglePersonalDetailsField = (index: number) => {
 const onPanelKeydown = (event: KeyboardEvent) => {
 	const target = event.target as HTMLElement;
 	const pillButtons = target
-		.closest('[role="list"]')
+		.closest("ul")
 		?.querySelectorAll("button:not([disabled])");
 	if (!pillButtons || pillButtons.length === 0) return;
 
@@ -161,7 +177,7 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 	);
 	if (currentIndex === -1) return;
 
-	let nextIndex = currentIndex;
+	let nextIndex: number;
 
 	switch (event.key) {
 		case "ArrowRight":
@@ -193,18 +209,16 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 <template>
 	<div class="space-y-4">
 		<!-- Section Pills -->
-		<div
-			class="flex flex-wrap gap-2"
-			role="list"
+		<ul
+			class="flex flex-wrap gap-2 list-none p-0 m-0"
 			aria-label="Resume sections"
-			tabindex="0"
 			@keydown="onPanelKeydown"
 		>
 			<template v-for="(section, idx) in metadata" :key="section.type">
 				<!-- Personal Details - always shows as enabled, can expand to show fields -->
 				<template v-if="section.type === 'personalDetails'">
-					<Collapsible class="w-full" :open="visibility.personalDetails.expanded">
-						<div class="flex gap-2 flex-wrap" role="listitem">
+					<Collapsible as="li" class="w-full" :open="visibility.personalDetails.expanded">
+						<div class="flex gap-2 flex-wrap">
 							<SectionTogglePill
 								:label="t(section.labelKey)"
 								:enabled="visibility.personalDetails.enabled"
@@ -228,10 +242,11 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 				<!-- Array Sections -->
 				<template v-else>
 					<Collapsible
+						as="li"
 						class="w-full"
 						:open="getArraySectionVisibility(section.type)?.expanded"
 					>
-						<div class="flex gap-2 flex-wrap items-center" role="listitem">
+						<div class="flex gap-2 flex-wrap items-center">
 							<SectionTogglePill
 								:label="t(section.labelKey)"
 								:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
@@ -257,17 +272,6 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 					</Collapsible>
 				</template>
 			</template>
-		</div>
-		<!--
-			Accessibility Audit Checklist (T014):
-			- Keyboard navigation: Tab/arrow keys move focus between pills
-			- Focus ring visible (focus-visible)
-			- ARIA roles: list, listitem, aria-label, aria-posinset, aria-setsize
-			- Screen reader labels: pill state, item counts
-			- Color contrast: All states meet WCAG AA
-			- Automated tools: axe, pa11y
-			- Manual: VoiceOver/NVDA/JAWS walkthrough
-			- Responsive: Pills wrap at 768px, 1024px, 1440px, 2560px
-		-->
+		</ul>
 	</div>
 </template>

@@ -60,6 +60,9 @@
 	"devDependencies": {
 		"@iconify-json/ph": "^1.2.2",
 		"@playwright/test": "^1.57.0",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/user-event": "^14.6.1",
+		"@testing-library/vue": "^8.1.0",
 		"@tsconfig/node22": "^22.0.5",
 		"@types/jsdom": "^27.0.0",
 		"@types/node": "^24.10.1",

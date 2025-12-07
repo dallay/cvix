@@ -3,7 +3,28 @@ import type { Resume } from "./Resume";
 /**
  * Enumeration of all resume section types.
  * Order defines standard resume section ordering (FR-009).
- * This order must match the backend LaTeX template (engineering.stg).
+ *
+ * ⚠️ CRITICAL: This order MUST match the backend LaTeX template rendering order.
+ * Template location: server/engine/src/main/resources/templates/resume/engineering/engineering.stg
+ * Template order: header → about → experience → education → skills → projects → publications →
+ *                 certificates → awards → volunteer → languages → interests → references
+ *
+ * Mapping:
+ * - personalDetails → header + about (always enabled, FR-007)
+ * - work → experience
+ * - education → education
+ * - skills → skills
+ * - projects → projects
+ * - certifications → certificates
+ * - volunteer → volunteer
+ * - awards → awards
+ * - publications → publications
+ * - languages → languages
+ * - interests → interests
+ * - references → references
+ *
+ * Do NOT reorder this array without coordinating with backend template changes.
+ * See: specs/005-pdf-section-selector/plan.md (FR-009)
  */
 export const SECTION_TYPES = [
 	"personalDetails",
@@ -213,7 +234,7 @@ function createArrayVisibility(itemCount: number): ArraySectionVisibility {
 	return {
 		enabled: itemCount > 0,
 		expanded: false,
-		items: Array(itemCount).fill(true),
+		items: Array.from({ length: itemCount }, () => true),
 	};
 }
 
@@ -237,7 +258,7 @@ export function countVisibleItems(visibility: ArraySectionVisibility): number {
 	if (!visibility.enabled) {
 		return 0;
 	}
-	return visibility.items.filter((visible) => visible).length;
+	return visibility.items.filter(Boolean).length;
 }
 
 /**

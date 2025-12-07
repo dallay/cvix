@@ -172,6 +172,8 @@ pnpm test   # Runs all tests (unit, integration)
 - Check localStorage in DevTools → Application → Local Storage
 - Verify key format: `cvix-section-visibility-{resumeId}`
 - Check for JSON parse errors in console
+- **TTL**: Preferences expire after 30 days (configurable in `SectionVisibilityStorage.ts`)
+- **Version**: Schema version is stored and checked for migrations (current: v1)
 
 ### Section Pill States Not Matching Figma
 
