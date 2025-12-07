@@ -182,6 +182,7 @@ pnpm test   # Runs all tests (unit, integration)
 
 - [Feature Specification](./spec.md)
 - [Implementation Plan](./plan.md)
+- [Wireframe Diagram](./wireframe.md)
 - [Research Notes](./research.md)
 - [Data Model](./data-model.md)
 - [API Contracts](./contracts/api-contracts.md)
