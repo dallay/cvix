@@ -114,6 +114,9 @@ export class SectionVisibilityStorageData {
 	/**
 	 * Checks if preferences exist and are not expired.
 	 *
+	 * ⚠️ Side effect: This method calls `load(resumeId)`, which will remove expired or version-mismatched entries from storage.
+	 * This is not a pure read-only check; it validates and may clean up stale data.
+	 *
 	 * @param resumeId - The resume ID to check
 	 * @returns true if valid preferences exist
 	 */
