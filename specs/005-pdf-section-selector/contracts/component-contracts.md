@@ -305,11 +305,9 @@ interface Props {
 }
 
 /**
- * toggleableFields is a computed property derived from the fields prop.
- * It is an array of objects: { key: keyof PersonalDetailsFieldVisibility, labelKey: string }
- * The component or parent must provide a mapping from field keys to i18n label keys.
+ * toggleableFields is a component-internal computed property derived from the fields prop.
  * Example:
- * const toggleableFields = [
+ * const toggleableFields = computed(() => [
  *   { key: 'email', labelKey: 'resume.fields.email' },
  *   { key: 'phone', labelKey: 'resume.fields.phone' },
  *   { key: 'location', labelKey: 'resume.fields.location' },
@@ -317,7 +315,7 @@ interface Props {
  *   { key: 'summary', labelKey: 'resume.fields.summary' },
  *   { key: 'url', labelKey: 'resume.fields.url' },
  *   { key: 'profiles', labelKey: 'resume.fields.profiles' },
- * ];
+ * ]);
  */
 ```
 

@@ -115,6 +115,10 @@ Resume).
 | client/apps/webapp/src/i18n/locale files                                                               | MODIFY | P1       |
 | client/apps/webapp/src/core/resume/e2e tests                                                           | CREATE | P2       |
 
+## Pre-PR Quality Checks
+
+Before opening a pull request, run `pnpm check` from the project root. This command executes Biome lint, Biome format, and TypeScript type-checks across all frontend packages, ensuring consistent code style, proper formatting, and type safety. This is the recommended quality gate before submitting changes. The other commands below are shortcuts for specific checks or test runs.
+
 ## Testing Commands
 
 ```bash
@@ -131,7 +135,7 @@ pnpm --filter webapp test:e2e
 pnpm --filter webapp typecheck
 
 # Lint, format, and type-check (recommended before PR)
-pnpm check # Runs Biome lint, Biome format, and TypeScript type-checks for all frontend packages. This is the recommended pre-PR command. It ensures code style, formatting, and type safety. Run this before opening a pull request.
+pnpm check
 
 # Additional commands (if needed)
 pnpm lint   # Runs only lint checks (Biome)
