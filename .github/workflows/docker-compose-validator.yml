@@ -1,0 +1,18 @@
+name: Docker Compose Validator
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose files
+        run: |
+          cd infra
+          docker compose $(find . -maxdepth 1 -name "*.yml" -printf "-f %p ") config
