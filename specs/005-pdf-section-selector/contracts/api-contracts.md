@@ -298,7 +298,7 @@ watch(
   "resume.sections.education": "Education",
   "resume.sections.skills": "Skills",
   "resume.sections.projects": "Projects",
-  "resume.sections.certifications": "Certifications",
+  "resume.sections.certificates": "Certificates",
   "resume.sections.volunteer": "Volunteer",
   "resume.sections.awards": "Awards",
   "resume.sections.publications": "Publications",

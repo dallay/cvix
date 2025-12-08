@@ -94,7 +94,7 @@ describe("SectionVisibility Domain", () => {
 				"education",
 				"skills",
 				"projects",
-				"certifications",
+				"certificates",
 				"volunteer",
 				"awards",
 				"publications",
@@ -164,7 +164,7 @@ describe("SectionVisibility Domain", () => {
 
 			// Empty sections should be disabled
 			expect(visibility.projects.enabled).toBe(false);
-			expect(visibility.certifications.enabled).toBe(false);
+			expect(visibility.certificates.enabled).toBe(false);
 			expect(visibility.volunteer.enabled).toBe(false);
 			expect(visibility.awards.enabled).toBe(false);
 			expect(visibility.publications.enabled).toBe(false);

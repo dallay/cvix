@@ -154,7 +154,7 @@ describe("useSectionVisibilityStore", () => {
 				education: { enabled: true, expanded: false, items: [true] },
 				skills: { enabled: false, expanded: false, items: [false, false] },
 				projects: { enabled: true, expanded: false, items: [] },
-				certifications: { enabled: true, expanded: false, items: [] },
+				certificates: { enabled: true, expanded: false, items: [] },
 				volunteer: { enabled: true, expanded: false, items: [] },
 				awards: { enabled: true, expanded: false, items: [] },
 				publications: { enabled: true, expanded: false, items: [] },
@@ -182,7 +182,7 @@ describe("useSectionVisibilityStore", () => {
 			expect(store.visibility?.education.enabled).toBe(true);
 			expect(store.visibility?.skills.enabled).toBe(true);
 			expect(store.visibility?.projects.enabled).toBe(false); // Empty
-			expect(store.visibility?.certifications.enabled).toBe(false); // Empty
+			expect(store.visibility?.certificates.enabled).toBe(false); // Empty
 		});
 	});
 

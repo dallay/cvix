@@ -1,184 +1,21 @@
 import { describe, expect, it } from "vitest";
+import { createTestResume } from "@/core/resume/test-resume-factory.ts";
 import type { Resume } from "../domain/Resume";
 import type {
 	ArraySectionVisibility,
 	SectionVisibility,
 } from "../domain/SectionVisibility";
+import { createDefaultVisibility as createDomainVisibility } from "../domain/SectionVisibility";
 import { ResumeSectionFilterService } from "./ResumeSectionFilterService";
 
 describe("ResumeSectionFilterService", () => {
 	const service = new ResumeSectionFilterService();
 
-	// Helper to create a complete test resume
-	const createTestResume = (): Resume => ({
-		basics: {
-			name: "John Doe",
-			label: "Software Engineer",
-			image: "profile.jpg",
-			email: "john@example.com",
-			phone: "+1-555-0100",
-			url: "https://johndoe.com",
-			summary: "Experienced software engineer",
-			location: {
-				address: "123 Main St",
-				postalCode: "12345",
-				city: "San Francisco",
-				countryCode: "US",
-				region: "CA",
-			},
-			profiles: [
-				{
-					network: "GitHub",
-					username: "johndoe",
-					url: "https://github.com/johndoe",
-				},
-				{
-					network: "LinkedIn",
-					username: "johndoe",
-					url: "https://linkedin.com/in/johndoe",
-				},
-			],
-		},
-		work: [
-			{
-				name: "Company A",
-				position: "Senior Developer",
-				url: "https://companya.com",
-				startDate: "2020-01-01",
-				endDate: "2022-12-31",
-				summary: "Led development team",
-				highlights: ["Achievement 1", "Achievement 2"],
-			},
-			{
-				name: "Company B",
-				position: "Developer",
-				url: "https://companyb.com",
-				startDate: "2018-01-01",
-				endDate: "2019-12-31",
-				summary: "Developed features",
-				highlights: [],
-			},
-		],
-		education: [
-			{
-				institution: "University A",
-				url: "https://university-a.edu",
-				area: "Computer Science",
-				studyType: "Bachelor",
-				startDate: "2014-09-01",
-				endDate: "2018-06-01",
-				score: "3.8",
-				courses: ["CS101", "CS201"],
-			},
-		],
-		skills: [
-			{ name: "JavaScript", level: "Expert", keywords: ["ES6", "Node.js"] },
-			{
-				name: "TypeScript",
-				level: "Advanced",
-				keywords: ["Types", "Interfaces"],
-			},
-			{ name: "Python", level: "Intermediate", keywords: ["Django", "Flask"] },
-		],
-		projects: [
-			{
-				name: "Project Alpha",
-				startDate: "2021-01-01",
-				endDate: "2021-12-31",
-				description: "A cool project",
-				highlights: [],
-				url: "https://project-alpha.com",
-			},
-		],
-		certificates: [
-			{
-				name: "AWS Certified",
-				date: "2021-06-01",
-				url: "https://aws.amazon.com",
-				issuer: "Amazon",
-			},
-		],
-		volunteer: [
-			{
-				organization: "Code for Good",
-				position: "Volunteer Developer",
-				url: "https://codeforgood.org",
-				startDate: "2020-01-01",
-				endDate: "",
-				summary: "Volunteering",
-				highlights: [],
-			},
-		],
-		awards: [
-			{
-				title: "Best Developer 2021",
-				date: "2021-12-01",
-				awarder: "Company A",
-				summary: "Excellence in development",
-			},
-		],
-		publications: [
-			{
-				name: "Article on TypeScript",
-				publisher: "Medium",
-				releaseDate: "2022-01-01",
-				url: "https://medium.com/article",
-				summary: "How to use TypeScript",
-			},
-		],
-		languages: [{ language: "English", fluency: "Native" }],
-		interests: [{ name: "Photography", keywords: ["Landscape", "Portrait"] }],
-		references: [
-			{
-				name: "Jane Smith",
-				reference: "John is an excellent developer",
-			},
-		],
-	});
-
-	// Helper to create default visibility (all enabled)
-	const createDefaultVisibility = (resumeId: string): SectionVisibility => ({
-		resumeId,
-		personalDetails: {
-			enabled: true,
-			expanded: false,
-			fields: {
-				image: true,
-				email: true,
-				phone: true,
-				location: {
-					address: true,
-					postalCode: true,
-					city: true,
-					countryCode: true,
-					region: true,
-				},
-				summary: true,
-				url: true,
-				profiles: {
-					GitHub: true,
-					LinkedIn: true,
-				},
-			},
-		},
-		work: { enabled: true, expanded: false, items: [true, true] },
-		education: { enabled: true, expanded: false, items: [true] },
-		skills: { enabled: true, expanded: false, items: [true, true, true] },
-		projects: { enabled: true, expanded: false, items: [true] },
-		certifications: { enabled: true, expanded: false, items: [true] },
-		volunteer: { enabled: true, expanded: false, items: [true] },
-		awards: { enabled: true, expanded: false, items: [true] },
-		publications: { enabled: true, expanded: false, items: [true] },
-		languages: { enabled: true, expanded: false, items: [true] },
-		interests: { enabled: true, expanded: false, items: [true] },
-		references: { enabled: true, expanded: false, items: [true] },
-	});
-
 	describe("filterResume", () => {
 		const resumeId = "b25582a9-cfe5-4d63-8d64-83b90b24d777";
 		it("should return unmodified resume when all sections and items are visible", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 
 			const filtered = service.filterResume(resume, visibility);
 
@@ -187,7 +24,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should preserve name (always visible)", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 
 			const filtered = service.filterResume(resume, visibility);
 
@@ -196,7 +33,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden personal details fields", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.personalDetails.fields.email = false;
 			visibility.personalDetails.fields.phone = false;
 			visibility.personalDetails.fields.image = false;
@@ -212,7 +49,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden location fields", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.personalDetails.fields.location.city = false;
 			visibility.personalDetails.fields.location.postalCode = false;
 
@@ -226,7 +63,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden profiles", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.personalDetails.fields.profiles.LinkedIn = false;
 
 			const filtered = service.filterResume(resume, visibility);
@@ -237,7 +74,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should return empty array when section is disabled", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.work.enabled = false;
 			visibility.education.enabled = false;
 
@@ -249,7 +86,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden items in work section", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.work.items[1] = false; // Hide second work item
 
 			const filtered = service.filterResume(resume, visibility);
@@ -260,7 +97,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden items in education section", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.education.items[0] = false;
 
 			const filtered = service.filterResume(resume, visibility);
@@ -270,7 +107,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter out hidden items in skills section", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.skills.items[0] = false; // Hide JavaScript
 			visibility.skills.items[2] = false; // Hide Python
 
@@ -282,9 +119,9 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should handle multiple sections disabled", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.projects.enabled = false;
-			visibility.certifications.enabled = false;
+			visibility.certificates.enabled = false;
 			visibility.volunteer.enabled = false;
 			visibility.awards.enabled = false;
 
@@ -298,7 +135,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should preserve enabled sections when others are disabled", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.work.enabled = false;
 			visibility.skills.enabled = false;
 
@@ -312,7 +149,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should handle mixed visibility states", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.work.items[0] = false; // Hide first work item
 			visibility.skills.enabled = false; // Disable entire skills section
 			visibility.personalDetails.fields.email = false; // Hide email
@@ -327,7 +164,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should treat undefined visibility items as visible (default behavior)", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			// Remove some items from visibility to test undefined handling
 			visibility.work.items = [true]; // Only first item defined
 
@@ -339,7 +176,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should filter all array sections independently", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility(resumeId);
+			const visibility = createDomainVisibility(resumeId, resume);
 			visibility.publications.items[0] = false;
 			visibility.languages.items[0] = false;
 			visibility.interests.items[0] = false;
@@ -464,7 +301,7 @@ describe("ResumeSectionFilterService", () => {
 				education: { enabled: true, expanded: false, items: [] },
 				skills: { enabled: true, expanded: false, items: [] },
 				projects: { enabled: true, expanded: false, items: [] },
-				certifications: { enabled: true, expanded: false, items: [] },
+				certificates: { enabled: true, expanded: false, items: [] },
 				volunteer: { enabled: true, expanded: false, items: [] },
 				awards: { enabled: true, expanded: false, items: [] },
 				publications: { enabled: true, expanded: false, items: [] },
@@ -482,7 +319,7 @@ describe("ResumeSectionFilterService", () => {
 
 		it("should handle all profiles hidden", () => {
 			const resume = createTestResume();
-			const visibility = createDefaultVisibility("resume-123");
+			const visibility = createDomainVisibility("resume-123", resume);
 			visibility.personalDetails.fields.profiles.GitHub = false;
 			visibility.personalDetails.fields.profiles.LinkedIn = false;
 

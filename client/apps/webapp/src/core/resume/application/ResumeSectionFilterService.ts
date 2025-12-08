@@ -38,7 +38,7 @@ export class ResumeSectionFilterService {
 			projects: this.filterArray(resume.projects, visibility.projects),
 			certificates: this.filterArray(
 				resume.certificates,
-				visibility.certifications,
+				visibility.certificates,
 			),
 			volunteer: this.filterArray(resume.volunteer, visibility.volunteer),
 			awards: this.filterArray(resume.awards, visibility.awards),
