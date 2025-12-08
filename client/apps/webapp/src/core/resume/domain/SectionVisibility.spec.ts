@@ -104,8 +104,8 @@ describe("SectionVisibility Domain", () => {
 			]);
 		});
 
-		it("should be immutable (readonly array)", () => {
-			expect(Object.isFrozen(SECTION_TYPES)).toBe(false); // as const doesn't freeze, but TypeScript prevents mutation
+		it("should expose 12 typed section types; runtime array is not frozen", () => {
+			expect(Object.isFrozen(SECTION_TYPES)).toBe(false); // 'as const' is TypeScript-only; runtime array is mutable
 			expect(SECTION_TYPES.length).toBe(12);
 		});
 	});

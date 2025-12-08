@@ -82,7 +82,7 @@ export class ResumeSectionFilterService {
 			profiles: basics.profiles.filter((profile) => {
 				// If the profile network is explicitly marked false, filter it out
 				// We use !== false to allow undefined (new profiles) to be visible by default
-				return fields.profiles[profile.network];
+				return fields.profiles[profile.network] !== false;
 			}),
 		};
 	}
