@@ -1,8 +1,10 @@
 import type { Basics, Resume } from "../domain/Resume";
-import type {
-	ArraySectionVisibility,
-	PersonalDetailsVisibility,
-	SectionVisibility,
+import {
+	type ArraySectionVisibility,
+	countVisibleItems,
+	hasVisibleItems,
+	type PersonalDetailsVisibility,
+	type SectionVisibility,
 } from "../domain/SectionVisibility";
 
 /**
@@ -112,16 +114,13 @@ export class ResumeSectionFilterService {
 	 * Counts the number of visible items in a section.
 	 */
 	countVisibleItems(visibility: ArraySectionVisibility): number {
-		if (!visibility.enabled) {
-			return 0;
-		}
-		return visibility.items.filter(Boolean).length;
+		return countVisibleItems(visibility);
 	}
 
 	/**
 	 * Checks if a section has any visible items.
 	 */
 	hasVisibleItems(visibility: ArraySectionVisibility): boolean {
-		return this.countVisibleItems(visibility) > 0;
+		return hasVisibleItems(visibility);
 	}
 }
