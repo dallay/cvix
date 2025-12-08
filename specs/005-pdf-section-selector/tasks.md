@@ -116,13 +116,13 @@ and a11y roles.
 - [X] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled,
   hasData, expanded) and implement full accessibility audit in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`:
-    - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
-    - Verify focus management (roving focus/aria-activedescendant if used)
-    - Ensure correct ARIA roles, labels, and states for screen readers
-    - Check color contrast for all pill states (enabled, disabled, hover, focus)
-    - Run automated accessibility tools (axe, pa11y)
-    - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
-    - Document all findings and required remediations
+  - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
+  - Verify focus management (roving focus/aria-activedescendant if used)
+  - Ensure correct ARIA roles, labels, and states for screen readers
+  - Check color contrast for all pill states (enabled, disabled, hover, focus)
+  - Run automated accessibility tools (axe, pa11y)
+  - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
+  - Document all findings and required remediations
 - [X] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in
   `SectionTogglePanel.vue`
 
@@ -181,11 +181,11 @@ reflect selections; auto-disable when all items off.
   @testing-library/vue - ⚠️ Deferred: Requires mount setup with Pinia store and i18n
 - [ ] T030 [P] Write component tests for ItemToggleList (item toggles, field toggles for Personal
   Details) - ⚠️ Deferred: Requires mount setup similar to T029
-- [ ] T031 Write E2E test: toggle section visibility, verify live preview updates in
+- [x] T031 Write E2E test: toggle section visibility, verify live preview updates in
   `client/e2e/resume-pdf-section-selector.spec.ts`
-- [ ] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
-- [ ] T033 Write E2E test: toggle preferences, refresh page, verify persistence
-- [ ] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints (toggle
+- [x] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
+- [x] T033 Write E2E test: toggle preferences, refresh page, verify persistence
+- [x] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints (toggle
   all sections and items at each breakpoint, confirm layout stability and pill wrapping per T015; do
   not limit to smoke test)
 

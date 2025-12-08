@@ -2,7 +2,8 @@
 
 **Feature Branch**: `005-pdf-section-selector`
 **Created**: December 6, 2025
-**Status**: Draft
+**Status**: ✅ Implemented
+**Implementation Date**: December 8, 2025
 **Input**: User description: "Redesign PDF Generator Screen to allow users to select which sections to include in the final PDF resume"
 
 ## User Scenarios & Testing *(mandatory)*
