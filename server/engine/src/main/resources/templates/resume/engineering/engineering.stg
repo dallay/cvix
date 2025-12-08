@@ -13,29 +13,52 @@ baseResume(resumeData, i18n, locale, lastUpdated) ::= <<
 
 <header(resumeData.basics)>
 
+<if(resumeData.basics.summary)>
 <about(resumeData.basics.summary, i18n)>
-
+<endif>
+<if(resumeData.work)>
 <experience(resumeData.work, i18n)>
+<endif>
 
+<if(resumeData.education)>
 <education(resumeData.education, i18n)>
+<endif>
 
+<if(resumeData.skills)>
 <skills(resumeData.skills, i18n)>
+<endif>
 
+<if(resumeData.projects)>
 <projects(resumeData.projects, i18n)>
+<endif>
 
+<if(resumeData.publications)>
 <publications(resumeData.publications, i18n)>
+<endif>
 
+<if(resumeData.certificates)>
 <certificates(resumeData.certificates, i18n)>
+<endif>
 
+<if(resumeData.awards)>
 <awards(resumeData.awards, i18n)>
+<endif>
 
+<if(resumeData.volunteer)>
 <volunteer(resumeData.volunteer, i18n)>
+<endif>
 
+<if(resumeData.languages)>
 <languages(resumeData.languages, i18n)>
+<endif>
 
+<if(resumeData.interests)>
 <interests(resumeData.interests, i18n)>
+<endif>
 
+<if(resumeData.references)>
 <references(resumeData.references, i18n)>
+<endif>
 
 \end{document}
 

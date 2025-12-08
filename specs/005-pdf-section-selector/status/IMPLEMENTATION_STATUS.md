@@ -291,11 +291,11 @@ Full WCAG 2.1 AA compliance:
 
 ### Deployment Checklist
 
-- [ ] Backend services deployed and accessible
-- [ ] Frontend built and deployed
-- [ ] E2E tests run against staging environment
-- [ ] Manual QA sign-off
-- [ ] Product owner acceptance
+- [X] Backend services deployed and accessible
+- [X] Frontend built and deployed
+- [X] E2E tests run against staging environment
+- [X] Manual QA sign-off
+- [X] Product owner acceptance
 
 ---
 
