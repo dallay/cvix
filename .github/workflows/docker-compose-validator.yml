@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'infra/**.yml'
+      - 'infra/**.yaml'
 
 jobs:
   validate:
@@ -15,7 +16,7 @@ jobs:
       - name: Validate docker-compose files
         run: |
           cd infra
-          find . -name "*.yml" -print0 | while IFS= read -r -d '' file; do
+          find . \( -name "*.yml" -o -name "*.yaml" \) -print0 | while IFS= read -r -d '' file; do
             echo "Validating $file..."
             docker compose -f "$file" config > /dev/null
           done
