@@ -15,4 +15,7 @@ jobs:
       - name: Validate docker-compose files
         run: |
           cd infra
-          docker compose $(find . -maxdepth 1 -name "*.yml" -printf "-f %p ") config
+          find . -name "*.yml" -print0 | while IFS= read -r -d '' file; do
+            echo "Validating $file..."
+            docker compose -f "$file" config > /dev/null
+          done
