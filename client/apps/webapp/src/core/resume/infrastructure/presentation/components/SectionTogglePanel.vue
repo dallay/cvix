@@ -208,7 +208,7 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 
 <template>
 	<div class="space-y-4">
-		<!-- Section Pills -->
+		<!-- Section Pills - Horizontal layout -->
 		<ul
 			class="flex flex-wrap gap-2 list-none p-0 m-0"
 			aria-label="Resume sections"
@@ -217,20 +217,18 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 			<template v-for="(section, idx) in metadata" :key="section.type">
 				<!-- Personal Details - always shows as enabled, can expand to show fields -->
 				<template v-if="section.type === 'personalDetails'">
-					<Collapsible as="li" class="w-full" :open="visibility.personalDetails.expanded">
-						<div class="flex gap-2 flex-wrap">
-							<SectionTogglePill
-								:label="t(section.labelKey)"
-								:enabled="visibility.personalDetails.enabled"
-								:has-data="section.hasData"
-								:expanded="visibility.personalDetails.expanded"
-								:aria-posinset="1"
-								:aria-setsize="metadata.length"
-								@toggle="handleToggleSection('personalDetails')"
-								@expand="handleExpandSection('personalDetails')"
-							/>
-						</div>
-						<CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
+					<Collapsible as="li" :open="visibility.personalDetails.expanded">
+						<SectionTogglePill
+							:label="t(section.labelKey)"
+							:enabled="visibility.personalDetails.enabled"
+							:has-data="section.hasData"
+							:expanded="visibility.personalDetails.expanded"
+							:aria-posinset="1"
+							:aria-setsize="metadata.length"
+							@toggle="handleToggleSection('personalDetails')"
+							@expand="handleExpandSection('personalDetails')"
+						/>
+						<CollapsibleContent v-if="section.hasData" class="mt-3 w-full">
 							<ItemToggleList
 								:items="getItemsForSection(section.type)"
 								@toggle-item="handleTogglePersonalDetailsField"
@@ -243,27 +241,24 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 				<template v-else>
 					<Collapsible
 						as="li"
-						class="w-full"
 						:open="getArraySectionVisibility(section.type)?.expanded"
 					>
-						<div class="flex gap-2 flex-wrap items-center">
-							<SectionTogglePill
-								:label="t(section.labelKey)"
-								:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
-								:has-data="section.hasData"
-								:expanded="getArraySectionVisibility(section.type)?.expanded"
-								:visible-count="section.visibleItemCount"
-								:total-count="section.itemCount"
-								:aria-posinset="idx + 1"
-								:aria-setsize="metadata.length"
-								:disabled-tooltip="
-									!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined
-								"
-								@toggle="handleToggleSection(section.type)"
-								@expand="handleExpandSection(section.type)"
-							/>
-						</div>
-						<CollapsibleContent v-if="section.hasData" class="mt-3 ml-0">
+						<SectionTogglePill
+							:label="t(section.labelKey)"
+							:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
+							:has-data="section.hasData"
+							:expanded="getArraySectionVisibility(section.type)?.expanded"
+							:visible-count="section.visibleItemCount"
+							:total-count="section.itemCount"
+							:aria-posinset="idx + 1"
+							:aria-setsize="metadata.length"
+							:disabled-tooltip="
+								!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined
+							"
+							@toggle="handleToggleSection(section.type)"
+							@expand="handleExpandSection(section.type)"
+						/>
+						<CollapsibleContent v-if="section.hasData" class="mt-3 w-full">
 							<ItemToggleList
 								:items="getItemsForSection(section.type)"
 								@toggle-item="(index) => handleToggleItem(section.type as ArraySectionType, index)"
