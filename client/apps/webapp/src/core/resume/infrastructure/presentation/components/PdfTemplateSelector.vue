@@ -137,6 +137,16 @@ function onUserTemplateChange(newId: ParamValue) {
 	params.value = buildTemplateParams(template);
 }
 
+// Handle template card click
+function onTemplateCardClick(templateId: string) {
+	if (selectedTemplateId.value === templateId) {
+		return; // Already selected
+	}
+	selectedTemplateId.value = templateId;
+	const template = props.templates.find((t) => t.id === templateId);
+	params.value = buildTemplateParams(template);
+}
+
 // Emit params changes
 watch(params, (newParams) => {
 	if (!isEqual(newParams, props.modelValue.params)) {
@@ -178,47 +188,84 @@ const updateParam = (key: string, value: unknown) => {
 
 <template>
   <div class="space-y-6">
-    <div class="space-y-2">
-      <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
-      <Select
-          v-model="selectedTemplateId"
-          :disabled="props.isLoading || templates.length === 0"
-          @update:model-value="onUserTemplateChange"
-          aria-label="Resume template selector"
-      >
-        <SelectTrigger :id="templateSelectId">
-          <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
-        </SelectTrigger>
-        <SelectContent>
-          <template v-if="props.isLoading">
-            <SelectItem disabled value="">
-              {{ t('resume.pdfSelector.loading', 'Loading templates…') }}
-            </SelectItem>
-          </template>
-          <template v-else-if="props.error">
-            <SelectItem disabled value="">
-              {{ props.error }}
-            </SelectItem>
-          </template>
-          <template v-else-if="templates.length === 0">
-            <SelectItem disabled value="">
-              {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
-            </SelectItem>
-          </template>
-          <template v-else>
-            <SelectItem
-                v-for="template in templates"
-                :key="template.id"
-                :value="template.id"
+    <!-- Template Cards Section -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-semibold text-foreground">
+        {{ t('resume.pdfSelector.templateLabel', 'Template') }}
+      </h3>
+
+      <!-- Loading State -->
+      <div v-if="props.isLoading" class="flex justify-center py-8">
+        <div class="text-sm text-muted-foreground">
+          {{ t('resume.pdfSelector.loading', 'Loading templates…') }}
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="props.error" class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        {{ props.error }}
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="templates.length === 0" class="text-center py-8 text-sm text-muted-foreground">
+        {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
+      </div>
+
+      <!-- Template Cards -->
+      <div v-else class="space-y-2">
+        <button
+          v-for="template in templates"
+          :key="template.id"
+          type="button"
+          :class="[
+            'w-full rounded-lg border-2 p-4 text-left transition-all duration-200',
+            'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+            selectedTemplateId === template.id
+              ? 'border-primary bg-primary/5 shadow-sm'
+              : 'border-border bg-card hover:bg-accent/50'
+          ]"
+          :aria-label="`Select ${template.name} template`"
+          :aria-pressed="selectedTemplateId === template.id"
+          @click="onTemplateCardClick(template.id)"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Template Icon/Indicator -->
+            <div
+              :class="[
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
+                selectedTemplateId === template.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              ]"
             >
-              {{ template.name }}
-            </SelectItem>
-          </template>
-        </SelectContent>
-      </Select>
-      <p v-if="selectedTemplate?.description" class="text-xs text-muted-foreground">
-        {{ selectedTemplate.description }}
-      </p>
+              {{ template.name.charAt(0).toUpperCase() }}
+            </div>
+
+            <!-- Template Info -->
+            <div class="flex-1 min-w-0">
+              <h4 :class="[
+                'text-sm font-semibold mb-1',
+                selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
+              ]">
+                {{ template.name }}
+              </h4>
+              <p v-if="template.description" class="text-xs text-muted-foreground line-clamp-2">
+                {{ template.description }}
+              </p>
+            </div>
+
+            <!-- Active Indicator -->
+            <div
+              v-if="selectedTemplateId === template.id"
+              class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
+            >
+              <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+        </button>
+      </div>
     </div>
 
     <div v-if="selectedTemplate" class="space-y-4 border-t pt-4">
