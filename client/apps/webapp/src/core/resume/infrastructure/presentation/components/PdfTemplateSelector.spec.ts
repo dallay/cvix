@@ -208,9 +208,9 @@ describe("PdfTemplateSelector", () => {
 				"button[aria-label='Select Classic template']",
 			);
 
-			// Verify checkmark SVG is present for active template
+			// Verify checkmark indicator is present for active template
 			const checkmark = classicCard?.querySelector(
-				'svg path[d*="M5 13l4 4L19 7"]',
+				'[data-testid="template-selected-indicator"]',
 			);
 			expect(checkmark).toBeInTheDocument();
 		});
