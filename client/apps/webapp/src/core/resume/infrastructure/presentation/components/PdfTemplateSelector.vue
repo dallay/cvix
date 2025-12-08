@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from "@cvix/ui/components/ui/carousel";
 import { Label } from "@cvix/ui/components/ui/label";
 import {
 	Select,
@@ -211,61 +218,77 @@ const updateParam = (key: string, value: unknown) => {
         {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
       </div>
 
-      <!-- Template Cards -->
-      <div v-else class="space-y-2">
-        <button
-          v-for="template in templates"
-          :key="template.id"
-          type="button"
-          :class="[
-            'w-full rounded-lg border-2 p-4 text-left transition-all duration-200',
-            'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-            selectedTemplateId === template.id
-              ? 'border-primary bg-primary/5 shadow-sm'
-              : 'border-border bg-card hover:bg-accent/50'
-          ]"
-          :aria-label="`Select ${template.name} template`"
-          :aria-pressed="selectedTemplateId === template.id"
-          @click="onTemplateCardClick(template.id)"
+      <!-- Template Carousel -->
+      <div v-else class="mx-8">
+        <Carousel
+          :opts="{
+            align: 'start',
+            loop: true,
+          }"
+          class="w-full"
         >
-          <div class="flex items-start gap-3">
-            <!-- Template Icon/Indicator -->
-            <div
-              :class="[
-                'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
-                selectedTemplateId === template.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
-              ]"
+          <CarouselContent class="-ml-4">
+            <CarouselItem 
+              v-for="template in templates" 
+              :key="template.id" 
+              class="pl-4 basis-full"
             >
-              {{ template.name.charAt(0).toUpperCase() }}
-            </div>
+              <button
+                type="button"
+                :class="[
+                  'w-full h-full rounded-lg border-2 p-4 text-left transition-all duration-200 flex flex-col',
+                  'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  selectedTemplateId === template.id
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border bg-card hover:bg-accent/50'
+                ]"
+                :aria-label="`Select ${template.name} template`"
+                :aria-pressed="selectedTemplateId === template.id"
+                @click="onTemplateCardClick(template.id)"
+              >
+                <div class="flex items-start gap-3 w-full">
+                  <!-- Template Icon/Indicator -->
+                  <div
+                    :class="[
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
+                      selectedTemplateId === template.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground'
+                    ]"
+                  >
+                    {{ template.name.charAt(0).toUpperCase() }}
+                  </div>
 
-            <!-- Template Info -->
-            <div class="flex-1 min-w-0">
-              <h4 :class="[
-                'text-sm font-semibold mb-1',
-                selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
-              ]">
-                {{ template.name }}
-              </h4>
-              <p v-if="template.description" class="text-xs text-muted-foreground line-clamp-2">
-                {{ template.description }}
-              </p>
-            </div>
+                  <!-- Template Info -->
+                  <div class="flex-1 min-w-0">
+                    <h4 :class="[
+                      'text-sm font-semibold mb-1',
+                      selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
+                    ]">
+                      {{ template.name }}
+                    </h4>
+                    <p v-if="template.description" class="text-xs text-muted-foreground line-clamp-2">
+                      {{ template.description }}
+                    </p>
+                  </div>
 
-            <!-- Active Indicator -->
-            <div
-              v-if="selectedTemplateId === template.id"
-              class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
-              data-testid="template-selected-indicator"
-            >
-              <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-        </button>
+                  <!-- Active Indicator -->
+                  <div
+                    v-if="selectedTemplateId === template.id"
+                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
+                    data-testid="template-selected-indicator"
+                  >
+                    <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
 

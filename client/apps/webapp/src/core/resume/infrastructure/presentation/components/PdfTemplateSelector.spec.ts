@@ -5,6 +5,31 @@ import { createI18n } from "vue-i18n";
 import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata";
 import PdfTemplateSelector from "./PdfTemplateSelector.vue";
 
+// Mock ResizeObserver and IntersectionObserver for Embla Carousel
+vi.stubGlobal(
+	"ResizeObserver",
+	class ResizeObserver {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+	},
+);
+
+vi.stubGlobal(
+	"IntersectionObserver",
+	class IntersectionObserver {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+	},
+);
+
+vi.stubGlobal("matchMedia", () => ({
+	matches: false,
+	addListener: () => {},
+	removeListener: () => {},
+}));
+
 const i18n = createI18n({
 	legacy: false,
 	locale: "en",
@@ -66,13 +91,14 @@ const mockTemplates: TemplateMetadata[] = [
 		params: {
 			colorPalette: "gray",
 			fontFamily: "sans-serif",
+			spacing: "compact",
 		},
 	},
 ];
 
 describe("PdfTemplateSelector", () => {
 	describe("Template Card Selection", () => {
-		it("should render template cards instead of dropdown", () => {
+		it("should render template cards in a carousel", () => {
 			const modelValue = { templateId: "", params: {} };
 			const { container } = render(PdfTemplateSelector, {
 				props: {
@@ -103,6 +129,7 @@ describe("PdfTemplateSelector", () => {
 				screen.getByText("A sleek contemporary design"),
 			).toBeInTheDocument();
 			expect(screen.getByText("Clean and simple layout")).toBeInTheDocument();
+			// Check if carousel wrapper exists (optional, simply checking cards exist might be enough but good to check structure)
 		});
 
 		it("should show active state for selected template", () => {
@@ -328,7 +355,7 @@ describe("PdfTemplateSelector", () => {
 	describe("Accessibility", () => {
 		it("should have proper ARIA attributes on template cards", () => {
 			const modelValue = { templateId: "modern", params: {} };
-			render(PdfTemplateSelector, {
+			const { container } = render(PdfTemplateSelector, {
 				props: {
 					templates: mockTemplates,
 					modelValue,
@@ -338,7 +365,10 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cards = screen.getAllByRole("button");
+			// Use specific selector for template cards
+			const cards = container.querySelectorAll(
+				"button[aria-label^='Select'][aria-label$='template']",
+			);
 
 			cards.forEach((card) => {
 				// Each card should have aria-label
@@ -350,7 +380,7 @@ describe("PdfTemplateSelector", () => {
 
 		it("should be focusable with keyboard", () => {
 			const modelValue = { templateId: "", params: {} };
-			render(PdfTemplateSelector, {
+			const { container } = render(PdfTemplateSelector, {
 				props: {
 					templates: mockTemplates,
 					modelValue,
@@ -360,7 +390,9 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cards = screen.getAllByRole("button");
+			const cards = container.querySelectorAll(
+				"button[aria-label^='Select'][aria-label$='template']",
+			) as NodeListOf<HTMLElement>;
 
 			cards.forEach((card) => {
 				card.focus();
@@ -380,7 +412,9 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cards = container.querySelectorAll("button");
+			const cards = container.querySelectorAll(
+				"button[aria-label^='Select'][aria-label$='template']",
+			);
 
 			cards.forEach((card) => {
 				// Should have focus styles
@@ -404,7 +438,9 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cards = container.querySelectorAll("button");
+			const cards = container.querySelectorAll(
+				"button[aria-label^='Select'][aria-label$='template']",
+			);
 
 			cards.forEach((card) => {
 				expect(card.className).toContain("hover:shadow-md");
@@ -414,7 +450,7 @@ describe("PdfTemplateSelector", () => {
 	});
 
 	describe("Responsive Behavior", () => {
-		it("should render cards in a vertical stack", () => {
+		it("should render cards within a carousel item wrapper", () => {
 			const modelValue = { templateId: "", params: {} };
 			const { container } = render(PdfTemplateSelector, {
 				props: {
@@ -426,8 +462,9 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cardContainer = container.querySelector(".space-y-2");
-			expect(cardContainer).toBeInTheDocument();
+			// Check if carousel structure exists
+			const carousel = container.querySelector(".pl-4");
+			expect(carousel).toBeInTheDocument();
 		});
 
 		it("should use full width for cards", () => {
@@ -442,7 +479,9 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const cards = container.querySelectorAll("button");
+			const cards = container.querySelectorAll(
+				"button[aria-label^='Select'][aria-label$='template']",
+			);
 
 			cards.forEach((card) => {
 				expect(card.className).toContain("w-full");
