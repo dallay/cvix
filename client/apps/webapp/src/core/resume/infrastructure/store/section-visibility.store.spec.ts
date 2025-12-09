@@ -340,10 +340,17 @@ describe("useSectionVisibilityStore", () => {
 			const resume = createTestResume();
 			store.initialize(resume, "test-resume-id");
 
-			// Name field doesn't exist in fields, but ensure toggle doesn't crash
+			// Capture state before toggle attempt
+			const fieldsBefore = { ...store.visibility?.personalDetails.fields };
+
 			store.togglePersonalDetailsField("name");
 
-			// No assertion needed - just verifying it doesn't throw
+			// Verify fields remain unchanged
+			expect(store.visibility?.personalDetails.fields).toEqual(fieldsBefore);
+			// Verify 'name' key is not present
+			expect(
+				Object.keys(store.visibility?.personalDetails.fields ?? {}),
+			).not.toContain("name");
 		});
 
 		it("should toggle all location fields together", () => {
