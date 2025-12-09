@@ -8,8 +8,8 @@
 		"clearForm": "Clear Form",
 		"saveProgress": "Save Progress",
 		"sections": {
-			"personalInfo": "Personal Information",
-			"workExperience": "Work Experience",
+			"personalDetails": "Personal Information",
+			"work": "Work Experience",
 			"volunteer": "Volunteer Experience",
 			"education": "Education",
 			"awards": "Awards and Honors",
@@ -20,8 +20,6 @@
 			"interests": "Interests and Hobbies",
 			"references": "References",
 			"projects": "Projects",
-			"personalDetails": "Personal Details",
-			"work": "Work Experience",
 			"certifications": "Certifications"
 		},
 		"fields": {
@@ -203,7 +201,7 @@
 			"descriptions": {
 				"personalInfo": "Add your basic contact information and professional details",
 				"profiles": "Add your social media and professional network profiles",
-				"workExperience": "Add your professional work history and achievements",
+				"work": "Add your professional work history and achievements",
 				"volunteer": "Add your volunteer work and community contributions",
 				"education": "Add your academic background and relevant courses",
 				"awards": "Add your awards, honors, and professional recognitions",
@@ -217,7 +215,7 @@
 			},
 			"labels": {
 				"profile": "Profile {number}",
-				"workExperience": "Work Experience {number}",
+				"work": "Work Experience {number}",
 				"volunteer": "Volunteer Experience {number}",
 				"education": "Education {number}",
 				"award": "Award {number}",
@@ -231,7 +229,7 @@
 			},
 			"empty": {
 				"profiles": "No profiles have been added yet. Click the button above to add your first profile.",
-				"workExperience": "No work experience has been added yet. Click the button above to add your first position.",
+				"work": "No work experience has been added yet. Click the button above to add your first position.",
 				"volunteer": "No volunteer experience has been added yet. Click the button above to add your first volunteer position.",
 				"highlights": "No highlights have been added yet. Click the button above to add highlights.",
 				"education": "No education entries have been added yet. Click the button above to add your first degree or certification.",

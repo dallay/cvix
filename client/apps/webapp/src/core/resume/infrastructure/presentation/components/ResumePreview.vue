@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineEmits } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Resume } from "@/core/resume/domain/Resume";
 import ResumePreviewEducation from "./resume-preview/ResumePreviewEducation.vue";

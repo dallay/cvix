@@ -8,8 +8,8 @@
 		"clearForm": "Limpiar Formulario",
 		"saveProgress": "Guardar Progreso",
 		"sections": {
-			"personalInfo": "Información Personal",
-			"workExperience": "Experiencia Laboral",
+			"personalDetails": "Información Personal",
+			"work": "Experiencia Laboral",
 			"volunteer": "Experiencia de Voluntariado",
 			"education": "Educación",
 			"awards": "Premios y Reconocimientos",
@@ -20,8 +20,6 @@
 			"interests": "Intereses y Pasatiempos",
 			"references": "Referencias",
 			"projects": "Proyectos",
-			"personalDetails": "Detalles Personales",
-			"work": "Experiencia Laboral",
 			"certifications": "Certificaciones"
 		},
 		"fields": {
@@ -203,7 +201,7 @@
 			"descriptions": {
 				"personalInfo": "Agrega tu información de contacto básica y detalles profesionales",
 				"profiles": "Agrega tus perfiles de redes sociales y redes profesionales",
-				"workExperience": "Agrega tu historial de trabajo profesional y logros",
+				"work": "Agrega tu historial de trabajo profesional y logros",
 				"volunteer": "Agrega tu trabajo voluntario y contribuciones a la comunidad",
 				"education": "Agrega tu formación académica y cursos relevantes",
 				"awards": "Agrega tus premios, honores y reconocimientos profesionales",
@@ -217,7 +215,7 @@
 			},
 			"labels": {
 				"profile": "Perfil {number}",
-				"workExperience": "Experiencia Laboral {number}",
+				"work": "Experiencia Laboral {number}",
 				"volunteer": "Experiencia de Voluntariado {number}",
 				"education": "Educación {number}",
 				"award": "Premio {number}",
@@ -231,7 +229,7 @@
 			},
 			"empty": {
 				"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil.",
-				"workExperience": "No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto.",
+				"work": "No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto.",
 				"volunteer": "No se ha agregado experiencia de voluntariado aún. Haz clic en el botón de arriba para agregar tu primera posición voluntaria.",
 				"highlights": "No se han agregado logros aún. Haz clic en el botón de arriba para agregar logros.",
 				"education": "No se han agregado entradas de educación aún. Haz clic en el botón de arriba para agregar tu primer título o certificación.",

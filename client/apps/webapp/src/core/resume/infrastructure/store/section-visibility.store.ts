@@ -61,8 +61,7 @@ export const useSectionVisibilityStore = defineStore(
 				} else {
 					// Array sections
 					const sectionData = resume.value[sectionType as keyof Resume];
-					itemCount =
-						(Array.isArray(sectionData) ? sectionData.length : 0) ?? 0;
+					itemCount = Array.isArray(sectionData) ? sectionData.length : 0;
 					hasData = itemCount > 0;
 					visibleItemCount = getFilterService().countVisibleItems(
 						vis as ArraySectionVisibility,
@@ -238,11 +237,9 @@ export const useSectionVisibilityStore = defineStore(
 			() => visibility.value,
 			(newVisibility) => {
 				if (newVisibility) {
-					debouncedSave(newVisibility)
-						.then((r) => r)
-						.catch((e) => {
-							console.error("Failed to save section visibility:", e);
-						});
+					debouncedSave(newVisibility).catch((e) => {
+						console.error("Failed to save section visibility:", e);
+					});
 				}
 			},
 			{ deep: true },

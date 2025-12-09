@@ -24,6 +24,13 @@ CLIENT_LANDING_FILTER := --filter @cvix/marketing
 CLIENT_WEBAPP_FILTER := --filter @cvix/webapp
 CLIENT_DOCS_FILTER := --filter @cvix/docs
 
+# Build configuration
+LOG_DIR := build/logs
+# Detect timeout command (gtimeout on macOS via brew, or timeout on Linux)
+TIMEOUT_CMD := $(shell command -v timeout || command -v gtimeout)
+TIMEOUT_300 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 300,)
+TIMEOUT_600 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 600,)
+
 # ------------------------------------------------------------------------------------
 # HELP
 # ------------------------------------------------------------------------------------
@@ -191,14 +198,17 @@ all: install build test backend-test lint check
 	@echo "║                                                                     ║"
 	@echo "║  ✅ Dependencies installed                                          ║"
 	@echo "║  ✅ Frontend & Backend built                                        ║"
-	@echo "║  ✅ Tests passed (730 tests)                                        ║"
+	@echo "║  ✅ Tests passed                                                  ║"
 	@echo "║  ✅ Linting passed                                                  ║"
-	@echo "║  ✅ Checks passed                                                   ║"
-	@echo "║                                                                     ║"
-	@echo "╚═════════════════════════════════════════════════════════════════════╝"
+# Helper function for verification steps
+# Usage: $(call run_verified_step, step_number, description, command, log_file_name)
+define run_verified_step
 	@echo ""
-	@echo "🚀 Project is ready for deployment!"
-	@echo ""
+	@echo "⏳ Step $(1): $(2)..."
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@mkdir -p $(LOG_DIR)
+	@$(3) > $(LOG_DIR)/$(4).log 2>&1 && echo "✅ $(2): PASSED" || (echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log for details"; exit 1)
+endef
 
 # Verifies the entire project with detailed output showing each step
 verify-all:
@@ -206,30 +216,25 @@ verify-all:
 	@echo "╔═════════════════════════════════════════════════════════════════════╗"
 	@echo "║                  🔍 CVIX PROJECT VERIFICATION                       ║"
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"
-	@echo ""
-	@echo "⏳ Step 1/4: Running pnpm run check..."
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@$(PNPM) check > /tmp/pnpm-check.log 2>&1 && echo "✅ pnpm run check: PASSED" || (echo "❌ pnpm run check: FAILED"; exit 1)
-	@echo ""
-	@echo "⏳ Step 2/4: Running pnpm run test..."
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@timeout 300 $(PNPM) test > /tmp/pnpm-test.log 2>&1 && echo "✅ pnpm run test: PASSED  (52 test files, 730 tests passed)" || (echo "❌ pnpm run test: FAILED"; exit 1)
-	@echo ""
-	@echo "⏳ Step 3/4: Running pnpm run build..."
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@timeout 600 $(PNPM) build > /tmp/pnpm-build.log 2>&1 && echo "✅ pnpm run build: PASSED (47 pages built successfully)" || (echo "❌ pnpm run build: FAILED"; exit 1)
-	@echo ""
-	@echo "⏳ Step 4/4: Running backend tests..."
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@$(MAKE) backend-test > /tmp/backend-test.log 2>&1 && echo "✅ Backend tests: PASSED" || (echo "❌ Backend tests: FAILED"; exit 1)
+	$(call run_verified_step,1/4,Running pnpm run check,$(PNPM) check,pnpm-check)
+	$(call run_verified_step,2/4,Running pnpm run test,$(TIMEOUT_300) $(PNPM) test,pnpm-test)
+	$(call run_verified_step,3/4,Running pnpm run build,$(TIMEOUT_600) $(PNPM) build,pnpm-build)
+	$(call run_verified_step,4/4,Running backend tests,$(MAKE) backend-test,backend-test)
 	@echo ""
 	@echo "╔═════════════════════════════════════════════════════════════════════╗"
 	@echo "║                                                                     ║"
 	@echo "║              ✨ ALL COMMANDS PASSED SUCCESSFULLY! ✨               ║"
 	@echo "║                                                                     ║"
 	@echo "║  ✅ Linting & Formatting verified                                   ║"
-	@echo "║  ✅ Frontend tests passed (730 tests)                               ║"
-	@echo "║  ✅ Frontend build successful (47 pages)                            ║"
+	@echo "║  ✅ Frontend tests passed                                           ║"
+	@echo "║  ✅ Frontend build successful                                       ║"
+	@echo "║  ✅ Backend tests passed                                            ║"
+	@echo "║                                                                     ║"
+	@echo "╚═════════════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "🚀 Project is ready for deployment!"
+	@echo ""  ✅ Frontend tests passed                                           ║"
+	@echo "║  ✅ Frontend build successful                                       ║"
 	@echo "║  ✅ Backend tests passed                                            ║"
 	@echo "║                                                                     ║"
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"

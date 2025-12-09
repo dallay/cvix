@@ -271,7 +271,7 @@ watch(
                 if (vis && Array.isArray(vis.items) && vis.items.length > 0) {
                     const allOff = vis.items.every((v) => v === false);
                     if (allOff && vis.enabled) {
-                        vis.enabled = false; // Auto-disable section
+                        visibilityStore.disableSection(section); // Use action instead
                         // Optionally emit event or show warning
                     }
                 }

@@ -16,8 +16,8 @@ export const i18n = createI18n({
 		en: {
 			resume: {
 				sections: {
-					personalInfo: "Personal Information",
-					workExperience: "Work Experience",
+					personalDetails: "Personal Information",
+					work: "Work Experience",
 					education: "Education",
 					skills: "Skills",
 					projects: "Projects",
@@ -130,8 +130,8 @@ export const i18n = createI18n({
 		es: {
 			resume: {
 				sections: {
-					personalInfo: "Información Personal",
-					workExperience: "Experiencia Laboral",
+					personalDetails: "Información Personal",
+					work: "Experiencia Laboral",
 					education: "Educación",
 					skills: "Habilidades",
 					projects: "Proyectos",

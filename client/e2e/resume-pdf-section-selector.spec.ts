@@ -71,7 +71,7 @@ async function createTestResume(page: Page) {
 	await page.getByLabel("Category Name").fill("Programming Languages");
 
 	// Wait for form to be saved
-	await page.waitForTimeout(1000);
+  await page.waitForLoadState("networkidle");
 }
 
 test.describe("Resume PDF Section Selector - Section Toggle", () => {
@@ -173,10 +173,11 @@ test.describe("Resume PDF Section Selector - Section Toggle", () => {
 			).toBeVisible();
 		});
 
-		await test.step("Wait for PDF preview to regenerate", async () => {
-			// Wait for the debounced PDF generation to complete
-			await page.waitForTimeout(1000);
-		});
+    await test.step("Wait for PDF preview to regenerate", async () => {
+      // Wait for loading indicator to appear and disappear
+      await expect(page.getByText("Generating preview...")).toBeVisible();
+      await expect(page.getByText("Generating preview...")).not.toBeVisible({ timeout: 5000 });
+    });
 
 		await test.step("Download PDF and verify", async () => {
 			// Start waiting for download before clicking

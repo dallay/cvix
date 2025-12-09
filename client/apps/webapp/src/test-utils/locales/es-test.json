@@ -35,8 +35,8 @@
 			}
 		},
 		"sections": {
-			"personalInfo": "Información Personal",
-			"workExperience": "Experiencia Laboral",
+			"personalDetails": "Información Personal",
+			"work": "Experiencia Laboral",
 			"education": "Educación",
 			"skills": "Habilidades",
 			"projects": "Proyectos",

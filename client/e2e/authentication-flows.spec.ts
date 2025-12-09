@@ -492,7 +492,7 @@ test.describe("Complete Authentication Flow", () => {
 				throw new Error("XSS vulnerability detected!");
 			});
 
-			await page.waitForTimeout(1000);
+			await page.waitForLoadState("networkidle");
 		});
 
 		test("should handle network errors gracefully", async ({
