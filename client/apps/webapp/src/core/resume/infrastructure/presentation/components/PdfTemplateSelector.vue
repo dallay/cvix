@@ -49,8 +49,6 @@ const { t } = useI18n();
 const selectedTemplateId = ref(props.modelValue.templateId);
 const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
-const templateSelectId = `template-select-${crypto.randomUUID()}`;
-
 // Sync external templateId changes
 watch(
 	() => props.modelValue.templateId,
@@ -74,26 +72,6 @@ watch(
 const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
-
-// Helper: Validate if the input should be processed
-function isValidTemplateId(value: ParamValue): boolean {
-	if (value === null || value === "" || props.templates.length === 0) {
-		return false;
-	}
-	// Ignore object values, only process primitives
-	return typeof value !== "object";
-}
-
-// Helper: Convert input to string ID
-function convertToStringId(value: ParamValue): string {
-	if (typeof value === "bigint" || typeof value === "number") {
-		return value.toString();
-	}
-	if (typeof value === "string") {
-		return value;
-	}
-	return "";
-}
 
 // Helper: Build params from template defaults
 function buildTemplateParams(
@@ -126,22 +104,6 @@ function buildTemplateParams(
 	}
 
 	return newParams;
-}
-
-// Accept all AcceptableValue types (string | number | bigint | null), ignore objects
-function onUserTemplateChange(newId: ParamValue) {
-	if (!isValidTemplateId(newId)) {
-		return;
-	}
-
-	const id = convertToStringId(newId);
-	if (!id) {
-		return;
-	}
-
-	selectedTemplateId.value = id;
-	const template = props.templates.find((t) => t.id === id);
-	params.value = buildTemplateParams(template);
 }
 
 // Handle template card click
@@ -236,7 +198,7 @@ const updateParam = (key: string, value: unknown) => {
               <button
                 type="button"
                 :class="[
-                  'w-full h-full rounded-lg border-2 p-4 text-left transition-all duration-200 flex flex-col',
+                  'w-full h-full rounded-lg border-2 p-4 text-left transition-all duration-200 flex items-start gap-3',
                   'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                   selectedTemplateId === template.id
                     ? 'border-primary bg-primary/5 shadow-sm'
@@ -246,43 +208,41 @@ const updateParam = (key: string, value: unknown) => {
                 :aria-pressed="selectedTemplateId === template.id"
                 @click="onTemplateCardClick(template.id)"
               >
-                <div class="flex items-start gap-3 w-full">
-                  <!-- Template Icon/Indicator -->
-                  <div
-                    :class="[
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
-                      selectedTemplateId === template.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    ]"
-                  >
-                    {{ template.name.charAt(0).toUpperCase() }}
-                  </div>
+                <!-- Template Icon/Indicator -->
+                <span
+                  :class="[
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
+                    selectedTemplateId === template.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                  ]"
+                >
+                  {{ template.name.charAt(0).toUpperCase() }}
+                </span>
 
-                  <!-- Template Info -->
-                  <div class="flex-1 min-w-0">
-                    <h4 :class="[
-                      'text-sm font-semibold mb-1',
-                      selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
-                    ]">
-                      {{ template.name }}
-                    </h4>
-                    <p v-if="template.description" class="text-xs text-muted-foreground line-clamp-2">
-                      {{ template.description }}
-                    </p>
-                  </div>
+                <!-- Template Info -->
+                <span class="flex-1 min-w-0">
+                  <span :class="[
+                    'text-sm font-semibold mb-1 block',
+                    selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
+                  ]">
+                    {{ template.name }}
+                  </span>
+                  <span v-if="template.description" class="text-xs text-muted-foreground line-clamp-2 block">
+                    {{ template.description }}
+                  </span>
+                </span>
 
-                  <!-- Active Indicator -->
-                  <div
-                    v-if="selectedTemplateId === template.id"
-                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
-                    data-testid="template-selected-indicator"
-                  >
-                    <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                </div>
+                <!-- Active Indicator -->
+                <span
+                  v-if="selectedTemplateId === template.id"
+                  class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
+                  data-testid="template-selected-indicator"
+                >
+                  <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
               </button>
             </CarouselItem>
           </CarouselContent>
