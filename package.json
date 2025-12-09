@@ -35,7 +35,7 @@
   "scripts": {
     "update-deps": "pnpm update -i -r --latest",
     "preinstall": "npx only-allow pnpm",
-    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && (command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply'); fi",
+    "prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
     "ruler:apply": "npx @intellectronica/ruler apply",
     "ruler:check": "npx @intellectronica/ruler check",
     "dev": "pnpm --recursive --parallel run dev",
@@ -70,7 +70,7 @@
     "start": "run-p backend:run dev",
     "test:all": "pnpm --recursive run test && pnpm run backend:test && pnpm run test:e2e",
     "test:all:unit": "pnpm --recursive run test && pnpm run backend:test",
-    "precommit": "(command -v ruler >/dev/null 2>&1 && pnpm run ruler:apply || echo 'ruler not found, skipping ruler:apply')",
+    "precommit": "pnpm run ruler:apply",
     "release": "semantic-release",
     "release:dry-run": "semantic-release --dry-run"
   },
