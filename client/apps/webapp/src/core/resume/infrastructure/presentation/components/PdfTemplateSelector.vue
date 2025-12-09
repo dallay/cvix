@@ -188,6 +188,7 @@ const updateParam = (key: string, value: unknown) => {
             loop: true,
           }"
           class="w-full"
+          data-testid="template-carousel"
         >
           <CarouselContent class="-ml-4">
             <CarouselItem

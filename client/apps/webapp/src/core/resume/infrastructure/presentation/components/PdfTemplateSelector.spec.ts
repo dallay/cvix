@@ -477,8 +477,11 @@ describe("PdfTemplateSelector", () => {
 			});
 
 			// Check if carousel structure exists
-			const carousel = container.querySelector(".pl-4");
-			expect(carousel).toBeInTheDocument();
+			// Prefer stable test id on the carousel wrapper rather than a layout utility class
+			const carouselElements = screen.queryAllByTestId
+				? screen.queryAllByTestId("template-carousel")
+				: container.querySelectorAll('[data-testid="template-carousel"]');
+			expect(carouselElements.length).toBeGreaterThan(0);
 		});
 
 		it("should use full width for cards", () => {
