@@ -73,7 +73,7 @@ const getArraySectionVisibility = (
 const getItemsForSection = (section: SectionType) => {
 	if (section === "personalDetails") {
 		const fields = props.visibility.personalDetails.fields;
-		return [
+		const items = [
 			{
 				label: t("resume.basics.image"),
 				enabled: fields.image,
@@ -100,6 +100,15 @@ const getItemsForSection = (section: SectionType) => {
 				enabled: fields.url,
 			},
 		];
+		// Add a toggle for each profile
+		const profiles = props.resume.basics?.profiles || [];
+		profiles.forEach((profile) => {
+			items.push({
+				label: `${t("resume.basics.profiles")} - ${profile.network}`,
+				enabled: fields.profiles?.[profile.network] ?? true,
+			});
+		});
+		return items;
 	}
 
 	// For array sections, get the items from the resume
@@ -143,21 +152,28 @@ const handleToggleItem = (section: ArraySectionType, index: number) => {
 };
 
 /**
- * Maps personalDetails field indices to field names for emit.
+ * Returns the personalDetails field map, including dynamic profile keys.
  */
-const personalDetailsFieldMap = [
-	"image",
-	"email",
-	"phone",
-	"location",
-	"summary",
-	"url",
-] as const;
+const getPersonalDetailsFieldMap = () => {
+	const staticFields = [
+		"image",
+		"email",
+		"phone",
+		"location",
+		"summary",
+		"url",
+	];
+	const profiles = props.resume.basics?.profiles || [];
+	const profileFields = profiles.map(
+		(profile) => `profiles:${profile.network}`,
+	);
+	return [...staticFields, ...profileFields];
+};
 
 const handleTogglePersonalDetailsField = (index: number) => {
-	const field = personalDetailsFieldMap[index];
-	if (field) {
-		emit("toggle-field", field);
+	const fieldKey = getPersonalDetailsFieldMap()[index];
+	if (fieldKey) {
+		emit("toggle-field", fieldKey);
 	}
 };
 

@@ -41,6 +41,7 @@ const i18n = createI18n({
 					loading: "Loading templates…",
 					noTemplates: "No templates available",
 					coreOptions: "Appearance & Language",
+					selectTemplateAria: "Select {name} template",
 					param: {
 						locale: "Language",
 						fontFamily: "Font Family",

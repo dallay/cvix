@@ -228,9 +228,9 @@ const updateParam = (key: string, value: unknown) => {
           class="w-full"
         >
           <CarouselContent class="-ml-4">
-            <CarouselItem 
-              v-for="template in templates" 
-              :key="template.id" 
+            <CarouselItem
+              v-for="template in templates"
+              :key="template.id"
               class="pl-4 basis-full"
             >
               <button
@@ -242,7 +242,7 @@ const updateParam = (key: string, value: unknown) => {
                     ? 'border-primary bg-primary/5 shadow-sm'
                     : 'border-border bg-card hover:bg-accent/50'
                 ]"
-                :aria-label="`Select ${template.name} template`"
+                :aria-label="t('resume.pdfSelector.selectTemplateAria', { name: template.name })"
                 :aria-pressed="selectedTemplateId === template.id"
                 @click="onTemplateCardClick(template.id)"
               >
