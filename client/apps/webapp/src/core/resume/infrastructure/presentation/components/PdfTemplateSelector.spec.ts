@@ -332,7 +332,7 @@ describe("PdfTemplateSelector", () => {
 			expect(labelTexts).toContain("Color Scheme");
 		});
 
-		it("should maintain dropdown behavior for language/font/color", async () => {
+		it("should render language dropdown label", async () => {
 			const modelValue = {
 				templateId: "classic",
 				params: { locale: "en" },
