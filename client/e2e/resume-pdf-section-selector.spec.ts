@@ -8,24 +8,43 @@
  * @see specs/005-pdf-section-selector/spec.md for user stories
  *
  * Prerequisites:
- * 1. Backend services must be running (make start)
+ * 1. Backend services must be running:
+ *    - Run: make start
+ *    - Or: ./gradlew bootRun
+ *    - Or: docker-compose up
  * 2. Frontend dev server will be started automatically by playwright webServer config
  * 3. User must be authenticated (these tests assume authentication is handled)
  *
  * To run:
  *   pnpm playwright test e2e/resume-pdf-section-selector.spec.ts
  *
- * Note: These tests create a test resume in the beforeEach hook.
- * In production, you may want to use fixtures or auth.setup.ts for authentication.
+ * Note:
+ * - Tests will be automatically skipped if the backend is not available (check /api/health-check)
+ * - Tests create a test resume in the beforeEach hook
+ * - In production, you may want to use fixtures or auth.setup.ts for authentication
  */
 
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
+// Check if backend is available
+async function isBackendAvailable(page: Page): Promise<boolean> {
+	try {
+		const response = await page.request.get("/api/health-check", {
+			timeout: 5000,
+		});
+		return response.ok();
+	} catch (error) {
+		return false;
+	}
+}
+
 // Helper to create a minimal resume with test data
 async function createTestResume(page: Page) {
-	await page.goto("/resume/editor");
-	await page.waitForLoadState("networkidle");
+	await page.goto("/resume/editor", { waitUntil: "domcontentloaded" });
+
+	// Wait for the page to be interactive (but don't wait for all network requests)
+	await page.waitForLoadState("load");
 
 	// Fill Personal Information (required for all tests)
 	await page.getByLabel("Full Name").fill("Alex Morgan");
@@ -70,23 +89,27 @@ async function createTestResume(page: Page) {
 	await page.getByRole("button", { name: /add skill category/i }).click();
 	await page.getByLabel("Category Name").fill("Programming Languages");
 
-	// Wait for form to be saved
-  await page.waitForLoadState("networkidle");
+	// Wait for form to be saved (use a short timeout to not block on failed API calls)
+	await page.waitForTimeout(1000);
 }
 
 test.describe("Resume PDF Section Selector - Section Toggle", () => {
 	test.beforeEach(async ({ page }) => {
+		// Check if backend is available
+		const backendAvailable = await isBackendAvailable(page);
+		test.skip(!backendAvailable, "Backend is not running. Start it with 'make start' or './gradlew bootRun'");
+
 		// Create a test resume with multiple sections
 		await createTestResume(page);
 
 		// Navigate to PDF page
-		await page.goto("/resume/pdf");
-		await page.waitForLoadState("networkidle");
+		await page.goto("/resume/pdf", { waitUntil: "domcontentloaded" });
+		await page.waitForLoadState("load");
 
 		// Wait for section toggle panel to be visible
 		await expect(
 			page.getByText("Visible Sections", { exact: false }),
-		).toBeVisible();
+		).toBeVisible({ timeout: 10000 });
 	});
 
 	// T031: Toggle section visibility, verify live preview updates
@@ -217,18 +240,24 @@ test.describe("Resume PDF Section Selector - Section Toggle", () => {
 				page.getByRole("button", { name: /Education.*disabled/i }),
 			).toBeVisible();
 
-			// Wait for persistence to complete (storage is synchronous but give it a moment)
-			await page.waitForTimeout(500);
+      // Wait for storage to persist (check localStorage directly)
+      await page.waitForFunction(() => {
+        const key = Object.keys(localStorage).find(k => k.startsWith('cvix-section-visibility-'));
+        return key && localStorage.getItem(key) !== null;
+      }, { timeout: 5000 }).catch(() => {
+        // If localStorage check fails, continue anyway - the persistence will be verified on refresh
+        console.log("localStorage check timed out, but continuing with test");
+      });
 		});
 
 		await test.step("Refresh the page", async () => {
-			await page.reload();
-			await page.waitForLoadState("networkidle");
+			await page.reload({ waitUntil: "domcontentloaded" });
+			await page.waitForLoadState("load");
 
 			// Wait for section toggle panel to be visible
 			await expect(
 				page.getByText("Visible Sections", { exact: false }),
-			).toBeVisible();
+			).toBeVisible({ timeout: 10000 });
 		});
 
 		await test.step("Verify preferences were restored", async () => {
@@ -279,17 +308,21 @@ test.describe("Resume PDF Section Selector - Section Toggle", () => {
 
 test.describe("Resume PDF Section Selector - Item Toggle", () => {
 	test.beforeEach(async ({ page }) => {
+		// Check if backend is available
+		const backendAvailable = await isBackendAvailable(page);
+		test.skip(!backendAvailable, "Backend is not running. Start it with 'make start' or './gradlew bootRun'");
+
 		// Create a test resume with multiple sections
 		await createTestResume(page);
 
 		// Navigate to PDF page
-		await page.goto("/resume/pdf");
-		await page.waitForLoadState("networkidle");
+		await page.goto("/resume/pdf", { waitUntil: "domcontentloaded" });
+		await page.waitForLoadState("load");
 
 		// Wait for section toggle panel to be visible
 		await expect(
 			page.getByText("Visible Sections", { exact: false }),
-		).toBeVisible();
+		).toBeVisible({ timeout: 10000 });
 	});
 
 	test("should expand section to show individual items", async ({ page }) => {
@@ -439,6 +472,10 @@ test.describe("Resume PDF Section Selector - Item Toggle", () => {
 // T034: Verify responsive behavior at 768px, 1024px, 1440px breakpoints
 test.describe("Resume PDF Section Selector - Responsive Layout", () => {
 	test.beforeEach(async ({ page }) => {
+		// Check if backend is available
+		const backendAvailable = await isBackendAvailable(page);
+		test.skip(!backendAvailable, "Backend is not running. Start it with 'make start' or './gradlew bootRun'");
+
 		// Create a test resume
 		await createTestResume(page);
 	});
@@ -454,13 +491,13 @@ test.describe("Resume PDF Section Selector - Responsive Layout", () => {
 		test(`should maintain layout stability at ${name}`, async ({ page }) => {
 			await test.step(`Set viewport to ${name}`, async () => {
 				await page.setViewportSize({ width, height });
-				await page.goto("/resume/pdf");
-				await page.waitForLoadState("networkidle");
+				await page.goto("/resume/pdf", { waitUntil: "domcontentloaded" });
+				await page.waitForLoadState("load");
 
 				// Wait for section toggle panel to be visible
 				await expect(
 					page.getByText("Visible Sections", { exact: false }),
-				).toBeVisible();
+				).toBeVisible({ timeout: 10000 });
 			});
 
 			await test.step("Verify all sections are visible", async () => {

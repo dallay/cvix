@@ -108,22 +108,34 @@ $RECYCLE.BIN/
 
 
 # START Ruler Generated Files
-.cursor/mcp.json
-.cursor/mcp.json.bak
-.cursor/rules/ruler_cursor_instructions.mdc
-.cursor/rules/ruler_cursor_instructions.mdc.bak
-.gemini/settings.json
-.gemini/settings.json.bak
-.github/copilot-instructions.md
-.github/copilot-instructions.md.bak
-.mcp.json
-.mcp.json.bak
-.vscode/mcp.json
-.vscode/mcp.json.bak
-CLAUDE.md
-CLAUDE.md.bak
-GEMINI.md
-GEMINI.md.bak
+/../../.config/.cursor/mcp.json
+/../../.config/.cursor/mcp.json.bak
+/../../.config/.gemini/settings.json
+/../../.config/.gemini/settings.json.bak
+/../../.config/.mcp.json
+/../../.config/.mcp.json.bak
+/../../.config/.vscode/mcp.json
+/../../.config/.vscode/mcp.json.bak
+/../../.config/AGENTS.md
+/../../.config/AGENTS.md.bak
+/../../.config/CLAUDE.md
+/../../.config/CLAUDE.md.bak
+/.cursor/mcp.json
+/.cursor/mcp.json.bak
+/.cursor/rules/ruler_cursor_instructions.mdc
+/.cursor/rules/ruler_cursor_instructions.mdc.bak
+/.gemini/settings.json
+/.gemini/settings.json.bak
+/.github/copilot-instructions.md
+/.github/copilot-instructions.md.bak
+/.mcp.json
+/.mcp.json.bak
+/.vscode/mcp.json
+/.vscode/mcp.json.bak
+/CLAUDE.md
+/CLAUDE.md.bak
+/GEMINI.md
+/GEMINI.md.bak
 # END Ruler Generated Files
 checksums.txt
 gitleaks_*.tar.gz
