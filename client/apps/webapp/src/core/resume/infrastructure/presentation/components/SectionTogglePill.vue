@@ -38,20 +38,20 @@ const emit = defineEmits<{
 
 const isDisabledDueToNoData = computed(() => !props.hasData);
 
-const ariaLabel = computed(() => {
-	let label = props.label;
-	if (props.visibleCount !== undefined && props.totalCount !== undefined) {
-		label += ` (${props.visibleCount}/${props.totalCount})`;
-	}
-	return `${label}, ${props.enabled ? "enabled" : "disabled"}`;
-});
-
 const showItemCount = computed(
 	() =>
 		props.totalCount &&
 		props.totalCount > 0 &&
 		props.visibleCount !== undefined,
 );
+
+const ariaLabel = computed(() => {
+	let label = props.label;
+	if (showItemCount.value) {
+		label += ` (${props.visibleCount}/${props.totalCount})`;
+	}
+	return `${label}, ${props.enabled ? "enabled" : "disabled"}`;
+});
 
 const buttonClasses = computed(() => {
 	const base =
