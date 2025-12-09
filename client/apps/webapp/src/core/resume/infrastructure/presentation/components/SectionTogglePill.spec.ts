@@ -33,9 +33,10 @@ describe("SectionTogglePill", () => {
 			});
 
 			const button = screen.getByRole("button", { name: /Work Experience/i });
-			// Check for checkmark icon by looking for svg element
-			const svg = button.querySelector("svg");
-			expect(svg).toBeInTheDocument();
+			// Check for checkmark icon by its semantic role or test-id
+			expect(
+				button.querySelector('[data-testid="checkmark-icon"]'),
+			).toBeInTheDocument();
 		});
 
 		it("should show item count when provided", () => {

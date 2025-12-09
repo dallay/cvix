@@ -135,7 +135,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
       <span
         class="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center"
       >
-        <Check class="w-2.5 h-2.5 text-primary-foreground" />
+        <Check class="w-2.5 h-2.5 text-primary-foreground" data-testid="checkmark-icon" />
       </span>
     </span>
     <!-- Disabled state (unchecked): gray circle, no icon -->
