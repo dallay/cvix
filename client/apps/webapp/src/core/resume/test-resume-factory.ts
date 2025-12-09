@@ -142,14 +142,22 @@ const DEFAULT_REFERENCES: Resume["references"] = [
 
 /**
  * Creates a test Resume object with default values, allowing overrides.
- * Note: `basics` is deep-merged with defaults using the shared `deepmerge`
- * utility. Nested plain objects (e.g., `basics.location`) will preserve
- * unspecified default fields when partially overridden. Arrays provided in
- * overrides will follow the `deepmerge` strategy (by default arrays are
- * concatenated); to replace arrays, provide the full array in overrides.
+ *
+ * Merge behavior:
+ * - `basics`: Deep-merged using `deepmerge`. Nested objects (e.g., `basics.location`)
+ *   preserve unspecified fields. Arrays within basics (e.g., `basics.profiles`) are
+ *   concatenated by default.
+ * - All other sections (work, education, skills, etc.): Shallow replacement. Providing
+ *   an override completely replaces the default array/value for that section.
  *
  * @param overrides Partial Resume object to override default values.
  * @returns Complete Resume object for testing.
+ * @example
+ * // Partially override basics.location - other location fields preserved
+ * createTestResume({ basics: { location: { city: "NYC" } } })
+ *
+ * // Replace entire work array - defaults not preserved
+ * createTestResume({ work: [{ name: "Custom Co", position: "Dev" }] })
  */
 export const createTestResume = (overrides?: Partial<Resume>): Resume => ({
 	basics: deepmerge.all([

@@ -174,9 +174,11 @@ setActivePinia(pinia);
 // Add Pinia to global plugins
 config.global.plugins = [i18n, pinia];
 
-// Mock ResizeObserver for tooltip components
-globalThis.ResizeObserver = class ResizeObserver {
-	observe() {}
-	unobserve() {}
-	disconnect() {}
-};
+// Mock ResizeObserver for tooltip components (only if not provided by the environment)
+if (!globalThis.ResizeObserver) {
+	globalThis.ResizeObserver = class ResizeObserver {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+	};
+}
