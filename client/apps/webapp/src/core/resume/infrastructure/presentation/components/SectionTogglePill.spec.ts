@@ -194,7 +194,6 @@ describe("SectionTogglePill", () => {
 		});
 
 		it("should not emit toggle event when clicked with no data", async () => {
-			const user = userEvent.setup();
 			const onToggle = vi.fn();
 
 			render(SectionTogglePill, {
@@ -207,10 +206,9 @@ describe("SectionTogglePill", () => {
 			});
 
 			const button = screen.getByRole("button", { name: /Projects/i });
-			// Attempting to click a disabled button shouldn't trigger the event
-			await user.click(button).catch(() => {
-				// @testing-library may throw when trying to click disabled button
-			});
+			// Button is disabled, so userEvent won't trigger the click handler
+			// Just verify it's disabled and the handler wasn't called
+			expect(button).toBeDisabled();
 
 			expect(onToggle).not.toHaveBeenCalled();
 		});

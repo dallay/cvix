@@ -1,3 +1,4 @@
+import { deepmerge } from "@cvix/utilities";
 import type { Resume } from "@/core/resume/domain/Resume.ts";
 
 const DEFAULT_BASICS: Resume["basics"] = {
@@ -141,14 +142,21 @@ const DEFAULT_REFERENCES: Resume["references"] = [
 
 /**
  * Creates a test Resume object with default values, allowing overrides.
+ * Note: `basics` is deep-merged with defaults using the shared `deepmerge`
+ * utility. Nested plain objects (e.g., `basics.location`) will preserve
+ * unspecified default fields when partially overridden. Arrays provided in
+ * overrides will follow the `deepmerge` strategy (by default arrays are
+ * concatenated); to replace arrays, provide the full array in overrides.
+ *
  * @param overrides Partial Resume object to override default values.
  * @returns Complete Resume object for testing.
  */
 export const createTestResume = (overrides?: Partial<Resume>): Resume => ({
-	basics: {
-		...DEFAULT_BASICS,
-		...overrides?.basics,
-	},
+	basics: deepmerge.all([
+		{},
+		DEFAULT_BASICS,
+		overrides?.basics ?? {},
+	]) as Resume["basics"],
 	work: overrides?.work ?? DEFAULT_WORK,
 	education: overrides?.education ?? DEFAULT_EDUCATION,
 	skills: overrides?.skills ?? DEFAULT_SKILLS,
