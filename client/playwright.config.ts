@@ -1,4 +1,4 @@
-import { defineConfig } from "@playwright/test";
+import {defineConfig} from "@playwright/test";
 
 // Choose a safe backend target for local Playwright runs to avoid Vite proxying to
 // an unavailable HTTPS dev backend (e.g., https://localhost:8443). Priority:
@@ -7,8 +7,8 @@ import { defineConfig } from "@playwright/test";
 // 3. Local dev: default to http://localhost:8080
 const defaultBackendForTests =
 	process.env.PLAYWRIGHT_BACKEND_URL ??
-	(process.env.CI ? process.env.BACKEND_URL ?? "http://localhost:8080" : "http://localhost:8080");
-
+    	process.env.BACKEND_URL ??
+    	"http://localhost:8080";
 export default defineConfig({
 	webServer: {
 		command: "pnpm run dev:web",
