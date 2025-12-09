@@ -115,12 +115,13 @@ watch(
 
 // Watch for visibility changes to regenerate preview
 watch(
-	() => visibilityStore.filteredResume,
-	(filteredResume) => {
-		if (selectedTemplate.value.templateId && filteredResume) {
+	() => visibilityStore.visibility,
+	() => {
+		if (selectedTemplate.value.templateId && visibilityStore.filteredResume) {
 			debouncedGenerate();
 		}
 	},
+	{ deep: true },
 );
 
 const onDownload = async () => {

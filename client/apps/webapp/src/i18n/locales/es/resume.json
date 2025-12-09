@@ -354,13 +354,20 @@
 		"pdfSelector": {
 			"templateLabel": "Plantilla",
 			"selectTemplate": "Selecciona una plantilla",
-			"optionsTitle": "Opciones de la plantilla",
+			"selectTemplateAria": "Selecciona una plantilla PDF",
+			"coreOptions": "Opciones principales",
+			"selectLocale": "Selecciona el idioma",
 			"param": {
 				"color": "Color",
 				"font": "Fuente",
+				"fontFamily": "Familia tipográfica",
 				"layout": "Diseño",
-				"locale": "Idioma"
-			}
+				"locale": "Idioma",
+				"colorPalette": "Paleta de colores"
+			},
+			"optionsTitle": "Opciones de la plantilla",
+			"selectFont": "Selecciona la fuente",
+			"selectColor": "Selecciona el color"
 		},
 		"pdfPage": {
 			"backToEditor": "Volver al editor",
