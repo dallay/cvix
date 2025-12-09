@@ -168,10 +168,11 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const classicCard = container.querySelector(
-				"button[aria-label='Select Classic template']",
-			);
-			if (!classicCard) throw new Error("Classic card not found");
+			// Use testing-library query to get a strong, descriptive failure if the element is missing
+			const classicCard = within(container as HTMLElement).getByRole("button", {
+				name: "Select Classic template",
+			});
+			expect(classicCard).toBeInTheDocument();
 			await user.click(classicCard);
 
 			await waitFor(() => {
@@ -204,14 +205,18 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			const classicCard = container.querySelector(
-				"button[aria-label='Select Classic template']",
-			) as HTMLElement;
-			if (!classicCard) throw new Error("Classic card not found");
+			// Prefer a testing-library query so missing elements fail with a clear message
+			const classicCardKeyboard = within(container as HTMLElement).getByRole(
+				"button",
+				{
+					name: "Select Classic template",
+				},
+			);
+			expect(classicCardKeyboard).toBeInTheDocument();
 
 			// Focus and activate with keyboard
-			classicCard.focus();
-			expect(classicCard).toHaveFocus();
+			classicCardKeyboard.focus();
+			expect(classicCardKeyboard).toHaveFocus();
 
 			await user.keyboard("{Enter}");
 
