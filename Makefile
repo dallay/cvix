@@ -233,13 +233,6 @@ verify-all:
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"
 	@echo ""
 	@echo "🚀 Project is ready for deployment!"
-	@echo ""  ✅ Frontend tests passed                                           ║"
-	@echo "║  ✅ Frontend build successful                                       ║"
-	@echo "║  ✅ Backend tests passed                                            ║"
-	@echo "║                                                                     ║"
-	@echo "╚═════════════════════════════════════════════════════════════════════╝"
-	@echo ""
-	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
 .PHONY: all verify-all help install update-deps prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit
