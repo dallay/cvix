@@ -491,7 +491,7 @@ function handlePreviewNavigate(section: string, entryIndex?: number) {
         <Card class="h-fit">
           <CardHeader>
             <CardTitle>
-              {{ t("resume.sections.personalInfo") }}
+              {{ t("resume.sections.personalDetails") }}
             </CardTitle>
             <CardDescription>
               Fill out the form to create your resume

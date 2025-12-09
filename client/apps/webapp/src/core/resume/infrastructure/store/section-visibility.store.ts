@@ -17,7 +17,12 @@ import {
 } from "@/core/resume/domain/SectionVisibility";
 import { sectionVisibilityStorage } from "@/core/resume/infrastructure/storage/SectionVisibilityStorage";
 
-const resumeSectionFilterService = new ResumeSectionFilterService();
+// Lazy-initialized filter service to improve testability (can be mocked by tests)
+let resumeSectionFilterService: ResumeSectionFilterService | null = null;
+function getFilterService(): ResumeSectionFilterService {
+	resumeSectionFilterService ??= new ResumeSectionFilterService();
+	return resumeSectionFilterService;
+}
 
 /**
  * Section visibility store for managing which sections/items appear in PDF exports.
@@ -56,10 +61,9 @@ export const useSectionVisibilityStore = defineStore(
 				} else {
 					// Array sections
 					const sectionData = resume.value[sectionType as keyof Resume];
-					itemCount =
-						(Array.isArray(sectionData) ? sectionData.length : 0) ?? 0;
+					itemCount = Array.isArray(sectionData) ? sectionData.length : 0;
 					hasData = itemCount > 0;
-					visibleItemCount = resumeSectionFilterService.countVisibleItems(
+					visibleItemCount = getFilterService().countVisibleItems(
 						vis as ArraySectionVisibility,
 					);
 				}
@@ -83,10 +87,7 @@ export const useSectionVisibilityStore = defineStore(
 			if (!visibility.value || !resume.value) {
 				return null;
 			}
-			return resumeSectionFilterService.filterResume(
-				resume.value,
-				visibility.value,
-			);
+			return getFilterService().filterResume(resume.value, visibility.value);
 		});
 
 		/**
@@ -236,11 +237,9 @@ export const useSectionVisibilityStore = defineStore(
 			() => visibility.value,
 			(newVisibility) => {
 				if (newVisibility) {
-					debouncedSave(newVisibility)
-						.then((r) => r)
-						.catch((e) => {
-							console.error("Failed to save section visibility:", e);
-						});
+					debouncedSave(newVisibility).catch((e) => {
+						console.error("Failed to save section visibility:", e);
+					});
 				}
 			},
 			{ deep: true },

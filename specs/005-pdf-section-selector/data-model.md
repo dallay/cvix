@@ -41,8 +41,8 @@ export interface SectionVisibility {
     /** Projects section visibility */
     projects: ArraySectionVisibility;
 
-    /** Certifications section visibility */
-    certifications: ArraySectionVisibility;
+    /** Certificates section visibility */
+    certificates: ArraySectionVisibility;
 
     /** Volunteer experience section visibility */
     volunteer: ArraySectionVisibility;
@@ -209,7 +209,7 @@ export const SECTION_TYPES = [
             'education',
             'skills',
             'projects',
-            'certifications',
+            'certificates',
             'volunteer',
             'awards',
             'publications',
@@ -338,7 +338,7 @@ export function createDefaultVisibility(
         education: createArrayVisibility(resume.education.length),
         skills: createArrayVisibility(resume.skills.length),
         projects: createArrayVisibility(resume.projects.length),
-        certifications: createArrayVisibility(resume.certificates.length),
+        certificates: createArrayVisibility(resume.certificates.length),
         volunteer: createArrayVisibility(resume.volunteer.length),
         awards: createArrayVisibility(resume.awards.length),
         publications: createArrayVisibility(resume.publications.length),
@@ -383,7 +383,7 @@ export function filterResume(
         education: filterArray(resume.education, visibility.education),
         skills: filterArray(resume.skills, visibility.skills),
         projects: filterArray(resume.projects, visibility.projects),
-        certificates: filterArray(resume.certificates, visibility.certifications),
+        certificates: filterArray(resume.certificates, visibility.certificates),
         volunteer: filterArray(resume.volunteer, visibility.volunteer),
         awards: filterArray(resume.awards, visibility.awards),
         publications: filterArray(resume.publications, visibility.publications),
@@ -408,7 +408,7 @@ export function filterResume(
 │ education: ArraySectionVisibility ─────────────────────────────┤        │
 │ skills: ArraySectionVisibility ────────────────────────────────┤        │
 │ projects: ArraySectionVisibility ──────────────────────────────┤        │
-│ certifications: ArraySectionVisibility ────────────────────────┤        │
+│ certificates  : ArraySectionVisibility ────────────────────────┤        │
 │ volunteer: ArraySectionVisibility ─────────────────────────────┤        │
 │ awards: ArraySectionVisibility ────────────────────────────────┤        │
 │ publications: ArraySectionVisibility ──────────────────────────┤        │

@@ -126,7 +126,7 @@ function handleCancel() {
       <FieldGroup>
         <Accordion type="multiple" class="w-full" :default-value="['basics', 'work', 'education']">
           <AccordionItem value="basics">
-              <AccordionTrigger>{{ t("resume.sections.personalInfo") }}</AccordionTrigger>
+              <AccordionTrigger>{{ t("resume.sections.personalDetails") }}</AccordionTrigger>
               <AccordionContent>
                 <div ref="section-basics" class="space-y-6">
                   <BasicsSection v-model="basics" />
@@ -138,7 +138,7 @@ function handleCancel() {
           </AccordionItem>
 
           <AccordionItem value="work">
-              <AccordionTrigger>{{ t("resume.sections.workExperience") }}</AccordionTrigger>
+              <AccordionTrigger>{{ t("resume.sections.work") }}</AccordionTrigger>
               <AccordionContent>
                 <div ref="section-work">
                   <WorkExperienceSection v-model="workExperiences" />

@@ -113,17 +113,17 @@ and a11y roles.
 - [x] T013 [P] [US2] Build `SectionTogglePill.vue` with primary/outline variants, checkmark icon,
   hover/focus styles in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePill.vue`
-- [ ] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled,
+- [X] T014 [P] [US2] Wire `SectionTogglePanel.vue` to render pills with correct props (enabled,
   hasData, expanded) and implement full accessibility audit in
   `client/apps/webapp/src/core/resume/infrastructure/presentation/components/SectionTogglePanel.vue`:
-    - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
-    - Verify focus management (roving focus/aria-activedescendant if used)
-    - Ensure correct ARIA roles, labels, and states for screen readers
-    - Check color contrast for all pill states (enabled, disabled, hover, focus)
-    - Run automated accessibility tools (axe, pa11y)
-    - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
-    - Document all findings and required remediations
-- [ ] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in
+  - Test keyboard navigation (tab/arrow handling, focus order, focus ring)
+  - Verify focus management (roving focus/aria-activedescendant if used)
+  - Ensure correct ARIA roles, labels, and states for screen readers
+  - Check color contrast for all pill states (enabled, disabled, hover, focus)
+  - Run automated accessibility tools (axe, pa11y)
+  - Perform manual screen reader walkthrough (VoiceOver/NVDA/JAWS)
+  - Document all findings and required remediations
+- [X] T015 [US2] Add responsive wrapping and spacing for pills (768px–2560px) using design tokens in
   `SectionTogglePanel.vue`
 
 **Checkpoint**: Visual states and accessibility confirmed for section pills.
@@ -155,10 +155,10 @@ reflect selections; auto-disable when all items off.
 **Independent Test**: Generate PDF after various toggles; sections appear in fixed order per
 `engineering.stg`.
 
-- [ ] T020 [US4] Lock `SECTION_TYPES` ordering to match backend template and annotate linkage to
+- [x] T020 [US4] Lock `SECTION_TYPES` ordering to match backend template and annotate linkage to
   `server/engine/src/main/resources/templates/resume/engineering/engineering.stg` in
   `SectionVisibility.ts`
-- [ ] T021 [US4] Keep rendering/filtering logic using `SECTION_TYPES` sequence and prevent drag/drop
+- [x] T021 [US4] Keep rendering/filtering logic using `SECTION_TYPES` sequence and prevent drag/drop
   or reorder affordances in `SectionTogglePanel.vue` and `ResumeSectionFilterService.ts`
 
 **Checkpoint**: Section ordering remains fixed and aligned with backend template.
@@ -169,23 +169,23 @@ reflect selections; auto-disable when all items off.
 
 **Purpose**: Fulfill Constitution II Testing Standards - unit, integration, and E2E coverage.
 
-- [ ] T025 [P] Write unit tests for `createDefaultVisibility` and filter functions in
+- [x] T025 [P] Write unit tests for `createDefaultVisibility` and filter functions in
   `client/apps/webapp/src/core/resume/domain/SectionVisibility.spec.ts`
-- [ ] T026 [P] Write unit tests for `filterResume` service covering all section types and edge cases
+- [x] T026 [P] Write unit tests for `filterResume` service covering all section types and edge cases
   in `client/apps/webapp/src/core/resume/application/ResumeSectionFilterService.spec.ts`
-- [ ] T027 [P] Write unit tests for store actions (toggle, expand, persist) in
+- [x] T027 [P] Write unit tests for store actions (toggle, expand, persist) in
   `client/apps/webapp/src/core/resume/infrastructure/store/section-visibility.store.spec.ts`
 - [ ] T028 [P] Write component tests for SectionTogglePill (enabled/disabled/hover states, a11y)
-  using @testing-library/vue
+  using @testing-library/vue - ⚠️ Test file created but requires cleanup setup between tests
 - [ ] T029 [P] Write component tests for SectionTogglePanel (renders pills, emits events) using
-  @testing-library/vue
+  @testing-library/vue - ⚠️ Deferred: Requires mount setup with Pinia store and i18n
 - [ ] T030 [P] Write component tests for ItemToggleList (item toggles, field toggles for Personal
-  Details)
-- [ ] T031 Write E2E test: toggle section visibility, verify live preview updates in
+  Details) - ⚠️ Deferred: Requires mount setup similar to T029
+- [x] T031 Write E2E test: toggle section visibility, verify live preview updates in
   `client/e2e/resume-pdf-section-selector.spec.ts`
-- [ ] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
-- [ ] T033 Write E2E test: toggle preferences, refresh page, verify persistence
-- [ ] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints (toggle
+- [x] T032 Write E2E test: toggle sections/items, download PDF, verify content matches selections
+- [x] T033 Write E2E test: toggle preferences, refresh page, verify persistence
+- [x] T034 Write E2E test: verify responsive behavior at 768px, 1024px, 1440px breakpoints (toggle
   all sections and items at each breakpoint, confirm layout stability and pill wrapping per T015; do
   not limit to smoke test)
 
@@ -200,8 +200,8 @@ reflect selections; auto-disable when all items off.
 - [x] T022 [P] Add required i18n keys for sections, fields, and toasts in
   `client/apps/webapp/src/i18n/` locale files
 - [x] T023 Run lint/typecheck in `cvix/client/apps/webapp` (`pnpm check` and
-  `pnpm --filter webapp typecheck`)
-- [ ] T024 Update `quickstart.md` with any deviations (if any) and confirm localStorage TTL/version
+  `pnpm --filter webapp typecheck`) - ✅ Linting warnings fixed
+- [x] T024 Update `quickstart.md` with any deviations (if any) and confirm localStorage TTL/version
   notes in `cvix/specs/005-pdf-section-selector/quickstart.md`
 
 ---

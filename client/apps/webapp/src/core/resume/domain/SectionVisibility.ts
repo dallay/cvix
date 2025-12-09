@@ -3,7 +3,28 @@ import type { Resume } from "./Resume";
 /**
  * Enumeration of all resume section types.
  * Order defines standard resume section ordering (FR-009).
- * This order must match the backend LaTeX template (engineering.stg).
+ *
+ * ⚠️ CRITICAL: This order MUST match the backend LaTeX template rendering order.
+ * Template location: server/engine/src/main/resources/templates/resume/engineering/engineering.stg
+ * Template order: header → about → experience → education → skills → projects → publications →
+ *                 certificates → awards → volunteer → languages → interests → references
+ *
+ * Mapping:
+ * - personalDetails → header + about (always enabled, FR-007)
+ * - work → experience
+ * - education → education
+ * - skills → skills
+ * - projects → projects
+ * - certificates → certificates
+ * - volunteer → volunteer
+ * - awards → awards
+ * - publications → publications
+ * - languages → languages
+ * - interests → interests
+ * - references → references
+ *
+ * Do NOT reorder this array without coordinating with backend template changes.
+ * See: specs/005-pdf-section-selector/plan.md (FR-009)
  */
 export const SECTION_TYPES = [
 	"personalDetails",
@@ -11,7 +32,7 @@ export const SECTION_TYPES = [
 	"education",
 	"skills",
 	"projects",
-	"certifications",
+	"certificates",
 	"volunteer",
 	"awards",
 	"publications",
@@ -32,43 +53,18 @@ export type ArraySectionType = Exclude<SectionType, "personalDetails">;
  * Controls which sections and items appear in the PDF export.
  */
 export interface SectionVisibility {
-	/** Unique identifier for the resume these preferences apply to */
 	resumeId: string;
-
-	/** Personal details section (always enabled, individual fields toggleable) */
 	personalDetails: PersonalDetailsVisibility;
-
-	/** Work experience section visibility */
 	work: ArraySectionVisibility;
-
-	/** Education section visibility */
 	education: ArraySectionVisibility;
-
-	/** Skills section visibility */
 	skills: ArraySectionVisibility;
-
-	/** Projects section visibility */
 	projects: ArraySectionVisibility;
-
-	/** Certifications section visibility */
-	certifications: ArraySectionVisibility;
-
-	/** Volunteer experience section visibility */
+	certificates: ArraySectionVisibility;
 	volunteer: ArraySectionVisibility;
-
-	/** Awards section visibility */
 	awards: ArraySectionVisibility;
-
-	/** Publications section visibility */
 	publications: ArraySectionVisibility;
-
-	/** Languages section visibility */
 	languages: ArraySectionVisibility;
-
-	/** Interests section visibility */
 	interests: ArraySectionVisibility;
-
-	/** References section visibility */
 	references: ArraySectionVisibility;
 }
 
@@ -93,16 +89,9 @@ export interface PersonalDetailsVisibility {
  * Note: 'name' is always visible and not included here.
  */
 export interface PersonalDetailsFieldVisibility {
-	/** Profile image visibility */
 	image: boolean;
-
-	/** Email address visibility */
 	email: boolean;
-
-	/** Phone number visibility */
 	phone: boolean;
-
-	/** Location/address visibility */
 	location: {
 		address: boolean;
 		postalCode: boolean;
@@ -110,14 +99,8 @@ export interface PersonalDetailsFieldVisibility {
 		countryCode: boolean;
 		region: boolean;
 	};
-
-	/** Professional summary visibility */
 	summary: boolean;
-
-	/** Website URL visibility */
 	url: boolean;
-
-	/** Social profiles visibility */
 	profiles: { [profile: string]: boolean };
 }
 
@@ -126,10 +109,7 @@ export interface PersonalDetailsFieldVisibility {
  * Used for Work Experience, Education, Skills, Projects, etc.
  */
 export interface ArraySectionVisibility {
-	/** Whether the entire section is enabled */
 	enabled: boolean;
-
-	/** Whether the section is expanded to show item toggles */
 	expanded: boolean;
 
 	/**
@@ -144,19 +124,10 @@ export interface ArraySectionVisibility {
  * Metadata for rendering a section toggle pill.
  */
 export interface SectionMetadata {
-	/** Section type identifier */
 	type: SectionType;
-
-	/** Internationalized display label key */
 	labelKey: string;
-
-	/** Whether the section has data in the resume */
 	hasData: boolean;
-
-	/** Number of items in the section (0 for personalDetails) */
 	itemCount: number;
-
-	/** Number of currently visible items */
 	visibleItemCount: number;
 }
 
@@ -196,7 +167,7 @@ export function createDefaultVisibility(
 		education: createArrayVisibility(resume.education.length),
 		skills: createArrayVisibility(resume.skills.length),
 		projects: createArrayVisibility(resume.projects.length),
-		certifications: createArrayVisibility(resume.certificates.length),
+		certificates: createArrayVisibility(resume.certificates.length),
 		volunteer: createArrayVisibility(resume.volunteer.length),
 		awards: createArrayVisibility(resume.awards.length),
 		publications: createArrayVisibility(resume.publications.length),
@@ -213,7 +184,7 @@ function createArrayVisibility(itemCount: number): ArraySectionVisibility {
 	return {
 		enabled: itemCount > 0,
 		expanded: false,
-		items: Array(itemCount).fill(true),
+		items: Array.from({ length: itemCount }, () => true),
 	};
 }
 
@@ -237,7 +208,7 @@ export function countVisibleItems(visibility: ArraySectionVisibility): number {
 	if (!visibility.enabled) {
 		return 0;
 	}
-	return visibility.items.filter((visible) => visible).length;
+	return visibility.items.filter(Boolean).length;
 }
 
 /**

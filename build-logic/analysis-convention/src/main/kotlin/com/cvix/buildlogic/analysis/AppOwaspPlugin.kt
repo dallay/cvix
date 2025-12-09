@@ -112,7 +112,7 @@ internal class AppOwaspPlugin : ConventionPlugin {
             val delayInt = delayValue.toIntOrNull()
             if (delayInt != null) {
                 if (delayInt <= 0) {
-                    println("⚠️ [NVD_API_DELAY] must be positive. Got: $delayInt ms. Defaulting to 1000ms.")
+                    println("⚠️ [NVD_API_DELAY] must be positive. Got: $delayInt ms. Defaulting to ${DEFAULT_DELAY}ms.")
                     nvd {
                         delay.set(DEFAULT_DELAY)
                     }
@@ -124,10 +124,16 @@ internal class AppOwaspPlugin : ConventionPlugin {
                 }
             } else {
                 println("⚠️ [NVD_API_DELAY] is set but is not a valid integer: '$delayValue'.")
-                println("   Defaulting to 1000ms.")
+                println("   Defaulting to ${DEFAULT_DELAY}ms.")
+                nvd {
+                    delay.set(DEFAULT_DELAY)
+                }
             }
         } else {
-            println("⚠️ [NVD_API_DELAY] not found in the environment. Defaulting to 1000ms.")
+            println("⚠️ [NVD_API_DELAY] not found in the environment. Defaulting to ${DEFAULT_DELAY}ms.")
+            nvd {
+                delay.set(DEFAULT_DELAY)
+            }
         }
     }
 }

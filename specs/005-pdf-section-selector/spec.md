@@ -2,7 +2,8 @@
 
 **Feature Branch**: `005-pdf-section-selector`
 **Created**: December 6, 2025
-**Status**: Draft
+**Status**: ✅ Implemented
+**Implementation Date**: December 8, 2025
 **Input**: User description: "Redesign PDF Generator Screen to allow users to select which sections to include in the final PDF resume"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -17,7 +18,7 @@ As a user preparing my resume for a specific job application, I want to select w
 
 **Acceptance Scenarios**:
 
-1. **Given** I am on the Resume Preview screen with my complete resume data, **When** I view the "Visible Sections" area, **Then** I see toggleable pills for each available section (Personal Details, Work Experience, Education, Skills, Projects, Certifications, Volunteer, Awards, Publications, Languages, Interests, References)
+1. **Given** I am on the Resume Preview screen with my complete resume data, **When** I view the "Visible Sections" area, **Then** I see toggleable pills for each available section (Personal Details, Work Experience, Education, Skills, Projects, Certificates, Volunteer, Awards, Publications, Languages, Interests, References)
 
 2. **Given** all sections are visible by default, **When** I click on an active (purple) section pill, **Then** the section becomes inactive (white/gray) and immediately disappears from the live preview
 
@@ -83,7 +84,7 @@ As a user, I want the sections in my PDF to maintain a logical order so that my 
 
 **Acceptance Scenarios**:
 
-1. **Given** I have enabled multiple sections, **When** I generate the PDF, **Then** sections appear in standard resume order: Personal Details → Work Experience → Education → Skills → Projects → Certifications
+1. **Given** I have enabled multiple sections, **When** I generate the PDF, **Then** sections appear in standard resume order: Personal Details → Work Experience → Education → Skills → Projects → Certificates
 
 2. **Given** I have only enabled Work Experience and Education, **When** I generate the PDF, **Then** they appear in the correct order without gaps where disabled sections would have been
 

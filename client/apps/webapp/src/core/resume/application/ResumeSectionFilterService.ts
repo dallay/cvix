@@ -1,13 +1,26 @@
 import type { Basics, Resume } from "../domain/Resume";
-import type {
-	ArraySectionVisibility,
-	PersonalDetailsVisibility,
-	SectionVisibility,
+import {
+	type ArraySectionVisibility,
+	countVisibleItems,
+	hasVisibleItems,
+	type PersonalDetailsVisibility,
+	type SectionVisibility,
 } from "../domain/SectionVisibility";
 
 /**
  * Service for filtering a resume based on visibility preferences.
  * Produces a new Resume object with hidden sections/items removed.
+ *
+ * ⚠️ SECTION ORDER PRESERVATION (FR-009, US4):
+ * The filterResume method MUST maintain the order of sections as defined in the Resume type,
+ * which matches SECTION_TYPES and the backend template (engineering.stg).
+ *
+ * Order: basics → work → education → skills → projects → certificates → volunteer →
+ *        awards → publications → languages → interests → references
+ *
+ * Do NOT add any sorting logic or allow section reordering in this service.
+ * See: client/apps/webapp/src/core/resume/domain/SectionVisibility.ts (SECTION_TYPES)
+ * See: specs/005-pdf-section-selector/plan.md (FR-009)
  */
 export class ResumeSectionFilterService {
 	/**
@@ -27,7 +40,7 @@ export class ResumeSectionFilterService {
 			projects: this.filterArray(resume.projects, visibility.projects),
 			certificates: this.filterArray(
 				resume.certificates,
-				visibility.certifications,
+				visibility.certificates,
 			),
 			volunteer: this.filterArray(resume.volunteer, visibility.volunteer),
 			awards: this.filterArray(resume.awards, visibility.awards),
@@ -70,6 +83,7 @@ export class ResumeSectionFilterService {
 			},
 			profiles: basics.profiles.filter((profile) => {
 				// If the profile network is explicitly marked false, filter it out
+				// We use !== false to allow undefined (new profiles) to be visible by default
 				return fields.profiles[profile.network] !== false;
 			}),
 		};
@@ -90,6 +104,7 @@ export class ResumeSectionFilterService {
 		// Filter items based on their visibility flags.
 		// Items without a corresponding visibility entry (e.g., newly added)
 		// are shown by default (undefined !== false).
+		// We explicitly use !== false to allow undefined values to pass through
 		return items.filter((_, index) => {
 			return visibility.items[index] !== false;
 		});
@@ -99,16 +114,13 @@ export class ResumeSectionFilterService {
 	 * Counts the number of visible items in a section.
 	 */
 	countVisibleItems(visibility: ArraySectionVisibility): number {
-		if (!visibility.enabled) {
-			return 0;
-		}
-		return visibility.items.filter((visible) => visible).length;
+		return countVisibleItems(visibility);
 	}
 
 	/**
 	 * Checks if a section has any visible items.
 	 */
 	hasVisibleItems(visibility: ArraySectionVisibility): boolean {
-		return this.countVisibleItems(visibility) > 0;
+		return hasVisibleItems(visibility);
 	}
 }

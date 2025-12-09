@@ -25,7 +25,7 @@ This file documents the main wireframe for the PDF Generator screen in feature `
 |                     |                                                                        |
 | [=] Templates       |  Visible Sections:                                                     |
 |                     |  [v] Personal  [v] Work Exp  [v] Education  [v] Skills  ( ) Projects   |
-| +-------+ +-------+ |  ( ) Certifications   + Add Custom Section                             |
+| +-------+ +-------+ |  ( ) Certificates     + Add Custom Section                             |
 | |       | |       | |                                                                        |
 | |ACTIVE | |       | |                                                                        |
 | +-------+ +-------+ |      +----------------------------------------------------------+      |

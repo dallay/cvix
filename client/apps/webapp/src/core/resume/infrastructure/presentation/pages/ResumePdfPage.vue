@@ -115,12 +115,13 @@ watch(
 
 // Watch for visibility changes to regenerate preview
 watch(
-	() => visibilityStore.filteredResume,
-	(filteredResume) => {
-		if (selectedTemplate.value.templateId && filteredResume) {
+	() => visibilityStore.visibility,
+	() => {
+		if (selectedTemplate.value.templateId && visibilityStore.filteredResume) {
 			debouncedGenerate();
 		}
 	},
+	{ deep: true },
 );
 
 const onDownload = async () => {
@@ -189,20 +190,22 @@ const goBack = async () => {
         </button>
       </div>
       <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar: Template Selection -->
-        <div class="w-80 border-r bg-muted/10 overflow-y-auto p-6">
-          <div v-if="isLoadingTemplates" class="flex justify-center py-8">
-            <Loader2 class="h-6 w-6 animate-spin text-muted-foreground"/>
+        <!-- Sidebar: Template Selection & Appearance Settings -->
+        <div class="w-[360px] border-r bg-card overflow-y-auto">
+          <div class="p-6">
+            <div v-if="isLoadingTemplates" class="flex justify-center py-8">
+              <Loader2 class="h-6 w-6 animate-spin text-muted-foreground"/>
+            </div>
+            <div v-else-if="pdfError"
+                 class="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+              {{ pdfError }}
+            </div>
+            <PdfTemplateSelector
+                v-else
+                v-model="selectedTemplate"
+                :templates="templates"
+            />
           </div>
-          <div v-else-if="pdfError"
-               class="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-            {{ pdfError }}
-          </div>
-          <PdfTemplateSelector
-              v-else
-              v-model="selectedTemplate"
-              :templates="templates"
-          />
         </div>
         <!-- Main Area: Section Toggles and Preview -->
         <div class="flex-1 bg-muted/30 p-8 flex flex-col overflow-hidden">

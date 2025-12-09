@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from "@cvix/ui/components/ui/carousel";
 import { Label } from "@cvix/ui/components/ui/label";
 import {
 	Select,
@@ -42,8 +49,6 @@ const { t } = useI18n();
 const selectedTemplateId = ref(props.modelValue.templateId);
 const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
 
-const templateSelectId = `template-select-${crypto.randomUUID()}`;
-
 // Sync external templateId changes
 watch(
 	() => props.modelValue.templateId,
@@ -67,26 +72,6 @@ watch(
 const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
-
-// Helper: Validate if the input should be processed
-function isValidTemplateId(value: ParamValue): boolean {
-	if (value === null || value === "" || props.templates.length === 0) {
-		return false;
-	}
-	// Ignore object values, only process primitives
-	return typeof value !== "object";
-}
-
-// Helper: Convert input to string ID
-function convertToStringId(value: ParamValue): string {
-	if (typeof value === "bigint" || typeof value === "number") {
-		return value.toString();
-	}
-	if (typeof value === "string") {
-		return value;
-	}
-	return "";
-}
 
 // Helper: Build params from template defaults
 function buildTemplateParams(
@@ -121,19 +106,13 @@ function buildTemplateParams(
 	return newParams;
 }
 
-// Accept all AcceptableValue types (string | number | bigint | null), ignore objects
-function onUserTemplateChange(newId: ParamValue) {
-	if (!isValidTemplateId(newId)) {
-		return;
+// Handle template card click
+function onTemplateCardClick(templateId: string) {
+	if (selectedTemplateId.value === templateId) {
+		return; // Already selected
 	}
-
-	const id = convertToStringId(newId);
-	if (!id) {
-		return;
-	}
-
-	selectedTemplateId.value = id;
-	const template = props.templates.find((t) => t.id === id);
+	selectedTemplateId.value = templateId;
+	const template = props.templates.find((t) => t.id === templateId);
 	params.value = buildTemplateParams(template);
 }
 
@@ -178,47 +157,99 @@ const updateParam = (key: string, value: unknown) => {
 
 <template>
   <div class="space-y-6">
-    <div class="space-y-2">
-      <Label :for="templateSelectId">{{ t('resume.pdfSelector.templateLabel', 'Template') }}</Label>
-      <Select
-          v-model="selectedTemplateId"
-          :disabled="props.isLoading || templates.length === 0"
-          @update:model-value="onUserTemplateChange"
-          aria-label="Resume template selector"
-      >
-        <SelectTrigger :id="templateSelectId">
-          <SelectValue :placeholder="t('resume.pdfSelector.selectTemplate', 'Select a template')"/>
-        </SelectTrigger>
-        <SelectContent>
-          <template v-if="props.isLoading">
-            <SelectItem disabled value="">
-              {{ t('resume.pdfSelector.loading', 'Loading templates…') }}
-            </SelectItem>
-          </template>
-          <template v-else-if="props.error">
-            <SelectItem disabled value="">
-              {{ props.error }}
-            </SelectItem>
-          </template>
-          <template v-else-if="templates.length === 0">
-            <SelectItem disabled value="">
-              {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
-            </SelectItem>
-          </template>
-          <template v-else>
-            <SelectItem
-                v-for="template in templates"
-                :key="template.id"
-                :value="template.id"
+    <!-- Template Cards Section -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-semibold text-foreground">
+        {{ t('resume.pdfSelector.templateLabel', 'Template') }}
+      </h3>
+
+      <!-- Loading State -->
+      <div v-if="props.isLoading" class="flex justify-center py-8">
+        <div class="text-sm text-muted-foreground">
+          {{ t('resume.pdfSelector.loading', 'Loading templates…') }}
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="props.error" class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        {{ props.error }}
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="templates.length === 0" class="text-center py-8 text-sm text-muted-foreground">
+        {{ t('resume.pdfSelector.noTemplates', 'No templates available') }}
+      </div>
+
+      <!-- Template Carousel -->
+      <div v-else class="mx-8">
+        <Carousel
+          :opts="{
+            align: 'start',
+            loop: true,
+          }"
+          class="w-full"
+        >
+          <CarouselContent class="-ml-4">
+            <CarouselItem
+              v-for="template in templates"
+              :key="template.id"
+              class="pl-4 basis-full"
             >
-              {{ template.name }}
-            </SelectItem>
-          </template>
-        </SelectContent>
-      </Select>
-      <p v-if="selectedTemplate?.description" class="text-xs text-muted-foreground">
-        {{ selectedTemplate.description }}
-      </p>
+              <button
+                type="button"
+                :class="[
+                  'w-full h-full rounded-lg border-2 p-4 text-left transition-all duration-200 flex items-start gap-3',
+                  'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  selectedTemplateId === template.id
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border bg-card hover:bg-accent/50'
+                ]"
+                :aria-label="t('resume.pdfSelector.selectTemplateAria', { name: template.name })"
+                :aria-pressed="selectedTemplateId === template.id"
+                @click="onTemplateCardClick(template.id)"
+              >
+                <!-- Template Icon/Indicator -->
+                <span
+                  :class="[
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
+                    selectedTemplateId === template.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                  ]"
+                >
+                  {{ template.name.charAt(0).toUpperCase() }}
+                </span>
+
+                <!-- Template Info -->
+                <span class="flex-1 min-w-0">
+                  <span :class="[
+                    'text-sm font-semibold mb-1 block',
+                    selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
+                  ]">
+                    {{ template.name }}
+                  </span>
+                  <span v-if="template.description" class="text-xs text-muted-foreground line-clamp-2 block">
+                    {{ template.description }}
+                  </span>
+                </span>
+
+                <!-- Active Indicator -->
+                <span
+                  v-if="selectedTemplateId === template.id"
+                  class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
+                  data-testid="template-selected-indicator"
+                >
+                  <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+              </button>
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
     </div>
 
     <div v-if="selectedTemplate" class="space-y-4 border-t pt-4">

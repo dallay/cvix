@@ -101,8 +101,8 @@
 			}
 		},
 		"sections": {
-			"personalInfo": "Personal Information",
-			"workExperience": "Work Experience",
+			"personalDetails": "Personal Information",
+			"work": "Work Experience",
 			"education": "Education",
 			"skills": "Skills",
 			"projects": "Projects",
