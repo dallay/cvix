@@ -146,7 +146,11 @@ const DEFAULT_REFERENCES: Resume["references"] = [
  * Merge behavior:
  * - `basics`: Deep-merged using `deepmerge`. Nested objects (e.g., `basics.location`)
  *   preserve unspecified fields. Arrays within basics (e.g., `basics.profiles`) are
- *   concatenated by default.
+ *   concatenated by default. Note: because `deepmerge` concatenates arrays, there is
+ *   no built-in way in this helper to *replace* a basics array (like `profiles`) via
+ *   the overrides. If you need to fully replace `basics.profiles`, either assign
+ *   the desired array after creating the resume (example below) or construct a
+ *   custom resume object instead of relying on this helper.
  * - All other sections (work, education, skills, etc.): Shallow replacement. Providing
  *   an override completely replaces the default array/value for that section.
  *
@@ -158,10 +162,13 @@ const DEFAULT_REFERENCES: Resume["references"] = [
  *
  * // Replace entire work array - defaults not preserved
  * createTestResume({ work: [{ name: "Custom Co", position: "Dev" }] })
+ *
+ * // To fully replace basics.profiles (replacement not supported by deepmerge):
+ * const r = createTestResume({});
+ * r.basics.profiles = [{ network: 'Twitter', username: 'jd', url: 'https://twitter.com/jd' }];
  */
 export const createTestResume = (overrides?: Partial<Resume>): Resume => ({
 	basics: deepmerge.all([
-		{},
 		DEFAULT_BASICS,
 		overrides?.basics ?? {},
 	]) as Resume["basics"],

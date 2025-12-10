@@ -111,8 +111,15 @@ function onTemplateCardClick(templateId: string) {
 	if (selectedTemplateId.value === templateId) {
 		return; // Already selected
 	}
-	selectedTemplateId.value = templateId;
+	// Defensive: ensure template exists before building params (avoid silent failure)
 	const template = props.templates.find((t) => t.id === templateId);
+	if (!template) {
+		console.warn(
+			`Template with id "${templateId}" not found in templates list`,
+		);
+		return;
+	}
+	selectedTemplateId.value = templateId;
 	params.value = buildTemplateParams(template);
 }
 
