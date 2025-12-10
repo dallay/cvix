@@ -555,7 +555,10 @@ function syncFormWithComposable(
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
-              <ResumePreview :data="resume" @navigate-section="handlePreviewNavigate"/>
+              <ResumePreview v-if="resume" :data="resume" @navigate-section="handlePreviewNavigate"/>
+              <div v-else class="flex items-center justify-center h-full text-muted-foreground">
+                {{ t('resume.messages.noDataPreview') || 'Add resume data to see preview' }}
+              </div>
             </div>
           </CardContent>
         </Card>
