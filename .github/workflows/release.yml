@@ -240,9 +240,6 @@ jobs:
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
             GIT_SHA=${{ github.sha }}
-          # Optimize for Docker layer caching and parallel task execution
-          build-contexts: |
-            git-context=git://github.com/${{ github.repository }}#${{ github.sha }}
 
       - name: Docker Image Summary
         run: |
