@@ -8,7 +8,6 @@ import {
 } from "vue";
 import type {
 	Award,
-	Basics,
 	Certificate,
 	Education,
 	Interest,
@@ -24,33 +23,63 @@ import type {
 	Work,
 } from "@/core/resume/domain/Resume";
 import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
+import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
-/**
- * Mutable version of Basics for form editing
- */
-interface MutableBasics extends Omit<Basics, "profiles"> {
+// Define a mutable basics type explicitly to avoid depending on `Basics` import
+type MutableBasics = {
+	name: string;
+	label: string;
+	image: string;
+	email: string;
+	phone: string;
+	url: string;
+	summary: string;
+	location: Location;
 	profiles: Profile[];
+};
+
+// Define the return type for clarity and reuse
+export interface UseResumeFormReturn {
+	// form fields
+	basics: import("vue").Ref<MutableBasics>;
+	workExperiences: import("vue").Ref<Work[]>;
+	volunteers: import("vue").Ref<Volunteer[]>;
+	education: import("vue").Ref<Education[]>;
+	awards: import("vue").Ref<Award[]>;
+	certificates: import("vue").Ref<Certificate[]>;
+	publications: import("vue").Ref<Publication[]>;
+	skills: import("vue").Ref<Skill[]>;
+	languages: import("vue").Ref<Language[]>;
+	interests: import("vue").Ref<Interest[]>;
+	references: import("vue").Ref<Reference[]>;
+	projects: import("vue").Ref<Project[]>;
+
+	// computed
+	resume: import("vue").ComputedRef<Resume>;
+	isValid: import("vue").ComputedRef<boolean>;
+	hasResume: import("vue").ComputedRef<boolean>;
+	isGenerating: import("vue").ComputedRef<boolean>;
+	generationError: import("vue").ComputedRef<ProblemDetail | null>;
+
+	// actions
+	submitResume: () => boolean;
+	saveToStorage: () => Promise<void>;
+	generatePdf: (locale?: string) => Promise<Blob>;
+	clearForm: () => void;
+	loadResume: (r: Resume) => void;
 }
+
+// Module-scoped shared instance
+let sharedInstance: UseResumeFormReturn | null = null;
 
 /**
  * Composable for managing the resume form state and validation.
- *
- * This composable connects the presentation layer with the resume store,
- * providing reactive form fields and validation state.
- *
- * @example
- * ```typescript
- * const {
- *   basics,
- *   workExperiences,
- *   isValid,
- *   isGenerating,
- *   submitResume,
- *   generatePdf
- * } = useResumeForm();
- * ```
+ * Returns a shared instance so different callers (pages/components)
+ * operate on the same reactive state.
  */
-export function useResumeForm() {
+export function useResumeForm(): UseResumeFormReturn {
+	if (sharedInstance) return sharedInstance;
+
 	const resumeStore = useResumeStore();
 
 	const hasComponentInstance = Boolean(getCurrentInstance());
@@ -118,7 +147,9 @@ export function useResumeForm() {
 	const isValid = computed(() => resumeStore.isValid);
 	const hasResume = computed(() => resumeStore.hasResume);
 	const isGenerating = computed(() => resumeStore.isGenerating);
-	const generationError = computed(() => resumeStore.generationError);
+	const generationError = computed(
+		() => resumeStore.generationError as ProblemDetail | null,
+	);
 
 	/**
 	 * Validate the current resume form and save it to the resume store.
@@ -227,8 +258,8 @@ export function useResumeForm() {
 			isInitializing.value = false;
 		}
 	});
-	return {
-		// Form fields
+
+	sharedInstance = {
 		basics,
 		workExperiences,
 		volunteers,
@@ -242,18 +273,17 @@ export function useResumeForm() {
 		references,
 		projects,
 
-		// Computed
 		resume,
 		isValid,
 		hasResume,
 		isGenerating,
 		generationError,
 
-		// Actions
 		submitResume,
 		saveToStorage,
 		generatePdf,
 		clearForm,
 		loadResume,
 	};
+	return sharedInstance;
 }
