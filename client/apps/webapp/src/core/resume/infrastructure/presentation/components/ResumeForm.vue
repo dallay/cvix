@@ -47,8 +47,14 @@ const {
 	submitResume,
 	generatePdf,
 	clearForm,
+	loadResume,
 	saveToStorage,
 } = useResumeForm();
+
+defineExpose({
+	loadResume,
+	clearForm,
+});
 
 const isSubmitting = ref(false);
 

@@ -183,6 +183,7 @@ async function processUpload(file: File) {
 
 		if (result.success && result.data) {
 			setResume(result.data);
+			resumeFormRef.value?.loadResume(result.data);
 			toast({
 				title: "Import successful",
 				description: "Your resume has been loaded successfully.",
@@ -288,6 +289,7 @@ async function confirmReset() {
 	try {
 		// Clear the form
 		clearForm();
+		resumeFormRef.value?.clearForm();
 
 		// Clear storage
 		await resumeStore.clearStorage();
