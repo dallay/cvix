@@ -1,0 +1,19 @@
+{
+	"sidebar": {
+		"help": "Help",
+		"logout": "Logout",
+		"sections": {
+			"platform": {
+				"title": "Platform"
+			},
+			"cvs": {
+				"title": "Resumes",
+				"openProject": "Open resume",
+				"status": {
+					"active": "Active",
+					"inactive": "Inactive"
+				}
+			}
+		}
+	}
+}
