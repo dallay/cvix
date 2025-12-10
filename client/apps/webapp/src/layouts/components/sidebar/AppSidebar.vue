@@ -44,6 +44,7 @@ import {
 } from "lucide-vue-next";
 import type { Component } from "vue";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
@@ -54,6 +55,7 @@ interface Props {
 	items: NavigationItem[];
 }
 
+const { t } = useI18n();
 const props = defineProps<Props>();
 const authStore = useAuthStore();
 const route = useRoute();
@@ -61,20 +63,6 @@ const router = useRouter();
 const isLoggingOut = ref(false);
 
 const navigationItems = computed(() => props.items ?? []);
-
-type Team = {
-	name: string;
-	plan: string;
-};
-
-const teams: Team[] = [
-	{ name: "Design Engineering", plan: "Enterprise" },
-	{ name: "Sales & Marketing", plan: "Growth" },
-	{ name: "Customer Success", plan: "Starter" },
-];
-
-const fallbackTeam: Team = teams[0] ?? { name: "Workspace", plan: "Starter" };
-const activeTeam = ref<Team>(fallbackTeam);
 
 const iconMap: Record<string, Component> = {
 	home: Home,
@@ -142,16 +130,29 @@ const userInitials = computed(() => {
 
 const primaryRole = computed(() => authStore.user?.roles?.[0] ?? "Member");
 
-type FavoriteProject = {
+enum ResumeStatus {
+	Active = "Active",
+	Inactive = "Inactive",
+}
+
+type FavoriteResume = {
 	name: string;
-	status: string;
+	status: ResumeStatus;
 	url: string;
 };
 
-const favoriteProjects: FavoriteProject[] = [
-	{ name: "Design System", status: "Active", url: "/dashboard" },
-	{ name: "Sales Playbook", status: "Review", url: "/dashboard" },
-	{ name: "Travel Portal", status: "Planning", url: "/dashboard" },
+const favoriteResumes: FavoriteResume[] = [
+	{ name: "Backend Engineer", status: ResumeStatus.Active, url: "/dashboard" },
+	{
+		name: "Frontend Engineer",
+		status: ResumeStatus.Inactive,
+		url: "/dashboard",
+	},
+	{
+		name: "FullStack Engineer",
+		status: ResumeStatus.Active,
+		url: "/dashboard",
+	},
 ];
 
 const userAvatarUrl = computed(() => {
@@ -259,10 +260,10 @@ const handleWorkspaceSelected = () => {
       </SidebarGroup>
 
       <SidebarGroup>
-        <SidebarGroupLabel>Projects</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ t('sidebar.sections.cvs.title') }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="project in favoriteProjects" :key="project.name">
+            <SidebarMenuItem v-for="project in favoriteResumes" :key="project.name">
               <SidebarMenuButton tooltip="Open project" as-child>
                 <RouterLink :to="project.url" class="flex w-full items-center justify-between">
                   <div class="flex items-center gap-2">

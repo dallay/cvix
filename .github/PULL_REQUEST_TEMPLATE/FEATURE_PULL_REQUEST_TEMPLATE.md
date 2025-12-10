@@ -1,6 +1,8 @@
-# Pull Request Template
+# ✳︎ Feature Pull Request Template
 
 ## Description
+
+<!--- Please provide a general summary of your changes in the title above -->
 
 Describe the change and why it's needed. Reference the issue using "Closes #123".
 

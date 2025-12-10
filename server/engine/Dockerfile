@@ -19,16 +19,22 @@ COPY shared/common/build.gradle.kts /workspace/shared/common/
 COPY shared/spring-boot-common/build.gradle.kts /workspace/shared/spring-boot-common/
 COPY server/engine/build.gradle.kts /workspace/server/engine/
 
-# Download dependencies (this layer will be cached unless build files change)
-RUN ./gradlew dependencies --no-daemon || true
+# Download dependencies with optimizations
+# Use --quiet to reduce verbosity and improve build parallelism on ARM
+RUN ./gradlew dependencies --no-daemon --quiet --parallel --max-workers=$(nproc) || true
 
 # Copy source code for all modules
 COPY shared/common/src /workspace/shared/common/src
 COPY shared/spring-boot-common/src /workspace/shared/spring-boot-common/src
 COPY server/engine/src /workspace/server/engine/src
 
-# Build the application
-RUN ./gradlew :server:engine:bootJar --no-daemon
+# Build the application with optimizations for container builds
+RUN ./gradlew :server:engine:bootJar \
+    --no-daemon \
+    --quiet \
+    --parallel \
+    --max-workers=$(nproc) \
+    -Dorg.gradle.jvmargs="-XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:MaxRAMPercentage=75.0"
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:25-jre-jammy
@@ -45,10 +51,10 @@ COPY --from=builder /workspace/server/engine/build/libs/*.jar app.jar
 
 # Copy entrypoint script for Docker secrets -> env bridge
 COPY server/engine/docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
 
-# Change ownership to non-root user
-RUN chown -R spring:spring /app
+# Setup permissions and user in one RUN instruction for better layer efficiency
+RUN chmod +x /app/docker-entrypoint.sh && \
+    chown -R spring:spring /app
 
 # Switch to non-root user
 USER spring:spring
