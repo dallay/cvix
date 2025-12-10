@@ -6,7 +6,6 @@ import type {
 	Education,
 	Interest,
 	Language,
-	Location,
 	Profile,
 	Project,
 	Publication,
@@ -68,33 +67,30 @@ export interface UseResumeFormReturn {
 export function useResumeForm(): UseResumeFormReturn {
 	const resumeStore = useResumeStore();
 
-	// Computed refs backed by Pinia store state
-	const basics = computed<MutableBasics>({
-		get: () => {
-			const b = resumeStore.resume?.basics;
-			return b
-				? { ...b, profiles: [...b.profiles] }
-				: {
-						name: "",
-						label: "",
-						image: "",
-						email: "",
-						phone: "",
-						url: "",
-						summary: "",
-						location: {
-							address: "",
-							postalCode: "",
-							city: "",
-							countryCode: "",
-							region: "",
-						} as Location,
-						profiles: [],
-					};
-		},
-		set: (value: MutableBasics) => {
-			const currentResume = resumeStore.resume || {
-				basics: value,
+	/**
+	 * Ensures resumeStore.resume is always initialized with a fully-populated, mutable resume object.
+	 * Returns the resume object (never null/undefined after this call).
+	 */
+	function ensureResume(): Resume {
+		if (!resumeStore.resume) {
+			resumeStore.setResume({
+				basics: {
+					name: "",
+					label: "",
+					image: "",
+					email: "",
+					phone: "",
+					url: "",
+					summary: "",
+					location: {
+						address: "",
+						postalCode: "",
+						city: "",
+						countryCode: "",
+						region: "",
+					},
+					profiles: [],
+				},
 				work: [],
 				volunteer: [],
 				education: [],
@@ -106,7 +102,19 @@ export function useResumeForm(): UseResumeFormReturn {
 				interests: [],
 				references: [],
 				projects: [],
-			};
+			});
+		}
+		if (!resumeStore.resume) {
+			throw new Error("Failed to initialize resume");
+		}
+		return resumeStore.resume;
+	}
+
+	// Computed refs backed by Pinia store state (no cloning, always store-backed)
+	const basics = computed<MutableBasics>({
+		get: () => ensureResume().basics as MutableBasics,
+		set: (value: MutableBasics) => {
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				basics: value,
@@ -114,22 +122,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const workExperiences = computed<Work[]>({
-		get: () => (resumeStore.resume?.work ? [...resumeStore.resume.work] : []),
+		get: () => ensureResume().work as Work[],
 		set: (value: Work[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: value,
-				volunteer: [],
-				education: [],
-				awards: [],
-				certificates: [],
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				work: value,
@@ -137,23 +132,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const volunteers = computed<Volunteer[]>({
-		get: () =>
-			resumeStore.resume?.volunteer ? [...resumeStore.resume.volunteer] : [],
+		get: () => ensureResume().volunteer as Volunteer[],
 		set: (value: Volunteer[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: value,
-				education: [],
-				awards: [],
-				certificates: [],
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				volunteer: value,
@@ -161,23 +142,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const education = computed<Education[]>({
-		get: () =>
-			resumeStore.resume?.education ? [...resumeStore.resume.education] : [],
+		get: () => ensureResume().education as Education[],
 		set: (value: Education[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: value,
-				awards: [],
-				certificates: [],
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				education: value,
@@ -185,23 +152,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const awards = computed<Award[]>({
-		get: () =>
-			resumeStore.resume?.awards ? [...resumeStore.resume.awards] : [],
+		get: () => ensureResume().awards as Award[],
 		set: (value: Award[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: value,
-				certificates: [],
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				awards: value,
@@ -209,25 +162,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const certificates = computed<Certificate[]>({
-		get: () =>
-			resumeStore.resume?.certificates
-				? [...resumeStore.resume.certificates]
-				: [],
+		get: () => ensureResume().certificates as Certificate[],
 		set: (value: Certificate[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: value,
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				certificates: value,
@@ -235,25 +172,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const publications = computed<Publication[]>({
-		get: () =>
-			resumeStore.resume?.publications
-				? [...resumeStore.resume.publications]
-				: [],
+		get: () => ensureResume().publications as Publication[],
 		set: (value: Publication[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: value,
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				publications: value,
@@ -261,23 +182,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const skills = computed<Skill[]>({
-		get: () =>
-			resumeStore.resume?.skills ? [...resumeStore.resume.skills] : [],
+		get: () => ensureResume().skills as Skill[],
 		set: (value: Skill[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: publications.value,
-				skills: value,
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				skills: value,
@@ -285,23 +192,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const languages = computed<Language[]>({
-		get: () =>
-			resumeStore.resume?.languages ? [...resumeStore.resume.languages] : [],
+		get: () => ensureResume().languages as Language[],
 		set: (value: Language[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: publications.value,
-				skills: skills.value,
-				languages: value,
-				interests: [],
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				languages: value,
@@ -309,23 +202,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const interests = computed<Interest[]>({
-		get: () =>
-			resumeStore.resume?.interests ? [...resumeStore.resume.interests] : [],
+		get: () => ensureResume().interests as Interest[],
 		set: (value: Interest[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: publications.value,
-				skills: skills.value,
-				languages: languages.value,
-				interests: value,
-				references: [],
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				interests: value,
@@ -333,23 +212,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const references = computed<Reference[]>({
-		get: () =>
-			resumeStore.resume?.references ? [...resumeStore.resume.references] : [],
+		get: () => ensureResume().references as Reference[],
 		set: (value: Reference[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: publications.value,
-				skills: skills.value,
-				languages: languages.value,
-				interests: interests.value,
-				references: value,
-				projects: [],
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				references: value,
@@ -357,23 +222,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const projects = computed<Project[]>({
-		get: () =>
-			resumeStore.resume?.projects ? [...resumeStore.resume.projects] : [],
+		get: () => ensureResume().projects as Project[],
 		set: (value: Project[]) => {
-			const currentResume = resumeStore.resume || {
-				basics: basics.value,
-				work: workExperiences.value,
-				volunteer: volunteers.value,
-				education: education.value,
-				awards: awards.value,
-				certificates: certificates.value,
-				publications: publications.value,
-				skills: skills.value,
-				languages: languages.value,
-				interests: interests.value,
-				references: references.value,
-				projects: value,
-			};
+			const currentResume = ensureResume();
 			resumeStore.setResume({
 				...currentResume,
 				projects: value,
