@@ -61,6 +61,11 @@ const {
 	saveToStorage,
 } = useResumeForm();
 
+defineExpose({
+	loadResume,
+	clearForm,
+});
+
 const isSubmitting = ref(false);
 
 /**
