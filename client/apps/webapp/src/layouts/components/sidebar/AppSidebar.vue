@@ -131,8 +131,8 @@ const userInitials = computed(() => {
 const primaryRole = computed(() => authStore.user?.roles?.[0] ?? "Member");
 
 enum ResumeStatus {
-	Active = "Active",
-	Inactive = "Inactive",
+	Active = "active",
+	Inactive = "inactive",
 }
 
 type FavoriteResume = {
@@ -270,7 +270,7 @@ const handleWorkspaceSelected = () => {
                     <Folder class="size-4 text-muted-foreground" />
                     <span class="truncate">{{ resume.name }}</span>
                   </div>
-                  <Badge variant="secondary" class="text-xs">{{ t('sidebar.sections.cvs.status.' + resume.status.toLowerCase()) }}</Badge>
+                  <Badge variant="secondary" class="text-xs">{{ t('sidebar.sections.cvs.status.' + resume.status) }}</Badge>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
