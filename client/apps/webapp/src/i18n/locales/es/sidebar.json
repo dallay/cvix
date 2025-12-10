@@ -1,0 +1,19 @@
+{
+	"sidebar": {
+		"help": "Ayuda",
+		"logout": "Cerrar sesión",
+		"sections": {
+			"platform": {
+				"title": "Plataforma"
+			},
+			"cvs": {
+				"title": "Currículos",
+				"openProject": "Abrir currículum",
+				"status": {
+					"active": "Activo",
+					"inactive": "Inactivo"
+				}
+			}
+		}
+	}
+}

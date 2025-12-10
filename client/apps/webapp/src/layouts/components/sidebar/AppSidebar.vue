@@ -44,6 +44,7 @@ import {
 } from "lucide-vue-next";
 import type { Component } from "vue";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import { useAuthStore } from "@/core/authentication/presentation/stores/authStore";
@@ -54,6 +55,7 @@ interface Props {
 	items: NavigationItem[];
 }
 
+const { t } = useI18n();
 const props = defineProps<Props>();
 const authStore = useAuthStore();
 const route = useRoute();
@@ -61,20 +63,6 @@ const router = useRouter();
 const isLoggingOut = ref(false);
 
 const navigationItems = computed(() => props.items ?? []);
-
-type Team = {
-	name: string;
-	plan: string;
-};
-
-const teams: Team[] = [
-	{ name: "Design Engineering", plan: "Enterprise" },
-	{ name: "Sales & Marketing", plan: "Growth" },
-	{ name: "Customer Success", plan: "Starter" },
-];
-
-const fallbackTeam: Team = teams[0] ?? { name: "Workspace", plan: "Starter" };
-const activeTeam = ref<Team>(fallbackTeam);
 
 const iconMap: Record<string, Component> = {
 	home: Home,
@@ -142,16 +130,29 @@ const userInitials = computed(() => {
 
 const primaryRole = computed(() => authStore.user?.roles?.[0] ?? "Member");
 
-type FavoriteProject = {
+enum ResumeStatus {
+	Active = "active",
+	Inactive = "inactive",
+}
+
+type FavoriteResume = {
 	name: string;
-	status: string;
+	status: ResumeStatus;
 	url: string;
 };
 
-const favoriteProjects: FavoriteProject[] = [
-	{ name: "Design System", status: "Active", url: "/dashboard" },
-	{ name: "Sales Playbook", status: "Review", url: "/dashboard" },
-	{ name: "Travel Portal", status: "Planning", url: "/dashboard" },
+const favoriteResumes: FavoriteResume[] = [
+	{ name: "Backend Engineer", status: ResumeStatus.Active, url: "/dashboard" },
+	{
+		name: "Frontend Engineer",
+		status: ResumeStatus.Inactive,
+		url: "/dashboard",
+	},
+	{
+		name: "FullStack Engineer",
+		status: ResumeStatus.Active,
+		url: "/dashboard",
+	},
 ];
 
 const userAvatarUrl = computed(() => {
@@ -189,7 +190,7 @@ const handleWorkspaceSelected = () => {
 
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ t('sidebar.sections.platform.title') }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <template v-for="item in navigationItems" :key="item.label">
@@ -259,17 +260,17 @@ const handleWorkspaceSelected = () => {
       </SidebarGroup>
 
       <SidebarGroup>
-        <SidebarGroupLabel>Projects</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ t('sidebar.sections.cvs.title') }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="project in favoriteProjects" :key="project.name">
-              <SidebarMenuButton tooltip="Open project" as-child>
-                <RouterLink :to="project.url" class="flex w-full items-center justify-between">
+            <SidebarMenuItem v-for="resume in favoriteResumes" :key="resume.name">
+              <SidebarMenuButton :tooltip="t('sidebar.sections.cvs.openProject')" as-child>
+                <RouterLink :to="resume.url" class="flex w-full items-center justify-between">
                   <div class="flex items-center gap-2">
                     <Folder class="size-4 text-muted-foreground" />
-                    <span class="truncate">{{ project.name }}</span>
+                    <span class="truncate">{{ resume.name }}</span>
                   </div>
-                  <Badge variant="secondary" class="text-xs">{{ project.status }}</Badge>
+                  <Badge variant="secondary" class="text-xs">{{ t('sidebar.sections.cvs.status.' + resume.status) }}</Badge>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -300,7 +301,7 @@ const handleWorkspaceSelected = () => {
             @click="handleLogout"
           >
             <LogOut class="size-3.5" />
-            <span>Logout</span>
+            <span>{{ t('sidebar.logout') }}</span>
           </Button>
         </div>
       </div>
