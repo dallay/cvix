@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/dallay/cvix/compare/v1.2.1...v1.3.0) (2025-12-10)
+
+### ✨ Features
+
+* **cod-67:** epic pdf section selector resume customization for pdf [#384](https://github.com/dallay/cvix/issues/384) ([#407](https://github.com/dallay/cvix/issues/407)) ([f7888e5](https://github.com/dallay/cvix/commit/f7888e5047abe9c30dd87c19cb62f2a09318a491)), closes [#383](https://github.com/dallay/cvix/issues/383) [#343](https://github.com/dallay/cvix/issues/343) [#394](https://github.com/dallay/cvix/issues/394) [#395](https://github.com/dallay/cvix/issues/395) [#396](https://github.com/dallay/cvix/issues/396) [#397](https://github.com/dallay/cvix/issues/397) [#398](https://github.com/dallay/cvix/issues/398) [#399](https://github.com/dallay/cvix/issues/399) [#400](https://github.com/dallay/cvix/issues/400) [#401](https://github.com/dallay/cvix/issues/401) [#402](https://github.com/dallay/cvix/issues/402) [#403](https://github.com/dallay/cvix/issues/403) [#404](https://github.com/dallay/cvix/issues/404) [#405](https://github.com/dallay/cvix/issues/405) [#406](https://github.com/dallay/cvix/issues/406) [#408](https://github.com/dallay/cvix/issues/408)
+
 ## [1.2.1](https://github.com/dallay/cvix/compare/v1.2.0...v1.2.1) (2025-12-06)
 
 ### 🐛 Bug Fixes
