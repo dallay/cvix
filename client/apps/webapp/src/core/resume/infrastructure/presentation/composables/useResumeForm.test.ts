@@ -57,11 +57,12 @@ describe("useResumeForm", () => {
 		it("should initialize with empty form data", () => {
 			const { basics, workExperiences, isValid, hasResume } = useResumeForm();
 
+			// Getters return safe defaults without side effects (no auto-creation)
 			expect(basics.value.name).toBe("");
 			expect(basics.value.email).toBe("");
 			expect(workExperiences.value).toEqual([]);
-			expect(isValid.value).toBe(true); // changed: always valid
-			expect(hasResume.value).toBe(true); // changed: always has resume
+			expect(isValid.value).toBe(false); // No resume yet
+			expect(hasResume.value).toBe(false); // No resume yet (not auto-created by field access)
 		});
 	});
 
@@ -183,11 +184,12 @@ describe("useResumeForm", () => {
 
 			clearForm();
 
+			// After clearing, getters return safe defaults without auto-creating
 			expect(basics.value.name).toBe("");
 			expect(basics.value.email).toBe("");
 			expect(workExperiences.value).toEqual([]);
-			expect(hasResume.value).toBe(true); // changed: always has resume
-			expect(isValid.value).toBe(true); // changed: always valid
+			expect(hasResume.value).toBe(false); // Resume is null after clearing (no auto-creation)
+			expect(isValid.value).toBe(false); // No resume, so not valid
 		});
 	});
 

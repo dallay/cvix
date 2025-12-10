@@ -19,6 +19,18 @@ import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.
 import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
 /**
+ * Utility type to strip readonly modifiers from deeply nested types.
+ * Transforms ReadonlyArray<T> → Array<T> and readonly properties → mutable.
+ * This enables bi-directional form binding without runtime type assertions.
+ */
+type DeepWritable<T> =
+	T extends ReadonlyArray<infer U>
+		? Array<DeepWritable<U>>
+		: T extends object
+			? { -readonly [K in keyof T]: DeepWritable<T[K]> }
+			: T;
+
+/**
  * Derive MutableBasics from the domain Basics type.
  * Omit the readonly profiles array and replace it with a mutable version.
  * This ensures the type stays synchronized with the domain definition
@@ -27,6 +39,12 @@ import type { ProblemDetail } from "@/shared/BaseHttpClient";
 type MutableBasics = Omit<Basics, "profiles"> & {
 	profiles: Profile[];
 };
+
+/**
+ * Form-specific mutable version of the entire Resume.
+ * Strips all readonly modifiers to enable bi-directional form binding.
+ */
+type WritableResume = DeepWritable<Resume>;
 
 // Define the return type for clarity and reuse
 export interface UseResumeFormReturn {
@@ -60,61 +78,64 @@ export interface UseResumeFormReturn {
 }
 
 /**
+ * Factory function to create an empty resume with all sections initialized.
+ * Used as a safe default for getters when no resume exists yet.
+ */
+function createEmptyResume(): WritableResume {
+	return {
+		basics: {
+			name: "",
+			label: "",
+			image: "",
+			email: "",
+			phone: "",
+			url: "",
+			summary: "",
+			location: {
+				address: "",
+				postalCode: "",
+				city: "",
+				countryCode: "",
+				region: "",
+			},
+			profiles: [],
+		},
+		work: [],
+		volunteer: [],
+		education: [],
+		awards: [],
+		certificates: [],
+		publications: [],
+		skills: [],
+		languages: [],
+		interests: [],
+		references: [],
+		projects: [],
+	};
+}
+
+/**
  * Composable for managing the resume form state and validation.
  * Returns a shared singleton accessor to Pinia store-backed computed refs for bi-directional reactivity.
  * All callers receive the same reactive state, ensuring a single source of truth.
+ *
+ * Key design decisions:
+ * - Resume is NOT initialized automatically; callers must explicitly create or load one.
+ * - Getters return safe defaults without side effects (preserves "no resume" state).
+ * - Setters only write when explicitly called (no accidental state creation).
+ * - Type casting is centralized in the WritableResume utility type.
  */
 export function useResumeForm(): UseResumeFormReturn {
 	const resumeStore = useResumeStore();
 
-	/**
-	 * Ensures resumeStore.resume is always initialized with a fully-populated, mutable resume object.
-	 * Returns the resume object (never null/undefined after this call).
-	 */
-	function ensureResume(): Resume {
-		if (!resumeStore.resume) {
-			resumeStore.setResume({
-				basics: {
-					name: "",
-					label: "",
-					image: "",
-					email: "",
-					phone: "",
-					url: "",
-					summary: "",
-					location: {
-						address: "",
-						postalCode: "",
-						city: "",
-						countryCode: "",
-						region: "",
-					},
-					profiles: [],
-				},
-				work: [],
-				volunteer: [],
-				education: [],
-				awards: [],
-				certificates: [],
-				publications: [],
-				skills: [],
-				languages: [],
-				interests: [],
-				references: [],
-				projects: [],
-			});
-		}
-		if (!resumeStore.resume) {
-			throw new Error("Failed to initialize resume");
-		}
-		return resumeStore.resume;
-	}
-
-	// Computed refs backed by Pinia store state (no cloning, always store-backed)
+	// Computed refs backed by Pinia store state with safe defaults (no side effects)
 	const basics = computed<MutableBasics>({
-		get: () => ensureResume().basics as MutableBasics,
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.basics ??
+				createEmptyResume().basics) as MutableBasics,
 		set: (value: MutableBasics) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				basics: value,
@@ -122,9 +143,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const workExperiences = computed<Work[]>({
-		get: () => ensureResume().work as Work[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.work ??
+				createEmptyResume().work) as Work[],
 		set: (value: Work[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				work: value,
@@ -132,9 +156,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const volunteers = computed<Volunteer[]>({
-		get: () => ensureResume().volunteer as Volunteer[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.volunteer ??
+				createEmptyResume().volunteer) as Volunteer[],
 		set: (value: Volunteer[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				volunteer: value,
@@ -142,9 +169,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const education = computed<Education[]>({
-		get: () => ensureResume().education as Education[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.education ??
+				createEmptyResume().education) as Education[],
 		set: (value: Education[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				education: value,
@@ -152,9 +182,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const awards = computed<Award[]>({
-		get: () => ensureResume().awards as Award[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.awards ??
+				createEmptyResume().awards) as Award[],
 		set: (value: Award[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				awards: value,
@@ -162,9 +195,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const certificates = computed<Certificate[]>({
-		get: () => ensureResume().certificates as Certificate[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.certificates ??
+				createEmptyResume().certificates) as Certificate[],
 		set: (value: Certificate[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				certificates: value,
@@ -172,9 +208,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const publications = computed<Publication[]>({
-		get: () => ensureResume().publications as Publication[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.publications ??
+				createEmptyResume().publications) as Publication[],
 		set: (value: Publication[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				publications: value,
@@ -182,9 +221,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const skills = computed<Skill[]>({
-		get: () => ensureResume().skills as Skill[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.skills ??
+				createEmptyResume().skills) as Skill[],
 		set: (value: Skill[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				skills: value,
@@ -192,9 +234,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const languages = computed<Language[]>({
-		get: () => ensureResume().languages as Language[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.languages ??
+				createEmptyResume().languages) as Language[],
 		set: (value: Language[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				languages: value,
@@ -202,9 +247,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const interests = computed<Interest[]>({
-		get: () => ensureResume().interests as Interest[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.interests ??
+				createEmptyResume().interests) as Interest[],
 		set: (value: Interest[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				interests: value,
@@ -212,9 +260,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const references = computed<Reference[]>({
-		get: () => ensureResume().references as Reference[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.references ??
+				createEmptyResume().references) as Reference[],
 		set: (value: Reference[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				references: value,
@@ -222,9 +273,12 @@ export function useResumeForm(): UseResumeFormReturn {
 		},
 	});
 	const projects = computed<Project[]>({
-		get: () => ensureResume().projects as Project[],
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.projects ??
+				createEmptyResume().projects) as Project[],
 		set: (value: Project[]) => {
-			const currentResume = ensureResume();
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
 			resumeStore.setResume({
 				...currentResume,
 				projects: value,
