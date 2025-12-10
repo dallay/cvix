@@ -384,14 +384,20 @@ function handlePreviewNavigate(section: string, entryIndex?: number) {
  * This helper centralizes all load/clear operations to prevent duplication
  * and ensure consistency across upload, reset, and other workflows.
  */
-function syncFormWithComposable(operation: "load" | "clear", data?: Resume) {
-	if (operation === "load" && data) {
-		// Update composable state (single source of truth)
-		// This automatically updates all v-model bound fields via reactive refs
+function syncFormWithComposable(operation: "clear"): void;
+function syncFormWithComposable(operation: "load", data: Resume): void;
+function syncFormWithComposable(
+	operation: "load" | "clear",
+	data?: Resume,
+): void {
+	if (operation === "load") {
+		if (!data) {
+			throw new Error(
+				"syncFormWithComposable('load') requires a Resume argument",
+			);
+		}
 		setResume(data);
 	} else if (operation === "clear") {
-		// Clear composable state
-		// This automatically updates all form fields via reactive refs
 		clearForm();
 	}
 }

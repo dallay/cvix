@@ -1,13 +1,16 @@
 import {
+	type ComputedRef,
 	computed,
 	getCurrentInstance,
 	nextTick,
 	onMounted,
+	type Ref,
 	ref,
 	watch,
 } from "vue";
 import type {
 	Award,
+	Basics,
 	Certificate,
 	Education,
 	Interest,
@@ -25,41 +28,38 @@ import type {
 import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
 import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
-// Define a mutable basics type explicitly to avoid depending on `Basics` import
-type MutableBasics = {
-	name: string;
-	label: string;
-	image: string;
-	email: string;
-	phone: string;
-	url: string;
-	summary: string;
-	location: Location;
+/**
+ * Derive MutableBasics from the domain Basics type.
+ * Omit the readonly profiles array and replace it with a mutable version.
+ * This ensures the type stays synchronized with the domain definition
+ * and automatically reflects any domain changes.
+ */
+type MutableBasics = Omit<Basics, "profiles"> & {
 	profiles: Profile[];
 };
 
 // Define the return type for clarity and reuse
 export interface UseResumeFormReturn {
 	// form fields
-	basics: import("vue").Ref<MutableBasics>;
-	workExperiences: import("vue").Ref<Work[]>;
-	volunteers: import("vue").Ref<Volunteer[]>;
-	education: import("vue").Ref<Education[]>;
-	awards: import("vue").Ref<Award[]>;
-	certificates: import("vue").Ref<Certificate[]>;
-	publications: import("vue").Ref<Publication[]>;
-	skills: import("vue").Ref<Skill[]>;
-	languages: import("vue").Ref<Language[]>;
-	interests: import("vue").Ref<Interest[]>;
-	references: import("vue").Ref<Reference[]>;
-	projects: import("vue").Ref<Project[]>;
+	basics: Ref<MutableBasics>;
+	workExperiences: Ref<Work[]>;
+	volunteers: Ref<Volunteer[]>;
+	education: Ref<Education[]>;
+	awards: Ref<Award[]>;
+	certificates: Ref<Certificate[]>;
+	publications: Ref<Publication[]>;
+	skills: Ref<Skill[]>;
+	languages: Ref<Language[]>;
+	interests: Ref<Interest[]>;
+	references: Ref<Reference[]>;
+	projects: Ref<Project[]>;
 
 	// computed
-	resume: import("vue").ComputedRef<Resume>;
-	isValid: import("vue").ComputedRef<boolean>;
-	hasResume: import("vue").ComputedRef<boolean>;
-	isGenerating: import("vue").ComputedRef<boolean>;
-	generationError: import("vue").ComputedRef<ProblemDetail | null>;
+	resume: ComputedRef<Resume>;
+	isValid: ComputedRef<boolean>;
+	hasResume: ComputedRef<boolean>;
+	isGenerating: ComputedRef<boolean>;
+	generationError: ComputedRef<ProblemDetail | null>;
 
 	// actions
 	submitResume: () => boolean;
