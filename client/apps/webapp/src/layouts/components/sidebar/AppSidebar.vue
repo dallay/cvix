@@ -190,7 +190,7 @@ const handleWorkspaceSelected = () => {
 
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ t('sidebar.sections.platform.title') }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <template v-for="item in navigationItems" :key="item.label">
@@ -263,14 +263,14 @@ const handleWorkspaceSelected = () => {
         <SidebarGroupLabel>{{ t('sidebar.sections.cvs.title') }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="project in favoriteResumes" :key="project.name">
-              <SidebarMenuButton tooltip="Open project" as-child>
-                <RouterLink :to="project.url" class="flex w-full items-center justify-between">
+            <SidebarMenuItem v-for="resume in favoriteResumes" :key="resume.name">
+              <SidebarMenuButton :tooltip="t('sidebar.sections.cvs.openProject')" as-child>
+                <RouterLink :to="resume.url" class="flex w-full items-center justify-between">
                   <div class="flex items-center gap-2">
                     <Folder class="size-4 text-muted-foreground" />
-                    <span class="truncate">{{ project.name }}</span>
+                    <span class="truncate">{{ resume.name }}</span>
                   </div>
-                  <Badge variant="secondary" class="text-xs">{{ project.status }}</Badge>
+                  <Badge variant="secondary" class="text-xs">{{ t('sidebar.sections.cvs.status.' + resume.status.toLowerCase()) }}</Badge>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -301,7 +301,7 @@ const handleWorkspaceSelected = () => {
             @click="handleLogout"
           >
             <LogOut class="size-3.5" />
-            <span>Logout</span>
+            <span>{{ t('sidebar.logout') }}</span>
           </Button>
         </div>
       </div>

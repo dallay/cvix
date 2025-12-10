@@ -21,7 +21,7 @@ COPY server/engine/build.gradle.kts /workspace/server/engine/
 
 # Download dependencies with optimizations
 # Use --quiet to reduce verbosity and improve build parallelism on ARM
-RUN ./gradlew dependencies --no-daemon --quiet --parallel --max-workers=$(nproc) || true
+RUN ./gradlew dependencies --no-daemon --quiet --parallel --max-workers="$(nproc)" || true
 
 # Copy source code for all modules
 COPY shared/common/src /workspace/shared/common/src
@@ -33,7 +33,7 @@ RUN ./gradlew :server:engine:bootJar \
     --no-daemon \
     --quiet \
     --parallel \
-    --max-workers=$(nproc) \
+    --max-workers="$(nproc)" \
     -Dorg.gradle.jvmargs="-XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:MaxRAMPercentage=75.0"
 
 # Stage 2: Create the runtime image
