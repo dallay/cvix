@@ -93,30 +93,34 @@ async function createTestResume(page: Page) {
 	// Wait for autosave to persist to IndexedDB (idb-keyval uses 'keyval-store' / 'keyval')
 	// If this fails or times out, fall back to a short network idle wait so the test
 	// doesn't become flaky when autosave uses a different mechanism in some envs.
-	await page.waitForFunction(() => {
-		return new Promise((resolve) => {
-			if (!('indexedDB' in window)) return resolve(false);
-			try {
-				const openReq = indexedDB.open('keyval-store');
-				openReq.onsuccess = () => {
-					try {
-						const db = openReq.result;
-						const tx = db.transaction('keyval', 'readonly');
-						const store = tx.objectStore('keyval');
-						const getReq = store.get('resume:draft');
-						getReq.onsuccess = () => resolve(!!getReq.result);
-						getReq.onerror = () => resolve(false);
-					} catch (e) {
-						// If object store doesn't exist or other errors occur, resolve false
-						resolve(false);
-					}
-				};
-				openReq.onerror = () => resolve(false);
-			} catch (e) {
-				resolve(false);
-			}
-		});
-	}, { timeout: 5000 }).catch(async () => {
+	await page.waitForFunction(
+		() => {
+			return new Promise((resolve) => {
+				if (!('indexedDB' in window)) return resolve(false);
+				try {
+					const openReq = indexedDB.open('keyval-store');
+					openReq.onsuccess = () => {
+						try {
+							const db = openReq.result;
+							const tx = db.transaction('keyval', 'readonly');
+							const store = tx.objectStore('keyval');
+							const getReq = store.get('resume:draft');
+							getReq.onsuccess = () => resolve(!!getReq.result);
+							getReq.onerror = () => resolve(false);
+						} catch (e) {
+							// If object store doesn't exist or other errors occur, resolve false
+							resolve(false);
+						}
+					};
+					openReq.onerror = () => resolve(false);
+				} catch (e) {
+					resolve(false);
+				}
+			});
+		},
+		null,
+		{ timeout: 5000 },
+	).catch(async () => {
 		// Fallback: wait for network to be mostly idle; continue even if that times out
 		await page.waitForLoadState('networkidle', { timeout: 3000 }).catch(() => {});
 	});
@@ -270,10 +274,14 @@ test.describe("Resume PDF Section Selector - Section Toggle", () => {
 			).toBeVisible();
 
       // Wait for storage to persist (check localStorage directly)
-      await page.waitForFunction(() => {
-        const key = Object.keys(localStorage).find(k => k.startsWith('cvix-section-visibility-'));
-        return key && localStorage.getItem(key) !== null;
-      }, { timeout: 5000 }).catch(() => {
+      await page.waitForFunction(
+        () => {
+          const key = Object.keys(localStorage).find(k => k.startsWith('cvix-section-visibility-'));
+          return !!key && localStorage.getItem(key) !== null;
+        },
+        null,
+        { timeout: 5000 },
+      ).catch(() => {
         // If localStorage check fails, continue anyway - the persistence will be verified on refresh
         console.log("localStorage check timed out, but continuing with test");
       });
