@@ -11,6 +11,7 @@ import { Loader2 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
+import type { Resume } from "@/core/resume/domain/Resume";
 import AwardSection from "@/core/resume/infrastructure/presentation/components/AwardSection.vue";
 import BasicsSection from "@/core/resume/infrastructure/presentation/components/BasicsSection.vue";
 import CertificateSection from "@/core/resume/infrastructure/presentation/components/CertificateSection.vue";
@@ -28,6 +29,15 @@ import ProfilesField from "./ProfilesField.vue";
 
 const { t } = useI18n();
 
+/**
+ * Component relies entirely on the shared reactive state from useResumeForm().
+ * The composable is the source of truth; all form fields are bound via v-model
+ * to refs exported by the composable. Parent pages/components update the
+ * composable state directly, and this component automatically reflects changes.
+ *
+ * No defineExpose needed: all state updates flow through the composable's
+ * reactive refs, eliminating the need for imperative parent-to-child method calls.
+ */
 const {
 	basics,
 	workExperiences,

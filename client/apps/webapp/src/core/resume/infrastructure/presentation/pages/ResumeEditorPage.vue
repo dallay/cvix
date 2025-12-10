@@ -29,6 +29,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
+import type { Resume } from "@/core/resume/domain/Resume";
 import ResumeForm from "@/core/resume/infrastructure/presentation/components/ResumeForm.vue";
 import ResumePreview from "@/core/resume/infrastructure/presentation/components/ResumePreview.vue";
 import ValidationErrorPanel from "@/core/resume/infrastructure/presentation/components/ValidationErrorPanel.vue";
@@ -98,13 +99,17 @@ function handleBeforeUnload(event: BeforeUnloadEvent) {
 }
 
 onMounted(() => {
-	window.addEventListener("keydown", handleSaveShortcut);
-	window.addEventListener("beforeunload", handleBeforeUnload);
+	if (typeof window !== "undefined") {
+		window.addEventListener("keydown", handleSaveShortcut);
+		window.addEventListener("beforeunload", handleBeforeUnload);
+	}
 });
 
 onUnmounted(() => {
-	window.removeEventListener("keydown", handleSaveShortcut);
-	window.removeEventListener("beforeunload", handleBeforeUnload);
+	if (typeof window !== "undefined") {
+		window.removeEventListener("keydown", handleSaveShortcut);
+		window.removeEventListener("beforeunload", handleBeforeUnload);
+	}
 });
 
 // Keyboard shortcuts
@@ -182,8 +187,11 @@ async function processUpload(file: File) {
 		const result = await importJson(file);
 
 		if (result.success && result.data) {
-			setResume(result.data);
-			resumeFormRef.value?.loadResume(result.data);
+			// Set the composable/store state.
+			// useResumeForm() returns a shared reactive instance, so updating it updates any components
+			// that bind to its refs via v-model. Use sync helper to centralize optional component calls.
+			syncFormWithComposable("load", result.data);
+
 			toast({
 				title: "Import successful",
 				description: "Your resume has been loaded successfully.",
@@ -288,8 +296,9 @@ async function confirmReset() {
 
 	try {
 		// Clear the form
-		clearForm();
-		resumeFormRef.value?.clearForm();
+		syncFormWithComposable("clear");
+		// The composable returns a shared reactive instance; clearing it updates bound form fields.
+		// Previously we also called `resumeFormRef.value?.clearForm()` — this is redundant and removed.
 
 		// Clear storage
 		await resumeStore.clearStorage();
@@ -316,6 +325,8 @@ function cancelReset() {
 }
 
 // Ref to ResumeForm instance
+// Note: Only used for DOM navigation in handlePreviewNavigate() to scroll/highlight sections.
+// Form state is managed entirely through the shared composable (useResumeForm).
 const resumeFormRef = ref();
 
 /**
@@ -366,6 +377,33 @@ function handlePreviewNavigate(section: string, entryIndex?: number) {
 			setTimeout(() => target.classList.remove("section-highlight"), 2000);
 		}
 	});
+}
+
+// Helper to sync composable state
+/**
+ * Sync operation between the composable state and the resumeStore.
+ * The composable (useResumeForm) is the single source of truth for form state.
+ * All updates go through the composable which reactively updates v-model bindings.
+ *
+ * This helper centralizes all load/clear operations to prevent duplication
+ * and ensure consistency across upload, reset, and other workflows.
+ */
+function syncFormWithComposable(operation: "clear"): void;
+function syncFormWithComposable(operation: "load", data: Resume): void;
+function syncFormWithComposable(
+	operation: "load" | "clear",
+	data?: Resume,
+): void {
+	if (operation === "load") {
+		if (!data) {
+			throw new Error(
+				"syncFormWithComposable('load') requires a Resume argument",
+			);
+		}
+		setResume(data);
+	} else if (operation === "clear") {
+		clearForm();
+	}
 }
 </script>
 
@@ -517,7 +555,10 @@ function handlePreviewNavigate(section: string, entryIndex?: number) {
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
-              <ResumePreview :data="resume" @navigate-section="handlePreviewNavigate"/>
+              <ResumePreview v-if="resume" :data="resume" @navigate-section="handlePreviewNavigate"/>
+              <div v-else class="flex items-center justify-center h-full text-muted-foreground">
+                {{ t('resume.messages.noDataPreview') || 'Add resume data to see preview' }}
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -55,24 +55,26 @@ describe("useResumeForm", () => {
 
 	describe("initialization", () => {
 		it("should initialize with empty form data", () => {
-			const { basics, workExperiences, isValid } = useResumeForm();
+			const { basics, workExperiences, isValid, hasResume } = useResumeForm();
 
+			// Getters return safe defaults without side effects (no auto-creation)
 			expect(basics.value.name).toBe("");
 			expect(basics.value.email).toBe("");
 			expect(workExperiences.value).toEqual([]);
-			expect(isValid.value).toBe(false);
+			expect(isValid.value).toBe(false); // No resume yet
+			expect(hasResume.value).toBe(false); // No resume yet (not auto-created by field access)
 		});
 	});
 
 	describe("form state", () => {
 		it("should update resume when basics change", async () => {
-			const { basics, isValid } = useResumeForm();
+			const { loadResume, isValid } = useResumeForm();
+			const resume = createMockResume();
 
-			basics.value.name = "John Doe";
-			basics.value.email = "john@example.com";
+			// Load a resume with complete basics data
+			loadResume(resume);
 
-			// Wait for the watch to trigger
-			await nextTick();
+			// Wait for state to update
 			await nextTick();
 
 			// The validator will accept this as valid since basics exists
@@ -95,9 +97,11 @@ describe("useResumeForm", () => {
 
 	describe("submitResume", () => {
 		it("should return true for empty resume with basics", () => {
-			const { submitResume } = useResumeForm();
+			const { loadResume, submitResume } = useResumeForm();
+			const resume = createMockResume();
 
-			// The validator accepts a resume with just basics (even if empty strings)
+			// Load a valid resume to ensure validation passes
+			loadResume(resume);
 			const result = submitResume();
 
 			expect(result).toBe(true);
@@ -160,8 +164,14 @@ describe("useResumeForm", () => {
 
 	describe("clearForm", () => {
 		it("should clear all form data", async () => {
-			const { loadResume, clearForm, basics, workExperiences, hasResume } =
-				useResumeForm();
+			const {
+				loadResume,
+				clearForm,
+				basics,
+				workExperiences,
+				hasResume,
+				isValid,
+			} = useResumeForm();
 			const resume = createMockResume();
 
 			loadResume(resume);
@@ -174,10 +184,12 @@ describe("useResumeForm", () => {
 
 			clearForm();
 
+			// After clearing, getters return safe defaults without auto-creating
 			expect(basics.value.name).toBe("");
 			expect(basics.value.email).toBe("");
 			expect(workExperiences.value).toEqual([]);
-			expect(hasResume.value).toBe(false);
+			expect(hasResume.value).toBe(false); // Resume is null after clearing (no auto-creation)
+			expect(isValid.value).toBe(false); // No resume, so not valid
 		});
 	});
 

@@ -1,11 +1,4 @@
-import {
-	computed,
-	getCurrentInstance,
-	nextTick,
-	onMounted,
-	ref,
-	watch,
-} from "vue";
+import { type ComputedRef, computed, onMounted, type Ref } from "vue";
 import type {
 	Award,
 	Basics,
@@ -13,7 +6,6 @@ import type {
 	Education,
 	Interest,
 	Language,
-	Location,
 	Profile,
 	Project,
 	Publication,
@@ -24,138 +16,74 @@ import type {
 	Work,
 } from "@/core/resume/domain/Resume";
 import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
+import type { ProblemDetail } from "@/shared/BaseHttpClient";
 
 /**
- * Mutable version of Basics for form editing
+ * Utility type to strip readonly modifiers from deeply nested types.
+ * Transforms ReadonlyArray<T> → Array<T> and readonly properties → mutable.
+ * This enables bi-directional form binding without runtime type assertions.
  */
-interface MutableBasics extends Omit<Basics, "profiles"> {
+type DeepWritable<T> =
+	T extends ReadonlyArray<infer U>
+		? Array<DeepWritable<U>>
+		: T extends object
+			? { -readonly [K in keyof T]: DeepWritable<T[K]> }
+			: T;
+
+/**
+ * Derive MutableBasics from the domain Basics type.
+ * Omit the readonly profiles array and replace it with a mutable version.
+ * This ensures the type stays synchronized with the domain definition
+ * and automatically reflects any domain changes.
+ */
+type MutableBasics = Omit<Basics, "profiles"> & {
 	profiles: Profile[];
+};
+
+/**
+ * Form-specific mutable version of the entire Resume.
+ * Strips all readonly modifiers to enable bi-directional form binding.
+ */
+type WritableResume = DeepWritable<Resume>;
+
+// Define the return type for clarity and reuse
+export interface UseResumeFormReturn {
+	// form fields
+	basics: Ref<MutableBasics>;
+	workExperiences: Ref<Work[]>;
+	volunteers: Ref<Volunteer[]>;
+	education: Ref<Education[]>;
+	awards: Ref<Award[]>;
+	certificates: Ref<Certificate[]>;
+	publications: Ref<Publication[]>;
+	skills: Ref<Skill[]>;
+	languages: Ref<Language[]>;
+	interests: Ref<Interest[]>;
+	references: Ref<Reference[]>;
+	projects: Ref<Project[]>;
+
+	// computed
+	resume: ComputedRef<Resume | null>;
+	isValid: ComputedRef<boolean>;
+	hasResume: ComputedRef<boolean>;
+	isGenerating: ComputedRef<boolean>;
+	generationError: ComputedRef<ProblemDetail | null>;
+
+	// actions
+	submitResume: () => boolean;
+	saveToStorage: () => Promise<void>;
+	generatePdf: (locale?: string) => Promise<Blob>;
+	clearForm: () => void;
+	loadResume: (r: Resume) => void;
 }
 
 /**
- * Composable for managing the resume form state and validation.
- *
- * This composable connects the presentation layer with the resume store,
- * providing reactive form fields and validation state.
- *
- * @example
- * ```typescript
- * const {
- *   basics,
- *   workExperiences,
- *   isValid,
- *   isGenerating,
- *   submitResume,
- *   generatePdf
- * } = useResumeForm();
- * ```
+ * Factory function to create an empty resume with all sections initialized.
+ * Used as a safe default for getters when no resume exists yet.
  */
-export function useResumeForm() {
-	const resumeStore = useResumeStore();
-
-	const hasComponentInstance = Boolean(getCurrentInstance());
-	// Flag para evitar que el watch sobrescriba datos durante la carga inicial
-	const isInitializing = ref(hasComponentInstance);
-
-	// Form state - cada sección del resume
-	const basics = ref<MutableBasics>({
-		name: "",
-		label: "",
-		image: "",
-		email: "",
-		phone: "",
-		url: "",
-		summary: "",
-		location: {
-			address: "",
-			postalCode: "",
-			city: "",
-			countryCode: "",
-			region: "",
-		} as Location,
-		profiles: [] as Profile[],
-	});
-
-	const workExperiences = ref<Work[]>([]);
-	const volunteers = ref<Volunteer[]>([]);
-	const education = ref<Education[]>([]);
-	const awards = ref<Award[]>([]);
-	const certificates = ref<Certificate[]>([]);
-	const publications = ref<Publication[]>([]);
-	const skills = ref<Skill[]>([]);
-	const languages = ref<Language[]>([]);
-	const interests = ref<Interest[]>([]);
-	const references = ref<Reference[]>([]);
-	const projects = ref<Project[]>([]);
-
-	// Computed para construir el resume completo
-	const resume = computed<Resume>(() => ({
-		basics: basics.value,
-		work: workExperiences.value,
-		volunteer: volunteers.value,
-		education: education.value,
-		awards: awards.value,
-		certificates: certificates.value,
-		publications: publications.value,
-		skills: skills.value,
-		languages: languages.value,
-		interests: interests.value,
-		references: references.value,
-		projects: projects.value,
-	}));
-
-	// Validación automática cuando cambia el resume
-	// Solo sincronizar después de la carga inicial
-	watch(
-		resume,
-		(newResume) => {
-			if (!isInitializing.value) {
-				resumeStore.setResume(newResume);
-			}
-		},
-		{ deep: true },
-	); // Estados del store
-	const isValid = computed(() => resumeStore.isValid);
-	const hasResume = computed(() => resumeStore.hasResume);
-	const isGenerating = computed(() => resumeStore.isGenerating);
-	const generationError = computed(() => resumeStore.generationError);
-
-	/**
-	 * Validate the current resume form and save it to the resume store.
-	 *
-	 * @returns `true` if the resume is valid, `false` otherwise.
-	 */
-	function submitResume(): boolean {
-		resumeStore.setResume(resume.value);
-		return resumeStore.validateResume();
-	}
-
-	/**
-	 * Persist the current resume to the configured storage.
-	 */
-	async function saveToStorage(): Promise<void> {
-		return resumeStore.saveToStorage();
-	}
-
-	/**
-	 * Generate a PDF from the current resume data.
-	 *
-	 * @param locale - Optional locale code (e.g., "en", "es") to localize generated content
-	 * @returns The generated PDF as a `Blob`
-	 */
-	async function generatePdf(locale?: string): Promise<Blob> {
-		return resumeStore.generatePdf(locale);
-	}
-
-	/**
-	 * Reset all form sections to their empty defaults and clear the resume in the store.
-	 *
-	 * This resets `basics` (including `location` and `profiles`) and clears every section array
-	 * (workExperiences, volunteers, education, awards, certificates, publications, skills,
-	 * languages, interests, references, projects), then delegates to the resume store to clear persisted state.
-	 */
-	function clearForm(): void {
-		basics.value = {
+function createEmptyResume(): WritableResume {
+	return {
+		basics: {
 			name: "",
 			label: "",
 			image: "",
@@ -169,66 +97,231 @@ export function useResumeForm() {
 				city: "",
 				countryCode: "",
 				region: "",
-			} as Location,
-			profiles: [] as Profile[],
-		};
-		workExperiences.value = [];
-		volunteers.value = [];
-		education.value = [];
-		awards.value = [];
-		certificates.value = [];
-		publications.value = [];
-		skills.value = [];
-		languages.value = [];
-		interests.value = [];
-		references.value = [];
-		projects.value = [];
+			},
+			profiles: [],
+		},
+		work: [],
+		volunteer: [],
+		education: [],
+		awards: [],
+		certificates: [],
+		publications: [],
+		skills: [],
+		languages: [],
+		interests: [],
+		references: [],
+		projects: [],
+	};
+}
 
+/**
+ * Composable for managing the resume form state and validation.
+ * Returns a shared singleton accessor to Pinia store-backed computed refs for bi-directional reactivity.
+ * All callers receive the same reactive state, ensuring a single source of truth.
+ *
+ * Key design decisions:
+ * - Resume is NOT initialized automatically; callers must explicitly create or load one.
+ * - Getters return safe defaults without side effects (preserves "no resume" state).
+ * - Setters only write when explicitly called (no accidental state creation).
+ * - Type casting is centralized in the WritableResume utility type.
+ */
+export function useResumeForm(): UseResumeFormReturn {
+	const resumeStore = useResumeStore();
+
+	// Computed refs backed by Pinia store state with safe defaults (no side effects)
+	const basics = computed<MutableBasics>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.basics ??
+				createEmptyResume().basics) as MutableBasics,
+		set: (value: MutableBasics) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				basics: value,
+			});
+		},
+	});
+	const workExperiences = computed<Work[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.work ??
+				createEmptyResume().work) as Work[],
+		set: (value: Work[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				work: value,
+			});
+		},
+	});
+	const volunteers = computed<Volunteer[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.volunteer ??
+				createEmptyResume().volunteer) as Volunteer[],
+		set: (value: Volunteer[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				volunteer: value,
+			});
+		},
+	});
+	const education = computed<Education[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.education ??
+				createEmptyResume().education) as Education[],
+		set: (value: Education[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				education: value,
+			});
+		},
+	});
+	const awards = computed<Award[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.awards ??
+				createEmptyResume().awards) as Award[],
+		set: (value: Award[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				awards: value,
+			});
+		},
+	});
+	const certificates = computed<Certificate[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.certificates ??
+				createEmptyResume().certificates) as Certificate[],
+		set: (value: Certificate[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				certificates: value,
+			});
+		},
+	});
+	const publications = computed<Publication[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.publications ??
+				createEmptyResume().publications) as Publication[],
+		set: (value: Publication[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				publications: value,
+			});
+		},
+	});
+	const skills = computed<Skill[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.skills ??
+				createEmptyResume().skills) as Skill[],
+		set: (value: Skill[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				skills: value,
+			});
+		},
+	});
+	const languages = computed<Language[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.languages ??
+				createEmptyResume().languages) as Language[],
+		set: (value: Language[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				languages: value,
+			});
+		},
+	});
+	const interests = computed<Interest[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.interests ??
+				createEmptyResume().interests) as Interest[],
+		set: (value: Interest[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				interests: value,
+			});
+		},
+	});
+	const references = computed<Reference[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.references ??
+				createEmptyResume().references) as Reference[],
+		set: (value: Reference[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				references: value,
+			});
+		},
+	});
+	const projects = computed<Project[]>({
+		get: () =>
+			((resumeStore.resume as WritableResume | null)?.projects ??
+				createEmptyResume().projects) as Project[],
+		set: (value: Project[]) => {
+			const currentResume =
+				(resumeStore.resume as WritableResume) ?? createEmptyResume();
+			resumeStore.setResume({
+				...currentResume,
+				projects: value,
+			});
+		},
+	});
+
+	const resume = computed<Resume | null>(() => resumeStore.resume);
+	const isValid = computed(() => resumeStore.isValid);
+	const hasResume = computed(() => resumeStore.hasResume);
+	const isGenerating = computed(() => resumeStore.isGenerating);
+	const generationError = computed(() => resumeStore.generationError);
+
+	function submitResume(): boolean {
+		return resumeStore.validateResume();
+	}
+
+	async function saveToStorage(): Promise<void> {
+		return resumeStore.saveToStorage();
+	}
+
+	async function generatePdf(locale?: string): Promise<Blob> {
+		return resumeStore.generatePdf(locale);
+	}
+
+	function clearForm(): void {
 		resumeStore.clearResume();
 	}
 
-	/**
-	 * Populate the form state with values from a Resume object.
-	 *
-	 * Clones the resume's arrays and the `basics.profiles` array before assigning to avoid retaining references to the source object.
-	 *
-	 * @param resumeData - The Resume object whose data should be loaded into the form
-	 */
-	function loadResume(resumeData: Resume): void {
-		basics.value = {
-			...resumeData.basics,
-			profiles: [...resumeData.basics.profiles],
-		};
-		workExperiences.value = [...(resumeData.work || [])];
-		volunteers.value = [...(resumeData.volunteer || [])];
-		education.value = [...(resumeData.education || [])];
-		awards.value = [...(resumeData.awards || [])];
-		certificates.value = [...(resumeData.certificates || [])];
-		publications.value = [...(resumeData.publications || [])];
-		skills.value = [...(resumeData.skills || [])];
-		languages.value = [...(resumeData.languages || [])];
-		interests.value = [...(resumeData.interests || [])];
-		references.value = [...(resumeData.references || [])];
-		projects.value = [...(resumeData.projects || [])];
-	} // Initialize: load from storage on mount
+	function loadResume(r: Resume): void {
+		resumeStore.setResume(r);
+	}
+
+	// Initialize: load from storage on mount
 	onMounted(async () => {
 		try {
 			await resumeStore.loadFromStorage();
-			if (resumeStore.resume) {
-				loadResume(resumeStore.resume);
-				// Esperar dos ticks: uno para que Vue procese los cambios, otro para que los componentes se actualicen
-				await nextTick();
-				await nextTick();
-			}
 		} catch (error) {
 			console.error("Failed to load resume from storage:", error);
-		} finally {
-			// Permitir que el watch sincronice cambios después de la carga inicial
-			isInitializing.value = false;
 		}
 	});
+
 	return {
-		// Form fields
 		basics,
 		workExperiences,
 		volunteers,
@@ -241,15 +334,11 @@ export function useResumeForm() {
 		interests,
 		references,
 		projects,
-
-		// Computed
 		resume,
 		isValid,
 		hasResume,
 		isGenerating,
 		generationError,
-
-		// Actions
 		submitResume,
 		saveToStorage,
 		generatePdf,
