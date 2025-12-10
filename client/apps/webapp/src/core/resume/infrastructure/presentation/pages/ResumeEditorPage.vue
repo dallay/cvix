@@ -99,13 +99,17 @@ function handleBeforeUnload(event: BeforeUnloadEvent) {
 }
 
 onMounted(() => {
-	globalThis.addEventListener("keydown", handleSaveShortcut);
-	globalThis.addEventListener("beforeunload", handleBeforeUnload);
+	if (typeof window !== "undefined") {
+		window.addEventListener("keydown", handleSaveShortcut);
+		window.addEventListener("beforeunload", handleBeforeUnload);
+	}
 });
 
 onUnmounted(() => {
-	globalThis.removeEventListener("keydown", handleSaveShortcut);
-	globalThis.removeEventListener("beforeunload", handleBeforeUnload);
+	if (typeof window !== "undefined") {
+		window.removeEventListener("keydown", handleSaveShortcut);
+		window.removeEventListener("beforeunload", handleBeforeUnload);
+	}
 });
 
 // Keyboard shortcuts

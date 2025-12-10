@@ -69,17 +69,11 @@ export interface UseResumeFormReturn {
 	loadResume: (r: Resume) => void;
 }
 
-// Module-scoped shared instance
-let sharedInstance: UseResumeFormReturn | null = null;
-
 /**
  * Composable for managing the resume form state and validation.
- * Returns a shared instance so different callers (pages/components)
- * operate on the same reactive state.
+ * Returns a fresh instance per caller so each component gets its own reactive state and effects.
  */
 export function useResumeForm(): UseResumeFormReturn {
-	if (sharedInstance) return sharedInstance;
-
 	const resumeStore = useResumeStore();
 
 	const hasComponentInstance = Boolean(getCurrentInstance());
@@ -147,9 +141,7 @@ export function useResumeForm(): UseResumeFormReturn {
 	const isValid = computed(() => resumeStore.isValid);
 	const hasResume = computed(() => resumeStore.hasResume);
 	const isGenerating = computed(() => resumeStore.isGenerating);
-	const generationError = computed(
-		() => resumeStore.generationError as ProblemDetail | null,
-	);
+	const generationError = computed(() => resumeStore.generationError);
 
 	/**
 	 * Validate the current resume form and save it to the resume store.
@@ -241,7 +233,9 @@ export function useResumeForm(): UseResumeFormReturn {
 		interests.value = [...(resumeData.interests || [])];
 		references.value = [...(resumeData.references || [])];
 		projects.value = [...(resumeData.projects || [])];
-	} // Initialize: load from storage on mount
+	}
+
+	// Initialize: load from storage on mount
 	onMounted(async () => {
 		try {
 			await resumeStore.loadFromStorage();
@@ -259,7 +253,7 @@ export function useResumeForm(): UseResumeFormReturn {
 		}
 	});
 
-	sharedInstance = {
+	return {
 		basics,
 		workExperiences,
 		volunteers,
@@ -272,18 +266,15 @@ export function useResumeForm(): UseResumeFormReturn {
 		interests,
 		references,
 		projects,
-
 		resume,
 		isValid,
 		hasResume,
 		isGenerating,
 		generationError,
-
 		submitResume,
 		saveToStorage,
 		generatePdf,
 		clearForm,
 		loadResume,
 	};
-	return sharedInstance;
 }
