@@ -4,14 +4,21 @@ import { ArrowLeft, Download, Loader2 } from "lucide-vue-next";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import type {
+	ArraySectionType,
+	SectionType,
+} from "@/core/resume/domain/SectionVisibility";
 import type { ParamValue } from "@/core/resume/domain/TemplateMetadata";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useResumeStore } from "../../store/resume.store";
+import { useSectionVisibilityStore } from "../../store/section-visibility.store";
 import PdfTemplateSelector from "../components/PdfTemplateSelector.vue";
+import SectionTogglePanel from "../components/SectionTogglePanel.vue";
 import { usePdf } from "../composables/usePdf";
 
 const router = useRouter();
 const resumeStore = useResumeStore();
+const visibilityStore = useSectionVisibilityStore();
 const { t } = useI18n();
 const {
 	templates,
@@ -55,6 +62,11 @@ onMounted(async () => {
 
 	await fetchTemplates();
 
+	// Initialize section visibility
+	if (resumeStore.resume) {
+		visibilityStore.initialize(resumeStore.resume);
+	}
+
 	// Select first template by default if available
 	if (templates.value.length > 0 && !selectedTemplate.value.templateId) {
 		const firstTemplate = templates.value[0];
@@ -65,13 +77,19 @@ onMounted(async () => {
 });
 
 const handleGeneratePdf = async (): Promise<Blob> => {
-	if (!resumeStore.resume || !selectedTemplate.value.templateId) {
-		throw new Error("No resume data or template selected");
+	if (!selectedTemplate.value.templateId) {
+		throw new Error("No template selected");
+	}
+
+	// Use filtered resume if available, otherwise use the full resume
+	const resumeToGenerate = visibilityStore.filteredResume || resumeStore.resume;
+	if (!resumeToGenerate) {
+		throw new Error("No resume data available");
 	}
 
 	try {
 		const result = await generatePdf(
-			resumeStore.resume,
+			resumeToGenerate,
 			selectedTemplate.value.templateId,
 			selectedTemplate.value.params,
 		);
@@ -95,12 +113,26 @@ watch(
 	{ deep: true },
 );
 
+// Watch for visibility changes to regenerate preview
+watch(
+	() => visibilityStore.visibility,
+	() => {
+		if (selectedTemplate.value.templateId && visibilityStore.filteredResume) {
+			debouncedGenerate();
+		}
+	},
+	{ deep: true },
+);
+
 const onDownload = async () => {
-	if (!resumeStore.resume || !selectedTemplate.value.templateId) return;
+	if (!selectedTemplate.value.templateId) return;
+
+	const resumeToDownload = visibilityStore.filteredResume || resumeStore.resume;
+	if (!resumeToDownload) return;
 
 	try {
 		const blob = await generatePdf(
-			resumeStore.resume,
+			resumeToDownload,
 			selectedTemplate.value.templateId,
 			selectedTemplate.value.params,
 		);
@@ -108,6 +140,22 @@ const onDownload = async () => {
 	} catch (e) {
 		console.error("PDF download failed", e);
 	}
+};
+
+const handleToggleSection = (section: SectionType) => {
+	visibilityStore.toggleSection(section);
+};
+
+const handleExpandSection = (section: SectionType) => {
+	visibilityStore.toggleSectionExpanded(section);
+};
+
+const handleToggleItem = (section: ArraySectionType, index: number) => {
+	visibilityStore.toggleItem(section, index);
+};
+
+const handleToggleField = (field: string) => {
+	visibilityStore.togglePersonalDetailsField(field);
 };
 
 const goBack = async () => {
@@ -142,47 +190,67 @@ const goBack = async () => {
         </button>
       </div>
       <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar: Template Selection -->
-        <div class="w-80 border-r bg-muted/10 overflow-y-auto p-6">
-          <div v-if="isLoadingTemplates" class="flex justify-center py-8">
-            <Loader2 class="h-6 w-6 animate-spin text-muted-foreground"/>
+        <!-- Sidebar: Template Selection & Appearance Settings -->
+        <div class="w-[360px] border-r bg-card overflow-y-auto">
+          <div class="p-6">
+            <div v-if="isLoadingTemplates" class="flex justify-center py-8">
+              <Loader2 class="h-6 w-6 animate-spin text-muted-foreground"/>
+            </div>
+            <div v-else-if="pdfError"
+                 class="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+              {{ pdfError }}
+            </div>
+            <PdfTemplateSelector
+                v-else
+                v-model="selectedTemplate"
+                :templates="templates"
+            />
           </div>
-          <div v-else-if="pdfError"
-               class="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-            {{ pdfError }}
-          </div>
-          <PdfTemplateSelector
-              v-else
-              v-model="selectedTemplate"
-              :templates="templates"
-          />
         </div>
-        <!-- Main Area: Preview -->
-        <div
-            class="flex-1 bg-muted/30 p-8 flex flex-col items-center justify-center overflow-hidden relative">
-          <div v-if="isGenerating && !pdfUrl"
-               class="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
-            <div class="flex flex-col items-center gap-2">
-              <Loader2 class="h-8 w-8 animate-spin text-primary"/>
-              <p class="text-sm text-muted-foreground">
-                {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}</p>
-            </div>
+        <!-- Main Area: Section Toggles and Preview -->
+        <div class="flex-1 bg-muted/30 p-8 flex flex-col overflow-hidden">
+          <!-- Section Toggle Panel -->
+          <div v-if="resumeStore.resume && visibilityStore.visibility" class="mb-6 pb-6 border-b">
+            <h2 class="text-sm font-semibold text-foreground mb-4">
+              {{ t('resume.pdfPage.visibleSections', 'Visible Sections') }}
+            </h2>
+            <SectionTogglePanel
+                :resume="resumeStore.resume"
+                :visibility="visibilityStore.visibility"
+                :metadata="visibilityStore.sectionMetadata"
+                @toggle-section="handleToggleSection"
+                @expand-section="handleExpandSection"
+                @toggle-item="handleToggleItem"
+                @toggle-field="handleToggleField"
+            />
           </div>
-          <div v-if="!selectedTemplate.templateId" class="text-center text-muted-foreground">
-            <p>{{ t('resume.pdfPage.selectTemplate', 'Select a template to generate preview') }}</p>
-          </div>
-          <object
-              v-else-if="pdfPreviewUrl"
-              :data="pdfPreviewUrl"
-              class="w-full h-full rounded-lg shadow-lg border bg-white max-w-[210mm]"
-              type="application/pdf"
-          >
-            <div class="flex h-full items-center justify-center text-muted-foreground">
-              <p>{{
-                  t('resume.pdfPage.unablePreview', 'Unable to display PDF preview. Please download to view.')
-                }}</p>
+
+          <!-- PDF Preview -->
+          <div class="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
+            <div v-if="isGenerating && !pdfUrl"
+                 class="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
+              <div class="flex flex-col items-center gap-2">
+                <Loader2 class="h-8 w-8 animate-spin text-primary"/>
+                <p class="text-sm text-muted-foreground">
+                  {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}</p>
+              </div>
             </div>
-          </object>
+            <div v-if="!selectedTemplate.templateId" class="text-center text-muted-foreground">
+              <p>{{ t('resume.pdfPage.selectTemplate', 'Select a template to generate preview') }}</p>
+            </div>
+            <object
+                v-else-if="pdfPreviewUrl"
+                :data="pdfPreviewUrl"
+                class="w-full h-full rounded-lg shadow-lg border bg-white max-w-[210mm]"
+                type="application/pdf"
+            >
+              <div class="flex h-full items-center justify-center text-muted-foreground">
+                <p>{{
+                    t('resume.pdfPage.unablePreview', 'Unable to display PDF preview. Please download to view.')
+                  }}</p>
+              </div>
+            </object>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 package com.cvix.buildlogic.analysis
 
+import com.cvix.buildlogic.common.AppConfiguration.APP_NAME
 import com.cvix.buildlogic.common.ConventionPlugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
@@ -13,6 +14,8 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 private const val FAIL_BUILDS_ON_CVSS: Float = 11F // SET THIS TO A REASONABLE VALUE FOR YOUR PROJECT
 private const val AUTO_UPDATE: Boolean = true // Enable auto-update of the NVD database
 private const val PURGE_DATABASE: Boolean = true // Enable purging of the database to fix corruption issues
+
+private const val DEFAULT_DELAY = 1000
 
 @Suppress("unused")
 internal class AppOwaspPlugin : ConventionPlugin {
@@ -92,18 +95,45 @@ internal class AppOwaspPlugin : ConventionPlugin {
             nvd {
                 apiKey.set(apiKeyValue)
             }
-            println(" ✅  [NVD_API_KEY] was successfully loaded from the environment.")
+            println("✅ NVD_API_KEY loaded from environment.")
+            println("   This increases rate limits when querying the NVD.")
+            println("   See: https://nvd.nist.gov/vuln/data-feeds#apikey")
+            println("   Tip: add the key as a secret in your CI/CD")
+            println("   or export NVD_API_KEY in your local environment. ($APP_NAME)")
         } else {
-            println(" ⚠️  [NVD_API_KEY] was not found in the environment. Please set it to avoid rate limiting.")
+            println("⚠️ NVD_API_KEY not found in the environment.")
+            println("   NVD queries may be rate-limited.")
+            println("   Create an API key at: https://nvd.nist.gov/vuln/data-feeds#apikey")
+            println("   Options: export NVD_API_KEY=... or add it as a secret in your CI/CD.")
+            println("   ($APP_NAME)")
         }
         val delayValue = System.getenv("NVD_API_DELAY")
         if (delayValue != null) {
-            nvd {
-                delay.set(delayValue.toInt())
+            val delayInt = delayValue.toIntOrNull()
+            if (delayInt != null) {
+                if (delayInt <= 0) {
+                    println("⚠️ [NVD_API_DELAY] must be positive. Got: $delayInt ms. Defaulting to ${DEFAULT_DELAY}ms.")
+                    nvd {
+                        delay.set(DEFAULT_DELAY)
+                    }
+                } else {
+                    nvd {
+                        delay.set(delayInt)
+                    }
+                    println("✅ [NVD_API_DELAY] loaded from environment: $delayInt ms.")
+                }
+            } else {
+                println("⚠️ [NVD_API_DELAY] is set but is not a valid integer: '$delayValue'.")
+                println("   Defaulting to ${DEFAULT_DELAY}ms.")
+                nvd {
+                    delay.set(DEFAULT_DELAY)
+                }
             }
-            println(" ✅  [NVD_API_DELAY] was successfully loaded from the environment.")
         } else {
-            println(" ⚠️  [NVD_API_DELAY] was not found in the environment. Defaulting to 1000ms.")
+            println("⚠️ [NVD_API_DELAY] not found in the environment. Defaulting to ${DEFAULT_DELAY}ms.")
+            nvd {
+                delay.set(DEFAULT_DELAY)
+            }
         }
     }
 }
