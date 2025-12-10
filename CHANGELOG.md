@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/dallay/cvix/compare/v1.3.0...v1.3.1) (2025-12-10)
+
+### 🐛 Bug Fixes
+
+* enhance resume form functionality with load and clear methods ([#421](https://github.com/dallay/cvix/issues/421)) ([75fd05b](https://github.com/dallay/cvix/commit/75fd05b08cf60ff592af2b797bdd1b3a02455fd6))
+
 ## [1.3.0](https://github.com/dallay/cvix/compare/v1.2.1...v1.3.0) (2025-12-10)
 
 ### ✨ Features
