@@ -69,65 +69,317 @@ export function useResumeForm(): UseResumeFormReturn {
 	const resumeStore = useResumeStore();
 
 	// Computed refs backed by Pinia store state
-	const basics = computed<MutableBasics>(() => {
-		const b = resumeStore.resume?.basics;
-		return b
-			? { ...b, profiles: [...b.profiles] }
-			: {
-					name: "",
-					label: "",
-					image: "",
-					email: "",
-					phone: "",
-					url: "",
-					summary: "",
-					location: {
-						address: "",
-						postalCode: "",
-						city: "",
-						countryCode: "",
-						region: "",
-					} as Location,
-					profiles: [],
-				};
+	const basics = computed<MutableBasics>({
+		get: () => {
+			const b = resumeStore.resume?.basics;
+			return b
+				? { ...b, profiles: [...b.profiles] }
+				: {
+						name: "",
+						label: "",
+						image: "",
+						email: "",
+						phone: "",
+						url: "",
+						summary: "",
+						location: {
+							address: "",
+							postalCode: "",
+							city: "",
+							countryCode: "",
+							region: "",
+						} as Location,
+						profiles: [],
+					};
+		},
+		set: (value: MutableBasics) => {
+			const currentResume = resumeStore.resume || {
+				basics: value,
+				work: [],
+				volunteer: [],
+				education: [],
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				basics: value,
+			});
+		},
 	});
-	const workExperiences = computed<Work[]>(() =>
-		resumeStore.resume?.work ? [...resumeStore.resume.work] : [],
-	);
-	const volunteers = computed<Volunteer[]>(() =>
-		resumeStore.resume?.volunteer ? [...resumeStore.resume.volunteer] : [],
-	);
-	const education = computed<Education[]>(() =>
-		resumeStore.resume?.education ? [...resumeStore.resume.education] : [],
-	);
-	const awards = computed<Award[]>(() =>
-		resumeStore.resume?.awards ? [...resumeStore.resume.awards] : [],
-	);
-	const certificates = computed<Certificate[]>(() =>
-		resumeStore.resume?.certificates
-			? [...resumeStore.resume.certificates]
-			: [],
-	);
-	const publications = computed<Publication[]>(() =>
-		resumeStore.resume?.publications
-			? [...resumeStore.resume.publications]
-			: [],
-	);
-	const skills = computed<Skill[]>(() =>
-		resumeStore.resume?.skills ? [...resumeStore.resume.skills] : [],
-	);
-	const languages = computed<Language[]>(() =>
-		resumeStore.resume?.languages ? [...resumeStore.resume.languages] : [],
-	);
-	const interests = computed<Interest[]>(() =>
-		resumeStore.resume?.interests ? [...resumeStore.resume.interests] : [],
-	);
-	const references = computed<Reference[]>(() =>
-		resumeStore.resume?.references ? [...resumeStore.resume.references] : [],
-	);
-	const projects = computed<Project[]>(() =>
-		resumeStore.resume?.projects ? [...resumeStore.resume.projects] : [],
-	);
+	const workExperiences = computed<Work[]>({
+		get: () => (resumeStore.resume?.work ? [...resumeStore.resume.work] : []),
+		set: (value: Work[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: value,
+				volunteer: [],
+				education: [],
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				work: value,
+			});
+		},
+	});
+	const volunteers = computed<Volunteer[]>({
+		get: () =>
+			resumeStore.resume?.volunteer ? [...resumeStore.resume.volunteer] : [],
+		set: (value: Volunteer[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: value,
+				education: [],
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				volunteer: value,
+			});
+		},
+	});
+	const education = computed<Education[]>({
+		get: () =>
+			resumeStore.resume?.education ? [...resumeStore.resume.education] : [],
+		set: (value: Education[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: value,
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				education: value,
+			});
+		},
+	});
+	const awards = computed<Award[]>({
+		get: () =>
+			resumeStore.resume?.awards ? [...resumeStore.resume.awards] : [],
+		set: (value: Award[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: value,
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				awards: value,
+			});
+		},
+	});
+	const certificates = computed<Certificate[]>({
+		get: () =>
+			resumeStore.resume?.certificates
+				? [...resumeStore.resume.certificates]
+				: [],
+		set: (value: Certificate[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: value,
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				certificates: value,
+			});
+		},
+	});
+	const publications = computed<Publication[]>({
+		get: () =>
+			resumeStore.resume?.publications
+				? [...resumeStore.resume.publications]
+				: [],
+		set: (value: Publication[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: value,
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				publications: value,
+			});
+		},
+	});
+	const skills = computed<Skill[]>({
+		get: () =>
+			resumeStore.resume?.skills ? [...resumeStore.resume.skills] : [],
+		set: (value: Skill[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: publications.value,
+				skills: value,
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				skills: value,
+			});
+		},
+	});
+	const languages = computed<Language[]>({
+		get: () =>
+			resumeStore.resume?.languages ? [...resumeStore.resume.languages] : [],
+		set: (value: Language[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: publications.value,
+				skills: skills.value,
+				languages: value,
+				interests: [],
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				languages: value,
+			});
+		},
+	});
+	const interests = computed<Interest[]>({
+		get: () =>
+			resumeStore.resume?.interests ? [...resumeStore.resume.interests] : [],
+		set: (value: Interest[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: publications.value,
+				skills: skills.value,
+				languages: languages.value,
+				interests: value,
+				references: [],
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				interests: value,
+			});
+		},
+	});
+	const references = computed<Reference[]>({
+		get: () =>
+			resumeStore.resume?.references ? [...resumeStore.resume.references] : [],
+		set: (value: Reference[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: publications.value,
+				skills: skills.value,
+				languages: languages.value,
+				interests: interests.value,
+				references: value,
+				projects: [],
+			};
+			resumeStore.setResume({
+				...currentResume,
+				references: value,
+			});
+		},
+	});
+	const projects = computed<Project[]>({
+		get: () =>
+			resumeStore.resume?.projects ? [...resumeStore.resume.projects] : [],
+		set: (value: Project[]) => {
+			const currentResume = resumeStore.resume || {
+				basics: basics.value,
+				work: workExperiences.value,
+				volunteer: volunteers.value,
+				education: education.value,
+				awards: awards.value,
+				certificates: certificates.value,
+				publications: publications.value,
+				skills: skills.value,
+				languages: languages.value,
+				interests: interests.value,
+				references: references.value,
+				projects: value,
+			};
+			resumeStore.setResume({
+				...currentResume,
+				projects: value,
+			});
+		},
+	});
 
 	const resume = computed<Resume | null>(() => resumeStore.resume);
 	const isValid = computed(() => resumeStore.isValid);
