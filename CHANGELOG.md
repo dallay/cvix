@@ -1,3 +1,9 @@
+## [1.3.2](https://github.com/dallay/cvix/compare/v1.3.1...v1.3.2) (2025-12-10)
+
+### 🐛 Bug Fixes
+
+* form resume loader ([#422](https://github.com/dallay/cvix/issues/422)) ([4fed367](https://github.com/dallay/cvix/commit/4fed367a27fb4da270b19697e3e9c825932bbbc5))
+
 ## [1.3.1](https://github.com/dallay/cvix/compare/v1.3.0...v1.3.1) (2025-12-10)
 
 ### 🐛 Bug Fixes
