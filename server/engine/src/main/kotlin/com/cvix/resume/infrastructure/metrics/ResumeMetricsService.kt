@@ -35,19 +35,6 @@ class ResumeMetricsService(
         )
         .register(meterRegistry)
 
-    // PDF generation duration timer
-    private val pdfGenerationTimer: Timer = Timer.builder("resume.pdf.generation.duration")
-        .description("PDF generation duration (LaTeX + Docker)")
-        .publishPercentiles(0.5, 0.75, 0.95, 0.99)
-        .publishPercentileHistogram()
-        .serviceLevelObjectives(
-            java.time.Duration.ofSeconds(2),
-            java.time.Duration.ofSeconds(5),
-            java.time.Duration.ofSeconds(8), // Target SLO
-            java.time.Duration.ofSeconds(10), // Timeout threshold
-        )
-        .register(meterRegistry)
-
     // Request counters
     private val requestTotalCounter: Counter = Counter.builder("resume.requests.total")
         .description("Total resume generation requests")
