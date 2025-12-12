@@ -5,5 +5,4 @@ package com.cvix.resume.domain
  */
 enum class DocumentType(val type: String) {
     RESUME("resume"),
-    COVER_LETTER("cover_letter"),
 }

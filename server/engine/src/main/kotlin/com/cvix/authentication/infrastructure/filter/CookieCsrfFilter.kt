@@ -17,50 +17,48 @@ class CookieCsrfFilter(
 ) : WebFilter {
     /** {@inheritDoc}  */
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
-        return if (exchange.request.cookies[CSRF_COOKIE_NAME] != null) {
+        return exchange.request.cookies[CSRF_COOKIE_NAME]?.let {
             chain.filter(exchange)
-        } else {
-            Mono.just(exchange)
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap { serverWebExchange: ServerWebExchange ->
-                    serverWebExchange.getAttributeOrDefault(
-                        CsrfToken::class.java.name,
-                        Mono.empty<CsrfToken>(),
+        } ?: Mono.just(exchange)
+            .publishOn(Schedulers.boundedElastic())
+            .flatMap { serverWebExchange: ServerWebExchange ->
+                serverWebExchange.getAttributeOrDefault(
+                    CsrfToken::class.java.name,
+                    Mono.empty<CsrfToken>(),
+                )
+            }
+            .doOnNext { token: CsrfToken ->
+                val cookieBuilder =
+                    ResponseCookie.from(CSRF_COOKIE_NAME, token.token)
+                        .maxAge(-1)
+                        .httpOnly(false)
+                        .path(getRequestContext(exchange.request))
+                        .secure(Optional.ofNullable(exchange.request.sslInfo).isPresent)
+                        .sameSite("Lax")
+
+                // Only set domain if configured and not localhost (localhost doesn't work with domain attribute)
+                if (applicationSecurityProperties.domain.isNotEmpty() &&
+                    applicationSecurityProperties.domain != "localhost"
+                ) {
+                    cookieBuilder.domain(
+                        if (applicationSecurityProperties.domain.startsWith(".")) {
+                            applicationSecurityProperties.domain
+                        } else {
+                            "." + applicationSecurityProperties.domain
+                        },
                     )
                 }
-                .doOnNext { token: CsrfToken ->
-                    val cookieBuilder =
-                        ResponseCookie.from(CSRF_COOKIE_NAME, token.token)
-                            .maxAge(-1)
-                            .httpOnly(false)
-                            .path(getRequestContext(exchange.request))
-                            .secure(Optional.ofNullable(exchange.request.sslInfo).isPresent)
-                            .sameSite("Lax")
 
-                    // Only set domain if configured and not localhost (localhost doesn't work with domain attribute)
-                    if (applicationSecurityProperties.domain.isNotEmpty() &&
-                        applicationSecurityProperties.domain != "localhost"
-                    ) {
-                        cookieBuilder.domain(
-                            if (applicationSecurityProperties.domain.startsWith(".")) {
-                                applicationSecurityProperties.domain
-                            } else {
-                                "." + applicationSecurityProperties.domain
-                            },
-                        )
-                    }
-
-                    val cookie = cookieBuilder.build()
-                    exchange.response.cookies.add(CSRF_COOKIE_NAME, cookie)
-                }
-                .then(
-                    Mono.defer {
-                        chain.filter(
-                            exchange,
-                        )
-                    },
-                )
-        }
+                val cookie = cookieBuilder.build()
+                exchange.response.cookies.add(CSRF_COOKIE_NAME, cookie)
+            }
+            .then(
+                Mono.defer {
+                    chain.filter(
+                        exchange,
+                    )
+                },
+            )
     }
 
     private fun getRequestContext(request: ServerHttpRequest): String {

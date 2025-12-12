@@ -110,13 +110,6 @@ class ResumeMetricsService(
     }
 
     /**
-     * Record PDF generation duration
-     */
-    fun recordPdfGeneration(durationMs: Long) {
-        pdfGenerationTimer.record(durationMs, TimeUnit.MILLISECONDS)
-    }
-
-    /**
      * Increment total request counter
      */
     fun incrementRequestTotal() {

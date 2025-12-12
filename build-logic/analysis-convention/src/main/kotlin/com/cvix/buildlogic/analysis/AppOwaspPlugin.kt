@@ -90,7 +90,14 @@ internal class AppOwaspPlugin : ConventionPlugin {
     }
 
     private fun DependencyCheckExtension.setEnvironmentVariables() {
-        val apiKeyValue = System.getenv("NVD_API_KEY")
+        val apiKeyValue = System.getenv("NVD_API_KEY") ?: run {
+            println("⚠️ NVD_API_KEY not found in the environment.")
+            println("   NVD queries may be rate-limited.")
+            println("   Create an API key at: https://nvd.nist.gov/vuln/data-feeds#apikey")
+            println("   Options: export NVD_API_KEY=... or add it as a secret in your CI/CD.")
+            println("   ($APP_NAME)")
+            null
+        }
         if (apiKeyValue != null) {
             nvd {
                 apiKey.set(apiKeyValue)
@@ -100,12 +107,6 @@ internal class AppOwaspPlugin : ConventionPlugin {
             println("   See: https://nvd.nist.gov/vuln/data-feeds#apikey")
             println("   Tip: add the key as a secret in your CI/CD")
             println("   or export NVD_API_KEY in your local environment. ($APP_NAME)")
-        } else {
-            println("⚠️ NVD_API_KEY not found in the environment.")
-            println("   NVD queries may be rate-limited.")
-            println("   Create an API key at: https://nvd.nist.gov/vuln/data-feeds#apikey")
-            println("   Options: export NVD_API_KEY=... or add it as a secret in your CI/CD.")
-            println("   ($APP_NAME)")
         }
         val delayValue = System.getenv("NVD_API_DELAY")
         if (delayValue != null) {
