@@ -27,7 +27,7 @@ data class Credential(
         val charSpecial: List<Char> = "!@#$%^&*()_+{}|:<>?".toList()
 
         // Updated charset to include special characters for better entropy
-        val charset: List<Char> = charLowercase + charUppercase + charNumbers + charSpecial
+        val charset: List<Char> = listOf(charLowercase, charUppercase, charNumbers, charSpecial).flatten()
 
         /**
          * Generates a random password with the following rules:

@@ -108,18 +108,18 @@ $RECYCLE.BIN/
 
 
 # START Ruler Generated Files
-/../../.config/.cursor/mcp.json
-/../../.config/.cursor/mcp.json.bak
-/../../.config/.gemini/settings.json
-/../../.config/.gemini/settings.json.bak
-/../../.config/.mcp.json
-/../../.config/.mcp.json.bak
-/../../.config/.vscode/mcp.json
-/../../.config/.vscode/mcp.json.bak
-/../../.config/AGENTS.md
-/../../.config/AGENTS.md.bak
-/../../.config/CLAUDE.md
-/../../.config/CLAUDE.md.bak
+/../../../.config/.cursor/mcp.json
+/../../../.config/.cursor/mcp.json.bak
+/../../../.config/.gemini/settings.json
+/../../../.config/.gemini/settings.json.bak
+/../../../.config/.mcp.json
+/../../../.config/.mcp.json.bak
+/../../../.config/.vscode/mcp.json
+/../../../.config/.vscode/mcp.json.bak
+/../../../.config/AGENTS.md
+/../../../.config/AGENTS.md.bak
+/../../../.config/CLAUDE.md
+/../../../.config/CLAUDE.md.bak
 /.cursor/mcp.json
 /.cursor/mcp.json.bak
 /.cursor/rules/ruler_cursor_instructions.mdc
