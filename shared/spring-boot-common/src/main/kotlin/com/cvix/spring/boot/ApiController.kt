@@ -143,5 +143,4 @@ abstract class ApiController(
         }
         return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
     }
-
 }
