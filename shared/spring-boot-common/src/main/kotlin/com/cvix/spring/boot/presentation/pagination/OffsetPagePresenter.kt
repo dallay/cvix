@@ -47,7 +47,7 @@ class OffsetPagePresenter(
             .distinct()
             .joinToString(", ")
         headers.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, merged)
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 
         val response = exchange.response
         val dataBuffer = response.bufferFactory().wrap(objectMapper.writeValueAsBytes(returnValue.data))
