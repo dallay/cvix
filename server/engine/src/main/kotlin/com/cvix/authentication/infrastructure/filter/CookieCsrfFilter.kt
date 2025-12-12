@@ -10,7 +10,6 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 
 class CookieCsrfFilter(
     val applicationSecurityProperties: ApplicationSecurityProperties
@@ -20,7 +19,6 @@ class CookieCsrfFilter(
         return exchange.request.cookies[CSRF_COOKIE_NAME]?.let {
             chain.filter(exchange)
         } ?: Mono.just(exchange)
-            .publishOn(Schedulers.boundedElastic())
             .flatMap { serverWebExchange: ServerWebExchange ->
                 serverWebExchange.getAttributeOrDefault(
                     CsrfToken::class.java.name,

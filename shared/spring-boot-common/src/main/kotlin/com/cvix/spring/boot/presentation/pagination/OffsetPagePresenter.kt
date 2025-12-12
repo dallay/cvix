@@ -19,7 +19,9 @@ class OffsetPagePresenter(
     override val type = OffsetPageResponse::class
 
     override suspend fun present(exchange: ServerWebExchange, result: HandlerResult) {
-        val returnValue = (result.returnValue as Mono<OffsetPageResponse<*>>).awaitSingleOrNull() ?: return
+        val mono = result.returnValue as? Mono<OffsetPageResponse<*>>
+            ?: return
+        val returnValue = mono.awaitSingleOrNull() ?: return
         val headers = exchange.response.headers
         val additional = mutableListOf<String>()
 
@@ -34,7 +36,17 @@ class OffsetPagePresenter(
         headers["Per-Page"] = returnValue.perPage.toString()
         additional.add("Per-Page")
 
-        headers[HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS] = additional.joinToString(", ")
+        val existing = headers.getFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS)
+        val merged = (
+            existing
+                ?.split(',')
+                ?.map { it.trim() }
+                ?.filter { it.isNotEmpty() }
+                .orEmpty() + additional
+            )
+            .distinct()
+            .joinToString(", ")
+        headers.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, merged)
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 
         val response = exchange.response

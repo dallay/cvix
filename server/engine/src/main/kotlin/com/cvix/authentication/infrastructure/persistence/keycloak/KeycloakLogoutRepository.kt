@@ -15,7 +15,7 @@ class KeycloakLogoutRepository(
     private val applicationSecurityProperties: ApplicationSecurityProperties,
     private val webClient: WebClient = WebClient.builder().build()
 ) : UserAuthenticatorLogout {
-    private val logoutURI = "${applicationSecurityProperties.oauth2.serverUrl}/realms/" +
+    private val logoutURI = "${applicationSecurityProperties.oauth2.serverUrl.removeSuffix("/")}/realms/" +
         "${applicationSecurityProperties.oauth2.realm}/protocol/openid-connect/logout"
 
     @Suppress("TooGenericExceptionCaught")
