@@ -22,6 +22,8 @@ import jakarta.validation.Valid
  */
 @ValidResumeContent
 data class GenerateResumeRequest(
+    val templateId: String,
+
     @field:Valid
     val basics: BasicsDto,
 

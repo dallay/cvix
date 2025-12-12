@@ -1,0 +1,25 @@
+{
+  "templateId": "simple-template-003",
+  "basics": {
+    "name": "Jane Minimal",
+    "email": "jane@example.com",
+    "phone": "(555) 000-0000"
+  },
+  "work": [],
+  "volunteer": [],
+  "education": [],
+  "awards": [],
+  "certificates": [],
+  "publications": [],
+  "skills": [
+    {
+      "name": "Programming",
+      "keywords": ["Python", "Java"]
+    }
+  ],
+  "languages": [],
+  "interests": [],
+  "references": [],
+  "projects": []
+}
+

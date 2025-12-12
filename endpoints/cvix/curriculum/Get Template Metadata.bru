@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{url}}/api/templates?limit=10
+  url: {{url}}/api/templates?limit=10&workspaceId={{workspaceId}}
   body: none
   auth: inherit
 }
 
 params:query {
   limit: 10
+  workspaceId: {{workspaceId}}
 }
 
 settings {

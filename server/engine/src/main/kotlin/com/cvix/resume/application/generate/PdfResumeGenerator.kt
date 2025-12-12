@@ -7,8 +7,12 @@ import com.cvix.resume.domain.DocumentType
 import com.cvix.resume.domain.Locale
 import com.cvix.resume.domain.PdfGenerator
 import com.cvix.resume.domain.Resume
+import com.cvix.resume.domain.TemplateMetadata
 import com.cvix.resume.domain.TemplateRenderer
 import com.cvix.resume.domain.event.GeneratedDocumentEvent
+import com.cvix.resume.domain.exception.TemplateAccessDeniedException
+import com.cvix.resume.domain.exception.TemplateNotFoundException
+import com.cvix.subscription.domain.SubscriptionTier
 import java.io.InputStream
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -33,11 +37,18 @@ import org.slf4j.LoggerFactory
  * - Atomic operations for thread-safe metrics tracking
  * - Efficient timing using measureTimeMillis
  * - Configurable timeouts for all operations
+ *
+ * Security:
+ * - Validates user subscription tier before allowing access to premium templates
+ * - Uses TemplateRepository to resolve template metadata and validate permissions
+ * - Defaults to FREE tier if user has no active subscription
  */
 @Service
 class PdfResumeGenerator(
     private val templateRenderer: TemplateRenderer,
     private val pdfGenerator: PdfGenerator,
+    private val templateRepository: com.cvix.resume.domain.TemplateRepository,
+    private val subscriptionRepository: com.cvix.subscription.domain.SubscriptionRepository,
     eventPublisher: EventPublisher<GeneratedDocumentEvent>
 ) {
     private val eventBroadcaster = EventBroadcaster<GeneratedDocumentEvent>()
@@ -50,60 +61,81 @@ class PdfResumeGenerator(
      * Generates a PDF resume from the given resume data and locale.
      *
      * All operations are non-blocking:
+     * - Template resolution and permission validation
      * - Template rendering: offloaded to IO dispatcher
      * - PDF generation: reactive stream with backpressure
      * - Event publishing: asynchronous
      *
+     * @param templateId The ID of the resume template to use
      * @param resume The resume data following JSON Resume schema
+     * @param userId The ID of the user requesting the resume (for permission validation)
      * @param locale The locale for the resume (default is EN)
      * @return An InputStream of the generated PDF
+     * @throws com.cvix.resume.domain.exception.TemplateAccessDeniedException if user lacks required subscription tier
+     * @throws com.cvix.resume.domain.exception.ResumeGenerationException if template not found
      * @throws kotlinx.coroutines.TimeoutCancellationException if generation exceeds timeout
      * @throws Exception if there is an error during generation
      */
-    suspend fun generate(resume: Resume, locale: Locale = Locale.EN): InputStream {
+    suspend fun generate(
+        templateId: String,
+        resume: Resume,
+        userId: UUID,
+        locale: Locale = Locale.EN
+    ): InputStream {
         val requestId = UUID.randomUUID()
         val startTimeNanos = System.nanoTime()
-
-        if (log.isInfoEnabled) {
-            log.info(
-                "Resume generation started - requestId={}, locale={}, hasWork={}, hasEducation={}, hasSkills={}",
-                requestId,
-                locale.code,
-                resume.work.isNotEmpty(),
-                resume.education.isNotEmpty(),
-                resume.skills.isNotEmpty(),
-            )
-        }
+        log.info(
+            "Resume generation started - requestId={}, templateId={}, userId={}, locale={}," +
+                "hasWork={}, hasEducation={}, hasSkills={}",
+            requestId,
+            templateId,
+            userId,
+            locale.code,
+            resume.work.isNotEmpty(),
+            resume.education.isNotEmpty(),
+            resume.skills.isNotEmpty(),
+        )
 
         return try {
             // Apply global timeout for entire operation
             withTimeout(GENERATION_TIMEOUT_MS) {
-                // Step 1: Render LaTeX template (offload to IO dispatcher)
-                val latexSource = withContext(Dispatchers.IO) {
-                    if (log.isDebugEnabled) {
-                        log.debug("Rendering template - requestId={}", requestId)
-                    }
+                // Step 1: Resolve template metadata and validate permissions
+                val templateMetadata = templateRepository.findById(templateId)
+                    ?: throw TemplateNotFoundException(templateId)
 
-                    var latex: String
-                    val renderTime = measureTimeMillis {
-                        latex = templateRenderer.render(resume, locale.code)
-                    }
+                // Step 2: Get user's subscription tier (default to FREE if no active subscription)
+                val userSubscription = subscriptionRepository.findActiveByUserId(userId)
+                val userTier =
+                    userSubscription?.tier ?: SubscriptionTier.FREE
 
-                    if (log.isDebugEnabled) {
-                        log.debug(
-                            "Template rendered - requestId={}, duration={}ms, size={}",
-                            requestId,
-                            renderTime,
-                            latex.length,
-                        )
-                    }
-                    latex
-                }
+                log.debug(
+                    "Validating template access - requestId={}, templateId={}, requiredTier={}, userTier={}",
+                    requestId,
+                    templateId,
+                    templateMetadata.requiredSubscriptionTier,
+                    userTier,
+                )
 
-                // Step 2: Generate PDF reactively (non-blocking)
-                if (log.isDebugEnabled) {
-                    log.debug("Generating PDF - requestId={}", requestId)
-                }
+                // Step 3: Validate user has required subscription tier
+                validateUserHasRequiredSubscriptionTier(
+                    templateMetadata,
+                    userTier,
+                    requestId,
+                    templateId,
+                )
+
+                log.debug(
+                    "Template access granted - requestId={}, templateId={}, templatePath={}",
+                    requestId,
+                    templateId,
+                    templateMetadata.templatePath,
+                )
+
+                // Step 4: Render LaTeX template (offload to IO dispatcher)
+                val latexSource = renderLatexTemplate(requestId, templateMetadata, resume, locale)
+
+                // Step 5: Generate PDF reactively (non-blocking)
+                log.debug("Generating PDF - requestId={}", requestId)
 
                 val pdfStream = pdfGenerator.generatePdf(latexSource, locale.code)
                     .awaitSingle()
@@ -114,16 +146,64 @@ class PdfResumeGenerator(
         } catch (error: Throwable) {
             val durationMs = (System.nanoTime() - startTimeNanos) / NANOS_TO_MILLIS
 
-            if (log.isErrorEnabled) {
-                log.error(
-                    "Resume generation failed - requestId={}, duration={}ms, error={}",
-                    requestId,
-                    durationMs,
-                    error.message,
-                    error,
+            log.error(
+                "Resume generation failed - requestId={}, duration={}ms, error={}",
+                requestId,
+                durationMs,
+                error.message,
+                error,
+            )
+            throw error
+        }
+    }
+
+    private suspend fun renderLatexTemplate(
+        requestId: UUID?,
+        templateMetadata: TemplateMetadata,
+        resume: Resume,
+        locale: Locale
+    ): String {
+        val latexSource = withContext(Dispatchers.IO) {
+            log.debug("Rendering template - requestId={}", requestId)
+            var latex: String
+            val renderTime = measureTimeMillis {
+                latex = templateRenderer.render(
+                    templateMetadata.templatePath,
+                    resume,
+                    locale.code,
                 )
             }
-            throw error
+
+            log.debug(
+                "Template rendered - requestId={}, duration={}ms, size={}",
+                requestId,
+                renderTime,
+                latex.length,
+            )
+            latex
+        }
+        return latexSource
+    }
+
+    private fun validateUserHasRequiredSubscriptionTier(
+        templateMetadata: TemplateMetadata,
+        userTier: SubscriptionTier,
+        requestId: UUID?,
+        templateId: String
+    ) {
+        if (!templateMetadata.isAccessibleBy(userTier)) {
+            log.warn(
+                "Template access denied - requestId={}, templateId={}, requiredTier={}, userTier={}",
+                requestId,
+                templateId,
+                templateMetadata.requiredSubscriptionTier,
+                userTier,
+            )
+            throw TemplateAccessDeniedException(
+                templateId = templateId,
+                requiredTier = templateMetadata.requiredSubscriptionTier,
+                userTier = userTier,
+            )
         }
     }
 
@@ -184,14 +264,12 @@ class PdfResumeGenerator(
                     val durationMs = (System.nanoTime() - startTimeNanos) / NANOS_TO_MILLIS
                     val totalBytes = bytesRead.get()
 
-                    if (log.isInfoEnabled) {
-                        log.info(
-                            "Resume generation completed - requestId={}, duration={}ms, size={} bytes",
-                            requestId,
-                            durationMs,
-                            totalBytes,
-                        )
-                    }
+                    log.info(
+                        "Resume generation completed - requestId={}, duration={}ms, size={} bytes",
+                        requestId,
+                        durationMs,
+                        totalBytes,
+                    )
 
                     // Publish event asynchronously (non-blocking)
                     // GlobalScope is appropriate here: event publishing must outlive the InputStream lifecycle

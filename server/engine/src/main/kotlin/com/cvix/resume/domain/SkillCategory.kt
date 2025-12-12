@@ -10,6 +10,7 @@ value class SkillCategoryName(val value: String) {
         require(value.isNotBlank()) { "Category name cannot be blank" }
         require(value.length <= MAX_CATEGORY_LENGTH) { "Category name cannot exceed $MAX_CATEGORY_LENGTH characters" }
     }
+
     companion object {
         private const val MAX_CATEGORY_LENGTH = 100
     }
@@ -25,6 +26,7 @@ value class Skill(val value: String) {
         require(value.isNotBlank()) { "Skill cannot be blank" }
         require(value.length <= MAX_SKILL_LENGTH) { "Skill cannot exceed $MAX_SKILL_LENGTH characters" }
     }
+
     companion object {
         private const val MAX_SKILL_LENGTH = 50
     }

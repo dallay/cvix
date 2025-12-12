@@ -43,10 +43,13 @@ class TemplateController(
     suspend fun listTemplates(
         @RequestParam(name = "limit", required = false)
         @Min(1) @Max(50) limit: Int?,
+        @RequestParam(name = "workspaceId", required = true)
+        workspaceId: java.util.UUID
     ): ResponseEntity<TemplateMetadataResponses> {
-        log.debug("Fetching templates with limit={}", limit)
+        log.debug("Fetching templates with limit={} for workspace={}", limit, workspaceId)
         val effectiveLimit = limit ?: DEFAULT_TEMPLATE_LIMIT
-        val query = ListTemplatesQuery(effectiveLimit)
+        val userId = userIdFromToken()
+        val query = ListTemplatesQuery(userId, workspaceId, effectiveLimit)
         val templates = ask(query)
         return ResponseEntity.ok().body(templates)
     }

@@ -205,6 +205,15 @@ resume:
       timeout-seconds: ${PDF_TIMEOUT_SECONDS:30}
       memory-limit-mb: ${PDF_MEMORY_LIMIT_MB:512}
       cpu-quota: ${PDF_CPU_QUOTA:0.5}
+  template:
+    source:
+      # Template source types (in order of priority - first wins on ID conflicts)
+      # Free tier: [CLASSPATH]
+      # Premium tier: [FILESYSTEM, CLASSPATH]
+      types: ${TEMPLATE_SOURCE_TYPES:CLASSPATH}
+      # Path to filesystem templates (only used when FILESYSTEM is in types)
+      # Can be absolute or relative to the application working directory
+      path: ${TEMPLATE_SOURCE_PATH:templates/resume}
 springdoc:
   show-actuator: true
   api-docs:

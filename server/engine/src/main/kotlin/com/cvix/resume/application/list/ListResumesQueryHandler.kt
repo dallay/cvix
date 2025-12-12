@@ -3,7 +3,8 @@ package com.cvix.resume.application.list
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.query.QueryHandler
 import com.cvix.resume.application.ResumeDocumentResponses
-import com.cvix.workspace.application.security.WorkspaceAuthorizationService
+import com.cvix.workspace.WorkspaceAuthorizationService
+import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import org.slf4j.LoggerFactory
 
 /**
@@ -19,6 +20,7 @@ class ListResumesQueryHandler(
      * Handles the list resumes query.
      * @param query The query containing user ID, workspace ID, and pagination params
      * @return List of resume documents (may be empty)
+     * @throws [WorkspaceAuthorizationException] If the user does not have access to the workspace.
      */
     override suspend fun handle(query: ListResumesQuery): ResumeDocumentResponses {
         log.debug(

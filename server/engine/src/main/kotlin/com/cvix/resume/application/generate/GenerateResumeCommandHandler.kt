@@ -17,7 +17,7 @@ class GenerateResumeCommandHandler(
 
     /**
      * Handles the resume generation command.
-     * @param command The command containing resume data and locale
+     * @param command The command containing resume data, userId, and locale
      * @return The PDF as an InputStream
      */
     override suspend fun handle(command: GenerateResumeCommand): InputStream {
@@ -26,9 +26,12 @@ class GenerateResumeCommandHandler(
         } catch (e: IllegalArgumentException) {
             throw IllegalArgumentException("Unsupported locale: ${command.locale}", e)
         }
-        log.debug("Handling GenerateResumeCommand - locale={}", locale.code)
+        log.debug(
+            "Handling GenerateResumeCommand - templateId={}, userId={}, locale={}",
+            command.templateId, command.userId, locale.code,
+        )
 
-        return pdfGenerator.generate(command.resume, locale)
+        return pdfGenerator.generate(command.templateId, command.resume, command.userId, locale)
     }
 
     companion object {
