@@ -6,6 +6,7 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
@@ -83,9 +84,22 @@ internal class TemplateControllerTest : ControllerTest() {
     @Test
     fun `should handle internal error`() {
         coEvery { mediator.send(any<ListTemplatesQuery>()) } throws RuntimeException("Internal error")
-        webTestClient.get()
+        val querySlot = slot<ListTemplatesQuery>()
+        val result = webTestClient.get()
             .uri("/api/templates?workspaceId=$workspaceId")
             .exchange()
             .expectStatus().is5xxServerError
+            .expectBody()
+            .returnResult()
+        val responseBody = result.responseBody?.toString(Charsets.UTF_8)
+        val objectMapper = ObjectMapper()
+        val json = responseBody?.let { objectMapper.readTree(it) }
+        val errorFields = listOf("message", "detail", "error", "title")
+        val found = errorFields.any { field ->
+            json?.get(field)?.asText()?.contains("Internal error") == true
+        }
+        assert(found) { "Expected error message to contain 'Internal error', but got: $responseBody" }
+        coVerify(exactly = 1) { mediator.send(capture(querySlot)) }
+        assertEquals(workspaceId, querySlot.captured.workspaceId)
     }
 }
