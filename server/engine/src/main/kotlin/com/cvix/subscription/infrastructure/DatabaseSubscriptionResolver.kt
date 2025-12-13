@@ -1,9 +1,9 @@
 package com.cvix.subscription.infrastructure
 
+import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionRepository
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.subscription.domain.SubscriptionTier
-import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component
  * for a user and returns their current tier. If no active subscription is found,
  * it defaults to the FREE tier.
  *
+ * **Supported Context:**
+ * - [ResolverContext.UserId]: Resolves from database using the provided UUID
+ * - [ResolverContext.ApiKey]: Not supported; defaults to FREE tier
+ *
  * This approach provides:
  * - Persistent subscription management
  * - Support for subscription validity periods
@@ -22,35 +26,38 @@ import org.springframework.stereotype.Component
  * - Flexibility to integrate with payment providers (Stripe, etc.)
  *
  * @param subscriptionRepository The repository for querying subscriptions
- * @created 12/11/25
+ * @since 1.0.0
  */
 @Component
 @Primary
 class DatabaseSubscriptionResolver(
     private val subscriptionRepository: SubscriptionRepository
 ) : SubscriptionResolver {
-    private val logger = LoggerFactory.getLogger(DatabaseSubscriptionResolver::class.java)
+    private val log = LoggerFactory.getLogger(DatabaseSubscriptionResolver::class.java)
 
     /**
-     * Resolves subscription tier from the database for the given user ID.
+     * Resolves subscription tier from the database for the given user ID context.
      *
-     * The context parameter is expected to be a user ID (UUID string).
+     * Expects [ResolverContext.UserId]. If a [ResolverContext.ApiKey] is provided,
+     * it defaults to FREE tier.
      *
-     * @param context The user ID as a string
+     * @param context The [ResolverContext.UserId] containing the user identifier
      * @return The user's current [SubscriptionTier], defaulting to FREE if not found
      */
-    override suspend fun resolve(context: String): SubscriptionTier {
-        if (context.isBlank()) {
-            logger.debug("Empty user ID provided, resolving to FREE tier")
-            return SubscriptionTier.FREE
+    override suspend fun resolve(context: ResolverContext): SubscriptionTier {
+        val userId = when (context) {
+            is ResolverContext.UserId -> context.userId
+            is ResolverContext.ApiKey -> {
+                log.debug("ApiKey context not supported by DatabaseSubscriptionResolver, resolving to FREE tier")
+                return SubscriptionTier.FREE
+            }
         }
 
         return try {
-            val userId = UUID.fromString(context)
             val subscription = subscriptionRepository.findActiveByUserId(userId)
 
             if (subscription != null) {
-                logger.debug(
+                log.debug(
                     "Resolved subscription tier {} for user {} (subscription: {})",
                     subscription.tier,
                     userId,
@@ -58,14 +65,11 @@ class DatabaseSubscriptionResolver(
                 )
                 subscription.tier
             } else {
-                logger.debug("No active subscription found for user {}, resolving to FREE tier", userId)
+                log.debug("No active subscription found for user {}, resolving to FREE tier", userId)
                 SubscriptionTier.FREE
             }
-        } catch (e: IllegalArgumentException) {
-            logger.warn("Invalid user ID format: {}, resolving to FREE tier", context, e)
-            SubscriptionTier.FREE
-        } catch (@Suppress("TooGenericExceptionCaught")e: Exception) {
-            logger.error("Error resolving subscription for user: {}, resolving to FREE tier", context, e)
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            log.error("Error resolving subscription for user: {}, resolving to FREE tier", userId, e)
             SubscriptionTier.FREE
         }
     }

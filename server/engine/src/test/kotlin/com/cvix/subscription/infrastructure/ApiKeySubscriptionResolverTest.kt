@@ -1,6 +1,7 @@
 package com.cvix.subscription.infrastructure
 
 import com.cvix.UnitTest
+import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionTier
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking
@@ -23,9 +24,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should resolve PROFESSIONAL tier from PX001 prefix`() {
         // Given
         val apiKey = "PX001-ABC123XYZ"
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.PROFESSIONAL
@@ -35,9 +37,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should resolve BASIC tier from BX001 prefix`() {
         // Given
         val apiKey = "BX001-ABC123XYZ"
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.BASIC
@@ -47,9 +50,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should resolve FREE tier for unknown prefix`() {
         // Given
         val apiKey = "UNKNOWN-ABC123XYZ"
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.FREE
@@ -59,9 +63,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should resolve FREE tier for empty key`() {
         // Given
         val apiKey = ""
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.FREE
@@ -71,9 +76,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should resolve FREE tier for whitespace key`() {
         // Given
         val apiKey = "   "
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.FREE
@@ -83,9 +89,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should handle key case sensitivity - prefix must be uppercase`() {
         // Given
         val apiKey = "px001-ABC123XYZ" // lowercase prefix
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.FREE // lowercase prefix is not recognized
@@ -96,10 +103,12 @@ class ApiKeySubscriptionResolverTest {
         // Given
         val apiKey1 = "PX001-KEY001"
         val apiKey2 = "PX001-KEY002"
+        val context1 = ResolverContext.ApiKey(apiKey1)
+        val context2 = ResolverContext.ApiKey(apiKey2)
 
         // When
-        val tier1 = runBlocking { resolver.resolve(apiKey1) }
-        val tier2 = runBlocking { resolver.resolve(apiKey2) }
+        val tier1 = runBlocking { resolver.resolve(context1) }
+        val tier2 = runBlocking { resolver.resolve(context2) }
 
         // Then
         tier1 shouldBe SubscriptionTier.PROFESSIONAL
@@ -111,10 +120,12 @@ class ApiKeySubscriptionResolverTest {
         // Given
         val apiKey1 = "BX001-KEY001"
         val apiKey2 = "BX001-KEY002"
+        val context1 = ResolverContext.ApiKey(apiKey1)
+        val context2 = ResolverContext.ApiKey(apiKey2)
 
         // When
-        val tier1 = runBlocking { resolver.resolve(apiKey1) }
-        val tier2 = runBlocking { resolver.resolve(apiKey2) }
+        val tier1 = runBlocking { resolver.resolve(context1) }
+        val tier2 = runBlocking { resolver.resolve(context2) }
 
         // Then
         tier1 shouldBe SubscriptionTier.BASIC
@@ -125,9 +136,10 @@ class ApiKeySubscriptionResolverTest {
     fun `should handle long API keys`() {
         // Given
         val apiKey = "PX001-" + "A".repeat(100)
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.PROFESSIONAL
@@ -137,11 +149,24 @@ class ApiKeySubscriptionResolverTest {
     fun `should handle API key with special characters in suffix`() {
         // Given
         val apiKey = "PX001-ABC_123-XYZ.789"
+        val context = ResolverContext.ApiKey(apiKey)
 
         // When
-        val tier = runBlocking { resolver.resolve(apiKey) }
+        val tier = runBlocking { resolver.resolve(context) }
 
         // Then
         tier shouldBe SubscriptionTier.PROFESSIONAL
+    }
+
+    @Test
+    fun `should resolve to FREE tier when UserId context is provided`() {
+        // Given
+        val context = ResolverContext.UserId(java.util.UUID.randomUUID())
+
+        // When
+        val tier = runBlocking { resolver.resolve(context) }
+
+        // Then
+        tier shouldBe SubscriptionTier.FREE
     }
 }

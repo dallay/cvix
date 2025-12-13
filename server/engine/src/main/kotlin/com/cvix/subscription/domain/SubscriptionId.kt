@@ -10,9 +10,10 @@ import java.util.UUID
  * @created 12/11/25
  */
 data class SubscriptionId(override val id: UUID) : BaseId<UUID>(id) {
-    constructor(id: String) : this(UUID.fromString(id))
+    private constructor(id: String) : this(UUID.fromString(id))
 
     companion object {
         fun random(): SubscriptionId = SubscriptionId(UUID.randomUUID())
+        fun fromString(id: String): SubscriptionId = SubscriptionId(id)
     }
 }

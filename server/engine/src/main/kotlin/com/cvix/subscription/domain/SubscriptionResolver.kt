@@ -15,19 +15,21 @@ package com.cvix.subscription.domain
  * This abstraction makes it easy to change the subscription resolution mechanism
  * without modifying domain or application logic.
  *
- * @created 11/12/25
+ * Implementations must specify which [ResolverContext] variant(s) they support
+ * in their documentation.
+ *
+ * @since 1.0.0
  */
 fun interface SubscriptionResolver {
     /**
      * Resolves the subscription tier for a given context.
      *
-     * Context can be:
-     * - An API key string
-     * - A user ID
-     * - Any other identifier the implementation understands
+     * The exact behavior depends on the [ResolverContext] variant and the
+     * implementation. Refer to specific implementation documentation for
+     * expected context format and resolution logic.
      *
-     * @param context The context to resolve the subscription tier from
-     * @return The user's [SubscriptionTier], defaulting to FREE if not found
+     * @param context The [ResolverContext] to resolve the subscription tier from
+     * @return The user's [SubscriptionTier], defaulting to FREE if not found or if context is invalid
      */
-    suspend fun resolve(context: String): SubscriptionTier
+    suspend fun resolve(context: ResolverContext): SubscriptionTier
 }

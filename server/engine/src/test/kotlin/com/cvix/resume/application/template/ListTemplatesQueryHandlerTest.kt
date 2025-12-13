@@ -5,6 +5,7 @@ import com.cvix.UnitTest
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.domain.Locale
 import com.cvix.resume.domain.TemplateMetadata
+import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.subscription.domain.SubscriptionTier
 import com.cvix.workspace.WorkspaceAuthorizationService
@@ -40,7 +41,7 @@ internal class ListTemplatesQueryHandlerTest {
         val templates = listOf(engineering, modern)
 
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
-        coEvery { subscriptionResolver.resolve(userId.toString()) } returns SubscriptionTier.FREE
+        coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.FREE
         coEvery { templateCatalog.listTemplates(SubscriptionTier.FREE, query.limit) } returns templates
 
         // When
@@ -65,7 +66,7 @@ internal class ListTemplatesQueryHandlerTest {
 
         coVerify {
             workspaceAuthorizationService.ensureAccess(workspaceId, userId)
-            subscriptionResolver.resolve(userId.toString())
+            subscriptionResolver.resolve(ResolverContext.UserId(userId))
             templateCatalog.listTemplates(SubscriptionTier.FREE, query.limit)
         }
     }
@@ -78,7 +79,7 @@ internal class ListTemplatesQueryHandlerTest {
         val query = ListTemplatesQuery(userId, workspaceId, 10)
 
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
-        coEvery { subscriptionResolver.resolve(userId.toString()) } returns SubscriptionTier.BASIC
+        coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.BASIC
         coEvery { templateCatalog.listTemplates(SubscriptionTier.BASIC, query.limit) } returns emptyList()
 
         // When
@@ -86,7 +87,7 @@ internal class ListTemplatesQueryHandlerTest {
 
         // Then
         coVerify {
-            subscriptionResolver.resolve(userId.toString())
+            subscriptionResolver.resolve(ResolverContext.UserId(userId))
             templateCatalog.listTemplates(SubscriptionTier.BASIC, query.limit)
         }
     }

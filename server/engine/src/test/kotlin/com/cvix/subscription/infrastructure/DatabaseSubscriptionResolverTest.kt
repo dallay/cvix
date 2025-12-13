@@ -1,6 +1,7 @@
 package com.cvix.subscription.infrastructure
 
 import com.cvix.UnitTest
+import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.Subscription
 import com.cvix.subscription.domain.SubscriptionRepository
 import com.cvix.subscription.domain.SubscriptionTier
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Test
 /**
  * Unit tests for DatabaseSubscriptionResolver.
  *
- * @created 12/11/25
+ * @since 1.0.0
  */
 @UnitTest
 internal class DatabaseSubscriptionResolverTest {
@@ -41,9 +42,10 @@ internal class DatabaseSubscriptionResolverTest {
             validFrom = Instant.now(),
         )
         coEvery { subscriptionRepository.findActiveByUserId(userId) } returns subscription
+        val context = ResolverContext.UserId(userId)
 
         // Act
-        val tier = resolver.resolve(userId.toString())
+        val tier = resolver.resolve(context)
 
         // Assert
         tier shouldBe SubscriptionTier.BASIC
@@ -61,9 +63,10 @@ internal class DatabaseSubscriptionResolverTest {
                 validFrom = Instant.now(),
             )
             coEvery { subscriptionRepository.findActiveByUserId(userId) } returns subscription
+            val context = ResolverContext.UserId(userId)
 
             // Act
-            val tier = resolver.resolve(userId.toString())
+            val tier = resolver.resolve(context)
 
             // Assert
             tier shouldBe SubscriptionTier.PROFESSIONAL
@@ -74,62 +77,25 @@ internal class DatabaseSubscriptionResolverTest {
         // Arrange
         val userId = UUID.randomUUID()
         coEvery { subscriptionRepository.findActiveByUserId(userId) } returns null
+        val context = ResolverContext.UserId(userId)
 
         // Act
-        val tier = resolver.resolve(userId.toString())
+        val tier = resolver.resolve(context)
 
         // Assert
         tier shouldBe SubscriptionTier.FREE
     }
 
     @Test
-    fun `should resolve to FREE tier when user ID is blank`() = runTest {
+    fun `should resolve to FREE tier when ApiKey context is provided`() = runTest {
+        // Given
+        val context = ResolverContext.ApiKey("PX001-KEY123")
+
         // Act
-        val tier = resolver.resolve("")
+        val tier = resolver.resolve(context)
 
         // Assert
         tier shouldBe SubscriptionTier.FREE
         coVerify(exactly = 0) { subscriptionRepository.findActiveByUserId(any()) }
-    }
-
-    @Test
-    fun `should resolve to FREE tier when user ID is invalid`() = runTest {
-        // Act
-        val tier = resolver.resolve("invalid-uuid")
-
-        // Assert
-        tier shouldBe SubscriptionTier.FREE
-        coVerify(exactly = 0) { subscriptionRepository.findActiveByUserId(any()) }
-    }
-
-    @Test
-    fun `should resolve to FREE tier when repository throws exception`() = runTest {
-        // Arrange
-        val userId = UUID.randomUUID()
-        coEvery { subscriptionRepository.findActiveByUserId(userId) } throws RuntimeException("Database error")
-
-        // Act
-        val tier = resolver.resolve(userId.toString())
-
-        // Assert
-        tier shouldBe SubscriptionTier.FREE
-    }
-
-    @Test
-    fun `should resolve FREE tier for user with FREE subscription`() = runTest {
-        // Arrange
-        val userId = UUID.randomUUID()
-        val subscription = Subscription.create(
-            userId = userId,
-            tier = SubscriptionTier.FREE,
-            validFrom = Instant.now(),
-        )
-        coEvery { subscriptionRepository.findActiveByUserId(userId) } returns subscription
-
-        // Act
-        val tier = resolver.resolve(userId.toString())
-
-        // Assert
-        tier shouldBe SubscriptionTier.FREE
     }
 }

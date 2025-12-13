@@ -20,7 +20,7 @@ Loads templates from the application's classpath (bundled inside the JAR/WAR).
 
 **Example Structure:**
 
-```
+```text
 src/main/resources/templates/resume/
 ├── engineering/
 │   ├── engineering.stg
@@ -83,7 +83,7 @@ export TEMPLATE_SOURCE_PATH=/opt/app/templates
 
 **Example Structure:**
 
-```
+```text
 /opt/app/templates/
 ├── engineering/
 │   ├── engineering.stg

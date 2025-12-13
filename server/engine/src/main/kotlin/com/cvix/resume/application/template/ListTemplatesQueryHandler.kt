@@ -3,6 +3,7 @@ package com.cvix.resume.application.template
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.query.QueryHandler
 import com.cvix.resume.application.TemplateMetadataResponses
+import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.workspace.WorkspaceAuthorizationService
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
@@ -32,7 +33,8 @@ class ListTemplatesQueryHandler(
         workspaceAuthorizationService.ensureAccess(query.workspaceId, query.userId)
 
         // Resolve user's subscription tier (defaults to FREE if not found)
-        val subscriptionTier = subscriptionResolver.resolve(query.userId.toString())
+        val context = ResolverContext.UserId(query.userId)
+        val subscriptionTier = subscriptionResolver.resolve(context)
         log.debug("Resolved subscription tier {} for user {}", subscriptionTier, query.userId)
 
         val listTemplates = templateCatalog.listTemplates(
