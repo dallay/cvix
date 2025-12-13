@@ -14,6 +14,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,6 +43,11 @@ class SubscriptionStoreR2dbcRepositoryTest : InfrastructureTestContainers() {
         testUserId = UUID.randomUUID()
         // Create a test user to satisfy foreign key constraint
         userRepository.insertIgnoreConflict(testUserId, "test-$testUserId@example.com", "Test User")
+    }
+
+    @AfterEach
+    fun tearDown() = runTest {
+        subscriptionRepository.deleteAllByUserId(testUserId)
     }
 
     @Test

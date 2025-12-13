@@ -89,6 +89,19 @@ class SubscriptionStoreR2dbcRepository(
         }
     }
 
+    /**
+     * Deletes all subscriptions for a given user (test utility).
+     */
+    suspend fun deleteAllByUserId(userId: UUID) {
+        log.debug("Deleting all subscriptions for user: {}", userId)
+        try {
+            subscriptionR2dbcRepository.deleteAllByUserId(userId)
+        } catch (@Suppress("TooGenericExceptionCaught")e: Exception) {
+            log.error("Error deleting subscriptions for user: {}", userId, e)
+            throw SubscriptionException("Error deleting subscriptions for user", e)
+        }
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(SubscriptionStoreR2dbcRepository::class.java)
     }

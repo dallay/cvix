@@ -68,4 +68,10 @@ interface SubscriptionR2dbcRepository : CoroutineCrudRepository<SubscriptionEnti
         """,
     )
     suspend fun saveWithTypecast(entity: SubscriptionEntity): Int
+
+    /**
+     * Deletes all subscriptions for a user (test utility).
+     */
+    @Query("DELETE FROM subscriptions WHERE user_id = :userId")
+    suspend fun deleteAllByUserId(userId: UUID): Int
 }
