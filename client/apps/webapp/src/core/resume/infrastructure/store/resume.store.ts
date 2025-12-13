@@ -181,11 +181,15 @@ export const useResumeStore = defineStore("resume", () => {
 	/**
 	 * Generate a PDF from the currently stored resume.
 	 *
+	 * @param templateId - The ID of the template to use for PDF generation
 	 * @param locale - Optional locale to use for generation (e.g., "en", "es")
 	 * @returns The generated PDF as a `Blob`
 	 * @throws Error if no resume is available to generate
 	 */
-	async function generatePdf(locale?: string): Promise<Blob> {
+	async function generatePdf(
+		templateId: string,
+		locale?: string,
+	): Promise<Blob> {
 		if (!resume.value) {
 			throw new Error("No resume data available to generate PDF");
 		}
@@ -194,7 +198,11 @@ export const useResumeStore = defineStore("resume", () => {
 			setGenerating(true);
 			setGenerationError(null);
 
-			const pdfBlob = await generator.generatePdf(resume.value, locale);
+			const pdfBlob = await generator.generatePdf(
+				templateId,
+				resume.value,
+				locale,
+			);
 
 			setGenerating(false);
 			return pdfBlob;

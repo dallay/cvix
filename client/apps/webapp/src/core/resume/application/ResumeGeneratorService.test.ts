@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume";
 import type { ResumeGenerator } from "@/core/resume/domain/ResumeGenerator";
 import type { ResumeValidator } from "@/core/resume/domain/ResumeValidator";
+import { createTestResume } from "@/core/resume/test-resume-factory.ts";
 import { ResumeGeneratorService } from "./ResumeGeneratorService";
 
 describe("ResumeGeneratorService", () => {
@@ -11,36 +12,7 @@ describe("ResumeGeneratorService", () => {
 	let mockResume: Resume;
 
 	beforeEach(() => {
-		mockResume = {
-			basics: {
-				name: "John Doe",
-				label: "Software Engineer",
-				image: "https://example.com/photo.jpg",
-				email: "john@example.com",
-				phone: "+1-555-0100",
-				url: "https://johndoe.com",
-				summary: "Experienced software engineer",
-				location: {
-					address: "123 Main St",
-					postalCode: "12345",
-					city: "San Francisco",
-					countryCode: "US",
-					region: "California",
-				},
-				profiles: [],
-			},
-			work: [],
-			volunteer: [],
-			education: [],
-			awards: [],
-			certificates: [],
-			publications: [],
-			skills: [],
-			languages: [],
-			interests: [],
-			references: [],
-			projects: [],
-		};
+		mockResume = createTestResume();
 
 		mockResumeGenerator = {
 			generatePdf: vi.fn(),
@@ -63,10 +35,12 @@ describe("ResumeGeneratorService", () => {
 			vi.mocked(mockResumeValidator.validate).mockReturnValue(true);
 			vi.mocked(mockResumeGenerator.generatePdf).mockResolvedValue(mockBlob);
 
-			const result = await service.generateResumePdf(mockResume);
+			const templateId = "template-123";
+			const result = await service.generateResumePdf(templateId, mockResume);
 
 			expect(mockResumeValidator.validate).toHaveBeenCalledWith(mockResume);
 			expect(mockResumeGenerator.generatePdf).toHaveBeenCalledWith(
+				templateId,
 				mockResume,
 				"en",
 			);
@@ -78,9 +52,11 @@ describe("ResumeGeneratorService", () => {
 			vi.mocked(mockResumeValidator.validate).mockReturnValue(true);
 			vi.mocked(mockResumeGenerator.generatePdf).mockResolvedValue(mockBlob);
 
-			await service.generateResumePdf(mockResume, "es");
+			const templateId = "template-123";
+			await service.generateResumePdf(templateId, mockResume, "es");
 
 			expect(mockResumeGenerator.generatePdf).toHaveBeenCalledWith(
+				templateId,
 				mockResume,
 				"es",
 			);
@@ -89,9 +65,9 @@ describe("ResumeGeneratorService", () => {
 		it("should throw error when resume data is invalid", async () => {
 			vi.mocked(mockResumeValidator.validate).mockReturnValue(false);
 
-			await expect(service.generateResumePdf(mockResume)).rejects.toThrow(
-				"Invalid resume data",
-			);
+			await expect(
+				service.generateResumePdf("template-123", mockResume),
+			).rejects.toThrow("Invalid resume data");
 
 			expect(mockResumeValidator.validate).toHaveBeenCalledWith(mockResume);
 			expect(mockResumeGenerator.generatePdf).not.toHaveBeenCalled();
@@ -103,9 +79,9 @@ describe("ResumeGeneratorService", () => {
 				new Error("PDF generation failed"),
 			);
 
-			await expect(service.generateResumePdf(mockResume)).rejects.toThrow(
-				"PDF generation failed",
-			);
+			await expect(
+				service.generateResumePdf("template-123", mockResume),
+			).rejects.toThrow("PDF generation failed");
 		});
 	});
 });
