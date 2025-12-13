@@ -2,7 +2,8 @@ package com.cvix
 
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.*
+import java.util.Locale
+import java.util.Objects
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.ConfigurableEnvironment

@@ -1,7 +1,7 @@
 package com.cvix.users.domain.event
 
 import com.cvix.common.domain.bus.event.BaseDomainEvent
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents an event that is triggered when a user is created.

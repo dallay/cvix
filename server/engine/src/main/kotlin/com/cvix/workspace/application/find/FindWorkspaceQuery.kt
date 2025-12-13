@@ -2,7 +2,7 @@ package com.cvix.workspace.application.find
 
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.workspace.application.WorkspaceResponse
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a query to find a workspace by its ID.

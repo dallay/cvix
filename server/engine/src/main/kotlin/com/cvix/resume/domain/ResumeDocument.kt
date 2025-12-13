@@ -4,7 +4,7 @@ import com.cvix.common.domain.AggregateRoot
 import com.cvix.resume.domain.event.ResumeCreatedEvent
 import com.cvix.resume.domain.event.ResumeUpdatedEvent
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Resume document aggregate root.

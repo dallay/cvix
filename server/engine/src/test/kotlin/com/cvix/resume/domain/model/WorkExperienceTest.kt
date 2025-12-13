@@ -11,7 +11,7 @@ import io.kotest.matchers.doubles.shouldBeWithinPercentageOf
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.time.LocalDate
-import java.util.*
+import java.util.Locale
 import org.junit.jupiter.api.Test
 
 /**

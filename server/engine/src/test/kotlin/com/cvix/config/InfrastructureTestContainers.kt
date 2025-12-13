@@ -6,7 +6,7 @@ import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.t
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory

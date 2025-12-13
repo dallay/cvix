@@ -1,6 +1,6 @@
 package com.cvix.workspace.domain
 
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull

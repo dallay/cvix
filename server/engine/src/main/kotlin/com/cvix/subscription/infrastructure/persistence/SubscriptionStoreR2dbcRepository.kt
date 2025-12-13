@@ -7,7 +7,7 @@ import com.cvix.subscription.domain.SubscriptionRepository
 import com.cvix.subscription.infrastructure.persistence.mapper.SubscriptionMapper.toDomain
 import com.cvix.subscription.infrastructure.persistence.mapper.SubscriptionMapper.toEntity
 import com.cvix.subscription.infrastructure.persistence.repository.SubscriptionR2dbcRepository
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.slf4j.LoggerFactory

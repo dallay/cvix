@@ -2,7 +2,7 @@ package com.cvix.resume.application.list
 
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.resume.application.ResumeDocumentResponses
-import java.util.*
+import java.util.UUID
 
 private const val MAX_ITEMS = 100
 

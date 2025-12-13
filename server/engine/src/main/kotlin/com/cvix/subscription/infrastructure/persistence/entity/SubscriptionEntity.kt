@@ -1,7 +1,7 @@
 package com.cvix.subscription.infrastructure.persistence.entity
 
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate

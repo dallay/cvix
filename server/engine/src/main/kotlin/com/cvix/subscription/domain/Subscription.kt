@@ -2,7 +2,7 @@ package com.cvix.subscription.domain
 
 import com.cvix.common.domain.AggregateRoot
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Subscription aggregate root representing a user's subscription plan.

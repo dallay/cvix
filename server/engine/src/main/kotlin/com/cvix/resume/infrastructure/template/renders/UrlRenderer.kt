@@ -1,7 +1,7 @@
 package com.cvix.resume.infrastructure.template.renders
 
 import com.cvix.resume.infrastructure.template.util.LatexEscaper
-import java.util.*
+import java.util.Locale
 import org.stringtemplate.v4.AttributeRenderer
 
 /**

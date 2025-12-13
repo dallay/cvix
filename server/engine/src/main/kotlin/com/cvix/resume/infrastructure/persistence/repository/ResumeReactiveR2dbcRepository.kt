@@ -1,7 +1,7 @@
 package com.cvix.resume.infrastructure.persistence.repository
 
 import com.cvix.resume.infrastructure.persistence.entity.ResumeEntity
-import java.util.*
+import java.util.UUID
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository

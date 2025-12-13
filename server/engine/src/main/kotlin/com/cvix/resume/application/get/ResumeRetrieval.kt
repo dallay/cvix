@@ -4,7 +4,7 @@ import com.cvix.common.domain.Service
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.domain.exception.ResumeNotFoundException
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

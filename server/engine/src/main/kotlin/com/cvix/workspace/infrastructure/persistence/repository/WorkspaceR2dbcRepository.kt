@@ -2,7 +2,7 @@ package com.cvix.workspace.infrastructure.persistence.repository
 
 import com.cvix.spring.boot.repository.ReactiveSearchRepository
 import com.cvix.workspace.infrastructure.persistence.entity.WorkspaceEntity
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

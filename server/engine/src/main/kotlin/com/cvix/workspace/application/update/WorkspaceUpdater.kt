@@ -8,7 +8,7 @@ import com.cvix.workspace.domain.WorkspaceId
 import com.cvix.workspace.domain.WorkspaceNotFoundException
 import com.cvix.workspace.domain.WorkspaceRepository
 import com.cvix.workspace.domain.event.WorkspaceUpdatedEvent
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

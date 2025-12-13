@@ -4,7 +4,7 @@ import com.cvix.common.domain.bus.event.BaseDomainEvent
 import com.cvix.resume.domain.DocumentType
 import com.cvix.resume.domain.Locale
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Domain event emitted when a resume PDF is successfully generated.

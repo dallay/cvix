@@ -3,7 +3,7 @@ package com.cvix.subscription.infrastructure
 import com.cvix.subscription.domain.SubscriptionRepository
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.subscription.domain.SubscriptionTier
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component

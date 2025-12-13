@@ -2,7 +2,7 @@ package com.cvix.resume.application.template
 
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.resume.application.TemplateMetadataResponses
-import java.util.*
+import java.util.UUID
 
 /**
  * Query to retrieve all available resume templates.

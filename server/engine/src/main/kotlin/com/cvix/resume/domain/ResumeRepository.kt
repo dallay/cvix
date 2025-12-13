@@ -1,6 +1,6 @@
 package com.cvix.resume.domain
 
-import java.util.*
+import java.util.UUID
 
 /**
  * Repository port for Resume aggregate persistence.

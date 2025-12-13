@@ -7,7 +7,7 @@ import com.cvix.workspace.domain.Workspace
 import com.cvix.workspace.domain.WorkspaceFinderRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

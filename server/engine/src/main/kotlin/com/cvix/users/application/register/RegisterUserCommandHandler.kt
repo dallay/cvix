@@ -6,7 +6,7 @@ import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.common.domain.vo.name.FirstName
 import com.cvix.common.domain.vo.name.LastName
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

@@ -2,7 +2,7 @@ package com.cvix.workspace.infrastructure.http.request
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import java.util.*
+import java.util.UUID
 
 /**
  * This data class represents the request body for creating a workspace.

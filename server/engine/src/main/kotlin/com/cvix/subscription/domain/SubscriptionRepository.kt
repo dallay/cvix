@@ -1,6 +1,6 @@
 package com.cvix.subscription.domain
 
-import java.util.*
+import java.util.UUID
 
 /**
  * Repository interface for subscription persistence operations.

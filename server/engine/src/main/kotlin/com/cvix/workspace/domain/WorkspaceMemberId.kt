@@ -2,7 +2,7 @@ package com.cvix.workspace.domain
 
 import com.cvix.common.domain.BaseId
 import com.cvix.common.domain.Generated
-import java.util.*
+import java.util.UUID
 
 /**
  * The id of a workspace member.

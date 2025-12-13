@@ -2,7 +2,7 @@ package com.cvix.workspace.infrastructure.persistence.repository
 
 import com.cvix.workspace.infrastructure.persistence.entity.WorkspaceMemberEntity
 import com.cvix.workspace.infrastructure.persistence.entity.WorkspaceMemberId
-import java.util.*
+import java.util.UUID
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

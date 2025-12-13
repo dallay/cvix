@@ -1,6 +1,6 @@
 package com.cvix.spring.boot.entity
 
-import java.util.*
+import java.util.UUID
 import org.springframework.data.relational.core.mapping.Table
 
 @Table("persons")

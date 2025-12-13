@@ -32,7 +32,7 @@ import com.cvix.resume.infrastructure.http.request.dto.SkillCategoryDto
 import com.cvix.resume.infrastructure.http.request.dto.VolunteerDto
 import com.cvix.resume.infrastructure.http.request.dto.WorkExperienceDto
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Test fixtures for resume CRUD tests.

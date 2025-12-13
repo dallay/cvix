@@ -1,7 +1,7 @@
 package com.cvix.authentication.application
 
 import com.cvix.authentication.domain.Role
-import java.util.*
+import java.util.UUID
 
 /**
  * Data class representing authenticated user information.

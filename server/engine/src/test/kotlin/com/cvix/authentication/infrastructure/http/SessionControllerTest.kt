@@ -8,7 +8,7 @@ import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.common.domain.bus.Mediator
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

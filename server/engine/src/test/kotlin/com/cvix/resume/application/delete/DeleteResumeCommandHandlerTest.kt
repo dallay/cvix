@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

@@ -1,7 +1,7 @@
 package com.cvix.users.application.register
 
 import com.cvix.common.domain.bus.command.CommandWithResult
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a command to register a new user.

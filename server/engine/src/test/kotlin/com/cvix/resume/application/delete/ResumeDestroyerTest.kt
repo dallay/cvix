@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.ResumeAccessDeniedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

@@ -5,7 +5,7 @@ import com.cvix.authentication.application.FederatedIdentity
 import com.cvix.authentication.application.UserInfo
 import com.cvix.authentication.domain.Role
 import com.cvix.users.infrastructure.persistence.UserStoreR2dbcRepository
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

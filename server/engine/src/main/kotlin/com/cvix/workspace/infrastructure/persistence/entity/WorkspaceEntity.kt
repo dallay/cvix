@@ -4,7 +4,7 @@ import com.cvix.common.domain.AuditableEntity
 import com.cvix.workspace.domain.Workspace.Companion.NAME_MAX_LENGTH
 import jakarta.validation.constraints.Size
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id

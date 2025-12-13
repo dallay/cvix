@@ -5,7 +5,7 @@ import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.infrastructure.persistence.mapper.ResumeMapper.toDomain
 import com.cvix.resume.infrastructure.persistence.mapper.ResumeMapper.toEntity
 import com.cvix.resume.infrastructure.persistence.repository.ResumeReactiveR2dbcRepository
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 

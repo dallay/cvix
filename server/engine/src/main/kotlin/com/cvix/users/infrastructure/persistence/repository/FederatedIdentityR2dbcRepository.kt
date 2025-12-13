@@ -1,7 +1,7 @@
 package com.cvix.users.infrastructure.persistence.repository
 
 import com.cvix.users.infrastructure.persistence.entity.FederatedIdentityEntity
-import java.util.*
+import java.util.UUID
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
 

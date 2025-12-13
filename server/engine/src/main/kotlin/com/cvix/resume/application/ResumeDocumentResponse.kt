@@ -4,7 +4,7 @@ import com.cvix.common.domain.bus.query.Response
 import com.cvix.resume.domain.Resume
 import com.cvix.resume.domain.ResumeDocument
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a response containing details of a single resume document.

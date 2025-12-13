@@ -9,7 +9,7 @@ import com.cvix.common.domain.bus.query.QueryHandlerExecutionError
 import com.cvix.common.domain.bus.query.Response
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

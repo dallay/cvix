@@ -1,7 +1,7 @@
 package com.cvix.authentication.domain
 
 import com.cvix.common.domain.bus.query.Response
-import java.util.*
+import java.util.UUID
 
 data class UserSession(
     val userId: UUID,

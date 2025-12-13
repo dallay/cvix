@@ -1,7 +1,7 @@
 package com.cvix.subscription.domain
 
 import com.cvix.common.domain.BaseId
-import java.util.*
+import java.util.UUID
 
 /**
  * Value object representing a unique subscription identifier.

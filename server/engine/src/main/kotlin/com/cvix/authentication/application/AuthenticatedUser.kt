@@ -5,7 +5,7 @@ import com.cvix.authentication.domain.Roles
 import com.cvix.authentication.domain.error.NotAuthenticatedUserException
 import com.cvix.authentication.domain.error.UnknownAuthenticationException
 import com.cvix.common.domain.vo.Username
-import java.util.*
+import java.util.Optional
 import java.util.stream.Collectors
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority

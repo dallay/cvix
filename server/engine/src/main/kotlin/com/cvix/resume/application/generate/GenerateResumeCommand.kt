@@ -4,7 +4,7 @@ import com.cvix.common.domain.bus.command.CommandWithResult
 import com.cvix.resume.domain.Locale
 import com.cvix.resume.domain.Resume
 import java.io.InputStream
-import java.util.*
+import java.util.UUID
 
 /**
  * Command to generate a PDF resume.

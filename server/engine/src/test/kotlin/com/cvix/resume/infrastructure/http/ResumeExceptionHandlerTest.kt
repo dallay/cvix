@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.PdfGenerationTimeoutException
 import com.cvix.resume.domain.exception.TemplateRenderingException
 import io.mockk.every
 import io.mockk.mockk
-import java.util.*
+import java.util.Locale
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test

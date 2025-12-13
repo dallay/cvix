@@ -4,7 +4,7 @@ import com.cvix.UnitTest
 import io.kotest.matchers.shouldBe
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.Test
 
 /**

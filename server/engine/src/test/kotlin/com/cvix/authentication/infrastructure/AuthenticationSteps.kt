@@ -5,7 +5,8 @@ import com.cvix.config.CucumberAuthenticationConfiguration
 import io.cucumber.java.en.Given
 import io.jsonwebtoken.Jwts
 import java.time.Instant
-import java.util.*
+import java.util.Collections
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders

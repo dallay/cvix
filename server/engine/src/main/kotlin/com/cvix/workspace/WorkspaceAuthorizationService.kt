@@ -3,7 +3,7 @@ package com.cvix.workspace
 import com.cvix.common.domain.Service
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
-import java.util.*
+import java.util.UUID
 
 /**
  * Service responsible for managing workspace authorization.

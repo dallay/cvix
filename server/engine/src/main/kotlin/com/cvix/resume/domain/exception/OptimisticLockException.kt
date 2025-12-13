@@ -1,7 +1,7 @@
 package com.cvix.resume.domain.exception
 
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Exception thrown when an optimistic lock check fails during update.

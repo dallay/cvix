@@ -1,6 +1,6 @@
 package com.cvix.workspace.domain
 
-import java.util.*
+import java.util.UUID
 
 /**
  *

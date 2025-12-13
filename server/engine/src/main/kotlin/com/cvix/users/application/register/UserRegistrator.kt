@@ -9,7 +9,7 @@ import com.cvix.common.domain.vo.name.FirstName
 import com.cvix.common.domain.vo.name.LastName
 import com.cvix.users.domain.UserCreator
 import com.cvix.users.domain.event.UserCreatedEvent
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

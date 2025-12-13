@@ -12,7 +12,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.just
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow

@@ -7,7 +7,7 @@ import com.cvix.common.domain.vo.credential.Credential.Companion.charNumbers
 import com.cvix.common.domain.vo.credential.Credential.Companion.charSpecial
 import com.cvix.common.domain.vo.credential.Credential.Companion.charUppercase
 import com.cvix.common.domain.vo.credential.Credential.Companion.charset
-import java.util.*
+import java.util.UUID
 
 /**
  * Credential representation in the domain layer of the application that is used to authenticate a user

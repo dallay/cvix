@@ -1,7 +1,7 @@
 package com.cvix.resume.application.delete
 
 import com.cvix.common.domain.bus.command.Command
-import java.util.*
+import java.util.UUID
 
 /**
  * Command to delete a resume document.

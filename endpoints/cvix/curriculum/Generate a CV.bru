@@ -378,7 +378,7 @@ docs {
   description: """
   Accepts a structured JSON resume payload and returns a rendered PDF using the specified template.
 
-  This endpoint expects the request body to follow the project's resume data shape (templateId + resume content). Dates should be ISO-8601 (YYYY-MM-DD). Image references must be absolute URLs and reachable by the service. All textual fields should be provided as plain text; the renderer sanitizes input and strips HTML to avoid XSS in generated documents.
+  This endpoint expects the request body to follow the project's resume data shape (templateId + resume content). Dates should be ISO-8601 (YYYY-MM-DD). Image references must be absolute URLs and reachable by the service. All textual fields should be provided as plain text; the renderer is expected to sanitize input and strip HTML to avoid XSS in generated documents, but clients should not rely on this as a security guarantee.
   """
 
   request: """
@@ -429,10 +429,14 @@ docs {
   """
 
   notes: """
-  - The renderer performs input sanitization; do not include raw HTML in text fields.
+  - The renderer currently performs input sanitization, but clients should not include raw HTML in text fields and should not rely on this as a security guarantee.
   - Remote images are fetched by the renderer. Ensure remote hosts allow server-side requests.
-  - For very large or long-running renders, an async job API may be offered in the future; currently the request returns the generated PDF synchronously.
-  - Use Accept: application/pdf to receive the PDF directly; some clients may accept application/json to receive a job resource (TBD).
+  - The request currently returns the generated PDF synchronously; async job APIs or alternate Accept handling (e.g., application/json for job resource) are not implemented at this time.
   - Keep payloads compact and reference external assets by URL to reduce request size.
+  """
+
+  planned: """
+  - Support for async job APIs for very large or long-running renders may be added in the future.
+  - Alternate Accept header handling (e.g., application/json for job resource) is under consideration.
   """
 }

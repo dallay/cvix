@@ -4,7 +4,7 @@ import com.cvix.authentication.domain.UserSession
 import com.cvix.authentication.domain.error.InvalidTokenException
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.query.QueryHandler
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 

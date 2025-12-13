@@ -23,7 +23,7 @@ import jakarta.ws.rs.InternalServerErrorException
 import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.core.Response
 import java.net.URI
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
 import org.junit.jupiter.api.BeforeEach

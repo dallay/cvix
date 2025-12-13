@@ -1,7 +1,7 @@
 package com.cvix.workspace.application.update
 
 import com.cvix.common.domain.bus.command.Command
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a command to update a workspace.

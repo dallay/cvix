@@ -2,7 +2,7 @@ package com.cvix.workspace.infrastructure.persistence.entity
 
 import com.cvix.workspace.domain.WorkspaceRole
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Column
