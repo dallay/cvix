@@ -2,6 +2,7 @@ package com.cvix.resume.infrastructure.template.source
 
 import com.cvix.UnitTest
 import com.cvix.resume.domain.TemplateMetadata
+import com.cvix.resume.domain.TemplateMetadataLoader
 import io.kotest.common.runBlocking
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.assertNull
 @UnitTest
 internal class FilesystemTemplateSourceRepositoryTest {
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `loads templates from filesystem directory and allows lookup and existence checks`() {
         val tempDir = Files.createTempDirectory("templates-load").toFile()
         try {
@@ -23,15 +25,13 @@ internal class FilesystemTemplateSourceRepositoryTest {
 
             val properties =
                 TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = tempDir.absolutePath))
-            val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
-            runBlocking {
-                coEvery { loader.loadTemplateMetadata(any(), any()) } returns TemplateMetadata(
-                    id = "tmpl-a",
-                    name = "TmplA",
-                    version = "v1",
-                    templatePath = tmpl.absolutePath,
-                )
-            }
+            val loader = mockk<TemplateMetadataLoader>()
+            coEvery { loader.loadTemplateMetadata(any(), any()) } returns TemplateMetadata(
+                id = "tmpl-a",
+                name = "TmplA",
+                version = "v1",
+                templatePath = tmpl.absolutePath,
+            )
 
             val repo = FilesystemTemplateSourceRepository(properties, loader)
             val all = runBlocking { repo.findAll() }
@@ -51,7 +51,7 @@ internal class FilesystemTemplateSourceRepositoryTest {
     fun `returns empty list when base path does not exist`() {
         val properties =
             TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = "/no/such/path/exists-xyz"))
-        val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
+        val loader = mockk<TemplateMetadataLoader>()
         val repo = FilesystemTemplateSourceRepository(properties, loader)
 
         val all = runBlocking { repo.findAll() }
@@ -67,7 +67,7 @@ internal class FilesystemTemplateSourceRepositoryTest {
         try {
             val properties =
                 TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = tempFile.absolutePath))
-            val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
+            val loader = mockk<TemplateMetadataLoader>()
             val repo = FilesystemTemplateSourceRepository(properties, loader)
 
             val all = runBlocking { repo.findAll() }
@@ -90,27 +90,25 @@ internal class FilesystemTemplateSourceRepositoryTest {
 
             val properties =
                 TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = tempDir.absolutePath))
-            val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
+            val loader = mockk<TemplateMetadataLoader>()
 
-            runBlocking {
-                coEvery {
-                    loader.loadTemplateMetadata(
-                        any(),
-                        match { it.contains("good") },
-                    )
-                } returns TemplateMetadata(
-                    id = "good-id",
-                    name = "Good",
-                    version = "1",
-                    templatePath = good.absolutePath,
+            coEvery {
+                loader.loadTemplateMetadata(
+                    any(),
+                    match { it.contains("good") },
                 )
-                coEvery {
-                    loader.loadTemplateMetadata(
-                        any(),
-                        match { it.contains("bad") },
-                    )
-                } coAnswers { throw IllegalArgumentException("invalid metadata") }
-            }
+            } returns TemplateMetadata(
+                id = "good-id",
+                name = "Good",
+                version = "1",
+                templatePath = good.absolutePath,
+            )
+            coEvery {
+                loader.loadTemplateMetadata(
+                    any(),
+                    match { it.contains("bad") },
+                )
+            } coAnswers { throw IllegalArgumentException("invalid metadata") }
 
             val repo = FilesystemTemplateSourceRepository(properties, loader)
             val all = runBlocking { repo.findAll() }
@@ -127,7 +125,7 @@ internal class FilesystemTemplateSourceRepositoryTest {
         try {
             val properties =
                 TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = tempDir.absolutePath))
-            val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
+            val loader = mockk<TemplateMetadataLoader>()
             val repo = FilesystemTemplateSourceRepository(properties, loader)
 
             val found = runBlocking { repo.findById("non-existent") }
@@ -149,15 +147,13 @@ internal class FilesystemTemplateSourceRepositoryTest {
 
             val properties =
                 TemplateSourceProperties(source = TemplateSourceProperties.SourceConfig(path = tempDir.absolutePath))
-            val loader = mockk<com.cvix.resume.domain.TemplateMetadataLoader>()
-            runBlocking {
-                coEvery {
-                    loader.loadTemplateMetadata(
-                        any(),
-                        any(),
-                    )
-                } coAnswers { @Suppress("TooGenericExceptionThrown") throw RuntimeException("boom") }
-            }
+            val loader = mockk<TemplateMetadataLoader>()
+            coEvery {
+                loader.loadTemplateMetadata(
+                    any(),
+                    any(),
+                )
+            } coAnswers { @Suppress("TooGenericExceptionThrown") throw RuntimeException("boom") }
 
             val repo = FilesystemTemplateSourceRepository(properties, loader)
             val all = runBlocking { repo.findAll() }

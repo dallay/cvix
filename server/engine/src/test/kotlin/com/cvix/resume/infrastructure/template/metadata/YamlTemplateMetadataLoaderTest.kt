@@ -4,6 +4,7 @@ import com.cvix.UnitTest
 import com.cvix.subscription.domain.SubscriptionTier
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayInputStream
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 @UnitTest
@@ -21,7 +22,7 @@ class YamlTemplateMetadataLoaderTest {
             requiredSubscriptionTier: BASIC
         """.trimIndent()
 
-        val metadata = kotlinx.coroutines.runBlocking {
+        val metadata = runBlocking {
             loader.loadTemplateMetadata(
                 ByteArrayInputStream(yaml.toByteArray()),
                 "test-metadata.yaml",
@@ -42,7 +43,7 @@ class YamlTemplateMetadataLoaderTest {
             templatePath: classpath:templates/resume/simple/simple.stg
         """.trimIndent()
 
-        val metadata = kotlinx.coroutines.runBlocking {
+        val metadata = runBlocking {
             loader.loadTemplateMetadata(
                 ByteArrayInputStream(yaml.toByteArray()),
                 "test-metadata.yaml",
@@ -62,7 +63,7 @@ class YamlTemplateMetadataLoaderTest {
             requiredSubscriptionTier: PROFESSIONAL
         """.trimIndent()
 
-        val metadata = kotlinx.coroutines.runBlocking {
+        val metadata = runBlocking {
             loader.loadTemplateMetadata(
                 ByteArrayInputStream(yaml.toByteArray()),
                 "test-metadata.yaml",
@@ -82,7 +83,7 @@ class YamlTemplateMetadataLoaderTest {
             requiredSubscriptionTier: basic
         """.trimIndent()
 
-        val metadata = kotlinx.coroutines.runBlocking {
+        val metadata = runBlocking {
             loader.loadTemplateMetadata(
                 ByteArrayInputStream(yaml.toByteArray()),
                 "test-metadata.yaml",
@@ -102,7 +103,7 @@ class YamlTemplateMetadataLoaderTest {
             requiredSubscriptionTier: INVALID_TIER
         """.trimIndent()
 
-        val metadata = kotlinx.coroutines.runBlocking {
+        val metadata = runBlocking {
             loader.loadTemplateMetadata(
                 ByteArrayInputStream(yaml.toByteArray()),
                 "test-metadata.yaml",

@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 @UnitTest
@@ -113,7 +114,7 @@ internal class TemplateSourceRepositoryFactoryTest {
         val found = factory.get(TemplateSourceKeys.CLASSPATH)
         assertSame(classpathRepo, found)
         // availableSources should contain the key we provided
-        assertEquals(true, factory.availableSources().contains(TemplateSourceKeys.CLASSPATH))
+        assertTrue(factory.availableSources().contains(TemplateSourceKeys.CLASSPATH))
     }
 
     @Test
