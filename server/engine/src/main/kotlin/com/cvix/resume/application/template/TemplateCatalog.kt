@@ -69,7 +69,7 @@ class TemplateCatalog(private val templateSourceStrategy: TemplateSourceStrategy
                             repository::class.simpleName,
                         )
                     }
-                } catch (e: RuntimeException) {
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                     log.warn(
                         "Failed to load templates from {}: {}",
                         repository::class.simpleName,

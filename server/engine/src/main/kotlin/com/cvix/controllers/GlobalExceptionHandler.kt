@@ -84,6 +84,7 @@ class GlobalExceptionHandler(
         problemDetail.setProperty(MESSAGE_KEY, MSG_AUTHORIZATION_FAILED)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        AuthCookieBuilder.clearCookies(response)
         return problemDetail
     }
 
