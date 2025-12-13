@@ -65,6 +65,11 @@ onMounted(async () => {
 	const workspaceId = workspaceStore?.currentWorkspace?.id;
 	if (!workspaceId) {
 		console.error("No workspace ID found");
+		pdfError.value = t(
+			"resume.pdfPage.error",
+			"No workspace selected. Please select a workspace first.",
+		);
+		isLoadingTemplates.value = false;
 		return;
 	}
 	// Fetch available templates

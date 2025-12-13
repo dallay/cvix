@@ -88,6 +88,7 @@ export interface WorkExperienceDto {
 	endDate?: string;
 	summary?: string;
 	url?: string;
+	highlights?: string[];
 }
 
 /**
