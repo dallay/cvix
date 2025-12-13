@@ -56,7 +56,9 @@ class YamlTemplateMetadataLoader : TemplateMetadataLoader {
         val constructor = Constructor(RawTemplateMetadata::class.java, loaderOptions)
         val yaml = Yaml(constructor)
 
-        return yaml.load(inputStream.bufferedReader())
+        return inputStream.bufferedReader().use { reader ->
+            yaml.load(reader)
+        }
     }
 
     /**

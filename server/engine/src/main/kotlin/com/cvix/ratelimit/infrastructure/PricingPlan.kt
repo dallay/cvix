@@ -19,6 +19,7 @@ import java.time.Duration.ofHours
  * @since 2.0.0
  * @deprecated Use [SubscriptionTier] for new functionality
  */
+@Deprecated("Use SubscriptionTier for new functionality. This enum will be removed in a future release.")
 enum class PricingPlan {
     FREE {
         override fun getLimit(): Bandwidth = Bandwidth.builder()

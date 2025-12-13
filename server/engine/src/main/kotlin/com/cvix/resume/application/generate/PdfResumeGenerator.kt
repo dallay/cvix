@@ -72,7 +72,7 @@ class PdfResumeGenerator(
      * @param locale The locale for the resume (default is EN)
      * @return An InputStream of the generated PDF
      * @throws com.cvix.resume.domain.exception.TemplateAccessDeniedException if user lacks required subscription tier
-     * @throws com.cvix.resume.domain.exception.ResumeGenerationException if template not found
+     * @throws com.cvix.resume.domain.exception.TemplateNotFoundException if template not found
      * @throws kotlinx.coroutines.TimeoutCancellationException if generation exceeds timeout
      * @throws Exception if there is an error during generation
      */
@@ -163,11 +163,11 @@ class PdfResumeGenerator(
         resume: Resume,
         locale: Locale
     ): String {
-        val latexSource = withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             log.debug("Rendering template - requestId={}", requestId)
-            var latex: String
-            val renderTime = measureTimeMillis {
-                latex = templateRenderer.render(
+            lateinit var latexResult: String
+            val durationMs = measureTimeMillis {
+                latexResult = templateRenderer.render(
                     templateMetadata.templatePath,
                     resume,
                     locale.code,
@@ -177,12 +177,11 @@ class PdfResumeGenerator(
             log.debug(
                 "Template rendered - requestId={}, duration={}ms, size={}",
                 requestId,
-                renderTime,
-                latex.length,
+                durationMs,
+                latexResult.length,
             )
-            latex
+            latexResult
         }
-        return latexSource
     }
 
     private fun validateUserHasRequiredSubscriptionTier(
