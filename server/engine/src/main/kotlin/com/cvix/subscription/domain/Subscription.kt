@@ -13,10 +13,21 @@ import java.util.UUID
  * - The validity period (start and optional end date)
  * - The current status (ACTIVE, CANCELLED, EXPIRED)
  *
+ * Semantic Clarity:
+ * - **Status** (ACTIVE/CANCELLED/EXPIRED): Represents the lifecycle state. Cancelled means the
+ *   subscription is no longer usable, even if the validity period extends into the future.
+ * - **Validity Period** (validFrom/validUntil): Represents the paid-for time window. A cancelled
+ *   subscription still has a valid period if its validUntil date is in the future, but it cannot
+ *   be used for access control.
+ * - **isValid()**: Returns true only if BOTH the status is ACTIVE AND the current time is within
+ *   the validity period. Use this to check if a subscription grants access.
+ * - **isActive()**: Returns true only if the status is ACTIVE. Does not consider time.
+ *
  * Business rules:
  * - A user can only have one active subscription at a time
  * - A subscription without an end date is considered perpetual (until cancelled)
  * - Expired subscriptions cannot be reactivated (a new subscription must be created)
+ * - Cancelled subscriptions are immediately inactive, regardless of their validity period
  *
  * @param id The unique identifier for this subscription
  * @param userId The UUID of the user who owns this subscription
@@ -39,9 +50,13 @@ data class Subscription(
      * Checks if this subscription is currently valid based on the current time.
      *
      * A subscription is valid if:
-     * - Status is ACTIVE
+     * - Status is ACTIVE (cancelled and expired subscriptions are never valid)
      * - Current time is after validFrom
-     * - Current time is before validUntil (or validUntil is null)
+     * - Current time is before validUntil (or validUntil is null for perpetual subscriptions)
+     *
+     * This method combines both the subscription status and the validity period to determine
+     * if the subscription can be used for access control or feature access. A cancelled
+     * subscription is never valid, regardless of its validity period.
      */
     fun isValid(now: Instant = Instant.now()): Boolean {
         if (!status.isActive()) return false

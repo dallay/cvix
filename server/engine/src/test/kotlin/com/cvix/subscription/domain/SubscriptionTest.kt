@@ -221,4 +221,23 @@ class SubscriptionTest {
         // Act & Assert
         subscription.isExpired(now) shouldBe false
     }
+
+    @Test
+    fun `should demonstrate semantic distinction between cancelled status and validity period`() {
+        // Arrange: A cancelled subscription with a future validity period
+        val now = Instant.now()
+        val subscription = Subscription.create(
+            userId = UUID.randomUUID(),
+            tier = SubscriptionTier.PROFESSIONAL,
+            validFrom = now.minus(1, ChronoUnit.DAYS),
+            validUntil = now.plus(30, ChronoUnit.DAYS), // Still has 30 days of paid access
+        ).cancel()
+
+        // Assert: The subscription is cancelled (status) so it's not valid (cannot be used)
+        // but the validity period extends into the future (paid-for period)
+        subscription.status shouldBe SubscriptionStatus.CANCELLED
+        subscription.validUntil.let { it != null && now.isBefore(it) } shouldBe true
+        subscription.isValid(now) shouldBe false // Not valid for use, even though paid-for
+        subscription.status.isActive() shouldBe false // Cancelled is never active
+    }
 }

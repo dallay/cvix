@@ -1,6 +1,7 @@
 package com.cvix.subscription.infrastructure.config
 
 import com.cvix.subscription.domain.SubscriptionTier
+import jakarta.validation.constraints.Min
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
 
@@ -74,8 +75,10 @@ data class SubscriptionProperties(
      * @param customFeatures Optional map of custom feature flags
      */
     data class TierConfig(
+        @field:Min(1)
         val rateLimitCapacity: Long = 20,
         val premiumTemplatesEnabled: Boolean = false,
+        @field:Min(0)
         val maxPremiumTemplates: Int = 0,
         val priority: Boolean = false,
         val customFeatures: Map<String, Boolean> = emptyMap()
