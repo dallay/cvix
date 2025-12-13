@@ -14,6 +14,7 @@ import com.cvix.resume.infrastructure.http.request.dto.VolunteerDto
 import com.cvix.resume.infrastructure.http.request.dto.WorkExperienceDto
 import com.cvix.resume.infrastructure.validation.ValidResumeContent
 import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 
 /**
  * DTO for resume generation request following JSON Resume schema.
@@ -22,6 +23,7 @@ import jakarta.validation.Valid
  */
 @ValidResumeContent
 data class GenerateResumeRequest(
+    @field:NotBlank(message = "Template ID is required")
     val templateId: String,
 
     @field:Valid

@@ -52,8 +52,9 @@ interface ResumeRepository {
      * Deletes a resume document by ID for a specific user (authorization enforced).
      * @param id The resume ID
      * @param userId The authenticated user ID
+     * @return The number of rows affected (0 if not found or unauthorized)
      */
-    suspend fun deleteByIdForUser(id: UUID, userId: UUID)
+    suspend fun deleteByIdForUser(id: UUID, userId: UUID): Long
 
     /**
      * Deletes a resume document if it exists and the user is authorized.
