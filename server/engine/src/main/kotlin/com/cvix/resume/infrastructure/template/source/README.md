@@ -68,9 +68,11 @@ Loads templates from an external filesystem directory.
 resume:
     template:
         source:
-            path: /path/to/templates  # Absolute path
-            # OR
-            path: templates/resume     # Relative to working directory
+            # Use one of the following:
+            # Absolute path example:
+            path: /path/to/templates
+            # Or, relative to working directory:
+            # path: templates/resume
 ```
 
 **Environment Variable:**
@@ -285,7 +287,7 @@ docker run -v /templates:/app/templates:ro myapp
 
 ### No templates found (ClasspathTemplateSourceRepository)
 
-```
+```text
 WARN: No template files found matching pattern: classpath:templates/resume/**/metadata.yaml
 ```
 
@@ -297,7 +299,7 @@ WARN: No template files found matching pattern: classpath:templates/resume/**/me
 
 ### No templates found (FilesystemTemplateSourceRepository)
 
-```
+```text
 WARN: Template base path does not exist: /opt/app/templates
 ```
 
@@ -310,7 +312,7 @@ WARN: Template base path does not exist: /opt/app/templates
 
 ### Template loading failed
 
-```
+```text
 WARN: Failed to load template metadata from: engineering/metadata.yaml
 ```
 
@@ -344,9 +346,7 @@ WARN: Failed to load template metadata from: engineering/metadata.yaml
 
 ## Example: Multi-Tenant Setup
 
-For multi-tenant applications with custom templates per tenant:
-
-```
+```text
 /opt/app/templates/
 ├── default/           # Default templates (fallback)
 │   ├── engineering/
@@ -421,4 +421,3 @@ Response example:
     ]
 }
 ```
-

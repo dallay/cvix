@@ -4,7 +4,7 @@ This directory contains all available resume template definitions. Each template
 
 ## Structure
 
-```
+```text
 templates/resume/
 ├── engineering/
 │   ├── template.stg          # StringTemplate file (LaTeX/PDF output)
@@ -149,4 +149,3 @@ If a template fails to load:
 - Metadata is parsed from YAML during initialization
 - In-memory cache of all templates after loading
 - O(1) lookup by template ID using List.find()
-
