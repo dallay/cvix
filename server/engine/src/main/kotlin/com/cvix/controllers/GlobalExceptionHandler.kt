@@ -47,7 +47,6 @@ class GlobalExceptionHandler(
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(
         UserAuthenticationException::class, UserRefreshTokenException::class,
-        WorkspaceAuthorizationException::class,
     )
     fun handleUserAuthenticationException(
         e: Exception,
@@ -65,6 +64,26 @@ class GlobalExceptionHandler(
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         AuthCookieBuilder.clearCookies(response)
+        return problemDetail
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(WorkspaceAuthorizationException::class)
+    fun handleWorkspaceAuthorizationException(
+        e: WorkspaceAuthorizationException,
+        response: ServerHttpResponse,
+        exchange: ServerWebExchange
+    ): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, MSG_AUTHORIZATION_FAILED)
+
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.message)
+        problemDetail.title = "Workspace access forbidden"
+        problemDetail.type = URI.create("$ERROR_PAGE/workspace-authorization-failed")
+        problemDetail.setProperty("errorCategory", "AUTHORIZATION")
+        problemDetail.setProperty("timestamp", Instant.now())
+        problemDetail.setProperty(MESSAGE_KEY, MSG_AUTHORIZATION_FAILED)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }
 
