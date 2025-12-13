@@ -22,7 +22,7 @@ import io.kotest.matchers.string.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldNotContain
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
+import java.time.ZoneOffset
 import org.junit.jupiter.api.Test
 
 /**
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test
 @UnitTest
 internal class LatexTemplateRendererI18nTest {
 
-    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
+    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneOffset.UTC)
     private val renderer = LatexTemplateRenderer(fixedClock)
     private val defaultTemplatePath = "templates/resume/engineering/engineering.stg"
 
