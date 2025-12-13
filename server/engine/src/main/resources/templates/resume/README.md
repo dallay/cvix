@@ -148,4 +148,4 @@ If a template fails to load:
 - Templates are loaded **once** at application startup (lazy singleton)
 - Metadata is parsed from YAML during initialization
 - In-memory cache of all templates after loading
-- O(1) lookup by template ID using List.find()
+- O(n) lookup by template ID using List.find() (or O(1) if templates are cached in a Map)

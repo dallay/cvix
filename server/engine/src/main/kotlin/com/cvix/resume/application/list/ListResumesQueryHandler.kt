@@ -3,7 +3,7 @@ package com.cvix.resume.application.list
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.query.QueryHandler
 import com.cvix.resume.application.ResumeDocumentResponses
-import com.cvix.workspace.WorkspaceAuthorizationService
+import com.cvix.workspace.application.security.WorkspaceAuthorizationService
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import org.slf4j.LoggerFactory
 

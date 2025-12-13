@@ -2,7 +2,7 @@ package com.cvix.resume.application.list
 
 import com.cvix.UnitTest
 import com.cvix.resume.ResumeTestFixtures
-import com.cvix.workspace.WorkspaceAuthorizationService
+import com.cvix.workspace.application.security.WorkspaceAuthorizationService
 import com.github.dockerjava.api.exception.UnauthorizedException
 import io.mockk.coEvery
 import io.mockk.coVerify

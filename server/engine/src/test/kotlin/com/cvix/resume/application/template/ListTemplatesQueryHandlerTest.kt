@@ -8,7 +8,7 @@ import com.cvix.resume.domain.TemplateMetadata
 import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.subscription.domain.SubscriptionTier
-import com.cvix.workspace.WorkspaceAuthorizationService
+import com.cvix.workspace.application.security.WorkspaceAuthorizationService
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify

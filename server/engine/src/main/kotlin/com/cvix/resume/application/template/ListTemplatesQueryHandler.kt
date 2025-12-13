@@ -5,7 +5,7 @@ import com.cvix.common.domain.bus.query.QueryHandler
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionResolver
-import com.cvix.workspace.WorkspaceAuthorizationService
+import com.cvix.workspace.application.security.WorkspaceAuthorizationService
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import org.slf4j.LoggerFactory
 

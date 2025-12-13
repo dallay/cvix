@@ -1,7 +1,6 @@
 package com.cvix.workspace.application.security
 
 import com.cvix.UnitTest
-import com.cvix.workspace.WorkspaceAuthorizationService
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
 import io.mockk.coEvery
