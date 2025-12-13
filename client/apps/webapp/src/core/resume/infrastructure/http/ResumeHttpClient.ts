@@ -153,9 +153,11 @@ export class ResumeHttpClient
 	 * @returns Promise with list of templates
 	 */
 	async getTemplates(workspaceId: string): Promise<TemplateMetadata[]> {
+		// Replace direct interpolation with URLSearchParams for safe encoding
+		const params = new URLSearchParams({ workspaceId });
 		const response = await this.client.get<{
 			data: TemplateMetadata[];
-		}>(`/templates?workspaceId=${workspaceId}`);
+		}>(`/templates?${params.toString()}`);
 		return response.data.data;
 	}
 }
