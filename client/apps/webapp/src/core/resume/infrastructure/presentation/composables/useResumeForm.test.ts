@@ -125,7 +125,7 @@ describe("useResumeForm", () => {
 			// Clear the form to ensure no resume is set
 			clearForm();
 
-			await expect(generatePdf()).rejects.toThrow(
+			await expect(generatePdf("template-123")).rejects.toThrow(
 				"No resume data available to generate PDF",
 			);
 		});

@@ -21,6 +21,7 @@ class DeleteResumeCommandHandler(
         log.debug("Deleting resume - id={}", command.id)
         destroyer.deleteResume(command.id, command.userId)
     }
+
     companion object {
         private val log = LoggerFactory.getLogger(DeleteResumeCommandHandler::class.java)
     }

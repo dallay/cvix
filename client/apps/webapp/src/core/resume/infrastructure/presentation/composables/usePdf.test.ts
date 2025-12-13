@@ -102,8 +102,8 @@ describe("usePdf", () => {
 			vi.mocked(resumeHttpClient.getTemplates).mockResolvedValue(mockTemplates);
 
 			const { fetchTemplates, templates, isLoadingTemplates, error } = usePdf();
-
-			await fetchTemplates();
+			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
+			await fetchTemplates(workspaceId);
 
 			expect(resumeHttpClient.getTemplates).toHaveBeenCalledOnce();
 			expect(templates.value).toEqual(mockTemplates);
@@ -119,7 +119,8 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, templates, isLoadingTemplates, error } = usePdf();
 
-			await fetchTemplates();
+			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
+			await fetchTemplates(workspaceId);
 
 			expect(templates.value).toEqual([]);
 			expect(isLoadingTemplates.value).toBe(false);
@@ -133,7 +134,8 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, error } = usePdf();
 
-			await fetchTemplates();
+			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
+			await fetchTemplates(workspaceId);
 
 			expect(error.value).toBe("Failed to load templates");
 		});
@@ -147,8 +149,8 @@ describe("usePdf", () => {
 			vi.mocked(resumeHttpClient.getTemplates).mockReturnValue(pendingPromise);
 
 			const { fetchTemplates, isLoadingTemplates } = usePdf();
-
-			const fetchPromise = fetchTemplates();
+			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
+			const fetchPromise = fetchTemplates(workspaceId);
 
 			expect(isLoadingTemplates.value).toBe(true);
 
@@ -164,10 +166,11 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, error } = usePdf();
 
-			await fetchTemplates();
+			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
+			await fetchTemplates(workspaceId);
 			expect(error.value).toBe("First error");
 
-			await fetchTemplates();
+			await fetchTemplates(workspaceId);
 			expect(error.value).toBeNull();
 		});
 	});
@@ -183,6 +186,7 @@ describe("usePdf", () => {
 			const result = await generatePdf(mockResume, "classic", {});
 
 			expect(resumeHttpClient.generatePdf).toHaveBeenCalledWith(
+				"classic",
 				mockResume,
 				"en",
 			);
@@ -201,6 +205,7 @@ describe("usePdf", () => {
 			await generatePdf(mockResume, "classic", { locale: "es" });
 
 			expect(resumeHttpClient.generatePdf).toHaveBeenCalledWith(
+				"classic",
 				mockResume,
 				"es",
 			);
@@ -214,6 +219,7 @@ describe("usePdf", () => {
 			await generatePdf(mockResume, "classic", { locale: "fr" });
 
 			expect(resumeHttpClient.generatePdf).toHaveBeenCalledWith(
+				"classic",
 				mockResume,
 				"en",
 			);

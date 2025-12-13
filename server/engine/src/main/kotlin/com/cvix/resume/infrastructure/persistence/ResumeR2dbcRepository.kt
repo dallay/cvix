@@ -60,6 +60,7 @@ class ResumeR2dbcRepository(
         return resumeReactiveR2dbcRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
             .map { it.toDomain() }
     }
+
     override suspend fun deleteByIdForUser(id: UUID, userId: UUID) {
         resumeReactiveR2dbcRepository.deleteByIdAndUserId(id, userId)
     }

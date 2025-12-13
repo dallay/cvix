@@ -17,6 +17,7 @@ import com.cvix.resume.domain.Summary
 import com.cvix.resume.domain.exception.LaTeXInjectionException
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
+import com.cvix.resume.infrastructure.template.renders.LatexTemplateRenderer
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -48,6 +49,8 @@ internal class LatexTemplateRendererTest {
     private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
     private val renderer = LatexTemplateRenderer(fixedClock)
 
+    private val defaultTemplatePath = "templates/resume/engineering/engineering.stg"
+
     /**
      * Flag to persist generated LaTeX files for manual inspection.
      * Set to true during development or debugging.
@@ -77,11 +80,11 @@ internal class LatexTemplateRendererTest {
     fun `should render minimal resume with only required fields`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/minimal-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/minimal-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert - verify LaTeX structure is valid
         assertValidLatexStructure(result)
@@ -97,11 +100,11 @@ internal class LatexTemplateRendererTest {
     fun `should properly escape LaTeX special characters`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/special-chars-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/special-chars-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert - verify critical escapes
         assertTrue(
@@ -136,11 +139,11 @@ internal class LatexTemplateRendererTest {
     fun `should handle Unicode and international characters`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/unicode-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/unicode-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert
         assertValidLatexStructure(result)
@@ -161,11 +164,11 @@ internal class LatexTemplateRendererTest {
     fun `should handle long content without breaking LaTeX structure`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/long-content-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/long-content-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert
         assertValidLatexStructure(result)
@@ -187,11 +190,11 @@ internal class LatexTemplateRendererTest {
     fun `should handle null and empty optional fields gracefully`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/null-fields-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert
         assertValidLatexStructure(result)
@@ -211,11 +214,11 @@ internal class LatexTemplateRendererTest {
     fun `should render empty endDate as Present in English`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/null-fields-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert
         assertValidLatexStructure(result)
@@ -243,11 +246,11 @@ internal class LatexTemplateRendererTest {
     fun `should render empty endDate as Presente in Spanish`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/null-fields-resume.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/null-fields-resume.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "es")
+        val result = renderer.render(defaultTemplatePath, resumeData, "es")
 
         // Assert
         assertValidLatexStructure(result)
@@ -319,7 +322,7 @@ internal class LatexTemplateRendererTest {
 
         // Act & Assert: Verify LaTeXInjectionException is thrown
         assertThrows(LaTeXInjectionException::class.java) {
-            renderer.render(maliciousResume, "en")
+            renderer.render(defaultTemplatePath, maliciousResume, "en")
         }
     }
 
@@ -330,11 +333,11 @@ internal class LatexTemplateRendererTest {
     fun `should generate valid LaTeX document structure`() {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/john-doe.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/john-doe.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert - verify all critical LaTeX document components
         assertTrue(result.contains("\\documentclass"), "Must have document class")
@@ -366,11 +369,11 @@ internal class LatexTemplateRendererTest {
     private fun assertResumeRendersCorrectly(fixtureName: String, locale: String = "en") {
         // Arrange
         val resumeJsonData: GenerateResumeRequest =
-            FixtureDataLoader.fromResource("data/json/$fixtureName.json")
+            FixtureDataLoader.fromResource("data/json/resume/requests/$fixtureName.json")
         val resumeData = ResumeRequestMapper.toDomain(resumeJsonData)
 
         // Act
-        val result = renderer.render(resumeData, locale)
+        val result = renderer.render(defaultTemplatePath, resumeData, locale)
 
         if (persistGeneratedDocument) {
             persistOutput(fixtureName, result)

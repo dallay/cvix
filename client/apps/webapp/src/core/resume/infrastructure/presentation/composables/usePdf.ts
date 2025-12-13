@@ -19,11 +19,11 @@ export function usePdf() {
 		}
 	});
 
-	const fetchTemplates = async () => {
+	const fetchTemplates = async (workspaceId: string) => {
 		isLoadingTemplates.value = true;
 		error.value = null;
 		try {
-			templates.value = await resumeHttpClient.getTemplates();
+			templates.value = await resumeHttpClient.getTemplates(workspaceId);
 		} catch (e: unknown) {
 			error.value = e instanceof Error ? e.message : "Failed to load templates";
 		} finally {
@@ -33,8 +33,8 @@ export function usePdf() {
 
 	const generatePdf = async (
 		resume: Resume,
-		_templateId: string,
-		_params: Record<string, ParamValue>,
+		templateId: string,
+		params: Record<string, ParamValue>,
 	) => {
 		isGenerating.value = true;
 		error.value = null;
@@ -46,13 +46,14 @@ export function usePdf() {
 		}
 
 		try {
-			// Note: Backend currently doesn't support templateId/params in generate endpoint yet
-			// We are passing them but they might be ignored until backend is updated to use them
-			// For now, we just call the existing endpoint
 			// Extract locale from params, default to 'en' if not present
-			const rawLocale = _params.locale;
+			const rawLocale = params.locale;
 			const locale: "en" | "es" = rawLocale === "es" ? "es" : "en";
-			const blob = await resumeHttpClient.generatePdf(resume, locale);
+			const blob = await resumeHttpClient.generatePdf(
+				templateId,
+				resume,
+				locale,
+			);
 			pdfUrl.value = URL.createObjectURL(blob);
 			return blob;
 		} catch (e: unknown) {

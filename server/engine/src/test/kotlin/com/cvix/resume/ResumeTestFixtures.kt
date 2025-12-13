@@ -149,8 +149,9 @@ object ResumeTestFixtures {
         content: GenerateResumeRequest = createValidResumeRequestContent()
     ): CreateResumeRequest = CreateResumeRequest(workspaceId, title, content)
 
-    fun createValidResumeRequestContent(): GenerateResumeRequest {
+    fun createValidResumeRequestContent(templateId: String = "engineering"): GenerateResumeRequest {
         return GenerateResumeRequest(
+            templateId = templateId,
             basics = basicsDto(),
             work = workExperienceDtos(),
             volunteer = volunteerDtos(),

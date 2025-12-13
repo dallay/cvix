@@ -27,7 +27,10 @@ annotation class ValidResumeContent(
  */
 class ResumeContentValidator : ConstraintValidator<ValidResumeContent, GenerateResumeRequest> {
 
-    override fun isValid(request: GenerateResumeRequest?, context: ConstraintValidatorContext?): Boolean {
+    override fun isValid(
+        request: GenerateResumeRequest?,
+        context: ConstraintValidatorContext?
+    ): Boolean {
         if (request == null) {
             return true // Let @NotNull handle null validation
         }

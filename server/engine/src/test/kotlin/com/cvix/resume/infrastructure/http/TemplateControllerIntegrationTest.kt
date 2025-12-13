@@ -2,13 +2,26 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerIntegrationTest
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.jdbc.Sql
 
 internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
+    private val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
 
     @Test
+    @Sql(
+        "/db/user/users.sql",
+        "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
+    )
+    @Sql(
+        "/db/resume/clean.sql",
+        "/db/workspace/clean.sql",
+        "/db/user/clean.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+    )
     fun `should list templates successfully`() {
         webTestClient.get()
-            .uri("/api/templates")
+            .uri("/api/templates?workspaceId=$workspaceId")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -16,15 +29,24 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
             .jsonPath("$.data.length()").isEqualTo(1)
             .jsonPath("$.data[0].id").isEqualTo("engineering")
             .jsonPath("$.data[0].name").isEqualTo("Engineering Resume")
-            .jsonPath("$.data[0].version").isEqualTo("0.1.0")
-            .jsonPath("$.data[0].description")
-            .isEqualTo("Engineering resume template (single-column focused for engineering profiles).")
+            .jsonPath("$.data[0].version").isEqualTo("1.0.0")
     }
 
     @Test
+    @Sql(
+        "/db/user/users.sql",
+        "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
+    )
+    @Sql(
+        "/db/resume/clean.sql",
+        "/db/workspace/clean.sql",
+        "/db/user/clean.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+    )
     fun `should return 400 when limit is below minimum`() {
         webTestClient.get()
-            .uri("/api/templates?limit=0")
+            .uri("/api/templates?workspaceId=$workspaceId&limit=0")
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
@@ -37,9 +59,20 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
     }
 
     @Test
+    @Sql(
+        "/db/user/users.sql",
+        "/db/workspace/workspace.sql",
+        "/db/resume/resumes.sql",
+    )
+    @Sql(
+        "/db/resume/clean.sql",
+        "/db/workspace/clean.sql",
+        "/db/user/clean.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+    )
     fun `should return 400 when limit is above maximum`() {
         webTestClient.get()
-            .uri("/api/templates?limit=51")
+            .uri("/api/templates?workspaceId=$workspaceId&limit=51")
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()

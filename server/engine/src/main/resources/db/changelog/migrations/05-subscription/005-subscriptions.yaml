@@ -1,0 +1,131 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-subscription-status-enum
+      author: cvix
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TYPE subscription_status AS ENUM ('ACTIVE', 'CANCELLED', 'EXPIRED');
+              CREATE TYPE subscription_tier AS ENUM ('FREE', 'BASIC', 'PROFESSIONAL');
+
+  - changeSet:
+      id: 006-create-subscriptions-table
+      author: cvix
+      changes:
+        - createTable:
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tier
+                  type: subscription_tier
+                  defaultValue: FREE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: subscription_status
+                  defaultValue: ACTIVE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_from
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_until
+                  type: timestamp with time zone
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+        - addForeignKeyConstraint:
+            baseTableName: subscriptions
+            baseColumnNames: user_id
+            constraintName: fk_subscription_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 007-create-subscriptions-indexes
+      author: cvix
+      changes:
+        - createIndex:
+            indexName: idx_subscriptions_user_id
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_subscriptions_status
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_subscriptions_user_status
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: status
+
+  - changeSet:
+      id: 008-add-unique-active-subscription-constraint
+      author: cvix
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Create a unique partial index to ensure only one active subscription per user
+              CREATE UNIQUE INDEX idx_subscriptions_user_active_unique
+              ON subscriptions (user_id)
+              WHERE status = 'ACTIVE';
+        - rollback:
+            sql: DROP INDEX IF EXISTS idx_subscriptions_user_active_unique;
+
+  - changeSet:
+      id: 009-create-default-free-subscriptions
+      author: cvix
+      context: dev,test
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              -- Create FREE tier subscriptions for all existing users
+              INSERT INTO subscriptions (id, user_id, tier, status, valid_from, created_at)
+              SELECT
+                gen_random_uuid(),
+                id,
+                'FREE',
+                'ACTIVE',
+                CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP
+              FROM users
+              WHERE NOT EXISTS (
+                SELECT 1 FROM subscriptions s WHERE s.user_id = users.id
+              );
+        - rollback:
+            sql: DELETE FROM subscriptions WHERE tier = 'FREE';
+

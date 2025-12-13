@@ -72,7 +72,7 @@ export interface UseResumeFormReturn {
 	// actions
 	submitResume: () => boolean;
 	saveToStorage: () => Promise<void>;
-	generatePdf: (locale?: string) => Promise<Blob>;
+	generatePdf: (templateId: string, locale?: string) => Promise<Blob>;
 	clearForm: () => void;
 	loadResume: (r: Resume) => void;
 }
@@ -80,6 +80,7 @@ export interface UseResumeFormReturn {
 /**
  * Factory function to create an empty resume with all sections initialized.
  * Used as a safe default for getters when no resume exists yet.
+ * @returns An empty WritableResume object.
  */
 function createEmptyResume(): WritableResume {
 	return {
@@ -292,24 +293,49 @@ export function useResumeForm(): UseResumeFormReturn {
 	const isGenerating = computed(() => resumeStore.isGenerating);
 	const generationError = computed(() => resumeStore.generationError);
 
+	/**
+	 * Validates the current resume data in the store.
+	 * @returns True if the resume is valid, false otherwise.
+	 */
 	function submitResume(): boolean {
 		return resumeStore.validateResume();
 	}
 
+	/**
+	 * Saves the current resume to local storage.
+	 * @returns A promise that resolves when the save is complete.
+	 */
 	async function saveToStorage(): Promise<void> {
 		return resumeStore.saveToStorage();
 	}
 
-	async function generatePdf(locale?: string): Promise<Blob> {
-		return resumeStore.generatePdf(locale);
+	/**
+	 * Generates a PDF for the current resume using the specified template and locale.
+	 * @param templateId Template ID to use for PDF generation.
+	 * @param locale Optional locale for localization (default is "en").
+	 * @returns A promise that resolves to a Blob representing the generated PDF.
+	 */
+	async function generatePdf(
+		templateId: string,
+		locale?: string,
+	): Promise<Blob> {
+		return resumeStore.generatePdf(templateId, locale);
 	}
 
+	/**
+	 * Clears the current resume form, resetting all fields.
+	 * No resume will be present after this action.
+	 */
 	function clearForm(): void {
 		resumeStore.clearResume();
 	}
 
-	function loadResume(r: Resume): void {
-		resumeStore.setResume(r);
+	/**
+	 * Loads the given resume into the form.
+	 * @param resume Resume data to load into the form.
+	 */
+	function loadResume(resume: Resume): void {
+		resumeStore.setResume(resume);
 	}
 
 	// Initialize: load from storage on mount

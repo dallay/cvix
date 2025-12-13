@@ -1,8 +1,15 @@
 import type { TemplateMetadata } from "@/core/resume/domain/TemplateMetadata.ts";
-import { BaseHttpClient } from "../../../../shared/BaseHttpClient";
+import type {
+	CreateResumeRequest,
+	UpdateResumeRequest,
+} from "@/core/resume/infrastructure/http/requests/ResumeRequest.ts";
+import { BaseHttpClient } from "@/shared/BaseHttpClient.ts";
 import type { Resume } from "../../domain/Resume.ts";
 import type { ResumeGenerator } from "../../domain/ResumeGenerator.ts";
-import { mapResumeToBackendRequest } from "./ResumeRequestMapper.ts";
+import {
+	mapResumeToGenerateResumeRequest,
+	mapResumeToResumeRequest,
+} from "./ResumeRequestMapper.ts";
 
 /**
  * Backend resume document response matching server DTO
@@ -17,23 +24,6 @@ export interface ResumeDocumentResponse {
 	updatedAt: string | null;
 	createdBy: string;
 	updatedBy: string | null;
-}
-
-/**
- * Request payload for creating a resume
- */
-export interface CreateResumeRequest {
-	workspaceId: string;
-	title?: string;
-	content: ReturnType<typeof mapResumeToBackendRequest>;
-}
-
-/**
- * Request payload for updating a resume
- */
-export interface UpdateResumeRequest {
-	title?: string;
-	content: ReturnType<typeof mapResumeToBackendRequest>;
 }
 
 /**
@@ -62,7 +52,7 @@ export class ResumeHttpClient
 		const request: CreateResumeRequest = {
 			workspaceId,
 			title,
-			content: mapResumeToBackendRequest(resume),
+			content: mapResumeToResumeRequest(resume),
 		};
 		const response = await this.client.put<ResumeDocumentResponse>(
 			`/resume/${id}`,
@@ -71,6 +61,11 @@ export class ResumeHttpClient
 		return response.data;
 	}
 
+	/**
+	 * Get a resume by ID
+	 * @param id Resume ID
+	 * @returns Promise with the resume document
+	 */
 	async getResume(id: string): Promise<ResumeDocumentResponse> {
 		const response = await this.client.get<ResumeDocumentResponse>(
 			`/resume/${id}`,
@@ -78,6 +73,13 @@ export class ResumeHttpClient
 		return response.data;
 	}
 
+	/**
+	 * Update an existing resume
+	 * @param id Resume ID
+	 * @param resume Resume data
+	 * @param title Optional new title
+	 * @returns Promise with the updated resume document
+	 */
 	async updateResume(
 		id: string,
 		resume: Resume,
@@ -85,7 +87,7 @@ export class ResumeHttpClient
 	): Promise<ResumeDocumentResponse> {
 		const request: UpdateResumeRequest = {
 			title,
-			content: mapResumeToBackendRequest(resume),
+			content: mapResumeToResumeRequest(resume),
 		};
 		const response = await this.client.put<ResumeDocumentResponse>(
 			`/resume/${id}/update`,
@@ -94,10 +96,19 @@ export class ResumeHttpClient
 		return response.data;
 	}
 
+	/**
+	 * Delete a resume by ID
+	 * @param id Resume ID
+	 * @returns Promise that resolves when deletion is complete
+	 */
 	async deleteResume(id: string): Promise<void> {
 		await this.client.delete(`/resume/${id}`);
 	}
 
+	/**
+	 * List all resumes for the current user
+	 * @returns Promise with array of resume documents
+	 */
 	async listResumes(): Promise<ResumeDocumentResponse[]> {
 		const response = await this.client.get<{ data: ResumeDocumentResponse[] }>(
 			"/resume",
@@ -107,17 +118,25 @@ export class ResumeHttpClient
 
 	/**
 	 * Generate a PDF resume from resume data
+	 * @param templateId Template ID to use for generation
 	 * @param resume Resume data
 	 * @param locale Language locale (en/es)
 	 * @returns Promise with the PDF blob
 	 */
-	async generatePdf(resume: Resume, locale?: "en" | "es"): Promise<Blob> {
+	async generatePdf(
+		templateId: string,
+		resume: Resume,
+		locale?: "en" | "es",
+	): Promise<Blob> {
 		// Map frontend Resume (JSON Resume schema) to backend GenerateResumeRequest format
-		const backendRequest = mapResumeToBackendRequest(resume);
+		const generateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		const response = await this.client.post<Blob>(
 			"/resume/generate",
-			backendRequest,
+			generateResumeRequest,
 			{
 				headers: {
 					"Accept-Language": locale,
@@ -133,13 +152,15 @@ export class ResumeHttpClient
 	 * Get list of available resume templates
 	 * @returns Promise with list of templates
 	 */
-	async getTemplates(): Promise<TemplateMetadata[]> {
+	async getTemplates(workspaceId: string): Promise<TemplateMetadata[]> {
 		const response = await this.client.get<{
 			data: TemplateMetadata[];
-		}>("/templates");
+		}>(`/templates?workspaceId=${workspaceId}`);
 		return response.data.data;
 	}
 }
 
-// Export singleton instance
+/**
+ * Singleton instance of ResumeHttpClient for use throughout the app
+ */
 export const resumeHttpClient = new ResumeHttpClient();

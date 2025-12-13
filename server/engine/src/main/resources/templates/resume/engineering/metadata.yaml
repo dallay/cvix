@@ -1,0 +1,33 @@
+# Engineering Resume Template Metadata
+id: engineering
+name: Engineering Resume
+version: 1.0.0
+descriptions:
+  en: Professional resume template for software engineers and tech professionals. Single-column focused layout emphasizing technical skills and project experience.
+  es: Plantilla de currículum profesional para ingenieros de software y profesionales técnicos. Diseño de una sola columna que enfatiza habilidades técnicas y experiencia en proyectos.
+supportedLocales:
+  - en
+  - es
+templatePath: templates/resume/engineering/engineering.stg
+previewUrl: /assets/previews/engineering.png
+requiredSubscriptionTier: FREE
+params:
+  colorPalette:
+    default: blue
+    options: [blue, green, red, gray]
+  fontFamily:
+    default: Roboto
+    options: [Roboto, OpenSans, SourceSansPro]
+  spacing:
+    default: normal
+    options: [compact, normal, comfortable]
+  density:
+    default: comfortable
+    options: [compact, comfortable, spacious]
+  includePhoto:
+    default: true
+    type: boolean
+  highlightSkills:
+    default: true
+    type: boolean
+

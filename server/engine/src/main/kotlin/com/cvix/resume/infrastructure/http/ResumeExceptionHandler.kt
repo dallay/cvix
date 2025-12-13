@@ -78,7 +78,11 @@ class ResumeExceptionHandler(
             problemDetail.setProperty("errors", globalErrors)
         }
 
-        logger.warn("Validation error: {} fields failed, {} global errors", fieldErrors.size, globalErrors.size)
+        logger.warn(
+            "Validation error: {} fields failed, {} global errors",
+            fieldErrors.size,
+            globalErrors.size,
+        )
         return problemDetail
     }
 

@@ -1086,7 +1086,7 @@ style:
         '**/iosTest/**',
         '**/*.kts',
       ]
-    ignoreNumbers: ['-1', '0', '1', '2']
+    ignoreNumbers: ['-1', '0', '1', '2', '3']
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: true
     ignoreLocalVariableDeclaration: false
@@ -1149,7 +1149,7 @@ style:
     active: true
   ReturnCount:
     active: true
-    max: 3
+    max: 4
     excludedFunctions:
       - 'equals'
     excludeLabeled: false

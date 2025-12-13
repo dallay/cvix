@@ -205,7 +205,7 @@ describe("useResumeStore", () => {
 		it("should throw error when no resume is available", async () => {
 			const store = useResumeStore();
 
-			await expect(store.generatePdf()).rejects.toThrow(
+			await expect(store.generatePdf("template-123")).rejects.toThrow(
 				"No resume data available to generate PDF",
 			);
 		});

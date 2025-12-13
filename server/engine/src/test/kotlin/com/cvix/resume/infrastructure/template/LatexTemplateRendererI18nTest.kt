@@ -16,6 +16,7 @@ import com.cvix.resume.domain.Skill
 import com.cvix.resume.domain.SkillCategory
 import com.cvix.resume.domain.SkillCategoryName
 import com.cvix.resume.domain.WorkExperience
+import com.cvix.resume.infrastructure.template.renders.LatexTemplateRenderer
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldNotContain
@@ -29,10 +30,11 @@ import org.junit.jupiter.api.Test
  * Tests that the template correctly renders with English and Spanish translations.
  */
 @UnitTest
-class LatexTemplateRendererI18nTest {
+internal class LatexTemplateRendererI18nTest {
 
     private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
     private val renderer = LatexTemplateRenderer(fixedClock)
+    private val defaultTemplatePath = "templates/resume/engineering/engineering.stg"
 
     @Test
     fun `should render resume with English translations`() {
@@ -40,7 +42,7 @@ class LatexTemplateRendererI18nTest {
         val resumeData = createResumeDataWithAllSections()
 
         // Act
-        val result = renderer.render(resumeData, "en")
+        val result = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert
         result.shouldNotBeEmpty()
@@ -68,7 +70,7 @@ class LatexTemplateRendererI18nTest {
         val resumeData = createResumeDataWithAllSections()
 
         // Act
-        val result = renderer.render(resumeData, "es")
+        val result = renderer.render(defaultTemplatePath, resumeData, "es")
 
         // Assert
         result.shouldNotBeEmpty()
@@ -96,13 +98,13 @@ class LatexTemplateRendererI18nTest {
         val resumeData = createResumeDataWithAllSections()
 
         // Act - English
-        val resultEn = renderer.render(resumeData, "en")
+        val resultEn = renderer.render(defaultTemplatePath, resumeData, "en")
 
         // Assert - English
         resultEn shouldContain "pdflang={en}"
 
         // Act - Spanish
-        val resultEs = renderer.render(resumeData, "es")
+        val resultEs = renderer.render(defaultTemplatePath, resumeData, "es")
 
         // Assert - Spanish
         resultEs shouldContain "pdflang={es}"
@@ -114,7 +116,7 @@ class LatexTemplateRendererI18nTest {
         val resumeData = createResumeDataWithAllSections()
 
         // Act - Unsupported locale should fallback to English
-        val result = renderer.render(resumeData, "fr")
+        val result = renderer.render(defaultTemplatePath, resumeData, "fr")
 
         // Assert - Should use English translations as fallback
         result.shouldNotBeEmpty()
