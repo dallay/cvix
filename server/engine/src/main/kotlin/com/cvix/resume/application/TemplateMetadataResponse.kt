@@ -11,7 +11,7 @@ import com.cvix.resume.domain.TemplateParams
  * @param id Template identifier
  * @param name Template name
  * @param version Template version
- * @param description Optional template description
+ * @param descriptions Localized descriptions of the template
  * @param supportedLocales List of supported locales for this template
  * @param previewUrl Optional URL to a preview image of the template
  * @param params Optional template parameters for customization
@@ -21,7 +21,7 @@ data class TemplateMetadataResponse(
     val id: String,
     val name: String,
     val version: String,
-    val description: String? = null,
+    val descriptions: Map<Locale, String> = emptyMap(),
     val supportedLocales: List<Locale> = emptyList(),
     val previewUrl: String? = null,
     val params: TemplateParams? = null
@@ -38,7 +38,7 @@ data class TemplateMetadataResponse(
                 id = domain.id,
                 name = domain.name,
                 version = domain.version,
-                description = domain.description,
+                descriptions = domain.descriptions,
                 supportedLocales = domain.supportedLocales,
                 previewUrl = domain.previewUrl,
                 params = domain.params,

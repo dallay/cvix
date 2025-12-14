@@ -2,7 +2,7 @@ package com.cvix.resume.application.create
 
 import com.cvix.common.domain.bus.command.Command
 import com.cvix.resume.domain.Resume
-import java.util.*
+import java.util.UUID
 
 /**
  * Command to create a new resume document.

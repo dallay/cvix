@@ -3,7 +3,7 @@ package com.cvix
 import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.credential.CredentialId
 import com.cvix.common.domain.vo.credential.CredentialValue
-import java.util.*
+import java.util.UUID
 import net.datafaker.Faker
 
 /**

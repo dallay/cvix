@@ -63,6 +63,7 @@ class ResumeGeneratorController(
                 HttpStatus.LENGTH_REQUIRED,
                 "Content-Length header is required for payload size enforcement (FR-015).",
             )
+
             contentLength > MAX_BYTES_SUPPORTED -> throw ResponseStatusException(
                 HttpStatus.PAYLOAD_TOO_LARGE,
                 "Request payload too large: $contentLength bytes. Maximum allowed: 102400 bytes (100KB)",
@@ -85,11 +86,19 @@ class ResumeGeneratorController(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported locale", e)
         }
 
+        // Get authenticated user ID
+        val userId = userIdFromToken()
+
         // Convert DTO to domain model
         val resumeData = ResumeRequestMapper.toDomain(request)
 
         // Create command
-        val command = GenerateResumeCommand(resumeData, locale)
+        val command = GenerateResumeCommand(
+            templateId = request.templateId,
+            resume = resumeData,
+            userId = userId,
+            locale = locale,
+        )
 
         // Track generation time
         val startTime = System.currentTimeMillis()
@@ -107,7 +116,10 @@ class ResumeGeneratorController(
             .contentLength(pdfBytes.size.toLong())
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"resume.pdf\"")
             .header("X-Generation-Time-Ms", generationTimeMs.toString())
-            .header(CONTENT_SECURITY_POLICY_HEADER, applicationSecurityProperties.contentSecurityPolicy)
+            .header(
+                CONTENT_SECURITY_POLICY_HEADER,
+                applicationSecurityProperties.contentSecurityPolicy,
+            )
             .header(X_CONTENT_TYPE_OPTIONS_HEADER, X_CONTENT_TYPE_OPTIONS_VALUE)
             .header(X_FRAME_OPTIONS_HEADER, X_FRAME_OPTIONS_VALUE)
             .header(REFERRER_POLICY_HEADER, REFERRER_POLICY_VALUE)

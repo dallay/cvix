@@ -1,7 +1,7 @@
 package com.cvix.authentication.infrastructure.filter
 
 import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
-import java.util.*
+import java.util.Optional
 import org.springframework.http.ResponseCookie
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.security.web.server.csrf.CsrfToken

@@ -1,6 +1,7 @@
 # PDF Generation with Docker
 
-This module provides PDF generation from LaTeX source using Docker containers for secure, isolated execution.
+This module provides PDF generation from LaTeX source using Docker containers for secure, isolated
+execution.
 
 ## Configuration
 
@@ -24,7 +25,8 @@ resume:
 
 ## Docker Image Requirements
 
-The Docker image must have `pdflatex` installed and available in the system PATH. The default image `texlive/texlive:TL2024-historic` includes:
+The Docker image must have `pdflatex` installed and available in the system PATH. The default image
+`texlive/texlive:TL2024-historic` includes:
 
 - pdfTeX 3.141592653-2.6-1.40.28 (TeX Live 2025)
 - Full LaTeX distribution with common packages
@@ -44,10 +46,10 @@ docker pull texlive/texlive:TL2024-historic
 
 1. The adapter creates a temporary directory and writes the LaTeX source to `resume.tex`
 2. A Docker container is created with:
-   - Read-only root filesystem
-   - No network access
-   - Memory and CPU limits
-   - The temp directory mounted at `/work`
+    - Read-only root filesystem
+    - No network access
+    - Memory and CPU limits
+    - The temp directory mounted at `/work`
 3. The container runs `pdflatex` to compile the LaTeX source
 4. The generated PDF is read from the temp directory
 5. The container and temp directory are cleaned up

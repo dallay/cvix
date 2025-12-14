@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.PdfGenerationTimeoutException
 import com.cvix.resume.domain.exception.TemplateRenderingException
 import io.mockk.every
 import io.mockk.mockk
-import java.util.*
+import java.util.Locale
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -44,13 +44,13 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handleInvalidResumeDataException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
-        assertEquals("Invalid Resume Data", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
-        assertEquals("Invalid resume data", problemDetail.properties?.get("localizedMessage"))
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("resume.error.invalid_data", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-123", problemDetail.properties?.get("traceId"))
+        assertEquals("Invalid Resume Data", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
+        assertEquals("Invalid resume data", problemDetail.properties?.get("localizedMessage") as Any)
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("resume.error.invalid_data", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-123", problemDetail.properties?.get("traceId") as Any)
     }
 
     @Test
@@ -68,16 +68,16 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handleTemplateRenderingException(exception, exchange)
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), problemDetail.status)
-        assertEquals("Template Rendering Error", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
+        assertEquals("Template Rendering Error", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
         assertEquals(
             "Failed to render resume template",
-            problemDetail.properties?.get("localizedMessage"),
+            problemDetail.properties?.get("localizedMessage") as Any,
         )
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("resume.error.template_rendering", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-456", problemDetail.properties?.get("traceId"))
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("resume.error.template_rendering", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-456", problemDetail.properties?.get("traceId") as Any)
     }
 
     @Test
@@ -99,13 +99,13 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handlePdfGenerationException(exception, exchange)
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
-        assertEquals("PDF Generation Error", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
-        assertEquals("Failed to generate PDF", problemDetail.properties?.get("localizedMessage"))
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("resume.error.pdf_generation", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-789", problemDetail.properties?.get("traceId"))
+        assertEquals("PDF Generation Error", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
+        assertEquals("Failed to generate PDF", problemDetail.properties?.get("localizedMessage") as Any)
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("resume.error.pdf_generation", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-789", problemDetail.properties?.get("traceId") as Any)
     }
 
     @Test
@@ -123,12 +123,12 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handlePdfGenerationTimeoutException(exception, exchange)
 
         assertEquals(HttpStatus.GATEWAY_TIMEOUT.value(), problemDetail.status)
-        assertEquals("PDF Generation Timeout", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("resume.error.pdf_timeout", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-timeout", problemDetail.properties?.get("traceId"))
+        assertEquals("PDF Generation Timeout", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("resume.error.pdf_timeout", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-timeout", problemDetail.properties?.get("traceId") as Any)
     }
 
     @Test
@@ -146,16 +146,16 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handleLaTeXInjectionException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
-        assertEquals("Malicious Content Detected", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
+        assertEquals("Malicious Content Detected", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
         assertEquals(
             "Content contains potentially unsafe characters",
-            problemDetail.properties?.get("localizedMessage"),
+            problemDetail.properties?.get("localizedMessage") as Any,
         )
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("resume.error.malicious_content", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-security", problemDetail.properties?.get("traceId"))
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("resume.error.malicious_content", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-security", problemDetail.properties?.get("traceId") as Any)
     }
 
     @Test
@@ -173,15 +173,15 @@ internal class ResumeExceptionHandlerTest {
         val problemDetail = handler.handleGenericException(exception, exchange)
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
-        assertEquals("Internal Server Error", problemDetail.title)
-        assertNotNull(problemDetail.properties?.get("localizedMessage"))
+        assertEquals("Internal Server Error", problemDetail.title as Any)
+        assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
         assertEquals(
             "An unexpected error occurred",
-            problemDetail.properties?.get("localizedMessage"),
+            problemDetail.properties?.get("localizedMessage") as Any,
         )
-        assertNotNull(problemDetail.properties?.get("message"))
-        assertEquals("error.internal_server_error", problemDetail.properties?.get("message"))
-        assertNotNull(problemDetail.properties?.get("traceId"))
-        assertEquals("test-trace-id-generic", problemDetail.properties?.get("traceId"))
+        assertNotNull(problemDetail.properties?.get("message") as Any)
+        assertEquals("error.internal_server_error", problemDetail.properties?.get("message") as Any)
+        assertNotNull(problemDetail.properties?.get("traceId") as Any)
+        assertEquals("test-trace-id-generic", problemDetail.properties?.get("traceId") as Any)
     }
 }

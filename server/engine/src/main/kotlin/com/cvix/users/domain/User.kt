@@ -6,7 +6,7 @@ import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.common.domain.vo.name.Name
 import com.cvix.users.domain.event.UserCreatedEvent
-import java.util.*
+import java.util.UUID
 
 /**
  * User domain model. This is the root of the user aggregate. It contains all the information about the user.

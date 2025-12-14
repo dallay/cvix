@@ -7,7 +7,7 @@ import com.cvix.resume.domain.Resume
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.domain.event.ResumeCreatedEvent
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

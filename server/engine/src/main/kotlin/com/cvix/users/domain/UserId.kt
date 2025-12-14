@@ -1,7 +1,7 @@
 package com.cvix.users.domain
 
 import com.cvix.common.domain.BaseId
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a unique identifier for a user. It is a value object.

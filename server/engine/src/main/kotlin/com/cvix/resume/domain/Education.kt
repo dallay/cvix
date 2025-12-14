@@ -1,8 +1,8 @@
 package com.cvix.resume.domain
 
 import java.time.LocalDate
-import java.util.*
 import java.util.Locale
+import java.util.ResourceBundle
 
 /**
  * InstitutionName value object with validation.
@@ -16,6 +16,7 @@ value class InstitutionName(val value: String) {
             "Institution name cannot exceed $MAX_INSTITUTION_LENGTH characters"
         }
     }
+
     companion object {
         private const val MAX_INSTITUTION_LENGTH = 100
     }
@@ -31,6 +32,7 @@ value class FieldOfStudy(val value: String) {
         require(value.isNotBlank()) { "Field of study cannot be blank" }
         require(value.length <= MAX_FIELD_LENGTH) { "Field of study cannot exceed $MAX_FIELD_LENGTH characters" }
     }
+
     companion object {
         private const val MAX_FIELD_LENGTH = 100
     }
@@ -46,6 +48,7 @@ value class DegreeType(val value: String) {
         require(value.isNotBlank()) { "Degree type cannot be blank" }
         require(value.length <= MAX_DEGREE_LENGTH) { "Degree type cannot exceed $MAX_DEGREE_LENGTH characters" }
     }
+
     companion object {
         private const val MAX_DEGREE_LENGTH = 100
     }

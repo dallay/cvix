@@ -2,8 +2,8 @@ package com.cvix.resume.domain
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
 import java.util.Locale
+import java.util.ResourceBundle
 
 /**
  * CompanyName value object with validation.

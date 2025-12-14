@@ -98,6 +98,7 @@
 			"companyUrl": "https://empresa.com",
 			"organization": "Cruz Roja, Hábitat para la Humanidad, etc.",
 			"organizationUrl": "https://organizacion.org",
+			"date": "2023-12-31",
 			"volunteerPosition": "Coordinador de Voluntarios",
 			"volunteerSummary": "Organicé eventos de recaudación de fondos y coordiné actividades de voluntariado...",
 			"volunteerHighlight": "Recaudé $10,000 para programas comunitarios",
@@ -202,6 +203,7 @@
 				"personalInfo": "Agrega tu información de contacto básica y detalles profesionales",
 				"profiles": "Agrega tus perfiles de redes sociales y redes profesionales",
 				"work": "Agrega tu historial de trabajo profesional y logros",
+				"workExperience": "Describe tus roles, responsabilidades y logros clave en cada puesto. Enfócate en el impacto y los resultados.",
 				"volunteer": "Agrega tu trabajo voluntario y contribuciones a la comunidad",
 				"education": "Agrega tu formación académica y cursos relevantes",
 				"awards": "Agrega tus premios, honores y reconocimientos profesionales",
@@ -225,7 +227,8 @@
 				"language": "Idioma {number}",
 				"interest": "Interés {number}",
 				"reference": "Referencia {number}",
-				"project": "Proyecto {number}"
+				"project": "Proyecto {number}",
+				"workExperience": "Experiencia Laboral"
 			},
 			"empty": {
 				"profiles": "No se han agregado perfiles aún. Haz clic en el botón de arriba para agregar tu primer perfil.",
@@ -242,7 +245,8 @@
 				"languages": "No se han agregado idiomas aún. Haz clic en el botón de arriba para agregar tu primer idioma.",
 				"interests": "No se han agregado intereses aún. Haz clic en el botón de arriba para agregar tu primer interés.",
 				"references": "No se han agregado referencias aún. Haz clic en el botón de arriba para agregar tu primera referencia.",
-				"projects": "No se han agregado proyectos aún. Haz clic en el botón de arriba para agregar tu primer proyecto."
+				"projects": "No se han agregado proyectos aún. Haz clic en el botón de arriba para agregar tu primer proyecto.",
+				"workExperience": "No se ha agregado experiencia laboral aún. Haz clic en el botón de arriba para agregar tu primer puesto."
 			}
 		},
 		"validation": {
@@ -342,6 +346,9 @@
 			},
 			"score": "Promedio",
 			"courses": "Cursos Relevantes"
+		},
+		"messages": {
+			"noDataPreview": "Comienza a llenar el formulario para ver la vista previa de tu currículum"
 		},
 		"resetDialog": {
 			"title": "¿Restablecer el formulario?",

@@ -2,7 +2,7 @@ package com.cvix.resume.application.get
 
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.resume.application.ResumeDocumentResponse
-import java.util.*
+import java.util.UUID
 
 /**
  * Query to retrieve a resume document by ID.

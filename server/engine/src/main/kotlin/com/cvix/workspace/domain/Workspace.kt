@@ -5,7 +5,7 @@ import com.cvix.users.domain.UserId
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
 import com.cvix.workspace.domain.event.WorkspaceUpdatedEvent
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Workspace domain model. This is the root of the workspace aggregate.

@@ -7,7 +7,7 @@ import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.domain.event.ResumeDeletedEvent
 import com.cvix.resume.domain.exception.ResumeAccessDeniedException
 import com.cvix.resume.domain.exception.ResumeNotFoundException
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

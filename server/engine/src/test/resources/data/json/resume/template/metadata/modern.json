@@ -1,0 +1,26 @@
+{
+  "id": "modern",
+  "name": "Modern Resume",
+  "version": "0.1.0",
+  "descriptions": {
+    "EN": "Modern resume template (clean and professional design for various profiles).",
+    "ES": "Plantilla de currículum moderna (diseño limpio y profesional para varios perfiles)."
+  },
+  "supportedLocales": [
+    "EN",
+    "ES"
+  ],
+  "templatePath": "templates/modern",
+  "previewUrl": "https://placehold.co/300x600.png",
+  "requiredSubscriptionTier": "FREE",
+  "params": {
+    "colorPalette": "blue",
+    "fontFamily": "Roboto",
+    "spacing": "normal",
+    "density": "comfortable",
+    "customParams": {
+      "includePhoto": true,
+      "highlightSkills": true
+    }
+  }
+}

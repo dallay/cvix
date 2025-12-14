@@ -4,7 +4,7 @@ import com.cvix.UnitTest
 import com.cvix.common.domain.error.BusinessRuleValidationException
 import io.mockk.every
 import io.mockk.mockk
-import java.util.*
+import java.util.Locale
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test

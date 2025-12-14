@@ -7,7 +7,7 @@ import com.cvix.resume.domain.exception.PdfGenerationTimeoutException
 import com.cvix.resume.domain.exception.TemplateRenderingException
 import java.net.URI
 import java.time.Instant
-import java.util.*
+import java.util.Locale
 import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
@@ -78,7 +78,11 @@ class ResumeExceptionHandler(
             problemDetail.setProperty("errors", globalErrors)
         }
 
-        logger.warn("Validation error: {} fields failed, {} global errors", fieldErrors.size, globalErrors.size)
+        logger.warn(
+            "Validation error: {} fields failed, {} global errors",
+            fieldErrors.size,
+            globalErrors.size,
+        )
         return problemDetail
     }
 

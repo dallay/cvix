@@ -9,6 +9,7 @@ import type {
 	SectionType,
 } from "@/core/resume/domain/SectionVisibility";
 import type { ParamValue } from "@/core/resume/domain/TemplateMetadata";
+import { useWorkspaceStore } from "@/core/workspace";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useResumeStore } from "../../store/resume.store";
 import { useSectionVisibilityStore } from "../../store/section-visibility.store";
@@ -19,6 +20,7 @@ import { usePdf } from "../composables/usePdf";
 const router = useRouter();
 const resumeStore = useResumeStore();
 const visibilityStore = useSectionVisibilityStore();
+const workspaceStore = useWorkspaceStore();
 const { t } = useI18n();
 const {
 	templates,
@@ -60,7 +62,18 @@ onMounted(async () => {
 		}
 	}
 
-	await fetchTemplates();
+	const workspaceId = workspaceStore?.currentWorkspace?.id;
+	if (!workspaceId) {
+		console.error("No workspace ID found");
+		pdfError.value = t(
+			"resume.pdfPage.error",
+			"No workspace selected. Please select a workspace first.",
+		);
+		isLoadingTemplates.value = false;
+		return;
+	}
+	// Fetch available templates
+	await fetchTemplates(workspaceId);
 
 	// Initialize section visibility
 	if (resumeStore.resume) {

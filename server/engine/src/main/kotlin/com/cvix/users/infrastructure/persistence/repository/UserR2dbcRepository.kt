@@ -2,7 +2,7 @@ package com.cvix.users.infrastructure.persistence.repository
 
 import com.cvix.spring.boot.repository.ReactiveSearchRepository
 import com.cvix.users.infrastructure.persistence.entity.UserEntity
-import java.util.*
+import java.util.UUID
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository

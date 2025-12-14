@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { Resume } from "@/core/resume/domain/Resume.ts";
-import {
-	type GenerateResumeRequest,
-	mapResumeToBackendRequest,
-} from "./ResumeRequestMapper.ts";
+import type { GenerateResumeRequest } from "@/core/resume/infrastructure/http/requests/ResumeRequest.ts";
+import { createTestResume } from "@/core/resume/test-resume-factory.ts";
+import { mapResumeToGenerateResumeRequest } from "./ResumeRequestMapper.ts";
 
 describe("mapResumeToBackendRequest", () => {
 	it("should map a complete Resume to GenerateResumeRequest", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "John Doe",
 				label: "Software Engineer",
@@ -24,18 +22,7 @@ describe("mapResumeToBackendRequest", () => {
 					countryCode: "US",
 					region: "CA",
 				},
-				profiles: [
-					{
-						network: "LinkedIn",
-						username: "johndoe",
-						url: "https://linkedin.com/in/johndoe",
-					},
-					{
-						network: "GitHub",
-						username: "johndoe",
-						url: "https://github.com/johndoe",
-					},
-				],
+				profiles: [],
 			},
 			work: [
 				{
@@ -61,7 +48,7 @@ describe("mapResumeToBackendRequest", () => {
 			],
 			education: [
 				{
-					institution: "University of Example", // Fixed institution name
+					institution: "University of Example",
 					url: "https://university.example.edu",
 					area: "Computer Science",
 					studyType: "Bachelor",
@@ -115,7 +102,7 @@ describe("mapResumeToBackendRequest", () => {
 					url: "https://github.com/johndoe/library",
 					startDate: "2022-01-01",
 					endDate: "2023-06-01",
-					highlights: [], // Add empty highlights array to satisfy type requirements
+					highlights: [],
 				},
 			],
 			skills: [
@@ -131,10 +118,27 @@ describe("mapResumeToBackendRequest", () => {
 					fluency: "Native",
 				},
 			],
-		};
+		});
+		// Replace profiles after creation (deepmerge limitation workaround)
+		resume.basics.profiles = [
+			{
+				network: "LinkedIn",
+				username: "johndoe",
+				url: "https://linkedin.com/in/johndoe",
+			},
+			{
+				network: "GitHub",
+				username: "johndoe",
+				url: "https://github.com/johndoe",
+			},
+		];
 
 		// Act
-		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert basics mapped to backend shape
 		expect(result.basics).toEqual({
@@ -192,6 +196,7 @@ describe("mapResumeToBackendRequest", () => {
 		expect(result.skills).toHaveLength(1);
 		expect(result.skills?.[0]).toEqual({
 			name: "Programming Languages",
+			level: "Expert",
 			keywords: ["JavaScript", "TypeScript", "Kotlin"],
 		});
 
@@ -208,12 +213,13 @@ describe("mapResumeToBackendRequest", () => {
 			url: "https://github.com/johndoe/library",
 			startDate: "2022-01-01",
 			endDate: "2023-06-01",
+			highlights: [],
 		});
 	});
 
 	it("should handle empty optional arrays by setting them to undefined", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Jane Doe",
 				label: "",
@@ -242,10 +248,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.work).toBeUndefined();
@@ -257,7 +267,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle missing LinkedIn and GitHub profiles", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Bob Smith",
 				label: "",
@@ -273,13 +283,7 @@ describe("mapResumeToBackendRequest", () => {
 					countryCode: "US",
 					region: "",
 				},
-				profiles: [
-					{
-						network: "Twitter",
-						username: "bobsmith",
-						url: "https://twitter.com/bobsmith",
-					},
-				],
+				profiles: [],
 			},
 			work: [],
 			volunteer: [],
@@ -292,10 +296,22 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
+		// Replace profiles after creation (deepmerge limitation workaround)
+		resume.basics.profiles = [
+			{
+				network: "Twitter",
+				username: "bobsmith",
+				url: "https://twitter.com/bobsmith",
+			},
+		];
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert: profiles preserved, but no LinkedIn/GitHub
 		expect(result.basics.profiles).toEqual([
@@ -309,13 +325,13 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle required string fields set to empty strings", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
-				name: "", // Empty required string
+				name: "",
 				label: "",
 				image: "",
-				email: "", // Empty required string
-				phone: "", // Empty required string
+				email: "",
+				phone: "",
 				url: "",
 				summary: "",
 				location: {
@@ -338,10 +354,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.basics.name).toBe("");
@@ -358,17 +378,13 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle null vs undefined in optional fields - null location", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Alice Cooper",
-				label: "",
-				image: "",
 				email: "alice@example.com",
 				phone: "+1-555-0400",
-				url: "",
-				summary: "",
 				// @ts-expect-error Testing runtime null handling
-				location: null, // Null instead of object
+				location: null,
 				profiles: [],
 			},
 			work: [
@@ -377,7 +393,7 @@ describe("mapResumeToBackendRequest", () => {
 					position: "Developer",
 					url: "",
 					startDate: "2020-01-01",
-					endDate: "", // Empty string for optional
+					endDate: "",
 					summary: "",
 					highlights: [],
 				},
@@ -392,10 +408,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.basics.location).toBeUndefined(); // null.city should be handled gracefully
@@ -405,7 +425,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle undefined optional fields in work experience", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Charlie Brown",
 				label: "",
@@ -427,10 +447,10 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					name: "Company B",
 					position: "Engineer",
-					url: "", // Empty string instead of undefined
+					url: "",
 					startDate: "2021-01-01",
-					endDate: "", // Empty string for optional
-					summary: "", // Empty string instead of undefined
+					endDate: "",
+					summary: "",
 					highlights: [],
 				},
 			],
@@ -444,10 +464,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.work).toHaveLength(1);
@@ -457,7 +481,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle profile network casing variations - LinkedIn", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "David Lee",
 				label: "",
@@ -473,18 +497,7 @@ describe("mapResumeToBackendRequest", () => {
 					countryCode: "US",
 					region: "",
 				},
-				profiles: [
-					{
-						network: "LINKEDIN", // All uppercase
-						username: "davidlee",
-						url: "https://linkedin.com/in/davidlee",
-					},
-					{
-						network: "GitHub", // Mixed case
-						username: "davidlee",
-						url: "https://github.com/davidlee",
-					},
-				],
+				profiles: [],
 			},
 			work: [],
 			volunteer: [],
@@ -497,10 +510,27 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
+		// Replace profiles after creation
+		resume.basics.profiles = [
+			{
+				network: "LINKEDIN",
+				username: "davidlee",
+				url: "https://linkedin.com/in/davidlee",
+			},
+			{
+				network: "GitHub",
+				username: "davidlee",
+				url: "https://github.com/davidlee",
+			},
+		];
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert: profiles are passed through
 		expect(result.basics.profiles).toEqual([
@@ -519,7 +549,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle profile network casing variations - lowercase", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Eva Martinez",
 				label: "",
@@ -535,18 +565,7 @@ describe("mapResumeToBackendRequest", () => {
 					countryCode: "US",
 					region: "",
 				},
-				profiles: [
-					{
-						network: "linkedin", // All lowercase
-						username: "evamartinez",
-						url: "https://linkedin.com/in/evamartinez",
-					},
-					{
-						network: "github", // All lowercase
-						username: "evamartinez",
-						url: "https://github.com/evamartinez",
-					},
-				],
+				profiles: [],
 			},
 			work: [],
 			volunteer: [],
@@ -559,10 +578,27 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
+		// Replace profiles after creation
+		resume.basics.profiles = [
+			{
+				network: "linkedin",
+				username: "evamartinez",
+				url: "https://linkedin.com/in/evamartinez",
+			},
+			{
+				network: "github",
+				username: "evamartinez",
+				url: "https://github.com/evamartinez",
+			},
+		];
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.basics.profiles).toEqual([
@@ -581,7 +617,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle profile network casing variations - mixed case", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Frank Wilson",
 				label: "",
@@ -597,18 +633,7 @@ describe("mapResumeToBackendRequest", () => {
 					countryCode: "US",
 					region: "",
 				},
-				profiles: [
-					{
-						network: "LiNkEdIn", // Mixed case
-						username: "frankwilson",
-						url: "https://linkedin.com/in/frankwilson",
-					},
-					{
-						network: "GiThUb", // Mixed case
-						username: "frankwilson",
-						url: "https://github.com/frankwilson",
-					},
-				],
+				profiles: [],
 			},
 			work: [],
 			volunteer: [],
@@ -621,10 +646,27 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
+		// Replace profiles after creation
+		resume.basics.profiles = [
+			{
+				network: "LiNkEdIn",
+				username: "frankwilson",
+				url: "https://linkedin.com/in/frankwilson",
+			},
+			{
+				network: "GiThUb",
+				username: "frankwilson",
+				url: "https://github.com/frankwilson",
+			},
+		];
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.basics.profiles).toEqual([
@@ -643,17 +685,13 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle missing nested location object entirely", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Grace Kim",
-				label: "",
-				image: "",
 				email: "grace@example.com",
 				phone: "+1-555-0900",
-				url: "",
-				summary: "",
 				// @ts-expect-error Testing runtime undefined handling
-				location: undefined, // Completely missing
+				location: undefined,
 				profiles: [],
 			},
 			work: [],
@@ -667,10 +705,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.basics.location).toBeUndefined();
@@ -680,7 +722,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle optional fields as null in projects", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Henry Adams",
 				label: "",
@@ -712,7 +754,7 @@ describe("mapResumeToBackendRequest", () => {
 				{
 					name: "Test Project",
 					// @ts-expect-error Testing runtime null handling
-					startDate: null, // Null instead of string
+					startDate: null,
 					// @ts-expect-error Testing runtime null handling
 					endDate: null,
 					description: "A test project",
@@ -721,10 +763,14 @@ describe("mapResumeToBackendRequest", () => {
 					url: null,
 				},
 			],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.projects).toHaveLength(1);
@@ -736,7 +782,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should handle education with null optional fields", () => {
 		// Arrange
-		const resume: Resume = {
+		const resume = createTestResume({
 			basics: {
 				name: "Isabel Torres",
 				label: "",
@@ -764,9 +810,9 @@ describe("mapResumeToBackendRequest", () => {
 					studyType: "Master",
 					startDate: "2018-09-01",
 					// @ts-expect-error Testing runtime null handling
-					endDate: null, // Null endDate
+					endDate: null,
 					// @ts-expect-error Testing runtime null handling
-					score: null, // Null score
+					score: null,
 					courses: [],
 				},
 			],
@@ -778,10 +824,14 @@ describe("mapResumeToBackendRequest", () => {
 			interests: [],
 			references: [],
 			projects: [],
-		};
+		});
 
 		// Act
-		const result = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		expect(result.education).toHaveLength(1);
@@ -793,35 +843,7 @@ describe("mapResumeToBackendRequest", () => {
 
 	it("should map all JSON Resume sections to GenerateResumeRequest", () => {
 		// Arrange
-		const resume: Resume = {
-			basics: {
-				name: "John Doe",
-				label: "Software Engineer",
-				image: "https://example.com/avatar.jpg",
-				email: "john.doe@example.com",
-				phone: "+1-555-0100",
-				url: "https://johndoe.com",
-				summary: "Experienced software engineer",
-				location: {
-					address: "123 Main St",
-					postalCode: "12345",
-					city: "San Francisco",
-					countryCode: "US",
-					region: "CA",
-				},
-				profiles: [
-					{
-						network: "LinkedIn",
-						username: "johndoe",
-						url: "https://linkedin.com/in/johndoe",
-					},
-					{
-						network: "GitHub",
-						username: "johndoe",
-						url: "https://github.com/johndoe",
-					},
-				],
-			},
+		const resume = createTestResume({
 			work: [
 				{
 					name: "Tech Corp",
@@ -900,7 +922,7 @@ describe("mapResumeToBackendRequest", () => {
 					url: "https://github.com/johndoe/library",
 					startDate: "2022-01-01",
 					endDate: "2023-06-01",
-					highlights: [], // Add empty highlights array to satisfy type requirements
+					highlights: [],
 				},
 			],
 			skills: [
@@ -916,10 +938,14 @@ describe("mapResumeToBackendRequest", () => {
 					fluency: "Native",
 				},
 			],
-		};
+		});
 
 		// Act
-		const result: GenerateResumeRequest = mapResumeToBackendRequest(resume);
+		const templateId = "template-123";
+		const result: GenerateResumeRequest = mapResumeToGenerateResumeRequest(
+			templateId,
+			resume,
+		);
 
 		// Assert
 		// volunteer.position must be preserved

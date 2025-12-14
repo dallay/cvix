@@ -5,7 +5,7 @@ import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

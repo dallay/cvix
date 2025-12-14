@@ -1,7 +1,7 @@
 package com.cvix.spring.boot.logging
 
 import java.security.MessageDigest
-import java.util.*
+import java.util.UUID
 
 /**
  * Utility for masking sensitive information in logs.

@@ -1,7 +1,7 @@
 package com.cvix.workspace.application.delete
 
 import com.cvix.common.domain.bus.command.Command
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents a command to delete a workspace.

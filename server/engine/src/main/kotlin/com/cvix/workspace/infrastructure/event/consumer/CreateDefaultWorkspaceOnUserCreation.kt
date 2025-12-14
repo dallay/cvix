@@ -8,7 +8,7 @@ import com.cvix.users.domain.event.UserCreatedEvent
 import com.cvix.workspace.application.create.CreateWorkspaceCommand
 import com.cvix.workspace.domain.Workspace
 import io.r2dbc.spi.R2dbcException
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component

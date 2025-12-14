@@ -3,7 +3,7 @@ package com.cvix.resume.application.list
 import com.cvix.common.domain.Service
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeRepository
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

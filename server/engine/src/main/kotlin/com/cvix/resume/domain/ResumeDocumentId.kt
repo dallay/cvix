@@ -1,7 +1,7 @@
 package com.cvix.resume.domain
 
 import com.cvix.common.domain.BaseId
-import java.util.*
+import java.util.UUID
 
 /**
  * Identifier for a Resume Document.

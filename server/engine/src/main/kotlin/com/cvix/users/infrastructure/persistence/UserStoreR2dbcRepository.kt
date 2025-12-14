@@ -1,7 +1,7 @@
 package com.cvix.users.infrastructure.persistence
 
 import com.cvix.users.infrastructure.persistence.repository.UserR2dbcRepository
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Repository

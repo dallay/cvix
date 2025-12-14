@@ -9,7 +9,7 @@ import com.cvix.workspace.domain.WorkspaceFinderRepository
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import java.util.*
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

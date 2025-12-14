@@ -15,7 +15,7 @@ import com.cvix.workspace.infrastructure.persistence.mapper.toDomain
 import com.cvix.workspace.infrastructure.persistence.repository.WorkspaceMemberR2dbcRepository
 import com.cvix.workspace.infrastructure.persistence.repository.WorkspaceR2dbcRepository
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.flow.toList
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DuplicateKeyException

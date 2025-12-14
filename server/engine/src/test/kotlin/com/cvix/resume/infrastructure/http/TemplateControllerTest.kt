@@ -6,9 +6,11 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,14 +20,15 @@ internal class TemplateControllerTest : ControllerTest() {
     private val controller = TemplateController(mediator)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
     private lateinit var response: TemplateMetadataResponses
+    private val workspaceId = UUID.randomUUID()
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
         val engineering: TemplateMetadata =
-            FixtureDataLoader.fromResource("data/json/template-metadata/engineering.json")
+            FixtureDataLoader.fromResource("data/json/resume/template/metadata/engineering.json")
         val modern: TemplateMetadata =
-            FixtureDataLoader.fromResource("data/json/template-metadata/modern.json")
+            FixtureDataLoader.fromResource("data/json/resume/template/metadata/modern.json")
         val templates = listOf(engineering, modern)
         response = TemplateMetadataResponses(
             data = templates.map { TemplateMetadataResponse.from(it) },
@@ -36,7 +39,7 @@ internal class TemplateControllerTest : ControllerTest() {
     @Test
     fun `should list templates successfully`() {
         webTestClient.get()
-            .uri("/api/templates")
+            .uri("/api/templates?workspaceId=$workspaceId")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -45,8 +48,6 @@ internal class TemplateControllerTest : ControllerTest() {
             .jsonPath("$.data[0].id").isEqualTo("engineering")
             .jsonPath("$.data[0].name").isEqualTo("Engineering Resume")
             .jsonPath("$.data[0].version").isEqualTo("0.1.0")
-            .jsonPath("$.data[0].description")
-            .isEqualTo("Engineering resume template (single-column focused for engineering profiles).")
             .jsonPath("$.data[0].supportedLocales").isArray
             .jsonPath("$.data[0].supportedLocales.length()").isEqualTo(2)
             .jsonPath("$.data[0].supportedLocales[0]").isEqualTo("EN")
@@ -61,8 +62,6 @@ internal class TemplateControllerTest : ControllerTest() {
             .jsonPath("$.data[1].id").isEqualTo("modern")
             .jsonPath("$.data[1].name").isEqualTo("Modern Resume")
             .jsonPath("$.data[1].version").isEqualTo("0.1.0")
-            .jsonPath("$.data[1].description")
-            .isEqualTo("Modern resume template (clean and professional design for various profiles).")
             .jsonPath("$.data[1].supportedLocales").isArray
             .jsonPath("$.data[1].supportedLocales.length()").isEqualTo(2)
             .jsonPath("$.data[1].supportedLocales[0]").isEqualTo("EN")
@@ -79,14 +78,28 @@ internal class TemplateControllerTest : ControllerTest() {
         coVerify(exactly = 1) { mediator.send(capture(querySlot)) }
         // Default limit is 50 in controller
         assertEquals(50, querySlot.captured.limit)
+        assertEquals(workspaceId, querySlot.captured.workspaceId)
     }
 
     @Test
     fun `should handle internal error`() {
         coEvery { mediator.send(any<ListTemplatesQuery>()) } throws RuntimeException("Internal error")
-        webTestClient.get()
-            .uri("/api/templates")
+        val querySlot = slot<ListTemplatesQuery>()
+        val result = webTestClient.get()
+            .uri("/api/templates?workspaceId=$workspaceId")
             .exchange()
             .expectStatus().is5xxServerError
+            .expectBody()
+            .returnResult()
+        val responseBody = result.responseBody?.toString(Charsets.UTF_8)
+        val objectMapper = ObjectMapper()
+        val json = responseBody?.let { objectMapper.readTree(it) }
+        val errorFields = listOf("message", "detail", "error", "title")
+        val found = errorFields.any { field ->
+            json?.get(field)?.asText()?.contains("Internal error") == true
+        }
+        assert(found) { "Expected error message to contain 'Internal error', but got: $responseBody" }
+        coVerify(exactly = 1) { mediator.send(capture(querySlot)) }
+        assertEquals(workspaceId, querySlot.captured.workspaceId)
     }
 }

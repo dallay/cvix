@@ -10,7 +10,7 @@ import com.cvix.users.infrastructure.http.request.RegisterUserRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import java.util.stream.Stream
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker

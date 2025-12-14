@@ -1,7 +1,7 @@
 package com.cvix.workspace.infrastructure.persistence.entity
 
 import java.io.Serializable
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents the composite primary key for WorkspaceMemberEntity.

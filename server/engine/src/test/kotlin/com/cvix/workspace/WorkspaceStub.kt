@@ -5,7 +5,7 @@ import com.cvix.workspace.domain.Workspace
 import com.cvix.workspace.domain.WorkspaceId
 import com.cvix.workspace.infrastructure.http.request.CreateWorkspaceRequest
 import com.cvix.workspace.infrastructure.http.request.UpdateWorkspaceRequest
-import java.util.*
+import java.util.UUID
 import net.datafaker.Faker
 
 object WorkspaceStub {

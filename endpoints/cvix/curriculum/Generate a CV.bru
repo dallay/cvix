@@ -18,6 +18,7 @@ headers {
 
 body:json {
   {
+    "templateId": "engineering",
     "basics": {
       "name": "John Doe",
       "label": "Full-Stack Engineer & Technical Leader",
@@ -369,4 +370,73 @@ body:json {
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+docs {
+  summary: "Generate a PDF resume from structured JSON input using a selected template."
+
+  description: """
+  Accepts a structured JSON resume payload and returns a rendered PDF using the specified template.
+
+  This endpoint expects the request body to follow the project's resume data shape (templateId + resume content). Dates should be ISO-8601 (YYYY-MM-DD). Image references must be absolute URLs and reachable by the service. All textual fields should be provided as plain text; the renderer is expected to sanitize input and strip HTML to avoid XSS in generated documents, but clients should not rely on this as a security guarantee.
+  """
+
+  request: """
+  Method: POST
+  URL: /api/resume/generate
+
+  Required headers (browser clients):
+    - X-XSRF-TOKEN: <token> (required for browser flows that use CSRF protection)
+    - Accept: application/pdf  (request a PDF response)
+    - Accept-Language: optional; controls locale used for date formatting and template translations
+    - Content-Type: application/json
+
+  Body (JSON):
+    - templateId (string, required): identifier of the chosen resume template (e.g. "engineering").
+    - basics (object): candidate basic information (name, label, email, phone, summary, location, profiles...)
+    - work, education, projects, skills, languages, awards, certificates, publications, references, volunteer: arrays of objects matching the example schema in this file.
+
+  Notes:
+    - Dates: use ISO-8601 strings (YYYY-MM-DD). endDate may be null for ongoing roles.
+    - Images: supply accessible absolute URLs. The service fetches images server-side; self-signed or protected URLs may fail.
+    - Size limits: avoid embedding large binary data in JSON; host large assets externally and reference by URL.
+  """
+
+  responses: """
+  200 application/pdf
+    - Returns the generated PDF as binary content with Content-Type: application/pdf.
+    - Response SHOULD include a Content-Disposition header suggesting a filename (e.g., resume.pdf).
+
+  400 Bad Request
+    - Returned when the payload fails validation. Response body is a JSON Problem Details structure with an `errors` array describing invalid fields.
+
+  401 Unauthorized / 403 Forbidden
+    - Returned when authentication or authorization fails.
+
+  429 Too Many Requests
+    - Rate limiting may be applied to public endpoints. Clients should respect Retry-After header when present.
+
+  500 Internal Server Error
+    - Returned for unexpected server-side failures (e.g., rendering engine error). The service will log detailed errors; clients receive a generic message.
+  """
+
+  example: """
+  curl -X POST "{{url}}/api/resume/generate" \
+    -H "Accept: application/pdf" \
+    -H "Content-Type: application/json" \
+    -H "X-XSRF-TOKEN: <token>" \
+    --data-binary @resume.json --output resume.pdf
+  """
+
+  notes: """
+  - The renderer currently performs input sanitization, but clients should not include raw HTML in text fields and should not rely on this as a security guarantee.
+  - Remote images are fetched by the renderer. Ensure remote hosts allow server-side requests.
+  - The request currently returns the generated PDF synchronously; async job APIs or alternate Accept handling (e.g., application/json for job resource) are not implemented at this time.
+  - Keep payloads compact and reference external assets by URL to reduce request size.
+  """
+
+  planned: """
+  - Support for async job APIs for very large or long-running renders may be added in the future.
+  - Alternate Accept header handling (e.g., application/json for job resource) is under consideration.
+  """
 }

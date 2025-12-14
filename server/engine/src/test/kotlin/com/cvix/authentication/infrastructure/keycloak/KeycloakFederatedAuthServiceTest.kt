@@ -5,7 +5,7 @@ import com.cvix.users.infrastructure.persistence.UserStoreR2dbcRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

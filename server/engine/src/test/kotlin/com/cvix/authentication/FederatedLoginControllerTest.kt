@@ -9,7 +9,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import java.net.URI
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

@@ -1,7 +1,7 @@
 package com.cvix.resume.infrastructure.template.renders
 
 import com.cvix.resume.infrastructure.template.util.LatexEscaper
-import java.util.*
+import java.util.Locale
 import org.stringtemplate.v4.AttributeRenderer
 
 /**
@@ -36,8 +36,14 @@ class UrlRenderer : AttributeRenderer<String> {
      */
     private fun shortenUrl(url: String): String {
         return url
-            .replace(Regex("^https?://", RegexOption.IGNORE_CASE), "") // Remove http:// or https:// (case-insensitive)
-            .replace(Regex("^www\\.", RegexOption.IGNORE_CASE), "") // Remove www. if present (case-insensitive)
+            .replace(
+                Regex("^https?://", RegexOption.IGNORE_CASE),
+                "",
+            ) // Remove http:// or https:// (case-insensitive)
+            .replace(
+                Regex("^www\\.", RegexOption.IGNORE_CASE),
+                "",
+            ) // Remove www. if present (case-insensitive)
             .trimEnd('/') // Remove trailing slash if present
     }
 

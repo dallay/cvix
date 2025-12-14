@@ -9,7 +9,7 @@ import com.cvix.workspace.domain.WorkspaceId
 import com.cvix.workspace.domain.WorkspaceRole
 import com.cvix.workspace.infrastructure.persistence.repository.WorkspaceMemberR2dbcRepository
 import com.cvix.workspace.infrastructure.persistence.repository.WorkspaceR2dbcRepository
-import java.util.*
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals

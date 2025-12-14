@@ -1,7 +1,7 @@
 package com.cvix.buildlogic.common.extensions
 
 import com.cvix.buildlogic.common.AppConfiguration
-import java.util.*
+import java.util.Properties
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalogsExtension

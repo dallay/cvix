@@ -3,7 +3,7 @@ package com.cvix.resume.infrastructure.http.request
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import java.util.*
+import java.util.UUID
 
 /**
  * Request DTO for creating a new resume.

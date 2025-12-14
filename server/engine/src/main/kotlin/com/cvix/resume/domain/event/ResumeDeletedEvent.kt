@@ -1,7 +1,7 @@
 package com.cvix.resume.domain.event
 
 import com.cvix.common.domain.bus.event.BaseDomainEvent
-import java.util.*
+import java.util.UUID
 
 /**
  * Event published when a resume is deleted.

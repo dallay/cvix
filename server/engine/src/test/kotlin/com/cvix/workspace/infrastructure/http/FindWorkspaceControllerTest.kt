@@ -6,7 +6,7 @@ import com.cvix.workspace.application.WorkspaceResponse
 import com.cvix.workspace.application.find.FindWorkspaceQuery
 import com.cvix.workspace.domain.WorkspaceNotFoundException
 import io.mockk.coEvery
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.reactive.server.WebTestClient

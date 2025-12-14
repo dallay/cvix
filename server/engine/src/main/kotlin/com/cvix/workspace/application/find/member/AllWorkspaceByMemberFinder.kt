@@ -4,7 +4,7 @@ import com.cvix.common.domain.Service
 import com.cvix.users.domain.UserId
 import com.cvix.workspace.application.WorkspaceResponses
 import com.cvix.workspace.domain.WorkspaceFinderRepository
-import java.util.*
+import java.util.UUID
 import org.slf4j.LoggerFactory
 
 /**

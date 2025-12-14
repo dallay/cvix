@@ -5,7 +5,7 @@ import com.cvix.resume.application.delete.DeleteResumeCommand
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
-import java.util.*
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
