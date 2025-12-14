@@ -4,7 +4,11 @@ import com.cvix.resume.domain.TemplateMetadata
 import com.cvix.resume.domain.TemplateMetadataLoader
 import com.cvix.resume.domain.TemplateRepository
 import com.cvix.resume.domain.TemplateSourceKeys
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Primary
 import org.springframework.core.io.support.ResourcePatternResolver
@@ -22,13 +26,20 @@ class ClasspathTemplateSourceRepository(
     private val templateMetadataLoader: TemplateMetadataLoader
 ) : TemplateRepository {
 
-    private val templates: List<TemplateMetadata> by lazy { loadTemplates() }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val templatesDeferred: Deferred<List<TemplateMetadata>>
+
+    init {
+        templatesDeferred = scope.async {
+            loadTemplatesSuspending()
+        }
+    }
 
     /**
      * Retrieves all available templates.
      * @return All template metadata
      */
-    override suspend fun findAll(): List<TemplateMetadata> = templates
+    override suspend fun findAll(): List<TemplateMetadata> = templatesDeferred.await()
 
     /**
      * Finds a template by ID.
@@ -36,7 +47,7 @@ class ClasspathTemplateSourceRepository(
      * @return The template metadata if found
      */
     override suspend fun findById(id: String): TemplateMetadata? =
-        templates.find { it.id == id }
+        templatesDeferred.await().find { it.id == id }
 
     /**
      * Checks if a template exists.
@@ -44,7 +55,7 @@ class ClasspathTemplateSourceRepository(
      * @return true if the template exists
      */
     override suspend fun existsById(id: String): Boolean =
-        templates.any { it.id == id }
+        templatesDeferred.await().any { it.id == id }
 
     /**
      * Loads templates from the classpath by scanning for metadata files.
@@ -52,29 +63,27 @@ class ClasspathTemplateSourceRepository(
      * Uses the TemplateMetadataLoader adapter to parse each metadata file.
      * @return List of discovered template metadata
      */
-    private fun loadTemplates(): List<TemplateMetadata> {
+    private suspend fun loadTemplatesSuspending(): List<TemplateMetadata> {
         return try {
             val pattern = "$TEMPLATES_BASE_PATH/**/metadata.yaml"
             val resources = resourcePatternResolver.getResources(pattern)
 
             if (resources.isEmpty()) {
                 log.warn("No metadata files found matching pattern: $pattern")
-                return emptyList()
-            }
+                emptyList()
+            } else {
+                log.debug("Found {} metadata files", resources.size)
 
-            log.debug("Found {} metadata files", resources.size)
-
-            resources.mapNotNull { resource ->
-                try {
-                    val sourceName = resource.filename ?: resource.description
-                    runBlocking {
+                resources.mapNotNull { resource ->
+                    try {
+                        val sourceName = resource.filename ?: resource.description
                         resource.inputStream.use { inputStream ->
                             templateMetadataLoader.loadTemplateMetadata(inputStream, sourceName)
                         }
+                    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                        log.warn("Failed to load template metadata from: ${resource.filename}", e)
+                        null
                     }
-                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    log.warn("Failed to load template metadata from: ${resource.filename}", e)
-                    null
                 }
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {

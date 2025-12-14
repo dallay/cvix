@@ -23,7 +23,11 @@ class FilesystemTemplateSourceRepository(
     private val templateMetadataLoader: TemplateMetadataLoader
 ) : TemplateRepository {
 
-    private val templates: List<TemplateMetadata> by lazy { loadTemplates() }
+    private val templates: List<TemplateMetadata>
+
+    init {
+        templates = loadTemplates()
+    }
 
     /**
      * Retrieves all available templates.

@@ -38,7 +38,7 @@ internal class FilesystemTemplateSourceRepositoryTest {
             assertEquals(1, all.size)
 
             val found = runBlocking { repo.findById("tmpl-a") }
-            assertEquals("TmplA", found?.name)
+            assertEquals("TmplA", found!!.name)
 
             val exists = runBlocking { repo.existsById("tmpl-a") }
             assertEquals(true, exists)
