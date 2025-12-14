@@ -30,4 +30,3 @@ params:
   highlightSkills:
     default: true
     type: boolean
-
