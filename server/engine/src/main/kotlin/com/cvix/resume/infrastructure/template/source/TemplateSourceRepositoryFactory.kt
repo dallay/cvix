@@ -4,7 +4,6 @@ import com.cvix.resume.domain.TemplateRepository
 import com.cvix.resume.domain.TemplateSourceKeys
 import com.cvix.resume.domain.TemplateSourceStrategy
 import com.cvix.resume.domain.TemplateSourceType
-import com.cvix.subscription.domain.SubscriptionTier
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -69,19 +68,17 @@ class TemplateSourceRepositoryFactory(
     fun availableSources(): Set<String> = templateSources.keys
 
     /**
-     * Returns the list of active [TemplateRepository] instances based on configuration and subscription tier.
+     * Returns the list of active [TemplateRepository] instances based on configuration.
      *
-     * Supports multiple repositories for multi-source scenarios (e.g., premium users
-     * accessing both filesystem and classpath templates).
+     * Supports multiple repositories for multi-source scenarios.
      *
      * The order of repositories matters: First repository has highest priority for ID conflicts.
-     * This allows premium templates to override default ones when they share the same ID.
+     * This allows templates from higher-priority sources to override default ones when they share the same ID.
      *
      * Configuration examples:
-     * - Free: types: [CLASSPATH, OTHER]
-     * - Premium: types: [FILESYSTEM, CLASSPATH]
+     * - types: [CLASSPATH, OTHER]
+     * - types: [FILESYSTEM, CLASSPATH]
      *
-     * @param subscriptionTier The user's subscription tier for context-aware repository selection
      * @return List of active [TemplateRepository] instances in priority order
      * @throws IllegalArgumentException if any configured source type is not available, or if none resolve
      *
@@ -89,15 +86,14 @@ class TemplateSourceRepositoryFactory(
      *           it throws an exception listing all missing types and their expected bean names. It also throws
      *           if no repositories are resolved at all.
      */
-    override suspend fun activeTemplateRepositories(subscriptionTier: SubscriptionTier): List<TemplateRepository> {
+    override suspend fun activeTemplateRepositories(): List<TemplateRepository> {
 
         val configuredTypes = properties.source.types.ifEmpty {
             listOf(TemplateSourceType.CLASSPATH)
         }
 
         log.debug(
-            "Resolving active template repositories for tier: {} and types: {}",
-            subscriptionTier,
+            "Resolving active template repositories for types: {}",
             configuredTypes,
         )
 
@@ -131,10 +127,9 @@ class TemplateSourceRepositoryFactory(
             }
             val repository = templateSources[repositoryBeanName]!!
             log.info(
-                "Activated template repository: {} (type: {}) for tier: {}",
+                "Activated template repository: {} (type: {})",
                 repositoryBeanName,
                 sourceType,
-                subscriptionTier,
             )
             repository
         }
@@ -146,7 +141,7 @@ class TemplateSourceRepositoryFactory(
             )
         }
 
-        log.info("Total active repositories: {} for tier: {}", repositories.size, subscriptionTier)
+        log.info("Total active repositories: {}", repositories.size)
         return repositories
     }
 

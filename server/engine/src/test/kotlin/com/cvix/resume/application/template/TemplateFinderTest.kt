@@ -29,7 +29,7 @@ class TemplateFinderTest {
         val template = createTemplate(templateId, SubscriptionTier.FREE)
         val mockRepository: TemplateRepository = mockk()
 
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             mockRepository,
         )
         coEvery { mockRepository.findById(templateId) } returns template
@@ -51,7 +51,7 @@ class TemplateFinderTest {
         val repo1: TemplateRepository = mockk()
         val repo2: TemplateRepository = mockk()
 
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.BASIC) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             repo1,
             repo2,
         )
@@ -74,7 +74,7 @@ class TemplateFinderTest {
         val template = createTemplate(templateId, SubscriptionTier.BASIC)
         val mockRepository: TemplateRepository = mockk()
 
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.BASIC) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             mockRepository,
         )
         coEvery { mockRepository.findById(templateId) } returns template
@@ -96,7 +96,7 @@ class TemplateFinderTest {
         val mockRepository: TemplateRepository = mockk()
 
         coEvery {
-            templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.PROFESSIONAL)
+            templateSourceStrategy.activeTemplateRepositories()
         } returns listOf(mockRepository)
         coEvery { mockRepository.findById(templateId) } returns template
 
@@ -119,7 +119,7 @@ class TemplateFinderTest {
         val template = createTemplate(templateId, SubscriptionTier.BASIC)
         val mockRepository: TemplateRepository = mockk()
 
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             mockRepository,
         )
         coEvery { mockRepository.findById(templateId) } returns template
@@ -138,7 +138,7 @@ class TemplateFinderTest {
         val template = createTemplate(templateId, SubscriptionTier.PROFESSIONAL)
         val mockRepository: TemplateRepository = mockk()
 
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.BASIC) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             mockRepository,
         )
         coEvery { mockRepository.findById(templateId) } returns template
@@ -158,7 +158,7 @@ class TemplateFinderTest {
             val repo1: TemplateRepository = mockk()
             val repo2: TemplateRepository = mockk()
 
-            coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+            coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
                 repo1,
                 repo2,
             )

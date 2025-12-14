@@ -51,7 +51,7 @@ class TemplateCatalog(private val templateSourceStrategy: TemplateSourceStrategy
         log.debug("Fetching templates for tier={} with limit={}", subscriptionTier, limit)
 
         // Get all active repositories for the current user context
-        val activeRepositories = templateSourceStrategy.activeTemplateRepositories(subscriptionTier)
+        val activeRepositories = templateSourceStrategy.activeTemplateRepositories()
         log.debug(
             "Found {} active template repositories for tier {}",
             activeRepositories.size,

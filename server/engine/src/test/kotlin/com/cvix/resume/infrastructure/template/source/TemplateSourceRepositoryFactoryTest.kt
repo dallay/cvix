@@ -5,7 +5,6 @@ import com.cvix.resume.domain.TemplateRepository
 import com.cvix.resume.domain.TemplateSourceKeys
 import com.cvix.resume.domain.TemplateSourceType
 import com.cvix.resume.infrastructure.template.source.TemplateSourceProperties.SourceConfig
-import com.cvix.subscription.domain.SubscriptionTier
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -38,7 +37,7 @@ internal class TemplateSourceRepositoryFactoryTest {
 
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
-        val repositories = runBlocking { factory.activeTemplateRepositories(SubscriptionTier.FREE) }
+        val repositories = runBlocking { factory.activeTemplateRepositories() }
 
         assertEquals(2, repositories.size)
         assertSame(filesystemRepo, repositories[0])
@@ -65,7 +64,7 @@ internal class TemplateSourceRepositoryFactoryTest {
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
         val exception = assertThrows(IllegalArgumentException::class.java) {
-            runBlocking { factory.activeTemplateRepositories(SubscriptionTier.BASIC) }
+            runBlocking { factory.activeTemplateRepositories() }
         }
         assertTrue(exception.message!!.contains("FILESYSTEM"))
         assertTrue(exception.message!!.contains(TemplateSourceKeys.FILESYSTEM))
@@ -82,7 +81,7 @@ internal class TemplateSourceRepositoryFactoryTest {
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
         assertThrows(IllegalArgumentException::class.java) {
-            runBlocking { factory.activeTemplateRepositories(SubscriptionTier.FREE) }
+            runBlocking { factory.activeTemplateRepositories() }
         }
     }
 
@@ -98,7 +97,7 @@ internal class TemplateSourceRepositoryFactoryTest {
 
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
-        val repositories = runBlocking { factory.activeTemplateRepositories(SubscriptionTier.FREE) }
+        val repositories = runBlocking { factory.activeTemplateRepositories() }
 
         assertEquals(1, repositories.size)
         assertSame(classpathRepo, repositories[0])

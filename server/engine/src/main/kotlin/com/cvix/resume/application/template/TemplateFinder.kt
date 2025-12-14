@@ -45,7 +45,7 @@ class TemplateFinder(
         log.debug("Finding template - templateId={}, userId={}, userTier={}", templateId, userId, userTier)
 
         // Step 1: Get active template repositories for this subscription tier
-        val activeRepositories = templateSourceStrategy.activeTemplateRepositories(userTier)
+        val activeRepositories = templateSourceStrategy.activeTemplateRepositories()
         log.debug(
             "Active template repositories - userId={}, tier={}, count={}",
             userId,

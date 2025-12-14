@@ -36,7 +36,7 @@ class TemplateCatalogTest {
                 basicTemplate,
                 professionalTemplate,
             )
-            coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+            coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
                 repository,
             )
 
@@ -65,7 +65,7 @@ class TemplateCatalogTest {
                 basicTemplate,
                 professionalTemplate,
             )
-            coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.BASIC) } returns listOf(
+            coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
                 repository,
             )
 
@@ -94,7 +94,7 @@ class TemplateCatalogTest {
                 basicTemplate,
                 professionalTemplate,
             )
-            coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.PROFESSIONAL) } returns listOf(
+            coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
                 repository,
             )
 
@@ -116,7 +116,7 @@ class TemplateCatalogTest {
 
         val repository = mockk<TemplateRepository>()
         coEvery { repository.findAll() } returns listOf(professionalTemplate)
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             repository,
         )
 
@@ -136,7 +136,7 @@ class TemplateCatalogTest {
 
         val repository = mockk<TemplateRepository>()
         coEvery { repository.findAll() } returns listOf(template1, template2, template3)
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             repository,
         )
 
@@ -162,7 +162,7 @@ class TemplateCatalogTest {
             freeTemplate2,
             freeTemplate3,
         )
-        coEvery { templateSourceStrategy.activeTemplateRepositories(SubscriptionTier.FREE) } returns listOf(
+        coEvery { templateSourceStrategy.activeTemplateRepositories() } returns listOf(
             repository,
         )
 
