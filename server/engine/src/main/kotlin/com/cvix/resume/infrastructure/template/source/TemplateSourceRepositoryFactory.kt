@@ -36,14 +36,31 @@ class TemplateSourceRepositoryFactory(
 ) : TemplateSourceStrategy {
 
     /**
-     * Retrieves the [TemplateRepository] for the specified source type.
-     * @param sourceType The template source type
+     * Retrieves the [TemplateRepository] for the specified [TemplateSourceType] in a type-safe way.
+     * @param sourceType The template source type enum
      * @return The corresponding TemplateRepository
      * @throws [IllegalArgumentException] if the source type is unsupported
      */
-    fun get(sourceType: String): TemplateRepository =
-        templateSources[sourceType]
-            ?: throw IllegalArgumentException("Unsupported source: $sourceType. Available: ${templateSources.keys}")
+    fun get(sourceType: TemplateSourceType): TemplateRepository {
+        val key = when (sourceType) {
+            TemplateSourceType.CLASSPATH -> TemplateSourceKeys.CLASSPATH
+            TemplateSourceType.FILESYSTEM -> TemplateSourceKeys.FILESYSTEM
+        }
+        return getByKey(key)
+    }
+
+    /**
+     * Retrieves the [TemplateRepository] for the specified internal bean key.
+     * Prefer [get] with [TemplateSourceType] for type safety.
+     * @param key The internal bean key (see [TemplateSourceKeys])
+     * @return The corresponding TemplateRepository
+     * @throws [IllegalArgumentException] if the key is unsupported
+     * @deprecated Use [get] with [TemplateSourceType] instead for type safety.
+     */
+    @Deprecated("Use get(sourceType: TemplateSourceType) for type safety.")
+    fun getByKey(key: String): TemplateRepository =
+        templateSources[key]
+            ?: throw IllegalArgumentException("Unsupported source key: $key. Available: ${templateSources.keys}")
 
     /**
      * Returns all available template source types registered in this factory.
@@ -102,7 +119,7 @@ class TemplateSourceRepositoryFactory(
             }
             throw IllegalArgumentException(
                 "Missing template repository for configured source type(s): $missingMsg. " +
-                    "Available sources: ${templateSources.keys}"
+                    "Available sources: ${templateSources.keys}",
             )
         }
 
@@ -132,7 +149,6 @@ class TemplateSourceRepositoryFactory(
         log.info("Total active repositories: {} for tier: {}", repositories.size, subscriptionTier)
         return repositories
     }
-
 
     companion object {
         private val log = LoggerFactory.getLogger(TemplateSourceRepositoryFactory::class.java)

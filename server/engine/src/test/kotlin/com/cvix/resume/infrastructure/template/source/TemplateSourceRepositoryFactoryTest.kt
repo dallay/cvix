@@ -105,26 +105,50 @@ internal class TemplateSourceRepositoryFactoryTest {
     }
 
     @Test
-    fun `get should return repository by bean name and availableSources should list keys`() {
+    fun `getByKey should return repository by bean name and availableSources should list keys`() {
         val classpathRepo: TemplateRepository = mockk()
         val sources = mapOf(TemplateSourceKeys.CLASSPATH to classpathRepo)
         val properties = TemplateSourceProperties()
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
-        val found = factory.get(TemplateSourceKeys.CLASSPATH)
+        val found = factory.getByKey(TemplateSourceKeys.CLASSPATH)
         assertSame(classpathRepo, found)
         // availableSources should contain the key we provided
         assertTrue(factory.availableSources().contains(TemplateSourceKeys.CLASSPATH))
     }
 
     @Test
-    fun `get should throw when requested source is unsupported`() {
+    fun `should throw when no repository exists for key`() {
+        val classpathRepo: TemplateRepository = mockk()
+        val sources = mapOf(TemplateSourceKeys.CLASSPATH to classpathRepo)
+        val properties = TemplateSourceProperties()
+        val factory = TemplateSourceRepositoryFactory(sources, properties)
+
+        assertThrows(IllegalArgumentException::class.java) {
+            factory.getByKey("non-existent")
+        }
+    }
+
+    @Test
+    fun `should throw when no repository exists for TemplateSourceType`() {
+        val classpathRepo: TemplateRepository = mockk()
+        val sources = mapOf(TemplateSourceKeys.CLASSPATH to classpathRepo)
+        val properties = TemplateSourceProperties()
+        val factory = TemplateSourceRepositoryFactory(sources, properties)
+
+        assertThrows(IllegalArgumentException::class.java) {
+            factory.get(TemplateSourceType.FILESYSTEM)
+        }
+    }
+
+    @Test
+    fun `getByKey should throw when requested source is unsupported`() {
         val sources = emptyMap<String, TemplateRepository>()
         val properties = TemplateSourceProperties()
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
         assertThrows(IllegalArgumentException::class.java) {
-            factory.get("non-existent")
+            factory.getByKey("non-existent")
         }
     }
 }
