@@ -66,7 +66,11 @@ class TemplateSourceRepositoryFactory(
      *
      * @param subscriptionTier The user's subscription tier for context-aware repository selection
      * @return List of active [TemplateRepository] instances in priority order
-     * @throws IllegalArgumentException if a configured source type is not available
+     * @throws IllegalArgumentException if any configured source type is not available, or if none resolve
+     *
+     * @implNote This method fails fast: if any configured source type is missing from the available sources,
+     *           it throws an exception listing all missing types and their expected bean names. It also throws
+     *           if no repositories are resolved at all.
      */
     override suspend fun activeTemplateRepositories(subscriptionTier: SubscriptionTier): List<TemplateRepository> {
 
@@ -80,31 +84,42 @@ class TemplateSourceRepositoryFactory(
             configuredTypes,
         )
 
-        // Map each configured type to its repository bean
-        val repositories = configuredTypes.mapNotNull { sourceType ->
+        // Check for missing repositories before mapping
+        val missingTypes = configuredTypes.mapNotNull { sourceType ->
             val repositoryBeanName = when (sourceType) {
                 TemplateSourceType.CLASSPATH -> TemplateSourceKeys.CLASSPATH
                 TemplateSourceType.FILESYSTEM -> TemplateSourceKeys.FILESYSTEM
             }
-
-            val repository = templateSources[repositoryBeanName]
-            if (repository == null) {
-                log.warn(
-                    "Repository for type '{}' not found. " +
-                        "Expected bean name: '{}'. " +
-                        "Available sources: {}",
-                    sourceType, repositoryBeanName, templateSources.keys,
-                )
-                null
+            if (templateSources[repositoryBeanName] == null) {
+                sourceType to repositoryBeanName
             } else {
-                log.info(
-                    "Activated template repository: {} (type: {}) for tier: {}",
-                    repositoryBeanName,
-                    sourceType,
-                    subscriptionTier,
-                )
-                repository
+                null
             }
+        }
+        if (missingTypes.isNotEmpty()) {
+            val missingMsg = missingTypes.joinToString(", ") { (type, bean) ->
+                "type '$type' (expected bean: '$bean')"
+            }
+            throw IllegalArgumentException(
+                "Missing template repository for configured source type(s): $missingMsg. " +
+                    "Available sources: ${templateSources.keys}"
+            )
+        }
+
+        // All required repositories are present; map to actual repositories
+        val repositories = configuredTypes.map { sourceType ->
+            val repositoryBeanName = when (sourceType) {
+                TemplateSourceType.CLASSPATH -> TemplateSourceKeys.CLASSPATH
+                TemplateSourceType.FILESYSTEM -> TemplateSourceKeys.FILESYSTEM
+            }
+            val repository = templateSources[repositoryBeanName]!!
+            log.info(
+                "Activated template repository: {} (type: {}) for tier: {}",
+                repositoryBeanName,
+                sourceType,
+                subscriptionTier,
+            )
+            repository
         }
 
         if (repositories.isEmpty()) {
@@ -117,6 +132,7 @@ class TemplateSourceRepositoryFactory(
         log.info("Total active repositories: {} for tier: {}", repositories.size, subscriptionTier)
         return repositories
     }
+
 
     companion object {
         private val log = LoggerFactory.getLogger(TemplateSourceRepositoryFactory::class.java)

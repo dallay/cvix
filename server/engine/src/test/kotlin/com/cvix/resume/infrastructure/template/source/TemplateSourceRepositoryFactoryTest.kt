@@ -46,7 +46,7 @@ internal class TemplateSourceRepositoryFactoryTest {
     }
 
     @Test
-    fun `should skip missing configured source and return available repositories`() {
+    fun `should throw when any configured source is missing`() {
         val classpathRepo: TemplateRepository = mockk()
 
         val sources = mapOf(
@@ -64,11 +64,11 @@ internal class TemplateSourceRepositoryFactoryTest {
 
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
-        val repositories =
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             runBlocking { factory.activeTemplateRepositories(SubscriptionTier.BASIC) }
-
-        assertEquals(1, repositories.size)
-        assertSame(classpathRepo, repositories[0])
+        }
+        assertTrue(exception.message!!.contains("FILESYSTEM"))
+        assertTrue(exception.message!!.contains(TemplateSourceKeys.FILESYSTEM))
     }
 
     @Test
