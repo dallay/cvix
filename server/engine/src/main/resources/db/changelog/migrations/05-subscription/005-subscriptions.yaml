@@ -121,5 +121,12 @@ databaseChangeLog:
                 SELECT 1 FROM subscriptions s WHERE s.user_id = users.id
               );
         - rollback:
-            sql: DELETE FROM subscriptions WHERE tier = 'FREE';
+            sql: |
+              -- Only delete FREE subscriptions that are the only subscription for a user (best-effort, avoids deleting legitimate data)
+              DELETE FROM subscriptions s
+              WHERE tier = 'FREE' AND status = 'ACTIVE'
+              AND NOT EXISTS (
+                SELECT 1 FROM subscriptions s2
+                WHERE s2.user_id = s.user_id AND s2.id != s.id
+              );
 
