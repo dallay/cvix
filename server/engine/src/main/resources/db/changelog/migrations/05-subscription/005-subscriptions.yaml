@@ -128,4 +128,3 @@ databaseChangeLog:
                 SELECT 1 FROM subscriptions s2
                 WHERE s2.user_id = s.user_id AND s2.id != s.id
               );
-
