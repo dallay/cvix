@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/dallay/cvix/compare/v1.4.0...v1.5.0) (2025-12-14)
+
+### ✨ Features
+
+* **COD-97:** feature multi source template loading via strategy pattern [#423](https://github.com/dallay/cvix/issues/423) ([#426](https://github.com/dallay/cvix/issues/426)) ([598777b](https://github.com/dallay/cvix/commit/598777bc2a379a928b5fd015dd721808be03983b))
+
 ## [1.4.0](https://github.com/dallay/cvix/compare/v1.3.2...v1.4.0) (2025-12-12)
 
 ### ✨ Features
