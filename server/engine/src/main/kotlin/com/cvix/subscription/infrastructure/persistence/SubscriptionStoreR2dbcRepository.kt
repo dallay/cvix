@@ -68,7 +68,7 @@ class SubscriptionStoreR2dbcRepository(
         } catch (e: DuplicateKeyException) {
             log.error("Error saving subscription with id: {} - duplicate key", subscription.id, e)
             throw SubscriptionException("Error saving subscription: duplicate key", e)
-        } catch (@Suppress("TooGenericExceptionCaught")e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error saving subscription with id: {}", subscription.id, e)
             throw SubscriptionException("Error saving subscription", e)
         }
@@ -83,7 +83,7 @@ class SubscriptionStoreR2dbcRepository(
         log.debug("Deleting subscription: {}", id)
         try {
             subscriptionR2dbcRepository.deleteById(id.id)
-        } catch (@Suppress("TooGenericExceptionCaught")e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscription with id: {}", id, e)
             throw SubscriptionException("Error deleting subscription", e)
         }
@@ -96,7 +96,7 @@ class SubscriptionStoreR2dbcRepository(
         log.debug("Deleting all subscriptions for user: {}", userId)
         try {
             subscriptionR2dbcRepository.deleteAllByUserId(userId)
-        } catch (@Suppress("TooGenericExceptionCaught")e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscriptions for user: {}", userId, e)
             throw SubscriptionException("Error deleting subscriptions for user", e)
         }

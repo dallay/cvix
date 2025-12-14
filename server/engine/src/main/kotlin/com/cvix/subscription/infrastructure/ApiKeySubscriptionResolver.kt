@@ -56,45 +56,23 @@ class ApiKeySubscriptionResolver : SubscriptionResolver {
             return SubscriptionTier.FREE
         }
 
-        val tier = when {
+        return when {
             apiKey.startsWith("PX001-") -> {
-                logger.debug(
-                    "Resolved PX001 prefix to PROFESSIONAL tier for key: ${
-                        apiKey.take(
-                            API_KEY_PREVIEW_LENGTH,
-                        )
-                    }...",
-                )
+                logger.debug("Resolved PROFESSIONAL tier for key with PX001 prefix")
                 SubscriptionTier.PROFESSIONAL
             }
-
             apiKey.startsWith("BX001-") -> {
-                logger.debug(
-                    "Resolved BX001 prefix to BASIC tier for key: ${
-                        apiKey.take(
-                            API_KEY_PREVIEW_LENGTH,
-                        )
-                    }...",
-                )
+                logger.debug("Resolved BASIC tier for key with BX001 prefix")
                 SubscriptionTier.BASIC
             }
-
             else -> {
-                logger.debug(
-                    "Unrecognized API key prefix, resolving to FREE tier for key: ${
-                        apiKey.take(
-                            API_KEY_PREVIEW_LENGTH,
-                        )
-                    }...",
-                )
+                logger.debug("Unrecognized API key prefix, resolving to FREE tier")
                 SubscriptionTier.FREE
             }
         }
-
-        return tier
     }
 
     companion object {
-        private const val API_KEY_PREVIEW_LENGTH = 10
+        // No constants needed
     }
 }
