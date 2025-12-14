@@ -138,6 +138,7 @@ jobs:
             !dist/**
             !build/**
             !CHANGELOG.md
+            !.opencode/**
           config: .markdownlint.json
 
   # ============================================================================
