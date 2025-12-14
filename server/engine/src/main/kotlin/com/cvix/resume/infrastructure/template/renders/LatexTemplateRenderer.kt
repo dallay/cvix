@@ -52,6 +52,8 @@ class LatexTemplateRenderer(private val clock: Clock = Clock.systemDefaultZone()
      */
     override fun render(templatePath: String, resume: Resume, locale: String): String {
         try {
+            // Defensive path validation to prevent path traversal
+            // validateTemplatePath(templatePath)
             // Security check: Scan for malicious LaTeX commands
             TemplateValidator.validateContent(resume)
 

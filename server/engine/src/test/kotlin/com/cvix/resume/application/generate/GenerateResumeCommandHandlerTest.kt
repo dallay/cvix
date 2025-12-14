@@ -3,12 +3,15 @@ package com.cvix.resume.application.generate
 import com.cvix.UnitTest
 import com.cvix.resume.ResumeTestFixtures
 import com.cvix.resume.domain.Locale
+import com.cvix.subscription.domain.ResolverContext
+import com.cvix.subscription.domain.SubscriptionResolver
+import com.cvix.subscription.domain.SubscriptionTier
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -20,13 +23,15 @@ import org.junit.jupiter.api.assertThrows
 internal class GenerateResumeCommandHandlerTest {
     private lateinit var generateResumeCommandHandler: GenerateResumeCommandHandler
     private val pdfGenerator: PdfResumeGenerator = mockk()
+    private val subscriptionResolver: SubscriptionResolver = mockk()
 
     private val testUserId = UUID.randomUUID()
     private val testTemplateId = "engineering-template"
 
     @BeforeEach
     fun setUp() {
-        generateResumeCommandHandler = GenerateResumeCommandHandler(pdfGenerator)
+        generateResumeCommandHandler =
+            GenerateResumeCommandHandler(pdfGenerator, subscriptionResolver)
     }
 
     @Test
@@ -41,11 +46,13 @@ internal class GenerateResumeCommandHandlerTest {
         )
         val expectedPdfStream: InputStream = ByteArrayInputStream("PDF content".toByteArray())
 
+        coEvery { subscriptionResolver.resolve(ResolverContext.UserId(testUserId)) } returns SubscriptionTier.BASIC
         coEvery {
             pdfGenerator.generate(
                 testTemplateId,
                 resume,
                 testUserId,
+                SubscriptionTier.BASIC,
                 Locale.EN,
             )
         } returns expectedPdfStream
@@ -56,7 +63,15 @@ internal class GenerateResumeCommandHandlerTest {
         // Then
         assertNotNull(result)
         assertEquals(expectedPdfStream, result)
-        coVerify { pdfGenerator.generate(testTemplateId, resume, testUserId, Locale.EN) }
+        coVerify {
+            pdfGenerator.generate(
+                testTemplateId,
+                resume,
+                testUserId,
+                SubscriptionTier.BASIC,
+                Locale.EN,
+            )
+        }
     }
 
     @Test
@@ -72,10 +87,16 @@ internal class GenerateResumeCommandHandlerTest {
         val expectedPdfStream: InputStream = ByteArrayInputStream("PDF content".toByteArray())
 
         coEvery {
+            subscriptionResolver.resolve(
+                ResolverContext.UserId(testUserId),
+            )
+        } returns SubscriptionTier.PROFESSIONAL
+        coEvery {
             pdfGenerator.generate(
                 testTemplateId,
                 resume,
                 testUserId,
+                SubscriptionTier.PROFESSIONAL,
                 Locale.ES,
             )
         } returns expectedPdfStream
@@ -86,7 +107,15 @@ internal class GenerateResumeCommandHandlerTest {
         // Then
         assertNotNull(result)
         assertEquals(expectedPdfStream, result)
-        coVerify { pdfGenerator.generate(testTemplateId, resume, testUserId, Locale.ES) }
+        coVerify {
+            pdfGenerator.generate(
+                testTemplateId,
+                resume,
+                testUserId,
+                SubscriptionTier.PROFESSIONAL,
+                Locale.ES,
+            )
+        }
     }
 
     @Test
@@ -100,8 +129,10 @@ internal class GenerateResumeCommandHandlerTest {
             locale = Locale.EN,
         )
 
+        coEvery { subscriptionResolver.resolve(ResolverContext.UserId(testUserId)) } returns SubscriptionTier.FREE
         coEvery {
             pdfGenerator.generate(
+                any(),
                 any(),
                 any(),
                 any(),

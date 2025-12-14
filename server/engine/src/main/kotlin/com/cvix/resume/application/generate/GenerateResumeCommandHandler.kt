@@ -3,6 +3,8 @@ package com.cvix.resume.application.generate
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.command.CommandWithResultHandler
 import com.cvix.resume.domain.Locale
+import com.cvix.subscription.domain.ResolverContext
+import com.cvix.subscription.domain.SubscriptionResolver
 import java.io.InputStream
 import org.slf4j.LoggerFactory
 
@@ -12,7 +14,8 @@ import org.slf4j.LoggerFactory
  */
 @Service
 class GenerateResumeCommandHandler(
-    private val pdfGenerator: PdfResumeGenerator
+    private val pdfGenerator: PdfResumeGenerator,
+    private val subscriptionResolver: SubscriptionResolver
 ) : CommandWithResultHandler<GenerateResumeCommand, InputStream> {
 
     /**
@@ -31,7 +34,12 @@ class GenerateResumeCommandHandler(
             command.templateId, command.userId, locale.code,
         )
 
-        return pdfGenerator.generate(command.templateId, command.resume, command.userId, locale)
+        // Resolve user's subscription tier (defaults to FREE if not found)
+        val context = ResolverContext.UserId(command.userId)
+        val subscriptionTier = subscriptionResolver.resolve(context)
+        log.debug("Resolved subscription tier {} for user {}", subscriptionTier, command.userId)
+
+        return pdfGenerator.generate(command.templateId, command.resume, command.userId, subscriptionTier, locale)
     }
 
     companion object {

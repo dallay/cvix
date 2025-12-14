@@ -215,12 +215,11 @@ class YamlTemplateMetadataLoader : TemplateMetadataLoader {
      */
     private fun extractCustomParams(paramsMap: Map<String, Any>): Map<String, Any> {
         return paramsMap
-            .filterKeys { key ->
-                key !in listOf("colorPalette", "fontFamily", "spacing", "density")
-            }
+            .filterKeys { key -> key !in STANDARD_PARAM_KEYS }
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(YamlTemplateMetadataLoader::class.java)
+        private val STANDARD_PARAM_KEYS = setOf("colorPalette", "fontFamily", "spacing", "density")
     }
 }
