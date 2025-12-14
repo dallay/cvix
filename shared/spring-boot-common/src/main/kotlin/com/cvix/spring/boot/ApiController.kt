@@ -143,17 +143,4 @@ abstract class ApiController(
         }
         return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
     }
-
-    /**
-     * Validates and joins multiple path variables into a single string for logging or other safe display.
-     * Each path variable is validated using an allow-list regex (^[a-zA-Z0-9_-]+$).
-     *
-     * @param pathVariables The path variables to validate and join.
-     * @return A string representation of the validated path variables, typically for logging.
-     * @throws IllegalArgumentException if any pathVariable contains invalid characters.
-     */
-    protected fun sanitizeAndJoinPathVariables(vararg pathVariables: String): String {
-        val sanitizedVariables = pathVariables.map { sanitizePathVariable(it) }
-        return sanitizedVariables.joinToString(" | ", prefix = "{", postfix = "}")
-    }
 }

@@ -1,3 +1,13 @@
+## [1.4.0](https://github.com/dallay/cvix/compare/v1.3.2...v1.4.0) (2025-12-12)
+
+### ✨ Features
+
+* **agents:** ✨ add new agents for database architecture, frontend development, and backend engineering ([#424](https://github.com/dallay/cvix/issues/424)) ([4d5a593](https://github.com/dallay/cvix/commit/4d5a59397caac99e134222919b9b16d6c9beafe2))
+
+### ♻️ Refactors
+
+* code quality suggestions ([#425](https://github.com/dallay/cvix/issues/425)) ([852ff38](https://github.com/dallay/cvix/commit/852ff382c3533d614440c2503b50c5f7dac37197))
+
 ## [1.3.2](https://github.com/dallay/cvix/compare/v1.3.1...v1.3.2) (2025-12-10)
 
 ### 🐛 Bug Fixes
