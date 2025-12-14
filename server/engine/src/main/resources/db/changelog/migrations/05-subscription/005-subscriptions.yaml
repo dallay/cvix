@@ -9,7 +9,6 @@ databaseChangeLog:
             sql: |
               CREATE TYPE subscription_status AS ENUM ('ACTIVE', 'CANCELLED', 'EXPIRED');
               CREATE TYPE subscription_tier AS ENUM ('FREE', 'BASIC', 'PROFESSIONAL');
-
   - changeSet:
       id: 006-create-subscriptions-table
       author: cvix
