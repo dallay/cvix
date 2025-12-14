@@ -134,11 +134,9 @@ class TemplateSourceRepositoryFactory(
             repository
         }
 
-        if (repositories.isEmpty()) {
-            throw IllegalArgumentException(
-                "No valid template repositories found for configured types: $configuredTypes. " +
-                    "Available sources: ${templateSources.keys}",
-            )
+        require(repositories.isNotEmpty()) {
+            "No valid template repositories found for configured types: $configuredTypes. " +
+                "Available sources: ${templateSources.keys}"
         }
 
         log.info("Total active repositories: {}", repositories.size)

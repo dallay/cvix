@@ -44,6 +44,7 @@ data class SubscriptionTiersConfig(
             ?: error(
                 "SubscriptionTiersConfig is missing the FREE tier configuration. This is required as a fallback.",
             )
+
     companion object {
         /**
          * Returns the default subscription tier configurations.

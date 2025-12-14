@@ -13,8 +13,8 @@ package com.cvix.subscription.domain
  *
  * @created 11/12/25
  */
-enum class SubscriptionTier {
-    FREE {
+enum class SubscriptionTier(val rank: Int) {
+    FREE(1) {
         override fun getDisplayName(): String = "Free"
         override fun getRateLimitCapacity(): Long = 20L
         override fun canAccessPremiumTemplates(): Boolean = false
@@ -22,7 +22,7 @@ enum class SubscriptionTier {
         override fun hasPriority(): Boolean = false
     },
 
-    BASIC {
+    BASIC(2) {
         override fun getDisplayName(): String = "Basic"
         override fun getRateLimitCapacity(): Long = 40L
         override fun canAccessPremiumTemplates(): Boolean = true
@@ -30,7 +30,7 @@ enum class SubscriptionTier {
         override fun hasPriority(): Boolean = false
     },
 
-    PROFESSIONAL {
+    PROFESSIONAL(3) {
         override fun getDisplayName(): String = "Professional"
         override fun getRateLimitCapacity(): Long = 100L
         override fun canAccessPremiumTemplates(): Boolean = true
@@ -83,7 +83,11 @@ enum class SubscriptionTier {
      * @param featureName The name of the feature to check
      * @return true if this tier has access to the feature, false otherwise
      */
-    open fun hasFeature(featureName: String): Boolean = false // By default, no custom features unless overridden
+    /**
+     * Reserved extension point for future custom feature gates.
+     * By default, returns false; override in a tier to enable custom features.
+     */
+    open fun hasFeature(featureName: String): Boolean = false
 
     companion object {
         /**
@@ -99,11 +103,7 @@ enum class SubscriptionTier {
         /**
          * Checks if tier A has more or equal capabilities than tier B.
          */
-        fun isAtLeastAs(tierA: SubscriptionTier, tierB: SubscriptionTier): Boolean {
-            val tierRank = mapOf(FREE to 1, BASIC to 2, PROFESSIONAL to 3)
-            val tierARank = tierRank[tierA] ?: 0
-            val tierBRank = tierRank[tierB] ?: 0
-            return tierARank >= tierBRank
-        }
+        fun isAtLeastAs(tierA: SubscriptionTier, tierB: SubscriptionTier): Boolean =
+            tierA.rank >= tierB.rank
     }
 }
