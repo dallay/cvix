@@ -256,13 +256,13 @@ Both repositories load templates **once** at startup and cache them in memory.
 
 ## Security Considerations
 
-### ClasspathTemplateSourceRepository Security
+### ClasspathTemplateSourceRepository
 
 - ✅ Templates are immutable (bundled in JAR)
 - ✅ No filesystem access needed
 - ✅ Safe for production
 
-### FilesystemTemplateSourceRepository Security
+### FilesystemTemplateSourceRepository
 
 - ⚠️ Requires filesystem read access
 - ⚠️ Path traversal attacks possible (validate paths)
