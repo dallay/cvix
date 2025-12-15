@@ -5,9 +5,11 @@ import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.adapter.Bucket4jRateLimiter
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
+import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Duration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -68,7 +70,9 @@ class Bucket4jRateLimiterTest {
             ),
         )
         val configFactory = BucketConfigurationFactory(properties)
-        rateLimiter = Bucket4jRateLimiter(configFactory)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        rateLimiter = Bucket4jRateLimiter(configFactory, metrics)
     }
 
     @Test
