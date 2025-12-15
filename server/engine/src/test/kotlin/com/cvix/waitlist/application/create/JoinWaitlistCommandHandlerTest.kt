@@ -32,7 +32,7 @@ internal class JoinWaitlistCommandHandlerTest {
     fun `should join waitlist and publish event when handle is called`() = runTest {
         // Given
         val id = UUID.randomUUID()
-        val email = "john.doe@test.com"
+        val email = faker.internet().emailAddress()
         val source = "landing-hero"
         val ipV4Address = faker.internet().ipV4Address()
         val metadata = mapOf("userAgent" to "Mozilla/5.0")

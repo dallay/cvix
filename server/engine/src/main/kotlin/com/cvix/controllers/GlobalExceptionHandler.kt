@@ -189,7 +189,7 @@ class GlobalExceptionHandler(
             HttpStatus.BAD_REQUEST,
             globalErrors.firstOrNull() ?: "Validation failed",
         )
-        problemDetail.title = "Validation Error"
+        problemDetail.title = "validation failed"
         problemDetail.type = URI.create("$ERROR_PAGE/validation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())

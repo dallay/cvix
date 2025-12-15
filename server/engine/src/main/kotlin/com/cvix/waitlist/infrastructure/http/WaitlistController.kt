@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -34,10 +35,10 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @property mediator The mediator for dispatching commands.
  */
+@Validated
 @RestController
 @RequestMapping(value = ["/api/waitlist"])
 @Tag(name = "Waitlist", description = "Waitlist management endpoints")
-@Suppress("TooGenericExceptionCaught")
 class WaitlistController(
     private val mediator: Mediator,
 ) : ApiController(mediator) {
@@ -91,7 +92,7 @@ class WaitlistController(
         consumes = ["application/json"],
     )
     suspend fun join(
-        @Validated @RequestBody request: JoinWaitlistRequest,
+        @Valid @RequestBody request: JoinWaitlistRequest,
         serverRequest: ServerHttpRequest
     ): ResponseEntity<JoinWaitlistApiResponse> {
         logger.info("Join waitlist request from source: {}, language: {}", request.source, request.language)
@@ -143,7 +144,7 @@ class WaitlistController(
                     message = getLocalizedMessage(request.language, MSG_TYPE_INVALID),
                 ),
             )
-        } catch (e: RuntimeException) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
             logger.error("Unexpected error joining waitlist", e)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 WaitlistErrorResponse(

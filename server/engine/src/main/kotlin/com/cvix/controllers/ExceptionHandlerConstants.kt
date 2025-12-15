@@ -22,3 +22,8 @@ const val MSG_MISSING_COOKIE = "error.missing_cookie"
 const val MSG_VALIDATION_ERROR = "error.validation_error"
 const val MSG_INTERNAL_SERVER_ERROR = "error.internal_server_error"
 const val MSG_AUTHORIZATION_FAILED = "authorization.failed"
+
+// Error title keys
+const val TITLE_BAD_REQUEST = "error.bad_request.title"
+const val TITLE_VALIDATION_ERROR = "error.validation_error.title"
+const val TITLE_INVALID_INPUT = "error.invalid_input.title"

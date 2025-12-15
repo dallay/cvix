@@ -21,7 +21,6 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.security.core.AuthenticationException as SpringAuthenticationException
 
 /**
@@ -42,52 +41,6 @@ internal class RateLimitAdvice {
         detail.title = "rate limit exceeded"
         detail.setProperty(MESSAGE_KEY, "error.http.429")
         detail.setProperty("retryAfter", this.retryAfter.seconds)
-        return detail
-    }
-}
-
-/**
- * Handles validation and input errors.
- */
-@ControllerAdvice
-@Order(Ordered.LOWEST_PRECEDENCE - DEFAULT_PRECEDENCE)
-internal class ValidationAdvice {
-
-    /**
-     * Handles WebExchangeBindException, typically caused by validation errors.
-     *
-     * @return ProblemDetail containing HTTP 400 status, error message, and field-specific validation errors.
-     */
-    @ExceptionHandler(WebExchangeBindException::class)
-    fun WebExchangeBindException.handleValidationException(): ProblemDetail {
-        val detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        detail.title = "validation failed"
-        detail.detail = "Request validation failed. Please check the provided data."
-        detail.setProperty(MESSAGE_KEY, "error.validation.failed")
-        val fieldErrors = this.bindingResult.fieldErrors.map { fieldError ->
-            mapOf(
-                "field" to fieldError.field,
-                "message" to (fieldError.defaultMessage ?: "Invalid value"),
-                "rejectedValue" to fieldError.rejectedValue,
-            )
-        }
-        detail.setProperty("errors", fieldErrors)
-        detail.setProperty(TIMESTAMP, Instant.now().toString())
-        return detail
-    }
-
-    /**
-     * Handles IllegalArgumentException, typically caused by invalid input.
-     *
-     * @return ProblemDetail containing HTTP 400 status and error message.
-     */
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun IllegalArgumentException.handleIllegalArgument(): ProblemDetail {
-        val detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        detail.title = "invalid input"
-        detail.detail = this.message ?: "The provided input is invalid"
-        detail.setProperty(MESSAGE_KEY, "error.invalid_input")
-        detail.setProperty(TIMESTAMP, Instant.now().toString())
         return detail
     }
 }
