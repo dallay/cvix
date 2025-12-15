@@ -5,7 +5,7 @@ import com.cvix.authentication.infrastructure.csrf.SpaCsrfTokenRequestHandler
 import com.cvix.authentication.infrastructure.filter.CookieCsrfFilter
 import com.cvix.authentication.infrastructure.filter.JwtCookieOrHeaderFilter
 import com.cvix.common.domain.Generated
-import com.cvix.ratelimit.infrastructure.RateLimitingFilter
+import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
 import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

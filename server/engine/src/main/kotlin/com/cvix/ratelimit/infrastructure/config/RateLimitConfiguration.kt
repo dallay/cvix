@@ -6,15 +6,17 @@ import org.springframework.context.annotation.Configuration
 
 /**
  * Configuration class to enable rate limiting properties and create necessary beans.
+ *
+ * @since 2.0.0
  */
 @Configuration
 @EnableConfigurationProperties(RateLimitProperties::class)
 class RateLimitConfiguration {
 
     /**
-     * Creates a BucketConfigurationStrategy bean that can be injected into other components.
+     * Creates a BucketConfigurationFactory bean that can be injected into other components.
      */
     @Bean
-    fun bucketConfigurationStrategy(properties: RateLimitProperties): BucketConfigurationStrategy =
-        BucketConfigurationStrategy(properties)
+    fun bucketConfigurationFactory(properties: RateLimitProperties): BucketConfigurationFactory =
+        BucketConfigurationFactory(properties)
 }

@@ -3,8 +3,8 @@ package com.cvix.ratelimit
 import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
+import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
-import com.cvix.ratelimit.infrastructure.Bucket4jRateLimiter
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.Runs
@@ -33,7 +33,7 @@ import reactor.test.StepVerifier
 class RateLimitingServiceTest {
 
     private lateinit var service: RateLimitingService
-    private lateinit var rateLimiter: Bucket4jRateLimiter
+    private lateinit var rateLimiter: RateLimiter
     private lateinit var eventPublisher: ApplicationEventPublisher
 
     @BeforeEach

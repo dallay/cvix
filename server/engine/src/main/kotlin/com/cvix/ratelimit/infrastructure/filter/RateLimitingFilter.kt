@@ -1,9 +1,9 @@
-package com.cvix.ratelimit.infrastructure
+package com.cvix.ratelimit.infrastructure.filter
 
 import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.Instant
 import org.slf4j.LoggerFactory
@@ -17,22 +17,26 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 /**
- * WebFlux filter for rate limiting authentication endpoints.
- * This filter uses the application's [RateLimitingService]
- * to apply rate limits based on IP addresses for authentication endpoints, following the hexagonal architecture.
+ * WebFlux filter for rate limiting endpoints based on configured strategies.
+ * This filter uses the application's [RateLimitingService] to apply rate limits
+ * based on IP addresses or other identifiers, following the hexagonal architecture.
  *
- * Authentication endpoints use strict time-based limits (per-minute, per-hour) to prevent brute force attacks,
- * while business endpoints use pricing plan-based limits for API usage quotas.
+ * Supported strategies:
+ * - AUTH: Strict time-based limits (per-minute, per-hour) to prevent brute force attacks
+ * - RESUME: Fixed rate limits for resume generation endpoints
+ * - WAITLIST: Fixed rate limits for waitlist endpoints to prevent spam
+ * - BUSINESS: Pricing plan-based limits for API usage quotas (not enforced in filter)
  *
  * @property rateLimitingService The application service for rate limiting.
  * @property objectMapper Jackson object mapper for JSON responses.
- * @property configurationStrategy Strategy for determining rate limit configuration.
+ * @property configurationFactory Factory for determining rate limit configuration.
+ * @since 2.0.0
  */
 @Component
 class RateLimitingFilter(
     private val rateLimitingService: RateLimitingService,
     private val objectMapper: ObjectMapper,
-    private val configurationStrategy: BucketConfigurationStrategy
+    private val configurationFactory: BucketConfigurationFactory
 ) : WebFilter {
 
     private val logger = LoggerFactory.getLogger(RateLimitingFilter::class.java)
@@ -65,15 +69,29 @@ class RateLimitingFilter(
             }
     }
 
+    /**
+     * Determines the rate limiting strategy based on the request path.
+     */
     private fun determineRateLimitStrategy(path: String): RateLimitStrategy? {
         return when {
-            isAuthenticationEndpoint(path) -> RateLimitStrategy.AUTH
-            isResumeEndpoint(path) -> RateLimitStrategy.RESUME
-            isWaitlistEndpoint(path) -> RateLimitStrategy.WAITLIST
+            isStrategyEndpoint(path, RateLimitStrategy.AUTH) -> RateLimitStrategy.AUTH
+            isStrategyEndpoint(path, RateLimitStrategy.RESUME) -> RateLimitStrategy.RESUME
+            isStrategyEndpoint(path, RateLimitStrategy.WAITLIST) -> RateLimitStrategy.WAITLIST
             else -> null
         }
     }
 
+    /**
+     * Checks if the path matches any endpoint for the given strategy.
+     */
+    private fun isStrategyEndpoint(path: String, strategy: RateLimitStrategy): Boolean {
+        val endpoints = configurationFactory.getEndpoints(strategy)
+        return endpoints.any { path.contains(it) }
+    }
+
+    /**
+     * Determines if rate limiting should be skipped for this request.
+     */
     private fun shouldSkipRateLimiting(
         exchange: ServerWebExchange,
         strategy: RateLimitStrategy
@@ -84,38 +102,22 @@ class RateLimitingFilter(
             return true
         }
 
-        val isRateLimitEnabled = when (strategy) {
-            RateLimitStrategy.AUTH -> configurationStrategy.isAuthRateLimitEnabled()
-            RateLimitStrategy.RESUME -> configurationStrategy.isResumeRateLimitEnabled()
-            RateLimitStrategy.WAITLIST -> configurationStrategy.isWaitlistRateLimitEnabled()
-            else -> false
-        }
-
+        val isRateLimitEnabled = configurationFactory.isRateLimitEnabled(strategy)
         if (!isRateLimitEnabled) {
             logger.debug("Rate limiting is disabled for strategy {}, skipping", strategy)
             return true
         }
+
         return false
     }
 
-    private fun isAuthenticationEndpoint(path: String): Boolean {
-        val authEndpoints = configurationStrategy.getAuthEndpoints()
-        return authEndpoints.any { path.contains(it) }
-    }
-
-    private fun isResumeEndpoint(path: String): Boolean {
-        val resumeEndpoints = configurationStrategy.getResumeEndpoints()
-        return resumeEndpoints.any { path.contains(it) }
-    }
-
-    private fun isWaitlistEndpoint(path: String): Boolean {
-        val waitlistEndpoints = configurationStrategy.getWaitlistEndpoints()
-        return waitlistEndpoints.any { path.contains(it) }
-    }
-
+    /**
+     * Extracts the identifier from the request.
+     * For most strategies, we use IP address to prevent abuse.
+     */
     private fun getIdentifier(exchange: ServerWebExchange): String {
-        // For authentication endpoints, we primarily use IP address to prevent brute force attacks
-        // API keys are not typically present in auth requests
+        // For authentication/waitlist endpoints, we primarily use IP address to prevent brute force attacks
+        // API keys are not typically present in these requests
         val forwardedFor = exchange.request.headers.getFirst("X-Forwarded-For")
         if (forwardedFor != null) {
             return "IP:${forwardedFor.split(",").first().trim()}"
@@ -123,12 +125,18 @@ class RateLimitingFilter(
         return "IP:${exchange.request.remoteAddress?.address?.hostAddress ?: "unknown"}"
     }
 
+    /**
+     * Adds rate limit headers to the response.
+     */
     private fun addRateLimitHeaders(exchange: ServerWebExchange, result: RateLimitResult.Allowed) {
         val response = exchange.response
         response.headers.set("X-Rate-Limit-Remaining", result.remainingTokens.toString())
         logger.debug("Added rate limit headers: remaining={}", result.remainingTokens)
     }
 
+    /**
+     * Sends a 429 Too Many Requests response with detailed error information.
+     */
     private fun sendRateLimitResponse(
         exchange: ServerWebExchange,
         result: RateLimitResult.Denied,

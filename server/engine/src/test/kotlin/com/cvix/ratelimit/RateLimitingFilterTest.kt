@@ -3,8 +3,8 @@ package com.cvix.ratelimit
 import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
-import com.cvix.ratelimit.infrastructure.RateLimitingFilter
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
+import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -41,29 +41,32 @@ class RateLimitingFilterTest {
 
     private lateinit var filter: RateLimitingFilter
     private lateinit var rateLimitingService: RateLimitingService
-    private lateinit var configurationStrategy: BucketConfigurationStrategy
+    private lateinit var configurationFactory: BucketConfigurationFactory
     private lateinit var objectMapper: ObjectMapper
     private lateinit var chain: WebFilterChain
 
     @BeforeEach
     fun setUp() {
         rateLimitingService = mockk()
-        configurationStrategy = mockk()
+        configurationFactory = mockk()
         objectMapper = ObjectMapper()
         chain = mockk()
 
-        filter = RateLimitingFilter(rateLimitingService, objectMapper, configurationStrategy)
+        filter = RateLimitingFilter(rateLimitingService, objectMapper, configurationFactory)
 
         // Default mocks
-        every { configurationStrategy.isAuthRateLimitEnabled() } returns true
-        every { configurationStrategy.isResumeRateLimitEnabled() } returns true
+        every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.AUTH) } returns true
+        every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.RESUME) } returns true
+        every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.WAITLIST) } returns true
         every {
-            configurationStrategy.getAuthEndpoints()
+            configurationFactory.getEndpoints(RateLimitStrategy.AUTH)
         } returns listOf("/api/auth/login", "/api/auth/register")
         every {
-            configurationStrategy.getResumeEndpoints()
+            configurationFactory.getEndpoints(RateLimitStrategy.RESUME)
         } returns listOf("/api/resume/generate")
-        every { configurationStrategy.getWaitlistEndpoints() } returns listOf("/api/waitlist")
+        every {
+            configurationFactory.getEndpoints(RateLimitStrategy.WAITLIST)
+        } returns listOf("/api/waitlist")
         every { chain.filter(any()) } returns Mono.empty()
     }
 
@@ -150,7 +153,7 @@ class RateLimitingFilterTest {
     @Test
     fun `should skip rate limiting when auth rate limiting is disabled`() {
         // Given
-        every { configurationStrategy.isAuthRateLimitEnabled() } returns false
+        every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.AUTH) } returns false
         val request = MockServerHttpRequest.post("/api/auth/login").build()
         val exchange = MockServerWebExchange.from(request)
 
@@ -439,7 +442,7 @@ class RateLimitingFilterTest {
     @Test
     fun `should skip rate limiting for resume endpoints when disabled`() {
         // Given
-        every { configurationStrategy.isResumeRateLimitEnabled() } returns false
+        every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.RESUME) } returns false
         val request = MockServerHttpRequest.post("/api/resume/generate").build()
         val exchange = MockServerWebExchange.from(request)
 

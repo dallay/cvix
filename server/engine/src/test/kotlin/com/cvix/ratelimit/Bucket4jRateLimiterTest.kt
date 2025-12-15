@@ -2,8 +2,8 @@ package com.cvix.ratelimit
 
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
-import com.cvix.ratelimit.infrastructure.Bucket4jRateLimiter
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.infrastructure.adapter.Bucket4jRateLimiter
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
@@ -67,8 +67,8 @@ class Bucket4jRateLimiterTest {
                 ),
             ),
         )
-        val configStrategy = BucketConfigurationStrategy(properties)
-        rateLimiter = Bucket4jRateLimiter(configStrategy)
+        val configFactory = BucketConfigurationFactory(properties)
+        rateLimiter = Bucket4jRateLimiter(configFactory)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.cvix.ratelimit
 
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.domain.RateLimitStrategy
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContain
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for BucketConfigurationStrategy.
+ * Unit tests for BucketConfigurationFactory.
  *
  * Tests cover:
  * - Auth bucket configuration creation
@@ -20,9 +21,9 @@ import org.junit.jupiter.api.Test
  * - Invalid plan handling
  * - Enable/disable flags
  */
-class BucketConfigurationStrategyTest {
+class BucketConfigurationFactoryTest {
 
-    private lateinit var strategy: BucketConfigurationStrategy
+    private lateinit var strategy: BucketConfigurationFactory
     private lateinit var properties: RateLimitProperties
 
     @BeforeEach
@@ -71,13 +72,13 @@ class BucketConfigurationStrategyTest {
                 ),
             ),
         )
-        strategy = BucketConfigurationStrategy(properties)
+        strategy = BucketConfigurationFactory(properties)
     }
 
     @Test
     fun `should create auth bucket configuration with multiple limits`() {
         // When
-        val config = strategy.createAuthBucketConfiguration()
+        val config = strategy.createConfiguration(RateLimitStrategy.AUTH)
 
         // Then
         config.bandwidths.size shouldBe 2
@@ -86,7 +87,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should create business bucket configuration for free plan`() {
         // When
-        val config = strategy.createBusinessBucketConfiguration("free")
+        val config = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "free")
 
         // Then
         config.bandwidths.size shouldBe 1
@@ -95,7 +96,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should create business bucket configuration for basic plan`() {
         // When
-        val config = strategy.createBusinessBucketConfiguration("basic")
+        val config = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "basic")
 
         // Then
         config.bandwidths.size shouldBe 1
@@ -104,7 +105,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should create business bucket configuration for professional plan`() {
         // When
-        val config = strategy.createBusinessBucketConfiguration("professional")
+        val config = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "professional")
 
         // Then
         config.bandwidths.size shouldBe 1
@@ -113,9 +114,9 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should be case-insensitive for plan names`() {
         // When
-        val config1 = strategy.createBusinessBucketConfiguration("FREE")
-        val config2 = strategy.createBusinessBucketConfiguration("free")
-        val config3 = strategy.createBusinessBucketConfiguration("Free")
+        val config1 = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "FREE")
+        val config2 = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "free")
+        val config3 = strategy.createConfiguration(RateLimitStrategy.BUSINESS, "Free")
 
         // Then - all should succeed
         config1.bandwidths.size shouldBe 1
@@ -127,7 +128,7 @@ class BucketConfigurationStrategyTest {
     fun `should throw exception for unknown pricing plan`() {
         // When/Then
         val exception = shouldThrow<IllegalArgumentException> {
-            strategy.createBusinessBucketConfiguration("unknown-plan")
+            strategy.createConfiguration(RateLimitStrategy.BUSINESS, "unknown-plan")
         }
 
         exception.message shouldContain "Unknown pricing plan"
@@ -140,7 +141,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should return auth endpoints list`() {
         // When
-        val endpoints = strategy.getAuthEndpoints()
+        val endpoints = strategy.getEndpoints(RateLimitStrategy.AUTH)
 
         // Then
         endpoints.size shouldBe 2
@@ -151,7 +152,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should return true when auth rate limiting is fully enabled`() {
         // When
-        val isEnabled = strategy.isAuthRateLimitEnabled()
+        val isEnabled = strategy.isRateLimitEnabled(RateLimitStrategy.AUTH)
 
         // Then
         isEnabled shouldBe true
@@ -161,10 +162,10 @@ class BucketConfigurationStrategyTest {
     fun `should return false when auth rate limiting is disabled globally`() {
         // Given
         val disabledProperties = properties.copy(enabled = false)
-        val disabledStrategy = BucketConfigurationStrategy(disabledProperties)
+        val disabledStrategy = BucketConfigurationFactory(disabledProperties)
 
         // When
-        val isEnabled = disabledStrategy.isAuthRateLimitEnabled()
+        val isEnabled = disabledStrategy.isRateLimitEnabled(RateLimitStrategy.AUTH)
 
         // Then
         isEnabled shouldBe false
@@ -176,10 +177,10 @@ class BucketConfigurationStrategyTest {
         val disabledAuthProperties = properties.copy(
             auth = properties.auth.copy(enabled = false),
         )
-        val disabledAuthStrategy = BucketConfigurationStrategy(disabledAuthProperties)
+        val disabledAuthStrategy = BucketConfigurationFactory(disabledAuthProperties)
 
         // When
-        val isEnabled = disabledAuthStrategy.isAuthRateLimitEnabled()
+        val isEnabled = disabledAuthStrategy.isRateLimitEnabled(RateLimitStrategy.AUTH)
 
         // Then
         isEnabled shouldBe false
@@ -188,7 +189,7 @@ class BucketConfigurationStrategyTest {
     @Test
     fun `should return true when business rate limiting is fully enabled`() {
         // When
-        val isEnabled = strategy.isBusinessRateLimitEnabled()
+        val isEnabled = strategy.isRateLimitEnabled(RateLimitStrategy.BUSINESS)
 
         // Then
         isEnabled shouldBe true
@@ -198,10 +199,10 @@ class BucketConfigurationStrategyTest {
     fun `should return false when business rate limiting is disabled globally`() {
         // Given
         val disabledProperties = properties.copy(enabled = false)
-        val disabledStrategy = BucketConfigurationStrategy(disabledProperties)
+        val disabledStrategy = BucketConfigurationFactory(disabledProperties)
 
         // When
-        val isEnabled = disabledStrategy.isBusinessRateLimitEnabled()
+        val isEnabled = disabledStrategy.isRateLimitEnabled(RateLimitStrategy.BUSINESS)
 
         // Then
         isEnabled shouldBe false
@@ -213,10 +214,10 @@ class BucketConfigurationStrategyTest {
         val disabledBusinessProperties = properties.copy(
             business = properties.business.copy(enabled = false),
         )
-        val disabledBusinessStrategy = BucketConfigurationStrategy(disabledBusinessProperties)
+        val disabledBusinessStrategy = BucketConfigurationFactory(disabledBusinessProperties)
 
         // When
-        val isEnabled = disabledBusinessStrategy.isBusinessRateLimitEnabled()
+        val isEnabled = disabledBusinessStrategy.isRateLimitEnabled(RateLimitStrategy.BUSINESS)
 
         // Then
         isEnabled shouldBe false
@@ -228,11 +229,11 @@ class BucketConfigurationStrategyTest {
         val emptyLimitsProperties = properties.copy(
             auth = properties.auth.copy(limits = emptyList()),
         )
-        val emptyLimitsStrategy = BucketConfigurationStrategy(emptyLimitsProperties)
+        val emptyLimitsStrategy = BucketConfigurationFactory(emptyLimitsProperties)
 
         // When/Then - Bucket4j doesn't allow empty configuration, so it should throw
         shouldThrow<IllegalArgumentException> {
-            emptyLimitsStrategy.createAuthBucketConfiguration()
+            emptyLimitsStrategy.createConfiguration(RateLimitStrategy.AUTH)
         }
     }
 
@@ -251,10 +252,10 @@ class BucketConfigurationStrategyTest {
                 ),
             ),
         )
-        val singleLimitStrategy = BucketConfigurationStrategy(singleLimitProperties)
+        val singleLimitStrategy = BucketConfigurationFactory(singleLimitProperties)
 
         // When
-        val config = singleLimitStrategy.createAuthBucketConfiguration()
+        val config = singleLimitStrategy.createConfiguration(RateLimitStrategy.AUTH)
 
         // Then
         config.bandwidths.size shouldBe 1
@@ -277,10 +278,10 @@ class BucketConfigurationStrategyTest {
                 ),
             ),
         )
-        val customStrategy = BucketConfigurationStrategy(customProperties)
+        val customStrategy = BucketConfigurationFactory(customProperties)
 
         // When
-        val config = customStrategy.createBusinessBucketConfiguration("custom")
+        val config = customStrategy.createConfiguration(RateLimitStrategy.BUSINESS, "custom")
 
         // Then
         config.bandwidths.size shouldBe 1

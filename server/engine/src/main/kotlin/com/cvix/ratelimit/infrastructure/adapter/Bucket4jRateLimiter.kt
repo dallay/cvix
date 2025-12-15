@@ -1,9 +1,10 @@
-package com.cvix.ratelimit.infrastructure
+package com.cvix.ratelimit.infrastructure.adapter
 
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.domain.RateLimiter
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
+import com.cvix.subscription.domain.SubscriptionTier
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import java.time.Duration
@@ -14,19 +15,22 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 
 /**
- * Adapter that implements the RateLimiterPort using Bucket4j.
+ * Adapter that implements the RateLimiter port using Bucket4j.
  * This class is responsible for the actual rate limiting logic using the Bucket4j library.
  * Operations are executed on a bounded elastic scheduler to avoid blocking the reactive pipeline.
  *
- * This implementation supports two strategies:
+ * This implementation supports multiple strategies:
  * - AUTH: For authentication endpoints, using time-based limits (per-minute, per-hour)
  * - BUSINESS: For business endpoints, using pricing plan-based limits
+ * - RESUME: For resume generation endpoints, using fixed rate limits per user
+ * - WAITLIST: For waitlist endpoints, using fixed rate limits per IP
  *
- * @property configurationStrategy Strategy for building bucket configurations from properties.
+ * @property configurationFactory Factory for creating bucket configurations.
+ * @since 2.0.0
  */
 @Component
 class Bucket4jRateLimiter(
-    private val configurationStrategy: BucketConfigurationStrategy
+    private val configurationFactory: BucketConfigurationFactory
 ) : RateLimiter {
 
     private val logger = LoggerFactory.getLogger(Bucket4jRateLimiter::class.java)
@@ -48,7 +52,7 @@ class Bucket4jRateLimiter(
     ): Mono<RateLimitResult> {
         return Mono.fromCallable {
             val cacheKey = "${strategy.name}:$identifier"
-            val bucket = cache.computeIfAbsent(cacheKey) { newBucket(identifier, strategy) }
+            val bucket = cache.computeIfAbsent(cacheKey) { createBucket(identifier, strategy) }
             val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
             if (probe.isConsumed) {
@@ -68,32 +72,34 @@ class Bucket4jRateLimiter(
         }.subscribeOn(Schedulers.boundedElastic())
     }
 
-    private fun newBucket(identifier: String, strategy: RateLimitStrategy): Bucket {
+    /**
+     * Creates a new bucket for the given identifier and strategy.
+     *
+     * @param identifier The identifier to rate limit.
+     * @param strategy The rate limiting strategy to apply.
+     * @return A configured [Bucket] instance.
+     */
+    private fun createBucket(identifier: String, strategy: RateLimitStrategy): Bucket {
+        logger.debug("Creating {} bucket for identifier: {}", strategy, identifier)
+
         val configuration = when (strategy) {
-            RateLimitStrategy.AUTH -> {
-                logger.debug("Creating AUTH bucket for identifier: {}", identifier)
-                configurationStrategy.createAuthBucketConfiguration()
-            }
+            RateLimitStrategy.AUTH ->
+                configurationFactory.createConfiguration(RateLimitStrategy.AUTH)
 
             RateLimitStrategy.BUSINESS -> {
-                val pricingPlan = PricingPlan.resolvePlanFromApiKey(identifier)
+                val planName = resolvePlanNameFromApiKey(identifier)
                 logger.debug(
-                    "Creating BUSINESS bucket for identifier: {} with plan: {}",
-                    identifier,
-                    pricingPlan.name,
+                    "Resolved plan: {} for identifier: {}",
+                    planName, identifier,
                 )
-                configurationStrategy.createBusinessBucketConfiguration(pricingPlan.name.lowercase())
+                configurationFactory.createConfiguration(RateLimitStrategy.BUSINESS, planName)
             }
 
-            RateLimitStrategy.RESUME -> {
-                logger.debug("Creating RESUME bucket for identifier: {}", identifier)
-                configurationStrategy.createResumeBucketConfiguration()
-            }
+            RateLimitStrategy.RESUME ->
+                configurationFactory.createConfiguration(RateLimitStrategy.RESUME)
 
-            RateLimitStrategy.WAITLIST -> {
-                logger.debug("Creating WAITLIST bucket for identifier: {}", identifier)
-                configurationStrategy.createWaitlistBucketConfiguration()
-            }
+            RateLimitStrategy.WAITLIST ->
+                configurationFactory.createConfiguration(RateLimitStrategy.WAITLIST)
         }
 
         // Build bucket with the configured limits
@@ -102,5 +108,36 @@ class Bucket4jRateLimiter(
             builder.addLimit(bandwidth)
         }
         return builder.build()
+    }
+
+    /**
+     * Resolves the pricing plan name from an API key.
+     * This method uses the SubscriptionTier to determine the plan.
+     *
+     * @param apiKey The API key.
+     * @return The plan name in lowercase (e.g., "free", "basic", "professional").
+     */
+    private fun resolvePlanNameFromApiKey(apiKey: String): String {
+        val tier = when {
+            apiKey.startsWith("PX001-") -> SubscriptionTier.PROFESSIONAL
+            apiKey.startsWith("BX001-") -> SubscriptionTier.BASIC
+            else -> SubscriptionTier.FREE
+        }
+        return tier.name.lowercase()
+    }
+
+    /**
+     * Returns the current cache size.
+     * Useful for monitoring and testing.
+     */
+    fun getCacheSize(): Int = cache.size
+
+    /**
+     * Clears all cached buckets.
+     * Useful for testing.
+     */
+    fun clearCache() {
+        cache.clear()
+        logger.debug("Cleared all cached buckets")
     }
 }
