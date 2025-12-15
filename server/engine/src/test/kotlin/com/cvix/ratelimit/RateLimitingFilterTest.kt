@@ -63,6 +63,7 @@ class RateLimitingFilterTest {
         every {
             configurationStrategy.getResumeEndpoints()
         } returns listOf("/api/resume/generate")
+        every { configurationStrategy.getWaitlistEndpoints() } returns listOf("/api/waitlist")
         every { chain.filter(any()) } returns Mono.empty()
     }
 

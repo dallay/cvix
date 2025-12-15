@@ -69,6 +69,7 @@ class RateLimitingFilter(
         return when {
             isAuthenticationEndpoint(path) -> RateLimitStrategy.AUTH
             isResumeEndpoint(path) -> RateLimitStrategy.RESUME
+            isWaitlistEndpoint(path) -> RateLimitStrategy.WAITLIST
             else -> null
         }
     }
@@ -86,6 +87,7 @@ class RateLimitingFilter(
         val isRateLimitEnabled = when (strategy) {
             RateLimitStrategy.AUTH -> configurationStrategy.isAuthRateLimitEnabled()
             RateLimitStrategy.RESUME -> configurationStrategy.isResumeRateLimitEnabled()
+            RateLimitStrategy.WAITLIST -> configurationStrategy.isWaitlistRateLimitEnabled()
             else -> false
         }
 
@@ -104,6 +106,11 @@ class RateLimitingFilter(
     private fun isResumeEndpoint(path: String): Boolean {
         val resumeEndpoints = configurationStrategy.getResumeEndpoints()
         return resumeEndpoints.any { path.contains(it) }
+    }
+
+    private fun isWaitlistEndpoint(path: String): Boolean {
+        val waitlistEndpoints = configurationStrategy.getWaitlistEndpoints()
+        return waitlistEndpoints.any { path.contains(it) }
     }
 
     private fun getIdentifier(exchange: ServerWebExchange): String {
@@ -138,6 +145,7 @@ class RateLimitingFilter(
         val message = when (strategy) {
             RateLimitStrategy.AUTH -> "Too many authentication attempts. Please try again later."
             RateLimitStrategy.RESUME -> "Rate limit exceeded for resume generation. Please try again later."
+            RateLimitStrategy.WAITLIST -> "Too many waitlist requests. Please try again later."
             else -> "Rate limit exceeded. Please try again later."
         }
 

@@ -89,6 +89,11 @@ class Bucket4jRateLimiter(
                 logger.debug("Creating RESUME bucket for identifier: {}", identifier)
                 configurationStrategy.createResumeBucketConfiguration()
             }
+
+            RateLimitStrategy.WAITLIST -> {
+                logger.debug("Creating WAITLIST bucket for identifier: {}", identifier)
+                configurationStrategy.createWaitlistBucketConfiguration()
+            }
         }
 
         // Build bucket with the configured limits

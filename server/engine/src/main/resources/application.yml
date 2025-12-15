@@ -137,7 +137,26 @@ application:
           capacity: 100
           refill-tokens: 100
           refill-duration: 1h
-
+    # Resume generation endpoints rate limiting
+    resume:
+      enabled: true
+      endpoints:
+        - /api/resume/generate
+      limit:
+        name: resume-per-minute
+        capacity: 10
+        refill-tokens: 10
+        refill-duration: 1m
+    # Waitlist endpoints rate limiting
+    waitlist:
+      enabled: true
+      endpoints:
+        - /api/waitlist
+      limit:
+        name: waitlist-per-minute
+        capacity: 10
+        refill-tokens: 10
+        refill-duration: 1m
 management:
   endpoints:
     web:

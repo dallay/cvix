@@ -47,3 +47,24 @@ application:
           capacity: 10000
           refill-tokens: 10000
           refill-duration: 1h
+    # Resume generation endpoints - permissive for dev
+    resume:
+      enabled: true
+      endpoints:
+        - /api/resume/generate
+      limit:
+        name: resume-per-minute
+        capacity: 100
+        refill-tokens: 100
+        refill-duration: 1m
+
+    # Waitlist endpoints - permissive for dev
+    waitlist:
+      enabled: true
+      endpoints:
+        - /api/waitlist
+      limit:
+        name: waitlist-per-minute
+        capacity: 100
+        refill-tokens: 100
+        refill-duration: 1m

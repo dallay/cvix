@@ -10,30 +10,31 @@ import org.slf4j.LoggerFactory
 class BucketConfigurationStrategy(
     private val properties: RateLimitProperties
 ) {
+    private val waitlistBucketConfiguration = WaitlistBucketConfiguration(properties)
+    private val resumeBucketConfiguration = ResumeBucketConfiguration(properties)
+    private val authBucketConfiguration = AuthBucketConfiguration(properties)
     private val logger = LoggerFactory.getLogger(BucketConfigurationStrategy::class.java)
 
-    /**
-     * Creates a bucket configuration for authentication endpoints.
-     * Applies multiple limits (e.g., per-minute and per-hour) to protect against different attack patterns.
-     *
-     * @return A [BucketConfiguration] with all configured auth limits.
-     */
-    fun createAuthBucketConfiguration(): BucketConfiguration {
-        logger.debug("Creating auth bucket configuration with {} limits", properties.auth.limits.size)
+    fun createWaitlistBucketConfiguration(): BucketConfiguration =
+        waitlistBucketConfiguration.createWaitlistBucketConfiguration()
+    fun isWaitlistRateLimitEnabled(): Boolean =
+        waitlistBucketConfiguration.isWaitlistRateLimitEnabled()
+    fun getWaitlistEndpoints(): List<String> =
+        waitlistBucketConfiguration.getWaitlistEndpoints()
 
-        val builder = BucketConfiguration.builder()
+    fun createResumeBucketConfiguration(): BucketConfiguration =
+        resumeBucketConfiguration.createResumeBucketConfiguration()
+    fun isResumeRateLimitEnabled(): Boolean =
+        resumeBucketConfiguration.isResumeRateLimitEnabled()
+    fun getResumeEndpoints(): List<String> =
+        resumeBucketConfiguration.getResumeEndpoints()
 
-        properties.auth.limits.forEach { limit ->
-            val bandwidth = createBandwidth(limit)
-            builder.addLimit(bandwidth)
-            logger.debug(
-                "Added auth limit: {} - capacity={}, refill={} tokens per {}",
-                limit.name, limit.capacity, limit.refillTokens, limit.refillDuration,
-            )
-        }
-
-        return builder.build()
-    }
+    fun createAuthBucketConfiguration(): BucketConfiguration =
+        authBucketConfiguration.createAuthBucketConfiguration()
+    fun isAuthRateLimitEnabled(): Boolean =
+        authBucketConfiguration.isAuthRateLimitEnabled()
+    fun getAuthEndpoints(): List<String> =
+        authBucketConfiguration.getAuthEndpoints()
 
     /**
      * Creates a bucket configuration for business endpoints based on a pricing plan.
@@ -60,26 +61,6 @@ class BucketConfigurationStrategy(
     }
 
     /**
-     * Creates a bucket configuration for resume generation endpoints.
-     * Applies a fixed rate limit of 10 requests per minute per user.
-     *
-     * @return A [BucketConfiguration] with the resume endpoint limit.
-     */
-    fun createResumeBucketConfiguration(): BucketConfiguration {
-        val limit = properties.resume.limit
-
-        logger.debug(
-            "Creating resume bucket configuration - capacity={}, refill={} tokens per {}",
-            limit.capacity, limit.refillTokens, limit.refillDuration,
-        )
-
-        val bandwidth = createBandwidth(limit)
-        return BucketConfiguration.builder()
-            .addLimit(bandwidth)
-            .build()
-    }
-
-    /**
      * Creates a Bandwidth from a BandwidthLimit configuration using Bucket4j v8 API.
      *
      * @param limit The bandwidth limit configuration.
@@ -97,26 +78,6 @@ class BucketConfigurationStrategy(
             limit.refillDuration,
         )
     }
-
-    /**
-     * Gets the list of authentication endpoints that should be rate limited.
-     */
-    fun getAuthEndpoints(): List<String> = properties.auth.endpoints
-
-    /**
-     * Checks if authentication rate limiting is enabled.
-     */
-    fun isAuthRateLimitEnabled(): Boolean = properties.enabled && properties.auth.enabled
-
-    /**
-     * Gets the list of resume endpoints that should be rate limited.
-     */
-    fun getResumeEndpoints(): List<String> = properties.resume.endpoints
-
-    /**
-     * Checks if resume rate limiting is enabled.
-     */
-    fun isResumeRateLimitEnabled(): Boolean = properties.enabled && properties.resume.enabled
 
     /**
      * Checks if business rate limiting is enabled.

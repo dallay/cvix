@@ -60,7 +60,12 @@ data class RateLimitProperties(
     /**
      * Configuration for resume generation endpoints rate limiting.
      */
-    val resume: ResumeRateLimitConfig = ResumeRateLimitConfig()
+    val resume: ResumeRateLimitConfig = ResumeRateLimitConfig(),
+
+    /**
+     * Configuration for waitlist endpoints rate limiting.
+     */
+    val waitlist: WaitlistRateLimitConfig = WaitlistRateLimitConfig()
 ) {
 
     /**
@@ -163,6 +168,34 @@ data class RateLimitProperties(
          */
         val limit: BandwidthLimit = BandwidthLimit(
             name = "resume-per-minute",
+            capacity = 10,
+            refillTokens = 10,
+            refillDuration = Duration.ofMinutes(1),
+        )
+    )
+
+    /**
+     * Configuration for waitlist endpoint rate limiting.
+     * Enforces a fixed rate limit of 10 requests per minute per IP to prevent spam.
+     */
+    data class WaitlistRateLimitConfig(
+        /**
+         * Whether waitlist rate limiting is enabled.
+         */
+        val enabled: Boolean = true,
+
+        /**
+         * List of endpoints that should be rate limited as waitlist endpoints.
+         */
+        val endpoints: List<String> = listOf(
+            "/api/waitlist",
+        ),
+
+        /**
+         * Rate limit configuration: 10 requests per minute per IP.
+         */
+        val limit: BandwidthLimit = BandwidthLimit(
+            name = "waitlist-per-minute",
             capacity = 10,
             refillTokens = 10,
             refillDuration = Duration.ofMinutes(1),
