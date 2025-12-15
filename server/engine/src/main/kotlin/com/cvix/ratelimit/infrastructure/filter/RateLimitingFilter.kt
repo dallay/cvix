@@ -126,16 +126,33 @@ class RateLimitingFilter(
     }
 
     /**
-     * Adds rate limit headers to the response.
+     * Adds standard rate limit headers to the response.
+     * Following RFC 6585 and industry best practices (GitHub, Twitter, Stripe).
+     *
+     * Headers:
+     * - X-RateLimit-Limit: Maximum number of requests allowed in the time window
+     * - X-RateLimit-Remaining: Number of requests remaining in the current time window
+     * - X-RateLimit-Reset: Unix timestamp (seconds) when the rate limit resets
      */
     private fun addRateLimitHeaders(exchange: ServerWebExchange, result: RateLimitResult.Allowed) {
         val response = exchange.response
-        response.headers.set("X-Rate-Limit-Remaining", result.remainingTokens.toString())
-        logger.debug("Added rate limit headers: remaining={}", result.remainingTokens)
+        response.headers.set("X-RateLimit-Limit", result.limitCapacity.toString())
+        response.headers.set("X-RateLimit-Remaining", result.remainingTokens.toString())
+        response.headers.set("X-RateLimit-Reset", result.resetTime.epochSecond.toString())
+        logger.debug(
+            "Added rate limit headers: limit={}, remaining={}, reset={}",
+            result.limitCapacity, result.remainingTokens, result.resetTime,
+        )
     }
 
     /**
      * Sends a 429 Too Many Requests response with detailed error information.
+     * Includes standard HTTP rate limit headers per RFC 6585.
+     *
+     * Headers:
+     * - X-RateLimit-Limit: Maximum number of requests allowed
+     * - Retry-After: Standard HTTP header (seconds) when to retry
+     * - X-Rate-Limit-Retry-After-Seconds: Custom header (deprecated, kept for backward compatibility)
      */
     private fun sendRateLimitResponse(
         exchange: ServerWebExchange,
@@ -148,6 +165,12 @@ class RateLimitingFilter(
         response.headers.contentType = MediaType.APPLICATION_JSON
 
         val retryAfterSeconds = result.retryAfter.seconds
+
+        // Standard headers
+        response.headers.set("X-RateLimit-Limit", result.limitCapacity.toString())
+        response.headers.set("Retry-After", retryAfterSeconds.toString()) // Standard HTTP header
+
+        // Custom header (kept for backward compatibility)
         response.headers.set("X-Rate-Limit-Retry-After-Seconds", retryAfterSeconds.toString())
 
         val message = when (strategy) {

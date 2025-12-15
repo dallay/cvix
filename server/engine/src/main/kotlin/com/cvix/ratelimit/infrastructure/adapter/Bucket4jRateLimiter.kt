@@ -8,6 +8,7 @@ import com.cvix.subscription.domain.SubscriptionTier
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -55,19 +56,32 @@ class Bucket4jRateLimiter(
             val bucket = cache.computeIfAbsent(cacheKey) { createBucket(identifier, strategy) }
             val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
+            // Get the bucket configuration to extract metadata
+            val configuration = getBucketConfiguration(identifier, strategy)
+            val limitCapacity = configuration.bandwidths.maxOf { it.capacity }
+            val refillDuration = configuration.bandwidths.maxOf { it.refillPeriodNanos }
+
             if (probe.isConsumed) {
+                val resetTime = calculateResetTime(refillDuration)
                 logger.debug(
-                    "Token consumed for identifier: {}, strategy: {}, remaining: {}",
-                    identifier, strategy, probe.remainingTokens,
+                    "Token consumed for identifier: {}, strategy: {}, remaining: {}, limit: {}, reset: {}",
+                    identifier, strategy, probe.remainingTokens, limitCapacity, resetTime,
                 )
-                RateLimitResult.Allowed(probe.remainingTokens)
+                RateLimitResult.Allowed(
+                    remainingTokens = probe.remainingTokens,
+                    limitCapacity = limitCapacity,
+                    resetTime = resetTime,
+                )
             } else {
                 val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
                 logger.warn(
-                    "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}",
-                    identifier, strategy, retryAfter,
+                    "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}, limit: {}",
+                    identifier, strategy, retryAfter, limitCapacity,
                 )
-                RateLimitResult.Denied(retryAfter)
+                RateLimitResult.Denied(
+                    retryAfter = retryAfter,
+                    limitCapacity = limitCapacity,
+                )
             }
         }.subscribeOn(Schedulers.boundedElastic())
     }
@@ -82,7 +96,29 @@ class Bucket4jRateLimiter(
     private fun createBucket(identifier: String, strategy: RateLimitStrategy): Bucket {
         logger.debug("Creating {} bucket for identifier: {}", strategy, identifier)
 
-        val configuration = when (strategy) {
+        val configuration = getBucketConfiguration(identifier, strategy)
+
+        // Build bucket with the configured limits
+        val builder = Bucket.builder()
+        configuration.bandwidths.forEach { bandwidth ->
+            builder.addLimit(bandwidth)
+        }
+        return builder.build()
+    }
+
+    /**
+     * Gets the bucket configuration for the given identifier and strategy.
+     * This method is extracted to allow reuse for metadata extraction.
+     *
+     * @param identifier The identifier to rate limit.
+     * @param strategy The rate limiting strategy to apply.
+     * @return A [io.github.bucket4j.BucketConfiguration] instance.
+     */
+    private fun getBucketConfiguration(
+        identifier: String,
+        strategy: RateLimitStrategy
+    ): io.github.bucket4j.BucketConfiguration {
+        return when (strategy) {
             RateLimitStrategy.AUTH ->
                 configurationFactory.createConfiguration(RateLimitStrategy.AUTH)
 
@@ -101,13 +137,18 @@ class Bucket4jRateLimiter(
             RateLimitStrategy.WAITLIST ->
                 configurationFactory.createConfiguration(RateLimitStrategy.WAITLIST)
         }
+    }
 
-        // Build bucket with the configured limits
-        val builder = Bucket.builder()
-        configuration.bandwidths.forEach { bandwidth ->
-            builder.addLimit(bandwidth)
-        }
-        return builder.build()
+    /**
+     * Calculates the reset time based on the refill duration.
+     * This is an approximation since Bucket4j doesn't expose the exact refill schedule.
+     *
+     * @param refillPeriodNanos The refill period in nanoseconds.
+     * @return The [java.time.Instant] when the bucket will be refilled.
+     */
+    private fun calculateResetTime(refillPeriodNanos: Long): java.time.Instant {
+        val refillDuration = Duration.ofNanos(refillPeriodNanos)
+        return java.time.Instant.now().plus(refillDuration)
     }
 
     /**

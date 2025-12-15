@@ -7,6 +7,7 @@ import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.clearAllMocks
 import io.mockk.clearMocks
@@ -15,6 +16,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import java.net.InetSocketAddress
 import java.time.Duration
+import java.time.Instant
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -86,7 +88,13 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -100,7 +108,11 @@ class RateLimitingFilterTest {
             rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         }
 
-        exchange.response.headers["X-Rate-Limit-Remaining"]?.get(0) shouldBe "9"
+        // Verify standard rate limit headers
+        exchange.response.headers["X-RateLimit-Limit"]?.get(0) shouldBe "10"
+        exchange.response.headers["X-RateLimit-Remaining"]?.get(0) shouldBe "9"
+        // X-RateLimit-Reset should be present (Unix timestamp)
+        exchange.response.headers["X-RateLimit-Reset"]?.get(0) shouldNotBe null
     }
 
     @Test
@@ -115,7 +127,7 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter))
+        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 10))
 
         // When
         val result = filter.filter(exchange, chain)
@@ -130,6 +142,11 @@ class RateLimitingFilterTest {
         }
 
         exchange.response.statusCode shouldBe HttpStatus.TOO_MANY_REQUESTS
+        // Verify standard HTTP Retry-After header
+        exchange.response.headers["Retry-After"]?.get(0) shouldBe "300"
+        // Verify rate limit headers
+        exchange.response.headers["X-RateLimit-Limit"]?.get(0) shouldBe "10"
+        // Backward compatibility header (deprecated)
         exchange.response.headers["X-Rate-Limit-Retry-After-Seconds"]?.get(0) shouldBe "300"
     }
 
@@ -178,8 +195,18 @@ class RateLimitingFilterTest {
         val expectedIdentifier = "IP:203.0.113.1" // Should use first IP
 
         every {
-            rateLimitingService.consumeToken(expectedIdentifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+            rateLimitingService.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -189,7 +216,11 @@ class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(expectedIdentifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            rateLimitingService.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
         }
     }
 
@@ -203,8 +234,18 @@ class RateLimitingFilterTest {
         val expectedIdentifier = "IP:192.168.1.100"
 
         every {
-            rateLimitingService.consumeToken(expectedIdentifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+            rateLimitingService.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -214,7 +255,11 @@ class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(expectedIdentifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            rateLimitingService.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
         }
     }
 
@@ -228,8 +273,18 @@ class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/auth/register", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 8))
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/auth/register",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 8,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -239,7 +294,11 @@ class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/auth/register", RateLimitStrategy.AUTH)
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/auth/register",
+                RateLimitStrategy.AUTH,
+            )
         }
     }
 
@@ -252,13 +311,19 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = remainingTokens))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = remainingTokens,
+                limitCapacity = 100,
+                resetTime = Instant.now().plusSeconds(3600),
+            ),
+        )
 
         // When
         filter.filter(exchange, chain).block()
 
         // Then
-        exchange.response.headers["X-Rate-Limit-Remaining"]?.get(0) shouldBe remainingTokens.toString()
+        exchange.response.headers["X-RateLimit-Remaining"]?.get(0) shouldBe remainingTokens.toString()
     }
 
     @Test
@@ -270,7 +335,12 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = Duration.ofSeconds(retryAfterSeconds)))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = Duration.ofSeconds(retryAfterSeconds),
+                limitCapacity = 10,
+            ),
+        )
 
         // When
         filter.filter(exchange, chain).block()
@@ -287,7 +357,12 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = Duration.ofMinutes(5)))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = Duration.ofMinutes(5),
+                limitCapacity = 10,
+            ),
+        )
 
         // When
         filter.filter(exchange, chain).block()
@@ -326,7 +401,13 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -346,7 +427,13 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When - POST
         filter.filter(postExchange, chain).block()
@@ -364,7 +451,13 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 8))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 8,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When - GET
         filter.filter(getExchange, chain).block()
@@ -383,7 +476,13 @@ class RateLimitingFilterTest {
 
         every {
             rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -403,8 +502,18 @@ class RateLimitingFilterTest {
         val expectedIdentifier = "IP:unknown"
 
         every {
-            rateLimitingService.consumeToken(expectedIdentifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+            rateLimitingService.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -424,8 +533,18 @@ class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
-        } returns Mono.just(RateLimitResult.Allowed(remainingTokens = 9))
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -435,7 +554,11 @@ class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
         }
     }
 
@@ -468,8 +591,12 @@ class RateLimitingFilterTest {
         val retryAfter = Duration.ofMinutes(5)
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter))
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
+        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 10))
 
         // When
         val result = filter.filter(exchange, chain)
@@ -480,7 +607,11 @@ class RateLimitingFilterTest {
 
         verify(exactly = 0) { chain.filter(exchange) }
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
         }
 
         exchange.response.statusCode shouldBe HttpStatus.TOO_MANY_REQUESTS

@@ -81,6 +81,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+                result.limitCapacity shouldBe 5
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -100,6 +102,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -114,6 +117,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 2 // 3 capacity - 1 consumed
+                result.limitCapacity shouldBe 3
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -133,6 +138,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+                result.limitCapacity shouldBe 3
             }
             .verifyComplete()
     }
@@ -147,6 +153,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+                result.limitCapacity shouldBe 5
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -161,6 +169,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 9 // 10 capacity - 1 consumed
+                result.limitCapacity shouldBe 10
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -212,6 +222,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
 
@@ -220,6 +231,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 3
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
 
@@ -228,6 +240,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 2
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -243,6 +256,7 @@ class Bucket4jRateLimiterTest {
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 // Should use FREE plan (3 tokens) as default
                 result.remainingTokens shouldBe 2
+                result.limitCapacity shouldBe 3
             }
             .verifyComplete()
     }
@@ -259,9 +273,11 @@ class Bucket4jRateLimiterTest {
         // Then - should see token decrements indicating same bucket is being used
         result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
         result1.remainingTokens shouldBe 4
+        result1.limitCapacity shouldBe 5
 
         result2.shouldBeInstanceOf<RateLimitResult.Allowed>()
         result2.remainingTokens shouldBe 3
+        result2.limitCapacity shouldBe 5
     }
 
     @Test
@@ -273,6 +289,7 @@ class Bucket4jRateLimiterTest {
         StepVerifier.create(rateLimiter.consumeToken(ipIdentifier, RateLimitStrategy.AUTH))
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -287,6 +304,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 9 // Professional plan (10 tokens)
+                result.limitCapacity shouldBe 10
             }
             .verifyComplete()
     }
@@ -307,6 +325,7 @@ class Bucket4jRateLimiterTest {
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.isNegative shouldBe false
                 result.retryAfter.isZero shouldBe false
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
