@@ -679,7 +679,7 @@ class RateLimitingFilterTest {
         every {
             configurationFactory.getEndpoints(RateLimitStrategy.RESUME)
         } returns listOf("/api/resume/generate/")
-        
+
         val request = MockServerHttpRequest.post("/api/resume/generate")
             .remoteAddress(InetSocketAddress("127.0.0.1", 8080))
             .build()

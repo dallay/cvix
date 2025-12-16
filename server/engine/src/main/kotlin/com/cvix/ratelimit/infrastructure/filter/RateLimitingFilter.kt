@@ -96,7 +96,7 @@ class RateLimitingFilter(
     private fun isStrategyEndpoint(path: String, strategy: RateLimitStrategy): Boolean {
         val endpoints = configurationFactory.getEndpoints(strategy)
         val normalizedPath = path.trimEnd('/')
-        
+
         return endpoints.any { endpoint ->
             val normalizedEndpoint = endpoint.trimEnd('/')
             // Exact match or prefix match with path boundary (next character must be /)

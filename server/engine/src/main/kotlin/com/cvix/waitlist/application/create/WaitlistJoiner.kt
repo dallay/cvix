@@ -28,6 +28,7 @@ class WaitlistJoiner(
     eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>
 ) {
     private val eventBroadcaster = EventBroadcaster<WaitlistEntryCreatedEvent>()
+
     init {
         this.eventBroadcaster.use(eventPublisher)
     }
@@ -77,7 +78,10 @@ class WaitlistJoiner(
         // Save to repository
         val savedEntry = repository.save(entry)
         logger.info("Successfully added email to waitlist with ID: {}", entry.id.id)
-
+        // Publish domain event
+        savedEntry.pullDomainEvents().forEach { event ->
+            eventBroadcaster.publish(event as WaitlistEntryCreatedEvent)
+        }
         return savedEntry
     }
 
