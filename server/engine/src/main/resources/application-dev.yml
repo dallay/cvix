@@ -15,6 +15,11 @@ spring:
       additional-exclude: static/**
     livereload:
       enabled: true
+  docker:
+    compose:
+      # Disable automatic Docker Compose lifecycle management
+      # We manage our own docker-compose.yaml in the root directory
+      enabled: false
   liquibase:
     contexts: dev
 springdoc:

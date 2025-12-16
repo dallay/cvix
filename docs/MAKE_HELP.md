@@ -7,6 +7,7 @@ Available commands:
   help                     Show this help message / list of make targets.
   install                  Install all dependencies.
   update-deps              Update all dependencies to their latest versions.
+  prepare-env              Prepare the local developer environment (.env, symlinks, tooling checks).
   prepare                  Prepare the development environment.
   ruler-check              Check the project's architecture rules.
   ruler-apply              Apply the project's architecture rules.

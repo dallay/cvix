@@ -3,8 +3,9 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import {defineConfig, envField} from "astro/config";
 import icon from "astro-icon";
+import { loadEnv } from "vite";
 import { BASE_URL } from "./src/consts.ts";
 import { DEFAULT_LOCALE_SETTING, LOCALES_SETTING } from "./src/i18n/locales";
 import { getSiteUrl } from "./src/utils/config.ts";
@@ -51,6 +52,12 @@ export default defineConfig({
 		}),
 		vue(),
 	],
+
+  env: {
+    schema: {
+      BACKEND_URL: envField.string({ context: "client", access: "public", optional: true }),
+    }
+  },
 
 	vite: {
 		plugins: [tailwindcss()],

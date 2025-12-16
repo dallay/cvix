@@ -30,7 +30,20 @@ Spring Boot + Kotlin, frontend: Vite/Astro/Vue).
 
 Requirements: JDK 21+, pnpm >= 10, Docker & Docker Compose, Git
 
-Install JS deps and build:
+1) Prepare your environment (one-time, idempotent):
+
+```bash
+make prepare-env
+```
+
+What this does:
+- verifies required tools: docker, docker compose, java (>=21), node (>=20 recommended), pnpm (>=10), git, make
+- ensures root `.env` exists (copies from `.env.example` if missing)
+- creates `.env` symbolic links for subprojects: `server/engine`, `client/apps/marketing`, `client/apps/webapp`
+- warns on Node version mismatch with `.nvmrc`, ensures `gradlew` is executable
+- supports extending the list of projects via `env.symlink-projects.txt`
+
+2) Install JS deps and build:
 
 ```bash
 make install
@@ -67,6 +80,7 @@ commands (28 targets) and what they actually invoke in the repository:
 
 | Command                        | Description                                                                   |
 |--------------------------------|-------------------------------------------------------------------------------|
+| `make prepare-env`             | Prepare local env: verify tools, setup `.env`, and create `.env` symlinks.    |
 | `make install`                 | Install JavaScript workspace dependencies (`pnpm install`).                   |
 | `make update-deps`             | Update JS dependencies to their latest versions via pnpm scripts.             |
 | `make prepare`                 | Prepare the development environment (runs `pnpm prepare`).                    |
