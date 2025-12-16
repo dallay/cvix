@@ -12,6 +12,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * application:
  *   rate-limit:
  *     enabled: true
+ *     api-key-prefixes:
+ *       professional: "PX001-"
+ *       basic: "BX001-"
  *     auth:
  *       enabled: true
  *       limits:
@@ -48,6 +51,12 @@ data class RateLimitProperties(
     val enabled: Boolean = true,
 
     /**
+     * Configuration for API key prefix mapping to subscription tiers.
+     * Used to determine the tier from an API key prefix.
+     */
+    val apiKeyPrefixes: ApiKeyPrefixConfig = ApiKeyPrefixConfig(),
+
+    /**
      * Configuration for authentication endpoints rate limiting.
      */
     val auth: AuthRateLimitConfig = AuthRateLimitConfig(),
@@ -67,6 +76,24 @@ data class RateLimitProperties(
      */
     val waitlist: WaitlistRateLimitConfig = WaitlistRateLimitConfig()
 ) {
+
+    /**
+     * Configuration for API key prefix to subscription tier mapping.
+     * Allows externalization of the prefix detection logic.
+     */
+    data class ApiKeyPrefixConfig(
+        /**
+         * Prefix for professional tier API keys.
+         * Example: "PX001-abc123..." indicates a professional tier key.
+         */
+        val professional: String = "PX001-",
+
+        /**
+         * Prefix for basic tier API keys.
+         * Example: "BX001-xyz789..." indicates a basic tier key.
+         */
+        val basic: String = "BX001-"
+    )
 
     /**
      * Configuration for authentication endpoint rate limiting.

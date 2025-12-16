@@ -36,6 +36,10 @@ class Bucket4jRateLimiterTest {
     fun setUp() {
         properties = RateLimitProperties(
             enabled = true,
+            apiKeyPrefixes = RateLimitProperties.ApiKeyPrefixConfig(
+                professional = "PX001-",
+                basic = "BX001-",
+            ),
             auth = RateLimitProperties.AuthRateLimitConfig(
                 enabled = true,
                 limits = listOf(
@@ -72,10 +76,11 @@ class Bucket4jRateLimiterTest {
             ),
         )
         val configFactory = BucketConfigurationFactory(properties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(properties)
         val meterRegistry = SimpleMeterRegistry()
         val metrics = RateLimitMetrics(meterRegistry)
         // Use system clock by default for existing tests
-        rateLimiter = Bucket4jRateLimiter(configFactory, metrics)
+        rateLimiter = Bucket4jRateLimiter(configFactory, apiKeyParser, metrics)
     }
 
     @Test
@@ -357,9 +362,10 @@ class Bucket4jRateLimiterTest {
         val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
         val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
         val configFactory = BucketConfigurationFactory(properties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(properties)
         val meterRegistry = SimpleMeterRegistry()
         val metrics = RateLimitMetrics(meterRegistry)
-        val deterministicLimiter = Bucket4jRateLimiter(configFactory, metrics, fixedClock)
+        val deterministicLimiter = Bucket4jRateLimiter(configFactory, apiKeyParser, metrics, fixedClock)
 
         val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
             .block() as RateLimitResult.Allowed

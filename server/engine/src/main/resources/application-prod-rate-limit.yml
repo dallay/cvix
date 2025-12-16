@@ -5,6 +5,14 @@ application:
   rate-limit:
     enabled: true
 
+    # API Key Prefix Configuration
+    # Used to determine subscription tier from API key format
+    # These prefixes can be customized per environment
+    api-key-prefixes:
+      professional: "PX001-"  # Professional tier keys start with PX001-
+      basic: "BX001-"         # Basic tier keys start with BX001-
+      # Keys without recognized prefixes default to FREE tier
+
     # Authentication endpoints - stricter limits for production
     auth:
       enabled: true

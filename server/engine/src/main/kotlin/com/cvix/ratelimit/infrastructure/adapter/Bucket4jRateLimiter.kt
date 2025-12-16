@@ -5,7 +5,6 @@ import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
-import com.cvix.subscription.domain.SubscriptionTier
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import java.time.Duration
@@ -28,12 +27,14 @@ import reactor.core.scheduler.Schedulers
  * - WAITLIST: For waitlist endpoints, using fixed rate limits per IP
  *
  * @property configurationFactory Factory for creating bucket configurations.
+ * @property apiKeyParser Parser for extracting subscription tier from API keys.
  * @property metrics Metrics collector for rate limiting operations.
  * @since 2.0.0
  */
 @Component
 class Bucket4jRateLimiter(
     private val configurationFactory: BucketConfigurationFactory,
+    private val apiKeyParser: ApiKeyParser,
     private val metrics: RateLimitMetrics,
     private var clock: java.time.Clock = java.time.Clock.systemUTC()
 ) : RateLimiter {
@@ -169,19 +170,17 @@ class Bucket4jRateLimiter(
 
     /**
      * Resolves the pricing plan name from an API key.
-     * This method uses the SubscriptionTier to determine the plan.
+     * This method delegates to [ApiKeyParser] to extract the subscription tier
+     * based on configured API key prefixes.
+     *
+     * The prefix-to-tier mapping is externalized to configuration, making the system
+     * more maintainable and following the Open/Closed Principle.
      *
      * @param apiKey The API key.
      * @return The plan name in lowercase (e.g., "free", "basic", "professional").
+     * @see ApiKeyParser.extractTierName
      */
-    private fun resolvePlanNameFromApiKey(apiKey: String): String {
-        val tier = when {
-            apiKey.startsWith("PX001-") -> SubscriptionTier.PROFESSIONAL
-            apiKey.startsWith("BX001-") -> SubscriptionTier.BASIC
-            else -> SubscriptionTier.FREE
-        }
-        return tier.name.lowercase()
-    }
+    private fun resolvePlanNameFromApiKey(apiKey: String): String = apiKeyParser.extractTierName(apiKey)
 
     /**
      * Returns the current cache size.
