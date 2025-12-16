@@ -65,6 +65,14 @@ export default defineConfig(({ mode }) => {
 		server: {
 			host: true,
 			port: 9876,
+			https: {
+				key: fileURLToPath(
+					new URL("../../../infra/ssl/localhost-key.pem", import.meta.url),
+				),
+				cert: fileURLToPath(
+					new URL("../../../infra/ssl/localhost.pem", import.meta.url),
+				),
+			},
 			proxy: {
 				"/api": {
 					target: backendTarget,

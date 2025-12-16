@@ -5,7 +5,6 @@ import vue from "@astrojs/vue";
 import tailwindcss from "@tailwindcss/vite";
 import {defineConfig, envField} from "astro/config";
 import icon from "astro-icon";
-import { loadEnv } from "vite";
 import { BASE_URL } from "./src/consts.ts";
 import { DEFAULT_LOCALE_SETTING, LOCALES_SETTING } from "./src/i18n/locales";
 import { getSiteUrl } from "./src/utils/config.ts";
@@ -70,6 +69,12 @@ export default defineConfig({
 				"@cvix/assets": fileURLToPath(
 					new URL("../../packages/assets/src", import.meta.url),
 				),
+			},
+		},
+		server: {
+			https: {
+				key: fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url)),
+				cert: fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url)),
 			},
 		},
 	},

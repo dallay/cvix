@@ -220,6 +220,12 @@ else
   log "${WARN} gradle wrapper not found (expected ./gradlew)"
 fi
 
+# Ensure all repo shell scripts are executable
+if [[ -d ./scripts ]]; then
+  chmod +x ./scripts/*.sh 2>/dev/null || true
+  log "${PASS} scripts marked executable"
+fi
+
 # Detect presence of an npm prepare script to hint Lefthook installation (no jq dependency)
 if [[ -f package.json ]]; then
   if grep -q '"prepare"' package.json 2>/dev/null; then

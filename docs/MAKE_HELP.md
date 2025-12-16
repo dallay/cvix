@@ -15,6 +15,7 @@ Available commands:
   dev-landing              Run the landing page in development mode.
   dev-web                  Run the web application in development mode.
   dev-docs                 Run the documentation in development mode.
+  ssl-cert                 Generate local development SSL certificates (requires mkcert & openssl).
   build                    Build all applications.
   build-landing            Build the landing page.
   preview-landing          Preview the landing page.

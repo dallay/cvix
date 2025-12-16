@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+# Script to verify HTTPS development setup
+# Usage: ./scripts/verify-https-setup.sh
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "🔍 Verifying HTTPS Development Setup..."
+echo ""
+
+# Check if certificates exist
+echo "1️⃣  Checking SSL certificates..."
+if [[ -f "infra/ssl/localhost.pem" && -f "infra/ssl/localhost-key.pem" && -f "infra/ssl/localhost.p12" ]]; then
+    echo -e "${GREEN}✅ SSL certificates found${NC}"
+    
+    # Check certificate validity
+    if openssl x509 -checkend 86400 -noout -in infra/ssl/localhost.pem > /dev/null 2>&1; then
+        expiry=$(openssl x509 -enddate -noout -in infra/ssl/localhost.pem | cut -d= -f2)
+        echo -e "${GREEN}   Certificate valid until: $expiry${NC}"
+    else
+        echo -e "${RED}❌ Certificate expired or will expire within 24 hours${NC}"
+        echo -e "${YELLOW}   Run: cd infra && ./generate-ssl-certificate.sh${NC}"
+        exit 1
+    fi
+else
+    echo -e "${RED}❌ SSL certificates not found${NC}"
+    echo -e "${YELLOW}   Run: cd infra && ./generate-ssl-certificate.sh${NC}"
+    exit 1
+fi
+
+echo ""
+
+# Check if mkcert CA is installed
+echo "2️⃣  Checking mkcert CA..."
+if command -v mkcert &> /dev/null; then
+    ca_location=$(mkcert -CAROOT)
+    if [[ -f "$ca_location/rootCA.pem" ]]; then
+        echo -e "${GREEN}✅ mkcert CA installed at: $ca_location${NC}"
+    else
+        echo -e "${YELLOW}⚠️  mkcert CA not installed${NC}"
+        echo -e "${YELLOW}   Run: mkcert -install${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  mkcert not found${NC}"
+    echo -e "${YELLOW}   Install: brew install mkcert (macOS)${NC}"
+fi
+
+echo ""
+
+# Check Astro config
+echo "3️⃣  Checking Astro HTTPS configuration..."
+if grep -q "https:" client/apps/marketing/astro.config.mjs && \
+   grep -q "localhost-key.pem" client/apps/marketing/astro.config.mjs; then
+    echo -e "${GREEN}✅ Astro configured for HTTPS${NC}"
+else
+    echo -e "${RED}❌ Astro HTTPS configuration missing or incorrect${NC}"
+    exit 1
+fi
+
+echo ""
+
+# Check Vite config (webapp)
+echo "4️⃣  Checking Vite (webapp) HTTPS configuration..."
+if grep -q "https:" client/apps/webapp/vite.config.ts && \
+   grep -q "localhost-key.pem" client/apps/webapp/vite.config.ts; then
+    echo -e "${GREEN}✅ Vite (webapp) configured for HTTPS${NC}"
+else
+    echo -e "${RED}❌ Vite (webapp) HTTPS configuration missing or incorrect${NC}"
+    exit 1
+fi
+
+echo ""
+
+# Check environment variables (if .env exists)
+echo "5️⃣  Checking environment variables..."
+if [[ -f ".env" ]]; then
+    backend_url=$(grep "^BACKEND_URL=" .env | cut -d= -f2 | tr -d '\r\n' || echo "")
+    
+    if [[ "$backend_url" == "https://localhost:8443" ]]; then
+        echo -e "${GREEN}✅ BACKEND_URL correctly set to HTTPS${NC}"
+    elif [[ "$backend_url" == "http://localhost:"* ]]; then
+        echo -e "${YELLOW}⚠️  BACKEND_URL is HTTP, should be HTTPS${NC}"
+        echo -e "${YELLOW}   Update .env: BACKEND_URL=https://localhost:8443${NC}"
+    else
+        echo -e "${YELLOW}⚠️  BACKEND_URL not found in .env${NC}"
+        echo -e "${YELLOW}   Add to .env: BACKEND_URL=https://localhost:8443${NC}"
+    fi
+    
+    marketing_url=$(grep "^PUBLIC_BASE_URL_LOCAL=" .env | cut -d= -f2 | tr -d '\r\n' || echo "")
+    if [[ "$marketing_url" == "https://localhost:7766" ]]; then
+        echo -e "${GREEN}✅ PUBLIC_BASE_URL_LOCAL correctly set to HTTPS${NC}"
+    elif [[ "$marketing_url" == "http://localhost:"* ]]; then
+        echo -e "${YELLOW}⚠️  PUBLIC_BASE_URL_LOCAL is HTTP, should be HTTPS${NC}"
+        echo -e "${YELLOW}   Update .env: PUBLIC_BASE_URL_LOCAL=https://localhost:7766${NC}"
+    fi
+    
+    webapp_url=$(grep "^PUBLIC_BASE_WEBAPP_URL_LOCAL=" .env | cut -d= -f2 | tr -d '\r\n' || echo "")
+    if [[ "$webapp_url" == "https://localhost:9876" ]]; then
+        echo -e "${GREEN}✅ PUBLIC_BASE_WEBAPP_URL_LOCAL correctly set to HTTPS${NC}"
+    elif [[ "$webapp_url" == "http://localhost:"* ]]; then
+        echo -e "${YELLOW}⚠️  PUBLIC_BASE_WEBAPP_URL_LOCAL is HTTP, should be HTTPS${NC}"
+        echo -e "${YELLOW}   Update .env: PUBLIC_BASE_WEBAPP_URL_LOCAL=https://localhost:9876${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  .env file not found${NC}"
+    echo -e "${YELLOW}   Copy .env.example to .env and update with HTTPS URLs${NC}"
+fi
+
+echo ""
+
+# Check if ports are available
+echo "6️⃣  Checking port availability..."
+ports=(7766 8443 9876)
+port_names=("Marketing (Astro)" "Backend (Spring Boot)" "Webapp (Vue.js)")
+
+for i in "${!ports[@]}"; do
+    port="${ports[$i]}"
+    name="${port_names[$i]}"
+    
+    if lsof -Pi ":$port" -sTCP:LISTEN -t >/dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  Port $port ($name) is already in use${NC}"
+        echo -e "${YELLOW}   Kill process: lsof -ti:$port | xargs kill -9${NC}"
+    else
+        echo -e "${GREEN}✅ Port $port ($name) is available${NC}"
+    fi
+done
+
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✨ HTTPS Development Setup Verification Complete!${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo "📚 Next steps:"
+echo "   1. Update your .env file with HTTPS URLs (if needed)"
+echo "   2. Start backend: ./gradlew :server:engine:bootRun --args='--spring.profiles.active=dev,tls'"
+echo "   3. Start marketing: cd client/apps/marketing && pnpm dev"
+echo "   4. Start webapp: cd client/apps/webapp && pnpm dev"
+echo ""
+echo "📖 For more details, see: client/HTTPS_DEVELOPMENT.md"

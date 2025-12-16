@@ -49,6 +49,12 @@ What this does:
 make install
 ```
 
+Optional: Generate local SSL certificates (requires mkcert & openssl):
+
+```bash
+make ssl-cert
+```
+
 Start local infra (optional):
 
 ```bash
@@ -81,6 +87,7 @@ commands (28 targets) and what they actually invoke in the repository:
 | Command                        | Description                                                                   |
 |--------------------------------|-------------------------------------------------------------------------------|
 | `make prepare-env`             | Prepare local env: verify tools, setup `.env`, and create `.env` symlinks.    |
+| `make ssl-cert`                | Generate local SSL certificates (interactive; mkcert & openssl required).     |
 | `make install`                 | Install JavaScript workspace dependencies (`pnpm install`).                   |
 | `make update-deps`             | Update JS dependencies to their latest versions via pnpm scripts.             |
 | `make prepare`                 | Prepare the development environment (runs `pnpm prepare`).                    |
