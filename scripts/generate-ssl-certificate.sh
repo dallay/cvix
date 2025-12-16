@@ -12,9 +12,9 @@ DEFAULT_ALIAS="server"
 prompt() {
   local var_name="$1"; local prompt_text="$2"; local default_value="$3"; local is_password="${4:-false}"; local input=""
   if [[ "$is_password" == "true" ]]; then
-    read -s -p "$prompt_text [$default_value]: " input; echo
+    read -r -s -p "$prompt_text [$default_value]: " input; echo
   else
-    read -p "$prompt_text [$default_value]: " input
+    read -r -p "$prompt_text [$default_value]: " input
   fi
   if [[ -z "$input" ]]; then printf -v "$var_name" "%s" "$default_value"; else printf -v "$var_name" "%s" "$input"; fi
 }
