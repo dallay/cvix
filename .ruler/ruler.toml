@@ -3,7 +3,7 @@
 
 # To specify which agents are active by default when --agents is not used,
 # uncomment and populate the following line. If omitted, all agents are active.
-default_agents = ["copilot", "gemini-cli", "cursor", "claude"]
+default_agents = ["copilot", "gemini-cli", "cursor", "claude", "opencode"]
 
 # Enable nested mode to allow for context-specific rules in subdirectories.
 nested = true
@@ -27,6 +27,10 @@ output_path = ".cursor/rules/ruler_cursor_instructions.mdc"
 [agents.claude]
 enabled = true
 output_path = "CLAUDE.md"
+
+[agents.opencode]
+enabled = true
+output_path = "AGENTS.md"
 
 [gitignore]
 enabled = true
