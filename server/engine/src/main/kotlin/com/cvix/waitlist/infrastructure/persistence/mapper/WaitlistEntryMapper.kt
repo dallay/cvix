@@ -9,6 +9,7 @@ import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
 
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory
  */
 object WaitlistEntryMapper {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
-    private val objectMapper = ObjectMapper()
+    private val objectMapper = ObjectMapper().registerKotlinModule()
 
     /**
      * Converts a domain WaitlistEntry to a WaitlistEntryEntity.

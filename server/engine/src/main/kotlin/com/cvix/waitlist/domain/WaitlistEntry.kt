@@ -66,7 +66,9 @@ data class WaitlistEntry(
             sourceNormalized: WaitlistSource,
             language: Language,
             ipHash: String? = null,
-            metadata: Map<String, Any>? = null
+            metadata: Map<String, Any>? = null,
+            createdAt: Instant = Instant.now(),
+            createdBy: String = "system"
         ): WaitlistEntry {
             val entry = WaitlistEntry(
                 id = id,
@@ -76,6 +78,8 @@ data class WaitlistEntry(
                 language = language,
                 ipHash = ipHash,
                 metadata = metadata,
+                createdAt = createdAt,
+                createdBy = createdBy,
             )
 
             // Record domain event with both raw and normalized sources

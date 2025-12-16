@@ -6,22 +6,40 @@ import com.cvix.waitlist.domain.EmailAlreadyExistsException
 import com.cvix.waitlist.infrastructure.http.request.JoinWaitlistRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.slot
+import java.util.Locale
 import net.datafaker.Faker
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.test.web.reactive.server.WebTestClient
 
 internal class WaitlistControllerTest : ControllerTest() {
 
-    private val controller = WaitlistController(mediator)
-    override val webTestClient = buildWebTestClient(controller)
     private val faker = Faker()
+    private lateinit var controller: WaitlistController
+    override lateinit var webTestClient: WebTestClient
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
+        // Mock the MessageSource to return English messages
+        every {
+            messageSource.getMessage("waitlist.success", null, Locale.ENGLISH)
+        } returns "You've been added to the waitlist!"
+        every {
+            messageSource.getMessage("waitlist.duplicate", null, Locale.ENGLISH)
+        } returns "This email is already on the waitlist"
+        every { messageSource.getMessage("waitlist.invalid", null, Locale.ENGLISH) } returns "Invalid request data"
+        every {
+            messageSource.getMessage("waitlist.error", null, Locale.ENGLISH)
+        } returns "Internal server error. Please try again later."
+
+        // Initialize after mocks are set up
+        controller = WaitlistController(mediator, messageSource)
+        webTestClient = buildWebTestClient(controller)
     }
 
     @Test
@@ -51,6 +69,7 @@ internal class WaitlistControllerTest : ControllerTest() {
         coVerify(exactly = 1) { mediator.send(any<JoinWaitlistCommand>()) }
         assertEquals(request.email, commandSlot.captured.email)
         assertEquals(request.source, commandSlot.captured.source)
+        assertEquals(request.language, commandSlot.captured.language)
     }
 
     @Test

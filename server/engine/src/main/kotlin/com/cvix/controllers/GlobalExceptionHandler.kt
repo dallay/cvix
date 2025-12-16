@@ -7,6 +7,7 @@ import com.cvix.authentication.domain.error.MissingCookieException
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.common.domain.error.BusinessRuleValidationException
 import com.cvix.common.domain.error.EntityNotFoundException
+import com.cvix.waitlist.domain.EmailAlreadyExistsException
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import java.net.URI
 import java.time.Instant
@@ -102,6 +103,25 @@ class GlobalExceptionHandler(
         problemDetail.setProperty(TIMESTAMP, Instant.now())
         problemDetail.setProperty(MESSAGE_KEY, MSG_ENTITY_NOT_FOUND)
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        return problemDetail
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(EmailAlreadyExistsException::class)
+    fun handleEmailAlreadyExistsException(
+        @Suppress("UNUSED_PARAMETER") ex: EmailAlreadyExistsException,
+        exchange: ServerWebExchange
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT,
+            "This email is already on the waitlist",
+        )
+        problemDetail.title = "Conflict"
+        problemDetail.type = URI.create("$ERROR_PAGE/waitlist/email-already-exists")
+        problemDetail.instance = URI.create(exchange.request.path.toString())
+        problemDetail.setProperty(ERROR_CATEGORY, "EMAIL_ALREADY_EXISTS")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }

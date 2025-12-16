@@ -80,7 +80,13 @@ internal class WaitlistControllerIntegrationTest : ControllerIntegrationTest() {
             .exchange()
             .expectStatus().isEqualTo(409)
             .expectBody()
-            .jsonPath("$.error").isEqualTo("EMAIL_ALREADY_EXISTS")
-            .jsonPath("$.message").isEqualTo("This email is already on the waitlist")
+            .jsonPath("$.type").exists()
+            .jsonPath("$.title").isEqualTo("Conflict")
+            .jsonPath("$.status").isEqualTo(409)
+            .jsonPath("$.detail").isEqualTo("This email is already on the waitlist")
+            .jsonPath("$.instance").isEqualTo("/api/waitlist")
+            .jsonPath("$.errorCategory").isEqualTo("EMAIL_ALREADY_EXISTS")
+            .jsonPath("$.timestamp").exists()
+            .jsonPath("$.traceId").exists()
     }
 }
