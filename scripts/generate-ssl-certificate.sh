@@ -42,19 +42,22 @@ if ! command -v openssl >/dev/null 2>&1; then
   exit 1
 fi
 
-info "Installing or verifying local CA..."
+info "Note: This may prompt for administrator/sudo password to install the local CA."
 mkcert -install
 
 info "Generating PEM certificate and key for '$DOMAIN'..."
 mkcert -cert-file "$OUTPUT_DIR/$DOMAIN.pem" -key-file "$OUTPUT_DIR/$DOMAIN-key.pem" "$DOMAIN"
 
 info "Creating PKCS#12 keystore with provided password..."
+temp_pass=$(mktemp)
+echo "$PASSWORD" > "$temp_pass"
+trap 'rm -f "$temp_pass"' EXIT
 openssl pkcs12 -export \
   -in "$OUTPUT_DIR/$DOMAIN.pem" \
   -inkey "$OUTPUT_DIR/$DOMAIN-key.pem" \
   -out "$OUTPUT_DIR/$DOMAIN.p12" \
   -name "$ALIAS" \
-  -password pass:"$PASSWORD"
+  -passout file:"$temp_pass"
 
 pass "SSL certificate generation complete!"
 cat <<EOT

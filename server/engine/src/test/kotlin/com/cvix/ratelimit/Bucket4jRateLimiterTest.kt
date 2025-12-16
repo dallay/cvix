@@ -10,7 +10,9 @@ import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.test.StepVerifier
@@ -72,6 +74,7 @@ class Bucket4jRateLimiterTest {
         val configFactory = BucketConfigurationFactory(properties)
         val meterRegistry = SimpleMeterRegistry()
         val metrics = RateLimitMetrics(meterRegistry)
+        // Use system clock by default for existing tests
         rateLimiter = Bucket4jRateLimiter(configFactory, metrics)
     }
 
@@ -332,5 +335,36 @@ class Bucket4jRateLimiterTest {
                 result.limitCapacity shouldBe 5
             }
             .verifyComplete()
+    }
+
+    // Option A: Tolerant test - assert resetTime is between now and now + refillDuration + tolerance
+    @Test
+    fun `reset time is within expected range (tolerant)`() {
+        val identifier = "TOLERANT-TEST"
+        val now = Instant.now()
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+            .block() as RateLimitResult.Allowed
+
+        // refillDuration configured for AUTH is 1 minute
+        val upperBound = now.plus(Duration.ofMinutes(1)).plusMillis(1000) // 1s tolerance
+        assert(!result.resetTime.isBefore(now)) { "resetTime should not be before now" }
+        assert(!result.resetTime.isAfter(upperBound)) { "resetTime should be within now + refillDuration + tolerance" }
+    }
+
+    // Option B: Deterministic test by injecting a fixed clock
+    @Test
+    fun `reset time deterministic with injected clock`() {
+        val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
+        val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
+        val configFactory = BucketConfigurationFactory(properties)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        val deterministicLimiter = Bucket4jRateLimiter(configFactory, metrics, fixedClock)
+
+        val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
+            .block() as RateLimitResult.Allowed
+        val expectedReset = fixedNow.plus(Duration.ofMinutes(1))
+        // Allow slight tolerance for internal timing, but deterministic clock should make this exact
+        assert(result.resetTime == expectedReset) { "expected reset time $expectedReset but was ${result.resetTime}" }
     }
 }

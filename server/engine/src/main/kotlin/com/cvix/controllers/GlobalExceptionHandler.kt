@@ -121,15 +121,17 @@ class GlobalExceptionHandler(
         LogoutFailedException::class,
     )
     fun handleIllegalArgumentException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
-        val localizedMessage = getLocalizedMessage(exchange, MSG_BAD_REQUEST)
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message ?: "Bad request")
-        problemDetail.title = "Bad request"
+        val locale = exchange.localeContext.locale ?: java.util.Locale.getDefault()
+        val localizedTitle = messageSource.getMessage(TITLE_INVALID_INPUT, emptyArray(), "Invalid Input", locale)
+        val detail = e.message ?: messageSource.getMessage(MSG_BAD_REQUEST, emptyArray(), "Bad request", locale)
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.title = localizedTitle
+        problemDetail.detail = detail
         problemDetail.type = URI.create("$ERROR_PAGE/bad-request")
         problemDetail.setProperty(ERROR_CATEGORY, "BAD_REQUEST")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
         problemDetail.setProperty(MESSAGE_KEY, MSG_BAD_REQUEST)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedTitle)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }
@@ -176,30 +178,31 @@ class GlobalExceptionHandler(
         status: HttpStatusCode,
         exchange: ServerWebExchange,
     ): Mono<ResponseEntity<Any>> {
-        val localizedMessage = getLocalizedMessage(exchange, MSG_VALIDATION_ERROR)
-
-        val fieldErrors = ex.bindingResult.fieldErrors.associate { error ->
-            error.field to (error.defaultMessage ?: "Invalid value")
-        }
-        val globalErrors = ex.bindingResult.globalErrors.map { error ->
-            error.defaultMessage ?: "Validation failed"
-        }
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST,
-            globalErrors.firstOrNull() ?: "Validation failed",
+        val locale = exchange.localeContext.locale ?: java.util.Locale.getDefault()
+        val title = messageSource.getMessage(TITLE_VALIDATION_ERROR, emptyArray(), "Validation Failed", locale)
+        val detail = messageSource.getMessage(
+            MSG_VALIDATION_ERROR,
+            emptyArray(),
+            "Request validation failed. Please check the provided data.",
+            locale,
         )
-        problemDetail.title = "validation failed"
+        val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError ->
+            mapOf(
+                "field" to fieldError.field,
+                "message" to (fieldError.defaultMessage ?: "Invalid value"),
+                "rejectedValue" to fieldError.rejectedValue,
+            )
+        }
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.title = title
+        problemDetail.detail = detail
         problemDetail.type = URI.create("$ERROR_PAGE/validation-error")
         problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
         problemDetail.setProperty(MESSAGE_KEY, MSG_VALIDATION_ERROR)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty("fieldErrors", fieldErrors)
+        problemDetail.setProperty(LOCALIZED_MESSAGE, title)
+        problemDetail.setProperty("errors", fieldErrors)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        if (globalErrors.isNotEmpty()) {
-            problemDetail.setProperty("errors", globalErrors)
-        }
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
     }
 

@@ -34,7 +34,8 @@ import reactor.core.scheduler.Schedulers
 @Component
 class Bucket4jRateLimiter(
     private val configurationFactory: BucketConfigurationFactory,
-    private val metrics: RateLimitMetrics
+    private val metrics: RateLimitMetrics,
+    private var clock: java.time.Clock = java.time.Clock.systemUTC()
 ) : RateLimiter {
 
     private val logger = LoggerFactory.getLogger(Bucket4jRateLimiter::class.java)
@@ -163,7 +164,7 @@ class Bucket4jRateLimiter(
      */
     private fun calculateResetTime(refillPeriodNanos: Long): java.time.Instant {
         val refillDuration = Duration.ofNanos(refillPeriodNanos)
-        return java.time.Instant.now().plus(refillDuration)
+        return java.time.Instant.now(clock).plus(refillDuration)
     }
 
     /**

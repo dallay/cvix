@@ -203,7 +203,10 @@ section "Additional checks"
 
 # Check Node version aligns with .nvmrc if present
 if [[ -f .nvmrc && -s .nvmrc ]] && has_cmd node; then
-  desired="v$(tr -d '\n' < .nvmrc)"
+  nvmrc_content=$(tr -d '\n' < .nvmrc)
+  # Normalize: add 'v' prefix only if not present (strip any leading v/V)
+  desired="${nvmrc_content#v}"
+  desired="v$desired"
   current="$(node -v 2>/dev/null || true)"
   if [[ -n "$desired" && -n "$current" && "$desired" != "$current" ]]; then
     log "${WARN} Node version mismatch: current $current, desired $desired (from .nvmrc)"

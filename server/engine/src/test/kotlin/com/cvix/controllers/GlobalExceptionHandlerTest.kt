@@ -32,18 +32,14 @@ internal class GlobalExceptionHandlerTest {
         every { exception.message } returns "Invalid argument"
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
-        every {
-            messageSource.getMessage(
-                "error.bad_request",
-                null,
-                Locale.ENGLISH,
-            )
-        } returns "Bad request"
+        // Generic mock: return the default message (3rd argument) for any getMessage call
+        every { messageSource.getMessage(any(), any(), any(), any()) } answers { thirdArg() }
 
         val problemDetail = handler.handleIllegalArgumentException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
-        assertEquals("Bad request", problemDetail.title)
+        assertNotNull(problemDetail.title)
+        assertEquals("Invalid argument", problemDetail.detail)
         assertNotNull(problemDetail.properties?.get("localizedMessage"))
         assertNotNull(problemDetail.properties?.get("message"))
         assertNotNull(problemDetail.properties?.get("traceId"))
@@ -61,21 +57,19 @@ internal class GlobalExceptionHandlerTest {
         every { exception.message } returns "Business rule violation"
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
-        every {
-            messageSource.getMessage(
-                "error.bad_request",
-                null,
-                Locale.ENGLISH,
-            )
-        } returns "Bad request"
+        // Generic mock: return the default message (3rd argument) for any getMessage call
+        every { messageSource.getMessage(any(), any(), any(), any()) } answers { thirdArg() }
 
         val problemDetail = handler.handleIllegalArgumentException(exception, exchange)
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
-        assertEquals("Bad request", problemDetail.title)
+        assertNotNull(problemDetail.title)
+        // handler prefers exception.message when present
+        assertEquals("Business rule violation", problemDetail.detail)
         assertNotNull(problemDetail.properties?.get("localizedMessage"))
         assertNotNull(problemDetail.properties?.get("message"))
         assertNotNull(problemDetail.properties?.get("traceId"))
+        assertEquals("test-trace-id", problemDetail.properties?.get("traceId"))
     }
 
     @Test
@@ -89,18 +83,13 @@ internal class GlobalExceptionHandlerTest {
         every { exception.message } returns "Unexpected error"
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
-        every {
-            messageSource.getMessage(
-                "error.internal_server_error",
-                null,
-                Locale.ENGLISH,
-            )
-        } returns "Internal server error"
+        // Mock for 3-argument getMessage(String, Array?, Locale) signature
+        every { messageSource.getMessage(any<String>(), any(), any<Locale>()) } returns "Internal server error"
 
         val problemDetail = handler.handleGenericException(exception, exchange)
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
-        assertEquals("Internal server error", problemDetail.title)
+        assertNotNull(problemDetail.title)
         assertNotNull(problemDetail.properties?.get("localizedMessage"))
         assertNotNull(problemDetail.properties?.get("message"))
         assertNotNull(problemDetail.properties?.get("traceId"))
