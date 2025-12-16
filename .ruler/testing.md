@@ -12,7 +12,7 @@ We follow the principles of the testing pyramid to ensure a balanced and effecti
 2. **Integration Tests (Middle)**: Fewer than unit tests. Verify that different parts of the system work together correctly.
 3. **End-to-End (E2E) Tests (Top)**: The smallest number of tests. Simulate full user journeys, slowest and most brittle.
 
-### General Principles
+### General Principles (All Tests)
 
 - **CI/CD**: All tests (Unit and Integration) run automatically in GitHub Actions on every commit
 - **Code Coverage**: Focus on testing behavior rather than just lines of code. Use Kover (backend) and Vitest coverage (frontend)
@@ -22,7 +22,7 @@ We follow the principles of the testing pyramid to ensure a balanced and effecti
 
 ## Backend Testing (Kotlin & Spring Boot)
 
-### General Principles
+### General Principles (Kotlin Testing)
 
 - **Arrange-Act-Assert (AAA)**: Structure tests clearly:
   1. **Arrange**: Set up test objects, mocks, and data
@@ -171,7 +171,7 @@ verify { service.process(any()) }
 
 ## Frontend Testing (TypeScript & Vue)
 
-### Unit Testing
+### Unit Testing (Vue)
 
 - **Framework**: **Vitest** with `@testing-library/vue`
 - **Scope**: Components, composables, and utility functions

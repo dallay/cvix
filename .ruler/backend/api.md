@@ -18,7 +18,6 @@
 | `PATCH`   | Partially update an existing resource | `PATCH /users/{id}`              |
 | `DELETE`  | Delete a resource                  | `DELETE /users/{id}`              |
 
-
 ## Status Codes
 
 | Code | Meaning | Usage |

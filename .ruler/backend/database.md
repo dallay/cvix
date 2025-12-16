@@ -23,10 +23,10 @@ RLS is a PostgreSQL feature used to enforce that queries automatically filter ro
 
 2. **Enable RLS**: Enable RLS on the table:
 
-```sql
-ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
-ALTER TABLE my_table FORCE ROW LEVEL SECURITY;
-```
+    ```sql
+    ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE my_table FORCE ROW LEVEL SECURITY;
+    ```
 
 3. **Create Policy**: Create a policy that checks the `tenant_id` against a session variable:
 

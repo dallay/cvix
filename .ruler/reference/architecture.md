@@ -44,7 +44,7 @@ domain ← application ← infrastructure
 
 The innermost layer containing **pure Kotlin code with no framework dependencies**.
 
-#### Contains:
+#### Contains
 
 | Element | Description | Example |
 |---------|-------------|---------|
@@ -54,7 +54,7 @@ The innermost layer containing **pure Kotlin code with no framework dependencies
 | **Domain Events** | Events that represent business facts | `WorkspaceCreatedEvent.kt` |
 | **Domain Exceptions** | Business-specific exceptions | `WorkspaceNotFoundException.kt` |
 
-#### Example Structure:
+#### Example Structure
 
 ```text
 📁domain
@@ -74,7 +74,7 @@ The innermost layer containing **pure Kotlin code with no framework dependencies
 
 The use case layer implementing business logic orchestration. Organized by **operations** following **CQRS principles**.
 
-#### Organization:
+#### Organization
 
 - Operations grouped by folders: `create/`, `find/`, `update/`, `delete/`
 - Each operation contains:
@@ -82,7 +82,7 @@ The use case layer implementing business logic orchestration. Organized by **ope
   - **CommandHandler/QueryHandler**: Receives command/query and delegates to service
   - **Service**: Contains the business logic implementation
 
-#### Command Pattern (Writes):
+#### Command Pattern (Writes)
 
 ```text
 📁application/create
@@ -93,7 +93,7 @@ The use case layer implementing business logic orchestration. Organized by **ope
 
 **Flow:** `Controller → CommandHandler → Service → Domain Repository`
 
-#### Query Pattern (Reads):
+#### Query Pattern (Reads)
 
 ```text
 📁application/find
@@ -104,7 +104,7 @@ The use case layer implementing business logic orchestration. Organized by **ope
 
 **Flow:** `Controller → QueryHandler → Service → Domain Repository`
 
-#### Key Principles:
+#### Key Principles
 
 - Handlers are **thin**: receive commands/queries and delegate to specialized services
 - Services contain the **actual business logic** and coordinate with repositories
@@ -116,7 +116,7 @@ The use case layer implementing business logic orchestration. Organized by **ope
 
 The outermost layer implementing technical concerns and framework integration. Organized by **technical responsibility**.
 
-#### Organization:
+#### Organization (Example for Workspace feature)
 
 ```text
 📁infrastructure
@@ -137,7 +137,7 @@ The outermost layer implementing technical concerns and framework integration. O
     └── WorkspaceEventPublisher.kt
 ```
 
-#### Responsibilities:
+#### Responsibilities
 
 | Directory | Purpose |
 |-----------|---------|
@@ -148,7 +148,7 @@ The outermost layer implementing technical concerns and framework integration. O
 | `persistence/repository/` | Spring Data repository interfaces |
 | `event/` | Event publishing infrastructure (message queues, event buses) |
 
-#### Key Principles:
+#### Key Principles (Infrastructure Layer)
 
 - Controllers are **thin**: validate input, call handlers, return responses
 - Persistence layer **implements domain repository interfaces**

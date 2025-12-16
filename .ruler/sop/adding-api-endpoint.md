@@ -56,7 +56,7 @@ interface UserPreferenceRepository {
 
 Location: `server/engine/src/main/kotlin/com/cvix/{feature}/application/`
 
-#### For Writes (Command):
+#### For Writes (Command)
 
 ```kotlin
 // application/update/UpdateUserPreferenceCommand.kt
@@ -83,18 +83,18 @@ class UserPreferenceUpdater(
     suspend fun update(userId: UserId, theme: Theme): UserPreference {
         val existing = repository.findByUserId(userId)
             ?: throw UserPreferenceNotFoundException(userId)
-        
+
         val updated = existing.copy(
             theme = theme,
             updatedAt = Instant.now()
         )
-        
+
         return repository.save(updated)
     }
 }
 ```
 
-#### For Reads (Query):
+#### For Reads (Query)
 
 ```kotlin
 // application/find/FindUserPreferenceQuery.kt
@@ -142,10 +142,10 @@ class UserPreferenceController(
     ): ResponseEntity<UserPreferenceResponse> {
         val userId = UserId(UUID.fromString(jwt.subject))
         val query = FindUserPreferenceQuery(userId)
-        
+
         val preference = findHandler.handle(query)
             ?: return ResponseEntity.notFound().build()
-        
+
         return ResponseEntity.ok(preference.toResponse())
     }
 
@@ -159,7 +159,7 @@ class UserPreferenceController(
             userId = userId,
             theme = request.theme
         )
-        
+
         val updated = updateHandler.handle(command)
         return ResponseEntity.ok(updated.toResponse())
     }

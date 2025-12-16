@@ -18,6 +18,7 @@ Use HTML elements for their intended purpose to improve SEO, accessibility, and 
 | `<header>` / `<footer>` | Page/section headers and footers |
 
 **Document Structure:**
+
 - Use proper heading hierarchy (`<h1>` to `<h6>`) without skipping levels
 - Each page should have exactly one `<h1>`
 - Use `<ul>`, `<ol>`, and `<dl>` for appropriate list types

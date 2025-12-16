@@ -39,4 +39,3 @@ This is a production-ready monorepo template for building SaaS applications. It 
 | Styling                | `frontend/design-system.md` + `frontend/html-css.md` |
 | Testing                | `testing.md`                                     |
 | Git workflow           | `general.md`                                     |
-
