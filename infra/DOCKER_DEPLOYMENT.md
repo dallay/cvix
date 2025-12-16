@@ -12,19 +12,19 @@ This guide provides a concise overview for building and pushing images from this
 
 ## Build Images
 
-You can build images using the repository Makefile and the project-specific Dockerfiles (when present) or using docker buildx directly. See `infra/README.md` for environment specifics and compose-based flows.
+You can build images using the repository Makefile and the service-specific Dockerfiles (when present): server/engine/Dockerfile, client/apps/webapp/Dockerfile, and client/apps/marketing/Dockerfile, or using docker buildx directly. See `infra/README.md` for environment specifics and compose-based flows.
 
 Example generic build using BuildKit:
 
 ```bash
 # From repository root
-docker build -t ghcr.io/<org-or-user>/cvix-engine:local -f server/engine/Dockerfile .
+docker build -t ghcr.io/dallay/cvix-engine:local -f server/engine/Dockerfile .
 ```
 
 ## Push Images
 
 ```bash
-docker push ghcr.io/<org-or-user>/cvix-engine:local
+docker push ghcr.io/dallay/cvix-engine:local
 ```
 
 For automated, versioned releases (recommended), this repository uses semantic-release in CI to tag and publish images. Refer to the main README “Release & Versioning” section for tags and policies.

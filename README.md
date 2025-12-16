@@ -41,7 +41,11 @@ What this does:
 - ensures root `.env` exists (copies from `.env.example` if missing)
 - creates `.env` symbolic links for subprojects: `server/engine`, `client/apps/marketing`, `client/apps/webapp`
 - warns on Node version mismatch with `.nvmrc`, ensures `gradlew` is executable
-- supports extending the list of projects via `env.symlink-projects.txt`
+- supports extending the list of projects via `env.symlink-projects.txt`. 
+  - **Format:** One relative directory path per line (e.g., `server/engine`).
+  - Blank lines and lines starting with `#` are ignored (comments).
+  - Each listed path will have a `.env` symlink created for it.
+  - See [`scripts/prepare-env.sh`](scripts/prepare-env.sh) for the authoritative behavior and file format.
 
 2) Install JS deps and build:
 
@@ -49,11 +53,18 @@ What this does:
 make install
 ```
 
-Optional: Generate local SSL certificates (requires mkcert & openssl):
+
+### Required: Generate SSL certificates for local development (mkcert & openssl required)
+
+Before running the webapp dev server, you **must** generate local SSL certificates:
 
 ```bash
 make ssl-cert
 ```
+
+- This step is mandatory. Certificates are consumed directly by [`client/apps/webapp/vite.config.ts`](client/apps/webapp/vite.config.ts).
+- You must have `mkcert` and `openssl` installed for this to work.
+- If certificates are missing, the dev server will not start or will show HTTPS errors.
 
 Start local infra (optional):
 

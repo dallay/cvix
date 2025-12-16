@@ -37,6 +37,11 @@ if ! command -v mkcert >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v openssl >/dev/null 2>&1; then
+  error "openssl is not installed. Install openssl first. See https://www.openssl.org/source/ or your OS package manager"
+  exit 1
+fi
+
 info "Installing or verifying local CA..."
 mkcert -install
 

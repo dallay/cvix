@@ -92,7 +92,7 @@ dev-docs:
 	@$(PNPM) $(CLIENT_DOCS_FILTER) dev
 
 # ------------------------------------------------------------------------------------
-# SECURITY & UTILITIES
+# LOCAL DEVELOPMENT UTILITIES
 # ------------------------------------------------------------------------------------
 
 # Generate local development SSL certificates (interactive; uses mkcert and openssl)
