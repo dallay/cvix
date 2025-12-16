@@ -168,10 +168,11 @@ async function initializeCsrfToken(backendUrl) {
 			// This avoids unnecessary requests on pages where the form is never used
 			const lazyLoadCsrf = () => {
 				const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
-				if (backendUrl && !csrfInitialized && !csrfLoading) {
-					initializeCsrfToken(backendUrl).catch((err) => {
-						console.warn("CSRF lazy load failed:", err);
-					});
+				if (backendUrl && !csrfInitialized && !csrfInitPromise) {
+					csrfInitPromise = initializeCsrfToken(backendUrl)
+						.catch((err) => {
+							console.warn("CSRF lazy load failed:", err);
+						});
 				}
 			};
 

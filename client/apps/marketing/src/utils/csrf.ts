@@ -39,13 +39,15 @@ export async function initializeCsrfToken(backendUrl: string): Promise<void> {
  *
  * @returns true if XSRF-TOKEN cookie is present, false otherwise
  */
+const CSRF_COOKIE_NAME = "XSRF-TOKEN";
+
 export function hasCsrfToken(): boolean {
 	if (typeof document === "undefined") {
 		return false;
 	}
 
 	const cookies = document.cookie.split(";");
-	return cookies.some((cookie) => cookie.trim().startsWith("XSRF-TOKEN="));
+	return cookies.some((cookie) => cookie.trim().startsWith(`${CSRF_COOKIE_NAME}=`));
 }
 
 /**
@@ -58,7 +60,7 @@ export function getCsrfToken(): string | null {
 		return null;
 	}
 
-	const name = "XSRF-TOKEN=";
+	const name = `${CSRF_COOKIE_NAME}=`;
 	const decodedCookie = decodeURIComponent(document.cookie);
 	const cookies = decodedCookie.split(";");
 

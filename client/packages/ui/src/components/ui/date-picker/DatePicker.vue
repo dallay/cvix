@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DateValue } from "@internationalized/date"
+import type { DateValue } from "reka-ui"
 import { CalendarIcon } from "lucide-vue-next"
 import type { HTMLAttributes } from "vue"
 import { computed, ref, watch } from "vue"
@@ -44,7 +44,7 @@ const df = computed(() => new DateFormatter(resolvedLocale.value, {
 }))
 
 const errorMessage = ref<string | null>(null)
-const value = computed({
+const value = computed<DateValue | undefined>({
 	get: () => {
 		if (!props.modelValue) {
 			errorMessage.value = null
@@ -85,7 +85,7 @@ const value = computed({
 				) {
 					try {
 						// CalendarDate constructor validates day is valid for the given month/year
-						const date = new CalendarDate(year, month, day)
+						const date = new CalendarDate(year, month, day) as unknown as DateValue
 						errorMessage.value = null
 						return date
 					} catch (e: any) {

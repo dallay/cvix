@@ -309,9 +309,6 @@ The API exposes a `resetTime` value in rate limit responses (and the server sets
 
 Clients should treat `resetTime` as advisory only. When precise retry timing is required, rely on the `Retry-After` header returned with HTTP 429 responses and use conservative retry/backoff strategies (e.g., exponential backoff).
 
-
-## Troubleshooting
-
 ### Rate limiting not working
 
 1. Verify it's enabled: `application.rate-limit.enabled=true`

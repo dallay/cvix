@@ -1,0 +1,20 @@
+{
+	// Configuration for markdownlint-cli2
+	// References the base rules from .markdownlint.json
+	// and respects exclusions from .markdownlintignore
+	"config": ".markdownlint.json",
+	"ignores": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/build/**",
+		"**/test-results/**",
+		".github/copilot-instructions.md",
+		".github/agents/**",
+		".specify/**",
+		"CLAUDE.md",
+		"GEMINI.md",
+		"AGENTS.md",
+		"CHANGELOG.md",
+		".opencode/**"
+	]
+}

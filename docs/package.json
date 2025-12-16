@@ -12,10 +12,10 @@
 	"dependencies": {
 		"@astrojs/starlight": "^0.37.1",
 		"@cvix/assets": "workspace:*",
-		"astro": "^5.16.3",
+		"astro": "^5.16.6",
 		"astro-mermaid": "^1.2.0",
 		"mermaid": "^11.12.1",
 		"sharp": "^0.34.5",
-		"zod": "^4.1.13"
+		"zod": "^4.2.1"
 	}
 }
