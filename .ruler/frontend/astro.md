@@ -99,7 +99,7 @@ export const collections = { blog };
 | `client:idle` | When browser is idle |
 | `client:visible` | When component enters viewport |
 | `client:media` | When media query matches |
-| `client:only` | Only on client, skip SSR |
+| `client:only` | Client-side only (no SSR) |
 
 - Optimize images using Astro's built-in `<Image />` component
 
@@ -142,16 +142,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 ## Documentation Resources
 
-When working with Astro, refer to these official documentation sets:
+When working with Astro, refer to the official documentation at:
 
-- [Abridged documentation](https://docs.astro.build/llms-small.txt): Compact version with essential content
-- [Complete documentation](https://docs.astro.build/llms-full.txt): Full documentation for comprehensive reference
-- [API Reference](https://docs.astro.build/_llms-txt/api-reference.txt): Structured descriptions of Astro's APIs
-- [How-to Recipes](https://docs.astro.build/_llms-txt/how-to-recipes.txt): Guided examples for adding features
-- [Build a Blog Tutorial](https://docs.astro.build/_llms-txt/build-a-blog-tutorial.txt): Step-by-step guide
-- [Deployment Guides](https://docs.astro.build/_llms-txt/deployment-guides.txt): Recipes for deploying to different services
-- [CMS Guides](https://docs.astro.build/_llms-txt/cms-guides.txt): Integration recipes for content management systems
-- [Backend Services](https://docs.astro.build/_llms-txt/backend-services.txt): Integration advice for Firebase, Sentry, Supabase, etc.
-- [Migration Guides](https://docs.astro.build/_llms-txt/migration-guides.txt): Advice on migrating from other tools
-- [Additional Guides](https://docs.astro.build/_llms-txt/additional-guides.txt): E-commerce, authentication, testing
-- [The Astro Blog](https://astro.build/blog/): Latest news about Astro development
+- [Astro Documentation](https://docs.astro.build) – Canonical source for all features, API reference, guides, and integration recipes
+- [Astro Blog](https://astro.build/blog/) – Latest news and releases from the Astro team
+
+> AI tools and integrations should auto-discover up-to-date, LLM-friendly Markdown docs starting at [docs.astro.build](https://docs.astro.build). For advanced guidance or server configuration, consult the "MCP server" documentation provided by Astro.

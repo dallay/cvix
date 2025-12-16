@@ -10,13 +10,14 @@
 
 ## HTTP Methods
 
-| Method | Purpose | Example |
-|--------|---------|---------|
-| `GET` | Retrieve a resource or collection | `GET /users`, `GET /users/{id}` |
-| `POST` | Create a new resource | `POST /users` |
-| `PUT` | Replace/update an existing resource | `PUT /users/{id}` |
-| `PATCH` | Partially update an existing resource | `PATCH /users/{id}` |
-| `DELETE` | Delete a resource | `DELETE /users/{id}` |
+| Method  | Purpose                          | Example                      |
+|--------|-----------------------------------|------------------------------|
+| `GET`     | Retrieve a resource or collection   | `GET /users`, `GET /users/{id}`   |
+| `POST`    | Create a new resource              | `POST /users`                     |
+| `PUT`     | Replace/update an existing resource| `PUT /users/{id}`                 |
+| `PATCH`   | Partially update an existing resource | `PATCH /users/{id}`              |
+| `DELETE`  | Delete a resource                  | `DELETE /users/{id}`              |
+
 
 ## Status Codes
 

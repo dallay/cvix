@@ -24,12 +24,14 @@ const props = withDefaults(defineProps<Props>(), {
   count: 0,
 });
 
+const { count, title } = props;
+
 const emit = defineEmits<{
   (e: 'update', value: number): void;
   (e: 'close'): void;
 }>();
 
-const doubled = computed(() => props.count * 2);
+const doubled = computed(() => count * 2);
 </script>
 
 <template>
