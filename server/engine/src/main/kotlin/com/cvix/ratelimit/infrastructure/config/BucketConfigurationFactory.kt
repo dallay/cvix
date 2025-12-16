@@ -119,18 +119,29 @@ class BucketConfigurationFactory(
     }
 
     /**
-     * Creates a Bandwidth from a BandwidthLimit configuration using Bucket4j v8 API.
-     * This method uses the simple bandwidth API which is equivalent to greedy refill
-     * when refillTokens equals capacity.
+     * Creates a Bandwidth from a BandwidthLimit configuration using Bucket4j v8 builder API.
+     *
+     * This method supports two refill strategies:
+     * - **Greedy Refill**: Used when [refillTokens] equals [capacity].
+     *   Provides greedy refill where the bucket is fully replenished at each refill interval.
+     *   Example: capacity=100, refillTokens=100 per minute = 100 tokens/minute.
+     *
+     * - **Intervally Refill**: Used when [refillTokens] differs from [capacity].
+     *   Allows fine-grained control over refill rates independent of bucket capacity.
+     *   Example: capacity=100, refillTokens=10 per minute = 10 tokens/minute (burst capacity of 100).
      *
      * @param limit The bandwidth limit configuration.
      * @return A [Bandwidth] instance configured with the specified parameters.
+     * @throws IllegalArgumentException if the refill duration is invalid (e.g., Duration.ZERO).
      */
     private fun createBandwidth(limit: RateLimitProperties.BandwidthLimit): Bandwidth {
-        return Bandwidth.simple(
-            limit.capacity,
-            limit.refillDuration,
-        )
+        val builder = Bandwidth.builder().capacity(limit.capacity)
+
+        return if (limit.refillTokens == limit.capacity) {
+            builder.refillGreedy(limit.capacity, limit.refillDuration).build()
+        } else {
+            builder.refillIntervally(limit.refillTokens, limit.refillDuration).build()
+        }
     }
 
     // ============================================

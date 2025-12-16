@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test
  * - Multiple limit handling
  * - Invalid plan handling
  * - Enable/disable flags
+ * - Custom refill rates (refillTokens != capacity)
  */
 class BucketConfigurationFactoryTest {
 
@@ -285,5 +286,64 @@ class BucketConfigurationFactoryTest {
 
         // Then
         config.bandwidths.size shouldBe 1
+    }
+
+    @Test
+    fun `should create bandwidth with refillTokens equal to capacity`() {
+        // Given - properties already have refillTokens == capacity in setUp()
+        val authConfig = strategy.createConfiguration(RateLimitStrategy.AUTH)
+
+        // When
+        val bandwidth = authConfig.bandwidths[0]
+
+        // Then - verify bandwidth was created with simple refill (greedy)
+        bandwidth.capacity shouldBe 10
+    }
+
+    @Test
+    fun `should create bandwidth with custom refill rate when refillTokens differs from capacity`() {
+        // Given
+        val customLimit = RateLimitProperties.BandwidthLimit(
+            name = "custom-refill",
+            capacity = 100,
+            refillTokens = 10,
+            refillDuration = Duration.ofMinutes(1),
+        )
+        val customProperties = properties.copy(
+            business = RateLimitProperties.BusinessRateLimitConfig(
+                enabled = true,
+                pricingPlans = mapOf(
+                    "custom" to customLimit,
+                ),
+            ),
+        )
+        val customStrategy = BucketConfigurationFactory(customProperties)
+
+        // When
+        val config = customStrategy.createConfiguration(RateLimitStrategy.BUSINESS, "custom")
+
+        // Then - verify bandwidth was created with custom refill
+        config.bandwidths.size shouldBe 1
+        config.bandwidths[0].capacity shouldBe 100
+    }
+
+    @Test
+    fun `should handle invalid refill durations gracefully`() {
+        // Given
+        val invalidLimit = RateLimitProperties.BandwidthLimit(
+            name = "invalid-duration",
+            capacity = 30,
+            refillTokens = 20,
+            refillDuration = Duration.ZERO,
+        )
+        val invalidProperties = properties.copy(
+            auth = properties.auth.copy(limits = listOf(invalidLimit)),
+        )
+        val invalidStrategy = BucketConfigurationFactory(invalidProperties)
+
+        // When/Then - Bucket4j should throw when duration is zero
+        shouldThrow<IllegalArgumentException> {
+            invalidStrategy.createConfiguration(RateLimitStrategy.AUTH)
+        }
     }
 }
