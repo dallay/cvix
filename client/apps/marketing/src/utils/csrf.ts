@@ -79,6 +79,7 @@ export function getCsrfToken(): string | null {
 export class CsrfTokenLoader {
 	private loading = false;
 	private loaded = false;
+	private loadPromise: Promise<void> | null = null;
 
 	/**
 	 * Initialize CSRF token if not already loaded
@@ -92,22 +93,25 @@ export class CsrfTokenLoader {
 			return;
 		}
 
-		// Currently loading, wait for it to complete
+		// Currently loading, wait for the pending load to complete
 		if (this.loading) {
-			// Wait a bit and check again
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			return this.ensureToken(backendUrl);
+			if (this.loadPromise) {
+				await this.loadPromise;
+			}
+			return;
 		}
 
 		// Start loading
 		this.loading = true;
-
-		try {
-			await initializeCsrfToken(backendUrl);
-			this.loaded = true;
-		} finally {
-			this.loading = false;
-		}
+		this.loadPromise = initializeCsrfToken(backendUrl)
+			.then(() => {
+				this.loaded = true;
+			})
+			.finally(() => {
+				this.loading = false;
+				this.loadPromise = null;
+			});
+		await this.loadPromise;
 	}
 
 	/**
@@ -116,6 +120,7 @@ export class CsrfTokenLoader {
 	reset(): void {
 		this.loading = false;
 		this.loaded = false;
+		this.loadPromise = null;
 	}
 }
 
