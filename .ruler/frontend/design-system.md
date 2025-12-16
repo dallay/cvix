@@ -1,62 +1,75 @@
 # Design System
 
-> This document defines the unified design system and color token conventions for the frontend applications.
+> Unified design system and color token conventions for the frontend applications.
 
 ## Overview
 
-The application uses a **token-based design system** built on CSS custom properties (CSS variables) that support both light and dark themes seamlessly. All components must use these semantic tokens instead of hardcoded color values.
+The application uses a **token-based design system** built on CSS custom properties (CSS variables) that support both light and dark themes seamlessly. **All components must use these semantic tokens instead of hardcoded color values.**
+
+---
 
 ## Color Tokens
 
 ### Semantic Color Variables
 
-All colors are defined using the OKLCH color space for better perceptual uniformity. Components should always reference these semantic tokens:
+All colors are defined using the **OKLCH color space** for better perceptual uniformity.
 
 #### Core Colors
 
-- **`--background`**: Main background color for the application
-- **`--foreground`**: Primary text color
-- **`--card`**: Background for card-like components
-- **`--card-foreground`**: Text color on cards
-- **`--popover`**: Background for popovers and tooltips
-- **`--popover-foreground`**: Text color for popovers
+| Token                  | Purpose                                   |
+|------------------------|-------------------------------------------|
+| `--background`         | Main background color for the application |
+| `--foreground`         | Primary text color                        |
+| `--card`               | Background for card-like components       |
+| `--card-foreground`    | Text color on cards                       |
+| `--popover`            | Background for popovers and tooltips      |
+| `--popover-foreground` | Text color for popovers                   |
 
 #### Interactive Colors
 
-- **`--primary`**: Primary action color (buttons, links)
-- **`--primary-foreground`**: Text on primary colored elements
-- **`--secondary`**: Secondary action color
-- **`--secondary-foreground`**: Text on secondary colored elements
-- **`--accent`**: Accent color for highlights
-- **`--accent-foreground`**: Text on accented elements
+| Token                    | Purpose                               |
+|--------------------------|---------------------------------------|
+| `--primary`              | Primary action color (buttons, links) |
+| `--primary-foreground`   | Text on primary colored elements      |
+| `--secondary`            | Secondary action color                |
+| `--secondary-foreground` | Text on secondary colored elements    |
+| `--accent`               | Accent color for highlights           |
+| `--accent-foreground`    | Text on accented elements             |
 
 #### Status Colors
 
-- **`--destructive`**: Destructive actions and errors
-- **`--destructive-foreground`**: Text for destructive actions (note: this is not explicitly defined in CSS, uses primary-foreground)
-- **`--muted`**: Muted background for subtle elements
-- **`--muted-foreground`**: Text for muted elements
+| Token                | Purpose                              |
+|----------------------|--------------------------------------|
+| `--destructive`      | Destructive actions and errors       |
+| `--muted`            | Muted background for subtle elements |
+| `--muted-foreground` | Text for muted elements              |
 
 #### UI Elements
 
-- **`--border`**: Border color for all components
-- **`--input`**: Background for input fields
-- **`--ring`**: Focus ring color
+| Token      | Purpose                         |
+|------------|---------------------------------|
+| `--border` | Border color for all components |
+| `--input`  | Background for input fields     |
+| `--ring`   | Focus ring color                |
 
 #### Sidebar Tokens
 
-- **`--sidebar`**: Sidebar background
-- **`--sidebar-foreground`**: Sidebar text color
-- **`--sidebar-primary`**: Sidebar primary action color
-- **`--sidebar-primary-foreground`**: Text on sidebar primary elements
-- **`--sidebar-accent`**: Sidebar hover/active states
-- **`--sidebar-accent-foreground`**: Text on sidebar accent elements
-- **`--sidebar-border`**: Sidebar borders and separators
-- **`--sidebar-ring`**: Sidebar focus ring color
+| Token                          | Purpose                          |
+|--------------------------------|----------------------------------|
+| `--sidebar`                    | Sidebar background               |
+| `--sidebar-foreground`         | Sidebar text color               |
+| `--sidebar-primary`            | Sidebar primary action color     |
+| `--sidebar-primary-foreground` | Text on sidebar primary elements |
+| `--sidebar-accent`             | Sidebar hover/active states      |
+| `--sidebar-accent-foreground`  | Text on sidebar accent elements  |
+| `--sidebar-border`             | Sidebar borders and separators   |
+| `--sidebar-ring`               | Sidebar focus ring color         |
 
 #### Chart Colors
 
-- **`--chart-1`** through **`--chart-5`**: Predefined colors for data visualization, maintaining consistency across charts
+- `--chart-1` through `--chart-5`: Predefined colors for data visualization
+
+---
 
 ## Usage in Tailwind CSS
 
@@ -79,9 +92,11 @@ These tokens are exposed as Tailwind utility classes:
 <input class="bg-input border-border focus:ring-ring" />
 ```
 
+---
+
 ## Dark Mode
 
-The design system automatically adapts to dark mode via the `.dark` class on the root element. Dark mode values are carefully calibrated to maintain consistency:
+The design system automatically adapts to dark mode via the `.dark` class on the root element.
 
 ### Dark Mode Color Hierarchy
 
@@ -94,13 +109,11 @@ In dark mode, colors follow this lightness hierarchy:
 5. **Input** (`oklch(1 0 0 / 15%)`) - Input backgrounds with opacity
 6. **Foreground** (`oklch(0.985 0 0)`) - Text, brightest
 
-This creates a subtle, cohesive depth hierarchy throughout the UI with clear visual separation between layers.
+---
 
 ## Layout Components
 
 ### Header
-
-The header uses `bg-card` with `border-border` to maintain consistency:
 
 ```vue
 <header class="bg-card border-b border-border sticky top-0 z-50">
@@ -108,23 +121,15 @@ The header uses `bg-card` with `border-border` to maintain consistency:
 </header>
 ```
 
-### Sidebar
-
-The sidebar uses dedicated sidebar tokens that automatically match the design system:
-
-```vue
-<!-- Sidebar automatically uses --sidebar-* tokens via the Sidebar component -->
-```
-
 ### Main Content
-
-Main content areas use `bg-background`:
 
 ```vue
 <main class="bg-background">
   <!-- Content -->
 </main>
 ```
+
+---
 
 ## Anti-Patterns
 
@@ -150,11 +155,13 @@ Main content areas use `bg-background`:
 <div style="background-color: var(--card)">...</div>
 ```
 
+---
+
 ## Component Guidelines
 
 ### Buttons
 
-Use the `Button` component from `client/packages/ui` which automatically uses the design tokens:
+Use the `Button` component from `client/packages/ui`:
 
 ```vue
 <Button variant="default">Primary Action</Button>
@@ -181,6 +188,8 @@ Use the `Card` component or apply card tokens manually:
 </div>
 ```
 
+---
+
 ## Maintaining Consistency
 
 When creating new components or pages:
@@ -189,6 +198,8 @@ When creating new components or pages:
 2. **Always reference semantic tokens**: `bg-background`, `text-foreground`, `border-border`
 3. **Test both light and dark themes** to ensure proper contrast
 4. **Use existing UI components** from `@/components/ui` when possible
+
+---
 
 ## Extending the System
 
@@ -199,17 +210,11 @@ If you need to add new colors:
 3. Document them in this file
 4. Ensure they follow the OKLCH color space convention
 
-## References
-
-- Color definitions: `client/apps/webapp/src/styles/globals.css`
-- UI Components: `client/packages/ui/src/components/`
-- Layout components: `client/apps/webapp/src/layouts/components/`
+---
 
 ## Additional Features
 
 ### Custom Scrollbars
-
-The design system includes custom scrollbar styling that adapts to light and dark modes:
 
 - Scrollbars use design tokens for consistency (`--background`, `--muted`, `--border`)
 - Smooth transitions on hover for better UX
@@ -219,11 +224,19 @@ The design system includes custom scrollbar styling that adapts to light and dar
 
 ### Border Radius
 
-The system provides a consistent border radius scale:
-
-- **`--radius-sm`**: Small radius (base - 4px)
-- **`--radius-md`**: Medium radius (base - 2px)
-- **`--radius-lg`**: Large radius (base value, 0.65rem)
-- **`--radius-xl`**: Extra large radius (base + 4px)
+| Token         | Size                 |
+|---------------|----------------------|
+| `--radius-sm` | base - 4px           |
+| `--radius-md` | base - 2px           |
+| `--radius-lg` | base value (0.65rem) |
+| `--radius-xl` | base + 4px           |
 
 Use these via Tailwind: `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`
+
+---
+
+## References
+
+- Color definitions: `client/apps/webapp/src/styles/globals.css`
+- UI Components: `client/packages/ui/src/components/`
+- Layout components: `client/apps/webapp/src/layouts/components/`
