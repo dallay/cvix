@@ -12,6 +12,7 @@ import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistRepository
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
+import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
 import org.slf4j.LoggerFactory
 
 /**
@@ -26,7 +27,8 @@ import org.slf4j.LoggerFactory
 class WaitlistJoiner(
     private val repository: WaitlistRepository,
     eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>,
-    private val metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
+    private val metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics,
+    private val securityProperties: WaitlistSecurityProperties
 ) {
     private val eventBroadcaster = EventBroadcaster<WaitlistEntryCreatedEvent>()
 
@@ -103,13 +105,17 @@ class WaitlistJoiner(
     }
 
     /**
-     * Hashes an IP address using SHA-256 for anonymization.
+     * Hashes an IP address using HMAC-SHA256 for anonymization.
      *
      * @param ipAddress The IP address to hash.
-     * @return The SHA-256 hash as a hexadecimal string.
+     * @return The HMAC-SHA256 hash as a hexadecimal string.
      */
-    private fun hashIpAddress(ipAddress: String): String =
-        HashUtils.hashSha256(ipAddress)
+    private fun hashIpAddress(ipAddress: String): String {
+        require(securityProperties.ipHmacSecret.isNotBlank()) {
+            "No HMAC secret configured for IP address hashing. Define waitlist.security.ip-hmac-secret"
+        }
+        return HashUtils.hmacSha256(ipAddress, securityProperties.ipHmacSecret)
+    }
 
     companion object {
         private val logger = LoggerFactory.getLogger(WaitlistJoiner::class.java)

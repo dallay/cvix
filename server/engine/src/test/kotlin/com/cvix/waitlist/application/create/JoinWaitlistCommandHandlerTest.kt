@@ -4,6 +4,7 @@ import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.waitlist.domain.WaitlistRepository
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
+import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -19,6 +20,7 @@ internal class JoinWaitlistCommandHandlerTest {
     private lateinit var eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>
     private lateinit var repository: WaitlistRepository
     private lateinit var metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
+    private lateinit var securityProperties: WaitlistSecurityProperties
     private lateinit var waitlistJoiner: WaitlistJoiner
     private lateinit var joinWaitlistCommandHandler: JoinWaitlistCommandHandler
     private val faker = Faker()
@@ -28,8 +30,9 @@ internal class JoinWaitlistCommandHandlerTest {
         eventPublisher = mockk(relaxed = true, relaxUnitFun = true)
         repository = mockk(relaxed = true, relaxUnitFun = true)
         metrics = mockk(relaxed = true, relaxUnitFun = true)
+        securityProperties = WaitlistSecurityProperties(ipHmacSecret = "test-secret-key")
 
-        waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics)
+        waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics, securityProperties)
         joinWaitlistCommandHandler = JoinWaitlistCommandHandler(waitlistJoiner)
     }
 

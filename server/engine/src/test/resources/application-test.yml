@@ -58,3 +58,8 @@ resume:
     docker:
       # Increased to 120s for CI environments with slow Docker image pulls.
       timeout-seconds: 120
+
+waitlist:
+  security:
+    # Test HMAC secret for IP address hashing
+    ip-hmac-secret: "test-hmac-secret-for-integration-tests-12345678"

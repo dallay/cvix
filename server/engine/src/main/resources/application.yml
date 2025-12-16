@@ -234,6 +234,11 @@ resume:
       # Path to filesystem templates (only used when FILESYSTEM is in types)
       # Can be absolute or relative to the application working directory
       path: ${TEMPLATE_SOURCE_PATH:templates/resume}
+waitlist:
+  security:
+    # HMAC secret for IP address hashing (required)
+    # Must be set via WAITLIST_IP_HMAC_SECRET environment variable
+    ip-hmac-secret: ${WAITLIST_IP_HMAC_SECRET:}
 springdoc:
   show-actuator: true
   api-docs:
