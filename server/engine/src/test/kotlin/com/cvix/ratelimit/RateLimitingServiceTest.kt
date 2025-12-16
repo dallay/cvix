@@ -216,9 +216,27 @@ class RateLimitingServiceTest {
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(10, 100, resetTime)) andThen
-            Mono.just(RateLimitResult.Allowed(9, 100, resetTime)) andThen
-            Mono.just(RateLimitResult.Allowed(8, 100, resetTime))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 10,
+                limitCapacity = 100,
+                resetTime = resetTime,
+            ),
+        ) andThen
+            Mono.just(
+                RateLimitResult.Allowed(
+                    remainingTokens = 9,
+                    limitCapacity = 100,
+                    resetTime = resetTime,
+                ),
+            ) andThen
+            Mono.just(
+                RateLimitResult.Allowed(
+                    remainingTokens = 8,
+                    limitCapacity = 100,
+                    resetTime = resetTime,
+                ),
+            )
 
         // When/Then - First request
         StepVerifier.create(service.consumeToken(identifier, endpoint))
@@ -259,7 +277,13 @@ class RateLimitingServiceTest {
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(1, 100, Instant.now().plusSeconds(3600))) andThen
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                1,
+                100,
+                Instant.now().plusSeconds(3600),
+            ),
+        ) andThen
             Mono.just(RateLimitResult.Denied(retryAfter, 100))
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
