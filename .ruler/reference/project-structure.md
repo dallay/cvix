@@ -65,13 +65,13 @@ client/
 └── e2e/                    # Playwright E2E tests
 ```
 
-| Directory | Purpose |
-|-----------|---------|
-| `client/apps/webapp` | Main Vue.js SPA |
-| `client/apps/marketing` | Astro-based marketing and landing page site |
-| `client/packages/ui` | Shared UI components (Shadcn-Vue) |
-| `client/packages/*` | Shared frontend code, utilities, TypeScript configurations |
-| `client/e2e` | End-to-end tests with Playwright |
+| Directory               | Purpose                                                    |
+|-------------------------|------------------------------------------------------------|
+| `client/apps/webapp`    | Main Vue.js SPA                                            |
+| `client/apps/marketing` | Astro-based marketing and landing page site                |
+| `client/packages/ui`    | Shared UI components (Shadcn-Vue)                          |
+| `client/packages/*`     | Shared frontend code, utilities, TypeScript configurations |
+| `client/e2e`            | End-to-end tests with Playwright                           |
 
 ---
 
@@ -89,9 +89,9 @@ shared/
         └── test/kotlin/
 ```
 
-| Directory | Purpose |
-|-----------|---------|
-| `shared/common` | Common Kotlin utilities (domain-agnostic) |
+| Directory                   | Purpose                                        |
+|-----------------------------|------------------------------------------------|
+| `shared/common`             | Common Kotlin utilities (domain-agnostic)      |
 | `shared/spring-boot-common` | Shared components for Spring Boot applications |
 
 ---

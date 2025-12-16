@@ -4,12 +4,12 @@
 
 ## Key Concepts
 
-| Concept | Description |
-|---------|-------------|
-| **Core Domain** | Central part containing business logic, independent of external systems and frameworks |
-| **Ports** | Interfaces defining how the core domain interacts with external systems |
-| **Adapters** | Implementations of ports that connect the core domain to external systems |
-| **Dependency Inversion** | Core domain defines interfaces (ports) that adapters implement |
+| Concept                  | Description                                                                            |
+|--------------------------|----------------------------------------------------------------------------------------|
+| **Core Domain**          | Central part containing business logic, independent of external systems and frameworks |
+| **Ports**                | Interfaces defining how the core domain interacts with external systems                |
+| **Adapters**             | Implementations of ports that connect the core domain to external systems              |
+| **Dependency Inversion** | Core domain defines interfaces (ports) that adapters implement                         |
 
 ---
 
@@ -30,11 +30,11 @@ Each feature is self-contained and follows this standard structure:
 domain ← application ← infrastructure
 ```
 
-| Layer | Depends On |
-|-------|------------|
-| **Infrastructure** | Application and Domain |
-| **Application** | Only Domain |
-| **Domain** | Nothing (pure business logic) |
+| Layer              | Depends On                    |
+|--------------------|-------------------------------|
+| **Infrastructure** | Application and Domain        |
+| **Application**    | Only Domain                   |
+| **Domain**         | Nothing (pure business logic) |
 
 ---
 
@@ -46,13 +46,13 @@ The innermost layer containing **pure Kotlin code with no framework dependencies
 
 #### Contains
 
-| Element | Description | Example |
-|---------|-------------|---------|
-| **Entities** | Core business objects | `Workspace.kt`, `WorkspaceMember.kt` |
-| **Value Objects** | Immutable objects representing domain concepts | `WorkspaceId.kt`, `WorkspaceRole.kt` |
-| **Repository Interfaces** | Contracts for data access | `WorkspaceRepository.kt` |
-| **Domain Events** | Events that represent business facts | `WorkspaceCreatedEvent.kt` |
-| **Domain Exceptions** | Business-specific exceptions | `WorkspaceNotFoundException.kt` |
+| Element                   | Description                                    | Example                              |
+|---------------------------|------------------------------------------------|--------------------------------------|
+| **Entities**              | Core business objects                          | `Workspace.kt`, `WorkspaceMember.kt` |
+| **Value Objects**         | Immutable objects representing domain concepts | `WorkspaceId.kt`, `WorkspaceRole.kt` |
+| **Repository Interfaces** | Contracts for data access                      | `WorkspaceRepository.kt`             |
+| **Domain Events**         | Events that represent business facts           | `WorkspaceCreatedEvent.kt`           |
+| **Domain Exceptions**     | Business-specific exceptions                   | `WorkspaceNotFoundException.kt`      |
 
 #### Example Structure
 
@@ -139,14 +139,14 @@ The outermost layer implementing technical concerns and framework integration. O
 
 #### Responsibilities
 
-| Directory | Purpose |
-|-----------|---------|
-| `http/` | REST controllers that receive HTTP requests and invoke command/query handlers |
-| `persistence/` | Database adapters implementing domain repository interfaces using Spring Data R2DBC |
-| `persistence/entity/` | Database-specific entities |
-| `persistence/mapper/` | Conversion between domain models and database entities |
-| `persistence/repository/` | Spring Data repository interfaces |
-| `event/` | Event publishing infrastructure (message queues, event buses) |
+| Directory                 | Purpose                                                                             |
+|---------------------------|-------------------------------------------------------------------------------------|
+| `http/`                   | REST controllers that receive HTTP requests and invoke command/query handlers       |
+| `persistence/`            | Database adapters implementing domain repository interfaces using Spring Data R2DBC |
+| `persistence/entity/`     | Database-specific entities                                                          |
+| `persistence/mapper/`     | Conversion between domain models and database entities                              |
+| `persistence/repository/` | Spring Data repository interfaces                                                   |
+| `event/`                  | Event publishing infrastructure (message queues, event buses)                       |
 
 #### Key Principles (Infrastructure Layer)
 

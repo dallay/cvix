@@ -17,17 +17,17 @@
 
 ## Naming Conventions
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Files (TypeScript) | `kebab-case.ts` | `user-profile-card.ts` |
-| Files (Vue) | `PascalCase.vue` | `UserProfileCard.vue` |
-| Directories | `kebab-case` | `user-profile/`, `resume-generator/` |
-| Types/Interfaces | `PascalCase` | `UserProfile`, `ResumeData` |
-| Variables/Functions | `camelCase` | `userProfile`, `getResumeData` |
-| Constants | `UPPER_SNAKE_CASE` | `MAX_RESUME_LENGTH` |
-| Composables | `useXxx` prefix | `useResumeForm.ts` |
-| Stores (Pinia) | `useXxxStore` | `useUserStore.ts` |
-| Components | `PascalCase.vue` | `ResumePreview.vue` |
+| Element             | Convention         | Example                              |
+|---------------------|--------------------|--------------------------------------|
+| Files (TypeScript)  | `kebab-case.ts`    | `user-profile-card.ts`               |
+| Files (Vue)         | `PascalCase.vue`   | `UserProfileCard.vue`                |
+| Directories         | `kebab-case`       | `user-profile/`, `resume-generator/` |
+| Types/Interfaces    | `PascalCase`       | `UserProfile`, `ResumeData`          |
+| Variables/Functions | `camelCase`        | `userProfile`, `getResumeData`       |
+| Constants           | `UPPER_SNAKE_CASE` | `MAX_RESUME_LENGTH`                  |
+| Composables         | `useXxx` prefix    | `useResumeForm.ts`                   |
+| Stores (Pinia)      | `useXxxStore`      | `useUserStore.ts`                    |
+| Components          | `PascalCase.vue`   | `ResumePreview.vue`                  |
 
 ## Functions
 

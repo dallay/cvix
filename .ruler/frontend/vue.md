@@ -101,10 +101,10 @@ import { ref, computed } from 'vue';
 export const useCounter = (initial = 0) => {
   const count = ref(initial);
   const doubled = computed(() => count.value * 2);
-  
+
   const increment = () => count.value++;
   const decrement = () => count.value--;
-  
+
   return { count, doubled, increment, decrement };
 };
 ```
@@ -192,11 +192,11 @@ const { handleSubmit, validateField } = useForm<FormData>({
 
 ## Communication Between Components
 
-| Scenario | Approach |
-|----------|----------|
-| Parent-Child | Props (down) and events (up) |
+| Scenario        | Approach                         |
+|-----------------|----------------------------------|
+| Parent-Child    | Props (down) and events (up)     |
 | Distant/Sibling | Pinia store or shared composable |
-| **Avoid** | Global event buses |
+| **Avoid**       | Global event buses               |
 
 ## Performance
 

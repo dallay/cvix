@@ -1,21 +1,23 @@
 # Database Guidelines
 
-> Guidelines for database design, including UUID strategy, Row-Level Security (RLS), and Liquibase migrations.
+> Guidelines for database design, including UUID strategy, Row-Level Security (RLS), and Liquibase
+> migrations.
 
 ## UUID Strategy
 
-| Aspect | Guideline |
-|--------|-----------|
-| **Version** | Use UUID version 4 (randomly generated) for all primary keys |
+| Aspect         | Guideline                                                                                                                                                                 |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Version**    | Use UUID version 4 (randomly generated) for all primary keys                                                                                                              |
 | **Generation** | Prefer client-side UUID generation (offline first, e.g., `crypto.randomUUID()` in browsers). Server-side generation only for system jobs, migrations, legacy integrations |
-| **Storage** | Store as native `UUID` type in PostgreSQL (efficient for storage and indexing) |
-| **Usage** | Use UUIDs as primary keys for all tables and as external identifiers in APIs |
+| **Storage**    | Store as native `UUID` type in PostgreSQL (efficient for storage and indexing)                                                                                            |
+| **Usage**      | Use UUIDs as primary keys for all tables and as external identifiers in APIs                                                                                              |
 
 ---
 
 ## Row-Level Security (RLS)
 
-RLS is a PostgreSQL feature used to enforce that queries automatically filter rows the current user is not allowed to see. This is a **critical component** of our multi-tenant security model.
+RLS is a PostgreSQL feature used to enforce that queries automatically filter rows the current user
+is not allowed to see. This is a **critical component** of our multi-tenant security model.
 
 ### RLS Pattern
 
@@ -32,13 +34,14 @@ RLS is a PostgreSQL feature used to enforce that queries automatically filter ro
 
 ```sql
 CREATE POLICY tenant_isolation ON my_table
-  USING (tenant_id = current_setting('app.current_tenant', true)::uuid)
-  WITH CHECK (tenant_id = current_setting('app.current_tenant', true)::uuid);
+    USING (tenant_id = current_setting('app.current_tenant', true)::uuid)
+    WITH CHECK (tenant_id = current_setting('app.current_tenant', true)::uuid);
 ```
 
 ### Application Integration
 
-- Set `app.current_tenant` session variable **immediately after acquiring a database connection** and **before executing any queries**
+- Set `app.current_tenant` session variable **immediately after acquiring a database connection**
+  and **before executing any queries**
 - Use `SET LOCAL` to ensure the setting only lasts for the duration of a transaction:
 
 ```sql
@@ -58,8 +61,10 @@ CREATE INDEX IF NOT EXISTS idx_my_table_tenant_id ON my_table (tenant_id);
 
 ### Security Notes
 
-- **`BYPASSRLS`**: Only grant this privilege to superuser/maintenance roles. Application roles must **not** have it.
-- **Connection Pooling**: Ensure your connection pooler is configured to clean up session variables to prevent state leakage between different tenants.
+- **`BYPASSRLS`**: Only grant this privilege to superuser/maintenance roles. Application roles must
+  **not** have it.
+- **Connection Pooling**: Ensure your connection pooler is configured to clean up session variables
+  to prevent state leakage between different tenants.
 
 ---
 
@@ -95,16 +100,16 @@ CREATE INDEX IF NOT EXISTS idx_my_table_tenant_id ON my_table (tenant_id);
 
 ### Migration Guidelines
 
-| Rule | Description |
-|------|-------------|
-| **Master file** | `master.yaml` includes all changes and data in execution order |
-| **Naming** | Organize by number and topic, use suffixes for variants (triggers, rls, constraints) |
-| **Dev/Test data** | Located in `changelog/data/`, loaded only in non-production environments |
-| **Immutability** | **Never modify** a migration file that has already been applied in production |
-| **Format** | Use YAML files for migrations, CSV files for bulk data |
-| **Documentation** | Document each relevant migration in the `README.md` inside `changelog` |
-| **Testing** | Test migrations on a clean database and in staging before production |
-| **Atomicity** | Keep changes small, atomic, and use descriptive names |
+| Rule              | Description                                                                          |
+|-------------------|--------------------------------------------------------------------------------------|
+| **Master file**   | `master.yaml` includes all changes and data in execution order                       |
+| **Naming**        | Organize by number and topic, use suffixes for variants (triggers, rls, constraints) |
+| **Dev/Test data** | Located in `changelog/data/`, loaded only in non-production environments             |
+| **Immutability**  | **Never modify** a migration file that has already been applied in production        |
+| **Format**        | Use YAML files for migrations, CSV files for bulk data                               |
+| **Documentation** | Document each relevant migration in the `README.md` inside `changelog`               |
+| **Testing**       | Test migrations on a clean database and in staging before production                 |
+| **Atomicity**     | Keep changes small, atomic, and use descriptive names                                |
 
 ### Best Practices
 

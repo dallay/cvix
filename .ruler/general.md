@@ -20,13 +20,13 @@ The result is a simple, elegant tool that turns raw career data into a compellin
 
 All branch names must follow a prefix-based convention to clearly indicate their purpose.
 
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `feature/` | New features or enhancements | `feature/user-authentication` |
-| `fix/` | Bug fixes | `fix/login-form-validation` |
-| `docs/` | Documentation-only changes | `docs/update-readme` |
-| `chore/` | Routine maintenance, refactoring, or build-related tasks | `chore/upgrade-gradle-wrapper` |
-| `refactor/` | Code changes that neither fix a bug nor add a feature | `refactor/extract-user-service` |
+| Prefix      | Purpose                                                  | Example                         |
+|-------------|----------------------------------------------------------|---------------------------------|
+| `feature/`  | New features or enhancements                             | `feature/user-authentication`   |
+| `fix/`      | Bug fixes                                                | `fix/login-form-validation`     |
+| `docs/`     | Documentation-only changes                               | `docs/update-readme`            |
+| `chore/`    | Routine maintenance, refactoring, or build-related tasks | `chore/upgrade-gradle-wrapper`  |
+| `refactor/` | Code changes that neither fix a bug nor add a feature    | `refactor/extract-user-service` |
 
 ### Commit Message Format
 
@@ -44,18 +44,18 @@ We adhere to the [Conventional Commits](https://www.conventionalcommits.org/en/v
 
 Must be one of the following:
 
-| Type | Description |
-|------|-------------|
-| `feat` | A new feature |
-| `fix` | A bug fix |
-| `docs` | Documentation only changes |
-| `style` | Changes that do not affect the meaning of the code (white-space, formatting, etc) |
-| `refactor` | A code change that neither fixes a bug nor adds a feature |
-| `perf` | A code change that improves performance |
-| `test` | Adding missing tests or correcting existing ones |
-| `build` | Changes that affect the build system or external dependencies |
-| `ci` | Changes to our CI configuration files and scripts |
-| `chore` | Other changes that don't modify src or test files |
+| Type       | Description                                                                       |
+|------------|-----------------------------------------------------------------------------------|
+| `feat`     | A new feature                                                                     |
+| `fix`      | A bug fix                                                                         |
+| `docs`     | Documentation only changes                                                        |
+| `style`    | Changes that do not affect the meaning of the code (white-space, formatting, etc) |
+| `refactor` | A code change that neither fixes a bug nor adds a feature                         |
+| `perf`     | A code change that improves performance                                           |
+| `test`     | Adding missing tests or correcting existing ones                                  |
+| `build`    | Changes that affect the build system or external dependencies                     |
+| `ci`       | Changes to our CI configuration files and scripts                                 |
+| `chore`    | Other changes that don't modify src or test files                                 |
 
 #### Scope (Optional)
 
@@ -83,19 +83,19 @@ Closes #123
 
 We encourage adding a single, standard Unicode emoji to commit messages to make PRs and changelogs more scannable.
 
-| Type | Emoji | Example |
-|------|-------|---------|
-| feat | ✨ | `feat(auth): ✨ add password reset functionality` |
-| fix | 🐛 | `fix(api): 🐛 correct pagination query parameter` |
-| docs | 📝 | `docs(readme): 📝 update quickstart instructions` |
-| style | 🎨 | `style(ui): 🎨 tidy CSS and fix spacing` |
-| refactor | ♻️ | `refactor(core): ♻️ extract user service` |
-| perf | 🚀 | `perf(cache): 🚀 improve lookup throughput` |
-| test | 🧪 | `test(api): 🧪 add integration test for pagination` |
-| build/deps | 📦 | `build(deps): 📦 bump vite to ^7.1.0` |
-| ci | ⚙️ | `ci(actions): ⚙️ add workflow for release` |
-| chore | 🔧 | `chore: 🔧 update README badges` |
-| revert/remove | 🔥 | `fix(api): 🔥 remove deprecated endpoint` |
+| Type          | Emoji | Example                                             |
+|---------------|-------|-----------------------------------------------------|
+| feat          | ✨     | `feat(auth): ✨ add password reset functionality`    |
+| fix           | 🐛    | `fix(api): 🐛 correct pagination query parameter`   |
+| docs          | 📝    | `docs(readme): 📝 update quickstart instructions`   |
+| style         | 🎨    | `style(ui): 🎨 tidy CSS and fix spacing`            |
+| refactor      | ♻️    | `refactor(core): ♻️ extract user service`           |
+| perf          | 🚀    | `perf(cache): 🚀 improve lookup throughput`         |
+| test          | 🧪    | `test(api): 🧪 add integration test for pagination` |
+| build/deps    | 📦    | `build(deps): 📦 bump vite to ^7.1.0`               |
+| ci            | ⚙️    | `ci(actions): ⚙️ add workflow for release`          |
+| chore         | 🔧    | `chore: 🔧 update README badges`                    |
+| revert/remove | 🔥    | `fix(api): 🔥 remove deprecated endpoint`           |
 
 **Guidelines:**
 

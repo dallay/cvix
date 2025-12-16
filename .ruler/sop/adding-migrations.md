@@ -14,13 +14,13 @@
 
 ### 1. Determine Migration Type
 
-| Type | Naming Pattern | Example |
-|------|----------------|---------|
-| New feature schema | `NNN-feature-name.yaml` | `005-user-preferences.yaml` |
-| Triggers | `NNNa-feature-triggers.yaml` | `005a-user-preferences-triggers.yaml` |
-| RLS policies | `NNNb-feature-rls.yaml` | `005b-user-preferences-rls.yaml` |
-| Constraints | `NNNc-feature-constraints.yaml` | `005c-user-preferences-constraints.yaml` |
-| Dev/Test data | `999NNNNN-data-description.yaml` | `99900002-data-dev-preferences.yaml` |
+| Type               | Naming Pattern                   | Example                                  |
+|--------------------|----------------------------------|------------------------------------------|
+| New feature schema | `NNN-feature-name.yaml`          | `005-user-preferences.yaml`              |
+| Triggers           | `NNNa-feature-triggers.yaml`     | `005a-user-preferences-triggers.yaml`    |
+| RLS policies       | `NNNb-feature-rls.yaml`          | `005b-user-preferences-rls.yaml`         |
+| Constraints        | `NNNc-feature-constraints.yaml`  | `005c-user-preferences-constraints.yaml` |
+| Dev/Test data      | `999NNNNN-data-description.yaml` | `99900002-data-dev-preferences.yaml`     |
 
 ### 2. Create Migration File
 
@@ -76,14 +76,14 @@ databaseChangeLog:
             sql: |
               ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
               ALTER TABLE user_preferences FORCE ROW LEVEL SECURITY;
-              
+
               CREATE POLICY tenant_isolation ON user_preferences
                 USING (user_id IN (
-                  SELECT id FROM users 
+                  SELECT id FROM users
                   WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
                 ))
                 WITH CHECK (user_id IN (
-                  SELECT id FROM users 
+                  SELECT id FROM users
                   WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
                 ));
 ```
@@ -167,9 +167,9 @@ For complex changes, include rollback instructions:
 
 ## Common Pitfalls
 
-| Issue | Solution |
-|-------|----------|
-| Migration already applied | Never modify applied migrations; create a new one |
-| Missing RLS | Always add RLS for tenant-scoped tables |
-| Poor index coverage | Index columns used in WHERE clauses and JOINs |
-| Large data migrations | Split into smaller changesets with proper batching |
+| Issue                     | Solution                                           |
+|---------------------------|----------------------------------------------------|
+| Migration already applied | Never modify applied migrations; create a new one  |
+| Missing RLS               | Always add RLS for tenant-scoped tables            |
+| Poor index coverage       | Index columns used in WHERE clauses and JOINs      |
+| Large data migrations     | Split into smaller changesets with proper batching |

@@ -8,13 +8,13 @@
 
 Use HTML elements for their intended purpose to improve SEO, accessibility, and maintainability:
 
-| Element | Purpose |
-|---------|---------|
-| `<nav>` | Navigation menus |
-| `<main>` | Primary content (one per page) |
-| `<article>` | Self-contained content |
-| `<section>` | Thematic groupings |
-| `<aside>` | Tangentially related content |
+| Element                 | Purpose                          |
+|-------------------------|----------------------------------|
+| `<nav>`                 | Navigation menus                 |
+| `<main>`                | Primary content (one per page)   |
+| `<article>`             | Self-contained content           |
+| `<section>`             | Thematic groupings               |
+| `<aside>`               | Tangentially related content     |
 | `<header>` / `<footer>` | Page/section headers and footers |
 
 **Document Structure:**
@@ -26,14 +26,14 @@ Use HTML elements for their intended purpose to improve SEO, accessibility, and 
 
 ### Accessibility (WCAG 2.2 / 3.0 Compliance)
 
-| Requirement | Implementation |
-|-------------|----------------|
-| **Alternative Text** | All `<img>` elements must have descriptive `alt` attributes. Decorative images use `alt=""` |
-| **ARIA Attributes** | Use only when semantic HTML is insufficient. Prefer `<button>` over `<div role="button">` |
+| Requirement             | Implementation                                                                                   |
+|-------------------------|--------------------------------------------------------------------------------------------------|
+| **Alternative Text**    | All `<img>` elements must have descriptive `alt` attributes. Decorative images use `alt=""`      |
+| **ARIA Attributes**     | Use only when semantic HTML is insufficient. Prefer `<button>` over `<div role="button">`        |
 | **Keyboard Navigation** | All interactive elements must be keyboard accessible. Use `tabindex="0"` (avoid positive values) |
-| **Color Contrast** | WCAG AA minimum: 4.5:1 for normal text, 3:1 for large text |
-| **Skip Links** | Provide "Skip to main content" links for keyboard and screen reader users |
-| **Form Labels** | All inputs must have associated `<label>` elements or `aria-label` attributes |
+| **Color Contrast**      | WCAG AA minimum: 4.5:1 for normal text, 3:1 for large text                                       |
+| **Skip Links**          | Provide "Skip to main content" links for keyboard and screen reader users                        |
+| **Form Labels**         | All inputs must have associated `<label>` elements or `aria-label` attributes                    |
 
 ### Performance
 
@@ -95,13 +95,13 @@ eval(userCode);
 
 ### Performance Optimization
 
-| Technique | Implementation |
-|-----------|----------------|
-| **JIT Mode** | Enable Just-in-Time compilation in Tailwind |
-| **Purging** | Ensure proper PurgeCSS/content configuration |
-| **Critical CSS** | Inline critical CSS for above-the-fold content |
+| Technique           | Implementation                                                    |
+|---------------------|-------------------------------------------------------------------|
+| **JIT Mode**        | Enable Just-in-Time compilation in Tailwind                       |
+| **Purging**         | Ensure proper PurgeCSS/content configuration                      |
+| **Critical CSS**    | Inline critical CSS for above-the-fold content                    |
 | **CSS Containment** | Use `contain: layout` or `contain: paint` for isolated components |
-| **Will-Change** | Use sparingly, only for elements that will definitely animate |
+| **Will-Change**     | Use sparingly, only for elements that will definitely animate     |
 
 ### Accessibility in CSS
 
@@ -131,13 +131,13 @@ button:focus-visible {
 
 ### Units & Sizing
 
-| Use Case | Unit | Reason |
-|----------|------|--------|
-| Font sizes | `rem` | Respects user font size preferences |
-| Spacing | `rem` or `em` | Scales with font size |
-| Borders | `px` | 1px should always be 1px |
-| Media queries | `em` | Supports browser zoom |
-| Line height | unitless | e.g., `1.5` instead of `1.5rem` |
+| Use Case      | Unit          | Reason                              |
+|---------------|---------------|-------------------------------------|
+| Font sizes    | `rem`         | Respects user font size preferences |
+| Spacing       | `rem` or `em` | Scales with font size               |
+| Borders       | `px`          | 1px should always be 1px            |
+| Media queries | `em`          | Supports browser zoom               |
+| Line height   | unitless      | e.g., `1.5` instead of `1.5rem`     |
 
 ### Color & Contrast
 
@@ -153,10 +153,10 @@ button:focus-visible {
 
 ### Best Practices
 
-| Rule | Description |
-|------|-------------|
-| Avoid `!important` | Use specificity and proper cascade instead |
-| Consistent Spacing | Use Tailwind's spacing scale consistently |
-| Color System | Stick to defined palette; avoid arbitrary values |
+| Rule               | Description                                            |
+|--------------------|--------------------------------------------------------|
+| Avoid `!important` | Use specificity and proper cascade instead             |
+| Consistent Spacing | Use Tailwind's spacing scale consistently              |
+| Color System       | Stick to defined palette; avoid arbitrary values       |
 | Z-Index Management | Define values centrally using Tailwind's z-index scale |
-| CSS Specificity | Keep low and consistent for predictable styles |
+| CSS Specificity    | Keep low and consistent for predictable styles         |

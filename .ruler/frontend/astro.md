@@ -6,13 +6,13 @@
 
 Astro is an all-in-one web framework for building content-focused, high-performance websites:
 
-| Feature | Description |
-|---------|-------------|
+| Feature                 | Description                                                   |
+|-------------------------|---------------------------------------------------------------|
 | **Island Architecture** | Server-first design to reduce client-side JavaScript overhead |
-| **Content-Focused** | Built-in content collections and Markdown support |
-| **HTML-First** | `.astro` templating syntax follows HTML standards |
-| **Framework Agnostic** | Supports React, Vue, Svelte, Preact, and Solid |
-| **Powered by Vite** | Fast development server with built-in JS and CSS bundling |
+| **Content-Focused**     | Built-in content collections and Markdown support             |
+| **HTML-First**          | `.astro` templating syntax follows HTML standards             |
+| **Framework Agnostic**  | Supports React, Vue, Svelte, Preact, and Solid                |
+| **Powered by Vite**     | Fast development server with built-in JS and CSS bundling     |
 
 ## Project Structure
 
@@ -93,13 +93,13 @@ export const collections = { blog };
 - **Avoid shipping unnecessary JavaScript** to the client—prefer static HTML where possible
 - Use `client:*` directives strategically to hydrate interactive components:
 
-| Directive | When it Hydrates |
-|-----------|------------------|
-| `client:load` | Immediately on page load |
-| `client:idle` | When browser is idle |
+| Directive        | When it Hydrates               |
+|------------------|--------------------------------|
+| `client:load`    | Immediately on page load       |
+| `client:idle`    | When browser is idle           |
 | `client:visible` | When component enters viewport |
-| `client:media` | When media query matches |
-| `client:only` | Client-side only (no SSR) |
+| `client:media`   | When media query matches       |
+| `client:only`    | Client-side only (no SSR)      |
 
 - Optimize images using Astro's built-in `<Image />` component
 

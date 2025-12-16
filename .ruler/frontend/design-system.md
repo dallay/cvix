@@ -16,54 +16,54 @@ All colors are defined using the **OKLCH color space** for better perceptual uni
 
 #### Core Colors
 
-| Token | Purpose |
-|-------|---------|
-| `--background` | Main background color for the application |
-| `--foreground` | Primary text color |
-| `--card` | Background for card-like components |
-| `--card-foreground` | Text color on cards |
-| `--popover` | Background for popovers and tooltips |
-| `--popover-foreground` | Text color for popovers |
+| Token                  | Purpose                                   |
+|------------------------|-------------------------------------------|
+| `--background`         | Main background color for the application |
+| `--foreground`         | Primary text color                        |
+| `--card`               | Background for card-like components       |
+| `--card-foreground`    | Text color on cards                       |
+| `--popover`            | Background for popovers and tooltips      |
+| `--popover-foreground` | Text color for popovers                   |
 
 #### Interactive Colors
 
-| Token | Purpose |
-|-------|---------|
-| `--primary` | Primary action color (buttons, links) |
-| `--primary-foreground` | Text on primary colored elements |
-| `--secondary` | Secondary action color |
-| `--secondary-foreground` | Text on secondary colored elements |
-| `--accent` | Accent color for highlights |
-| `--accent-foreground` | Text on accented elements |
+| Token                    | Purpose                               |
+|--------------------------|---------------------------------------|
+| `--primary`              | Primary action color (buttons, links) |
+| `--primary-foreground`   | Text on primary colored elements      |
+| `--secondary`            | Secondary action color                |
+| `--secondary-foreground` | Text on secondary colored elements    |
+| `--accent`               | Accent color for highlights           |
+| `--accent-foreground`    | Text on accented elements             |
 
 #### Status Colors
 
-| Token | Purpose |
-|-------|---------|
-| `--destructive` | Destructive actions and errors |
-| `--muted` | Muted background for subtle elements |
-| `--muted-foreground` | Text for muted elements |
+| Token                | Purpose                              |
+|----------------------|--------------------------------------|
+| `--destructive`      | Destructive actions and errors       |
+| `--muted`            | Muted background for subtle elements |
+| `--muted-foreground` | Text for muted elements              |
 
 #### UI Elements
 
-| Token | Purpose |
-|-------|---------|
+| Token      | Purpose                         |
+|------------|---------------------------------|
 | `--border` | Border color for all components |
-| `--input` | Background for input fields |
-| `--ring` | Focus ring color |
+| `--input`  | Background for input fields     |
+| `--ring`   | Focus ring color                |
 
 #### Sidebar Tokens
 
-| Token | Purpose |
-|-------|---------|
-| `--sidebar` | Sidebar background |
-| `--sidebar-foreground` | Sidebar text color |
-| `--sidebar-primary` | Sidebar primary action color |
+| Token                          | Purpose                          |
+|--------------------------------|----------------------------------|
+| `--sidebar`                    | Sidebar background               |
+| `--sidebar-foreground`         | Sidebar text color               |
+| `--sidebar-primary`            | Sidebar primary action color     |
 | `--sidebar-primary-foreground` | Text on sidebar primary elements |
-| `--sidebar-accent` | Sidebar hover/active states |
-| `--sidebar-accent-foreground` | Text on sidebar accent elements |
-| `--sidebar-border` | Sidebar borders and separators |
-| `--sidebar-ring` | Sidebar focus ring color |
+| `--sidebar-accent`             | Sidebar hover/active states      |
+| `--sidebar-accent-foreground`  | Text on sidebar accent elements  |
+| `--sidebar-border`             | Sidebar borders and separators   |
+| `--sidebar-ring`               | Sidebar focus ring color         |
 
 #### Chart Colors
 
@@ -224,12 +224,12 @@ If you need to add new colors:
 
 ### Border Radius
 
-| Token | Size |
-|-------|------|
-| `--radius-sm` | base - 4px |
-| `--radius-md` | base - 2px |
+| Token         | Size                 |
+|---------------|----------------------|
+| `--radius-sm` | base - 4px           |
+| `--radius-md` | base - 2px           |
 | `--radius-lg` | base value (0.65rem) |
-| `--radius-xl` | base + 4px |
+| `--radius-xl` | base + 4px           |
 
 Use these via Tailwind: `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`
 

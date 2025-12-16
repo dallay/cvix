@@ -4,7 +4,8 @@
 
 ## General Style
 
-- Follow the official [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
+- Follow the
+  official [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
 - Use 4 spaces for indentation
 - Use `val` over `var` whenever possible
 - Prefer expression bodies for functions when concise
@@ -25,14 +26,17 @@
 ## Object-Oriented Design
 
 - Use `data class` for immutable models that primarily hold data
-- Use `sealed class` or `sealed interface` for restricted class hierarchies (result types, state machines)
+- Use `sealed class` or `sealed interface` for restricted class hierarchies (result types, state
+  machines)
 - Prefer composition over inheritance
 
 ## Collections and Functional Style
 
-- Use functional operators (`map`, `filter`, `fold`, etc.) over imperative loops where it improves readability
+- Use functional operators (`map`, `filter`, `fold`, etc.) over imperative loops where it improves
+  readability
 - Prefer immutable collections
-- Use functions like `toList()` or `toMap()` to create new collections instead of modifying existing ones
+- Use functions like `toList()` or `toMap()` to create new collections instead of modifying existing
+  ones
 
 ## Error Handling
 
@@ -42,12 +46,12 @@
 
 ## Naming Conventions
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Classes/Interfaces | `PascalCase` | `UserService`, `WorkspaceRepository` |
-| Functions/Variables | `camelCase` | `findById`, `userName` |
-| Constants | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| Test Methods | Backticks with description | `` `should return user when exists` `` |
+| Element             | Convention                 | Example                                |
+|---------------------|----------------------------|----------------------------------------|
+| Classes/Interfaces  | `PascalCase`               | `UserService`, `WorkspaceRepository`   |
+| Functions/Variables | `camelCase`                | `findById`, `userName`                 |
+| Constants           | `UPPER_SNAKE_CASE`         | `MAX_RETRY_COUNT`                      |
+| Test Methods        | Backticks with description | `` `should return user when exists` `` |
 
 ## Coroutines
 

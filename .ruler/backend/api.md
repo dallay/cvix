@@ -10,29 +10,29 @@
 
 ## HTTP Methods
 
-| Method  | Purpose                          | Example                      |
-|--------|-----------------------------------|------------------------------|
-| `GET`     | Retrieve a resource or collection   | `GET /users`, `GET /users/{id}`   |
-| `POST`    | Create a new resource              | `POST /users`                     |
-| `PUT`     | Replace/update an existing resource| `PUT /users/{id}`                 |
-| `PATCH`   | Partially update an existing resource | `PATCH /users/{id}`              |
-| `DELETE`  | Delete a resource                  | `DELETE /users/{id}`              |
+| Method   | Purpose                               | Example                         |
+|----------|---------------------------------------|---------------------------------|
+| `GET`    | Retrieve a resource or collection     | `GET /users`, `GET /users/{id}` |
+| `POST`   | Create a new resource                 | `POST /users`                   |
+| `PUT`    | Replace/update an existing resource   | `PUT /users/{id}`               |
+| `PATCH`  | Partially update an existing resource | `PATCH /users/{id}`             |
+| `DELETE` | Delete a resource                     | `DELETE /users/{id}`            |
 
 ## Status Codes
 
-| Code | Meaning | Usage |
-|------|---------|-------|
-| `200 OK` | Successful request | General success |
-| `201 Created` | Resource was created successfully | After POST |
-| `204 No Content` | Successful request with no response body | After DELETE |
-| `400 Bad Request` | Invalid request | Validation error |
-| `401 Unauthorized` | Authentication is required | Missing/invalid token |
-| `403 Forbidden` | Authenticated but not authorized | Insufficient permissions |
-| `404 Not Found` | Resource does not exist | Invalid ID |
-| `409 Conflict` | State conflict | Duplicate resource |
-| `422 Unprocessable Entity` | Semantic validation error | Business rule violation |
-| `429 Too Many Requests` | Rate limit exceeded | Throttling |
-| `500 Internal Server Error` | Generic server-side error | Unexpected failure |
+| Code                        | Meaning                                  | Usage                    |
+|-----------------------------|------------------------------------------|--------------------------|
+| `200 OK`                    | Successful request                       | General success          |
+| `201 Created`               | Resource was created successfully        | After POST               |
+| `204 No Content`            | Successful request with no response body | After DELETE             |
+| `400 Bad Request`           | Invalid request                          | Validation error         |
+| `401 Unauthorized`          | Authentication is required               | Missing/invalid token    |
+| `403 Forbidden`             | Authenticated but not authorized         | Insufficient permissions |
+| `404 Not Found`             | Resource does not exist                  | Invalid ID               |
+| `409 Conflict`              | State conflict                           | Duplicate resource       |
+| `422 Unprocessable Entity`  | Semantic validation error                | Business rule violation  |
+| `429 Too Many Requests`     | Rate limit exceeded                      | Throttling               |
+| `500 Internal Server Error` | Generic server-side error                | Unexpected failure       |
 
 ## Request and Response
 

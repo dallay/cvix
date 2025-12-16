@@ -39,10 +39,10 @@ We follow the principles of the testing pyramid to ensure a balanced and effecti
 
 ### Annotations and Base Classes
 
-| Annotation/Class | Purpose |
-|-----------------|---------|
-| `@UnitTest` | Mark unit tests for clear scope indication |
-| `@IntegrationTest` | Composite annotation for tests requiring full Spring Boot context |
+| Annotation/Class            | Purpose                                                                                             |
+|-----------------------------|-----------------------------------------------------------------------------------------------------|
+| `@UnitTest`                 | Mark unit tests for clear scope indication                                                          |
+| `@IntegrationTest`          | Composite annotation for tests requiring full Spring Boot context                                   |
 | `ControllerIntegrationTest` | Abstract base class for controller tests with pre-configured `WebTestClient`, CSRF, and JWT helpers |
 
 ### Unit Testing
@@ -225,13 +225,13 @@ test.describe('User Login Feature', () => {
 
 ### Assertion Best Practices
 
-| Assertion | Purpose |
-|-----------|---------|
-| `toBeVisible()` | Element is in DOM and visible |
-| `toHaveText()` | Exact text match |
-| `toContainText()` | Partial text match |
-| `toHaveURL()` | Verify page URL after action |
-| `toHaveCount()` | Assert number of elements |
+| Assertion         | Purpose                       |
+|-------------------|-------------------------------|
+| `toBeVisible()`   | Element is in DOM and visible |
+| `toHaveText()`    | Exact text match              |
+| `toContainText()` | Partial text match            |
+| `toHaveURL()`     | Verify page URL after action  |
+| `toHaveCount()`   | Assert number of elements     |
 
 ### Test Execution
 

@@ -24,37 +24,38 @@
 
 ## Error Handling
 
-- Implement a global `@ControllerAdvice` with `@ExceptionHandler` methods for uniform error responses
+- Implement a global `@ControllerAdvice` with `@ExceptionHandler` methods for uniform error
+  responses
 - Return a consistent, meaningful error model (e.g., `ApiError` with code and message)
 - Never expose internal exceptions or stack traces to the client
 
 ### HTTP Status Codes
 
-| Code | Usage |
-|------|-------|
-| `400 Bad Request` | Invalid input or validation errors |
-| `401 Unauthorized` | Missing or invalid authentication |
-| `403 Forbidden` | Authenticated but not authorized |
-| `404 Not Found` | Resource does not exist |
-| `409 Conflict` | State conflict (e.g., duplicate resource) |
-| `422 Unprocessable Entity` | Semantic validation errors |
-| `500 Internal Server Error` | Unexpected server errors |
+| Code                        | Usage                                     |
+|-----------------------------|-------------------------------------------|
+| `400 Bad Request`           | Invalid input or validation errors        |
+| `401 Unauthorized`          | Missing or invalid authentication         |
+| `403 Forbidden`             | Authenticated but not authorized          |
+| `404 Not Found`             | Resource does not exist                   |
+| `409 Conflict`              | State conflict (e.g., duplicate resource) |
+| `422 Unprocessable Entity`  | Semantic validation errors                |
+| `500 Internal Server Error` | Unexpected server errors                  |
 
 ### Error Response Format
 
 ```json
 {
-  "type": "https://example.com/problems/validation-error",
-  "title": "Validation Error",
-  "status": 400,
-  "detail": "Invalid input data",
-  "instance": "/api/users",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Email format is invalid"
-    }
-  ]
+    "type": "https://example.com/problems/validation-error",
+    "title": "Validation Error",
+    "status": 400,
+    "detail": "Invalid input data",
+    "instance": "/api/users",
+    "errors": [
+        {
+            "field": "email",
+            "message": "Email format is invalid"
+        }
+    ]
 }
 ```
 
@@ -74,9 +75,12 @@
 
 ## Configuration Management
 
-- Use `@ConfigurationProperties` for type-safe configuration binding instead of multiple `@Value` annotations
-- Organize configuration classes by feature or domain (e.g., `DatabaseProperties`, `SecurityProperties`)
-- Use Spring Profiles (`dev`, `test`, `staging`, `prod`) to manage environment-specific configuration
+- Use `@ConfigurationProperties` for type-safe configuration binding instead of multiple `@Value`
+  annotations
+- Organize configuration classes by feature or domain (e.g., `DatabaseProperties`,
+  `SecurityProperties`)
+- Use Spring Profiles (`dev`, `test`, `staging`, `prod`) to manage environment-specific
+  configuration
 - Externalize all environment-specific values using environment variables or configuration files
 - **Never commit sensitive configuration** (passwords, tokens) to version control
 
@@ -186,7 +190,8 @@ class CorsConfig {
 
 ## Request Validation
 
-- Use Bean Validation (`jakarta.validation`) annotations on DTOs: `@NotNull`, `@Size`, `@Email`, `@Pattern`
+- Use Bean Validation (`jakarta.validation`) annotations on DTOs: `@NotNull`, `@Size`, `@Email`,
+  `@Pattern`
 - Create custom validators for complex business rules using `@Constraint` and `ConstraintValidator`
 - Use validation groups to apply different rules for different scenarios (create vs. update)
 - Return all validation errors in a single response, not just the first error
@@ -206,27 +211,27 @@ annotation class UniqueEmail(
 
 - Use SLF4J with Logback as the logging framework
 - Configure log levels per environment:
-  - `dev`: `DEBUG` for application code, `INFO` for libraries
-  - `prod`: `INFO` for application code, `WARN` for libraries
+    - `dev`: `DEBUG` for application code, `INFO` for libraries
+    - `prod`: `INFO` for application code, `WARN` for libraries
 - Use structured logging (JSON format) in production for better log analysis
 - Include correlation IDs in logs for request tracing
 - **Never log sensitive data** (passwords, tokens, PII)
 
-| Level | Usage |
-|-------|-------|
-| `ERROR` | Critical failures requiring immediate attention |
-| `WARN` | Recoverable issues or degraded functionality |
-| `INFO` | Significant application events (startup, shutdown, major operations) |
-| `DEBUG` | Detailed diagnostic information for troubleshooting |
+| Level   | Usage                                                                |
+|---------|----------------------------------------------------------------------|
+| `ERROR` | Critical failures requiring immediate attention                      |
+| `WARN`  | Recoverable issues or degraded functionality                         |
+| `INFO`  | Significant application events (startup, shutdown, major operations) |
+| `DEBUG` | Detailed diagnostic information for troubleshooting                  |
 
 ## Application Profiles
 
-| Profile | Purpose |
-|---------|---------|
-| `dev` | Local development with mocks, verbose logging, hot reload |
-| `test` | Automated testing with embedded databases and mocks |
-| `staging` | Production-like environment for final validation |
-| `prod` | Production with optimized settings, external services, security hardening |
+| Profile   | Purpose                                                                   |
+|-----------|---------------------------------------------------------------------------|
+| `dev`     | Local development with mocks, verbose logging, hot reload                 |
+| `test`    | Automated testing with embedded databases and mocks                       |
+| `staging` | Production-like environment for final validation                          |
+| `prod`    | Production with optimized settings, external services, security hardening |
 
 - Activate profiles via `SPRING_PROFILES_ACTIVE` environment variable or `--spring.profiles.active`
 - Use `@Profile` annotation to conditionally load beans based on active profiles

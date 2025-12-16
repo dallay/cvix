@@ -30,12 +30,12 @@ This is a production-ready monorepo template for building SaaS applications. It 
 
 ## Quick Reference
 
-| Task                   | Reference                                         |
-|------------------------|--------------------------------------------------|
-| Writing Kotlin code    | `backend/kotlin.md`                              |
-| Creating API endpoints | `sop/adding-api-endpoint.md` + `backend/api.md`  |
-| Database changes       | `sop/adding-migrations.md` + `backend/database.md` |
-| Vue components         | `frontend/vue.md`                                |
+| Task                   | Reference                                            |
+|------------------------|------------------------------------------------------|
+| Writing Kotlin code    | `backend/kotlin.md`                                  |
+| Creating API endpoints | `sop/adding-api-endpoint.md` + `backend/api.md`      |
+| Database changes       | `sop/adding-migrations.md` + `backend/database.md`   |
+| Vue components         | `frontend/vue.md`                                    |
 | Styling                | `frontend/design-system.md` + `frontend/html-css.md` |
-| Testing                | `testing.md`                                     |
-| Git workflow           | `general.md`                                     |
+| Testing                | `testing.md`                                         |
+| Git workflow           | `general.md`                                         |
