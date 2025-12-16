@@ -14,23 +14,25 @@ echo "🔍 Verifying HTTPS Development Setup..."
 echo ""
 
 # Check if certificates exist
+CERTS_FOUND=false
 echo "1️⃣  Checking SSL certificates..."
 if [[ -f "infra/ssl/localhost.pem" && -f "infra/ssl/localhost-key.pem" && -f "infra/ssl/localhost.p12" ]]; then
     echo -e "${GREEN}✅ SSL certificates found${NC}"
+    CERTS_FOUND=true
     
     # Check certificate validity
     if openssl x509 -checkend 86400 -noout -in infra/ssl/localhost.pem > /dev/null 2>&1; then
         expiry=$(openssl x509 -enddate -noout -in infra/ssl/localhost.pem | cut -d= -f2)
         echo -e "${GREEN}   Certificate valid until: $expiry${NC}"
     else
-        echo -e "${RED}❌ Certificate expired or will expire within 24 hours${NC}"
+        echo -e "${YELLOW}⚠️  Certificate expired or will expire within 24 hours${NC}"
         echo -e "${YELLOW}   Run: cd infra && ./generate-ssl-certificate.sh${NC}"
-        exit 1
+        CERTS_FOUND=false
     fi
 else
-    echo -e "${RED}❌ SSL certificates not found${NC}"
-    echo -e "${YELLOW}   Run: cd infra && ./generate-ssl-certificate.sh${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️  SSL certificates not found${NC}"
+    echo -e "${YELLOW}   Dev servers will run in HTTP mode (graceful fallback)${NC}"
+    echo -e "${YELLOW}   To enable HTTPS: cd infra && ./generate-ssl-certificate.sh${NC}"
 fi
 
 echo ""
@@ -54,11 +56,15 @@ echo ""
 
 # Check Astro config
 echo "3️⃣  Checking Astro HTTPS configuration..."
-if grep -q "https:" client/apps/marketing/astro.config.mjs && \
-   grep -q "localhost-key.pem" client/apps/marketing/astro.config.mjs; then
-    echo -e "${GREEN}✅ Astro configured for HTTPS${NC}"
+if grep -q "getHttpsConfig()" client/apps/marketing/astro.config.mjs; then
+    echo -e "${GREEN}✅ Astro configured with automatic HTTPS detection${NC}"
+    if [[ "$CERTS_FOUND" == true ]]; then
+        echo -e "${GREEN}   → Will run on HTTPS${NC}"
+    else
+        echo -e "${YELLOW}   → Will run on HTTP (no certs)${NC}"
+    fi
 else
-    echo -e "${RED}❌ Astro HTTPS configuration missing or incorrect${NC}"
+    echo -e "${RED}❌ Astro HTTPS configuration missing getHttpsConfig()${NC}"
     exit 1
 fi
 
@@ -66,11 +72,15 @@ echo ""
 
 # Check Vite config (webapp)
 echo "4️⃣  Checking Vite (webapp) HTTPS configuration..."
-if grep -q "https:" client/apps/webapp/vite.config.ts && \
-   grep -q "localhost-key.pem" client/apps/webapp/vite.config.ts; then
-    echo -e "${GREEN}✅ Vite (webapp) configured for HTTPS${NC}"
+if grep -q "getHttpsConfig()" client/apps/webapp/vite.config.ts; then
+    echo -e "${GREEN}✅ Vite (webapp) configured with automatic HTTPS detection${NC}"
+    if [[ "$CERTS_FOUND" == true ]]; then
+        echo -e "${GREEN}   → Will run on HTTPS${NC}"
+    else
+        echo -e "${YELLOW}   → Will run on HTTP (no certs)${NC}"
+    fi
 else
-    echo -e "${RED}❌ Vite (webapp) HTTPS configuration missing or incorrect${NC}"
+    echo -e "${RED}❌ Vite (webapp) HTTPS configuration missing getHttpsConfig()${NC}"
     exit 1
 fi
 
@@ -84,7 +94,7 @@ if [[ -f ".env" ]]; then
     if [[ "$backend_url" == "https://localhost:8443" ]]; then
         echo -e "${GREEN}✅ BACKEND_URL correctly set to HTTPS${NC}"
     elif [[ "$backend_url" == "http://localhost:"* ]]; then
-        echo -e "${YELLOW}⚠️  BACKEND_URL is HTTP, should be HTTPS${NC}"
+        echo -e "${YELLOW}⚠️  BACKEND_URL is HTTP, backend requires HTTPS${NC}"
         echo -e "${YELLOW}   Update .env: BACKEND_URL=https://localhost:8443${NC}"
     else
         echo -e "${YELLOW}⚠️  BACKEND_URL not found in .env${NC}"
@@ -92,23 +102,41 @@ if [[ -f ".env" ]]; then
     fi
     
     marketing_url=$(grep "^PUBLIC_BASE_URL_LOCAL=" .env | cut -d= -f2 | tr -d '\r\n' || echo "")
-    if [[ "$marketing_url" == "https://localhost:7766" ]]; then
-        echo -e "${GREEN}✅ PUBLIC_BASE_URL_LOCAL correctly set to HTTPS${NC}"
-    elif [[ "$marketing_url" == "http://localhost:"* ]]; then
-        echo -e "${YELLOW}⚠️  PUBLIC_BASE_URL_LOCAL is HTTP, should be HTTPS${NC}"
-        echo -e "${YELLOW}   Update .env: PUBLIC_BASE_URL_LOCAL=https://localhost:7766${NC}"
+    if [[ "$CERTS_FOUND" == true ]]; then
+        if [[ "$marketing_url" == "https://localhost:7766" ]]; then
+            echo -e "${GREEN}✅ PUBLIC_BASE_URL_LOCAL correctly set to HTTPS${NC}"
+        else
+            echo -e "${YELLOW}⚠️  PUBLIC_BASE_URL_LOCAL should be HTTPS (certs found)${NC}"
+            echo -e "${YELLOW}   Update .env: PUBLIC_BASE_URL_LOCAL=https://localhost:7766${NC}"
+        fi
+    else
+        if [[ "$marketing_url" == "http://localhost:7766" ]]; then
+            echo -e "${GREEN}✅ PUBLIC_BASE_URL_LOCAL correctly set to HTTP (no certs)${NC}"
+        else
+            echo -e "${YELLOW}⚠️  PUBLIC_BASE_URL_LOCAL should be HTTP (no certs)${NC}"
+            echo -e "${YELLOW}   Update .env: PUBLIC_BASE_URL_LOCAL=http://localhost:7766${NC}"
+        fi
     fi
     
     webapp_url=$(grep "^PUBLIC_BASE_WEBAPP_URL_LOCAL=" .env | cut -d= -f2 | tr -d '\r\n' || echo "")
-    if [[ "$webapp_url" == "https://localhost:9876" ]]; then
-        echo -e "${GREEN}✅ PUBLIC_BASE_WEBAPP_URL_LOCAL correctly set to HTTPS${NC}"
-    elif [[ "$webapp_url" == "http://localhost:"* ]]; then
-        echo -e "${YELLOW}⚠️  PUBLIC_BASE_WEBAPP_URL_LOCAL is HTTP, should be HTTPS${NC}"
-        echo -e "${YELLOW}   Update .env: PUBLIC_BASE_WEBAPP_URL_LOCAL=https://localhost:9876${NC}"
+    if [[ "$CERTS_FOUND" == true ]]; then
+        if [[ "$webapp_url" == "https://localhost:9876" ]]; then
+            echo -e "${GREEN}✅ PUBLIC_BASE_WEBAPP_URL_LOCAL correctly set to HTTPS${NC}"
+        else
+            echo -e "${YELLOW}⚠️  PUBLIC_BASE_WEBAPP_URL_LOCAL should be HTTPS (certs found)${NC}"
+            echo -e "${YELLOW}   Update .env: PUBLIC_BASE_WEBAPP_URL_LOCAL=https://localhost:9876${NC}"
+        fi
+    else
+        if [[ "$webapp_url" == "http://localhost:9876" ]]; then
+            echo -e "${GREEN}✅ PUBLIC_BASE_WEBAPP_URL_LOCAL correctly set to HTTP (no certs)${NC}"
+        else
+            echo -e "${YELLOW}⚠️  PUBLIC_BASE_WEBAPP_URL_LOCAL should be HTTP (no certs)${NC}"
+            echo -e "${YELLOW}   Update .env: PUBLIC_BASE_WEBAPP_URL_LOCAL=http://localhost:9876${NC}"
+        fi
     fi
 else
     echo -e "${YELLOW}⚠️  .env file not found${NC}"
-    echo -e "${YELLOW}   Copy .env.example to .env and update with HTTPS URLs${NC}"
+    echo -e "${YELLOW}   Copy .env.example to .env${NC}"
 fi
 
 echo ""
@@ -132,13 +160,22 @@ done
 
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✨ HTTPS Development Setup Verification Complete!${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-echo "📚 Next steps:"
-echo "   1. Update your .env file with HTTPS URLs (if needed)"
-echo "   2. Start backend: ./gradlew :server:engine:bootRun --args='--spring.profiles.active=dev,tls'"
-echo "   3. Start marketing: cd client/apps/marketing && pnpm dev"
-echo "   4. Start webapp: cd client/apps/webapp && pnpm dev"
+if [[ "$CERTS_FOUND" == true ]]; then
+    echo -e "${GREEN}✨ HTTPS Development Setup Verified!${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo "📚 Next steps:"
+    echo "   1. Start backend: ./gradlew :server:engine:bootRun --args='--spring.profiles.active=dev,tls'"
+    echo "   2. Start marketing: cd client/apps/marketing && pnpm dev → https://localhost:7766"
+    echo "   3. Start webapp: cd client/apps/webapp && pnpm dev → https://localhost:9876"
+else
+    echo -e "${YELLOW}⚠️  HTTP Development Mode (No SSL Certificates)${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo "📚 Next steps:"
+    echo "   1. Generate certificates: cd infra && ./generate-ssl-certificate.sh"
+    echo "   2. OR run in HTTP mode: cd client/apps/marketing && pnpm dev → http://localhost:7766"
+    echo "   3. Note: Backend requires HTTPS, you'll see mixed content errors in HTTP mode"
+fi
 echo ""
 echo "📖 For more details, see: client/HTTPS_DEVELOPMENT.md"

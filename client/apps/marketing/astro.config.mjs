@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -10,6 +11,50 @@ import { DEFAULT_LOCALE_SETTING, LOCALES_SETTING } from "./src/i18n/locales";
 import { getSiteUrl } from "./src/utils/config.ts";
 
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
+
+/**
+ * Check if SSL certificates exist for HTTPS development
+ * @returns {boolean} true if both cert and key files exist
+ */
+function hasSSLCertificates() {
+	const certPath = fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url));
+	const keyPath = fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url));
+	
+	const certExists = existsSync(certPath);
+	const keyExists = existsSync(keyPath);
+	
+	return certExists && keyExists;
+}
+
+/**
+ * Get HTTPS configuration for Vite dev server
+ * Falls back to HTTP if certificates are not available
+ * @returns {object | undefined} HTTPS config or undefined for HTTP
+ */
+function getHttpsConfig() {
+	// Check for explicit HTTP-only mode via environment variable
+	if (process.env.FORCE_HTTP === "true") {
+		console.log("ℹ️  FORCE_HTTP=true detected, running in HTTP mode");
+		return undefined;
+	}
+
+	// Check if certificates exist
+	if (!hasSSLCertificates()) {
+		console.warn("⚠️  SSL certificates not found. Running in HTTP mode.");
+		console.warn("   To enable HTTPS, generate certificates with:");
+		console.warn("   → cd infra && ./generate-ssl-certificate.sh");
+		console.warn("   → OR run: make ssl-cert");
+		console.warn("   → See: client/HTTPS_DEVELOPMENT.md for details");
+		return undefined;
+	}
+
+	// Certificates exist, use HTTPS
+	console.log("✅ SSL certificates found, running in HTTPS mode");
+	return {
+		key: fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url)),
+		cert: fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url)),
+	};
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -72,10 +117,7 @@ export default defineConfig({
 			},
 		},
 		server: {
-			https: {
-				key: fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url)),
-				cert: fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url)),
-			},
+			https: getHttpsConfig(),
 		},
 	},
 	markdown: {
