@@ -83,10 +83,25 @@ class RateLimitingFilter(
 
     /**
      * Checks if the path matches any endpoint for the given strategy.
+     *
+     * Uses prefix matching with proper path boundary validation to prevent false positives.
+     * For example, `/api/auth` will NOT match `/api/auth-extended` or `/api/v2/auth/settings`.
+     *
+     * Matching logic:
+     * - Exact match: `/api/auth/login` == `/api/auth/login` ✅
+     * - Prefix with slash boundary: `/api/auth/login/extra` starts with `/api/auth/login/` ✅
+     * - No false positive: `/api/auth-extended` does NOT start with `/api/auth/` ❌
+     * - Trailing slash normalization: both `/api/auth/` and `/api/auth` are treated equally
      */
     private fun isStrategyEndpoint(path: String, strategy: RateLimitStrategy): Boolean {
         val endpoints = configurationFactory.getEndpoints(strategy)
-        return endpoints.any { path.contains(it) }
+        val normalizedPath = path.trimEnd('/')
+        
+        return endpoints.any { endpoint ->
+            val normalizedEndpoint = endpoint.trimEnd('/')
+            // Exact match or prefix match with path boundary (next character must be /)
+            normalizedPath == normalizedEndpoint || normalizedPath.startsWith(normalizedEndpoint + "/")
+        }
     }
 
     /**

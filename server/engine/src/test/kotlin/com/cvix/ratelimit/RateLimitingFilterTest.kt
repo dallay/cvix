@@ -621,4 +621,89 @@ class RateLimitingFilterTest {
         val responseBody = exchange.response.bodyAsString.block()
         responseBody shouldContain "Rate limit exceeded for resume generation. Please try again later."
     }
+
+    @Test
+    fun `should not match false positive paths with contains logic`() {
+        // Given - endpoint is /api/auth but path should NOT match /api/auth-extended or /api/v2/auth/settings
+        val request1 = MockServerHttpRequest.get("/api/auth-extended").build()
+        val exchange1 = MockServerWebExchange.from(request1)
+
+        val request2 = MockServerHttpRequest.get("/api/v2/auth/settings").build()
+        val exchange2 = MockServerWebExchange.from(request2)
+
+        // When
+        val result1 = filter.filter(exchange1, chain)
+        val result2 = filter.filter(exchange2, chain)
+
+        // Then - should skip rate limiting for both (not recognized as auth endpoints)
+        StepVerifier.create(result1).verifyComplete()
+        StepVerifier.create(result2).verifyComplete()
+
+        verify(exactly = 2) { chain.filter(any()) }
+        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+    }
+
+    @Test
+    fun `should match exact endpoint paths correctly`() {
+        // Given - exact match for /api/auth/login
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .remoteAddress(InetSocketAddress("127.0.0.1", 8080))
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+        val identifier = "IP:127.0.0.1"
+
+        every {
+            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then - should match and apply rate limiting
+        StepVerifier.create(result).verifyComplete()
+
+        verify(exactly = 1) {
+            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+        }
+    }
+
+    @Test
+    fun `should match endpoints with trailing slashes in configuration`() {
+        // Given - endpoint configured with trailing slash /api/resume/generate/
+        every {
+            configurationFactory.getEndpoints(RateLimitStrategy.RESUME)
+        } returns listOf("/api/resume/generate/")
+        
+        val request = MockServerHttpRequest.post("/api/resume/generate")
+            .remoteAddress(InetSocketAddress("127.0.0.1", 8080))
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+        val identifier = "IP:127.0.0.1"
+
+        every {
+            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then - should match despite trailing slash difference
+        StepVerifier.create(result).verifyComplete()
+
+        verify(exactly = 1) {
+            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+        }
+    }
 }
