@@ -25,11 +25,15 @@ data class JoinWaitlistRequest(
     val email: String,
 
     @field:NotBlank(message = "Source is required")
-    @field:Pattern(regexp = "^(landing-hero|landing-cta|blog-cta|unknown)$", message = "Invalid source")
+    @field:Size(min = 1, max = 50, message = "Source must be between 1 and 50 characters")
+    @field:Pattern(
+        regexp = "^[a-z0-9-]+$",
+        message = "Source must contain only lowercase letters, numbers, and hyphens",
+    )
     @field:Schema(
-        description = "Source from where the user is joining",
+        description = "Source from where the user is joining " +
+            "(e.g., landing-hero, landing-cta, blog-cta). Unknown values will be normalized to 'unknown'.",
         example = "landing-hero",
-        allowableValues = ["landing-hero", "landing-cta", "blog-cta", "unknown"],
         required = true,
     )
     val source: String,

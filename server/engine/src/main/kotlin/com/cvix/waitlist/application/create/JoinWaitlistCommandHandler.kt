@@ -36,18 +36,28 @@ class JoinWaitlistCommandHandler(
             val email = Email.of(command.email)
                 ?: throw IllegalArgumentException("Invalid email format: ${command.email}")
 
-            // Parse source and language
-            val source = WaitlistSource.fromString(command.source)
+            // Parse source and language (normalization happens in domain layer)
+            val sourceNormalized = WaitlistSource.fromString(command.source)
             val language = Language.fromString(command.language)
+
+            // Log when raw source differs from normalized (for analytics/monitoring)
+            if (sourceNormalized.value != command.source) {
+                logger.info(
+                    "Source normalized: raw='{}', normalized='{}'",
+                    command.source,
+                    sourceNormalized.value,
+                )
+            }
 
             // Create entry ID
             val entryId = WaitlistEntryId(command.id)
 
-            // Call service to join waitlist
+            // Call service to join waitlist with both raw and normalized sources
             waitlistJoiner.join(
                 id = entryId,
                 email = email,
-                source = source,
+                sourceRaw = command.source,
+                sourceNormalized = sourceNormalized,
                 language = language,
                 ipAddress = command.ipAddress,
                 metadata = command.metadata,

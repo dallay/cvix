@@ -63,12 +63,7 @@ databaseChangeLog:
                   constraints:
                     nullable: true
 
-        - createIndex:
-            indexName: idx_waitlist_email
-            tableName: waitlist
-            columns:
-              - column:
-                  name: email
+
 
         - createIndex:
             indexName: idx_waitlist_source

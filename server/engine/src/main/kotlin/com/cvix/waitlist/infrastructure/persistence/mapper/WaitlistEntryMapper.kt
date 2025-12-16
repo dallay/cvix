@@ -28,7 +28,8 @@ object WaitlistEntryMapper {
         return WaitlistEntryEntity(
             id = this.id.id,
             email = this.email.value,
-            source = this.source.value,
+            sourceRaw = this.sourceRaw,
+            sourceNormalized = this.sourceNormalized.value,
             language = this.language.code,
             ipHash = this.ipHash,
             metadata = this.metadata?.let { Json.of(objectMapper.writeValueAsString(it)) },
@@ -57,7 +58,8 @@ object WaitlistEntryMapper {
         return WaitlistEntry(
             id = WaitlistEntryId(this.id),
             email = Email(this.email),
-            source = WaitlistSource.fromString(this.source),
+            sourceRaw = this.sourceRaw,
+            sourceNormalized = WaitlistSource.fromString(this.sourceNormalized),
             language = Language.fromString(this.language),
             ipHash = this.ipHash,
             metadata = metadata,

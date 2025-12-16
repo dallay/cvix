@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory
 @Service
 class WaitlistJoiner(
     private val repository: WaitlistRepository,
-    eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>
+    eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>,
+    private val metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
 ) {
     private val eventBroadcaster = EventBroadcaster<WaitlistEntryCreatedEvent>()
 
@@ -38,7 +39,8 @@ class WaitlistJoiner(
      *
      * @param id Unique identifier for the entry.
      * @param email User's email address (will be validated).
-     * @param source Source from where user is joining.
+     * @param sourceRaw The raw source string from the client.
+     * @param sourceNormalized The normalized source enum value.
      * @param language User's preferred language.
      * @param ipAddress User's IP address (will be hashed).
      * @param metadata Additional metadata.
@@ -48,12 +50,21 @@ class WaitlistJoiner(
     suspend fun join(
         id: WaitlistEntryId,
         email: Email,
-        source: WaitlistSource,
+        sourceRaw: String,
+        sourceNormalized: WaitlistSource,
         language: Language,
         ipAddress: String? = null,
         metadata: Map<String, Any>? = null
     ): WaitlistEntry {
-        logger.info("Attempting to add email to waitlist from source: {}", source.value)
+        logger.info(
+            "Attempting to add email to waitlist from source: raw='{}', normalized='{}'",
+            sourceRaw,
+            sourceNormalized.value,
+        )
+
+        // Record metrics for source tracking
+        metrics.recordWaitlistJoin(sourceRaw, sourceNormalized)
+        metrics.recordSourceNormalization(sourceRaw, sourceNormalized)
 
         // Check if email already exists
         val exists = repository.existsByEmail(email)
@@ -65,11 +76,12 @@ class WaitlistJoiner(
         // Hash IP address for privacy
         val ipHash = ipAddress?.let { hashIpAddress(it) }
 
-        // Create the waitlist entry
+        // Create the waitlist entry with both raw and normalized sources
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = source,
+            sourceRaw = sourceRaw,
+            sourceNormalized = sourceNormalized,
             language = language,
             ipHash = ipHash,
             metadata = metadata,
@@ -77,7 +89,12 @@ class WaitlistJoiner(
 
         // Save to repository
         val savedEntry = repository.save(entry)
-        logger.info("Successfully added email to waitlist with ID: {}", entry.id.id)
+        logger.info(
+            "Successfully added email to waitlist with ID: {}, sourceRaw: {}, sourceNormalized: {}",
+            entry.id.id,
+            sourceRaw,
+            sourceNormalized.value,
+        )
         // Publish domain event
         savedEntry.pullDomainEvents().forEach { event ->
             eventBroadcaster.publish(event as WaitlistEntryCreatedEvent)

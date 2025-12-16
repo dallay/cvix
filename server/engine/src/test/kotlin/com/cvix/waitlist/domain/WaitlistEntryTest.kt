@@ -25,7 +25,8 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = source,
+            sourceRaw = "landing-hero",
+            sourceNormalized = source,
             language = language,
             ipHash = hashIpAddress("192.168.1.1"),
             metadata = mapOf("userAgent" to "Mozilla/5.0"),
@@ -35,7 +36,8 @@ internal class WaitlistEntryTest {
         entry shouldNotBe null
         entry.id shouldBe id
         entry.email shouldBe email
-        entry.source shouldBe source
+        entry.sourceRaw shouldBe "landing-hero"
+        entry.sourceNormalized shouldBe source
         entry.language shouldBe language
         entry.metadata?.get("userAgent") shouldBe "Mozilla/5.0"
     }
@@ -52,7 +54,8 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = WaitlistSource.LANDING_HERO,
+            sourceRaw = "landing-hero",
+            sourceNormalized = WaitlistSource.LANDING_HERO,
             language = Language.ENGLISH,
             ipHash = ipHash,
             metadata = emptyMap(),
@@ -75,8 +78,9 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = WaitlistSource.LANDING_HERO,
-            language = Language.ENGLISH,
+            sourceRaw = "landing-cta",
+            sourceNormalized = WaitlistSource.LANDING_CTA,
+            language = Language.SPANISH,
             ipHash = null,
             metadata = emptyMap(),
         )
@@ -95,7 +99,8 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = WaitlistSource.LANDING_HERO,
+            sourceRaw = "landing-hero",
+            sourceNormalized = WaitlistSource.LANDING_HERO,
             language = Language.ENGLISH,
             ipHash = null,
             metadata = emptyMap(),
@@ -121,8 +126,9 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = WaitlistSource.LANDING_CTA,
-            language = Language.SPANISH,
+            sourceRaw = "landing-hero",
+            sourceNormalized = WaitlistSource.LANDING_HERO,
+            language = Language.ENGLISH,
             ipHash = null,
             metadata = emptyMap(),
         )
@@ -141,7 +147,8 @@ internal class WaitlistEntryTest {
         val entry = WaitlistEntry.create(
             id = id,
             email = email,
-            source = WaitlistSource.LANDING_CTA,
+            sourceRaw = "landing-cta",
+            sourceNormalized = WaitlistSource.LANDING_CTA,
             language = Language.SPANISH,
             ipHash = null,
             metadata = null,
@@ -164,7 +171,15 @@ internal class WaitlistEntryTest {
         // Act & Assert
         Language.fromString("en") shouldBe Language.ENGLISH
         Language.fromString("es") shouldBe Language.SPANISH
-        Language.fromString("unknown") shouldBe Language.ENGLISH // defaults to English
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException for unsupported language codes`() {
+        // Act & Assert
+        val exception = org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+            Language.fromString("fr")
+        }
+        exception.message shouldBe "Invalid language code 'fr'. Supported codes: en, es"
     }
 
     /**

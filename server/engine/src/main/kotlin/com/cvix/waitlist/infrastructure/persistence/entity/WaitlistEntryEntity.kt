@@ -29,9 +29,13 @@ data class WaitlistEntryEntity(
     @get:Size(max = 320)
     val email: String,
 
-    @Column("source")
+    @Column("source_raw")
     @get:Size(max = 50)
-    val source: String,
+    val sourceRaw: String,
+
+    @Column("source_normalized")
+    @get:Size(max = 50)
+    val sourceNormalized: String,
 
     @Column("language")
     @get:Size(max = 10)
@@ -65,5 +69,5 @@ data class WaitlistEntryEntity(
 
     override fun getId(): UUID = id
 
-    override fun isNew(): Boolean = updatedAt == null || createdAt == updatedAt
+    override fun isNew(): Boolean = updatedAt == null
 }

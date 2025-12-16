@@ -13,7 +13,8 @@ import java.time.Instant
  *
  * @property id Unique identifier for the waitlist entry.
  * @property email The user's email address (validated).
- * @property source The source from where the user joined (e.g., landing-hero, landing-cta).
+ * @property sourceRaw The raw source string as provided by the client (for analytics and future growth).
+ * @property sourceNormalized The normalized source enum value (for aggregated metrics and queries).
  * @property language The user's preferred language.
  * @property ipHash Anonymized hash of the user's IP address (for anti-spam).
  * @property metadata Additional JSON metadata (user agent, referrer, etc.).
@@ -25,13 +26,14 @@ import java.time.Instant
 data class WaitlistEntry(
     override val id: WaitlistEntryId,
     val email: Email,
-    val source: WaitlistSource,
+    val sourceRaw: String,
+    val sourceNormalized: WaitlistSource,
     val language: Language,
     val ipHash: String?,
     val metadata: Map<String, Any>? = null,
     override val createdAt: Instant = Instant.now(),
     override val createdBy: String = "system",
-    override var updatedAt: Instant? = createdAt,
+    override var updatedAt: Instant? = null,
     override var updatedBy: String? = null
 ) : AggregateRoot<WaitlistEntryId>() {
 
@@ -50,7 +52,8 @@ data class WaitlistEntry(
          *
          * @param id Unique identifier for the entry.
          * @param email User's email address.
-         * @param source Source from where user joined.
+         * @param sourceRaw The raw source string from the client.
+         * @param sourceNormalized The normalized source enum value.
          * @param language User's preferred language.
          * @param ipHash Anonymized IP hash.
          * @param metadata Additional metadata.
@@ -59,7 +62,8 @@ data class WaitlistEntry(
         fun create(
             id: WaitlistEntryId,
             email: Email,
-            source: WaitlistSource,
+            sourceRaw: String,
+            sourceNormalized: WaitlistSource,
             language: Language,
             ipHash: String? = null,
             metadata: Map<String, Any>? = null
@@ -67,18 +71,19 @@ data class WaitlistEntry(
             val entry = WaitlistEntry(
                 id = id,
                 email = email,
-                source = source,
+                sourceRaw = sourceRaw,
+                sourceNormalized = sourceNormalized,
                 language = language,
                 ipHash = ipHash,
                 metadata = metadata,
             )
 
-            // Record domain event
+            // Record domain event with both raw and normalized sources
             entry.record(
                 WaitlistEntryCreatedEvent(
                     id = entry.id.id.toString(),
                     email = entry.email.value,
-                    source = entry.source.value,
+                    source = entry.sourceNormalized.value,
                     language = entry.language.code,
                 ),
             )

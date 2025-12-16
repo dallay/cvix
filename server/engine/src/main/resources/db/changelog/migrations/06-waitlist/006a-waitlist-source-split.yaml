@@ -1,0 +1,122 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006a-waitlist-split-source-columns
+      author: system
+      comment: |
+        Split waitlist source column into source_raw and source_normalized.
+        This enables:
+        - Tracking exact source values from clients (source_raw) for analytics
+        - Normalized categorization (source_normalized) for aggregated metrics
+        - Discovery of new marketing channels without code changes
+      changes:
+        # Add new columns
+        - addColumn:
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source_raw
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                  remarks: Raw source string as provided by the client
+              - column:
+                  name: source_normalized
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                  remarks: Normalized source value for aggregated analytics
+
+        # Migrate existing data: copy 'source' to both new columns
+        - sql:
+            sql: |
+              UPDATE waitlist 
+              SET source_raw = source, 
+                  source_normalized = source
+              WHERE source_raw IS NULL;
+
+        # Make new columns NOT NULL after migration
+        - addNotNullConstraint:
+            tableName: waitlist
+            columnName: source_raw
+            columnDataType: varchar(50)
+
+        - addNotNullConstraint:
+            tableName: waitlist
+            columnName: source_normalized
+            columnDataType: varchar(50)
+
+        # Drop old 'source' column (this automatically drops associated indexes)
+        - dropColumn:
+            tableName: waitlist
+            columnName: source
+
+        # Create new indexes for analytics queries
+        - createIndex:
+            indexName: idx_waitlist_source_raw
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source_raw
+
+        - createIndex:
+            indexName: idx_waitlist_source_normalized
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source_normalized
+
+        # Composite index for queries filtering by both
+        - createIndex:
+            indexName: idx_waitlist_source_raw_normalized
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source_raw
+              - column:
+                  name: source_normalized
+
+      rollback:
+        # Recreate original 'source' column
+        - addColumn:
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+
+        # Copy normalized value back to original column
+        - sql:
+            sql: UPDATE waitlist SET source = source_normalized WHERE source IS NULL;
+
+        # Make it NOT NULL
+        - addNotNullConstraint:
+            tableName: waitlist
+            columnName: source
+            columnDataType: varchar(50)
+
+        # Drop new columns
+        - dropIndex:
+            indexName: idx_waitlist_source_raw_normalized
+            tableName: waitlist
+        - dropIndex:
+            indexName: idx_waitlist_source_normalized
+            tableName: waitlist
+        - dropIndex:
+            indexName: idx_waitlist_source_raw
+            tableName: waitlist
+        - dropColumn:
+            tableName: waitlist
+            columnName: source_normalized
+        - dropColumn:
+            tableName: waitlist
+            columnName: source_raw
+
+        # Recreate original index
+        - createIndex:
+            indexName: idx_waitlist_source
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source

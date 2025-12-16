@@ -68,6 +68,7 @@ spring:
             enable: false
 application:
   name: ProFileTailors
+  homepage: https://profiletailors.com
   description: Example ProFileTailors application used as a starting point for projects.
   version: 0.0.1-SNAPSHOT
   security:

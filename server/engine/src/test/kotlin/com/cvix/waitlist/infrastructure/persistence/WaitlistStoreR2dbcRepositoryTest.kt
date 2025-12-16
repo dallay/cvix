@@ -34,7 +34,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "test@example.com",
             ipHash = "hashed-ip",
-            source = "landing-page",
+            sourceRaw = "landing-page",
+            sourceNormalized = "landing-page",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -57,7 +58,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "exists@example.com",
             ipHash = "hashed-ip",
-            source = "landing-page",
+            sourceRaw = "landing-page",
+            sourceNormalized = "landing-page",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -80,7 +82,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "user1@example.com",
             ipHash = "ip1",
-            source = "twitter",
+            sourceRaw = "twitter",
+            sourceNormalized = "twitter",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -89,7 +92,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "user2@example.com",
             ipHash = "ip2",
-            source = "linkedin",
+            sourceRaw = "linkedin",
+            sourceNormalized = "linkedin",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -98,7 +102,7 @@ internal class WaitlistStoreR2dbcRepositoryTest {
         waitlistR2dbcRepository.save(entry2)
 
         // Act
-        val twitterEntries = waitlistR2dbcRepository.findBySource("twitter").toList()
+        val twitterEntries = waitlistR2dbcRepository.findBySourceRaw("twitter").toList()
 
         // Assert
         assertEquals(1, twitterEntries.size)
@@ -112,7 +116,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "user1@example.com",
             ipHash = "ip1",
-            source = "twitter",
+            sourceRaw = "twitter",
+            sourceNormalized = "twitter",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -121,7 +126,8 @@ internal class WaitlistStoreR2dbcRepositoryTest {
             id = UUID.randomUUID(),
             email = "user2@example.com",
             ipHash = "ip2",
-            source = "twitter",
+            sourceRaw = "twitter",
+            sourceNormalized = "twitter",
             language = "en",
             metadata = io.r2dbc.postgresql.codec.Json.of("{}"),
             createdAt = Instant.now(),
@@ -130,7 +136,7 @@ internal class WaitlistStoreR2dbcRepositoryTest {
         waitlistR2dbcRepository.save(entry2)
 
         // Act
-        val count = waitlistR2dbcRepository.countBySource("twitter")
+        val count = waitlistR2dbcRepository.countBySourceRaw("twitter")
 
         // Assert
         assertEquals(2, count)
