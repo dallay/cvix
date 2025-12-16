@@ -1,12 +1,12 @@
 package com.cvix.waitlist.domain
 
 import com.cvix.UnitTest
+import com.cvix.common.domain.security.HashUtils
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import java.security.MessageDigest
 import java.util.UUID
 import org.junit.jupiter.api.Test
 
@@ -182,12 +182,7 @@ internal class WaitlistEntryTest {
         exception.message shouldBe "Invalid language code 'fr'. Supported codes: en, es"
     }
 
-    /**
-     * Helper function to hash IP address (same as WaitlistJoiner).
-     */
-    private fun hashIpAddress(ipAddress: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hashBytes = digest.digest(ipAddress.toByteArray())
-        return hashBytes.joinToString("") { "%02x".format(it) }
-    }
+    // Use shared utility for hashing, same as WaitlistJoiner
+    private fun hashIpAddress(ipAddress: String): String =
+        HashUtils.hashSha256(ipAddress)
 }

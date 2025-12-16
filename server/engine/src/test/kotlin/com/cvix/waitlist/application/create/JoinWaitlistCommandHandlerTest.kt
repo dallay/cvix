@@ -4,7 +4,10 @@ import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.waitlist.domain.WaitlistRepository
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import java.util.*
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
@@ -47,12 +50,28 @@ internal class JoinWaitlistCommandHandlerTest {
             metadata = metadata,
         )
 
+        // Mocks & Captors
+        val entrySlot = slot<com.cvix.waitlist.domain.WaitlistEntry>()
+        val eventSlot = slot<com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent>()
+        coEvery { repository.save(capture(entrySlot)) } answers { entrySlot.captured }
+        coEvery { eventPublisher.publish(capture(eventSlot)) } returns Unit
+
         // When
         joinWaitlistCommandHandler.handle(command)
 
-        // Then - if it completes without error, the test passes
-        // We can't use matchers with value classes due to MockK limitations
-        // Both sourceRaw and sourceNormalized should be tracked
+        // Then: verify interactions occurred and the arguments passed
+        coVerify(exactly = 1) { repository.save(any()) }
+        coVerify(exactly = 1) { eventPublisher.publish(capture(eventSlot)) }
+        // Check the saved entry fields
+        val savedEntry = entrySlot.captured
+        kotlin.test.assertEquals(email, savedEntry.email.value)
+        kotlin.test.assertEquals(source, savedEntry.sourceRaw)
+        // Check the published event fields
+        val publishedEvent = eventSlot.captured
+        kotlin.test.assertEquals(savedEntry.id.id.toString(), publishedEvent.id)
+        kotlin.test.assertEquals(savedEntry.email.value, publishedEvent.email)
+        kotlin.test.assertEquals(savedEntry.sourceRaw, publishedEvent.source)
+        kotlin.test.assertEquals(savedEntry.language.code, publishedEvent.language)
     }
 
     @Test

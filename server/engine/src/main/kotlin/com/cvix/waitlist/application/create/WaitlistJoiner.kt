@@ -3,6 +3,7 @@ package com.cvix.waitlist.application.create
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventBroadcaster
 import com.cvix.common.domain.bus.event.EventPublisher
+import com.cvix.common.domain.security.HashUtils
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.EmailAlreadyExistsException
 import com.cvix.waitlist.domain.Language
@@ -11,7 +12,6 @@ import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistRepository
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
-import java.security.MessageDigest
 import org.slf4j.LoggerFactory
 
 /**
@@ -108,11 +108,8 @@ class WaitlistJoiner(
      * @param ipAddress The IP address to hash.
      * @return The SHA-256 hash as a hexadecimal string.
      */
-    private fun hashIpAddress(ipAddress: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hashBytes = digest.digest(ipAddress.toByteArray())
-        return hashBytes.joinToString("") { "%02x".format(it) }
-    }
+    private fun hashIpAddress(ipAddress: String): String =
+        HashUtils.hashSha256(ipAddress)
 
     companion object {
         private val logger = LoggerFactory.getLogger(WaitlistJoiner::class.java)
