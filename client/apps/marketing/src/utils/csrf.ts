@@ -5,6 +5,8 @@
  * The token is loaded lazily (on-demand) to avoid unnecessary requests on pages without forms.
  */
 
+export const CSRF_COOKIE_NAME = "XSRF-TOKEN";
+
 /**
  * Initialize CSRF token by making a GET request to the backend
  * This sets the XSRF-TOKEN cookie which will be automatically sent with subsequent requests
@@ -39,7 +41,6 @@ export async function initializeCsrfToken(backendUrl: string): Promise<void> {
  *
  * @returns true if XSRF-TOKEN cookie is present, false otherwise
  */
-const CSRF_COOKIE_NAME = "XSRF-TOKEN";
 
 export function hasCsrfToken(): boolean {
 	if (typeof document === "undefined") {
@@ -128,3 +129,11 @@ export class CsrfTokenLoader {
 
 // Export singleton instance for use across components
 export const csrfLoader = new CsrfTokenLoader();
+
+// Declare global window extensions for TypeScript (exposed in components)
+declare global {
+	interface Window {
+		csrfLoader: CsrfTokenLoader;
+		getCsrfToken: () => string | null;
+	}
+}
