@@ -234,9 +234,10 @@ class Bucket4jRateLimiter(
      * Useful for testing and dynamic configuration reloading.
      */
     fun clearCache() {
+        val statsBeforeClear = cache.stats()
         cache.invalidateAll()
         cache.cleanUp()
         metrics.updateCacheSize(0)
-        logger.info("Cleared all cached buckets. Cache stats before clear: {}", cache.stats())
+        logger.info("Cleared all cached buckets. Cache stats before clear: {}", statsBeforeClear)
     }
 }

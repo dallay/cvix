@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component
  * - waitlist.source.raw: Counter for raw sources (tag: source)
  * - waitlist.source.normalized: Counter for normalized sources (tag: source)
  * - waitlist.source.unknown: Counter for unknown sources that were normalized
+ * - waitlist.source.normalization: Counter for source transformations (tags: raw, normalized)
  *
  * @property meterRegistry Micrometer meter registry for metric registration
  */
@@ -41,7 +42,8 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
         meterRegistry.counter("waitlist.source.raw", "source", sourceRaw).increment()
 
         // Track normalized source distribution
-        meterRegistry.counter("waitlist.source.normalized", "source", sourceNormalized.value).increment()
+        meterRegistry.counter("waitlist.source.normalized", "source", sourceNormalized.value)
+            .increment()
 
         // Track when sources are normalized to UNKNOWN (potential new channels)
         if (sourceNormalized == WaitlistSource.UNKNOWN && sourceRaw != "unknown") {

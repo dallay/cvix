@@ -114,7 +114,12 @@ data class RateLimitProperties(
          * Default: 60 minutes (1 hour)
          */
         val ttlMinutes: Long = 60
-    )
+    ) {
+        init {
+            require(maxSize > 0) { "maxSize must be positive" }
+            require(ttlMinutes > 0) { "ttlMinutes must be positive" }
+        }
+    }
 
     /**
      * Configuration for API key prefix to subscription tier mapping.

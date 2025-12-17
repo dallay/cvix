@@ -61,6 +61,16 @@ export default defineConfig({
 	server: {
 		port: 7766,
 	},
+
+	// Configure Sharp image service explicitly
+	image: {
+		service: {
+			entrypoint: 'astro/assets/services/sharp',
+			config: {
+				limitInputPixels: false,
+			},
+		},
+	},
 	// Set your site's URL
 	site: getSiteUrl(),
 

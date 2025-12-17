@@ -29,8 +29,9 @@
 	"scripts": {
 		"update": "pnpm update",
 		"update-interactive": "pnpm update --interactive",
-		"dev": "astro dev",
-		"start": "astro dev --open",
+		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev",
+		"dev:http": "FORCE_HTTP=true astro dev",
+		"start": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev --open",
 		"build": "astro check && astro build",
 		"preview": "astro preview",
 		"check": "astro check",

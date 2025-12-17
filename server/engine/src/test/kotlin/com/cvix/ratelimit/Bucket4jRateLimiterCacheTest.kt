@@ -6,6 +6,8 @@ import com.cvix.ratelimit.infrastructure.adapter.Bucket4jRateLimiter
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
+import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.longs.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Clock
@@ -100,18 +102,14 @@ class Bucket4jRateLimiterCacheTest {
         // The exact number depends on Caffeine's async cleanup timing
         // NOTE: Caffeine uses asynchronous eviction for performance, so eviction count
         // may vary slightly between runs, but it MUST be > 0 to prove bounded behavior
-        assert(evictionCount > 0) {
-            "Expected evictions to occur with 30 entries and max size 10, but got 0 evictions"
-        }
+        evictionCount shouldBeGreaterThan 0
 
         // And: Cache size should be bounded (with tolerance for async eviction)
         // Caffeine may temporarily exceed the limit before cleanup runs
         // In production, this is fine—the cache stabilizes quickly under load
         // We allow 50% tolerance (15) to account for async cleanup timing
         val cacheSize = rateLimiter.getCacheSize()
-        assert(cacheSize <= 15) {
-            "Cache size $cacheSize exceeded reasonable bound (max: 10, tolerance: 15)"
-        }
+        cacheSize shouldBeLessThanOrEqual 15
     }
 
     @Test

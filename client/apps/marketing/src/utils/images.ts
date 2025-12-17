@@ -6,6 +6,25 @@ const imageGlobs = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 /**
+ * Normalize filename to handle spaces and special characters
+ * @param path - File path to normalize
+ * @returns Normalized path with URL-encoded filename
+ */
+const normalizeFilename = (path: string): string => {
+	const lastSlashIndex = path.lastIndexOf("/");
+	if (lastSlashIndex === -1) return path;
+
+	const directory = path.substring(0, lastSlashIndex + 1);
+	const filename = path.substring(lastSlashIndex + 1);
+
+	// Only encode the filename part, not the directory path
+	// This handles spaces and special characters in filenames
+	const encodedFilename = encodeURIComponent(filename);
+
+	return `${directory}${encodedFilename}`;
+};
+
+/**
  * Find and resolve an image from the assets directory
  * @param imagePath - Path to the image (supports ~/assets/images/*, @/assets/images/*, or src/assets/images/* format)
  * @returns ImageMetadata or the original path
@@ -45,7 +64,27 @@ export const findImage = async (
 	}
 
 	// Try to find the image in the glob results
-	const imageLoader = imageGlobs[normalizedPath];
+	let imageLoader = imageGlobs[normalizedPath];
+
+	// If not found, try with encoded filename (for files with spaces)
+	if (!imageLoader) {
+		const encodedPath = normalizeFilename(normalizedPath);
+		imageLoader = imageGlobs[encodedPath];
+	}
+
+	// If still not found, try all glob keys to find a case-insensitive match
+	if (!imageLoader) {
+		const globKeys = Object.keys(imageGlobs);
+		const matchingKey = globKeys.find(
+			(key) =>
+				key.toLowerCase() === normalizedPath.toLowerCase() ||
+				key.toLowerCase() === normalizeFilename(normalizedPath).toLowerCase(),
+		);
+
+		if (matchingKey) {
+			imageLoader = imageGlobs[matchingKey];
+		}
+	}
 
 	if (typeof imageLoader === "function") {
 		try {

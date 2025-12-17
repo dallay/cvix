@@ -30,7 +30,7 @@ object WaitlistEntryMapper {
             try {
                 Json.of(objectMapper.writeValueAsString(it))
             } catch (e: JsonProcessingException) {
-                logger.warn("Failed to serialize metadata for waitlist entry {}", this.id, e)
+                logger.error("Failed to serialize metadata for waitlist entry {}", this.id, e)
                 null
             }
         }

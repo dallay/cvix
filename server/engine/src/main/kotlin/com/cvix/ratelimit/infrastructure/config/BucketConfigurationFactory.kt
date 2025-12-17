@@ -158,6 +158,9 @@ class BucketConfigurationFactory(
 
     /**
      * Gets the list of endpoints that should be rate limited for the specified strategy.
+     *
+     * Note: BUSINESS strategy returns an empty list because business endpoint detection
+     * is based on API key presence rather than specific URL paths.
      */
     fun getEndpoints(strategy: RateLimitStrategy): List<String> {
         return when (strategy) {
