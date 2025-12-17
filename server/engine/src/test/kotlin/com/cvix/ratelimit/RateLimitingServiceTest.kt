@@ -284,7 +284,12 @@ class RateLimitingServiceTest {
                 resetTime = Instant.now().plusSeconds(3600),
             ),
         ) andThen
-            Mono.just(RateLimitResult.Denied(retryAfter, 100))
+            Mono.just(
+                RateLimitResult.Denied(
+                    retryAfter = retryAfter,
+                    limitCapacity = 100,
+                ),
+            )
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
 
@@ -337,11 +342,22 @@ class RateLimitingServiceTest {
 
         every {
             rateLimiter.consumeToken(identifier1, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(10, 100, Instant.now().plusSeconds(3600)))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 10,
+                limitCapacity = 100,
+                resetTime = Instant.now().plusSeconds(3600),
+            ),
+        )
 
         every {
             rateLimiter.consumeToken(identifier2, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Denied(Duration.ofHours(1), 100))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = Duration.ofHours(1),
+                limitCapacity = 100,
+            ),
+        )
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
 

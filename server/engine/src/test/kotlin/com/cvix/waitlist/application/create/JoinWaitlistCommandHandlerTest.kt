@@ -2,6 +2,7 @@ package com.cvix.waitlist.application.create
 
 import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
+import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistRepository
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
@@ -54,8 +55,8 @@ internal class JoinWaitlistCommandHandlerTest {
         )
 
         // Mocks & Captors
-        val entrySlot = slot<com.cvix.waitlist.domain.WaitlistEntry>()
-        val eventSlot = slot<com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent>()
+        val entrySlot = slot<WaitlistEntry>()
+        val eventSlot = slot<WaitlistEntryCreatedEvent>()
         coEvery { repository.save(capture(entrySlot)) } answers { entrySlot.captured }
         coEvery { eventPublisher.publish(capture(eventSlot)) } returns Unit
 
@@ -93,10 +94,19 @@ internal class JoinWaitlistCommandHandlerTest {
             metadata = null,
         )
 
+        // Mocks & Captors
+        val entrySlot = slot<WaitlistEntry>()
+        coEvery { repository.save(capture(entrySlot)) } answers { entrySlot.captured }
+
         // When
         joinWaitlistCommandHandler.handle(command)
 
         // Then - command should be processed successfully despite unknown source
-        // sourceRaw will be "twitter-campaign" and sourceNormalized will be "unknown"
+        val savedEntry = entrySlot.captured
+        kotlin.test.assertEquals(unknownSource, savedEntry.sourceRaw)
+        kotlin.test.assertEquals(
+            com.cvix.waitlist.domain.WaitlistSource.UNKNOWN,
+            savedEntry.sourceNormalized,
+        )
     }
 }

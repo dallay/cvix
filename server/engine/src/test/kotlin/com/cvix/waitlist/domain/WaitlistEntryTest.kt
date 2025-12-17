@@ -182,7 +182,10 @@ internal class WaitlistEntryTest {
         exception.message shouldBe "Invalid language code 'fr'. Supported codes: en, es"
     }
 
+    private companion object {
+        private const val TEST_HMAC_SECRET = "test-hmac-secret-for-testing"
+    }
     // Use shared utility for hashing, same as WaitlistJoiner
     private fun hashIpAddress(ipAddress: String): String =
-        HashUtils.hashSha256(ipAddress)
+        HashUtils.hmacSha256(ipAddress, TEST_HMAC_SECRET)
 }

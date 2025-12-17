@@ -32,6 +32,6 @@ object HashUtils {
         val keySpec = SecretKeySpec(secretKey.toByteArray(), algorithm)
         mac.init(keySpec)
         val hmacBytes = mac.doFinal(input.toByteArray())
-        return hmacBytes.joinToString("") { "%02x".format(it and 0xff.toByte()) }
+        return hmacBytes.joinToString("") { "%02x".format(it) }
     }
 }
