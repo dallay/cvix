@@ -1,14 +1,12 @@
 package com.cvix.waitlist.infrastructure.config
 
+import jakarta.validation.constraints.NotBlank
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.validation.annotation.Validated
 
-/**
- * Configuration properties for waitlist security.
- *
- * @property ipHmacSecret The secret key used for HMAC-SHA256 hashing of IP addresses.
- * Must be kept secret to prevent rainbow table attacks on the hashed IPs.
- */
 @ConfigurationProperties(prefix = "waitlist.security")
+@Validated
 data class WaitlistSecurityProperties(
+    @field:NotBlank(message = "waitlist.security.ip-hmac-secret must be configured")
     val ipHmacSecret: String = ""
 )

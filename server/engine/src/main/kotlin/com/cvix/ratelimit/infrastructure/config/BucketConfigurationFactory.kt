@@ -3,16 +3,9 @@ package com.cvix.ratelimit.infrastructure.config
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.BucketConfiguration
+import java.time.Duration
 import org.slf4j.LoggerFactory
 
-/**
- * Factory responsible for creating Bucket4j bucket configurations based on rate limit strategies.
- * This class centralizes all bucket configuration logic, eliminating duplication and providing
- * a single source of truth for rate limit configuration.
- *
- * @property properties The rate limit configuration properties.
- * @since 2.0.0
- */
 class BucketConfigurationFactory(
     private val properties: RateLimitProperties
 ) {
@@ -122,11 +115,11 @@ class BucketConfigurationFactory(
      * Creates a Bandwidth from a BandwidthLimit configuration using Bucket4j v8 builder API.
      *
      * This method supports two refill strategies:
-     * - **Greedy Refill**: Used when [refillTokens] equals [capacity].
+     * - **Greedy Refill**: Used when `refillTokens` equals `capacity`.
      *   Provides greedy refill where the bucket is fully replenished at each refill interval.
      *   Example: capacity=100, refillTokens=100 per minute = 100 tokens/minute.
      *
-     * - **Intervally Refill**: Used when [refillTokens] differs from [capacity].
+     * - **Intervally Refill**: Used when `refillTokens` differs from `capacity`.
      *   Allows fine-grained control over refill rates independent of bucket capacity.
      *   Example: capacity=100, refillTokens=10 per minute = 10 tokens/minute (burst capacity of 100).
      *
@@ -135,6 +128,9 @@ class BucketConfigurationFactory(
      * @throws IllegalArgumentException if the refill duration is invalid (e.g., Duration.ZERO).
      */
     private fun createBandwidth(limit: RateLimitProperties.BandwidthLimit): Bandwidth {
+        require(limit.refillDuration > Duration.ZERO) {
+            "Refill duration must be positive, got: ${limit.refillDuration}"
+        }
         val builder = Bandwidth.builder().capacity(limit.capacity)
 
         return if (limit.refillTokens == limit.capacity) {

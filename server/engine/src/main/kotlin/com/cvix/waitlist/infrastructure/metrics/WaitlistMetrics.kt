@@ -1,7 +1,6 @@
 package com.cvix.waitlist.infrastructure.metrics
 
 import com.cvix.waitlist.domain.WaitlistSource
-import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Component
 
@@ -32,34 +31,21 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
      */
     fun recordWaitlistJoin(sourceRaw: String, sourceNormalized: WaitlistSource) {
         // Track overall join with both raw and normalized tags
-        Counter.builder("waitlist.join.total")
-            .tag("source_raw", sourceRaw)
-            .tag("source_normalized", sourceNormalized.value)
-            .description("Total number of waitlist joins")
-            .register(meterRegistry)
-            .increment()
+        meterRegistry.counter(
+            "waitlist.join.total",
+            "source_raw", sourceRaw,
+            "source_normalized", sourceNormalized.value,
+        ).increment()
 
         // Track raw source distribution
-        Counter.builder("waitlist.source.raw")
-            .tag("source", sourceRaw)
-            .description("Distribution of raw source values from clients")
-            .register(meterRegistry)
-            .increment()
+        meterRegistry.counter("waitlist.source.raw", "source", sourceRaw).increment()
 
         // Track normalized source distribution
-        Counter.builder("waitlist.source.normalized")
-            .tag("source", sourceNormalized.value)
-            .description("Distribution of normalized source values")
-            .register(meterRegistry)
-            .increment()
+        meterRegistry.counter("waitlist.source.normalized", "source", sourceNormalized.value).increment()
 
         // Track when sources are normalized to UNKNOWN (potential new channels)
         if (sourceNormalized == WaitlistSource.UNKNOWN && sourceRaw != "unknown") {
-            Counter.builder("waitlist.source.unknown")
-                .tag("raw_source", sourceRaw)
-                .description("Count of unknown sources normalized to 'unknown'")
-                .register(meterRegistry)
-                .increment()
+            meterRegistry.counter("waitlist.source.unknown", "raw_source", sourceRaw).increment()
         }
     }
 
@@ -78,11 +64,10 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
             return // No normalization occurred
         }
 
-        Counter.builder("waitlist.source.normalization")
-            .tag("raw", sourceRaw)
-            .tag("normalized", sourceNormalized.value)
-            .description("Count of source normalizations (case/format changes)")
-            .register(meterRegistry)
-            .increment()
+        meterRegistry.counter(
+            "waitlist.source.normalization",
+            "raw", sourceRaw,
+            "normalized", sourceNormalized.value,
+        ).increment()
     }
 }
