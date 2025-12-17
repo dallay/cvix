@@ -419,11 +419,8 @@ describe("images.ts - Performance & Monitoring", () => {
      * 
      * These paths are defensive programming best practices and acceptable to leave uncovered.
      */
-    it("should document uncovered defensive code paths", () => {
-      // This test exists to document why certain lines are uncovered
-      // See JSDoc comment above for detailed explanation
-      expect(true).toBe(true);
-    });
+    // See JSDoc comment above (lines 399-421) for documentation of
+    // intentionally uncovered defensive code paths.
   });
 });
 
