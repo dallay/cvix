@@ -1,5 +1,6 @@
 package com.cvix.waitlist.infrastructure.persistence.mapper
 
+import com.cvix.common.domain.error.DomainMappingException
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.Language
 import com.cvix.waitlist.domain.WaitlistEntry
@@ -64,12 +65,26 @@ object WaitlistEntryMapper {
             }
         }
 
+        val email = try {
+            Email(this.email)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Invalid email value '{}' for waitlist entry {}", this.email, this.id)
+            throw DomainMappingException("Invalid email for waitlist entry ${this.id}: ${this.email}", e)
+        }
+
+        val language = try {
+            Language.fromString(this.language)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Invalid language value '{}' for waitlist entry {}", this.language, this.id)
+            throw DomainMappingException("Invalid language for waitlist entry ${this.id}: ${this.language}", e)
+        }
+
         return WaitlistEntry(
             id = WaitlistEntryId(this.id),
-            email = Email(this.email),
+            email = email,
             sourceRaw = this.sourceRaw,
             sourceNormalized = WaitlistSource.fromString(this.sourceNormalized),
-            language = Language.fromString(this.language),
+            language = language,
             ipHash = this.ipHash,
             metadata = metadata,
             createdBy = this.createdBy,
