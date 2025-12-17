@@ -31,7 +31,7 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
 
     /**
      * Sanitizes a raw source value to prevent unbounded metric cardinality.
-     * Returns "invalid" for values that are too long or contain invalid characters.
+     * Returns "invalid" for values that are empty, too long (>100 chars), or contain invalid characters.
      *
      * @param sourceRaw The raw source string to sanitize
      * @return Sanitized source string safe for use as a metric tag

@@ -69,7 +69,13 @@ export const rebuildImageLookupMap = (): number => {
  * Get image lookup statistics for monitoring/debugging.
  * @returns Metrics about the image lookup system
  */
-export const getImageLookupStats = () => {
+export interface ImageLookupStats {
+	totalGlobKeys: number;
+	normalizedMapSize: number;
+	timestamp: string;
+}
+
+export const getImageLookupStats = (): ImageLookupStats => {
 	return {
 		totalGlobKeys: Object.keys(imageGlobs).length,
 		normalizedMapSize: normalizedLookupMap.size,
