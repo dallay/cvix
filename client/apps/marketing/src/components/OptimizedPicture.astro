@@ -12,6 +12,8 @@ type Props = (LocalImageProps | RemoteImageProps) & {
 	fallbackFormat?: ImageOutputFormat;
 	pictureAttributes?: HTMLAttributes<"picture">;
 	class?: string | null;
+	/** Fallback image URL to use when the primary image fails to load */
+	fallbackSrc?: string;
 };
 
 const {
@@ -24,6 +26,7 @@ const {
 	loading = undefined,
 	fetchpriority = "auto",
 	class: className = "mx-auto w-full max-w-full rounded-lg",
+	fallbackSrc,
 	...props
 } = Astro.props;
 
@@ -38,13 +41,47 @@ const picLoading: "eager" | "lazy" | null | undefined =
 	rawLoading === "auto"
 		? undefined
 		: (rawLoading as "eager" | "lazy" | null | undefined);
+
+// Generate unique ID for fallback handling (only when fallback is provided)
+const wrapperId = fallbackSrc ? `img-wrapper-${crypto.randomUUID()}` : undefined;
 ---
 
-<Picture
-	{...props}
-	formats={formats}
-	fallbackFormat={fallbackFormat}
-	loading={picLoading}
-	fetchpriority={fetchpriority}
-	class={className}
-/>
+<div id={wrapperId} data-fallback-src={fallbackSrc} class="contents">
+	<Picture
+		{...props}
+		formats={formats}
+		fallbackFormat={fallbackFormat}
+		loading={picLoading}
+		fetchpriority={fetchpriority}
+		class={className}
+	/>
+</div>
+
+{fallbackSrc && (
+	<script>
+		// Handle image fallback - runs once per component instance
+		(function initImageFallback() {
+			const wrappers = document.querySelectorAll('[data-fallback-src]');
+			
+			wrappers.forEach((wrapper) => {
+				if (wrapper.hasAttribute('data-fallback-initialized')) return;
+				wrapper.setAttribute('data-fallback-initialized', 'true');
+				
+				const fallbackUrl = wrapper.getAttribute('data-fallback-src');
+				if (!fallbackUrl) return;
+
+				const img = wrapper.querySelector('img');
+				if (!img) return;
+
+				// Set fallback image on error
+				img.addEventListener('error', function handleImageError() {
+					// Prevent infinite loop if fallback also fails
+					if (this.src !== fallbackUrl && !this.dataset.fallbackFailed) {
+						this.src = fallbackUrl;
+						this.dataset.fallbackFailed = 'true';
+					}
+				}, { once: true });
+			});
+		})();
+	</script>
+)}

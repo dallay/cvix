@@ -25,6 +25,59 @@ const normalizeFilename = (path: string): string => {
 };
 
 /**
+ * Normalized lookup map for fast case-insensitive image searches.
+ * Built once at module initialization to avoid expensive glob iterations.
+ * Maps: lowercased-path -> original-key-in-imageGlobs
+ */
+const normalizedLookupMap = new Map<string, string>();
+
+/**
+ * Build the normalized lookup map once at module initialization.
+ * This eliminates the need to iterate over all glob keys on every lookup.
+ */
+const buildNormalizedLookupMap = (): void => {
+	const globKeys = Object.keys(imageGlobs);
+	
+	for (const key of globKeys) {
+		// Store both the original lowercased key and the encoded version
+		const lowercasedKey = key.toLowerCase();
+		normalizedLookupMap.set(lowercasedKey, key);
+		
+		// Also store the encoded version for filenames with spaces
+		const encodedKey = normalizeFilename(key).toLowerCase();
+		if (encodedKey !== lowercasedKey) {
+			normalizedLookupMap.set(encodedKey, key);
+		}
+	}
+};
+
+// Initialize the lookup map once at module load
+buildNormalizedLookupMap();
+
+/**
+ * Rebuild the normalized lookup map.
+ * Useful if imageGlobs changes dynamically (rare in typical Astro builds).
+ * @returns Number of entries in the rebuilt map
+ */
+export const rebuildImageLookupMap = (): number => {
+	normalizedLookupMap.clear();
+	buildNormalizedLookupMap();
+	return normalizedLookupMap.size;
+};
+
+/**
+ * Get image lookup statistics for monitoring/debugging.
+ * @returns Metrics about the image lookup system
+ */
+export const getImageLookupStats = () => {
+	return {
+		totalGlobKeys: Object.keys(imageGlobs).length,
+		normalizedMapSize: normalizedLookupMap.size,
+		timestamp: new Date().toISOString(),
+	};
+};
+
+/**
  * Find and resolve an image from the assets directory
  * @param imagePath - Path to the image (supports ~/assets/images/*, @/assets/images/*, or src/assets/images/* format)
  * @returns ImageMetadata or the original path
@@ -63,25 +116,31 @@ export const findImage = async (
 		return imagePath;
 	}
 
-	// Try to find the image in the glob results
+	// Try to find the image in the glob results using a 3-tier lookup strategy:
+	
+	// 1. Fast path: exact match (O(1))
 	let imageLoader = imageGlobs[normalizedPath];
 
-	// If not found, try with encoded filename (for files with spaces)
+	// 2. Fast path: encoded filename match (O(1))
 	if (!imageLoader) {
 		const encodedPath = normalizeFilename(normalizedPath);
 		imageLoader = imageGlobs[encodedPath];
 	}
 
-	// If still not found, try all glob keys to find a case-insensitive match
+	// 3. Optimized fallback: case-insensitive lookup using pre-built map (O(1))
 	if (!imageLoader) {
-		const globKeys = Object.keys(imageGlobs);
-		const matchingKey = globKeys.find(
-			(key) =>
-				key.toLowerCase() === normalizedPath.toLowerCase() ||
-				key.toLowerCase() === normalizeFilename(normalizedPath).toLowerCase(),
-		);
-
-		if (matchingKey) {
+		const lowercasedPath = normalizedPath.toLowerCase();
+		const matchingKey = normalizedLookupMap.get(lowercasedPath);
+		
+		// If not found with direct lowercase, try encoded version
+		if (!matchingKey) {
+			const encodedLowercasedPath = normalizeFilename(normalizedPath).toLowerCase();
+			const encodedMatchingKey = normalizedLookupMap.get(encodedLowercasedPath);
+			
+			if (encodedMatchingKey) {
+				imageLoader = imageGlobs[encodedMatchingKey];
+			}
+		} else {
 			imageLoader = imageGlobs[matchingKey];
 		}
 	}

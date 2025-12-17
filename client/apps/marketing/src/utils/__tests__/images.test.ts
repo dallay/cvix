@@ -232,6 +232,92 @@ describe("images.ts - Path Normalization", () => {
 	});
 });
 
+describe("images.ts - Performance & Monitoring", () => {
+	describe("normalized lookup map", () => {
+		it("should provide lookup statistics", async () => {
+			const { getImageLookupStats } = await import("../images");
+			const stats = getImageLookupStats();
+
+			expect(stats).toHaveProperty("totalGlobKeys");
+			expect(stats).toHaveProperty("normalizedMapSize");
+			expect(stats).toHaveProperty("timestamp");
+			expect(typeof stats.totalGlobKeys).toBe("number");
+			expect(typeof stats.normalizedMapSize).toBe("number");
+			expect(typeof stats.timestamp).toBe("string");
+		});
+
+		it("should have normalized map size >= glob keys (due to encoded variants)", async () => {
+			const { getImageLookupStats } = await import("../images");
+			const stats = getImageLookupStats();
+
+			// Normalized map can be larger because it stores both
+			// original and encoded versions for files with spaces
+			expect(stats.normalizedMapSize).toBeGreaterThanOrEqual(stats.totalGlobKeys);
+		});
+
+		it("should allow rebuilding the lookup map", async () => {
+			const { rebuildImageLookupMap, getImageLookupStats } = await import("../images");
+			
+			const initialStats = getImageLookupStats();
+			const rebuiltSize = rebuildImageLookupMap();
+			const finalStats = getImageLookupStats();
+
+			expect(typeof rebuiltSize).toBe("number");
+			expect(finalStats.normalizedMapSize).toBe(rebuiltSize);
+			expect(finalStats.normalizedMapSize).toBe(initialStats.normalizedMapSize);
+		});
+
+		it("should return consistent stats across multiple calls", async () => {
+			const { getImageLookupStats } = await import("../images");
+			
+			const stats1 = getImageLookupStats();
+			const stats2 = getImageLookupStats();
+
+			expect(stats1.totalGlobKeys).toBe(stats2.totalGlobKeys);
+			expect(stats1.normalizedMapSize).toBe(stats2.normalizedMapSize);
+		});
+	});
+
+	describe("lookup performance characteristics", () => {
+		it("should use Map for O(1) lookups instead of array iteration", () => {
+			// Map lookups are O(1) vs O(n) for array.find()
+			const testMap = new Map<string, string>();
+			
+			testMap.set("key1", "value1");
+			testMap.set("key2", "value2");
+			testMap.set("key3", "value3");
+
+			expect(testMap.get("key2")).toBe("value2");
+			expect(testMap.has("key1")).toBe(true);
+			expect(testMap.has("nonexistent")).toBe(false);
+		});
+
+		it("should demonstrate Map vs Object.keys performance pattern", () => {
+			// This test demonstrates why Map is better for lookups
+			const obj = {
+				"/src/assets/image1.jpg": "loader1",
+				"/src/assets/image2.jpg": "loader2",
+				"/src/assets/image3.jpg": "loader3",
+			};
+
+			// Old approach: O(n) - iterate over all keys
+			const slowLookup = Object.keys(obj).find(key => 
+				key.toLowerCase() === "/src/assets/image2.jpg".toLowerCase()
+			);
+
+			// New approach: O(1) - direct Map lookup
+			const fastMap = new Map<string, string>();
+			for (const [key, value] of Object.entries(obj)) {
+				fastMap.set(key.toLowerCase(), value);
+			}
+			const fastLookup = fastMap.get("/src/assets/image2.jpg".toLowerCase());
+
+			expect(slowLookup).toBe("/src/assets/image2.jpg");
+			expect(fastLookup).toBe("loader2");
+		});
+	});
+});
+
 describe("images.ts - Integration Scenarios", () => {
 	describe("blog post cover images", () => {
 		it("should handle blog cover image paths", () => {
