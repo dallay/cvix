@@ -6,11 +6,11 @@ const imageGlobs = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 /**
- * Normalize filename to handle spaces and special characters
- * @param path - File path to normalize
+ * Normalizes a file path by encoding only the filename part.
+ * @param path - Path with directory and filename
  * @returns Normalized path with URL-encoded filename
  */
-const normalizeFilename = (path: string): string => {
+export const normalizeFilename = (path: string): string => {
 	const lastSlashIndex = path.lastIndexOf("/");
 	if (lastSlashIndex === -1) return path;
 

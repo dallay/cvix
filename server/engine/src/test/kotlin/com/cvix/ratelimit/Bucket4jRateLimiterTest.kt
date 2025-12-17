@@ -394,4 +394,113 @@ class Bucket4jRateLimiterTest {
             "Expected resetTime to be $expectedReset, but was ${result.resetTime}",
         )
     }
+
+    @Test
+    fun `should select shortest refill period when multiple bandwidths share minimum capacity`() {
+        // Given - configure multiple bandwidths with the same capacity but different refill periods
+        // This tests the edge case where:
+        // Bandwidth A: 10 requests per minute (capacity=10, refill=60s)
+        // Bandwidth B: 10 requests per hour (capacity=10, refill=3600s)
+        // Both have capacity=10, but B is more restrictive (shorter effective rate)
+        val customProperties = RateLimitProperties(
+            enabled = true,
+            apiKeyPrefixes = RateLimitProperties.ApiKeyPrefixConfig(
+                professional = "PX001-",
+                basic = "BX001-",
+            ),
+            auth = authRateLimitConfig(),
+            business = businessRateLimitConfig(),
+            resume = resumeRateLimitConfig(),
+            waitlist = waitlistRateLimitConfig(),
+            cache = RateLimitProperties.CacheConfig(
+                maxSize = 10000,
+                ttlMinutes = 60,
+            ),
+        )
+
+        val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
+        val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
+        val configFactory = BucketConfigurationFactory(customProperties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(customProperties)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        val customLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = customProperties,
+            clock = fixedClock,
+        )
+
+        // When - consume a token
+        val result = customLimiter.consumeToken("MULTI-BANDWIDTH-TEST", RateLimitStrategy.AUTH)
+            .block()
+
+        // Then - should select the shortest refill period (60s, not 3600s)
+        // The resetTime should be now + 60 seconds, not now + 3600 seconds
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.limitCapacity shouldBe 10
+
+        val expectedResetTime = fixedNow.plus(Duration.ofSeconds(60))
+        assertEquals(
+            expectedResetTime,
+            result.resetTime,
+            "Expected resetTime to use shortest refill period (60s), but got ${result.resetTime}",
+        )
+    }
+
+    private fun waitlistRateLimitConfig(): RateLimitProperties.WaitlistRateLimitConfig =
+        RateLimitProperties.WaitlistRateLimitConfig(
+            enabled = true,
+            limit = RateLimitProperties.BandwidthLimit(
+                name = "waitlist",
+                capacity = 10,
+                refillTokens = 10,
+                refillDuration = Duration.ofMinutes(1),
+            ),
+        )
+
+    private fun resumeRateLimitConfig(): RateLimitProperties.ResumeRateLimitConfig =
+        RateLimitProperties.ResumeRateLimitConfig(
+            enabled = true,
+            limit = RateLimitProperties.BandwidthLimit(
+                name = "resume",
+                capacity = 10,
+                refillTokens = 10,
+                refillDuration = Duration.ofMinutes(1),
+            ),
+        )
+
+    private fun businessRateLimitConfig(): RateLimitProperties.BusinessRateLimitConfig =
+        RateLimitProperties.BusinessRateLimitConfig(
+            enabled = true,
+            pricingPlans = mapOf(
+                "free" to RateLimitProperties.BandwidthLimit(
+                    name = "free",
+                    capacity = 3,
+                    refillTokens = 3,
+                    refillDuration = Duration.ofMinutes(1),
+                ),
+            ),
+        )
+
+    private fun authRateLimitConfig(): RateLimitProperties.AuthRateLimitConfig =
+        RateLimitProperties.AuthRateLimitConfig(
+            enabled = true,
+            limits = listOf(
+                // Same capacity, different refill periods
+                RateLimitProperties.BandwidthLimit(
+                    name = "per-minute",
+                    capacity = 10,
+                    refillTokens = 10,
+                    refillDuration = Duration.ofSeconds(60),
+                ),
+                RateLimitProperties.BandwidthLimit(
+                    name = "per-hour",
+                    capacity = 10,
+                    refillTokens = 10,
+                    refillDuration = Duration.ofSeconds(3600),
+                ),
+            ),
+        )
 }

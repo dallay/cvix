@@ -19,10 +19,36 @@ import org.springframework.stereotype.Component
  * - waitlist.source.unknown: Counter for unknown sources that were normalized
  * - waitlist.source.normalization: Counter for source transformations (tags: raw, normalized)
  *
+ * **Cardinality Mitigation:**
+ * Raw source values are sanitized to prevent unbounded metric cardinality. Invalid values
+ * (excessive length, invalid characters) are replaced with "invalid" to avoid memory exhaustion
+ * from malicious or malformed inputs.
+ *
  * @property meterRegistry Micrometer meter registry for metric registration
  */
 @Component
 class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
+
+    companion object {
+        private const val MAX_SOURCE_LENGTH = 100
+        private val VALID_SOURCE_PATTERN = Regex("^[a-zA-Z0-9_-]+$")
+        private const val INVALID_SOURCE_TAG = "invalid"
+    }
+
+    /**
+     * Sanitizes a raw source value to prevent unbounded metric cardinality.
+     * Returns "invalid" for values that are too long or contain invalid characters.
+     *
+     * @param sourceRaw The raw source string to sanitize
+     * @return Sanitized source string safe for use as a metric tag
+     */
+    private fun sanitizeSourceForMetrics(sourceRaw: String): String {
+        return if (sourceRaw.length > MAX_SOURCE_LENGTH || !sourceRaw.matches(VALID_SOURCE_PATTERN)) {
+            INVALID_SOURCE_TAG
+        } else {
+            sourceRaw
+        }
+    }
 
     /**
      * Records a waitlist join event with both raw and normalized source tracking.
@@ -31,15 +57,17 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
      * @param sourceNormalized The normalized source enum value
      */
     fun recordWaitlistJoin(sourceRaw: String, sourceNormalized: WaitlistSource) {
+        val sanitizedRaw = sanitizeSourceForMetrics(sourceRaw)
+
         // Track overall join with both raw and normalized tags
         meterRegistry.counter(
             "waitlist.join.total",
-            "source_raw", sourceRaw,
+            "source_raw", sanitizedRaw,
             "source_normalized", sourceNormalized.value,
         ).increment()
 
         // Track raw source distribution
-        meterRegistry.counter("waitlist.source.raw", "source", sourceRaw).increment()
+        meterRegistry.counter("waitlist.source.raw", "source", sanitizedRaw).increment()
 
         // Track normalized source distribution
         meterRegistry.counter("waitlist.source.normalized", "source", sourceNormalized.value)
@@ -47,9 +75,9 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
 
         // Track when sources are normalized to UNKNOWN (potential new channels)
         if (sourceNormalized == WaitlistSource.UNKNOWN &&
-            !sourceRaw.equals("unknown", ignoreCase = true)
+            !sanitizedRaw.equals("unknown", ignoreCase = true)
         ) {
-            meterRegistry.counter("waitlist.source.unknown", "raw_source", sourceRaw).increment()
+            meterRegistry.counter("waitlist.source.unknown", "raw_source", sanitizedRaw).increment()
         }
     }
 
@@ -64,13 +92,15 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
      * @param sourceNormalized The normalized source enum value
      */
     fun recordSourceNormalization(sourceRaw: String, sourceNormalized: WaitlistSource) {
-        if (sourceRaw == sourceNormalized.value) {
+        val sanitizedRaw = sanitizeSourceForMetrics(sourceRaw)
+
+        if (sanitizedRaw == sourceNormalized.value) {
             return // No normalization occurred
         }
 
         meterRegistry.counter(
             "waitlist.source.normalization",
-            "raw", sourceRaw,
+            "raw", sanitizedRaw,
             "normalized", sourceNormalized.value,
         ).increment()
     }

@@ -167,4 +167,83 @@ class WaitlistMetricsTest {
         val unknownSources = meterRegistry.find("waitlist.source.unknown").counters().size
         unknownSources shouldBe 2 // twitter-campaign and reddit-post
     }
+
+    @Test
+    fun `should sanitize excessively long source values to prevent cardinality explosion`() {
+        // Given - a source value longer than 100 characters
+        val longSource = "a".repeat(150)
+        val sourceNormalized = WaitlistSource.UNKNOWN
+
+        // When
+        metrics.recordWaitlistJoin(longSource, sourceNormalized)
+
+        // Then - should be sanitized to "invalid"
+        val counter = meterRegistry.counter(
+            "waitlist.source.raw",
+            "source", "invalid",
+        )
+        counter.count() shouldBe 1.0
+    }
+
+    @Test
+    fun `should sanitize source values with invalid characters to prevent cardinality explosion`() {
+        // Given - sources with special characters, spaces, or other invalid chars
+        val invalidSources = listOf(
+            "landing<script>alert('xss')</script>",
+            "source with spaces",
+            "source@with!special#chars",
+            "source/with/slashes",
+        )
+
+        // When
+        invalidSources.forEach { source ->
+            metrics.recordWaitlistJoin(source, WaitlistSource.UNKNOWN)
+        }
+
+        // Then - all should be sanitized to "invalid"
+        val counter = meterRegistry.counter(
+            "waitlist.source.raw",
+            "source", "invalid",
+        )
+        counter.count() shouldBe 4.0
+    }
+
+    @Test
+    fun `should allow valid source values through sanitization`() {
+        // Given - valid sources with alphanumeric, dash, and underscore
+        val validSources = listOf(
+            "landing-hero",
+            "landing_cta",
+            "twitter123",
+            "reddit-post-2024",
+        )
+
+        // When & Then
+        validSources.forEach { source ->
+            metrics.recordWaitlistJoin(source, WaitlistSource.UNKNOWN)
+            val counter = meterRegistry.counter(
+                "waitlist.source.raw",
+                "source", source,
+            )
+            counter.count() shouldBe 1.0
+        }
+    }
+
+    @Test
+    fun `should sanitize invalid sources in normalization recording`() {
+        // Given - an invalid source
+        val invalidSource = "source with spaces"
+        val sourceNormalized = WaitlistSource.UNKNOWN
+
+        // When
+        metrics.recordSourceNormalization(invalidSource, sourceNormalized)
+
+        // Then - should be sanitized to "invalid"
+        val counter = meterRegistry.counter(
+            "waitlist.source.normalization",
+            "raw", "invalid",
+            "normalized", sourceNormalized.value,
+        )
+        counter.count() shouldBe 1.0
+    }
 }

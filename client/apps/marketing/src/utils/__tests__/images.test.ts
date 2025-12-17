@@ -1,6 +1,6 @@
 import {describe, expect, it, vi} from "vitest";
 import type {ImageMetadata} from "astro";
-import {findImage} from "@/utils/images.ts";
+import {findImage, normalizeFilename} from "@/utils/images.ts";
 
 /**
  * Tests for images.ts
@@ -59,51 +59,55 @@ describe("images.ts - Path Normalization", () => {
     });
   });
 
-  describe("filename normalization with spaces", () => {
-    it("should encode filenames with spaces", () => {
+  describe("normalizeFilename helper", () => {
+    it("should return filename unchanged when no path separator exists", () => {
       const filename = "photo with spaces.jpg";
-      const encoded = encodeURIComponent(filename);
+      const normalized = normalizeFilename(filename);
 
-      expect(encoded).toBe("photo%20with%20spaces.jpg");
+      // normalizeFilename only encodes when there's a directory path
+      // Without '/', it returns the input unchanged
+      expect(normalized).toBe(filename);
     });
 
-    it("should preserve directory structure when encoding filename", () => {
+    it("should preserve directory and encode filename when path has separator", () => {
       const path = "/src/assets/images/photo with spaces.jpg";
-      const lastSlashIndex = path.lastIndexOf("/");
-      const directory = path.substring(0, lastSlashIndex + 1);
-      const filename = path.substring(lastSlashIndex + 1);
-      const encoded = `${directory}${encodeURIComponent(filename)}`;
+      const normalized = normalizeFilename(path);
 
-      expect(encoded).toBe("/src/assets/images/photo%20with%20spaces.jpg");
-      expect(directory).toBe("/src/assets/images/");
+      expect(normalized).toBe("/src/assets/images/photo%20with%20spaces.jpg");
+      // Verify directory is preserved
+      expect(normalized.startsWith("/src/assets/images/")).toBe(true);
     });
 
-    it("should handle special characters in filenames", () => {
-      const specialChars = [
-        "photo&image.jpg",
-        "photo=value.jpg",
-        "photo+plus.jpg",
-        "photo#hash.jpg",
+    it("should handle special characters in filenames with paths", () => {
+      const testCases = [
+        { input: "/images/photo&image.jpg", expected: "/images/photo%26image.jpg" },
+        { input: "/images/photo=value.jpg", expected: "/images/photo%3Dvalue.jpg" },
+        { input: "/images/photo+plus.jpg", expected: "/images/photo%2Bplus.jpg" },
+        { input: "/images/photo#hash.jpg", expected: "/images/photo%23hash.jpg" },
       ];
 
-      for (const filename of specialChars) {
-        const encoded = encodeURIComponent(filename);
-        expect(encoded).not.toContain(filename);
-        expect(encoded).toMatch(/^photo/);
+      for (const { input, expected } of testCases) {
+        const normalized = normalizeFilename(input);
+        expect(normalized).toBe(expected);
+        // Verify special characters are encoded
+        expect(normalized).not.toContain("&");
+        expect(normalized).not.toContain("=");
+        expect(normalized).not.toContain("+");
+        expect(normalized).not.toContain("#");
       }
     });
 
-    it("should handle kebab-case filenames without encoding", () => {
-      const filename = "choosing-the-right-format-chronological.webp";
-      const encoded = encodeURIComponent(filename);
+    it("should handle kebab-case filenames without additional encoding", () => {
+      const path = "/images/choosing-the-right-format-chronological.webp";
+      const normalized = normalizeFilename(path);
 
-      // Kebab-case doesn't need encoding
-      expect(encoded).toBe(filename);
+      // Kebab-case characters (letters, numbers, hyphens, dots) don't need encoding
+      expect(normalized).toBe(path);
     });
   });
 
-  describe("external URL detection", () => {
-    it("should identify HTTP URLs", () => {
+  describe("external URL handling via findImage", () => {
+    it("should pass through HTTP URLs unchanged", async () => {
       const urls = [
         "http://example.com/image.jpg",
         "http://cdn.example.com/photo.webp",
@@ -111,13 +115,12 @@ describe("images.ts - Path Normalization", () => {
       ];
 
       for (const url of urls) {
-        expect(url.startsWith("http://") || url.startsWith("https://")).toBe(
-            true,
-        );
+        const result = await findImage(url);
+        expect(result).toBe(url);
       }
     });
 
-    it("should identify HTTPS URLs", () => {
+    it("should pass through HTTPS URLs unchanged", async () => {
       const urls = [
         "https://example.com/image.jpg",
         "https://cdn.example.com/photo.webp",
@@ -125,24 +128,25 @@ describe("images.ts - Path Normalization", () => {
       ];
 
       for (const url of urls) {
-        expect(url.startsWith("http://") || url.startsWith("https://")).toBe(
-            true,
-        );
+        const result = await findImage(url);
+        expect(result).toBe(url);
       }
     });
 
-    it("should not treat relative paths as external URLs", () => {
-      const paths = [
-        "/images/photo.jpg",
-        "./images/photo.jpg",
-        "../images/photo.jpg",
-        "images/photo.jpg",
+    it("should handle non-http(s) paths according to findImage logic", async () => {
+      // Paths that don't match /src/assets/ pattern are returned as-is
+      const passThroughPaths = [
+        "/images/photo.jpg",  // Absolute but not /src/assets/
+        "./images/photo.jpg", // Relative
+        "../images/photo.jpg", // Relative
+        "images/photo.jpg",   // Relative
       ];
 
-      for (const path of paths) {
-        expect(path.startsWith("http://") || path.startsWith("https://")).toBe(
-            false,
-        );
+      for (const path of passThroughPaths) {
+        const result = await findImage(path);
+        // These paths are returned unchanged because they don't match
+        // the /src/assets/ pattern that findImage handles
+        expect(result).toBe(path);
       }
     });
   });

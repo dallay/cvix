@@ -78,7 +78,7 @@ internal class JoinWaitlistCommandHandlerTest {
         val publishedEvent = eventSlot.captured
         assertEquals(savedEntry.id.id.toString(), publishedEvent.id)
         assertEquals(savedEntry.email.value, publishedEvent.email)
-        assertEquals(savedEntry.sourceRaw, publishedEvent.source)
+        assertEquals(savedEntry.sourceNormalized.value, publishedEvent.source)
         assertEquals(savedEntry.language.code, publishedEvent.language)
     }
 
