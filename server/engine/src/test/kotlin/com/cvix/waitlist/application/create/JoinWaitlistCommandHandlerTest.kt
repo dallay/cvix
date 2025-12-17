@@ -5,14 +5,17 @@ import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistRepository
+import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
+import com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
 import java.util.UUID
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
 import org.junit.jupiter.api.BeforeEach
@@ -21,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach
 internal class JoinWaitlistCommandHandlerTest {
     private lateinit var eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>
     private lateinit var repository: WaitlistRepository
-    private lateinit var metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
+    private lateinit var metrics: WaitlistMetrics
     private lateinit var securityProperties: WaitlistSecurityProperties
     private lateinit var waitlistJoiner: WaitlistJoiner
     private lateinit var joinWaitlistCommandHandler: JoinWaitlistCommandHandler
@@ -69,14 +72,14 @@ internal class JoinWaitlistCommandHandlerTest {
         coVerify(exactly = 1) { eventPublisher.publish(capture(eventSlot)) }
         // Check the saved entry fields
         val savedEntry = entrySlot.captured
-        kotlin.test.assertEquals(email, savedEntry.email.value)
-        kotlin.test.assertEquals(source, savedEntry.sourceRaw)
+        assertEquals(email, savedEntry.email.value)
+        assertEquals(source, savedEntry.sourceRaw)
         // Check the published event fields
         val publishedEvent = eventSlot.captured
-        kotlin.test.assertEquals(savedEntry.id.id.toString(), publishedEvent.id)
-        kotlin.test.assertEquals(savedEntry.email.value, publishedEvent.email)
-        kotlin.test.assertEquals(savedEntry.sourceRaw, publishedEvent.source)
-        kotlin.test.assertEquals(savedEntry.language.code, publishedEvent.language)
+        assertEquals(savedEntry.id.id.toString(), publishedEvent.id)
+        assertEquals(savedEntry.email.value, publishedEvent.email)
+        assertEquals(savedEntry.sourceRaw, publishedEvent.source)
+        assertEquals(savedEntry.language.code, publishedEvent.language)
     }
 
     @Test
@@ -104,9 +107,9 @@ internal class JoinWaitlistCommandHandlerTest {
 
         // Then - command should be processed successfully despite unknown source
         val savedEntry = entrySlot.captured
-        kotlin.test.assertEquals(unknownSource, savedEntry.sourceRaw)
-        kotlin.test.assertEquals(
-            com.cvix.waitlist.domain.WaitlistSource.UNKNOWN,
+        assertEquals(unknownSource, savedEntry.sourceRaw)
+        assertEquals(
+            WaitlistSource.UNKNOWN,
             savedEntry.sourceNormalized,
         )
     }

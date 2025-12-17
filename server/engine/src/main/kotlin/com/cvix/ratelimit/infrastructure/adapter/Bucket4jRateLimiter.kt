@@ -102,9 +102,9 @@ class Bucket4jRateLimiter(
             metrics.recordTokenConsumption(strategy) {
                 val cacheKey = "${strategy.name}:$identifier"
                 val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
-val bucket = entry.bucket
-val limitCapacity = entry.limitCapacity
-val refillDuration = entry.refillPeriodNanos
+                val bucket = entry.bucket
+                val limitCapacity = entry.limitCapacity
+                val refillDuration = entry.refillPeriodNanos
 
                 // Update cache size and stats metrics after potential cache insertion
                 metrics.updateCacheSize(cache.estimatedSize().toInt())
