@@ -1,3 +1,13 @@
+## [1.6.0](https://github.com/dallay/cvix/compare/v1.5.0...v1.6.0) (2025-12-17)
+
+### ✨ Features
+
+* **COD-98:** Implement Waitlist Capture on Landing Page ([#430](https://github.com/dallay/cvix/issues/430)) ([1b26d92](https://github.com/dallay/cvix/commit/1b26d92d3d7867a954ac6c7d3980ea71db05cd20))
+
+### 📝 Documentation
+
+* **COD-33:** rule agent refactor automatic docs ([#431](https://github.com/dallay/cvix/issues/431)) ([0f40731](https://github.com/dallay/cvix/commit/0f40731d02228c7a1dc251847e978936bd3b40bc))
+
 ## [1.5.0](https://github.com/dallay/cvix/compare/v1.4.0...v1.5.0) (2025-12-14)
 
 ### ✨ Features
