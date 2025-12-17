@@ -1,6 +1,7 @@
 package com.cvix.common.domain.security
 
 import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -11,6 +12,7 @@ object HashUtils {
      * @param input The input string to hash.
      * @param algorithm The hashing algorithm to use (default is "SHA-256").
      * @return The hexadecimal representation of the hash.
+     * @throws [NoSuchAlgorithmException] if the specified algorithm is not available.
      */
     fun hashSha256(input: String, algorithm: String = "SHA-256"): String {
         val digest = MessageDigest.getInstance(algorithm)
@@ -27,6 +29,7 @@ object HashUtils {
      * @return The hexadecimal representation of the HMAC.
      */
     fun hmacSha256(input: String, secretKey: String, algorithm: String = "HmacSHA256"): String {
+        require(secretKey.isNotBlank()) { "Secret key must not be empty for HMAC" }
         val mac = Mac.getInstance(algorithm)
         val keySpec = SecretKeySpec(secretKey.toByteArray(), algorithm)
         mac.init(keySpec)

@@ -1,5 +1,6 @@
 package com.cvix.waitlist.application.create
 
+import com.cvix.TestConstants
 import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.waitlist.domain.WaitlistEntry
@@ -31,7 +32,7 @@ internal class JoinWaitlistCommandHandlerTest {
         eventPublisher = mockk(relaxed = true, relaxUnitFun = true)
         repository = mockk(relaxed = true, relaxUnitFun = true)
         metrics = mockk(relaxed = true, relaxUnitFun = true)
-        securityProperties = WaitlistSecurityProperties(ipHmacSecret = "test-secret-key")
+        securityProperties = WaitlistSecurityProperties(ipHmacSecret = TestConstants.TEST_HMAC_SECRET)
 
         waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics, securityProperties)
         joinWaitlistCommandHandler = JoinWaitlistCommandHandler(waitlistJoiner)

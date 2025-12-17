@@ -1,5 +1,6 @@
 package com.cvix.waitlist.domain
 
+import com.cvix.TestConstants
 import com.cvix.UnitTest
 import com.cvix.common.domain.security.HashUtils
 import com.cvix.common.domain.vo.email.Email
@@ -64,7 +65,7 @@ internal class WaitlistEntryTest {
         // Assert
         entry.ipHash shouldNotBe null
         entry.ipHash shouldNotBe ipAddress
-        // SHA-256 hash is always 64 characters (hex)
+        // HMAC-SHA256 hash is always 64 characters (hex)
         entry.ipHash!!.length shouldBe 64
     }
 
@@ -184,9 +185,9 @@ internal class WaitlistEntryTest {
 
     // Use shared utility for hashing, same as WaitlistJoiner
     private fun hashIpAddress(ipAddress: String): String =
-        HashUtils.hmacSha256(ipAddress, TEST_HMAC_SECRET)
+        HashUtils.hmacSha256(ipAddress, TestConstants.TEST_HMAC_SECRET)
 
     private companion object {
-        private const val TEST_HMAC_SECRET = "test-hmac-secret-for-testing"
+        // ...existing code...
     }
 }
