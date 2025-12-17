@@ -24,12 +24,13 @@ object HashUtils {
      * Computes HMAC-SHA256 of the input string using the provided secret key.
      *
      * @param input The input string to hash.
-     * @param secretKey The secret key for HMAC.
+     * @param secretKey The secret key for HMAC. Must not be empty or blank.
      * @param algorithm The HMAC algorithm to use (default is "HmacSHA256").
      * @return The hexadecimal representation of the HMAC.
+     * @throws IllegalArgumentException if the secret key is empty or blank.
      */
     fun hmacSha256(input: String, secretKey: String, algorithm: String = "HmacSHA256"): String {
-        require(secretKey.isNotBlank()) { "Secret key must not be empty for HMAC" }
+        require(secretKey.isNotBlank()) { "Secret key must not be empty or blank for HMAC" }
         val mac = Mac.getInstance(algorithm)
         val keySpec = SecretKeySpec(secretKey.toByteArray(), algorithm)
         mac.init(keySpec)

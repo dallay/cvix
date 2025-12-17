@@ -187,6 +187,20 @@ class HashUtilsTest {
     }
 
     @Test
+    fun `hmacSha256 should throw exception for blank secret`() {
+        // Arrange
+        val input = "hello"
+        val secret = "   "
+
+        // Act & Assert
+        // Blank secrets (whitespace only) are not allowed
+        // This prevents accidental use of whitespace-only secrets
+        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+            HashUtils.hmacSha256(input, secret)
+        }
+    }
+
+    @Test
     fun `hmacSha256 should be resistant to rainbow table attacks`() {
         // Arrange
         // Common IPv4 addresses that might be in a rainbow table
