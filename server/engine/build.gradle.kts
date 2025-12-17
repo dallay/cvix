@@ -58,8 +58,7 @@ dependencies {
     implementation("org.springframework.data:spring-data-r2dbc")
     implementation("org.postgresql:r2dbc-postgresql")
 
-    implementation("com.github.ben-manes.caffeine:caffeine")
-
+    implementation(libs.caffeine)
     implementation(libs.bundles.kotlin.jvm)
     implementation(libs.commons.text)
     implementation(libs.bucket4j.core)

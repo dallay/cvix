@@ -80,7 +80,13 @@ class Bucket4jRateLimiterTest {
         val meterRegistry = SimpleMeterRegistry()
         val metrics = RateLimitMetrics(meterRegistry)
         // Use system clock by default for existing tests
-        rateLimiter = Bucket4jRateLimiter(configFactory, apiKeyParser, metrics)
+        rateLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = properties,
+            clock = Clock.systemUTC(),
+        )
     }
 
     @Test
@@ -365,7 +371,13 @@ class Bucket4jRateLimiterTest {
         val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(properties)
         val meterRegistry = SimpleMeterRegistry()
         val metrics = RateLimitMetrics(meterRegistry)
-        val deterministicLimiter = Bucket4jRateLimiter(configFactory, apiKeyParser, metrics, fixedClock)
+        val deterministicLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = properties,
+            clock = fixedClock,
+        )
 
         val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
             .block() as RateLimitResult.Allowed

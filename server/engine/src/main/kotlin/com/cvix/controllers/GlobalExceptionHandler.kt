@@ -110,18 +110,32 @@ class GlobalExceptionHandler(
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EmailAlreadyExistsException::class)
     fun handleEmailAlreadyExistsException(
-        @Suppress("UNUSED_PARAMETER") ex: EmailAlreadyExistsException,
         exchange: ServerWebExchange
     ): ProblemDetail {
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val localizedTitle = messageSource.getMessage(
+            "error.email.already.exists.title",
+            emptyArray(),
+            "Conflict",
+            locale,
+        )
+        val localizedDetail = messageSource.getMessage(
+            "error.email.already.exists.detail",
+            emptyArray(),
+            "This email is already on the waitlist",
+            locale,
+        )
+
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.CONFLICT,
-            "This email is already on the waitlist",
+            localizedDetail,
         )
-        problemDetail.title = "Conflict"
+        problemDetail.title = localizedTitle
         problemDetail.type = URI.create("$ERROR_PAGE/waitlist/email-already-exists")
         problemDetail.instance = URI.create(exchange.request.path.toString())
         problemDetail.setProperty(ERROR_CATEGORY, "EMAIL_ALREADY_EXISTS")
         problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedTitle)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
     }

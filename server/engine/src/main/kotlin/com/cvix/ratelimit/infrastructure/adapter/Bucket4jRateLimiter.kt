@@ -4,12 +4,15 @@ import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
+import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -26,9 +29,21 @@ import reactor.core.scheduler.Schedulers
  * - RESUME: For resume generation endpoints, using fixed rate limits per user
  * - WAITLIST: For waitlist endpoints, using fixed rate limits per IP
  *
+ * **Cache Strategy:**
+ * Uses Caffeine cache with bounded size and TTL-based eviction to prevent unbounded memory growth.
+ * In high-traffic scenarios with many unique identifiers (IPs, API keys), an unbounded cache would
+ * lead to memory exhaustion. The cache is configured with:
+ * - Maximum size limit (default: 10,000 entries)
+ * - TTL-based eviction (default: 1 hour after last access)
+ * - Automatic cleanup of stale entries
+ *
+ * For horizontally-scaled deployments, consider migrating to Bucket4j distributed buckets
+ * (Redis, Hazelcast, etc.) to share rate limit state across instances.
+ *
  * @property configurationFactory Factory for creating bucket configurations.
  * @property apiKeyParser Parser for extracting subscription tier from API keys.
  * @property metrics Metrics collector for rate limiting operations.
+ * @property properties Rate limit configuration properties.
  * @since 2.0.0
  */
 @Component
@@ -36,11 +51,31 @@ class Bucket4jRateLimiter(
     private val configurationFactory: BucketConfigurationFactory,
     private val apiKeyParser: ApiKeyParser,
     private val metrics: RateLimitMetrics,
-    private var clock: java.time.Clock = java.time.Clock.systemUTC()
+    private val properties: RateLimitProperties,
+    private val clock: Clock = Clock.systemUTC()
 ) : RateLimiter {
 
     private val logger = LoggerFactory.getLogger(Bucket4jRateLimiter::class.java)
-    private val cache = ConcurrentHashMap<String, Bucket>()
+
+    /**
+     * Bounded, TTL-based cache for rate limit buckets.
+     * Prevents unbounded memory growth in long-running services with many unique identifiers.
+     */
+    private val cache: Cache<String, Bucket> = Caffeine.newBuilder()
+        .maximumSize(properties.cache.maxSize)
+        .expireAfterAccess(Duration.ofMinutes(properties.cache.ttlMinutes))
+        .removalListener<String, Bucket> { key, _, cause ->
+            logger.debug("Cache eviction: key={}, cause={}", key, cause)
+        }
+        .recordStats()
+        .build()
+
+    init {
+        logger.info(
+            "Initialized Bucket4jRateLimiter with cache config: maxSize={}, ttlMinutes={}",
+            properties.cache.maxSize, properties.cache.ttlMinutes,
+        )
+    }
 
     override fun consumeToken(identifier: String): Mono<RateLimitResult> =
         consumeToken(identifier, RateLimitStrategy.BUSINESS)
@@ -60,10 +95,10 @@ class Bucket4jRateLimiter(
             // Record token consumption time and update cache size metric
             metrics.recordTokenConsumption(strategy) {
                 val cacheKey = "${strategy.name}:$identifier"
-                val bucket = cache.computeIfAbsent(cacheKey) { createBucket(identifier, strategy) }
+                val bucket = cache.get(cacheKey) { createBucket(identifier, strategy) }
 
-                // Update cache size metric after potential cache insertion
-                metrics.updateCacheSize(cache.size)
+                // Update cache size and stats metrics after potential cache insertion
+                metrics.updateCacheSize(cache.estimatedSize().toInt())
 
                 val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
@@ -163,9 +198,9 @@ class Bucket4jRateLimiter(
      * @param refillPeriodNanos The refill period in nanoseconds.
      * @return The [java.time.Instant] when the bucket will be refilled.
      */
-    private fun calculateResetTime(refillPeriodNanos: Long): java.time.Instant {
+    private fun calculateResetTime(refillPeriodNanos: Long): Instant {
         val refillDuration = Duration.ofNanos(refillPeriodNanos)
-        return java.time.Instant.now(clock).plus(refillDuration)
+        return Instant.now(clock).plus(refillDuration)
     }
 
     /**
@@ -183,18 +218,25 @@ class Bucket4jRateLimiter(
     private fun resolvePlanNameFromApiKey(apiKey: String): String = apiKeyParser.extractTierName(apiKey)
 
     /**
-     * Returns the current cache size.
+     * Returns the current cache size (estimated).
      * Useful for monitoring and testing.
      */
-    fun getCacheSize(): Int = cache.size
+    fun getCacheSize(): Long = cache.estimatedSize()
+
+    /**
+     * Returns cache statistics including hit rate, eviction count, and load times.
+     * Useful for monitoring cache performance and tuning configuration.
+     */
+    fun getCacheStats(): com.github.benmanes.caffeine.cache.stats.CacheStats = cache.stats()
 
     /**
      * Clears all cached buckets.
      * Useful for testing and dynamic configuration reloading.
      */
     fun clearCache() {
-        cache.clear()
+        cache.invalidateAll()
+        cache.cleanUp()
         metrics.updateCacheSize(0)
-        logger.debug("Cleared all cached buckets")
+        logger.info("Cleared all cached buckets. Cache stats before clear: {}", cache.stats())
     }
 }

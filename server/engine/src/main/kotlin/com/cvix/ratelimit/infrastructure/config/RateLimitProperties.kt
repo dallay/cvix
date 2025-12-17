@@ -51,6 +51,12 @@ data class RateLimitProperties(
     val enabled: Boolean = true,
 
     /**
+     * Configuration for the rate limiter cache.
+     * Controls bounded size and TTL-based eviction to prevent unbounded memory growth.
+     */
+    val cache: CacheConfig = CacheConfig(),
+
+    /**
      * Configuration for API key prefix mapping to subscription tiers.
      * Used to determine the tier from an API key prefix.
      */
@@ -76,6 +82,39 @@ data class RateLimitProperties(
      */
     val waitlist: WaitlistRateLimitConfig = WaitlistRateLimitConfig()
 ) {
+
+    /**
+     * Configuration for the rate limiter bucket cache.
+     * Prevents unbounded memory growth by limiting cache size and using TTL-based eviction.
+     *
+     * The cache uses Caffeine with:
+     * - Maximum size limit (LRU eviction when full)
+     * - TTL-based eviction (removes idle entries)
+     * - Asynchronous eviction (optimized for throughput)
+     *
+     * Capacity Planning:
+     * - Small API (< 1K users): 2,000 entries
+     * - Medium API (1-10K users): 10,000 entries (default)
+     * - Large API (10-100K users): 50,000 entries
+     * - Enterprise (> 100K users): Consider distributed cache (Redis)
+     */
+    data class CacheConfig(
+        /**
+         * Maximum number of cached rate limit buckets.
+         * When the cache reaches this size, least-recently-used entries are evicted.
+         *
+         * Default: 10,000 entries (~1-2MB memory footprint)
+         */
+        val maxSize: Long = 10_000,
+
+        /**
+         * Time-to-live in minutes for idle cache entries.
+         * Entries not accessed within this duration are automatically evicted.
+         *
+         * Default: 60 minutes (1 hour)
+         */
+        val ttlMinutes: Long = 60
+    )
 
     /**
      * Configuration for API key prefix to subscription tier mapping.

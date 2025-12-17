@@ -97,6 +97,13 @@ application:
   # Rate limiting configuration
   rate-limit:
     enabled: true
+    # Cache configuration for rate limit buckets
+    # Prevents unbounded memory growth with many unique identifiers
+    cache:
+      # Maximum number of cached buckets per instance
+      max-size: ${RATELIMIT_CACHE_MAX_SIZE:10000}
+      # Time-to-live in minutes for idle buckets
+      ttl-minutes: ${RATELIMIT_CACHE_TTL_MINUTES:60}
     # Authentication endpoints rate limiting (time-based to prevent brute force attacks)
     auth:
       enabled: true
