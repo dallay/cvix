@@ -279,9 +279,9 @@ class RateLimitingServiceTest {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         } returns Mono.just(
             RateLimitResult.Allowed(
-                1,
-                100,
-                Instant.now().plusSeconds(3600),
+                remainingTokens = 1,
+                limitCapacity = 100,
+                resetTime = Instant.now().plusSeconds(3600),
             ),
         ) andThen
             Mono.just(RateLimitResult.Denied(retryAfter, 100))

@@ -13,6 +13,8 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.test.StepVerifier
@@ -380,9 +382,16 @@ class Bucket4jRateLimiterTest {
         )
 
         val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
-            .block() as RateLimitResult.Allowed
+            .block()
+        assertTrue(
+            result is RateLimitResult.Allowed,
+            "Expected RateLimitResult.Allowed, got {result?.let { it::class }}",
+        )
         val expectedReset = fixedNow.plus(Duration.ofMinutes(1))
-        // Allow slight tolerance for internal timing, but deterministic clock should make this exact
-        assert(result.resetTime == expectedReset) { "expected reset time $expectedReset but was ${result.resetTime}" }
+        assertEquals(
+            expectedReset,
+            result.resetTime,
+            "Expected resetTime to be $expectedReset, but was ${result.resetTime}",
+        )
     }
 }
