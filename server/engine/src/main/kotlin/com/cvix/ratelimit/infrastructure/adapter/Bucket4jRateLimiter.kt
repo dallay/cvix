@@ -163,7 +163,7 @@ class Bucket4jRateLimiter(
         val refillPeriodNanos = configuration.bandwidths
             .filter { it.capacity == limitCapacity }
             .minOfOrNull { it.refillPeriodNanos }
-            ?: throw IllegalStateException("Bucket configuration must have at least one bandwidth")
+            ?: error("Bucket configuration must have at least one bandwidth")
         return CachedBucketEntry(bucket, limitCapacity, refillPeriodNanos)
     }
 

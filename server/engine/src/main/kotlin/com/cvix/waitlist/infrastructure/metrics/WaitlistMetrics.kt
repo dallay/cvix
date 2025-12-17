@@ -29,12 +29,6 @@ import org.springframework.stereotype.Component
 @Component
 class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
 
-    companion object {
-        private const val MAX_SOURCE_LENGTH = 100
-        private val VALID_SOURCE_PATTERN = Regex("^[a-zA-Z0-9_-]+$")
-        private const val INVALID_SOURCE_TAG = "invalid"
-    }
-
     /**
      * Sanitizes a raw source value to prevent unbounded metric cardinality.
      * Returns "invalid" for values that are too long or contain invalid characters.
@@ -103,5 +97,11 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
             "raw", sanitizedRaw,
             "normalized", sourceNormalized.value,
         ).increment()
+    }
+
+    companion object {
+        private const val MAX_SOURCE_LENGTH = 100
+        private val VALID_SOURCE_PATTERN = Regex("^[a-zA-Z0-9_-]+$")
+        private const val INVALID_SOURCE_TAG = "invalid"
     }
 }
