@@ -73,6 +73,15 @@ const t = useTranslations(currentLocale);
 	</div>
 </div>
 
+<!-- Load CSRF helper and expose globally for inline script -->
+<script>
+	import { csrfLoader, getCsrfToken } from "@/utils/csrf-client";
+
+	// Expose globally for inline script compatibility
+	window.csrfLoader = csrfLoader;
+	window.getCsrfToken = getCsrfToken;
+</script>
+
 <script is:inline define:vars={{ successMessage, errorMessage, rateLimitMessage }}>
 	// Email validation regex
 	const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,59 +101,6 @@ const t = useTranslations(currentLocale);
 
 		// Return 'es' for Spanish, 'en' for everything else
 		return baseLang === "es" ? "es" : "en";
-	}
-
-	// CSRF Token Management
-let csrfInitialized = false;
-let csrfInitPromise = null;
-
-/**
- * Initialize CSRF token by making a GET request to the backend
- * This sets the XSRF-TOKEN cookie which will be sent with subsequent requests
- * Uses a shared promise so multiple callers do not stack
- */
-async function initializeCsrfToken(backendUrl) {
-	if (csrfInitialized) return;
-	if (csrfInitPromise) return csrfInitPromise;
-
-	csrfInitPromise = (async () => {
-		try {
-			const response = await fetch(`${backendUrl}/api/health-check`, {
-				method: "GET",
-				credentials: "include",
-				headers: { Accept: "application/vnd.api.v1+json" },
-			});
-
-			if (response.ok) {
-				csrfInitialized = true;
-				console.debug("✅ CSRF token initialized");
-			} else {
-				console.warn("⚠️ CSRF token initialization failed:", response.status);
-			}
-		} catch (error) {
-			console.warn("⚠️ Failed to initialize CSRF token:", error);
-		} finally {
-			csrfInitPromise = null;
-		}
-	})();
-	return csrfInitPromise;
-}
-
-	/**
-	 * Get CSRF token from cookie
-	 */
-	function getCsrfToken() {
-		const name = "XSRF-TOKEN=";
-		const decodedCookie = decodeURIComponent(document.cookie);
-		const cookies = decodedCookie.split(";");
-
-		for (let cookie of cookies) {
-			cookie = cookie.trim();
-			if (cookie.startsWith(name)) {
-				return cookie.substring(name.length);
-			}
-		}
-		return null;
 	}
 
 	// Initialize all forms on the page
@@ -168,11 +124,10 @@ async function initializeCsrfToken(backendUrl) {
 			// This avoids unnecessary requests on pages where the form is never used
 			const lazyLoadCsrf = () => {
 				const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
-				if (backendUrl && !csrfInitialized && !csrfInitPromise) {
-					csrfInitPromise = initializeCsrfToken(backendUrl)
-						.catch((err) => {
-							console.warn("CSRF lazy load failed:", err);
-						});
+				if (backendUrl) {
+					window.csrfLoader.ensureToken(backendUrl).catch((err) => {
+						console.warn("CSRF lazy load failed:", err);
+					});
 				}
 			};
 
@@ -258,12 +213,12 @@ async function initializeCsrfToken(backendUrl) {
 
 					// Ensure CSRF token is loaded before submitting
 					const backendUrl = apiUrl?.replace("/api/waitlist", "");
-					if (backendUrl && !csrfInitialized) {
-						await initializeCsrfToken(backendUrl);
+					if (backendUrl) {
+						await window.csrfLoader.ensureToken(backendUrl);
 					}
 
 					// Get CSRF token from cookie and add to headers
-					const csrfToken = getCsrfToken();
+					const csrfToken = window.getCsrfToken();
 					const headers = {
 						"Content-Type": "application/json",
 						Accept: "application/vnd.api.v1+json",

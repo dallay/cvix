@@ -1,22 +1,21 @@
 /**
- * CSRF Token Management for Marketing Site
+ * CSRF Helper - Client-Side Module
  *
- * This module handles CSRF token initialization for forms that interact with the backend API.
- * The token is loaded lazily (on-demand) to avoid unnecessary requests on pages without forms.
+ * This module handles CSRF token management for client-side forms.
+ * It provides a robust, deduplicated loader and token retrieval functions.
  */
+
+const CSRF_COOKIE_NAME = "XSRF-TOKEN";
 
 /**
  * Initialize CSRF token by making a GET request to the backend
  * This sets the XSRF-TOKEN cookie which will be automatically sent with subsequent requests
- *
- * @param backendUrl - Base URL of the backend API
- * @returns Promise that resolves when CSRF token is initialized
  */
-export async function initializeCsrfToken(backendUrl: string): Promise<void> {
+async function initializeCsrfToken(backendUrl: string): Promise<void> {
 	try {
 		const response = await fetch(`${backendUrl}/api/health-check`, {
 			method: "GET",
-			credentials: "include", // Important: Include cookies in request
+			credentials: "include",
 			headers: {
 				Accept: "application/vnd.api.v1+json",
 			},
@@ -36,18 +35,16 @@ export async function initializeCsrfToken(backendUrl: string): Promise<void> {
 
 /**
  * Check if CSRF token cookie exists
- *
- * @returns true if XSRF-TOKEN cookie is present, false otherwise
  */
-const CSRF_COOKIE_NAME = "XSRF-TOKEN";
-
-export function hasCsrfToken(): boolean {
+function hasCsrfToken(): boolean {
 	if (typeof document === "undefined") {
 		return false;
 	}
 
 	const cookies = document.cookie.split(";");
-	return cookies.some((cookie) => cookie.trim().startsWith(`${CSRF_COOKIE_NAME}=`));
+	return cookies.some((cookie) =>
+		cookie.trim().startsWith(`${CSRF_COOKIE_NAME}=`)
+	);
 }
 
 /**
@@ -78,7 +75,7 @@ export function getCsrfToken(): string | null {
  * Lazy CSRF token loader with caching
  * This class ensures CSRF token is loaded only once and only when needed
  */
-export class CsrfTokenLoader {
+class CsrfTokenLoader {
 	private loading = false;
 	private loaded = false;
 	private loadPromise: Promise<void> | null = null;
@@ -90,16 +87,14 @@ export class CsrfTokenLoader {
 	 * @param backendUrl - Base URL of the backend API
 	 */
 	async ensureToken(backendUrl: string): Promise<void> {
-		// Already loaded, skip
+		// Already loaded and cookie still exists, skip
 		if (this.loaded && hasCsrfToken()) {
 			return;
 		}
 
 		// Currently loading, wait for the pending load to complete
-		if (this.loading) {
-			if (this.loadPromise) {
-				await this.loadPromise;
-			}
+		if (this.loading && this.loadPromise) {
+			await this.loadPromise;
 			return;
 		}
 
@@ -128,3 +123,12 @@ export class CsrfTokenLoader {
 
 // Export singleton instance for use across components
 export const csrfLoader = new CsrfTokenLoader();
+export { CSRF_COOKIE_NAME };
+
+// Declare global window extensions for TypeScript
+declare global {
+	interface Window {
+		csrfLoader: CsrfTokenLoader;
+		getCsrfToken: () => string | null;
+	}
+}
