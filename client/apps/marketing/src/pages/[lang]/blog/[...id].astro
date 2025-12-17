@@ -2,7 +2,7 @@
 export const prerender = true;
 
 import { render } from "astro:content";
-import CtaNewsletterSubscription from "@/components/CtaNewsletterSubscription.astro";
+import Waitlist from "@/components/Waitlist.astro";
 import OptimizedPicture from "@/components/OptimizedPicture.astro";
 import PostFooter from "@/components/PostFooter.astro";
 import PostHeader from "@/components/PostHeader.astro";
@@ -174,12 +174,7 @@ const schema = {
           </div>
 
           <div class="p-6 bg-muted/50 rounded-xl border border-border/50">
-            <CtaNewsletterSubscription
-              formId="sidebar-newsletter-form"
-              title=""
-              description=""
-              class="w-full"
-            />
+            <Waitlist formId="sidebar-waitlist-form" title="" description="" class="w-full" />
           </div>
         </div>
       </aside>
@@ -189,8 +184,8 @@ const schema = {
   <div class="border-t border-border mt-20 bg-muted/30">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-3xl mx-auto text-center">
-        <CtaNewsletterSubscription
-          formId="article-bottom-newsletter-form"
+        <Waitlist
+          formId="article-bottom-waitlist-form"
           title=""
           description=""
           class="max-w-md mx-auto"

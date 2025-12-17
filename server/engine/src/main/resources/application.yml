@@ -68,6 +68,7 @@ spring:
             enable: false
 application:
   name: ProFileTailors
+  homepage: https://profiletailors.com
   description: Example ProFileTailors application used as a starting point for projects.
   version: 0.0.1-SNAPSHOT
   security:
@@ -96,6 +97,13 @@ application:
   # Rate limiting configuration
   rate-limit:
     enabled: true
+    # Cache configuration for rate limit buckets
+    # Prevents unbounded memory growth with many unique identifiers
+    cache:
+      # Maximum number of cached buckets per instance
+      max-size: ${RATELIMIT_CACHE_MAX_SIZE:10000}
+      # Time-to-live in minutes for idle buckets
+      ttl-minutes: ${RATELIMIT_CACHE_TTL_MINUTES:60}
     # Authentication endpoints rate limiting (time-based to prevent brute force attacks)
     auth:
       enabled: true
@@ -137,7 +145,26 @@ application:
           capacity: 100
           refill-tokens: 100
           refill-duration: 1h
-
+    # Resume generation endpoints rate limiting
+    resume:
+      enabled: true
+      endpoints:
+        - /api/resume/generate
+      limit:
+        name: resume-per-minute
+        capacity: 10
+        refill-tokens: 10
+        refill-duration: 1m
+    # Waitlist endpoints rate limiting
+    waitlist:
+      enabled: true
+      endpoints:
+        - /api/waitlist
+      limit:
+        name: waitlist-per-minute
+        capacity: 10
+        refill-tokens: 10
+        refill-duration: 1m
 management:
   endpoints:
     web:
@@ -214,6 +241,11 @@ resume:
       # Path to filesystem templates (only used when FILESYSTEM is in types)
       # Can be absolute or relative to the application working directory
       path: ${TEMPLATE_SOURCE_PATH:templates/resume}
+waitlist:
+  security:
+    # HMAC secret for IP address hashing (required)
+    # Must be set via WAITLIST_IP_HMAC_SECRET environment variable
+    ip-hmac-secret: ${WAITLIST_IP_HMAC_SECRET:}
 springdoc:
   show-actuator: true
   api-docs:

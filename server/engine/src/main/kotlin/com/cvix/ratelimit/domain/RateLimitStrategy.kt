@@ -17,5 +17,10 @@ enum class RateLimitStrategy {
     /**
      * Resume strategy: uses fixed rate limit for resume generation endpoints (10 req/min per user).
      */
-    RESUME
+    RESUME,
+
+    /**
+     * Waitlist strategy: uses fixed rate limit for waitlist endpoints (10 req/min per IP to prevent spam).
+     */
+    WAITLIST
 }

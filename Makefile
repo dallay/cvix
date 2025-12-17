@@ -52,6 +52,14 @@ update-deps:
 	@$(PNPM) update-deps
 
 # ------------------------------------------------------------------------------------
+# ENVIRONMENT
+# ------------------------------------------------------------------------------------
+
+# Prepares the local developer environment (.env, symlinks, tooling checks).
+prepare-env:
+	@bash ./scripts/prepare-env.sh
+
+# ------------------------------------------------------------------------------------
 # DEVELOPMENT
 # ------------------------------------------------------------------------------------
 
@@ -82,6 +90,14 @@ dev-web:
 # Runs the documentation in development mode.
 dev-docs:
 	@$(PNPM) $(CLIENT_DOCS_FILTER) dev
+
+# ------------------------------------------------------------------------------------
+# LOCAL DEVELOPMENT UTILITIES
+# ------------------------------------------------------------------------------------
+
+# Generate local development SSL certificates (interactive; uses mkcert and openssl)
+ssl-cert:
+	@bash ./scripts/generate-ssl-certificate.sh
 
 # ------------------------------------------------------------------------------------
 # BUILD
@@ -240,4 +256,4 @@ verify-all:
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert

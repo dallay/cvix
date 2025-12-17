@@ -21,6 +21,7 @@ apacheCommon = "1.14.0"
 jackson = "2.18.0"
 springSecurity = "6.5.7"
 bucket4j = "8.10.1"
+caffeine = "3.1.8"
 stringtemplate = "4.3.4"
 docker-java = "3.7.0"
 
@@ -81,6 +82,7 @@ kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.21.2" }
 bucket4j-core = { module = "com.bucket4j:bucket4j-core", version.ref = "bucket4j" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 stringtemplate4 = { module = "org.antlr:ST4", version.ref = "stringtemplate" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
 docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }

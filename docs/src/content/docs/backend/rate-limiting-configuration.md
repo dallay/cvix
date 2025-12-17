@@ -303,6 +303,12 @@ curl -v http://localhost:8080/api/auth/login
 
 ## Troubleshooting
 
+### Note about reset times
+
+The API exposes a `resetTime` value in rate limit responses (and the server sets `X-RateLimit-Reset` to this value). This is an estimated timestamp indicating when the bucket is expected to be fully refilled. IMPORTANT: This value is approximate and may not reflect the exact refill schedule. It is computed conservatively (for example: now + refill duration) and does not account for bucket creation time, partial refills, or clock skew in distributed deployments.
+
+Clients should treat `resetTime` as advisory only. When precise retry timing is required, rely on the `Retry-After` header returned with HTTP 429 responses and use conservative retry/backoff strategies (e.g., exponential backoff).
+
 ### Rate limiting not working
 
 1. Verify it's enabled: `application.rate-limit.enabled=true`

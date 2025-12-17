@@ -2,13 +2,19 @@ package com.cvix.ratelimit
 
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
-import com.cvix.ratelimit.infrastructure.Bucket4jRateLimiter
-import com.cvix.ratelimit.infrastructure.config.BucketConfigurationStrategy
+import com.cvix.ratelimit.infrastructure.adapter.Bucket4jRateLimiter
+import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
+import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import java.time.Clock
 import java.time.Duration
+import java.time.Instant
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.test.StepVerifier
@@ -32,6 +38,10 @@ class Bucket4jRateLimiterTest {
     fun setUp() {
         properties = RateLimitProperties(
             enabled = true,
+            apiKeyPrefixes = RateLimitProperties.ApiKeyPrefixConfig(
+                professional = "PX001-",
+                basic = "BX001-",
+            ),
             auth = RateLimitProperties.AuthRateLimitConfig(
                 enabled = true,
                 limits = listOf(
@@ -67,8 +77,18 @@ class Bucket4jRateLimiterTest {
                 ),
             ),
         )
-        val configStrategy = BucketConfigurationStrategy(properties)
-        rateLimiter = Bucket4jRateLimiter(configStrategy)
+        val configFactory = BucketConfigurationFactory(properties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(properties)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        // Use system clock by default for existing tests
+        rateLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = properties,
+            clock = Clock.systemUTC(),
+        )
     }
 
     @Test
@@ -81,6 +101,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+                result.limitCapacity shouldBe 5
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -100,6 +122,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -114,6 +137,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 2 // 3 capacity - 1 consumed
+                result.limitCapacity shouldBe 3
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -133,6 +158,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+                result.limitCapacity shouldBe 3
             }
             .verifyComplete()
     }
@@ -147,6 +173,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+                result.limitCapacity shouldBe 5
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -161,6 +189,8 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 9 // 10 capacity - 1 consumed
+                result.limitCapacity shouldBe 10
+                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
             }
             .verifyComplete()
     }
@@ -212,6 +242,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 4
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
 
@@ -220,6 +251,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 3
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
 
@@ -228,6 +260,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 2
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -243,6 +276,7 @@ class Bucket4jRateLimiterTest {
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 // Should use FREE plan (3 tokens) as default
                 result.remainingTokens shouldBe 2
+                result.limitCapacity shouldBe 3
             }
             .verifyComplete()
     }
@@ -259,9 +293,11 @@ class Bucket4jRateLimiterTest {
         // Then - should see token decrements indicating same bucket is being used
         result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
         result1.remainingTokens shouldBe 4
+        result1.limitCapacity shouldBe 5
 
         result2.shouldBeInstanceOf<RateLimitResult.Allowed>()
         result2.remainingTokens shouldBe 3
+        result2.limitCapacity shouldBe 5
     }
 
     @Test
@@ -273,6 +309,7 @@ class Bucket4jRateLimiterTest {
         StepVerifier.create(rateLimiter.consumeToken(ipIdentifier, RateLimitStrategy.AUTH))
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
@@ -287,6 +324,7 @@ class Bucket4jRateLimiterTest {
             .assertNext { result ->
                 result.shouldBeInstanceOf<RateLimitResult.Allowed>()
                 result.remainingTokens shouldBe 9 // Professional plan (10 tokens)
+                result.limitCapacity shouldBe 10
             }
             .verifyComplete()
     }
@@ -307,7 +345,162 @@ class Bucket4jRateLimiterTest {
                 result.shouldBeInstanceOf<RateLimitResult.Denied>()
                 result.retryAfter.isNegative shouldBe false
                 result.retryAfter.isZero shouldBe false
+                result.limitCapacity shouldBe 5
             }
             .verifyComplete()
     }
+
+    // Option A: Tolerant test - assert resetTime is between now and now + refillDuration + tolerance
+    @Test
+    fun `reset time is within expected range (tolerant)`() {
+        val identifier = "TOLERANT-TEST"
+        val now = Instant.now()
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+            .block() as RateLimitResult.Allowed
+
+        // refillDuration configured for AUTH is 1 minute
+        val upperBound = now.plus(Duration.ofMinutes(1)).plusMillis(1000) // 1s tolerance
+        assert(!result.resetTime.isBefore(now)) { "resetTime should not be before now" }
+        assert(!result.resetTime.isAfter(upperBound)) { "resetTime should be within now + refillDuration + tolerance" }
+    }
+
+    // Option B: Deterministic test by injecting a fixed clock
+    @Test
+    fun `reset time deterministic with injected clock`() {
+        val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
+        val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
+        val configFactory = BucketConfigurationFactory(properties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(properties)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        val deterministicLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = properties,
+            clock = fixedClock,
+        )
+
+        val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
+            .block()
+        assertTrue(
+            result is RateLimitResult.Allowed,
+            "Expected RateLimitResult.Allowed, got ${result?.let { it::class }}",
+        )
+        val expectedReset = fixedNow.plus(Duration.ofMinutes(1))
+        assertEquals(
+            expectedReset,
+            result.resetTime,
+            "Expected resetTime to be $expectedReset, but was ${result.resetTime}",
+        )
+    }
+
+    @Test
+    fun `should select shortest refill period when multiple bandwidths share minimum capacity`() {
+        // Given - configure multiple bandwidths with the same capacity but different refill periods
+        // This tests the edge case where:
+        // Bandwidth A: 10 requests per minute (capacity=10, refill=60s)
+        // Bandwidth B: 10 requests per hour (capacity=10, refill=3600s)
+        // Both have capacity=10, but B is more restrictive (shorter effective rate)
+        val customProperties = RateLimitProperties(
+            enabled = true,
+            apiKeyPrefixes = RateLimitProperties.ApiKeyPrefixConfig(
+                professional = "PX001-",
+                basic = "BX001-",
+            ),
+            auth = authRateLimitConfig(),
+            business = businessRateLimitConfig(),
+            resume = resumeRateLimitConfig(),
+            waitlist = waitlistRateLimitConfig(),
+            cache = RateLimitProperties.CacheConfig(
+                maxSize = 10000,
+                ttlMinutes = 60,
+            ),
+        )
+
+        val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
+        val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
+        val configFactory = BucketConfigurationFactory(customProperties)
+        val apiKeyParser = com.cvix.ratelimit.infrastructure.adapter.ApiKeyParser(customProperties)
+        val meterRegistry = SimpleMeterRegistry()
+        val metrics = RateLimitMetrics(meterRegistry)
+        val customLimiter = Bucket4jRateLimiter(
+            configurationFactory = configFactory,
+            apiKeyParser = apiKeyParser,
+            metrics = metrics,
+            properties = customProperties,
+            clock = fixedClock,
+        )
+
+        // When - consume a token
+        val result = customLimiter.consumeToken("MULTI-BANDWIDTH-TEST", RateLimitStrategy.AUTH)
+            .block()
+
+        // Then - should select the shortest refill period (60s, not 3600s)
+        // The resetTime should be now + 60 seconds, not now + 3600 seconds
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.limitCapacity shouldBe 10
+
+        val expectedResetTime = fixedNow.plus(Duration.ofSeconds(60))
+        assertEquals(
+            expectedResetTime,
+            result.resetTime,
+            "Expected resetTime to use shortest refill period (60s), but got ${result.resetTime}",
+        )
+    }
+
+    private fun waitlistRateLimitConfig(): RateLimitProperties.WaitlistRateLimitConfig =
+        RateLimitProperties.WaitlistRateLimitConfig(
+            enabled = true,
+            limit = RateLimitProperties.BandwidthLimit(
+                name = "waitlist",
+                capacity = 10,
+                refillTokens = 10,
+                refillDuration = Duration.ofMinutes(1),
+            ),
+        )
+
+    private fun resumeRateLimitConfig(): RateLimitProperties.ResumeRateLimitConfig =
+        RateLimitProperties.ResumeRateLimitConfig(
+            enabled = true,
+            limit = RateLimitProperties.BandwidthLimit(
+                name = "resume",
+                capacity = 10,
+                refillTokens = 10,
+                refillDuration = Duration.ofMinutes(1),
+            ),
+        )
+
+    private fun businessRateLimitConfig(): RateLimitProperties.BusinessRateLimitConfig =
+        RateLimitProperties.BusinessRateLimitConfig(
+            enabled = true,
+            pricingPlans = mapOf(
+                "free" to RateLimitProperties.BandwidthLimit(
+                    name = "free",
+                    capacity = 3,
+                    refillTokens = 3,
+                    refillDuration = Duration.ofMinutes(1),
+                ),
+            ),
+        )
+
+    private fun authRateLimitConfig(): RateLimitProperties.AuthRateLimitConfig =
+        RateLimitProperties.AuthRateLimitConfig(
+            enabled = true,
+            limits = listOf(
+                // Same capacity, different refill periods
+                RateLimitProperties.BandwidthLimit(
+                    name = "per-minute",
+                    capacity = 10,
+                    refillTokens = 10,
+                    refillDuration = Duration.ofSeconds(60),
+                ),
+                RateLimitProperties.BandwidthLimit(
+                    name = "per-hour",
+                    capacity = 10,
+                    refillTokens = 10,
+                    refillDuration = Duration.ofSeconds(3600),
+                ),
+            ),
+        )
 }

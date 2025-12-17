@@ -60,8 +60,6 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <style>
-  @reference "@/styles/global.css";
-
   /* Header states */
   header {
     background-color: transparent;
@@ -69,7 +67,14 @@ const currentPath = Astro.url.pathname;
   }
 
   header.scrolled {
-    @apply border-b border-b-slate-300/60 dark:border-b-slate-700/60 bg-white dark:bg-gray-900;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(203 213 225 / 0.6);
+    background-color: white;
+  }
+
+  :global(.dark) header.scrolled {
+    border-bottom-color: rgb(51 65 85 / 0.6);
+    background-color: rgb(17 24 39);
   }
 
   /* Alternative approach using CSS variables */
@@ -86,7 +91,11 @@ const currentPath = Astro.url.pathname;
   }
 
   header.scrolled nav a:hover {
-    @apply text-gray-500 dark:text-gray-400;
+    color: rgb(107 114 128);
+  }
+
+  :global(.dark) header.scrolled nav a:hover {
+    color: rgb(156 163 175);
   }
 
   header.hide {

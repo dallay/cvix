@@ -73,22 +73,6 @@ args = [
     "mcp/memory"
 ]
 
-[mcp_servers.filesystem]
-command = "docker"
-args = [
-    "run",
-    "--rm",
-    "-i",
-    "--name",
-    "mcp-filesystem",
-    "--read-only",
-    "--cap-drop=ALL",
-    "--security-opt=no-new-privileges",
-    "-v",
-    "mcp-files:/data",
-    "mcp/filesystem"
-]
-
 [mcp_servers.astro-docs]
 command = "npx"
 args = ["-y", "mcp-remote", "https://mcp.docs.astro.build/mcp"]

@@ -7,6 +7,7 @@ Available commands:
   help                     Show this help message / list of make targets.
   install                  Install all dependencies.
   update-deps              Update all dependencies to their latest versions.
+  prepare-env              Prepare the local developer environment (.env, symlinks, tooling checks).
   prepare                  Prepare the development environment.
   ruler-check              Check the project's architecture rules.
   ruler-apply              Apply the project's architecture rules.
@@ -14,6 +15,7 @@ Available commands:
   dev-landing              Run the landing page in development mode.
   dev-web                  Run the web application in development mode.
   dev-docs                 Run the documentation in development mode.
+  ssl-cert                 Generate local development SSL certificates (requires mkcert & openssl).
   build                    Build all applications.
   build-landing            Build the landing page.
   preview-landing          Preview the landing page.

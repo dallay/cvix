@@ -100,7 +100,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.title").isEqualTo("validation failed")
+            .jsonPath("$.title").isEqualTo("Validation Failed")
             .jsonPath("$.status").isEqualTo(400)
             .jsonPath("$.detail").isEqualTo("Request validation failed. Please check the provided data.")
     }

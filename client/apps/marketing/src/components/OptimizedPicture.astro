@@ -12,6 +12,8 @@ type Props = (LocalImageProps | RemoteImageProps) & {
 	fallbackFormat?: ImageOutputFormat;
 	pictureAttributes?: HTMLAttributes<"picture">;
 	class?: string | null;
+	/** Fallback image URL to use when the primary image fails to load */
+	fallbackSrc?: string;
 };
 
 const {
@@ -24,6 +26,7 @@ const {
 	loading = undefined,
 	fetchpriority = "auto",
 	class: className = "mx-auto w-full max-w-full rounded-lg",
+	fallbackSrc,
 	...props
 } = Astro.props;
 
@@ -38,13 +41,52 @@ const picLoading: "eager" | "lazy" | null | undefined =
 	rawLoading === "auto"
 		? undefined
 		: (rawLoading as "eager" | "lazy" | null | undefined);
+
+// Generate unique ID for fallback handling (always generated, but only used when fallback is provided)
+const wrapperId = `img-wrapper-${crypto.randomUUID()}`;
 ---
 
-<Picture
-	{...props}
-	formats={formats}
-	fallbackFormat={fallbackFormat}
-	loading={picLoading}
-	fetchpriority={fetchpriority}
-	class={className}
-/>
+<div id={wrapperId} data-fallback-src={fallbackSrc} data-wrapper-id={wrapperId} class="contents">
+	<Picture
+		{...props}
+		formats={formats}
+		fallbackFormat={fallbackFormat}
+		loading={picLoading}
+		fetchpriority={fetchpriority}
+		class={className}
+	/>
+</div>
+
+{fallbackSrc && (
+	<script is:inline>
+		// Handle image fallback - scoped to this specific component instance
+		// Uses data attributes to read wrapperId and fallbackSrc from the DOM
+		(function initImageFallback() {
+			// Find the wrapper that was just added (last one without initialized flag)
+			const wrappers = document.querySelectorAll('[data-fallback-src]:not([data-fallback-initialized])');
+			const wrapper = wrappers[wrappers.length - 1];
+			
+			if (wrapper) {
+				wrapper.setAttribute('data-fallback-initialized', 'true');
+				
+				const fallbackSrc = wrapper.getAttribute('data-fallback-src');
+				if (!fallbackSrc) return;
+				
+				const img = wrapper.querySelector('img');
+				if (img) {
+					// Set fallback image on error
+					img.addEventListener('error', function handleImageError() {
+						// Normalize URLs for proper comparison (img.src is always absolute in DOM)
+						const currentSrc = new URL(this.src, document.baseURI).href;
+						const fallbackFullUrl = new URL(fallbackSrc, document.baseURI).href;
+						
+						// Prevent infinite loop if fallback also fails
+						if (currentSrc !== fallbackFullUrl) {
+							this.src = fallbackSrc;
+						}
+					}, { once: true });
+				}
+			}
+		})();
+	</script>
+)}

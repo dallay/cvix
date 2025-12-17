@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
     includeFilters = [
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
-            classes = [Service::class],
+            classes = [Service::class, org.springframework.web.bind.annotation.RestControllerAdvice::class],
         ),
     ],
 )

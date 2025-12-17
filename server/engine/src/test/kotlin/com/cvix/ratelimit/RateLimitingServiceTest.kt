@@ -3,8 +3,8 @@ package com.cvix.ratelimit
 import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
+import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
-import com.cvix.ratelimit.infrastructure.Bucket4jRateLimiter
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.Runs
@@ -14,6 +14,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import java.time.Duration
+import java.time.Instant
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,7 +34,7 @@ import reactor.test.StepVerifier
 class RateLimitingServiceTest {
 
     private lateinit var service: RateLimitingService
-    private lateinit var rateLimiter: Bucket4jRateLimiter
+    private lateinit var rateLimiter: RateLimiter
     private lateinit var eventPublisher: ApplicationEventPublisher
 
     @BeforeEach
@@ -53,7 +54,11 @@ class RateLimitingServiceTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
-        val expectedResult = RateLimitResult.Allowed(remainingTokens = 99)
+        val expectedResult = RateLimitResult.Allowed(
+            remainingTokens = 99,
+            limitCapacity = 100,
+            resetTime = Instant.now().plusSeconds(3600),
+        )
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
@@ -78,7 +83,11 @@ class RateLimitingServiceTest {
         // Given
         val identifier = "IP:192.168.1.1"
         val endpoint = "/api/auth/login"
-        val expectedResult = RateLimitResult.Allowed(remainingTokens = 9)
+        val expectedResult = RateLimitResult.Allowed(
+            remainingTokens = 9,
+            limitCapacity = 10,
+            resetTime = Instant.now().plusSeconds(60),
+        )
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
@@ -104,7 +113,10 @@ class RateLimitingServiceTest {
         val identifier = "IP:192.168.1.2"
         val endpoint = "/api/auth/login"
         val retryAfter = Duration.ofMinutes(5)
-        val expectedResult = RateLimitResult.Denied(retryAfter = retryAfter)
+        val expectedResult = RateLimitResult.Denied(
+            retryAfter = retryAfter,
+            limitCapacity = 10,
+        )
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
@@ -140,7 +152,11 @@ class RateLimitingServiceTest {
         // Given
         val identifier = "IP:192.168.1.3"
         val endpoint = "/api/auth/login"
-        val expectedResult = RateLimitResult.Allowed(remainingTokens = 5)
+        val expectedResult = RateLimitResult.Allowed(
+            remainingTokens = 5,
+            limitCapacity = 10,
+            resetTime = Instant.now().plusSeconds(60),
+        )
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
@@ -162,7 +178,10 @@ class RateLimitingServiceTest {
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
         val retryAfter = Duration.ofHours(1)
-        val expectedResult = RateLimitResult.Denied(retryAfter = retryAfter)
+        val expectedResult = RateLimitResult.Denied(
+            retryAfter = retryAfter,
+            limitCapacity = 100,
+        )
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
@@ -193,12 +212,31 @@ class RateLimitingServiceTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
+        val resetTime = Instant.now().plusSeconds(3600)
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(10)) andThen
-            Mono.just(RateLimitResult.Allowed(9)) andThen
-            Mono.just(RateLimitResult.Allowed(8))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 10,
+                limitCapacity = 100,
+                resetTime = resetTime,
+            ),
+        ) andThen
+            Mono.just(
+                RateLimitResult.Allowed(
+                    remainingTokens = 9,
+                    limitCapacity = 100,
+                    resetTime = resetTime,
+                ),
+            ) andThen
+            Mono.just(
+                RateLimitResult.Allowed(
+                    remainingTokens = 8,
+                    limitCapacity = 100,
+                    resetTime = resetTime,
+                ),
+            )
 
         // When/Then - First request
         StepVerifier.create(service.consumeToken(identifier, endpoint))
@@ -239,8 +277,19 @@ class RateLimitingServiceTest {
 
         every {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(1)) andThen
-            Mono.just(RateLimitResult.Denied(retryAfter))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 1,
+                limitCapacity = 100,
+                resetTime = Instant.now().plusSeconds(3600),
+            ),
+        ) andThen
+            Mono.just(
+                RateLimitResult.Denied(
+                    retryAfter = retryAfter,
+                    limitCapacity = 100,
+                ),
+            )
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
 
@@ -293,11 +342,22 @@ class RateLimitingServiceTest {
 
         every {
             rateLimiter.consumeToken(identifier1, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Allowed(10))
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 10,
+                limitCapacity = 100,
+                resetTime = Instant.now().plusSeconds(3600),
+            ),
+        )
 
         every {
             rateLimiter.consumeToken(identifier2, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(RateLimitResult.Denied(Duration.ofHours(1)))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = Duration.ofHours(1),
+                limitCapacity = 100,
+            ),
+        )
 
         every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
 

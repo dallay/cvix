@@ -1,14 +1,15 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import CTAEmail from "@cvix/ui/components/ui/cta-email/CTAEmail.vue";
 import { type Lang, useTranslations } from "@/i18n";
 import { cn } from "@cvix/ui/lib/utils";
+import EmailCaptureForm from "./EmailCaptureForm.astro";
 
 interface Props extends HTMLAttributes<"section"> {
 	title?: string;
 	description?: string;
 	formId?: string;
 }
+
 const { title, description, formId, ...attrs } = Astro.props as Props;
 const currentLocale = Astro.currentLocale as Lang;
 const t = useTranslations(currentLocale);
@@ -47,19 +48,30 @@ const t = useTranslations(currentLocale);
 					{description || t("cta.description")}
 				</p>
 				<div class="flex mt-6 w-full">
-						<CTAEmail
-							emailPlaceholder={t({
-                en: "Enter your email",
-                es: "Ingresa tu correo electrónico",
-              })}
-							buttonText={t({
-                en: "Join the waitlist",
-                es: "Únete a la lista de espera",
-              })}
-							lang={currentLocale}
-							client:visible
-						/>
-					</div>
+					<EmailCaptureForm
+						emailPlaceholder={t({
+							en: "Enter your email",
+							es: "Ingresa tu correo electrónico",
+						})}
+						buttonText={t({
+							en: "Join the waitlist",
+							es: "Únete a la lista de espera",
+						})}
+						successMessage={t({
+							en: "Successfully joined the waitlist!",
+							es: "¡Te has unido a la lista de espera!",
+						})}
+						errorMessage={t({
+							en: "Failed to join. Please try again.",
+							es: "Error al unirse. Por favor intenta de nuevo.",
+						})}
+						rateLimitMessage={t({
+							en: "Too many requests. Please wait.",
+							es: "Demasiadas solicitudes. Por favor espera.",
+						})}
+						source="landing-cta"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>

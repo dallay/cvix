@@ -12,6 +12,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * application:
  *   rate-limit:
  *     enabled: true
+ *     api-key-prefixes:
+ *       professional: "PX001-"
+ *       basic: "BX001-"
  *     auth:
  *       enabled: true
  *       limits:
@@ -48,6 +51,18 @@ data class RateLimitProperties(
     val enabled: Boolean = true,
 
     /**
+     * Configuration for the rate limiter cache.
+     * Controls bounded size and TTL-based eviction to prevent unbounded memory growth.
+     */
+    val cache: CacheConfig = CacheConfig(),
+
+    /**
+     * Configuration for API key prefix mapping to subscription tiers.
+     * Used to determine the tier from an API key prefix.
+     */
+    val apiKeyPrefixes: ApiKeyPrefixConfig = ApiKeyPrefixConfig(),
+
+    /**
      * Configuration for authentication endpoints rate limiting.
      */
     val auth: AuthRateLimitConfig = AuthRateLimitConfig(),
@@ -60,8 +75,69 @@ data class RateLimitProperties(
     /**
      * Configuration for resume generation endpoints rate limiting.
      */
-    val resume: ResumeRateLimitConfig = ResumeRateLimitConfig()
+    val resume: ResumeRateLimitConfig = ResumeRateLimitConfig(),
+
+    /**
+     * Configuration for waitlist endpoints rate limiting.
+     */
+    val waitlist: WaitlistRateLimitConfig = WaitlistRateLimitConfig()
 ) {
+
+    /**
+     * Configuration for the rate limiter bucket cache.
+     * Prevents unbounded memory growth by limiting cache size and using TTL-based eviction.
+     *
+     * The cache uses Caffeine with:
+     * - Maximum size limit (LRU eviction when full)
+     * - TTL-based eviction (removes idle entries)
+     * - Asynchronous eviction (optimized for throughput)
+     *
+     * Capacity Planning:
+     * - Small API (< 1K users): 2,000 entries
+     * - Medium API (1-10K users): 10,000 entries (default)
+     * - Large API (10-100K users): 50,000 entries
+     * - Enterprise (> 100K users): Consider distributed cache (Redis)
+     */
+    data class CacheConfig(
+        /**
+         * Maximum number of cached rate limit buckets.
+         * When the cache reaches this size, least-recently-used entries are evicted.
+         *
+         * Default: 10,000 entries (~1-2MB memory footprint)
+         */
+        val maxSize: Long = 10_000,
+
+        /**
+         * Time-to-live in minutes for idle cache entries.
+         * Entries not accessed within this duration are automatically evicted.
+         *
+         * Default: 60 minutes (1 hour)
+         */
+        val ttlMinutes: Long = 60
+    ) {
+        init {
+            require(maxSize > 0) { "maxSize must be positive" }
+            require(ttlMinutes > 0) { "ttlMinutes must be positive" }
+        }
+    }
+
+    /**
+     * Configuration for API key prefix to subscription tier mapping.
+     * Allows externalization of the prefix detection logic.
+     */
+    data class ApiKeyPrefixConfig(
+        /**
+         * Prefix for professional tier API keys.
+         * Example: "PX001-abc123..." indicates a professional tier key.
+         */
+        val professional: String = "PX001-",
+
+        /**
+         * Prefix for basic tier API keys.
+         * Example: "BX001-xyz789..." indicates a basic tier key.
+         */
+        val basic: String = "BX001-"
+    )
 
     /**
      * Configuration for authentication endpoint rate limiting.
@@ -163,6 +239,34 @@ data class RateLimitProperties(
          */
         val limit: BandwidthLimit = BandwidthLimit(
             name = "resume-per-minute",
+            capacity = 10,
+            refillTokens = 10,
+            refillDuration = Duration.ofMinutes(1),
+        )
+    )
+
+    /**
+     * Configuration for waitlist endpoint rate limiting.
+     * Enforces a fixed rate limit of 10 requests per minute per IP to prevent spam.
+     */
+    data class WaitlistRateLimitConfig(
+        /**
+         * Whether waitlist rate limiting is enabled.
+         */
+        val enabled: Boolean = true,
+
+        /**
+         * List of endpoints that should be rate limited as waitlist endpoints.
+         */
+        val endpoints: List<String> = listOf(
+            "/api/waitlist",
+        ),
+
+        /**
+         * Rate limit configuration: 10 requests per minute per IP.
+         */
+        val limit: BandwidthLimit = BandwidthLimit(
+            name = "waitlist-per-minute",
             capacity = 10,
             refillTokens = 10,
             refillDuration = Duration.ofMinutes(1),

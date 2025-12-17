@@ -10,7 +10,7 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
 	},
-	"packageManager": "pnpm@10.25.0",
+	"packageManager": "pnpm@10.26.0",
 	"main": "./dist/utilities.js",
 	"module": "./dist/utilities.js",
 	"types": "./dist/index.d.ts",
@@ -62,16 +62,16 @@
 		"gravatar-url": "^4.0.1"
 	},
 	"devDependencies": {
-		"@internationalized/date": "^3.10.0",
 		"@cvix/config": "workspace:*",
 		"@cvix/tsconfig": "workspace:*",
-		"@vitest/coverage-v8": "^4.0.14",
+		"@internationalized/date": "^3.10.1",
+		"@vitest/coverage-v8": "^4.0.16",
 		"npm-run-all2": "^8.0.4",
 		"rimraf": "^6.1.2",
 		"typescript": "^5.9.3",
-		"vite": "^7.2.6",
+		"vite": "^7.3.0",
 		"vite-plugin-dts": "^4.5.4",
-		"vitest": "^4.0.14"
+		"vitest": "^4.0.16"
 	},
 	"publishConfig": {
 		"access": "public"

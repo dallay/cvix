@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
@@ -7,6 +8,58 @@ import Components from "unplugin-vue-components/vite";
 import type { PluginOption } from "vite";
 import { defineConfig, loadEnv } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
+
+/**
+ * Check if SSL certificates exist for HTTPS development
+ * @returns {boolean} true if both cert and key files exist
+ */
+function hasSSLCertificates(): boolean {
+	const certPath = fileURLToPath(
+		new URL("../../../infra/ssl/localhost.pem", import.meta.url),
+	);
+	const keyPath = fileURLToPath(
+		new URL("../../../infra/ssl/localhost-key.pem", import.meta.url),
+	);
+
+	const certExists = existsSync(certPath);
+	const keyExists = existsSync(keyPath);
+
+	return certExists && keyExists;
+}
+
+/**
+ * Get HTTPS configuration for Vite dev server
+ * Falls back to HTTP if certificates are not available
+ * @returns HTTPS config or undefined for HTTP
+ */
+function getHttpsConfig(): { key: string; cert: string } | undefined {
+	// Check for explicit HTTP-only mode via environment variable
+	if (process.env.FORCE_HTTP === "true") {
+		console.log("ℹ️  FORCE_HTTP=true detected, running in HTTP mode");
+		return undefined;
+	}
+
+	// Check if certificates exist
+	if (!hasSSLCertificates()) {
+		console.warn("⚠️  SSL certificates not found. Running in HTTP mode.");
+		console.warn("   To enable HTTPS, generate certificates with:");
+		console.warn("   → cd infra && ./generate-ssl-certificate.sh");
+		console.warn("   → OR run: make ssl-cert");
+		console.warn("   → See: client/HTTPS_DEVELOPMENT.md for details");
+		return undefined;
+	}
+
+	// Certificates exist, use HTTPS
+	console.log("✅ SSL certificates found, running in HTTPS mode");
+	return {
+		key: fileURLToPath(
+			new URL("../../../infra/ssl/localhost-key.pem", import.meta.url),
+		),
+		cert: fileURLToPath(
+			new URL("../../../infra/ssl/localhost.pem", import.meta.url),
+		),
+	};
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -65,6 +118,7 @@ export default defineConfig(({ mode }) => {
 		server: {
 			host: true,
 			port: 9876,
+			https: getHttpsConfig(),
 			proxy: {
 				"/api": {
 					target: backendTarget,

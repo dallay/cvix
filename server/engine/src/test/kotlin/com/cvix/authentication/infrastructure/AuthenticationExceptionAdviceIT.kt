@@ -15,7 +15,7 @@ class AuthenticationExceptionAdviceIT {
     private lateinit var webTestClient: WebTestClient
 
     @Test
-    fun shouldHandleNotAuthenticatedUserException() {
+    fun `should handle NotAuthenticatedUserException`() {
         webTestClient.get().uri("/api/account-exceptions/not-authenticated")
             .exchange()
             .expectStatus().isUnauthorized
@@ -26,7 +26,7 @@ class AuthenticationExceptionAdviceIT {
     }
 
     @Test
-    fun shouldHandleUnknownAuthenticationException() {
+    fun `should handle UnknownAuthenticationException`() {
         webTestClient.get().uri("/api/account-exceptions/unknown-authentication")
             .exchange()
             .expectStatus().is5xxServerError

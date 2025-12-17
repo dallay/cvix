@@ -5,6 +5,13 @@ application:
   rate-limit:
     enabled: true
 
+    # API Key Prefix Configuration
+    # Used to determine subscription tier from API key format
+    api-key-prefixes:
+      professional: "PX001-"  # Professional tier keys start with PX001-
+      basic: "BX001-"         # Basic tier keys start with BX001-
+      # Keys without recognized prefixes default to FREE tier
+
     auth:
       enabled: true
       endpoints:
@@ -47,3 +54,24 @@ application:
           capacity: 10000
           refill-tokens: 10000
           refill-duration: 1h
+    # Resume generation endpoints - permissive for dev
+    resume:
+      enabled: true
+      endpoints:
+        - /api/resume/generate
+      limit:
+        name: resume-per-minute
+        capacity: 100
+        refill-tokens: 100
+        refill-duration: 1m
+
+    # Waitlist endpoints - permissive for dev
+    waitlist:
+      enabled: true
+      endpoints:
+        - /api/waitlist
+      limit:
+        name: waitlist-per-minute
+        capacity: 100
+        refill-tokens: 100
+        refill-duration: 1m
