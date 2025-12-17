@@ -4,7 +4,6 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
-import mermaid from "astro-mermaid";
 
 const patchedRoutingDataPath = fileURLToPath(
 	new URL("./src/starlight-patches/routing-data.ts", import.meta.url),
@@ -24,10 +23,6 @@ const sharedAssetsPath = fileURLToPath(
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
-		mermaid({
-			theme: "forest",
-			autoTheme: true,
-		}),
 		starlight({
 			title: "ProFileTailors",
 			logo: {

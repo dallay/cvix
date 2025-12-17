@@ -100,7 +100,9 @@ internal class JoinWaitlistCommandHandlerTest {
 
         // Mocks & Captors
         val entrySlot = slot<WaitlistEntry>()
+        val eventSlot = slot<WaitlistEntryCreatedEvent>()
         coEvery { repository.save(capture(entrySlot)) } answers { entrySlot.captured }
+        coEvery { eventPublisher.publish(capture(eventSlot)) } returns Unit
 
         // When
         joinWaitlistCommandHandler.handle(command)
@@ -112,5 +114,10 @@ internal class JoinWaitlistCommandHandlerTest {
             WaitlistSource.UNKNOWN,
             savedEntry.sourceNormalized,
         )
+        // Verify published event wraps the saved entry
+        val publishedEvent = eventSlot.captured
+        assertEquals(savedEntry.id.id.toString(), publishedEvent.id)
+        assertEquals(savedEntry.email.value, publishedEvent.email)
+        assertEquals(savedEntry.sourceNormalized.value, publishedEvent.source)
     }
 }

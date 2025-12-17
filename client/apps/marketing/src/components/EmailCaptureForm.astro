@@ -83,226 +83,236 @@ const t = useTranslations(currentLocale);
 </script>
 
 <script is:inline define:vars={{ successMessage, errorMessage, rateLimitMessage }}>
-	// Email validation regex
-	const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	
-	// Auto-hide message timeout (in milliseconds)
-	const MESSAGE_AUTO_HIDE_MS = 5000;
+	// Guard: only initialize once across all component instances
+	// When multiple EmailCaptureForm components exist on the same page,
+	// each instance's is:inline script runs and would register duplicate
+	// DOMContentLoaded listeners that process ALL forms, causing N API calls per submit.
+	if (window.__emailCaptureInitialized) {
+		// Already initialized by another instance - skip
+	} else {
+		window.__emailCaptureInitialized = true;
 
-	/**
-	 * Normalize browser language to backend-supported language code
-	 * Backend only accepts 'en' or 'es'
-	 *
-	 * @param {string} browserLang - Browser language (e.g., 'en-US', 'es-ES', 'en', 'es')
-	 * @returns {string} Normalized language code ('en' or 'es')
-	 */
-	function normalizeLanguage(browserLang) {
-		if (!browserLang) return "en";
+		// Email validation regex
+		const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-		// Extract base language code (first two chars before '-' or '_')
-		const baseLang = browserLang.toLowerCase().split(/[-_]/)[0];
+		// Auto-hide message timeout (in milliseconds)
+		const MESSAGE_AUTO_HIDE_MS = 5000;
 
-		// Return 'es' for Spanish, 'en' for everything else
-		return baseLang === "es" ? "es" : "en";
-	}
+		/**
+		 * Normalize browser language to backend-supported language code
+		 * Backend only accepts 'en' or 'es'
+		 *
+		 * @param {string} browserLang - Browser language (e.g., 'en-US', 'es-ES', 'en', 'es')
+		 * @returns {string} Normalized language code ('en' or 'es')
+		 */
+		function normalizeLanguage(browserLang) {
+			if (!browserLang) return "en";
 
-	// Initialize all forms on the page
-	document.addEventListener("DOMContentLoaded", () => {
-		const forms = document.querySelectorAll('form[id^="email-form-"]');
+			// Extract base language code (first two chars before '-' or '_')
+			const baseLang = browserLang.toLowerCase().split(/[-_]/)[0];
 
-		forms.forEach((form) => {
-			if (!(form instanceof HTMLFormElement)) return;
+			// Return 'es' for Spanish, 'en' for everything else
+			return baseLang === "es" ? "es" : "en";
+		}
 
-			const emailInput = form.querySelector('input[type="email"]');
-			const submitButton = form.querySelector('button[type="submit"]');
-			const buttonText = submitButton?.querySelector(".button-text");
-			const statusMessage = form.parentElement?.querySelector(".status-message");
+		// Initialize all forms on the page
+		document.addEventListener("DOMContentLoaded", () => {
+			const forms = document.querySelectorAll('form[id^="email-form-"]');
 
-			if (!emailInput || !submitButton || !buttonText || !statusMessage) return;
+			forms.forEach((form) => {
+				if (!(form instanceof HTMLFormElement)) return;
 
-			let retryInterval = null;
-			let retryAfter = 0;
+				const emailInput = form.querySelector('input[type="email"]');
+				const submitButton = form.querySelector('button[type="submit"]');
+				const buttonText = submitButton?.querySelector(".button-text");
+				const statusMessage = form.parentElement?.querySelector(".status-message");
 
-			// Lazy load CSRF token on first interaction with the form
-			// This avoids unnecessary requests on pages where the form is never used
-			const lazyLoadCsrf = () => {
-				const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
-				if (backendUrl) {
-					window.csrfLoader.ensureToken(backendUrl).catch((err) => {
-						console.warn("CSRF lazy load failed:", err);
-					});
-				}
-			};
+				if (!emailInput || !submitButton || !buttonText || !statusMessage) return;
 
-			// Initialize CSRF on first focus or input
-			emailInput.addEventListener("focus", lazyLoadCsrf, { once: true });
-			emailInput.addEventListener("input", lazyLoadCsrf, { once: true });
+				let retryInterval = null;
+				let retryAfter = 0;
 
-			// Validate email on input
-			emailInput.addEventListener("input", () => {
-				const email = emailInput.value;
-				const isValid = EMAIL_REGEX.test(email);
-				emailInput.setAttribute("aria-invalid", isValid ? "false" : "true");
-				submitButton.disabled = !isValid || retryAfter > 0;
-			});
-
-			// Handle Enter key
-			emailInput.addEventListener("keydown", (e) => {
-				if (e.key === "Enter" && !submitButton.disabled) {
-					e.preventDefault();
-					form.dispatchEvent(new Event("submit"));
-				}
-			});
-
-			// Show status message
-			const showMessage = (message, type) => {
-				statusMessage.textContent = message;
-				statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 ${
-					type === "success"
-						? "text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-950/30"
-						: type === "error"
-							? "text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/30"
-							: "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30"
-				}`;
-				statusMessage.classList.remove("hidden");
-			};
-
-			const hideMessage = () => {
-				statusMessage.classList.add("hidden");
-			};
-
-			// Start countdown timer
-			const startCountdown = (seconds) => {
-				retryAfter = seconds;
-				submitButton.disabled = true;
-				emailInput.disabled = true;
-
-				if (retryInterval) clearInterval(retryInterval);
-
-				retryInterval = setInterval(() => {
-					retryAfter--;
-					buttonText.textContent = `${retryAfter}s`;
-
-					if (retryAfter <= 0) {
-						clearInterval(retryInterval);
-						retryInterval = null;
-						buttonText.textContent =
-							submitButton.getAttribute("data-original-text") || "Join";
-						submitButton.disabled = false;
-						emailInput.disabled = false;
-						hideMessage();
-					}
-				}, 1000);
-			};
-
-			// Handle form submission
-			form.addEventListener("submit", async (e) => {
-				e.preventDefault();
-
-				const email = emailInput.value.trim();
-				if (!EMAIL_REGEX.test(email) || submitButton.disabled) return;
-
-				// Store original button text
-				const originalText = buttonText.textContent;
-				submitButton.setAttribute("data-original-text", originalText);
-
-				// Show loading state
-				buttonText.textContent = "...";
-				submitButton.disabled = true;
-
-				try {
-					const apiUrl = form.getAttribute("data-api-url");
-					const source = form.getAttribute("data-source");
-
-					// Ensure CSRF token is loaded before submitting
-					const backendUrl = apiUrl?.replace("/api/waitlist", "");
+				// Lazy load CSRF token on first interaction with the form
+				// This avoids unnecessary requests on pages where the form is never used
+				const lazyLoadCsrf = () => {
+					const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
 					if (backendUrl) {
-						await window.csrfLoader.ensureToken(backendUrl);
+						window.csrfLoader.ensureToken(backendUrl).catch((err) => {
+							console.warn("CSRF lazy load failed:", err);
+						});
 					}
+				};
 
-					// Get CSRF token from cookie and add to headers
-					const csrfToken = window.getCsrfToken();
-					const headers = {
-						"Content-Type": "application/json",
-						Accept: "application/vnd.api.v1+json",
-					};
+				// Initialize CSRF on first focus or input
+				emailInput.addEventListener("focus", lazyLoadCsrf, { once: true });
+				emailInput.addEventListener("input", lazyLoadCsrf, { once: true });
 
-					// Add CSRF token header if available
-					if (csrfToken) {
-						headers["X-XSRF-TOKEN"] = csrfToken;
+				// Validate email on input
+				emailInput.addEventListener("input", () => {
+					const email = emailInput.value;
+					const isValid = EMAIL_REGEX.test(email);
+					emailInput.setAttribute("aria-invalid", isValid ? "false" : "true");
+					submitButton.disabled = !isValid || retryAfter > 0;
+				});
+
+				// Handle Enter key
+				emailInput.addEventListener("keydown", (e) => {
+					if (e.key === "Enter" && !submitButton.disabled) {
+						e.preventDefault();
+						form.dispatchEvent(new Event("submit"));
 					}
+				});
 
-					// Normalize language from browser (e.g., 'en-US' -> 'en')
-					const normalizedLanguage = normalizeLanguage(navigator.language || "en");
+				// Show status message
+				const showMessage = (message, type) => {
+					statusMessage.textContent = message;
+					statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 ${
+						type === "success"
+							? "text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-950/30"
+							: type === "error"
+								? "text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/30"
+								: "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30"
+					}`;
+					statusMessage.classList.remove("hidden");
+				};
 
-					const response = await fetch(apiUrl, {
-						method: "POST",
-						headers,
-						body: JSON.stringify({
-							email,
-							source,
-							language: normalizedLanguage
-						}),
-						credentials: "include",
-					});
+				const hideMessage = () => {
+					statusMessage.classList.add("hidden");
+				};
 
-					if (response.ok) {
-						// Success
-						const data = await response.json();
-						const message =
-							successMessage ||
-							data.message ||
-							"Successfully joined the waitlist!";
-						showMessage(message, "success");
-						emailInput.value = "";
+				// Start countdown timer
+				const startCountdown = (seconds) => {
+					retryAfter = seconds;
+					submitButton.disabled = true;
+					emailInput.disabled = true;
 
-					// Store in localStorage
+					if (retryInterval) clearInterval(retryInterval);
+
+					retryInterval = setInterval(() => {
+						retryAfter--;
+						buttonText.textContent = `${retryAfter}s`;
+
+						if (retryAfter <= 0) {
+							clearInterval(retryInterval);
+							retryInterval = null;
+							buttonText.textContent =
+								submitButton.getAttribute("data-original-text") || "Join";
+							submitButton.disabled = false;
+							emailInput.disabled = false;
+							hideMessage();
+						}
+					}, 1000);
+				};
+
+				// Handle form submission
+				form.addEventListener("submit", async (e) => {
+					e.preventDefault();
+
+					const email = emailInput.value.trim();
+					if (!EMAIL_REGEX.test(email) || submitButton.disabled) return;
+
+					// Store original button text
+					const originalText = buttonText.textContent;
+					submitButton.setAttribute("data-original-text", originalText);
+
+					// Show loading state
+					buttonText.textContent = "...";
+					submitButton.disabled = true;
+
 					try {
-						localStorage.setItem("waitlist_email", email);
-					} catch {}
+						const apiUrl = form.getAttribute("data-api-url");
+						const source = form.getAttribute("data-source");
 
-					// Auto-hide after configured timeout
-					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
-					} else if (response.status === 429) {
-						// Rate limited
-						const retryAfterHeader = response.headers.get("Retry-After");
-						const retrySeconds = retryAfterHeader
-							? parseInt(retryAfterHeader, 10)
-							: 60;
+						// Ensure CSRF token is loaded before submitting
+						const backendUrl = apiUrl?.replace("/api/waitlist", "");
+						if (backendUrl) {
+							await window.csrfLoader.ensureToken(backendUrl);
+						}
 
+						// Get CSRF token from cookie and add to headers
+						const csrfToken = window.getCsrfToken();
+						const headers = {
+							"Content-Type": "application/json",
+							Accept: "application/vnd.api.v1+json",
+						};
+
+						// Add CSRF token header if available
+						if (csrfToken) {
+							headers["X-XSRF-TOKEN"] = csrfToken;
+						}
+
+						// Normalize language from browser (e.g., 'en-US' -> 'en')
+						const normalizedLanguage = normalizeLanguage(navigator.language || "en");
+
+						const response = await fetch(apiUrl, {
+							method: "POST",
+							headers,
+							body: JSON.stringify({
+								email,
+								source,
+								language: normalizedLanguage
+							}),
+							credentials: "include",
+						});
+
+						if (response.ok) {
+							// Success
+							const data = await response.json();
+							const message =
+								successMessage ||
+								data.message ||
+								"Successfully joined the waitlist!";
+							showMessage(message, "success");
+							emailInput.value = "";
+
+							// Store in localStorage
+							try {
+								localStorage.setItem("waitlist_email", email);
+							} catch {}
+
+							// Auto-hide after configured timeout
+							setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+						} else if (response.status === 429) {
+							// Rate limited
+							const retryAfterHeader = response.headers.get("Retry-After");
+							const retrySeconds = retryAfterHeader
+								? parseInt(retryAfterHeader, 10)
+								: 60;
+
+							const message =
+								rateLimitMessage ||
+								`Too many requests. Please try again in ${retrySeconds} seconds.`;
+							showMessage(message, "info");
+							startCountdown(retrySeconds);
+						} else {
+							// Other errors
+							const errorData = await response.json().catch(() => ({}));
+							const message =
+								errorMessage ||
+								errorData.error?.message ||
+								errorData.message ||
+								"Failed to submit. Please try again.";
+							showMessage(message, "error");
+
+							// Auto-hide after configured timeout
+							setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+						}
+					} catch (err) {
+						console.error("Email submission error:", err);
 						const message =
-							rateLimitMessage ||
-							`Too many requests. Please try again in ${retrySeconds} seconds.`;
-						showMessage(message, "info");
-						startCountdown(retrySeconds);
-					} else {
-						// Other errors
-						const errorData = await response.json().catch(() => ({}));
-					const message =
-						errorMessage ||
-						errorData.error?.message ||
-						errorData.message ||
-						"Failed to submit. Please try again.";
-					showMessage(message, "error");
+							errorMessage || "Network error. Please check your connection.";
+						showMessage(message, "error");
 
-					// Auto-hide after configured timeout
-					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+						// Auto-hide after configured timeout
+						setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+					} finally {
+						if (retryAfter === 0) {
+							buttonText.textContent = originalText;
+							submitButton.disabled = false;
+						}
 					}
-				} catch (err) {
-					console.error("Email submission error:", err);
-					const message =
-						errorMessage || "Network error. Please check your connection.";
-					showMessage(message, "error");
-
-					// Auto-hide after configured timeout
-					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
-				} finally {
-					if (retryAfter === 0) {
-						buttonText.textContent = originalText;
-						submitButton.disabled = false;
-					}
-				}
+				});
 			});
 		});
-	});
+	}
 </script>

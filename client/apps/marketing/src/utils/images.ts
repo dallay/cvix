@@ -129,19 +129,20 @@ export const findImage = async (
 
 	// 3. Optimized fallback: case-insensitive lookup using pre-built map (O(1))
 	if (!imageLoader) {
+		// Try direct lowercase match first
 		const lowercasedPath = normalizedPath.toLowerCase();
 		const matchingKey = normalizedLookupMap.get(lowercasedPath);
 		
-		// If not found with direct lowercase, try encoded version
-		if (!matchingKey) {
+		if (matchingKey) {
+			imageLoader = imageGlobs[matchingKey];
+		} else {
+			// Try encoded lowercase as final fallback
 			const encodedLowercasedPath = normalizeFilename(normalizedPath).toLowerCase();
 			const encodedMatchingKey = normalizedLookupMap.get(encodedLowercasedPath);
 			
 			if (encodedMatchingKey) {
 				imageLoader = imageGlobs[encodedMatchingKey];
 			}
-		} else {
-			imageLoader = imageGlobs[matchingKey];
 		}
 	}
 

@@ -42,11 +42,11 @@ const picLoading: "eager" | "lazy" | null | undefined =
 		? undefined
 		: (rawLoading as "eager" | "lazy" | null | undefined);
 
-// Generate unique ID for fallback handling (only when fallback is provided)
-const wrapperId = fallbackSrc ? `img-wrapper-${crypto.randomUUID()}` : undefined;
+// Generate unique ID for fallback handling (always generated, but only used when fallback is provided)
+const wrapperId = `img-wrapper-${crypto.randomUUID()}`;
 ---
 
-<div id={wrapperId} data-fallback-src={fallbackSrc} class="contents">
+<div id={wrapperId} data-fallback-src={fallbackSrc} data-wrapper-id={wrapperId} class="contents">
 	<Picture
 		{...props}
 		formats={formats}
@@ -58,30 +58,35 @@ const wrapperId = fallbackSrc ? `img-wrapper-${crypto.randomUUID()}` : undefined
 </div>
 
 {fallbackSrc && (
-	<script>
-		// Handle image fallback - runs once per component instance
+	<script is:inline>
+		// Handle image fallback - scoped to this specific component instance
+		// Uses data attributes to read wrapperId and fallbackSrc from the DOM
 		(function initImageFallback() {
-			const wrappers = document.querySelectorAll('[data-fallback-src]');
+			// Find the wrapper that was just added (last one without initialized flag)
+			const wrappers = document.querySelectorAll('[data-fallback-src]:not([data-fallback-initialized])');
+			const wrapper = wrappers[wrappers.length - 1];
 			
-			wrappers.forEach((wrapper) => {
-				if (wrapper.hasAttribute('data-fallback-initialized')) return;
+			if (wrapper) {
 				wrapper.setAttribute('data-fallback-initialized', 'true');
 				
-				const fallbackUrl = wrapper.getAttribute('data-fallback-src');
-				if (!fallbackUrl) return;
-
+				const fallbackSrc = wrapper.getAttribute('data-fallback-src');
+				if (!fallbackSrc) return;
+				
 				const img = wrapper.querySelector('img');
-				if (!img) return;
-
-				// Set fallback image on error
-				img.addEventListener('error', function handleImageError() {
-					// Prevent infinite loop if fallback also fails
-					if (this.src !== fallbackUrl && !this.dataset.fallbackFailed) {
-						this.src = fallbackUrl;
-						this.dataset.fallbackFailed = 'true';
-					}
-				}, { once: true });
-			});
+				if (img) {
+					// Set fallback image on error
+					img.addEventListener('error', function handleImageError() {
+						// Normalize URLs for proper comparison (img.src is always absolute in DOM)
+						const currentSrc = new URL(this.src, document.baseURI).href;
+						const fallbackFullUrl = new URL(fallbackSrc, document.baseURI).href;
+						
+						// Prevent infinite loop if fallback also fails
+						if (currentSrc !== fallbackFullUrl) {
+							this.src = fallbackSrc;
+						}
+					}, { once: true });
+				}
+			}
 		})();
 	</script>
 )}

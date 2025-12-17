@@ -159,8 +159,9 @@ class Bucket4jRateLimiter(
             builder.addLimit(bandwidth)
         }
         val bucket = builder.build()
-        val limitCapacity = configuration.bandwidths.maxOf { it.capacity }
-        val refillPeriodNanos = configuration.bandwidths.maxOf { it.refillPeriodNanos }
+        val limitCapacity = configuration.bandwidths.minOf { it.capacity }
+        val refillPeriodNanos = configuration.bandwidths.find { it.capacity == limitCapacity }?.refillPeriodNanos
+            ?: configuration.bandwidths.first().refillPeriodNanos
         return CachedBucketEntry(bucket, limitCapacity, refillPeriodNanos)
     }
 

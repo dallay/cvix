@@ -46,10 +46,8 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
             .increment()
 
         // Track when sources are normalized to UNKNOWN (potential new channels)
-        if (sourceNormalized == WaitlistSource.UNKNOWN && !sourceRaw.equals(
-                "unknown",
-                ignoreCase = true,
-            )
+        if (sourceNormalized == WaitlistSource.UNKNOWN &&
+            !sourceRaw.equals("unknown", ignoreCase = true)
         ) {
             meterRegistry.counter("waitlist.source.unknown", "raw_source", sourceRaw).increment()
         }
