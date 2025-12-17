@@ -61,10 +61,16 @@ class Bucket4jRateLimiter(
      * Bounded, TTL-based cache for rate limit buckets.
      * Prevents unbounded memory growth in long-running services with many unique identifiers.
      */
-    private val cache: Cache<String, Bucket> = Caffeine.newBuilder()
+    private data class CachedBucketEntry(
+        val bucket: Bucket,
+        val limitCapacity: Long,
+        val refillPeriodNanos: Long
+    )
+
+    private val cache: Cache<String, CachedBucketEntry> = Caffeine.newBuilder()
         .maximumSize(properties.cache.maxSize)
         .expireAfterAccess(Duration.ofMinutes(properties.cache.ttlMinutes))
-        .removalListener<String, Bucket> { key, _, cause ->
+        .removalListener<String, CachedBucketEntry> { key, _, cause ->
             logger.debug("Cache eviction: key={}, cause={}", key, cause)
         }
         .recordStats()
@@ -95,18 +101,17 @@ class Bucket4jRateLimiter(
             // Record token consumption time and update cache size metric
             metrics.recordTokenConsumption(strategy) {
                 val cacheKey = "${strategy.name}:$identifier"
-                val bucket = cache.get(cacheKey) { createBucket(identifier, strategy) }
+                val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
+val bucket = entry.bucket
+val limitCapacity = entry.limitCapacity
+val refillDuration = entry.refillPeriodNanos
 
                 // Update cache size and stats metrics after potential cache insertion
                 metrics.updateCacheSize(cache.estimatedSize().toInt())
 
                 val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
-                // Get the bucket configuration to extract metadata
-                val configuration = getBucketConfiguration(identifier, strategy)
-                val limitCapacity = configuration.bandwidths.maxOf { it.capacity }
-                val refillDuration = configuration.bandwidths.maxOf { it.refillPeriodNanos }
-
+                // Metadata already extracted from entry above
                 val result = if (probe.isConsumed) {
                     val resetTime = calculateResetTime(refillDuration)
                     logger.debug(
@@ -145,17 +150,18 @@ class Bucket4jRateLimiter(
      * @param strategy The rate limiting strategy to apply.
      * @return A configured [Bucket] instance.
      */
-    private fun createBucket(identifier: String, strategy: RateLimitStrategy): Bucket {
+    private fun createCachedBucketEntry(identifier: String, strategy: RateLimitStrategy): CachedBucketEntry {
         logger.debug("Creating {} bucket for identifier: {}", strategy, identifier)
 
         val configuration = getBucketConfiguration(identifier, strategy)
-
-        // Build bucket with the configured limits
         val builder = Bucket.builder()
         configuration.bandwidths.forEach { bandwidth ->
             builder.addLimit(bandwidth)
         }
-        return builder.build()
+        val bucket = builder.build()
+        val limitCapacity = configuration.bandwidths.maxOf { it.capacity }
+        val refillPeriodNanos = configuration.bandwidths.maxOf { it.refillPeriodNanos }
+        return CachedBucketEntry(bucket, limitCapacity, refillPeriodNanos)
     }
 
     /**
@@ -238,6 +244,6 @@ class Bucket4jRateLimiter(
         cache.invalidateAll()
         cache.cleanUp()
         metrics.updateCacheSize(0)
-        logger.info("Cleared all cached buckets. Cache stats before clear: {}", statsBeforeClear)
+        logger.info("Cleared all cached bucket entries. Cache stats before clear: {}", statsBeforeClear)
     }
 }
