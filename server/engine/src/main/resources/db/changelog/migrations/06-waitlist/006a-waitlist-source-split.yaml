@@ -29,8 +29,8 @@ databaseChangeLog:
         # Migrate existing data: copy 'source' to both new columns
         - sql:
             sql: |
-              UPDATE waitlist 
-              SET source_raw = source, 
+              UPDATE waitlist
+              SET source_raw = source,
                   source_normalized = source
               WHERE source_raw IS NULL;
 
@@ -65,16 +65,6 @@ databaseChangeLog:
               - column:
                   name: source_normalized
 
-        # Composite index for queries filtering by both
-        - createIndex:
-            indexName: idx_waitlist_source_raw_normalized
-            tableName: waitlist
-            columns:
-              - column:
-                  name: source_raw
-              - column:
-                  name: source_normalized
-
       rollback:
         # Recreate original 'source' column
         - addColumn:
@@ -87,6 +77,7 @@ databaseChangeLog:
                     nullable: true
 
         # Copy normalized value back to original column
+        # Note: This rollback is lossy—original source_raw values are permanently lost if they differed from source_normalized. Operators should back up data before running the rollback.
         - sql:
             sql: UPDATE waitlist SET source = source_normalized WHERE source IS NULL;
 
@@ -97,9 +88,6 @@ databaseChangeLog:
             columnDataType: varchar(50)
 
         # Drop new columns
-        - dropIndex:
-            indexName: idx_waitlist_source_raw_normalized
-            tableName: waitlist
         - dropIndex:
             indexName: idx_waitlist_source_normalized
             tableName: waitlist

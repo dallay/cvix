@@ -26,6 +26,14 @@ object WaitlistEntryMapper {
      * @return The corresponding WaitlistEntryEntity.
      */
     fun WaitlistEntry.toEntity(): WaitlistEntryEntity {
+        val metadataJson = this.metadata?.let {
+            try {
+                Json.of(objectMapper.writeValueAsString(it))
+            } catch (e: JsonProcessingException) {
+                logger.warn("Failed to serialize metadata for waitlist entry {}", this.id, e)
+                null
+            }
+        }
         return WaitlistEntryEntity(
             id = this.id.id,
             email = this.email.value,
@@ -33,7 +41,7 @@ object WaitlistEntryMapper {
             sourceNormalized = this.sourceNormalized.value,
             language = this.language.code,
             ipHash = this.ipHash,
-            metadata = this.metadata?.let { Json.of(objectMapper.writeValueAsString(it)) },
+            metadata = metadataJson,
             createdBy = this.createdBy,
             createdAt = this.createdAt,
             updatedBy = this.updatedBy,
