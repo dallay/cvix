@@ -11,7 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
-import java.util.*
+import java.util.UUID
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
