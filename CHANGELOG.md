@@ -1,3 +1,9 @@
+## [1.6.1](https://github.com/dallay/cvix/compare/v1.6.0...v1.6.1) (2025-12-17)
+
+### ♻️ Refactors
+
+* **images:** clean up test file and remove unused dependency ([#433](https://github.com/dallay/cvix/issues/433)) ([d183ead](https://github.com/dallay/cvix/commit/d183ead076ec4ec263e744be8f5a08fd96209e9f))
+
 ## [1.6.0](https://github.com/dallay/cvix/compare/v1.5.0...v1.6.0) (2025-12-17)
 
 ### ✨ Features
