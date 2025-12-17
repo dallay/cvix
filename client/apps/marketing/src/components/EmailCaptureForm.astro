@@ -85,6 +85,9 @@ const t = useTranslations(currentLocale);
 <script is:inline define:vars={{ successMessage, errorMessage, rateLimitMessage }}>
 	// Email validation regex
 	const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	
+	// Auto-hide message timeout (in milliseconds)
+	const MESSAGE_AUTO_HIDE_MS = 5000;
 
 	/**
 	 * Normalize browser language to backend-supported language code
@@ -253,13 +256,13 @@ const t = useTranslations(currentLocale);
 						showMessage(message, "success");
 						emailInput.value = "";
 
-						// Store in localStorage
-						try {
-							localStorage.setItem("waitlist_email", email);
-						} catch {}
+					// Store in localStorage
+					try {
+						localStorage.setItem("waitlist_email", email);
+					} catch {}
 
-						// Auto-hide after 5 seconds
-						setTimeout(hideMessage, 5000);
+					// Auto-hide after configured timeout
+					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
 					} else if (response.status === 429) {
 						// Rate limited
 						const retryAfterHeader = response.headers.get("Retry-After");
@@ -275,15 +278,15 @@ const t = useTranslations(currentLocale);
 					} else {
 						// Other errors
 						const errorData = await response.json().catch(() => ({}));
-						const message =
-							errorMessage ||
-							errorData.error?.message ||
-							errorData.message ||
-							"Failed to submit. Please try again.";
-						showMessage(message, "error");
+					const message =
+						errorMessage ||
+						errorData.error?.message ||
+						errorData.message ||
+						"Failed to submit. Please try again.";
+					showMessage(message, "error");
 
-						// Auto-hide after 5 seconds
-						setTimeout(hideMessage, 5000);
+					// Auto-hide after configured timeout
+					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
 					}
 				} catch (err) {
 					console.error("Email submission error:", err);
@@ -291,8 +294,8 @@ const t = useTranslations(currentLocale);
 						errorMessage || "Network error. Please check your connection.";
 					showMessage(message, "error");
 
-					// Auto-hide after 5 seconds
-					setTimeout(hideMessage, 5000);
+					// Auto-hide after configured timeout
+					setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
 				} finally {
 					if (retryAfter === 0) {
 						buttonText.textContent = originalText;
