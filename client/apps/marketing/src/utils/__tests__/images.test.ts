@@ -226,7 +226,7 @@ describe("images.ts - Path Normalization", () => {
       const resultString = await findImage(stringPath);
       const resultObject = await findImage(objectInput as any);
       // contract: string returns string or normalized path, object returns object
-      expect(typeof resultString === "string" || typeof resultString === "object" || resultString === null).toBe(true);
+      expect(typeof resultString === "string" || typeof resultString === "object").toBe(true);
       expect(resultObject).toEqual(objectInput);
     });
   });
