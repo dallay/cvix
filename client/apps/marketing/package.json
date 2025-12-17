@@ -51,7 +51,7 @@
 		"@cvix/ui": "workspace:*",
 		"@cvix/utilities": "workspace:*",
 		"@iconify-json/openmoji": "^1.2.17",
-		"@iconify-json/tabler": "^1.2.23",
+		"@iconify-json/tabler": "^1.2.24",
 		"@tailwindcss/vite": "^4.1.18",
 		"@vee-validate/zod": "^4.15.1",
 		"@vueuse/core": "^14.1.0",
