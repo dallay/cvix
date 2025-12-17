@@ -7,7 +7,7 @@ import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Test
 
 @UnitTest
@@ -182,10 +182,11 @@ internal class WaitlistEntryTest {
         exception.message shouldBe "Invalid language code 'fr'. Supported codes: en, es"
     }
 
-    private companion object {
-        private const val TEST_HMAC_SECRET = "test-hmac-secret-for-testing"
-    }
     // Use shared utility for hashing, same as WaitlistJoiner
     private fun hashIpAddress(ipAddress: String): String =
         HashUtils.hmacSha256(ipAddress, TEST_HMAC_SECRET)
+
+    private companion object {
+        private const val TEST_HMAC_SECRET = "test-hmac-secret-for-testing"
+    }
 }

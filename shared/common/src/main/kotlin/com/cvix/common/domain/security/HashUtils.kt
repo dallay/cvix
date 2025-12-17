@@ -3,7 +3,6 @@ package com.cvix.common.domain.security
 import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import kotlin.experimental.and
 
 object HashUtils {
     /**

@@ -268,9 +268,8 @@ class HashUtilsTest {
         // 3. Without the secret, an attacker cannot determine which HMAC corresponds
         //    to which IP, even if they have a rainbow table of SHA-256(IP) values
         val sha256Hashes = ipAddresses.map { ip -> HashUtils.hashSha256(ip) }
-        hmacs.forEach { hmac ->
-            // HMAC should not match any plain SHA-256 hash
-            assertThat(sha256Hashes.none { it == hmac }).isTrue()
-        }
+        // HMAC values must not match any plain SHA-256 hashes. Use AssertJ fluent assertion
+        // for clearer intent and better failure messages.
+        assertThat(sha256Hashes).doesNotContainAnyElementsOf(hmacs)
     }
 }
