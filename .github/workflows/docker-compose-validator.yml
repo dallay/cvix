@@ -24,7 +24,6 @@ jobs:
         run: |
           cd infra
           echo "🔍 Validating compose file syntax..."
-          
           # Validate individual files (will show warnings but won't fail on missing services)
           for file in greenmail/greenmail-compose.yml maildev/maildev-compose.yml; do
             if [[ -f "$file" ]]; then
@@ -35,20 +34,17 @@ jobs:
               }
             fi
           done
-          
           echo "✅ Individual files validated"
 
       - name: Validate full stack composition
         run: |
           cd infra
           echo "🔍 Validating full stack with dependencies..."
-          
           # Validate the main app.yml which includes all dependencies
           docker compose -f app.yml config > /dev/null || {
             echo "❌ Full stack validation failed"
             exit 1
           }
-          
           echo "✅ Full stack validated successfully"
 
       - name: Validate PostgreSQL compose
