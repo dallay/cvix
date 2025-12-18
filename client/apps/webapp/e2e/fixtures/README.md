@@ -1,510 +1,253 @@
 # E2E Test Fixtures
 
-This directory contains test fixtures and utilities for E2E tests with **two testing modes**: offline-first with mocks (recommended) and integration with real backend.
+This directory contains test fixtures and utilities for E2E tests using **HAR-based API mocking**.
 
 ## 📁 Directory Structure
 
 ```text
-fixtures/
-├── auth-fixtures.ts          # Authentication utilities with mocking (✅ no backend needed)
-├── workspace-fixtures.ts      # Workspace API fixtures (⚠️ requires backend)
-├── mocks/                     # Mock data generators and route handlers
-│   └── workspace-mocks.ts     # Workspace mock data and API routes
-├── har/                       # HTTP Archive files for recording/replaying traffic
-└── README.md                  # This file
+e2e/
+├── authentication-flows.spec.ts  # Authentication E2E tests
+├── config/
+│   └── environment.ts            # Environment configuration
+├── fixtures/
+│   ├── har/                      # HTTP Archive files for mocking
+│   │   ├── auth-flow-login.har   # Login flow recording
+│   │   └── auth-flow-register.har # Registration flow recording
+│   └── README.md                 # This file
+└── helpers/
+    └── auth.helper.ts            # HAR-based authentication helpers
 ```
 
 ---
 
 ## 🎯 Testing Philosophy
 
-### Offline-First Testing (Recommended)
+### Offline-First Testing
 
-**E2E tests should NOT require a running backend server** by default. This enables:
+**E2E tests run WITHOUT a real backend server** by using pre-recorded HAR files. This enables:
 
-- ✅ **Faster test execution** - No network latency, no server startup time
-- ✅ **Reliable tests in CI** - No complex infrastructure setup needed
-- ✅ **Predictable test data** - Mocks are deterministic and controllable
-- ✅ **Easy error testing** - Simulate any error scenario without backend changes
+- ✅ **Fast execution** - No network latency, no server startup time
+- ✅ **Reliable CI** - No backend infrastructure required
+- ✅ **Predictable data** - HAR responses are deterministic
+- ✅ **Easy error testing** - Mock any error scenario with custom routes
 
-### When to Use What
+### HAR Files
 
-| Scenario                        | Use                                     |
-|---------------------------------|-----------------------------------------|
-| **Normal test flow**            | Mock fixtures (`auth-fixtures.ts`, etc) |
-| **Testing error scenarios**     | Mock fixtures with error handlers       |
-| **Integration with real API**   | `workspace-fixtures.ts` (backend required) |
-| **Recording real API traffic**  | HAR files in `har/` directory           |
+HAR (HTTP Archive) files contain recorded API request/response pairs from real interactions:
 
----
-
-## Overview
-
-The fixtures system provides:
-
-- **Auth Test Fixtures** (NEW): Mock authentication without backend - no server required
-- **Workspace Mock Data** (NEW): Mock workspace API responses - no server required
-- **Workspace Test Fixtures**: API-based setup/teardown - requires backend running
-- **Centralized Configuration**: Environment config for all test URLs and credentials
-- **User Management**: Automatic user creation and validation
-- **Keycloak Integration**: Real authentication using Keycloak OAuth2
-- **Deterministic State**: Clean state before each test to prevent flakiness
+| File | Description | Test User |
+|------|-------------|-----------|
+| `auth-flow-login.har` | Login flow for existing user | `john.doe@cvix.com` |
+| `auth-flow-register.har` | Registration flow | `jane.doe@cvix.com` |
 
 ---
 
-## 🚀 Quick Start (Offline-First with Mocks)
+## 🚀 Quick Start
 
-### Basic Authentication Test
+### Basic Login Test
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
+import { setupLoginMocks, TEST_USERS } from './helpers/auth.helper';
 
-test('should login successfully', async ({ page }) => {
-  // Set up mock authentication routes
-  await AuthTestFixtures.setupMockAuth(page);
+test.describe('Login Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set up HAR-based API mocking
+    await setupLoginMocks(page);
+  });
 
-  // Perform login
-  await AuthTestFixtures.loginWithUI(page);
+  test('should login successfully', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel(/email/i).fill(TEST_USERS.existingUser.email);
+    await page.getByLabel(/password/i).fill(TEST_USERS.existingUser.password);
+    await page.getByRole('button', { name: /log in/i }).click();
 
-  // Verify authentication
-  await expect(page).toHaveURL(/\/dashboard/);
-  expect(await AuthTestFixtures.verifyAuthenticated(page)).toBe(true);
+    await expect(page).toHaveURL(/\/dashboard/);
+  });
 });
 ```
 
-### Workspace Test with Mocks
+### Testing Error Scenarios
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
-import { WorkspaceMockData } from './fixtures/mocks/workspace-mocks';
-
-test('should load default workspace', async ({ page }) => {
-  // Set up mocks
-  await AuthTestFixtures.setupMockAuth(page);
-  WorkspaceMockData.createDefaultWorkspaces();
-  WorkspaceMockData.setupWorkspaceRoutes(page.route.bind(page));
-
-  // Login and navigate
-  await AuthTestFixtures.setAuthState(page);
-  await page.goto('/dashboard');
-
-  // Verify default workspace loaded
-  const workspaceIndicator = page.locator('[data-testid="workspace-indicator"]');
-  await expect(workspaceIndicator).toContainText('Default Workspace');
-});
-```
-
----
-
-## 📦 Auth Test Fixtures (Offline-First)
-
-The `AuthTestFixtures` class provides mock authentication **without requiring a backend server**.
-
-### Available Methods
-
-| Method                        | Description                                     |
-|-------------------------------|-------------------------------------------------|
-| `setupMockAuth(page)`         | Set up mock authentication routes               |
-| `setupMockAuthFailure(page)`  | Mock authentication failure                     |
-| `setupMockNetworkError(page)` | Mock network errors                             |
-| `setupMockRateLimitError(page)` | Mock rate limiting                            |
-| `loginWithUI(page, credentials?)` | Perform UI login                            |
-| `setAuthState(page, userId?)` | Set authentication state directly in storage    |
-| `clearAuthState(page)`        | Clear authentication state                      |
-| `verifyAuthenticated(page)`   | Check if user is authenticated                  |
-| `createMockStorageState()`    | Create reusable storage state for test context  |
-
-### Usage Examples
-
-#### Testing Error Scenarios
-
-```typescript
-import { test, expect } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
+import { mockApiErrors, setupLoginMocks } from './helpers/auth.helper';
 
 test('should show error for invalid credentials', async ({ page }) => {
-  // Set up mock authentication failure
-  await AuthTestFixtures.setupMockAuthFailure(page);
+  // First set up base mocks, then override with error
+  await setupLoginMocks(page);
+  await mockApiErrors.invalidCredentials(page);
 
-  await AuthTestFixtures.loginWithUI(page);
+  await page.goto('/login');
+  await page.getByLabel(/email/i).fill('wrong@example.com');
+  await page.getByLabel(/password/i).fill('WrongPassword!');
+  await page.getByRole('button', { name: /log in/i }).click();
 
   await expect(page.getByText(/invalid.*credentials/i)).toBeVisible();
 });
-
-test('should handle rate limiting', async ({ page }) => {
-  await AuthTestFixtures.setupMockRateLimitError(page);
-
-  // Attempt login 6 times
-  for (let i = 0; i < 6; i++) {
-    await AuthTestFixtures.loginWithUI(page);
-  }
-
-  await expect(page.getByText(/too many.*attempts/i)).toBeVisible();
-});
 ```
 
-#### Skip Login in Every Test
+---
+
+## 📦 Auth Helper API
+
+### Setup Functions
+
+| Function | Description |
+|----------|-------------|
+| `setupLoginMocks(page)` | Set up HAR-based mocking for login flow |
+| `setupRegisterMocks(page)` | Set up HAR-based mocking for registration flow |
+
+### Test Users
 
 ```typescript
-import { test as base } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
+import { TEST_USERS } from './helpers/auth.helper';
 
-// Extend test fixture with authenticated context
-const test = base.extend({
-  authenticatedPage: async ({ page }, use) => {
-    await AuthTestFixtures.setupMockAuth(page);
-    await AuthTestFixtures.setAuthState(page);
-    await page.goto('/dashboard');
-    await use(page);
-  },
-});
+// Existing user (for login tests)
+TEST_USERS.existingUser.email     // "john.doe@cvix.com"
+TEST_USERS.existingUser.password  // "S3cr3tP@ssw0rd*123"
 
-test('should see workspace selector when authenticated', async ({ authenticatedPage }) => {
-  const workspaceSelector = authenticatedPage.locator('[data-testid="workspace-selector"]');
-  await expect(workspaceSelector).toBeVisible();
+// New user (for registration tests)
+TEST_USERS.newUser.email          // "jane.doe@cvix.com"
+TEST_USERS.newUser.password       // "S3cr3tP@ssw0rd*123"
+```
+
+### Error Mocks
+
+```typescript
+import { mockApiErrors } from './helpers/auth.helper';
+
+// Invalid login credentials
+await mockApiErrors.invalidCredentials(page);
+
+// Rate limit exceeded
+await mockApiErrors.rateLimitExceeded(page);
+
+// Network error
+await mockApiErrors.networkError(page);
+
+// Email already registered
+await mockApiErrors.emailAlreadyExists(page);
+```
+
+### UI Helpers
+
+```typescript
+import { loginViaUI, registerViaUI } from './helpers/auth.helper';
+
+// Perform login through UI
+await loginViaUI(page);  // Uses TEST_USERS.existingUser
+
+// Perform registration through UI
+await registerViaUI(page);  // Uses TEST_USERS.newUser
+```
+
+---
+
+## 🔧 How HAR Mocking Works
+
+1. **Recording**: HAR files were created by running tests against a real backend with `update: true`
+2. **Replaying**: `page.routeFromHAR()` intercepts matching requests and returns recorded responses
+3. **Filtering**: Only `/api/**` requests are mocked; Vite dev server requests pass through normally
+
+```typescript
+// Under the hood, setupLoginMocks does this:
+await page.routeFromHAR('fixtures/har/auth-flow-login.har', {
+  url: '**/api/**',      // Only mock API calls
+  notFound: 'fallback',  // Let other requests through
 });
 ```
 
 ---
 
-## 📦 Workspace Mock Data (Offline-First)
+## 📝 Updating HAR Files
 
-The `WorkspaceMockData` class provides mock workspace API responses **without requiring a backend server**.
+When the API changes, you need to re-record the HAR files:
 
-### Available Methods
-
-| Method                               | Description                              |
-|--------------------------------------|------------------------------------------|
-| `createDefaultWorkspaces(userId?)`   | Create mock workspaces with one default  |
-| `createNonDefaultWorkspaces(userId?)` | Create non-default workspaces only      |
-| `getAllWorkspaces()`                 | Get all mock workspaces                  |
-| `getWorkspaceById(id)`               | Get specific workspace                   |
-| `addWorkspace(workspace)`            | Add workspace to mock store              |
-| `removeWorkspace(id)`                | Remove workspace from mock store         |
-| `clearWorkspaces()`                  | Clear all workspaces                     |
-| `setupWorkspaceRoutes(routeHandler)` | Set up API route handlers                |
-
-### Usage Example
-
-```typescript
-import { test, expect } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
-import { WorkspaceMockData } from './fixtures/mocks/workspace-mocks';
-
-test.beforeEach(async ({ page }) => {
-  // Clear previous state
-  WorkspaceMockData.clearWorkspaces();
-  await AuthTestFixtures.clearAuthState(page);
-});
-
-test('should switch between workspaces', async ({ page }) => {
-  await AuthTestFixtures.setupMockAuth(page);
-  WorkspaceMockData.createDefaultWorkspaces();
-  WorkspaceMockData.setupWorkspaceRoutes(page.route.bind(page));
-
-  await AuthTestFixtures.setAuthState(page);
-  await page.goto('/dashboard');
-
-  // Open workspace selector
-  await page.locator('[data-testid="workspace-selector"]').click();
-
-  // Select different workspace
-  await page.getByRole('option', { name: /project alpha/i }).click();
-
-  // Verify switch
-  const workspaceIndicator = page.locator('[data-testid="workspace-indicator"]');
-  await expect(workspaceIndicator).toContainText('Project Alpha');
-});
-```
+1. **Start the backend** and all dependencies (Keycloak, PostgreSQL)
+2. **Modify the helper** to use `update: true`:
+   ```typescript
+   await page.routeFromHAR('fixtures/har/auth-flow-login.har', {
+     url: '**/api/**',
+     update: true,  // Record new responses
+   });
+   ```
+3. **Run the tests** against the real backend
+4. **Revert** the helper to `update: false` (or remove the option)
+5. **Commit** the updated HAR files
 
 ---
 
-## Workspace Test Fixtures (Requires Backend)
+## 🛠️ Adding New HAR Files
 
-The `WorkspaceTestFixtures` class provides utilities for managing workspace test data via API calls with Keycloak authentication.
+1. Create a new test that exercises the flow you want to record
+2. Use `page.routeFromHAR()` with `update: true` pointing to a new file
+3. Run the test against the real backend
+4. Create a helper function in `auth.helper.ts` (or a new helper file)
+5. Set `update: false` and commit the HAR file
 
-### Usage Example
+---
 
-```typescript
-import { test, expect } from "@playwright/test";
-import { getTestUser } from "./config/environment";
-import { WorkspaceTestFixtures } from "./fixtures/workspace-fixtures";
+## 🆕 Creating a New HAR Archive for E2E Tests
 
-test("my workspace test", async ({ page, request }) => {
-  const fixtures = new WorkspaceTestFixtures(request);
-  const testUser = getTestUser("noDefault");
+When you need to add a new E2E test that requires a new HAR file (for a new API flow or endpoint), follow these steps:
 
-  // Setup: Create test data
-  await test.step("Setup test data", async () => {
-    const workspaces = await fixtures.setupUserWithNonDefaultWorkspaces(
-      testUser.email,
-      testUser.password,
-      testUser.id,
-      ["Workspace 1", "Workspace 2"]
-    );
+1. **Start the backend and all dependencies** (Keycloak, PostgreSQL, etc.) so the API is available at the expected URL (e.g., `https://localhost:9876`).
+2. **Open Playwright in record mode to capture API requests**. Use the following command, replacing the HAR file path and URL as needed:
 
-    expect(workspaces.length).toBe(2);
-  });
+   ```sh
+   npx playwright open \
+     --save-har=client/apps/webapp/e2e/fixtures/har/example.har \
+     --save-har-glob="**/api/**" \
+     https://localhost:9876
+   ```
 
-  // Your test steps here...
+   - This will launch a browser window. Interact with the app to exercise the flow you want to record.
+   - All API requests matching `**/api/**` will be saved to the specified HAR file.
 
-  // Cleanup: Remove test data
-  await test.step("Cleanup", async () => {
-    await fixtures.cleanup(testUser.email, testUser.password);
-  });
-});
-```
-
-### Available Methods
-
-#### `checkApiAvailability()`
-
-Check if the backend API is accessible before running tests.
-
-**Returns:** `Promise<boolean>` - True if API is available
+3. **Complete the flow in the browser** (e.g., registration, login, etc.).
+4. **Close the browser**. The HAR file will be written to the path you specified.
+5. **Rename the HAR file** if needed and move it to `client/apps/webapp/e2e/fixtures/har/`.
+6. **Update or create a helper** in `helpers/` to use your new HAR file for mocking in tests.
+7. **Commit the new HAR file** to version control. **Never commit HAR files with real/production credentials.**
 
 **Example:**
 
-```typescript
-const isAvailable = await fixtures.checkApiAvailability();
-if (!isAvailable) {
-  console.warn("API not available, tests may fail");
-}
-```
+To record a registration flow and save it as `auth-flow-register.har`:
 
-#### `ensureUserExists(email, password, userId)`
-
-Ensures a test user exists in the system. Creates the user if they don't exist, or verifies authentication if they do.
-
-**Parameters:**
-
-- `email` (string): User email
-- `password` (string): User password
-- `userId` (string, optional): User UUID
-
-**Returns:** `Promise<UserFixture>` - User data
-
-#### `setupUserWithNonDefaultWorkspaces(email, password, userId, workspaceNames)`
-
-Creates multiple non-default workspaces for a test user. Automatically ensures user exists and cleans up existing workspaces first.
-
-**Parameters:**
-
-- `email` (string): User email for authentication
-- `password` (string): User password
-- `userId` (string): User UUID
-- `workspaceNames` (string[]): Array of workspace names to create (default: ["Workspace Alpha", "Workspace Beta"])
-
-**Returns:** `Promise<WorkspaceFixture[]>` - Array of created workspaces
-
-#### `setupUserWithDefaultWorkspace(email, password, userId, workspaceName)`
-
-Creates a single default workspace for a test user. Automatically ensures user exists and cleans up existing workspaces first.
-
-**Parameters:**
-
-- `email` (string): User email for authentication
-- `password` (string): User password
-- `userId` (string): User UUID
-- `workspaceName` (string): Name for the default workspace (default: "Default Workspace")
-
-**Returns:** `Promise<WorkspaceFixture>` - The created workspace
-
-#### `setupUserWithNoWorkspaces(email, password, userId)`
-
-Sets up a user with no workspaces. Useful for testing the "no workspaces available" error scenario.
-
-**Parameters:**
-
-- `email` (string): User email
-- `password` (string): User password
-- `userId` (string): User UUID
-
-**Returns:** `Promise<void>`
-
-#### `cleanup(email, password)`
-
-Deletes all workspaces for a user. Use this in `afterEach` or at the end of test steps to clean up test data.
-
-**Parameters:**
-
-- `email` (string): User email
-- `password` (string): User password
-
-**Returns:** `Promise<void>`
-
-## Environment Configuration
-
-Test environment settings are centralized in `config/environment.ts`. Use the `getTestUser()` helper to get predefined test user credentials:
-
-```typescript
-import { getTestUser } from "./config/environment";
-
-const testUser = getTestUser("noDefault"); // or "default", "noWorkspace", "newUser"
-// testUser contains: { id, email, password }
-```
-
-### Available Test Users
-
-- **`default`**: User with a default workspace (<test@example.com>)
-- **`noDefault`**: User with only non-default workspaces (<nodefault@example.com>)
-- **`noWorkspace`**: User with no workspaces (<noworkspace@example.com>)
-- **`newUser`**: New user with no history (<newuser@example.com>)
-
-### Environment Variables
-
-The fixtures use the following environment variables:
-
-- `API_BASE_URL`: Base URL for API calls (default: `http://localhost:8080/api`)
-- `KEYCLOAK_URL`: Keycloak realm URL (default: `http://localhost:9080/realms/cvix`)
-- `KEYCLOAK_CLIENT_ID`: Keycloak client ID (default: `cvix-client`)
-
-You can set these in your Playwright configuration:
-
-```typescript
-// playwright.config.ts
-use: {
-  baseURL: 'http://localhost:9876',
-}
-
-// Set environment variables
-process.env.API_BASE_URL = 'http://localhost:8080/api';
-process.env.KEYCLOAK_URL = 'http://localhost:9080/realms/cvix';
-```
-
-### Best Practices (Backend-based fixtures)
-
-1. **Always clean up**: Use the `cleanup()` method in a test step or afterEach hook to prevent test pollution
-2. **Use unique emails**: Each test should use a distinct test user email to avoid conflicts
-3. **Handle errors gracefully**: Wrap setup calls in try-catch blocks, as shown in the examples
-4. **Verify setup**: Assert that the expected data was created before running test assertions
-5. **Deterministic state**: Always start with a clean slate by calling cleanup or setup methods that do so
-
-### Troubleshooting
-
-**Authentication fails:**
-
-- Ensure the test user exists in your test database
-- Verify the API_BASE_URL is correct
-- Check that the auth endpoint matches your implementation
-
-**Workspaces not created:**
-
-- Verify the backend API is running and accessible
-- Check API endpoint paths match your backend routes
-- Review backend logs for error details
-
-**Cleanup fails:**
-
-- This is usually non-critical and logged as a warning
-- May occur if the user doesn't exist or was already cleaned up
-- Check if your backend requires special permissions for deletion
-
----
-
-## 🛠️ Migration Guide
-
-### Old Pattern (Backend Required)
-
-```typescript
-// ❌ Old - requires backend running
-test('should login', async ({ page, request }) => {
-  const fixtures = new WorkspaceTestFixtures(request);
-  const token = await fixtures.getAuthToken(email, password);
-
-  await page.goto('/login');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: /log in/i }).click();
-
-  await expect(page).toHaveURL(/\/dashboard/);
-});
-```
-
-### New Pattern (Mocked)
-
-```typescript
-// ✅ New - no backend needed
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
-
-test('should login', async ({ page }) => {
-  await AuthTestFixtures.setupMockAuth(page);
-  await AuthTestFixtures.loginWithUI(page);
-
-  await expect(page).toHaveURL(/\/dashboard/);
-});
+```sh
+npx playwright open \
+  --save-har=client/apps/webapp/e2e/fixtures/har/auth-flow-register.har \
+  --save-har-glob="**/api/**" \
+  https://localhost:9876
 ```
 
 ---
 
-## 🎯 Best Practices (General)
+## ⚠️ Important Notes
 
-### 1. **Default to Mocks**
+### HAR File Matching
 
-Always use mocks unless you're explicitly testing API integration.
+- HAR matching is **strict** on URL and HTTP method
+- For POST requests, it also matches the request body
+- If no match is found and `notFound: 'fallback'`, the request passes through
+- If no match is found and `notFound: 'abort'` (default), the request fails
 
-```typescript
-// ✅ Good - uses mocks, no backend needed
-await AuthTestFixtures.setupMockAuth(page);
+### Test Isolation
 
-// ❌ Avoid - requires backend running
-const token = await fixtures.getAuthToken(email, password);
-```
+- Each test should set up its own mocks in `beforeEach`
+- Mocks are automatically cleared when the page closes
+- Override specific routes after setting up HAR mocks for error scenarios
 
-### 2. **Clean Up State**
+### Credentials in HAR Files
 
-Always clean up mock state between tests.
-
-```typescript
-test.beforeEach(async ({ page }) => {
-  // Clear previous state
-  WorkspaceMockData.clearWorkspaces();
-  await AuthTestFixtures.clearAuthState(page);
-});
-```
-
-### 3. **Use Fixtures for Reusability**
-
-Extend Playwright's test fixture for common setups.
-
-```typescript
-import { test as base } from '@playwright/test';
-import { AuthTestFixtures } from './fixtures/auth-fixtures';
-
-export const test = base.extend({
-  authenticatedPage: async ({ page }, use) => {
-    await AuthTestFixtures.setupMockAuth(page);
-    await AuthTestFixtures.setAuthState(page);
-    await use(page);
-  },
-});
-```
-
-### 4. **Document Mock Behavior**
-
-When creating custom mocks, document what they do and what they return.
-
-```typescript
-/**
- * Mock workspace API to return empty workspace list
- * Used for testing "no workspaces available" scenario
- */
-static setupEmptyWorkspaceResponse(page: Page): void {
-  page.route('**/api/workspace', route => {
-    route.fulfill({
-      status: 200,
-      body: JSON.stringify({ data: [] }),
-    });
-  });
-}
-```
+- HAR files contain test credentials - this is intentional
+- Never commit HAR files with real/production credentials
+- The test passwords in HAR files should match `TEST_USERS` constants
 
 ---
 
 ## 📚 Further Reading
 
-- [Playwright Mocking Guide](https://playwright.dev/docs/mock)
-- [HAR Files Documentation](https://playwright.dev/docs/api/class-browser#browser-new-context-option-record-har)
+- [Playwright Mock APIs - HAR](https://playwright.dev/docs/mock#mocking-with-har-files)
+- [HAR 1.2 Specification](http://www.softwareishard.com/blog/har-12-spec)
 - [Playwright Test Fixtures](https://playwright.dev/docs/test-fixtures)

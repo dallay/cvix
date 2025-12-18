@@ -7,11 +7,51 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 /**
- * [SpaWebFilter] is a filter that forwards any unmapped paths (except those containing a period)
- * to the client `index.html`.
+ * WebFlux filter that enables Single Page Application (SPA) routing by forwarding
+ * unmapped paths to `/index.html`.
+ *
+ * This filter implements the "HTML5 History Mode" pattern for SPAs, where client-side
+ * routing handles navigation without full page reloads. When a user directly accesses
+ * a client-side route (e.g., `/dashboard`, `/profile`), the server returns `index.html`
+ * instead of a 404, allowing the SPA router to take over.
+ *
+ * ## Redirect Logic
+ *
+ * A path is redirected to `/index.html` if:
+ * 1. It does **not** start with any excluded prefix (API endpoints, actuator, etc.)
+ * 2. It does **not** contain a period (`.`) — assumes file extension means static resource
+ *
+ * ## Excluded Prefixes
+ *
+ * The following paths are **not** redirected (handled by backend or served as-is):
+ * - `/actuator` — Spring Boot Actuator endpoints (health, metrics, etc.)
+ * - `/api` — REST API endpoints
+ * - `/management` — Management endpoints
+ * - `/v3/api-docs` — OpenAPI documentation
+ * - `/login` — Authentication endpoints
+ * - `/oauth2` — OAuth2 endpoints
+ *
+ * ## Example Behavior
+ *
+ * | Request Path             | Action                       | Reason                          |
+ * |--------------------------|------------------------------|---------------------------------|
+ * | `/dashboard`             | Redirect to `/index.html`    | No excluded prefix, no period   |
+ * | `/api/users`             | Pass through                 | Starts with `/api`              |
+ * | `/assets/logo.png`       | Pass through (serve as-is)   | Contains period (file)          |
+ * | `/actuator/health`       | Pass through                 | Starts with `/actuator`         |
+ * | `/profile/settings`      | Redirect to `/index.html`    | Client-side route               |
+ *
+ * @see WebFilter
+ * @since 1.0.0
  */
 @Component
-class SpaWebFilter(
+class SpaWebFilter : WebFilter {
+
+    /**
+     * Path prefixes that should **not** be redirected to `index.html`.
+     * These typically represent backend endpoints or resources that should be handled
+     * by the server directly.
+     */
     private val excludedPrefixes: List<String> = listOf(
         "/actuator",
         "/api",
@@ -20,9 +60,13 @@ class SpaWebFilter(
         "/login",
         "/oauth2",
     )
-) : WebFilter {
+
     /**
-     * Forwards any unmapped paths (except those containing a period) to the client `index.html`.
+     * Intercepts incoming requests and redirects SPA routes to `/index.html`.
+     *
+     * @param exchange The current server web exchange (request/response)
+     * @param chain The filter chain to continue processing
+     * @return A [Mono] representing the completion of filter processing
      */
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         val path = exchange.request.uri.path
@@ -34,8 +78,14 @@ class SpaWebFilter(
         }
     }
 
+    /**
+     * Determines if a given path should be redirected to `/index.html`.
+     *
+     * @param path The request path to evaluate
+     * @return `true` if the path should be redirected, `false` otherwise
+     */
     private fun shouldRedirect(path: String): Boolean {
         return excludedPrefixes.none { path.startsWith(it) } &&
-            !path.contains(".") // Always matches any path
+            !path.contains(".") // Paths with periods are assumed to be static files (e.g., .js, .css, .png)
     }
 }

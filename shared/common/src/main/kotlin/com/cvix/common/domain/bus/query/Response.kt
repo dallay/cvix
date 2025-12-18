@@ -7,11 +7,3 @@ package com.cvix.common.domain.bus.query
  * @see Query
  */
 interface Response
-
-/**
- * Generic response to a query.
- *
- * @property T The type of the response.
- * @property data The response of the query.
- */
-data class QueryResponse<T>(val data: T) : Response

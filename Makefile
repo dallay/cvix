@@ -100,6 +100,42 @@ ssl-cert:
 	@bash ./scripts/generate-ssl-certificate.sh
 
 # ------------------------------------------------------------------------------------
+# DOCKER IMAGE BUILDS (BACKEND & FRONTEND)
+# ------------------------------------------------------------------------------------
+
+# Allows override: make docker-build-backend TAG=<someversion>
+TAG ?= latest
+
+# Build Backend Docker image
+# Usage: make docker-build-backend [TAG=yourtag]
+docker-build-backend:
+	docker buildx build \
+		--load \
+		-t cvix-engine:$(TAG) \
+		-f server/engine/Dockerfile .
+
+# Build WebApp Docker image
+# Usage: make docker-build-webapp [TAG=yourtag]
+docker-build-webapp:
+	docker buildx build \
+		--load \
+		-t cvix-webapp:$(TAG) \
+		-f client/apps/webapp/Dockerfile .
+
+# Build Marketing Docker image
+# Usage: make docker-build-marketing [TAG=yourtag]
+docker-build-marketing:
+	docker buildx build \
+		--load \
+		-t cvix-marketing:$(TAG) \
+		-f client/apps/marketing/Dockerfile .
+
+# Build all Docker images: backend, webapp, marketing
+# Usage: make docker-build-all [TAG=yourtag]
+docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
+	@echo "Todas las imágenes construidas con tag '$(TAG)'"
+
+# ------------------------------------------------------------------------------------
 # BUILD
 # ------------------------------------------------------------------------------------
 

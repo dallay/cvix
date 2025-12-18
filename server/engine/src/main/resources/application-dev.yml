@@ -19,7 +19,7 @@ spring:
     compose:
       # Disable automatic Docker Compose lifecycle management
       # We manage our own docker-compose.yaml in the root directory
-      enabled: false
+      enabled: true
   liquibase:
     contexts: dev
 springdoc:
@@ -52,3 +52,8 @@ application:
       allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
       max-age: ${CORS_MAX_AGE:3600}
     domain: ${HOSTNAME:localhost}
+waitlist:
+  security:
+    # HMAC secret for IP address hashing (required)
+    # Must be set via WAITLIST_IP_HMAC_SECRET environment variable
+    ip-hmac-secret: ${WAITLIST_IP_HMAC_SECRET:WILL_BE_REPLACED}

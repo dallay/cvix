@@ -76,3 +76,19 @@ args = [
 [mcp_servers.astro-docs]
 command = "npx"
 args = ["-y", "mcp-remote", "https://mcp.docs.astro.build/mcp"]
+
+[mcp_servers.playwright-mcp]
+command = "docker"
+args = [
+    "run",
+    "--rm",
+    "-i",
+    "--name",
+    "mcp-playwright",
+    "--read-only",
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges",
+    "-v",
+    "mcp-playwright-data:/app/data",
+    "microsoft/playwright-mcp"
+]

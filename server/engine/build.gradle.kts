@@ -1,3 +1,5 @@
+import com.cvix.buildlogic.common.AppConfiguration
+
 plugins {
     id("app.spring.boot.convention")
     kotlin("jvm").version(libs.versions.kotlin)
@@ -6,12 +8,12 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "4.0.5"
 }
 
-group = "com.cvix"
-version = "0.0.1-SNAPSHOT"
+group = rootProject.findProperty("group")?.toString() ?: "com.cvix"
+version = rootProject.findProperty("version")?.toString() ?: "0.1.0-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(AppConfiguration.useJavaVersion.ordinal)
     }
 }
 

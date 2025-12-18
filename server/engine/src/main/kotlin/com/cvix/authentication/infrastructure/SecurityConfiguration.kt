@@ -149,7 +149,6 @@ class SecurityConfiguration(
             .addFilterAt(CookieCsrfFilter(applicationSecurityProperties), SecurityWebFiltersOrder.REACTOR_CONTEXT)
             .addFilterAt(JwtCookieOrHeaderFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterBefore(rateLimitingFilter, SecurityWebFiltersOrder.HTTP_BASIC)
-//            .addFilterAfter(SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
             .redirectToHttps {
                     httpsRedirect ->
                 httpsRedirect.httpsRedirectWhen {

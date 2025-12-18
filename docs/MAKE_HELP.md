@@ -37,5 +37,10 @@ Available commands:
   start                    Start all applications.
   test-all                 Run all tests for all applications.
   precommit                Run the pre-commit checks.
+  
+  docker-build-backend     Build the backend Docker image (TAG=yourtag, default: latest)
+  docker-build-marketing   Build the marketing Docker image (TAG=yourtag, default: latest)
+  docker-build-webapp      Build the webapp Docker image (TAG=yourtag, default: latest)
+  docker-build-all         Build all Docker images (TAG=yourtag, default: latest)
 
 For a detailed explanation of each command, refer to the project's README.md.
