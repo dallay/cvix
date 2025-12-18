@@ -292,4 +292,4 @@ verify-all:
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all
