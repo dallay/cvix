@@ -461,5 +461,12 @@ export async function registerViaUI(
 	await page.getByLabel(/last name/i).fill(userData.lastName);
 	await page.getByLabel(/^password$/i).fill(userData.password);
 	await page.getByLabel(/confirm password/i).fill(userData.password);
+
+	// Accept terms and conditions checkbox (required for registration)
+	const termsCheckbox = page.getByRole("checkbox", {
+		name: /terms|accept|agree/i,
+	});
+	await termsCheckbox.check();
+
 	await page.getByRole("button", { name: /create account/i }).click();
 }

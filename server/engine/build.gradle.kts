@@ -13,7 +13,9 @@ version = rootProject.findProperty("version")?.toString() ?: "0.1.0-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(AppConfiguration.useJavaVersion.ordinal)
+        // Use jvmTargetStr (string "24") converted to Int to get the actual Java version number.
+        // DO NOT use useJavaVersion.ordinal as it returns the enum position, not the version.
+        languageVersion = JavaLanguageVersion.of(AppConfiguration.jvmTargetStr.toInt())
     }
 }
 

@@ -133,7 +133,7 @@ docker-build-marketing:
 # Build all Docker images: backend, webapp, marketing
 # Usage: make docker-build-all [TAG=yourtag]
 docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
-	@echo "Todas las imágenes construidas con tag '$(TAG)'"
+	@echo "All images built with tag '$(TAG)'"
 
 # ------------------------------------------------------------------------------------
 # BUILD

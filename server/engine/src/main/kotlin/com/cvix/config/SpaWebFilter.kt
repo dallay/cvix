@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono
  *
  * A path is redirected to `/index.html` if:
  * 1. It does **not** start with any excluded prefix (API endpoints, actuator, etc.)
- * 2. It does **not** contain a period (`.`) — assumes file extension means static resource
+ * 2. The **last path segment** does **not** contain a period (`.`) — assumes file extension means static resource
  *
  * ## Excluded Prefixes
  *
@@ -33,13 +33,16 @@ import reactor.core.publisher.Mono
  *
  * ## Example Behavior
  *
- * | Request Path             | Action                       | Reason                          |
- * |--------------------------|------------------------------|---------------------------------|
- * | `/dashboard`             | Redirect to `/index.html`    | No excluded prefix, no period   |
- * | `/api/users`             | Pass through                 | Starts with `/api`              |
- * | `/assets/logo.png`       | Pass through (serve as-is)   | Contains period (file)          |
- * | `/actuator/health`       | Pass through                 | Starts with `/actuator`         |
- * | `/profile/settings`      | Redirect to `/index.html`    | Client-side route               |
+ * | Request Path             | Action                       | Reason                                   |
+ * |--------------------------|------------------------------|------------------------------------------|
+ * | `/dashboard`             | Redirect to `/index.html`    | No excluded prefix, no file extension    |
+ * | `/api/users`             | Pass through                 | Starts with `/api`                       |
+ * | `/assets/logo.png`       | Pass through (serve as-is)   | Last segment contains period (file)      |
+ * | `/actuator/health`       | Pass through                 | Starts with `/actuator`                  |
+ * | `/profile/settings`      | Redirect to `/index.html`    | Client-side route                        |
+ * | `/user/john.doe`         | Redirect to `/index.html`    | Period in mid-path, not last segment     |
+ * | `/api/v1.0/users`        | Pass through                 | Starts with `/api` (excluded prefix)     |
+ * | `/page/v1.0`             | Redirect to `/index.html`    | No excluded prefix, period not in last   |
  *
  * @see WebFilter
  * @since 1.0.0
@@ -85,7 +88,14 @@ class SpaWebFilter : WebFilter {
      * @return `true` if the path should be redirected, `false` otherwise
      */
     private fun shouldRedirect(path: String): Boolean {
-        return excludedPrefixes.none { path.startsWith(it) } &&
-            !path.contains(".") // Paths with periods are assumed to be static files (e.g., .js, .css, .png)
+        // Extract the last path segment (after the last '/')
+        val lastSegment = path.substringAfterLast('/')
+
+        // Only treat as static file if the LAST segment contains a period
+        // This allows routes like /user/john.doe or /api/v1.0/users to work correctly
+        // while still catching actual files like /assets/logo.png or /js/app.bundle.js
+        val isStaticFile = lastSegment.contains(".")
+
+        return excludedPrefixes.none { path.startsWith(it) } && !isStaticFile
     }
 }

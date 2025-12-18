@@ -45,6 +45,7 @@
   
   /* Destructive Colors */
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.969 0.016 293.756);
   
   /* Input & Border Colors */
   --border: oklch(0.92 0.004 286.32);
@@ -103,6 +104,7 @@
   
   /* Destructive Colors */
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
   
   /* Input & Border Colors */
   --border: oklch(1 0 0 / 10%);
@@ -127,7 +129,8 @@
   --sidebar-ring: oklch(0.38 0.189 293.745);
   
   /* Dark Mode Scrollbar Colors */
-  scrollbar-color: oklch(var(--muted) / 0.7) oklch(var(--background));
+  /* Use raw oklch values to avoid nested oklch() syntax */
+  scrollbar-color: oklch(0.274 0.006 286.033 / 0.7) var(--background);
 }
 
 /* ============================================

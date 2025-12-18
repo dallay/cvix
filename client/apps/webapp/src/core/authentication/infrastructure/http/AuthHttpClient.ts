@@ -202,8 +202,9 @@ export class AuthHttpClient extends BaseHttpClient {
 	 * Follows the registration flow diagram
 	 */
 	async register(data: RegisterFormData): Promise<void> {
-		// POST /auth/register returns 201 with AuthResponse (includes tokens and user)
-		// But we don't need the response here as we'll auto-login
+		// POST /auth/register returns 201 with AuthResponse but this method discards it
+		// as it only performs registration (no auto-login).
+		// Callers must handle subsequent login separately if needed.
 		// Note: Error handling is done by the response interceptor which transforms
 		// AxiosError to domain errors (UserAlreadyExistsError, ValidationError, etc.)
 		await this.post<AuthResponse>("/auth/register", {
