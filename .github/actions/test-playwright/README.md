@@ -34,7 +34,7 @@ e2e-tests:
       browser: [chromium, firefox, webkit]
   steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
 
     - name: Setup Node.js
       uses: ./.github/actions/setup/node
