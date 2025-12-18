@@ -5,18 +5,65 @@ on:
     paths:
       - 'infra/**.yml'
       - 'infra/**.yaml'
+      - '.env.example'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
 
-      - name: Validate docker-compose files
+      - name: Prepare environment file for validation
+        run: |
+          # Copy .env.example to .env for validation
+          cp .env.example .env
+          echo "✅ Environment file prepared"
+
+      - name: Validate individual compose files (syntax only)
         run: |
           cd infra
-          find . \( -name "*.yml" -o -name "*.yaml" \) -print0 | while IFS= read -r -d '' file; do
-            echo "Validating $file..."
-            docker compose -f "$file" config > /dev/null
+          echo "🔍 Validating compose file syntax..."
+          
+          # Validate individual files (will show warnings but won't fail on missing services)
+          for file in greenmail/greenmail-compose.yml maildev/maildev-compose.yml; do
+            if [[ -f "$file" ]]; then
+              echo "Validating $file..."
+              docker compose -f "$file" config > /dev/null || {
+                echo "❌ Syntax validation failed for $file"
+                exit 1
+              }
+            fi
           done
+          
+          echo "✅ Individual files validated"
+
+      - name: Validate full stack composition
+        run: |
+          cd infra
+          echo "🔍 Validating full stack with dependencies..."
+          
+          # Validate the main app.yml which includes all dependencies
+          docker compose -f app.yml config > /dev/null || {
+            echo "❌ Full stack validation failed"
+            exit 1
+          }
+          
+          echo "✅ Full stack validated successfully"
+
+      - name: Validate PostgreSQL compose
+        run: |
+          cd infra/postgresql
+          echo "🔍 Validating PostgreSQL compose..."
+          docker compose -f postgresql-compose.yml config > /dev/null || {
+            echo "❌ PostgreSQL compose validation failed"
+            exit 1
+          }
+          echo "✅ PostgreSQL compose validated"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          # Remove the temporary .env file
+          rm -f .env
+          echo "🧹 Cleanup completed"
