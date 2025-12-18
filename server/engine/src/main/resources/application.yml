@@ -72,7 +72,7 @@ application:
   version: 0.0.1-SNAPSHOT
   security:
     oauth2:
-      base-url: ${OAUTH2_SERVER_URL:http://localhost:9080}
+      base-url: ${OAUTH2_SERVER_URL}
       server-url: ${application.security.oauth2.base-url}
       issuer-uri: ${application.security.oauth2.base-url}/realms/${application.security.oauth2.realm}
       realm: ${REALM:ProFileTailors}

@@ -17,8 +17,6 @@ spring:
       enabled: true
   docker:
     compose:
-      # Disable automatic Docker Compose lifecycle management
-      # We manage our own docker-compose.yaml in the root directory
       enabled: true
   liquibase:
     contexts: dev

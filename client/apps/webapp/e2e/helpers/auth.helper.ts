@@ -13,19 +13,6 @@ import type { Page } from "@playwright/test";
  */
 
 const API_CONTENT_TYPE = "application/vnd.api.v1+json";
-
-/**
- * Default headers for mocked API responses.
- * These headers ensure proper CORS handling and content type negotiation.
- * Reserved for future use in response mocking.
- */
-const _DEFAULT_RESPONSE_HEADERS = {
-	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, X-XSRF-TOKEN",
-	"Content-Type": API_CONTENT_TYPE,
-};
-
 /**
  * Test user credentials for authentication tests
  */
