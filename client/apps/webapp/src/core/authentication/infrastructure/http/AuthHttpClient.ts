@@ -202,57 +202,50 @@ export class AuthHttpClient extends BaseHttpClient {
 	 * Follows the registration flow diagram
 	 */
 	async register(data: RegisterFormData): Promise<void> {
-		try {
-			// POST /auth/register returns 201 with AuthResponse (includes tokens and user)
-			// But we don't need the response here as we'll auto-login
-			await this.post<AuthResponse>("/auth/register", {
-				email: data.email,
-				password: data.password,
-				firstname: data.firstName,
-				lastname: data.lastName,
-			});
-		} catch (error) {
-			throw this.handleError(error as AxiosError);
-		}
+		// POST /auth/register returns 201 with AuthResponse (includes tokens and user)
+		// But we don't need the response here as we'll auto-login
+		// Note: Error handling is done by the response interceptor which transforms
+		// AxiosError to domain errors (UserAlreadyExistsError, ValidationError, etc.)
+		await this.post<AuthResponse>("/auth/register", {
+			email: data.email,
+			password: data.password,
+			firstname: data.firstName,
+			lastname: data.lastName,
+		});
 	}
 
 	/**
 	 * Login with email and password - Maps to POST /auth/login
 	 * Follows the login flow diagram
+	 * Note: Error handling is done by the response interceptor which transforms
+	 * AxiosError to domain errors (InvalidCredentialsError, etc.)
 	 */
 	async login(data: LoginFormData): Promise<Session> {
-		try {
-			// POST /auth/login returns AuthResponse with tokens and user data
-			const response = await this.post<AuthResponse>("/auth/login", {
-				email: data.email,
-				password: data.password,
-				rememberMe: data.rememberMe,
-			});
+		// POST /auth/login returns AuthResponse with tokens and user data
+		const response = await this.post<AuthResponse>("/auth/login", {
+			email: data.email,
+			password: data.password,
+			rememberMe: data.rememberMe,
+		});
 
-			// Map AuthResponse to Session domain model
-			return {
-				accessToken: response.accessToken,
-				refreshToken: "", // Refresh token is in HTTP-only cookie
-				expiresIn: response.expiresIn,
-				tokenType: response.tokenType,
-				scope: "", // Scope not returned in v1 API
-			};
-		} catch (error) {
-			throw this.handleError(error as AxiosError);
-		}
+		// Map AuthResponse to Session domain model
+		return {
+			accessToken: response.accessToken,
+			refreshToken: "", // Refresh token is in HTTP-only cookie
+			expiresIn: response.expiresIn,
+			tokenType: response.tokenType,
+			scope: "", // Scope not returned in v1 API
+		};
 	}
 
 	/**
 	 * Logout the current user - Maps to POST /auth/logout
 	 * Follows the logout flow diagram
+	 * Note: Error handling is done by the response interceptor
 	 */
 	async logout(): Promise<void> {
-		try {
-			// POST /auth/logout returns 204 No Content
-			await this.post("/auth/logout");
-		} catch (error) {
-			throw this.handleError(error as AxiosError);
-		}
+		// POST /auth/logout returns 204 No Content
+		await this.post("/auth/logout");
 	}
 
 	/**
@@ -280,22 +273,19 @@ export class AuthHttpClient extends BaseHttpClient {
 
 	/**
 	 * Get the current authenticated user - Maps to GET /api/account
+	 * Note: Error handling is done by the response interceptor
 	 */
 	async getCurrentUser(): Promise<User> {
-		try {
-			const response = await this.get<UserResponse>("/account");
+		const response = await this.get<UserResponse>("/account");
 
-			return {
-				id: response.id,
-				username: response.username,
-				email: response.email,
-				firstName: response.firstname,
-				lastName: response.lastname,
-				roles: response.authorities,
-			};
-		} catch (error) {
-			throw this.handleError(error as AxiosError);
-		}
+		return {
+			id: response.id,
+			username: response.username,
+			email: response.email,
+			firstName: response.firstname,
+			lastName: response.lastname,
+			roles: response.authorities,
+		};
 	}
 
 	/**
