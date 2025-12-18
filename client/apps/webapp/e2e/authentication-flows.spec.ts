@@ -273,6 +273,9 @@ test.describe("Navigation", () => {
 		if (await registerLink.isVisible()) {
 			await registerLink.click();
 			await expect(page).toHaveURL(/\/register/);
+		} else {
+			// failed to find register link
+			throw new Error("Register link not found on login page");
 		}
 
 		// Find link back to login
@@ -280,6 +283,9 @@ test.describe("Navigation", () => {
 		if (await loginLink.isVisible()) {
 			await loginLink.click();
 			await expect(page).toHaveURL(/\/login/);
+		} else {
+			// failed to find login link
+			throw new Error("Login link not found on registration page");
 		}
 	});
 });

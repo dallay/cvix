@@ -90,5 +90,5 @@ args = [
     "--security-opt=no-new-privileges",
     "-v",
     "mcp-playwright-data:/app/data",
-    "microsoft/playwright-mcp"
+    "mcr.microsoft.com/playwright/mcp"
 ]
