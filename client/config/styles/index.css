@@ -8,7 +8,11 @@
 /* Import global styles first (includes Tailwind) */
 @import "./global.css";
 
-/* Additional CSS imports can be added here */
+/* Import centralized design tokens (CSS variables) */
+@import "./variables.css";
+
+/* Import base styles (scrollbars, resets, global element styles) */
+@import "./base.css";
 
 /* Short-term SVG theming: force shapes to inherit currentColor so
 	 logos and favicons switch with light/dark theme. This is a small,
