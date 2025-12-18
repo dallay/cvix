@@ -39,7 +39,7 @@ e2e-tests:
     - name: Setup Node.js
       uses: ./.github/actions/setup/node
       with:
-        node-version: '22'
+        node-version-file: '.nvmrc'
 
     - name: Build dependencies (recommended for faster startup)
       run: pnpm --filter @cvix/utilities build

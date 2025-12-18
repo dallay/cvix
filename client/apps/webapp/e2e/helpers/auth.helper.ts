@@ -357,7 +357,6 @@ export const mockApiErrors = {
 	async networkError(page: Page): Promise<void> {
 		// Remove any existing handlers for auth routes
 		await page.unroute("**/api/auth/**");
-		await page.unroute("**/api/auth/login");
 		await page.route("**/api/auth/**", (route) => route.abort("failed"));
 	},
 

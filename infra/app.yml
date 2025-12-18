@@ -15,6 +15,8 @@ services:
       # Enable access logs for debugging
       - --accesslog=true
       - --log.level=INFO
+      # Enable ping endpoint for healthcheck
+      - --ping=true
     ports:
       - "80:80"
       - "443:443"
@@ -161,17 +163,17 @@ services:
 
     secrets:
       - source: client_secret
-        target: CLIENT_SECRET
+        target: client_secret
       - source: admin_realm_password
-        target: ADMIN_REALM_PASSWORD
+        target: admin_realm_password
       - source: sendgrid_api_key
-        target: SENDGRID_API_KEY
+        target: sendgrid_api_key
       - source: smtp_username
-        target: SMTP_USERNAME
+        target: smtp_username
       - source: smtp_password
-        target: SMTP_PASSWORD
+        target: smtp_password
       - source: ssl_keystore_password
-        target: SSL_KEYSTORE_PASSWORD
+        target: ssl_keystore_password
 
     volumes:
       # CRITICAL: Docker socket access for PDF generation

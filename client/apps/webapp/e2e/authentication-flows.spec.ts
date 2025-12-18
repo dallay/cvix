@@ -232,7 +232,11 @@ test.describe("Logout Flow (US6)", () => {
 			const userMenu = page.getByRole("button", {
 				name: /profile|account|menu|user/i,
 			});
-			if (await userMenu.isVisible().catch(() => false)) {
+
+			// Check if user menu exists and is visible
+			const userMenuVisible = await userMenu.isVisible();
+			if (userMenuVisible) {
+				await expect(userMenu).toBeVisible();
 				await userMenu.click();
 			}
 
@@ -242,9 +246,17 @@ test.describe("Logout Flow (US6)", () => {
 					name: /log out|sign out|logout/i,
 				})
 				.first();
-			if (await logoutButton.isVisible().catch(() => false)) {
-				await logoutButton.click();
+
+			// Ensure logout button is visible before clicking
+			const logoutButtonVisible = await logoutButton.isVisible();
+			if (!logoutButtonVisible) {
+				throw new Error(
+					"Logout button not found. Expected either a user menu with logout option or a sidebar logout button.",
+				);
 			}
+
+			await expect(logoutButton).toBeVisible();
+			await logoutButton.click();
 		});
 
 		await test.step("Verify redirect to login or home", async () => {
@@ -313,17 +325,22 @@ test.describe("Security", () => {
 			);
 		} catch (error) {
 			// TimeoutError is expected (no dialog = good)
-			if (error instanceof Error && error.message.includes("Timeout")) {
-				// Success: no dialog appeared within timeout window
-				expect(true).toBe(true);
-			} else {
-				// Re-throw if it's our custom XSS error
-				throw error;
+			if (error instanceof Error && error.name === "TimeoutError") {
+				// Success: no dialog appeared within timeout window - test passes
+				return;
 			}
+			// Re-throw any other error (including our custom XSS error)
+			throw error;
 		}
 	});
 
 	test("should use HTTPS in URLs", async ({ page }) => {
+		// CI runs on HTTP (baseURL: http://localhost:9876), skip test in CI
+		// In deployment/production, this test ensures HTTPS is enforced
+		if (process.env.CI) {
+			test.skip();
+		}
+
 		await page.goto("/login");
 		const url = new URL(page.url());
 		expect(url.protocol).toBe("https:");
