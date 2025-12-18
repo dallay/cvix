@@ -10,10 +10,13 @@
 		"dev": "vite",
 		"build": "run-p type-check \"build-only {@}\" --",
 		"preview": "vite preview",
-		"pretest": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build",
+		"pretest": "pnpm --filter @cvix/utilities build",
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:headed": "playwright test --headed",
+		"test:e2e:debug": "playwright test --debug",
+		"test:e2e:report": "playwright show-report",
 		"test": "run-s pretest test:unit",
 		"test:ui": "vitest --ui",
 		"test:coverage": "vitest run --coverage",
@@ -22,10 +25,10 @@
 		"lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
 		"lint:biome": "biome check . --write",
 		"lint": "run-s lint:*",
-		"clean": "rm -rf dist node_modules .vitest .cache",
+		"clean": "rm -rf dist node_modules .vitest .cache playwright-report test-results",
 		"check": "run-p type-check lint",
-		"predev": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build",
-		"prebuild": "pnpm --filter @cvix/utilities build && pnpm --filter @cvix/ui build"
+		"predev": "pnpm --filter @cvix/utilities build",
+		"prebuild": "pnpm --filter @cvix/utilities build"
 	},
 	"dependencies": {
 		"@cvix/assets": "workspace:*",

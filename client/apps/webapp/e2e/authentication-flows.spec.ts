@@ -266,27 +266,26 @@ test.describe("Navigation", () => {
 	});
 
 	test("should navigate between login and register pages", async ({ page }) => {
-		await page.goto("/login");
+		await test.step("Navigate to login page", async () => {
+			await page.goto("/login");
+			await expect(page).toHaveURL(/\/login/);
+		});
 
-		// Find link to registration
-		const registerLink = page.getByRole("link", { name: /sign up|register/i });
-		if (await registerLink.isVisible()) {
+		await test.step("Click on Sign up link to go to registration", async () => {
+			const registerLink = page.getByRole("link", {
+				name: /sign up|register/i,
+			});
+			await expect(registerLink).toBeVisible();
 			await registerLink.click();
 			await expect(page).toHaveURL(/\/register/);
-		} else {
-			// failed to find register link
-			throw new Error("Register link not found on login page");
-		}
+		});
 
-		// Find link back to login
-		const loginLink = page.getByRole("link", { name: /log in|sign in/i });
-		if (await loginLink.isVisible()) {
+		await test.step("Click on Sign in link to return to login", async () => {
+			const loginLink = page.getByRole("link", { name: /log in|sign in/i });
+			await expect(loginLink).toBeVisible();
 			await loginLink.click();
 			await expect(page).toHaveURL(/\/login/);
-		} else {
-			// failed to find login link
-			throw new Error("Login link not found on registration page");
-		}
+		});
 	});
 });
 

@@ -296,37 +296,33 @@ jobs:
           retention-days: 7
 
   e2e-tests:
-    name: E2E Tests (Playwright)
+    name: 🎭 E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: [changes, lint-frontend]
     if: needs.changes.outputs.frontend == 'true' && needs.lint-frontend.result == 'success'
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup/node
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Install Playwright Browsers
-        run: cd client/apps/webapp && pnpm exec playwright install --with-deps chromium
-      - name: Build webapp
-        run: pnpm --filter @cvix/webapp build
-      - name: Run E2E Tests
-        run: pnpm --filter @cvix/webapp test:e2e
-      - name: Upload Playwright Report
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
-        if: always()
+
+      - name: Build dependencies
+        run: pnpm --filter @cvix/utilities build
+
+      - name: Run E2E tests
+        uses: ./.github/actions/test-playwright
         with:
-          name: playwright-report
-          path: client/apps/webapp/playwright-report/
-          retention-days: 7
-      - name: Upload Test Results
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
-        if: always()
-        with:
-          name: playwright-test-results
-          path: client/apps/webapp/test-results/
-          retention-days: 7
+          browser: ${{ matrix.browser }}
+          upload-results: 'true'
+          working-directory: 'client/apps/webapp'
 
   # ============================================================================
   # Codecov Status Comment - Posts sticky comment on coverage upload issues
