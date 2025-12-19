@@ -14,5 +14,12 @@ services:
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 networks:
   backend:

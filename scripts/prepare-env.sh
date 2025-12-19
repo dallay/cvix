@@ -167,6 +167,8 @@ DEFAULT_LINK_DIRS=(
   "server/engine"
   "client/apps/marketing"
   "client/apps/webapp"
+  "docs"
+  "infra"
 )
 
 LINK_DIRS=()

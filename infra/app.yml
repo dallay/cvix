@@ -3,6 +3,7 @@ include:
   - ./common.yml
   - ./postgresql/postgresql-compose.yml
   - ./keycloak/keycloak-compose.yml
+
 services:
   traefik:
     image: traefik:v3.0
@@ -11,14 +12,26 @@ services:
       - --providers.docker=true
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      # Enable access logs for debugging
+      - --accesslog=true
+      - --log.level=INFO
+      # Enable ping endpoint for healthcheck
+      - --ping=true
     ports:
       - "80:80"
       - "443:443"
+      - "8090:8080"  # Traefik dashboard
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - frontend
       - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   landing:
     image: ghcr.io/dallay/cvix-marketing:latest
@@ -28,32 +41,68 @@ services:
       PUBLIC_BASE_DOCS_URL_PROD: ${PUBLIC_BASE_DOCS_URL_PROD}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       PUBLIC_BASE_WEBAPP_URL_PROD: ${PUBLIC_BASE_WEBAPP_URL_PROD}
+
+      # Node environment
+      NODE_ENV: production
     labels:
       - "traefik.enable=true"
+      # Use HTTP in local, TLS would be handled by reverse proxy in real prod
       - "traefik.http.routers.landing.rule=Host(`landing.localhost`)"
-      - "traefik.http.routers.landing.entrypoints=websecure"
-      - "traefik.http.services.landing.loadbalancer.server.port=443"
+      - "traefik.http.routers.landing.entrypoints=web"
+      # Nginx serves on port 8080 (non-privileged port for non-root user)
+      - "traefik.http.services.landing.loadbalancer.server.port=8080"
     networks:
       - frontend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   frontend:
     image: ghcr.io/dallay/cvix-webapp:latest
     environment:
       # Frontend runtime configuration
-      BACKEND_URL: ${BACKEND_URL}
-      # Optional: public url for the webapp if needed by the image
+      VITE_BACKEND_URL: ${BACKEND_URL}
+      VITE_KEYCLOAK_URL: ${OAUTH2_SERVER_URL}
+      VITE_KEYCLOAK_REALM: ${REALM}
+      VITE_KEYCLOAK_CLIENT_ID: ${CLIENT_ID}
+
+      # Public webapp URL
       PUBLIC_BASE_WEBAPP_URL_PROD: ${PUBLIC_BASE_WEBAPP_URL_PROD}
+
+      # Node environment
+      NODE_ENV: production
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
       - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      # Nginx serves on port 8080 (non-privileged port for non-root user)
+      - "traefik.http.services.frontend.loadbalancer.server.port=8080"
     networks:
       - frontend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   backend:
     image: ghcr.io/dallay/cvix-engine:latest
     environment:
+      # JVM Options for production-like setup
+      JAVA_OPTS: >-
+        -Xms512m
+        -Xmx1024m
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=100
+        -XX:+UseStringDeduplication
+        -Djava.security.egd=file:/dev/./urandom
+
       # Database (R2DBC)
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
@@ -64,22 +113,22 @@ services:
       OAUTH2_SERVER_URL: ${OAUTH2_SERVER_URL}
 
       # Keycloak / Auth configuration
-      # Realm and client used by the application to validate tokens
       REALM: ${REALM}
       CLIENT_ID: ${CLIENT_ID}
-      # CLIENT_SECRET is now provided via Docker secret (see secrets: block below)
+      # Point to secret file location
+      CLIENT_SECRET_FILE: /run/secrets/client_secret
 
-      # Admin / test helpers (admin realm client used by infra tasks/tests)
+      # Admin / test helpers
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_REALM: ${ADMIN_REALM}
       ADMIN_REALM_USERNAME: ${ADMIN_REALM_USERNAME}
-      # ADMIN_REALM_PASSWORD is now provided via Docker secret (see secrets: block below)
+      ADMIN_REALM_PASSWORD_FILE: /run/secrets/admin_realm_password
 
-      # Keycloak host references (docker/compose integration)
+      # Keycloak host references
       KEYCLOAK_URL: ${KEYCLOAK_URL}
       KC_HOSTNAME: ${KC_HOSTNAME}
 
-      # CORS configuration (comma-separated values supported)
+      # CORS configuration
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       CORS_ALLOWED_METHODS: ${CORS_ALLOWED_METHODS}
       CORS_ALLOWED_HEADERS: ${CORS_ALLOWED_HEADERS}
@@ -91,47 +140,96 @@ services:
       HOSTNAME: ${HOSTNAME}
       PERSIST_LATEX_FILES: ${PERSIST_LATEX_FILES}
 
-      # Email / Notification (development & production)
-      # SENDGRID_API_KEY is now provided via Docker secret (see secrets: block below)
+      # Email / Notification
+      SENDGRID_API_KEY_FILE: /run/secrets/sendgrid_api_key
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
-      # SMTP_USERNAME and SMTP_PASSWORD are now provided via Docker secrets (see secrets: block below)
+      SMTP_USERNAME_FILE: /run/secrets/smtp_username
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
       SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
       SMTP_FROM_NAME: ${SMTP_FROM_NAME}
 
-      # PDF Generation (resume/document rendering)
+      # PDF Generation
       PDF_DOCKER_IMAGE: ${PDF_DOCKER_IMAGE}
       PDF_MAX_CONCURRENT_CONTAINERS: ${PDF_MAX_CONCURRENT_CONTAINERS}
       PDF_TIMEOUT_SECONDS: ${PDF_TIMEOUT_SECONDS}
       PDF_MEMORY_LIMIT_MB: ${PDF_MEMORY_LIMIT_MB}
       PDF_CPU_QUOTA: ${PDF_CPU_QUOTA}
 
-      # Optional SSL/keystore references (if your image uses them)
+      # SSL/TLS
       SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
-      # SSL_KEYSTORE_PASSWORD is now provided via Docker secret (see secrets: block below)
+      SSL_KEYSTORE_PASSWORD_FILE: /run/secrets/ssl_keystore_password
       SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
 
     secrets:
-      - client_secret
-      - admin_realm_password
-      - sendgrid_api_key
-      - smtp_username
-      - smtp_password
-      - ssl_keystore_password
+      - source: client_secret
+        target: client_secret
+      - source: admin_realm_password
+        target: admin_realm_password
+      - source: sendgrid_api_key
+        target: sendgrid_api_key
+      - source: smtp_username
+        target: smtp_username
+      - source: smtp_password
+        target: smtp_password
+      - source: ssl_keystore_password
+        target: ssl_keystore_password
+
+    volumes:
+      # CRITICAL: Docker socket access for PDF generation
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+      # Persist LaTeX output if enabled
+      - ./data/latex:/app/latex-output
+
+      # Application logs
+      - ./logs/backend:/app/logs
+
+      # SSL keystore (if using file-based)
+      - ./ssl:/app/ssl:ro
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
+
     networks:
       - frontend
       - backend
+
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    # Resource limits (prod-like constraints)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
 #
 # Docker secrets definitions for sensitive values
 # These secrets must be created and provisioned in your deployment pipeline or Docker Compose setup.
 # Each secret will be mounted as a file in /run/secrets/SECRET_NAME inside the container.
 # Ensure strict file permissions and access controls for any temporary secret files.
+#
+# Your Spring Boot app MUST read from these files explicitly using the _FILE env vars.
 secrets:
   client_secret:
     file: ./secrets/client_secret.txt

@@ -142,3 +142,5 @@ test-results/
 *.fls
 *.out
 *.synctex.gz
+# Qodana analysis results
+*_qodana.sarif.json

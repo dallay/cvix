@@ -100,6 +100,47 @@ ssl-cert:
 	@bash ./scripts/generate-ssl-certificate.sh
 
 # ------------------------------------------------------------------------------------
+# DOCKER IMAGE BUILDS (BACKEND & FRONTEND)
+# ------------------------------------------------------------------------------------
+
+# Allows override: make docker-build-backend TAG=<someversion>
+TAG ?= latest
+
+# Build Backend Docker image
+# Usage: make docker-build-backend [TAG=yourtag]
+docker-build-backend:
+	docker buildx build \
+		--load \
+		-t cvix-engine:$(TAG) \
+		-f server/engine/Dockerfile .
+
+# Build WebApp Docker image
+# Usage: make docker-build-webapp [TAG=yourtag]
+docker-build-webapp:
+	docker buildx build \
+		--load \
+		-t cvix-webapp:$(TAG) \
+		-f client/apps/webapp/Dockerfile .
+
+# Build Marketing Docker image
+# Usage: make docker-build-marketing [TAG=yourtag]
+docker-build-marketing:
+	docker buildx build \
+		--load \
+		-t cvix-marketing:$(TAG) \
+		-f client/apps/marketing/Dockerfile .
+
+# Build all Docker images: backend, webapp, marketing
+# Usage: make docker-build-all [TAG=yourtag]
+docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
+	@echo "All images built with tag '$(TAG)'"
+
+# Verifies Docker containers are running as non-root users
+# Tests that all frontend containers properly run as UID 101 (nginx user)
+docker-verify-nonroot:
+	@bash ./scripts/verify-nonroot-docker.sh
+
+# ------------------------------------------------------------------------------------
 # BUILD
 # ------------------------------------------------------------------------------------
 
@@ -256,4 +297,4 @@ verify-all:
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-verify-nonroot

@@ -47,8 +47,6 @@ args = [
     "run",
     "--rm",
     "-i",
-    "--name",
-    "mcp-sequentialthinking",
     "--read-only",
     "--cap-drop=ALL",
     "--security-opt=no-new-privileges",
@@ -65,8 +63,6 @@ args = [
     "-v",
     "claude-memory:/app/dist",
     "--rm",
-    "--name",
-    "mcp-memory",
     "--read-only",
     "--cap-drop=ALL",
     "--security-opt=no-new-privileges",
@@ -76,3 +72,17 @@ args = [
 [mcp_servers.astro-docs]
 command = "npx"
 args = ["-y", "mcp-remote", "https://mcp.docs.astro.build/mcp"]
+
+[mcp_servers.playwright-mcp]
+command = "docker"
+args = [
+    "run",
+    "--rm",
+    "-i",
+    "--read-only",
+    "--cap-drop=ALL",
+    "--security-opt=no-new-privileges",
+    "-v",
+    "mcp-playwright-data:/app/data",
+    "mcr.microsoft.com/playwright/mcp"
+]

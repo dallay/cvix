@@ -25,8 +25,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 private val Project.libs get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 val Test.isRelease get() = name.contains("""beta|release""".toRegex(RegexOption.IGNORE_CASE))
 
-val Project.fullPackageName get() = AppConfiguration.PACKAGE_NAME + path.replace(':', '.')
-
 fun Project.catalogVersion(alias: String) = libs.findVersion(alias).get().toString()
 fun Project.catalogLib(alias: String) = libs.findLibrary(alias).get()
 fun Project.catalogBundle(alias: String) = libs.findBundle(alias).get()

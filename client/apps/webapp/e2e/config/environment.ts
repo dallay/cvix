@@ -11,11 +11,10 @@ export const E2E_CONFIG = {
 	apiBaseURL: process.env.API_BASE_URL || "http://localhost:8080/api",
 
 	/** Keycloak authentication URL */
-	keycloakURL:
-      process.env.KEYCLOAK_URL || "http://localhost:9080/realms/cvix",
+	keycloakURL: process.env.KEYCLOAK_URL || "http://localhost:9080/realms/cvix",
 
 	/** Keycloak client ID */
-  keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "cvix-client",
+	keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "cvix-client",
 
 	/** Test user IDs for different test scenarios */
 	testUsers: {

@@ -1,0 +1,126 @@
+/**
+ * Centralized Base Styles
+ * 
+ * This file contains shared base styles like scrollbars, resets, and global element styling.
+ * All apps should import this file for consistent UI behavior.
+ */
+
+/* ============================================
+   BASE LAYER - Global Element Styles
+   ============================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================
+   CUSTOM SCROLLBARS - WebKit & Firefox
+   ============================================ */
+
+/* WebKit Scrollbar Base Styles */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(var(--background));
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--muted));
+  border-radius: 6px;
+  border: 2px solid oklch(var(--background));
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--muted-foreground) / 0.6);
+}
+
+::-webkit-scrollbar-corner {
+  background: oklch(var(--background));
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--muted)) oklch(var(--background));
+}
+
+/* ============================================
+   DARK MODE SCROLLBAR OVERRIDES
+   ============================================ */
+.dark::-webkit-scrollbar-thumb {
+  background: oklch(var(--muted) / 0.7);
+  border: 2px solid oklch(var(--background));
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--muted-foreground) / 0.5);
+}
+
+/* ============================================
+   LIGHT MODE SCROLLBAR IMPROVEMENTS
+   ============================================ */
+:root::-webkit-scrollbar-thumb {
+  background: oklch(var(--border));
+}
+
+:root::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--muted-foreground) / 0.5);
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  transition: background 0.2s ease-in-out;
+}
+
+/* ============================================
+   HOVER STATE VISIBILITY
+   ============================================ */
+*:hover::-webkit-scrollbar-thumb {
+  background: oklch(var(--border));
+}
+
+.dark *:hover::-webkit-scrollbar-thumb {
+  background: oklch(var(--muted) / 0.8);
+}
+
+/* ============================================
+   RESPONSIVE SCROLLBARS
+   ============================================ */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* ============================================
+   CODE BLOCK SCROLLBARS
+   ============================================ */
+pre::-webkit-scrollbar,
+code::-webkit-scrollbar {
+  height: 6px;
+}
+
+pre::-webkit-scrollbar-thumb,
+code::-webkit-scrollbar-thumb {
+  background: oklch(var(--muted-foreground) / 0.4);
+  border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb:hover,
+code::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--muted-foreground) / 0.6);
+}
