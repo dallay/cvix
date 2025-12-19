@@ -1,3 +1,9 @@
+## [1.6.2](https://github.com/dallay/cvix/compare/v1.6.1...v1.6.2) (2025-12-19)
+
+### 🐛 Bug Fixes
+
+* qodana report suggestions ([#435](https://github.com/dallay/cvix/issues/435)) ([95e303f](https://github.com/dallay/cvix/commit/95e303fde739ee4203e0c8000c905fc6f84b7f29)), closes [#XXX](https://github.com/dallay/cvix/issues/XXX)
+
 ## [1.6.1](https://github.com/dallay/cvix/compare/v1.6.0...v1.6.1) (2025-12-17)
 
 ### ♻️ Refactors
