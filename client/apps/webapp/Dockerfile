@@ -46,28 +46,34 @@ RUN pnpm build
 # Production stage - using nginx for static file serving
 FROM nginx:alpine AS production
 
-# Copy nginx configuration
-COPY client/apps/webapp/nginx.conf /etc/nginx/conf.d/default.conf
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+# Create required directories with proper permissions for non-root user
+RUN mkdir -p /var/cache/nginx/client_temp \
+    /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp \
+    /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp \
+    /tmp/nginx \
+    /var/log/nginx \
+    && chown -R 101:101 /var/cache/nginx /tmp/nginx /var/log/nginx /etc/nginx/conf.d
+
+# Copy custom nginx configuration (must be done as root before switching user)
+COPY client/apps/webapp/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files from build stage with proper ownership
 COPY --from=build --chown=101:101 /app/client/apps/webapp/dist /usr/share/nginx/html
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
-
-# Create required directories with proper permissions
-RUN mkdir -p /var/cache/nginx /var/run \
-    && chown -R 101:101 /var/cache/nginx /var/run
-
-# Expose port
-EXPOSE 80
+# Expose port 8080 (non-privileged port)
+EXPOSE 8080
 
 # Switch to non-root user (nginx)
 USER 101:101
 
 # Health check using curl to verify the server is responding
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
+  CMD curl -f http://localhost:8080/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

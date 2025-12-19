@@ -135,6 +135,11 @@ docker-build-marketing:
 docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
 	@echo "All images built with tag '$(TAG)'"
 
+# Verifies Docker containers are running as non-root users
+# Tests that all frontend containers properly run as UID 101 (nginx user)
+docker-verify-nonroot:
+	@bash ./scripts/verify-nonroot-docker.sh
+
 # ------------------------------------------------------------------------------------
 # BUILD
 # ------------------------------------------------------------------------------------
@@ -292,4 +297,4 @@ verify-all:
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-verify-nonroot
