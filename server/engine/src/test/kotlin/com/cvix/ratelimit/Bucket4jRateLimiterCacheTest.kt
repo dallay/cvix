@@ -81,29 +81,15 @@ class Bucket4jRateLimiterCacheTest {
             clock = Clock.systemUTC(),
         )
 
-        // When: Add many more entries than cache size
-        // Use a pattern that triggers eviction: add new entries while accessing old ones
-        repeat(30) { i ->
-            val identifier = "IP:192.168.1.$i"
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
-
-            // Access some old entries to ensure they're not all evicted immediately
-            if (i % 5 == 0 && i > 0) {
-                rateLimiter.consumeToken("IP:192.168.1.${i - 1}", RateLimitStrategy.AUTH).block()
-            }
-        }
-
-        // Force Caffeine to run pending maintenance tasks (eviction cleanup)
-        // This is necessary because Caffeine uses asynchronous eviction for performance
-        rateLimiter.clearCache()
-
-        // Re-populate cache to trigger evictions with cleanup
+        // When: Add many more entries than cache size (30 entries, max cache size 10)
         repeat(30) { i ->
             val identifier = "IP:192.168.1.$i"
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
         }
 
         // Force Caffeine to process evictions synchronously for deterministic testing
+        // This triggers the pending maintenance tasks (eviction cleanup) that Caffeine
+        // normally runs asynchronously for performance
         rateLimiter.triggerCacheCleanup()
 
         // Then: Cache stats should show that evictions occurred
