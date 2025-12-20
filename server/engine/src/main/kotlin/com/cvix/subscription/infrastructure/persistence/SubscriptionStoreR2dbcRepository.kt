@@ -85,13 +85,12 @@ class SubscriptionStoreR2dbcRepository(
                             "Treating as success with unknown row count.",
                         subscription.id,
                     )
-                0 ->
+                0 -> {
                     // UPSERT (INSERT ... ON CONFLICT DO UPDATE) should always affect exactly 1 row
                     // 0 rows affected indicates a serious query logic error
-                    run {
-                        log.error("UPSERT operation affected 0 rows for subscription: {}", subscription.id)
-                        throw SubscriptionException("Failed to save subscription: no rows affected")
-                    }
+                    log.error("UPSERT operation affected 0 rows for subscription: {}", subscription.id)
+                    throw SubscriptionException("Failed to save subscription: no rows affected")
+                }
                 else -> log.debug("Subscription saved, rows affected: {}", rowsAffected)
             }
         } catch (e: DuplicateKeyException) {
