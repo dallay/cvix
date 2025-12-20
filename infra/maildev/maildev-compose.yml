@@ -1,3 +1,8 @@
+# Self-contained MailDev compose file for local email testing
+# Includes common network definitions
+include:
+  - ../common.yml
+
 services:
   maildev:
     image: djfarrelly/maildev:latest
@@ -16,8 +21,3 @@ services:
       start_period: 30s
     labels:
       org.springframework.boot.ignore: true
-
-networks:
-  frontend:
-
-  backend:

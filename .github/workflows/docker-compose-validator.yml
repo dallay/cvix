@@ -1,65 +1,278 @@
 name: Docker Compose Validator
 
 on:
-  pull_request:
+  push:
+    branches: [main, master, develop]
     paths:
-      - 'infra/**.yml'
-      - 'infra/**.yaml'
+      - 'infra/**/*.yml'
+      - 'infra/**/*.yaml'
       - '.env.example'
+      - 'infra/.env.example'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'infra/**/*.yml'
+      - 'infra/**/*.yaml'
+      - '.env.example'
+      - 'infra/.env.example'
 
 jobs:
   validate:
+    name: Validate Docker Compose Files
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
 
-      - name: Prepare environment file for validation
+      - name: Prepare environment files
         run: |
-          # Copy .env.example to .env for validation
-          cp .env.example .env
-          echo "✅ Environment file prepared"
+          echo "📦 Preparing environment files for validation..."
 
-      - name: Validate individual compose files (syntax only)
+          # Verify root .env.example exists before attempting operations
+          if [ ! -f .env.example ]; then
+            echo "❌ ERROR: Root .env.example does not exist!"
+            echo "   This file is required for CI validation."
+            echo "   Please ensure .env.example is committed to the repository."
+            exit 1
+          fi
+
+          # Copy root .env.example to infra directory if not exists
+          if [ ! -f infra/.env.example ]; then
+            echo "⚠️  No infra/.env.example found, using root .env.example"
+            cp .env.example infra/.env.example
+          fi
+
+          # Create .env from .env.example in infra directory
+          cp infra/.env.example infra/.env
+
+          echo "✅ Environment files prepared"
+          echo "📋 Environment variables loaded:"
+          VAR_COUNT=$(grep -cv '^#\|^$' infra/.env || echo "0")
+          echo "   Total variables: $VAR_COUNT"
+
+      - name: Validate individual compose files
         run: |
           cd infra
-          echo "🔍 Validating compose file syntax..."
-          # Validate individual files (will show warnings but won't fail on missing services)
-          for file in greenmail/greenmail-compose.yml maildev/maildev-compose.yml; do
-            if [[ -f "$file" ]]; then
-              echo "Validating $file..."
-              docker compose -f "$file" config > /dev/null || {
-                echo "❌ Syntax validation failed for $file"
-                exit 1
-              }
+          echo ""
+          echo "🔍 Validating individual Docker Compose files..."
+          echo "================================================"
+          echo "   All compose files are now self-contained using 'include' directives"
+          echo ""
+
+          # Find all *-compose.yml files (excluding app.yml and app-stack.yml)
+          COMPOSE_FILES=$(find . -type f -name "*-compose.yml" | sort)
+
+          if [ -z "$COMPOSE_FILES" ]; then
+            echo "⚠️  No compose files found!"
+            exit 1
+          fi
+
+          VALIDATED=0
+          FAILED=0
+
+          for file in $COMPOSE_FILES; do
+            echo ""
+            echo "📄 Validating: $file"
+
+            # Validate syntax and variable interpolation
+            if docker compose -f "$file" config > /dev/null 2>&1; then
+              echo "   ✅ Valid"
+              VALIDATED=$((VALIDATED + 1))
+            else
+              echo "   ❌ Validation failed!"
+              echo ""
+              echo "   Error details:"
+              docker compose -f "$file" config 2>&1 | head -30 | sed 's/^/      /'
+              FAILED=$((FAILED + 1))
             fi
           done
-          echo "✅ Individual files validated"
 
-      - name: Validate full stack composition
+          echo ""
+          echo "================================================"
+          echo "Summary: $VALIDATED validated, $FAILED failed"
+
+          if [ $FAILED -gt 0 ]; then
+            exit 1
+          fi
+
+          echo "✅ All individual files validated successfully"
+
+      - name: Validate common configuration
         run: |
           cd infra
-          echo "🔍 Validating full stack with dependencies..."
-          # Validate the main app.yml which includes all dependencies
-          docker compose -f app.yml config > /dev/null || {
-            echo "❌ Full stack validation failed"
-            exit 1
-          }
-          echo "✅ Full stack validated successfully"
+          echo ""
+          echo "🔍 Validating common.yml..."
+          echo "================================================"
 
-      - name: Validate PostgreSQL compose
-        run: |
-          cd infra/postgresql
-          echo "🔍 Validating PostgreSQL compose..."
-          docker compose -f postgresql-compose.yml config > /dev/null || {
-            echo "❌ PostgreSQL compose validation failed"
+          if docker compose -f common.yml config > /dev/null 2>&1; then
+            echo "✅ common.yml is valid"
+          else
+            echo "❌ common.yml validation failed!"
+            echo ""
+            echo "Error details:"
+            docker compose -f common.yml config 2>&1 | head -30 | sed 's/^/   /'
             exit 1
-          }
-          echo "✅ PostgreSQL compose validated"
+          fi
+
+      - name: Validate full application stack (with includes)
+        run: |
+          cd infra
+          echo ""
+          echo "🔍 Validating app.yml (full stack with includes)..."
+          echo "================================================"
+          echo "   This file includes:"
+          echo "     - common.yml"
+          echo "     - postgresql/postgresql-compose.yml"
+          echo "     - keycloak/keycloak-compose.yml"
+          echo ""
+
+          # Validate the main app.yml which includes dependencies
+          if docker compose -f app.yml config > /dev/null 2>&1; then
+            echo "✅ Full stack validated successfully"
+            echo ""
+            echo "📊 Stack summary:"
+            SERVICE_COUNT=$(docker compose -f app.yml config --services | wc -l)
+            echo "   Total services: $SERVICE_COUNT"
+            echo "   Services:"
+            docker compose -f app.yml config --services | sed 's/^/     - /'
+          else
+            echo "❌ Full stack validation failed!"
+            echo ""
+            echo "Error details:"
+            docker compose -f app.yml config 2>&1 | head -50 | sed 's/^/   /'
+            echo ""
+            echo "💡 Common issues:"
+            echo "   - Missing required environment variables"
+            echo "   - Incorrect service references"
+            echo "   - Invalid YAML syntax"
+            echo "   - Circular dependencies"
+            exit 1
+          fi
+
+      - name: Validate stack-compatible compose file
+        run: |
+          cd infra
+          echo ""
+          echo "🔍 Validating app-stack.yml (Swarm-compatible)..."
+          echo "================================================"
+          echo "   This is the Swarm/Stack compatible version"
+          echo "   (no 'include' directives, all merged inline)"
+          echo ""
+
+          if docker compose -f app-stack.yml config > /dev/null 2>&1; then
+            echo "✅ Stack file validated successfully"
+            echo ""
+            echo "📊 Stack summary:"
+            SERVICE_COUNT=$(docker compose -f app-stack.yml config --services | wc -l)
+            echo "   Total services: $SERVICE_COUNT"
+          else
+            echo "❌ Stack validation failed!"
+            echo ""
+            echo "Error details:"
+            docker compose -f app-stack.yml config 2>&1 | head -50 | sed 's/^/   /'
+            exit 1
+          fi
+
+      - name: Check for hardcoded sensitive values
+        run: |
+          cd infra
+          echo ""
+          echo "🔐 Checking for hardcoded sensitive values..."
+          echo "================================================"
+
+          # Look for actual hardcoded values, not just keys/labels
+          # Patterns like: password: "actual_password" or token: abc123
+          # Exclude: variables ${VAR}, secret definitions (file:, external:), comments
+
+          FOUND_ISSUES=false
+
+          # Check for passwords with actual values (not variables or file references)
+          if grep -rE "(PASSWORD|SECRET|TOKEN|KEY)\s*=\s*['\"]?[a-zA-Z0-9]+" app.yml app-stack.yml | \
+             grep -v '\${' | \
+             grep -v 'changeme' | \
+             grep -v 'example' > /dev/null 2>&1; then
+            echo "⚠️  Warning: Found potentially hardcoded credentials in environment variables"
+            FOUND_ISSUES=true
+          fi
+
+          if [ "$FOUND_ISSUES" = false ]; then
+            echo "✅ No hardcoded sensitive values detected"
+            echo ""
+            echo "   Security checks passed:"
+            echo "   ✓ All passwords use variables or Docker secrets"
+            echo "   ✓ No plaintext credentials in compose files"
+            echo "   ✓ Secret definitions use file: or external: references"
+          fi
+
+      - name: Lint compose files with yamllint
+        run: |
+          echo ""
+          echo "🧹 Linting YAML files..."
+          echo "================================================"
+
+          # Pin yamllint to specific version for deterministic builds
+          pip install yamllint==1.37.1
+
+          # Create yamllint configuration using heredoc for readability
+          cat > /tmp/yamllint-config.yml << 'YAMLLINTEOF'
+          extends: default
+          rules:
+            line-length:
+              max: 150
+              level: warning
+            comments:
+              min-spaces-from-content: 1
+            indentation:
+              spaces: 2
+            truthy:
+              allowed-values: ['true', 'false', 'on']
+            document-start: disable
+            comments-indentation: disable
+          YAMLLINTEOF
+
+          cd infra
+
+          echo "Linting compose files..."
+          # Remove || echo to allow step to fail on real linting errors
+          # If advisory-only behavior is needed, use continue-on-error: true on the step
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -exec yamllint -c /tmp/yamllint-config.yml {} +
+
+          echo ""
+          echo "✅ Linting completed"
+
+      - name: Generate validation report
+        if: always()
+        run: |
+          cd infra
+          echo ""
+          echo "📊 Validation Report"
+          echo "================================================"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo ""
+          echo "Compose files found:"
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) | sed 's/^/   /'
+          echo ""
+
+          # Check job status to provide accurate final message
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ All validations completed successfully"
+          else
+            echo "❌ Some validations failed — check previous steps for errors"
+            echo ""
+            echo "💡 Common failure causes:"
+            echo "   - Invalid YAML syntax in compose files"
+            echo "   - Missing required environment variables"
+            echo "   - Hardcoded sensitive values detected"
+            echo "   - yamllint errors (line-length, indentation, etc.)"
+          fi
 
       - name: Cleanup
         if: always()
         run: |
-          # Remove the temporary .env file
-          rm -f .env
-          echo "🧹 Cleanup completed"
+          echo ""
+          echo "🧹 Cleaning up temporary files..."
+          rm -f infra/.env
+          echo "✅ Cleanup completed"

@@ -13,6 +13,12 @@ import type { Page } from "@playwright/test";
  */
 
 const API_CONTENT_TYPE = "application/vnd.api.v1+json";
+
+/**
+ * Fixed timestamp for deterministic test data
+ */
+const FIXED_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+
 /**
  * Test user credentials for authentication tests
  */
@@ -108,8 +114,8 @@ const MOCK_RESPONSES = {
 					description: null,
 					isDefault: true,
 					ownerId: "550e8400-e29b-41d4-a716-446655440000",
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
+					createdAt: FIXED_TIMESTAMP,
+					updatedAt: FIXED_TIMESTAMP,
 				},
 			],
 			meta: {

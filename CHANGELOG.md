@@ -1,3 +1,9 @@
+## [1.6.3](https://github.com/dallay/cvix/compare/v1.6.2...v1.6.3) (2025-12-20)
+
+### 🐛 Bug Fixes
+
+* update environment and configuration files for improved security and clarity ([#439](https://github.com/dallay/cvix/issues/439)) ([cc8bad6](https://github.com/dallay/cvix/commit/cc8bad69cf25fded88c919f9eaf0f8c8eb868f4e))
+
 ## [1.6.2](https://github.com/dallay/cvix/compare/v1.6.1...v1.6.2) (2025-12-19)
 
 ### 🐛 Bug Fixes

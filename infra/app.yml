@@ -3,6 +3,7 @@ include:
   - ./common.yml
   - ./postgresql/postgresql-compose.yml
   - ./keycloak/keycloak-compose.yml
+  - ./docker-socket-proxy/docker-socket-proxy-compose.yml
 
 services:
   traefik:
@@ -75,6 +76,12 @@ services:
 
       # Node environment
       NODE_ENV: production
+
+      # Nginx CSP configuration (envsubst variables for runtime templating)
+      # CRITICAL: Override these in staging/production to remove 'unsafe-inline'
+      BACKEND_URL: ${BACKEND_URL}
+      CSP_SCRIPT_SRC: ${CSP_SCRIPT_SRC:-'self' 'unsafe-inline'}
+      CSP_STYLE_SRC: ${CSP_STYLE_SRC:-'self' 'unsafe-inline'}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
@@ -155,6 +162,10 @@ services:
       PDF_TIMEOUT_SECONDS: ${PDF_TIMEOUT_SECONDS}
       PDF_MEMORY_LIMIT_MB: ${PDF_MEMORY_LIMIT_MB}
       PDF_CPU_QUOTA: ${PDF_CPU_QUOTA}
+      # Docker Socket Proxy configuration
+      # Set to 'tcp://docker-socket-proxy:2375' to use the socket proxy
+      # For local dev only, you can use 'unix:///var/run/docker.sock' (NOT RECOMMENDED FOR PRODUCTION)
+      DOCKER_HOST: ${DOCKER_HOST:-tcp://docker-socket-proxy:2375}
 
       # SSL/TLS
       SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
@@ -176,10 +187,28 @@ services:
         target: ssl_keystore_password
 
     volumes:
-      # CRITICAL: Docker socket access for PDF generation
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # PRODUCTION WARNING: Direct Docker socket mounting is a CRITICAL security risk
+      # ════════════════════════════════════════════════════════════════════════════
+      # Mounting /var/run/docker.sock grants ROOT-LEVEL access to the host system.
+      # Any compromise of this container means complete host compromise.
+      #
+      # RECOMMENDED APPROACH FOR PRODUCTION:
+      # 1. Remove this volume mount entirely
+      # 2. Configure DOCKER_HOST=tcp://docker-socket-proxy:2375 (see environment above)
+      # 3. Use the included docker-socket-proxy service (Tecnativa Docker Socket Proxy)
+      #    which whitelists ONLY these operations:
+      #    - POST /containers/create (create LaTeX containers)
+      #    - POST /containers/{id}/start (start containers)
+      #    - POST /containers/{id}/wait (wait for completion)
+      #    - DELETE /containers/{id} (cleanup)
+      #    - GET /images/* (check if texlive image exists)
+      #
+      # LOCAL DEVELOPMENT ONLY: Direct socket mount for convenience
+      # Comment out the line below and use docker-socket-proxy for ANY non-local env
+      - /var/run/docker.sock:/var/run/docker.sock
 
       # Persist LaTeX output if enabled
+      # NOTE: Use absolute paths or set working directory before running docker compose
       - ./data/latex:/app/latex-output
 
       # Application logs
@@ -213,15 +242,10 @@ services:
       retries: 5
       start_period: 60s
 
-    # Resource limits (prod-like constraints)
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
+    # Resource limits for non-Swarm mode (docker compose)
+    mem_limit: 2G
+    mem_reservation: 512M
+    cpus: 2.0
 
 #
 # Docker secrets definitions for sensitive values

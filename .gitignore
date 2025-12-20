@@ -135,6 +135,7 @@ gitleaks_*.tar.gz.sha256
 actionlint
 
 test-results/
+temporal-docs/
 
 # LaTeX build artifacts
 *.aux

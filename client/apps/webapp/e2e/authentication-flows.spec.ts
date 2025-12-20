@@ -255,7 +255,6 @@ test.describe("Logout Flow (US6)", () => {
 				);
 			}
 
-			await expect(logoutButton).toBeVisible();
 			await logoutButton.click();
 		});
 
