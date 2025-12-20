@@ -1,0 +1,50 @@
+# Docker Socket Proxy for Backend PDF Generation
+# Provides restricted access to Docker API for creating ephemeral LaTeX containers
+
+# Note: This file is included by app.yml and app-stack.yml
+# It inherits the network definitions from common.yml via parent includes
+
+services:
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    environment:
+      # Disable all endpoints by default
+      AUTH: 0
+      SECRETS: 0
+      POST: 1  # Required for creating containers
+      BUILD: 0
+      COMMIT: 0
+      CONFIGS: 0
+      CONTAINERS: 1  # Required for container operations
+      DISTRIBUTION: 0
+      EXEC: 0
+      IMAGES: 1  # Required for pulling images
+      INFO: 0
+      NETWORKS: 0
+      NODES: 0
+      PING: 0
+      PLUGINS: 0
+      SERVICES: 0
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      TASKS: 0
+      VOLUMES: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 32M
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2375"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

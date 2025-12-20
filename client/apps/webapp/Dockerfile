@@ -46,8 +46,8 @@ RUN pnpm build
 # Production stage - using nginx for static file serving
 FROM nginx:alpine AS production
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
+# Install curl for healthcheck and gettext for envsubst
+RUN apk add --no-cache curl gettext
 
 # Create required directories with proper permissions for non-root user
 # Nginx uses /tmp/nginx/* for temp files (configured in nginx.conf)
@@ -55,21 +55,33 @@ RUN mkdir -p /tmp/nginx \
     /var/log/nginx \
     && chown -R 101:101 /tmp/nginx /var/log/nginx /etc/nginx/conf.d
 
-# Copy custom nginx configuration (must be done as root before switching user)
-COPY client/apps/webapp/nginx.conf /etc/nginx/nginx.conf
+# Copy nginx configuration templates
+COPY client/apps/webapp/nginx.conf.template /etc/nginx/nginx.conf.template
+COPY client/apps/webapp/security-headers.conf.template /etc/nginx/conf.d/security-headers.conf.template
+
+# Copy entrypoint script and make it executable
+COPY client/apps/webapp/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Copy built files from build stage with proper ownership
 COPY --from=build --chown=101:101 /app/client/apps/webapp/dist /usr/share/nginx/html
 
+# Environment variables for CSP and backend URL (set defaults for local dev)
+# Override these in production:
+#   BACKEND_URL: https://api.yourdomain.com
+#   CSP_SCRIPT_SRC: 'self' 'sha256-HASH1' 'sha256-HASH2' (remove 'unsafe-inline')
+#   CSP_STYLE_SRC: 'self' 'sha256-HASH1' (remove 'unsafe-inline')
+ENV BACKEND_URL=https://backend.localhost \
+    CSP_SCRIPT_SRC="'self' 'unsafe-inline'" \
+    CSP_STYLE_SRC="'self' 'unsafe-inline'"
+
 # Expose port 8080 (non-privileged port)
 EXPOSE 8080
-
-# Switch to non-root user (nginx)
-USER 101:101
 
 # Health check using curl to verify the server is responding
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Entrypoint runs as root to perform config substitution, then starts nginx
+# Nginx itself drops privileges based on the user directive in nginx.conf
+ENTRYPOINT ["/docker-entrypoint.sh"]
