@@ -60,12 +60,31 @@ class SubscriptionStoreR2dbcRepository(
      * Saves a subscription (create or update).
      *
      * Uses custom saveWithTypecast to properly handle PostgreSQL ENUM types.
+     *
+     * DML operations should return deterministic row counts per R2DBC specification.
+     * However, some versions of Spring Data R2DBC return null for custom @Query DML operations
+     * due to a known driver limitation. We handle this at the repository boundary by converting
+     * null to 0, treating it as "unknown affected rows" rather than failing.
+     *
+     * See: https://github.com/spring-projects/spring-data-r2dbc/issues/523
      */
     override suspend fun save(subscription: Subscription) {
         log.debug("Saving subscription: {}", subscription.id)
         try {
-            val rowsAffected = subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity())
-            log.debug("Subscription saved, rows affected: {}", rowsAffected ?: 0)
+            // Handle null return from R2DBC driver limitation for custom @Query DML operations
+            // This is a known issue with Spring Data R2DBC and PostgreSQL custom queries
+            val rowsAffected = subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity()) ?: 0
+            log.debug("Subscription saved, rows affected: {}", rowsAffected)
+
+            // UPSERT (INSERT ... ON CONFLICT DO UPDATE) should affect exactly 1 row when successful
+            // If rowsAffected is 0, it might indicate a driver issue returning null
+            if (rowsAffected == 0) {
+                log.warn(
+                    "saveWithTypecast returned null or 0 rows affected for subscription: {}. " +
+                        "This is likely due to R2DBC driver limitations with custom @Query DML operations.",
+                    subscription.id,
+                )
+            }
         } catch (e: DuplicateKeyException) {
             log.error("Error saving subscription with id: {} - duplicate key", subscription.id, e)
             throw SubscriptionException("Error saving subscription: duplicate key", e)
@@ -92,12 +111,18 @@ class SubscriptionStoreR2dbcRepository(
 
     /**
      * Deletes all subscriptions for a given user (test utility).
+     *
+     * DML operations should return deterministic row counts per R2DBC specification.
+     * However, some versions of Spring Data R2DBC return null for custom @Query DML operations
+     * due to a known driver limitation. We handle this at the repository boundary by converting
+     * null to 0, treating it as "unknown deleted rows" rather than failing.
      */
     suspend fun deleteAllByUserId(userId: UUID) {
         log.debug("Deleting all subscriptions for user: {}", userId)
         try {
-            val rowsDeleted = subscriptionR2dbcRepository.deleteAllByUserId(userId)
-            log.debug("Deleted {} subscriptions for user: {}", rowsDeleted ?: 0, userId)
+            // Handle null return from R2DBC driver limitation for custom @Query DML operations
+            val rowsDeleted = subscriptionR2dbcRepository.deleteAllByUserId(userId) ?: 0
+            log.debug("Deleted {} subscriptions for user: {}", rowsDeleted, userId)
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscriptions for user: {}", userId, e)
             throw SubscriptionException("Error deleting subscriptions for user", e)

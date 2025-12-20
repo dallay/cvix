@@ -103,8 +103,8 @@ class Bucket4jRateLimiterCacheTest {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
         }
 
-        // Give Caffeine time to process evictions asynchronously
-        Thread.sleep(100)
+        // Force Caffeine to process evictions synchronously for deterministic testing
+        rateLimiter.triggerCacheCleanup()
 
         // Then: Cache stats should show that evictions occurred
         // This proves the bounded behavior is working
