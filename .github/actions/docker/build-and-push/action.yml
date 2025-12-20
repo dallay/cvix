@@ -57,10 +57,6 @@ inputs:
   major-version:
     description: 'Major version for tagging'
     required: true
-  git-sha:
-    description: 'Git commit SHA for tagging'
-    required: false
-    default: ''
 
 outputs:
   tags:
