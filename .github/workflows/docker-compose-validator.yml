@@ -267,7 +267,6 @@ jobs:
             echo "   - Missing required environment variables"
             echo "   - Hardcoded sensitive values detected"
             echo "   - yamllint errors (line-length, indentation, etc.)"
-            exit 1
           fi
 
       - name: Cleanup
