@@ -52,6 +52,10 @@ interface SubscriptionR2dbcRepository : CoroutineCrudRepository<SubscriptionEnti
      *
      * This is necessary because R2DBC doesn't automatically handle custom PostgreSQL ENUM types.
      * We need to explicitly cast String values to subscription_tier and subscription_status types.
+     *
+     * Returns the number of rows affected. Note: Some versions of Spring Data R2DBC return null
+     * for custom @Query DML operations due to a known driver limitation. The adapter layer must
+     * handle this by converting null to a deterministic value (0) at the repository boundary.
      */
     @Query(
         """
@@ -67,11 +71,15 @@ interface SubscriptionR2dbcRepository : CoroutineCrudRepository<SubscriptionEnti
             updated_at = CURRENT_TIMESTAMP
         """,
     )
-    suspend fun saveWithTypecast(entity: SubscriptionEntity): Int
+    suspend fun saveWithTypecast(entity: SubscriptionEntity): Int?
 
     /**
      * Deletes all subscriptions for a user (test utility).
+     *
+     * Returns the number of rows deleted. Note: Some versions of Spring Data R2DBC return null
+     * for custom @Query DML operations due to a known driver limitation. The adapter layer must
+     * handle this by converting null to a deterministic value (0) at the repository boundary.
      */
     @Query("DELETE FROM subscriptions WHERE user_id = :userId")
-    suspend fun deleteAllByUserId(userId: UUID): Int
+    suspend fun deleteAllByUserId(userId: UUID): Int?
 }

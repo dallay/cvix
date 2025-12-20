@@ -6,6 +6,7 @@ import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
 import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldStartWith
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Duration
@@ -204,7 +205,7 @@ class RateLimitMetricsTest {
                 "result-$index"
             }
             // Verify the result is returned correctly
-            require(result.startsWith("result-"))
+            result shouldStartWith "result-"
         }
 
         // Then
