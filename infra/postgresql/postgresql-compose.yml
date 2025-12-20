@@ -1,3 +1,8 @@
+# Self-contained PostgreSQL compose file
+# Can be used standalone or as part of the full stack
+include:
+  - ../common.yml
+
 services:
   postgresql:
     image: postgres:${POSTGRESQL_VERSION:-16.9-alpine}
@@ -21,5 +26,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-networks:
-  backend:

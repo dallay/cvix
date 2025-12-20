@@ -135,6 +135,15 @@ docker-build-marketing:
 docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
 	@echo "All images built with tag '$(TAG)'"
 
+# Remove locally built Docker images
+# Usage: make docker-clean [TAG=yourtag]
+docker-clean:
+	@echo "Removing Docker images with tag '$(TAG)'..."
+	@docker rmi -f cvix-engine:$(TAG) 2>/dev/null || true
+	@docker rmi -f cvix-webapp:$(TAG) 2>/dev/null || true
+	@docker rmi -f cvix-marketing:$(TAG) 2>/dev/null || true
+	@echo "✅ Docker images with tag '$(TAG)' removed"
+
 # Verifies Docker containers are running as non-root users
 # Tests that all frontend containers properly run as UID 101 (nginx user)
 docker-verify-nonroot:
@@ -297,4 +306,4 @@ verify-all:
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-verify-nonroot
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot

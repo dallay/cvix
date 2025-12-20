@@ -19,6 +19,24 @@
 [![Liquibase](https://img.shields.io/badge/Liquibase-%E2%9C%93-F0A500?logo=liquibase&logoColor=white)](https://www.liquibase.org/)
 [![Docker](https://img.shields.io/badge/Docker-%E2%9C%93-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
+---
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=bugs)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fwww.yunielacosta.com%2F)
+![GitHub repo size](https://img.shields.io/github/repo-size/dallay/cvix)
+
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=dallay_cvix)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+
+---
+
 ## ✨ What is ProFileTailors?
 
 ProFileTailors is a **production-grade platform** for creating, customizing, and exporting professional résumés. No “SaaS starter” fluff—this is a working, modern webapp focused on real résumé management with best-in-class architecture, accessibility, and clean code standards.
@@ -132,7 +150,7 @@ Open to focused, quality-driven contributions:
 1. 🔍 Review your changes and follow [project conventions](.ruler/)
 2. ✅ Pass all tests and lints (`make test-all`)
 3. 📝 Use clear, conventional commits (`.ruler/general.md`)
-4. 👀 See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODEOWNERS](CODEOWNERS)
+4. 👀 See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODEOWNERS](.github/CODEOWNERS)
 
 ---
 
@@ -147,7 +165,7 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 - 📖 [Canonical architecture & style rules](.ruler/)
 - 📝 [Docs site](docs/)
 - 🛡️ [Security policy](SECURITY.md)
-- 🐳 [Docker deployment guide](docs/DOCKER_DEPLOYMENT.md)
+- 🐳 [Docker deployment guide](infra/DOCKER_DEPLOYMENT.md)
 
 ---
 

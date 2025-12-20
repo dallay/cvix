@@ -70,7 +70,7 @@ e2e-tests:
 
 ## How It Works
 
-1. **Version Detection**: Detects the installed Playwright version from `package.json`
+1. **Version Detection**: Detects the installed Playwright version using `pnpm list @playwright/test --json`
 2. **Browser Caching**: Caches browsers based on OS + Playwright version + browser type
 3. **Conditional Installation**:
    - If cache hit: Only installs system dependencies

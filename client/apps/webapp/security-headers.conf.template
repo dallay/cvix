@@ -1,0 +1,13 @@
+# Shared security headers for nginx
+# This file is templated and processed by envsubst during container startup
+# Environment variables:
+#   - BACKEND_URL: Backend API endpoint (e.g., https://api.example.com)
+#   - CSP_SCRIPT_SRC: CSP script-src directive (e.g., 'self' 'sha256-...')
+#   - CSP_STYLE_SRC: CSP style-src directive (e.g., 'self' 'sha256-...')
+
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src ${CSP_SCRIPT_SRC}; style-src ${CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ${BACKEND_URL}; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" always;
+add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
