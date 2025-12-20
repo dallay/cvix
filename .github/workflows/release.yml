@@ -155,7 +155,6 @@ jobs:
           major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-            GIT_SHA=${{ github.sha }}
 
   # ============================================================================
   # Docker Build & Push - Marketing Site (Multi-Registry)
