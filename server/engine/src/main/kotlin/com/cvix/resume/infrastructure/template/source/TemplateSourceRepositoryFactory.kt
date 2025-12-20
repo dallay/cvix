@@ -125,12 +125,7 @@ class TemplateSourceRepositoryFactory(
                 TemplateSourceType.CLASSPATH -> TemplateSourceKeys.CLASSPATH
                 TemplateSourceType.FILESYSTEM -> TemplateSourceKeys.FILESYSTEM
             }
-            val repository = templateSources.getOrElse(repositoryBeanName) {
-                throw IllegalStateException(
-                    "Template source repository not found for type: $repositoryBeanName. " +
-                        "Available repositories: ${templateSources.keys}",
-                )
-            }
+            val repository = templateSources.getValue(repositoryBeanName)
             log.info(
                 "Activated template repository: {} (type: {})",
                 repositoryBeanName,
