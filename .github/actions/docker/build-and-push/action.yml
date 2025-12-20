@@ -12,7 +12,6 @@ inputs:
   image-description:
     description: 'Description of the image'
     required: true
-  
   # Build configuration
   context:
     description: 'Build context path'
@@ -29,7 +28,6 @@ inputs:
     description: 'Build arguments (multiline string)'
     required: false
     default: ''
-  
   # Registry configuration
   registry-ghcr:
     description: 'GitHub Container Registry URL'
@@ -45,7 +43,6 @@ inputs:
   dockerhub-username:
     description: 'Docker Hub username'
     required: true
-  
   # Authentication
   github-token:
     description: 'GitHub token for GHCR authentication'
@@ -53,7 +50,6 @@ inputs:
   dockerhub-token:
     description: 'Docker Hub token for authentication'
     required: true
-  
   # Versioning
   version:
     description: 'Image version tag'
