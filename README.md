@@ -33,8 +33,9 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/yacosta738/yacosta738.github.io)
 
 
-
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=dallay_cvix)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
+
+---
 
 ## ✨ What is ProFileTailors?
 
