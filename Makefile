@@ -30,6 +30,8 @@ LOG_DIR := build/logs
 TIMEOUT_CMD := $(shell command -v timeout || command -v gtimeout)
 TIMEOUT_300 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 300,)
 TIMEOUT_600 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 600,)
+# Markdown lint command with glob pattern
+MARKDOWNLINT_CMD := npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json
 
 # ------------------------------------------------------------------------------------
 # HELP
@@ -271,7 +273,7 @@ all: install build test backend-test lint check
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-# Helper function for verification steps
+# Helper function for verification steps (sequential)
 # Usage: $(call run_verified_step, step_number, description, command, log_file_name)
 define run_verified_step
 	@echo ""
@@ -281,29 +283,94 @@ define run_verified_step
 	@$(3) > $(LOG_DIR)/$(4).log 2>&1 && echo "✅ $(2): PASSED" || (echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log for details"; exit 1)
 endef
 
-# Verifies the entire project with detailed output showing each step
+# Helper function for parallel verification steps
+# Usage: $(call verify_step, step_num, description, command, log_name)
+define verify_step
+	@echo "⏳ [$(1)/8] $(2)..." && \
+	mkdir -p $(LOG_DIR) && \
+	$(3) > $(LOG_DIR)/$(4).log 2>&1 && \
+	echo "✅ $(2): PASSED" || \
+	(echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log"; exit 1)
+endef
+
+# Individual verification targets (for parallel execution)
+.PHONY: _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml
+.PHONY: _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
+
+_verify-frontend-check:
+	$(call verify_step,1,Running frontend checks (Biome),$(PNPM) check,frontend-check)
+
+_verify-backend-check:
+	$(call verify_step,2,Running backend checks (Detekt),./gradlew detektAll,backend-check)
+
+_verify-markdown:
+	$(call verify_step,3,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
+
+_verify-yaml:
+	@echo "⏳ [4/8] Running YAML lint..." && \
+	mkdir -p $(LOG_DIR) && \
+	if command -v yamllint >/dev/null 2>&1; then \
+		yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && \
+		echo "✅ YAML lint: PASSED" || \
+		(echo "❌ YAML lint: FAILED. See $(LOG_DIR)/yaml-lint.log"; exit 1); \
+	else \
+		echo "⚠️  YAML lint: SKIPPED (yamllint not installed)"; \
+	fi
+
+_verify-secrets:
+	$(call verify_step,5,Checking secrets synchronization,./scripts/check-secrets.sh,secrets-check)
+
+_verify-frontend-tests:
+	$(call verify_step,6,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
+
+_verify-backend-tests:
+	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew test,backend-tests)
+
+_verify-e2e-tests:
+	$(call verify_step,8,Running E2E tests,$(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
+
+# Verifies the entire project with all checks, lints, and tests
+# Runs checks in parallel groups for optimal performance
 verify-all:
 	@echo ""
 	@echo "╔═════════════════════════════════════════════════════════════════════╗"
-	@echo "║                  🔍 CVIX PROJECT VERIFICATION                       ║"
+	@echo "║                  🔍 CVIX FULL PROJECT VERIFICATION                  ║"
+	@echo "║                                                                     ║"
+	@echo "║  This will run all checks, lints, and tests in parallel groups     ║"
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"
-	$(call run_verified_step,1/4,Running pnpm run check,$(PNPM) check,pnpm-check)
-	$(call run_verified_step,2/4,Running pnpm run test,$(TIMEOUT_300) $(PNPM) test,pnpm-test)
-	$(call run_verified_step,3/4,Running pnpm run build,$(TIMEOUT_600) $(PNPM) build,pnpm-build)
-	$(call run_verified_step,4/4,Running backend tests,$(MAKE) backend-test,backend-test)
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "Phase 1: Static Analysis & Linting (Parallel)"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@$(MAKE) -j4 _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml || exit 1
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "Phase 2: Security & Configuration Checks"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@$(MAKE) _verify-secrets || exit 1
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "Phase 3: Testing (Parallel)"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@$(MAKE) -j3 _verify-frontend-tests _verify-backend-tests _verify-e2e-tests || exit 1
 	@echo ""
 	@echo "╔═════════════════════════════════════════════════════════════════════╗"
 	@echo "║                                                                     ║"
-	@echo "║              ✨ ALL COMMANDS PASSED SUCCESSFULLY! ✨               ║"
+	@echo "║              ✨ ALL VERIFICATIONS PASSED SUCCESSFULLY! ✨          ║"
 	@echo "║                                                                     ║"
-	@echo "║  ✅ Linting & Formatting verified                                   ║"
-	@echo "║  ✅ Frontend tests passed                                           ║"
-	@echo "║  ✅ Frontend build successful                                       ║"
-	@echo "║  ✅ Backend tests passed                                            ║"
+	@echo "║  ✅ Frontend checks (Biome)                                         ║"
+	@echo "║  ✅ Backend checks (Detekt)                                         ║"
+	@echo "║  ✅ Markdown lint                                                   ║"
+	@echo "║  ✅ YAML lint                                                       ║"
+	@echo "║  ✅ Secrets synchronization                                         ║"
+	@echo "║  ✅ Frontend unit tests                                             ║"
+	@echo "║  ✅ Backend tests                                                   ║"
+	@echo "║  ✅ E2E tests                                                       ║"
 	@echo "║                                                                     ║"
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"
 	@echo ""
 	@echo "🚀 Project is ready for deployment!"
+	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
