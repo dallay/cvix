@@ -146,7 +146,7 @@ class FederatedLoginControllerTest {
 
             // Then
             StepVerifier.create(result)
-                .expectNextMatches { response ->
+                .expectNextMatches {
                     sessionAttributes["OAUTH2_REDIRECT_URI"] == "/dashboard"
                 }
                 .verifyComplete()

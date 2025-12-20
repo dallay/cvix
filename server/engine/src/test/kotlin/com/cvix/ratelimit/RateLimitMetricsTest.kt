@@ -199,10 +199,12 @@ class RateLimitMetricsTest {
         val strategy = RateLimitStrategy.AUTH
 
         // When
-        repeat(5) {
-            metrics.recordTokenConsumption(strategy) {
-                "result-$it"
+        repeat(5) { index ->
+            val result = metrics.recordTokenConsumption(strategy) {
+                "result-$index"
             }
+            // Verify the result is returned correctly
+            require(result.startsWith("result-"))
         }
 
         // Then
