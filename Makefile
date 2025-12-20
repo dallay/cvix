@@ -271,7 +271,7 @@ all: install build test backend-test lint check
 	@echo "🚀 Project is ready for deployment!"
 	@echo ""
 
-# Helper function for verification steps
+# Helper function for verification steps (sequential)
 # Usage: $(call run_verified_step, step_number, description, command, log_file_name)
 define run_verified_step
 	@echo ""
@@ -281,63 +281,55 @@ define run_verified_step
 	@$(3) > $(LOG_DIR)/$(4).log 2>&1 && echo "✅ $(2): PASSED" || (echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log for details"; exit 1)
 endef
 
+# Helper function for parallel verification steps
+# Usage: $(call verify_step, step_num, description, command, log_name)
+define verify_step
+	@echo "⏳ [$(1)/8] $(2)..." && \
+	mkdir -p $(LOG_DIR) && \
+	$(3) > $(LOG_DIR)/$(4).log 2>&1 && \
+	echo "✅ $(2): PASSED" || \
+	(echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log"; exit 1)
+endef
+
 # Individual verification targets (for parallel execution)
 .PHONY: _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml
 .PHONY: _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
 
 _verify-frontend-check:
-	@echo "⏳ [1/8] Running frontend checks (Biome)..." && \
-	mkdir -p $(LOG_DIR) && \
-	$(PNPM) check > $(LOG_DIR)/frontend-check.log 2>&1 && \
-	echo "✅ Frontend checks: PASSED" || \
-	(echo "❌ Frontend checks: FAILED. See $(LOG_DIR)/frontend-check.log"; exit 1)
+	$(call verify_step,1,Running frontend checks (Biome),$(PNPM) check,frontend-check)
 
 _verify-backend-check:
-	@echo "⏳ [2/8] Running backend checks (Detekt)..." && \
-	mkdir -p $(LOG_DIR) && \
-	./gradlew detektAll > $(LOG_DIR)/backend-check.log 2>&1 && \
-	echo "✅ Backend checks: PASSED" || \
-	(echo "❌ Backend checks: FAILED. See $(LOG_DIR)/backend-check.log"; exit 1)
+	$(call verify_step,2,Running backend checks (Detekt),./gradlew detektAll,backend-check)
 
 _verify-markdown:
 	@echo "⏳ [3/8] Running Markdown lint..." && \
 	mkdir -p $(LOG_DIR) && \
 	npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json > $(LOG_DIR)/markdown-lint.log 2>&1 && \
-	echo "✅ Markdown lint: PASSED" || \
-	(echo "❌ Markdown lint: FAILED. See $(LOG_DIR)/markdown-lint.log"; exit 1)
+	echo "✅ Running Markdown lint: PASSED" || \
+	(echo "❌ Running Markdown lint: FAILED. See $(LOG_DIR)/markdown-lint.log"; exit 1)
 
 _verify-yaml:
 	@echo "⏳ [4/8] Running YAML lint..." && \
 	mkdir -p $(LOG_DIR) && \
-	(command -v yamllint >/dev/null 2>&1 && yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && echo "✅ YAML lint: PASSED" || echo "⚠️  YAML lint: SKIPPED (yamllint not installed)") || true
+	if command -v yamllint >/dev/null 2>&1; then \
+		yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && \
+		echo "✅ YAML lint: PASSED" || \
+		(echo "❌ YAML lint: FAILED. See $(LOG_DIR)/yaml-lint.log"; exit 1); \
+	else \
+		echo "⚠️  YAML lint: SKIPPED (yamllint not installed)"; \
+	fi
 
 _verify-secrets:
-	@echo "⏳ [5/8] Checking secrets synchronization..." && \
-	mkdir -p $(LOG_DIR) && \
-	./scripts/check-secrets.sh > $(LOG_DIR)/secrets-check.log 2>&1 && \
-	echo "✅ Secrets check: PASSED" || \
-	(echo "❌ Secrets check: FAILED. See $(LOG_DIR)/secrets-check.log"; exit 1)
+	$(call verify_step,5,Checking secrets synchronization,./scripts/check-secrets.sh,secrets-check)
 
 _verify-frontend-tests:
-	@echo "⏳ [6/8] Running frontend unit tests..." && \
-	mkdir -p $(LOG_DIR) && \
-	$(TIMEOUT_300) $(PNPM) test > $(LOG_DIR)/frontend-tests.log 2>&1 && \
-	echo "✅ Frontend unit tests: PASSED" || \
-	(echo "❌ Frontend unit tests: FAILED. See $(LOG_DIR)/frontend-tests.log"; exit 1)
+	$(call verify_step,6,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
 
 _verify-backend-tests:
-	@echo "⏳ [7/8] Running backend tests..." && \
-	mkdir -p $(LOG_DIR) && \
-	$(TIMEOUT_600) ./gradlew test > $(LOG_DIR)/backend-tests.log 2>&1 && \
-	echo "✅ Backend tests: PASSED" || \
-	(echo "❌ Backend tests: FAILED. See $(LOG_DIR)/backend-tests.log"; exit 1)
+	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew test,backend-tests)
 
 _verify-e2e-tests:
-	@echo "⏳ [8/8] Running E2E tests..." && \
-	mkdir -p $(LOG_DIR) && \
-	$(TIMEOUT_600) $(PNPM) test:e2e > $(LOG_DIR)/e2e-tests.log 2>&1 && \
-	echo "✅ E2E tests: PASSED" || \
-	(echo "❌ E2E tests: FAILED. See $(LOG_DIR)/e2e-tests.log"; exit 1)
+	$(call verify_step,8,Running E2E tests,$(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
 
 # Verifies the entire project with all checks, lints, and tests
 # Runs checks in parallel groups for optimal performance
