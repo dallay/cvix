@@ -30,6 +30,8 @@ LOG_DIR := build/logs
 TIMEOUT_CMD := $(shell command -v timeout || command -v gtimeout)
 TIMEOUT_300 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 300,)
 TIMEOUT_600 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 600,)
+# Markdown lint command with glob pattern
+MARKDOWNLINT_CMD := npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json
 
 # ------------------------------------------------------------------------------------
 # HELP
@@ -302,11 +304,7 @@ _verify-backend-check:
 	$(call verify_step,2,Running backend checks (Detekt),./gradlew detektAll,backend-check)
 
 _verify-markdown:
-	@echo "⏳ [3/8] Running Markdown lint..." && \
-	mkdir -p $(LOG_DIR) && \
-	npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json > $(LOG_DIR)/markdown-lint.log 2>&1 && \
-	echo "✅ Running Markdown lint: PASSED" || \
-	(echo "❌ Running Markdown lint: FAILED. See $(LOG_DIR)/markdown-lint.log"; exit 1)
+	$(call verify_step,3,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
 
 _verify-yaml:
 	@echo "⏳ [4/8] Running YAML lint..." && \
