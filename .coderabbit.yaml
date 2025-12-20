@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+early_access: true
+inheritance: true
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary_in_walkthrough: true
+  auto_title_instructions: >-
+    Add a prefix to indicate what kind of release this pull request corresponds to. For reference,
+    see https://www.conventionalcommits.org/  Available types:  - feat: A new feature  - fix: A bug
+    fix  - docs: Documentation only changes  - style: Changes that do not affect the meaning of the
+    code (white-space, formatting, missing semi-colons, etc)  - refactor: A code change that neither
+    fixes a bug nor adds a feature  - perf: A code change that improves performance  - test: Adding
+    missing tests or correcting existing tests  - build: Changes that affect the build system or
+    external dependencies (example scopes: gulp, broccoli, npm)  - ci: Changes to our CI
+    configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)  -
+    chore: Other changes that don't modify src or test files  - revert: Reverts a previous commit
+  fail_commit_status: true
+  collapse_walkthrough: true
+  auto_apply_labels: true
+  auto_assign_reviewers: true
+  path_filters:
+    - '!docs/src/content/docs/structure.md'
+  auto_review:
+    drafts: true
+knowledge_base:
+  linear:
+    team_keys:
+      - COD
+code_generation:
+  docstrings:
+    path_instructions:
+      - path: ''
+        instructions: .github/copilot-instructions.md
