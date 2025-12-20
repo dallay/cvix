@@ -13,7 +13,7 @@ object AppConfiguration {
     // Using JVM_24 as fallback; bump to JVM_25 when supported (check gradle/libs.versions.toml)
     val jvmTarget = KtJvmTarget.JVM_24
     val jvmTargetStr = jvmTarget.target
-    val kotlinVersion = KtVersion.KOTLIN_1_9
+    val kotlinVersion = KtVersion.KOTLIN_2_0
 
     // Detekt JVM target - keep at 22 until Detekt 2.0.0+ is stable (see gradle/libs.versions.toml)
     // Detekt only analyzes code (doesn't generate bytecode), so using older target is safe
