@@ -34,58 +34,11 @@ concurrency:
 
 jobs:
   # ============================================================================
-  # Change Detection - Determines which components need releasing
-  # ============================================================================
-  detect-changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
-      should_release: ${{ steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Detect changed paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            frontend:
-              - 'client/apps/**'
-              - 'client/packages/**'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-            backend:
-              - 'server/**'
-              - 'shared/**'
-              - 'build.gradle.kts'
-              - 'settings.gradle.kts'
-              - 'gradle/**'
-              - 'gradle.properties'
-
-      - name: Summary
-        run: |
-          {
-            echo "## 🔍 Change Detection Results"
-            echo ""
-            echo "| Component | Changed |"
-            echo "|-----------|---------|"
-            echo "| Frontend  | ${{ steps.filter.outputs.frontend }} |"
-            echo "| Backend   | ${{ steps.filter.outputs.backend }} |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-  # ============================================================================
   # Semantic Release - Version calculation and release creation
   # ============================================================================
   semantic-release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.should_release == 'true'
     # Retry entire job if it fails due to transient errors
     strategy:
       max-parallel: 1
@@ -97,8 +50,6 @@ jobs:
       new_release_minor_version: ${{ steps.semantic.outputs.new_release_minor_version }}
       new_release_patch_version: ${{ steps.semantic.outputs.new_release_patch_version }}
       new_release_git_tag: ${{ steps.semantic.outputs.new_release_git_tag }}
-      frontend_changed: ${{ needs.detect-changes.outputs.frontend }}
-      backend_changed: ${{ needs.detect-changes.outputs.backend }}
     steps:
       - name: Generate GitHub App Token
         id: app-token
@@ -161,10 +112,6 @@ jobs:
             echo "| Major    | ${{ steps.semantic.outputs.new_release_major_version }} |"
             echo "| Minor    | ${{ steps.semantic.outputs.new_release_minor_version }} |"
             echo "| Patch    | ${{ steps.semantic.outputs.new_release_patch_version }} |"
-            echo ""
-            echo "### Components Updated"
-            echo "- Frontend: ${{ needs.detect-changes.outputs.frontend }}"
-            echo "- Backend: ${{ needs.detect-changes.outputs.backend }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
 
@@ -175,7 +122,7 @@ jobs:
     name: Build & Push Backend Images
     runs-on: ubuntu-latest
     needs: semantic-release
-    if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.backend_changed == 'true'
+    if: needs.semantic-release.outputs.new_release_published == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -193,64 +140,21 @@ jobs:
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-engine
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-engine
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-          labels: |
-            org.opencontainers.image.title=cvix-engine
-            org.opencontainers.image.description=ProFileTailors Backend Service
-            org.opencontainers.image.version=${{ needs.semantic-release.outputs.new_release_version }}
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./server/engine/Dockerfile
-          push: true
-          # Build platforms sequentially instead of in parallel to reduce resource contention
-          # This prevents ARM64 builds from being starved on resource-constrained runners
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          image-name: cvix-engine
+          image-title: cvix-engine
+          image-description: ProFileTailors Backend Service
+          dockerfile: ./server/engine/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-            GIT_SHA=${{ github.sha }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 Backend Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - Marketing Site (Multi-Registry)
@@ -259,7 +163,7 @@ jobs:
     name: Build & Push Marketing Images
     runs-on: ubuntu-latest
     needs: semantic-release
-    if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.frontend_changed == 'true'
+    if: needs.semantic-release.outputs.new_release_published == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -269,57 +173,21 @@ jobs:
       - name: Setup Docker Buildx
         uses: ./.github/actions/setup-buildx
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-marketing
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-marketing
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./client/apps/marketing/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          image-name: cvix-marketing
+          image-title: cvix-marketing
+          image-description: ProFileTailors Marketing Site
+          dockerfile: ./client/apps/marketing/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 Marketing Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - WebApp (Multi-Registry)
@@ -328,7 +196,7 @@ jobs:
     name: Build & Push WebApp Images
     runs-on: ubuntu-latest
     needs: semantic-release
-    if: needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.frontend_changed == 'true'
+    if: needs.semantic-release.outputs.new_release_published == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -338,57 +206,21 @@ jobs:
       - name: Setup Docker Buildx
         uses: ./.github/actions/setup-buildx
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-webapp
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-webapp
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./client/apps/webapp/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          image-name: cvix-webapp
+          image-title: cvix-webapp
+          image-description: ProFileTailors Web Application
+          dockerfile: ./client/apps/webapp/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 WebApp Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Release Summary
