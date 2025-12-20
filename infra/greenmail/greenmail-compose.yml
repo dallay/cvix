@@ -1,3 +1,8 @@
+# Self-contained GreenMail compose file for local email testing
+# Includes common network definitions
+include:
+  - ../common.yml
+
 services:
   greenmail:
     image: greenmail/standalone:${GREENMAIL_VERSION}
@@ -23,8 +28,3 @@ services:
       start_period: 30s
     labels:
       org.springframework.boot.ignore: true
-
-networks:
-  frontend:
-
-  backend:
