@@ -125,7 +125,7 @@ class TemplateSourceRepositoryFactory(
                 TemplateSourceType.CLASSPATH -> TemplateSourceKeys.CLASSPATH
                 TemplateSourceType.FILESYSTEM -> TemplateSourceKeys.FILESYSTEM
             }
-            val repository = templateSources[repositoryBeanName]!!
+            val repository = templateSources.getValue(repositoryBeanName)
             log.info(
                 "Activated template repository: {} (type: {})",
                 repositoryBeanName,
