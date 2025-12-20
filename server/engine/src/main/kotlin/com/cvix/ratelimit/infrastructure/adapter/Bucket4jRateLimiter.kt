@@ -239,6 +239,17 @@ class Bucket4jRateLimiter(
     fun getCacheStats(): com.github.benmanes.caffeine.cache.stats.CacheStats = cache.stats()
 
     /**
+     * Triggers Caffeine's async cleanup process to execute pending maintenance tasks.
+     * This forces evictions to be processed immediately, which is useful for testing.
+     *
+     * In production, Caffeine handles cleanup asynchronously for performance,
+     * but in tests we need deterministic behavior to verify eviction counts.
+     */
+    fun triggerCacheCleanup() {
+        cache.cleanUp()
+    }
+
+    /**
      * Clears all cached buckets.
      * Useful for testing and dynamic configuration reloading.
      */

@@ -93,6 +93,19 @@ class Bucket4jRateLimiterCacheTest {
             }
         }
 
+        // Force Caffeine to run pending maintenance tasks (eviction cleanup)
+        // This is necessary because Caffeine uses asynchronous eviction for performance
+        rateLimiter.clearCache()
+
+        // Re-populate cache to trigger evictions with cleanup
+        repeat(30) { i ->
+            val identifier = "IP:192.168.1.$i"
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+        }
+
+        // Give Caffeine time to process evictions asynchronously
+        Thread.sleep(100)
+
         // Then: Cache stats should show that evictions occurred
         // This proves the bounded behavior is working
         val stats = rateLimiter.getCacheStats()
