@@ -4,6 +4,7 @@ Usage: make [command]
 
 Available commands:
   all                      Run install, build, test, lint and check (common entry point).
+  verify-all               🔍 Run comprehensive verification: all checks, lints, and tests in parallel.
   help                     Show this help message / list of make targets.
   install                  Install all dependencies.
   update-deps              Update all dependencies to their latest versions.
