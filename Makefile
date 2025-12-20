@@ -135,6 +135,15 @@ docker-build-marketing:
 docker-build-all: docker-build-backend docker-build-marketing docker-build-webapp
 	@echo "All images built with tag '$(TAG)'"
 
+# Remove locally built Docker images
+# Usage: make docker-clean [TAG=yourtag]
+docker-clean:
+	@echo "Removing Docker images with tag '$(TAG)'..."
+	@docker rmi -f cvix-engine:$(TAG) 2>/dev/null || true
+	@docker rmi -f cvix-webapp:$(TAG) 2>/dev/null || true
+	@docker rmi -f cvix-marketing:$(TAG) 2>/dev/null || true
+	@echo "✅ Docker images with tag '$(TAG)' removed"
+
 # Verifies Docker containers are running as non-root users
 # Tests that all frontend containers properly run as UID 101 (nginx user)
 docker-verify-nonroot:

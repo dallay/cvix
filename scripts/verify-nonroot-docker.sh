@@ -72,10 +72,10 @@ check_nonroot() {
         return 1
     fi
     
-    # Check process user
+    # Check process user using docker top (more reliable than ps aux)
     print_status "$YELLOW" "  Checking process ownership..."
     local process_user
-    process_user=$(docker exec "test-${container_name}" ps aux | grep nginx | grep -v grep | awk '{print $1}' | head -n1)
+    process_user=$(docker top "test-${container_name}" -o user | tail -n +2 | head -n1)
     if [ "$process_user" = "nginx" ] || [ "$process_user" = "101" ]; then
         print_status "$GREEN" "  ✅ NGINX process running as non-root user"
     else
@@ -117,6 +117,11 @@ fi
 print_status "$GREEN" "🎉 All containers are running as non-root users successfully!"
 print_status "$GREEN" "========================================\n"
 
-# Optional: Show docker images
+# Optional: Show and cleanup docker images
 print_status "$YELLOW" "📦 Created test images:"
 docker images | grep -E "cvix-(webapp|marketing):test" || true
+
+print_status "$YELLOW" "\n🧹 Cleaning up test images..."
+docker rmi cvix-webapp:test 2>/dev/null || true
+docker rmi cvix-marketing:test 2>/dev/null || true
+print_status "$GREEN" "✅ Test images cleaned up\n"

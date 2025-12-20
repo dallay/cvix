@@ -50,14 +50,10 @@ FROM nginx:alpine AS production
 RUN apk add --no-cache curl
 
 # Create required directories with proper permissions for non-root user
-RUN mkdir -p /var/cache/nginx/client_temp \
-    /var/cache/nginx/proxy_temp \
-    /var/cache/nginx/fastcgi_temp \
-    /var/cache/nginx/uwsgi_temp \
-    /var/cache/nginx/scgi_temp \
-    /tmp/nginx \
+# Nginx uses /tmp/nginx/* for temp files (configured in nginx.conf)
+RUN mkdir -p /tmp/nginx \
     /var/log/nginx \
-    && chown -R 101:101 /var/cache/nginx /tmp/nginx /var/log/nginx /etc/nginx/conf.d
+    && chown -R 101:101 /tmp/nginx /var/log/nginx /etc/nginx/conf.d
 
 # Copy custom nginx configuration (must be done as root before switching user)
 COPY client/apps/webapp/nginx.conf /etc/nginx/nginx.conf

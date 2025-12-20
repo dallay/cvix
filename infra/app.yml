@@ -176,10 +176,12 @@ services:
         target: ssl_keystore_password
 
     volumes:
-      # CRITICAL: Docker socket access for PDF generation
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # CRITICAL: Docker socket access for PDF generation (requires write access)
+      # For production, consider using a Docker socket proxy with operation whitelisting
+      - /var/run/docker.sock:/var/run/docker.sock
 
       # Persist LaTeX output if enabled
+      # NOTE: Use absolute paths or set working directory before running docker compose
       - ./data/latex:/app/latex-output
 
       # Application logs
@@ -213,15 +215,10 @@ services:
       retries: 5
       start_period: 60s
 
-    # Resource limits (prod-like constraints)
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
+    # Resource limits for non-Swarm mode (docker compose)
+    mem_limit: 2G
+    mem_reservation: 512M
+    cpus: 2.0
 
 #
 # Docker secrets definitions for sensitive values

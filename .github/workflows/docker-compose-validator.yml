@@ -28,10 +28,12 @@ jobs:
           for file in greenmail/greenmail-compose.yml maildev/maildev-compose.yml; do
             if [[ -f "$file" ]]; then
               echo "Validating $file..."
-              docker compose -f "$file" config > /dev/null || {
+              if ! docker compose -f "$file" config > /dev/null 2>&1; then
                 echo "❌ Syntax validation failed for $file"
+                echo "Error details:"
+                docker compose -f "$file" config 2>&1 | head -20
                 exit 1
-              }
+              fi
             fi
           done
           echo "✅ Individual files validated"
@@ -41,20 +43,24 @@ jobs:
           cd infra
           echo "🔍 Validating full stack with dependencies..."
           # Validate the main app.yml which includes all dependencies
-          docker compose -f app.yml config > /dev/null || {
+          if ! docker compose -f app.yml config > /dev/null 2>&1; then
             echo "❌ Full stack validation failed"
+            echo "Error details:"
+            docker compose -f app.yml config 2>&1 | head -50
             exit 1
-          }
+          fi
           echo "✅ Full stack validated successfully"
 
       - name: Validate PostgreSQL compose
         run: |
           cd infra/postgresql
           echo "🔍 Validating PostgreSQL compose..."
-          docker compose -f postgresql-compose.yml config > /dev/null || {
+          if ! docker compose -f postgresql-compose.yml config > /dev/null 2>&1; then
             echo "❌ PostgreSQL compose validation failed"
+            echo "Error details:"
+            docker compose -f postgresql-compose.yml config 2>&1 | head -20
             exit 1
-          }
+          fi
           echo "✅ PostgreSQL compose validated"
 
       - name: Cleanup
