@@ -48,7 +48,8 @@ jobs:
 
           echo "✅ Environment files prepared"
           echo "📋 Environment variables loaded:"
-          grep -v '^#' infra/.env | grep -v '^$' | wc -l | xargs echo "   Total variables:"
+          VAR_COUNT=$(grep -cv '^#\|^$' infra/.env || echo "0")
+          echo "   Total variables: $VAR_COUNT"
 
       - name: Validate individual compose files
         run: |
@@ -131,7 +132,8 @@ jobs:
             echo "✅ Full stack validated successfully"
             echo ""
             echo "📊 Stack summary:"
-            docker compose -f app.yml config --services | wc -l | xargs echo "   Total services:"
+            SERVICE_COUNT=$(docker compose -f app.yml config --services | wc -l)
+            echo "   Total services: $SERVICE_COUNT"
             echo "   Services:"
             docker compose -f app.yml config --services | sed 's/^/     - /'
           else
@@ -162,7 +164,8 @@ jobs:
             echo "✅ Stack file validated successfully"
             echo ""
             echo "📊 Stack summary:"
-            docker compose -f app-stack.yml config --services | wc -l | xargs echo "   Total services:"
+            SERVICE_COUNT=$(docker compose -f app-stack.yml config --services | wc -l)
+            echo "   Total services: $SERVICE_COUNT"
           else
             echo "❌ Stack validation failed!"
             echo ""
@@ -209,7 +212,7 @@ jobs:
           echo "================================================"
 
           # Pin yamllint to specific version for deterministic builds
-          pip install yamllint==1.35.1
+          pip install yamllint==1.37.1
 
           # Create yamllint configuration using heredoc for readability
           cat > /tmp/yamllint-config.yml << 'YAMLLINTEOF'
@@ -226,6 +229,7 @@ jobs:
               allowed-values: ['true', 'false', 'on']
             document-start: disable
             comments-indentation: disable
+          YAMLLINTEOF
 
           cd infra
 

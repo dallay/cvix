@@ -50,3 +50,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+# Define networks for standalone validation
+# When included by parent files, the parent's network definition takes precedence
+networks:
+  backend:
+    driver: bridge
