@@ -60,11 +60,39 @@ class SubscriptionStoreR2dbcRepository(
      * Saves a subscription (create or update).
      *
      * Uses custom saveWithTypecast to properly handle PostgreSQL ENUM types.
+     *
+     * **Null vs 0 Handling:**
+     * - `null`: R2DBC driver limitation with custom @Query DML operations. Treated as success with unknown row count.
+     * - `0`: Actual rows affected. For UPSERT, this is an error since UPSERT should always affect exactly 1 row.
+     *
+     * See: https://github.com/spring-projects/spring-data-r2dbc/issues/523
      */
     override suspend fun save(subscription: Subscription) {
         log.debug("Saving subscription: {}", subscription.id)
         try {
-            subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity())
+            // Capture nullable result directly to distinguish between null (driver limitation)
+            // and 0 (actual rows affected, which is an error for UPSERT)
+            val rowsAffected = subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity())
+
+            when (rowsAffected) {
+                null ->
+                    // R2DBC driver limitation with custom @Query DML operations
+                    // Some versions of Spring Data R2DBC return null for custom queries
+                    // See: https://github.com/spring-projects/spring-data-r2dbc/issues/523
+                    log.warn(
+                        "saveWithTypecast returned null for subscription: {}. " +
+                            "This indicates R2DBC driver limitation with custom @Query DML operations. " +
+                            "Treating as success with unknown row count.",
+                        subscription.id,
+                    )
+                0 -> {
+                    // UPSERT (INSERT ... ON CONFLICT DO UPDATE) should always affect exactly 1 row
+                    // 0 rows affected indicates a serious query logic error
+                    log.error("UPSERT operation affected 0 rows for subscription: {}", subscription.id)
+                    throw SubscriptionException("Failed to save subscription: no rows affected")
+                }
+                else -> log.debug("Subscription saved, rows affected: {}", rowsAffected)
+            }
         } catch (e: DuplicateKeyException) {
             log.error("Error saving subscription with id: {} - duplicate key", subscription.id, e)
             throw SubscriptionException("Error saving subscription: duplicate key", e)
@@ -91,11 +119,30 @@ class SubscriptionStoreR2dbcRepository(
 
     /**
      * Deletes all subscriptions for a given user (test utility).
+     *
+     * **Null vs 0 Handling:**
+     * - `null`: R2DBC driver limitation with custom @Query DML operations.
+     *   Logged as a warning, treated as 0 rows deleted.
+     * - `0`: Valid result indicating no matching subscriptions were found for the user.
      */
     suspend fun deleteAllByUserId(userId: UUID) {
         log.debug("Deleting all subscriptions for user: {}", userId)
         try {
-            subscriptionR2dbcRepository.deleteAllByUserId(userId)
+            // Capture nullable result to distinguish null (driver limitation) from 0 (no rows found)
+            val rowsDeleted = subscriptionR2dbcRepository.deleteAllByUserId(userId)
+
+            // For DELETE operations, 0 is a legitimate result (no matching rows)
+            // but null indicates a driver issue that should be logged
+            if (rowsDeleted == null) {
+                log.warn(
+                    "deleteAllByUserId returned null for user: {}. " +
+                        "This indicates R2DBC driver limitation with custom @Query DML operations. " +
+                        "Treating as 0 rows deleted.",
+                    userId,
+                )
+            }
+
+            log.debug("Deleted {} subscriptions for user: {}", rowsDeleted ?: 0, userId)
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscriptions for user: {}", userId, e)
             throw SubscriptionException("Error deleting subscriptions for user", e)

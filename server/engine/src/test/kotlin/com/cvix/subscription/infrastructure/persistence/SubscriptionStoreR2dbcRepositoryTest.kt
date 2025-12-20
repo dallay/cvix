@@ -5,6 +5,7 @@ import com.cvix.config.InfrastructureTestContainers
 import com.cvix.subscription.domain.Subscription
 import com.cvix.subscription.domain.SubscriptionStatus
 import com.cvix.subscription.domain.SubscriptionTier
+import com.cvix.users.infrastructure.persistence.repository.UserR2dbcRepository
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -34,7 +35,7 @@ class SubscriptionStoreR2dbcRepositoryTest : InfrastructureTestContainers() {
     private lateinit var subscriptionRepository: SubscriptionStoreR2dbcRepository
 
     @Autowired
-    private lateinit var userRepository: com.cvix.users.infrastructure.persistence.repository.UserR2dbcRepository
+    private lateinit var userRepository: UserR2dbcRepository
 
     private lateinit var testUserId: UUID
 

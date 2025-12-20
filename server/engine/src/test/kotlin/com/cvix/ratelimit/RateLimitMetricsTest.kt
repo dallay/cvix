@@ -6,6 +6,7 @@ import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
 import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldStartWith
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Duration
@@ -199,10 +200,12 @@ class RateLimitMetricsTest {
         val strategy = RateLimitStrategy.AUTH
 
         // When
-        repeat(5) {
-            metrics.recordTokenConsumption(strategy) {
-                "result-$it"
+        repeat(5) { index ->
+            val result = metrics.recordTokenConsumption(strategy) {
+                "result-$index"
             }
+            // Verify the result is returned correctly
+            result shouldStartWith "result-"
         }
 
         // Then

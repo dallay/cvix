@@ -104,27 +104,27 @@ internal class TemplateSourceRepositoryFactoryTest {
     }
 
     @Test
-    fun `getByKey should return repository by bean name and availableSources should list keys`() {
+    fun `get should return repository by type and availableSources should list keys`() {
         val classpathRepo: TemplateRepository = mockk()
         val sources = mapOf(TemplateSourceKeys.CLASSPATH to classpathRepo)
         val properties = TemplateSourceProperties()
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
-        val found = factory.getByKey(TemplateSourceKeys.CLASSPATH)
+        val found = factory.get(TemplateSourceType.CLASSPATH)
         assertSame(classpathRepo, found)
         // availableSources should contain the key we provided
         assertTrue(factory.availableSources().contains(TemplateSourceKeys.CLASSPATH))
     }
 
     @Test
-    fun `should throw when no repository exists for key`() {
+    fun `should throw when no repository exists for type using get`() {
         val classpathRepo: TemplateRepository = mockk()
         val sources = mapOf(TemplateSourceKeys.CLASSPATH to classpathRepo)
         val properties = TemplateSourceProperties()
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
         assertThrows(IllegalArgumentException::class.java) {
-            factory.getByKey("non-existent")
+            factory.get(TemplateSourceType.FILESYSTEM)
         }
     }
 
@@ -141,13 +141,13 @@ internal class TemplateSourceRepositoryFactoryTest {
     }
 
     @Test
-    fun `getByKey should throw when requested source is unsupported`() {
+    fun `get should throw when requested source type is unsupported`() {
         val sources = emptyMap<String, TemplateRepository>()
         val properties = TemplateSourceProperties()
         val factory = TemplateSourceRepositoryFactory(sources, properties)
 
         assertThrows(IllegalArgumentException::class.java) {
-            factory.getByKey("non-existent")
+            factory.get(TemplateSourceType.CLASSPATH)
         }
     }
 }
