@@ -46,8 +46,11 @@ RUN pnpm build
 # Production stage - using nginx for static file serving
 FROM nginx:alpine AS production
 
-# Install curl for healthcheck and gettext for envsubst
-RUN apk add --no-cache curl gettext
+# Install required packages:
+#   curl: for healthcheck
+#   gettext: for envsubst (environment variable substitution)
+#   su-exec: for dropping root privileges after config generation
+RUN apk add --no-cache curl gettext su-exec
 
 # Create required directories with proper permissions for non-root user
 # Nginx uses /tmp/nginx/* for temp files (configured in nginx.conf)
@@ -82,6 +85,9 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ || exit 1
 
-# Entrypoint runs as root to perform config substitution, then starts nginx
-# Nginx itself drops privileges based on the user directive in nginx.conf
+# Entrypoint runs as root ONLY to:
+#   1. Validate required environment variables
+#   2. Substitute variables in nginx config templates
+#   3. Drop privileges and exec nginx as UID 101 (non-root)
+# See docker-entrypoint.sh for implementation
 ENTRYPOINT ["/docker-entrypoint.sh"]

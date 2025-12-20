@@ -1,0 +1,240 @@
+# ============================================================================
+# Stack-compatible compose file (no 'include' support in Stack mode)
+# PostgreSQL and network definitions are merged inline
+# Stack name is provided via: docker stack deploy -c app-stack.yml <stack-name>
+# ============================================================================
+
+services:
+  # ========================================
+  # PostgreSQL Database
+  # ========================================
+  postgresql:
+    image: postgres:${POSTGRESQL_VERSION:-16.9-alpine}
+    # Note: container_name is ignored in Stack mode (Swarm auto-generates names)
+    environment:
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRESQL_DB}
+    shm_size: 128mb
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+      - ./postgresql/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ========================================
+  # Frontend (Vue.js)
+  # ========================================
+  frontend:
+    image: dallay/cvix-webapp:latest
+    environment:
+      # Frontend runtime configuration
+      VITE_BACKEND_URL: ${BACKEND_URL}
+      VITE_KEYCLOAK_URL: ${OAUTH2_SERVER_URL}
+      VITE_KEYCLOAK_REALM: ${REALM}
+      VITE_KEYCLOAK_CLIENT_ID: ${CLIENT_ID}
+
+      # Public webapp URL
+      PUBLIC_BASE_WEBAPP_URL_PROD: ${PUBLIC_BASE_WEBAPP_URL_PROD}
+
+      # Node environment
+      NODE_ENV: production
+
+    # Port exposed for Traefik routing (configured via Dokploy UI)
+    expose:
+      - 80
+
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  backend:
+    image: dallay/cvix-engine:latest
+    environment:
+      # JVM Options for production-like setup
+      JAVA_OPTS: >-
+        -Xms512m
+        -Xmx1024m
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=100
+        -XX:+UseStringDeduplication
+        -Djava.security.egd=file:/dev/./urandom
+
+      # Database (R2DBC)
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+
+      # Spring profile / server URLs
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      OAUTH2_SERVER_URL: ${OAUTH2_SERVER_URL}
+
+      # Keycloak / Auth configuration
+      REALM: ${REALM}
+      CLIENT_ID: ${CLIENT_ID}
+      # Point to secret file location
+      CLIENT_SECRET_FILE: /run/secrets/client_secret
+
+      # Admin / test helpers
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_REALM: ${ADMIN_REALM}
+      ADMIN_REALM_USERNAME: ${ADMIN_REALM_USERNAME}
+      ADMIN_REALM_PASSWORD_FILE: /run/secrets/admin_realm_password
+
+      # Keycloak host references
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KC_HOSTNAME: ${KC_HOSTNAME}
+
+      # CORS configuration
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      CORS_ALLOWED_METHODS: ${CORS_ALLOWED_METHODS}
+      CORS_ALLOWED_HEADERS: ${CORS_ALLOWED_HEADERS}
+      CORS_EXPOSED_HEADERS: ${CORS_EXPOSED_HEADERS}
+      CORS_ALLOW_CREDENTIALS: ${CORS_ALLOW_CREDENTIALS}
+      CORS_MAX_AGE: ${CORS_MAX_AGE}
+
+      # Host & app-level flags
+      HOSTNAME: ${HOSTNAME}
+      PERSIST_LATEX_FILES: ${PERSIST_LATEX_FILES}
+
+      # Email / Notification
+      SENDGRID_API_KEY_FILE: /run/secrets/sendgrid_api_key
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME_FILE: /run/secrets/smtp_username
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME}
+
+      # PDF Generation
+      PDF_DOCKER_IMAGE: ${PDF_DOCKER_IMAGE}
+      PDF_MAX_CONCURRENT_CONTAINERS: ${PDF_MAX_CONCURRENT_CONTAINERS}
+      PDF_TIMEOUT_SECONDS: ${PDF_TIMEOUT_SECONDS}
+      PDF_MEMORY_LIMIT_MB: ${PDF_MEMORY_LIMIT_MB}
+      PDF_CPU_QUOTA: ${PDF_CPU_QUOTA}
+
+      # SSL/TLS
+      SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
+      SSL_KEYSTORE_PASSWORD_FILE: /run/secrets/ssl_keystore_password
+      SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
+
+    secrets:
+      - source: client_secret
+        target: CLIENT_SECRET
+      - source: admin_realm_password
+        target: ADMIN_REALM_PASSWORD
+      - source: sendgrid_api_key
+        target: SENDGRID_API_KEY
+      - source: smtp_username
+        target: SMTP_USERNAME
+      - source: smtp_password
+        target: SMTP_PASSWORD
+      - source: ssl_keystore_password
+        target: SSL_KEYSTORE_PASSWORD
+
+    volumes:
+      # CRITICAL: Docker socket access for PDF generation
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+      # Persist LaTeX output if enabled
+      - ./data/latex:/app/latex-output
+
+      # Application logs
+      - ./logs/backend:/app/logs
+
+      # SSL keystore (if using file-based)
+      - ./ssl:/app/ssl:ro
+
+    # Port exposed for Traefik routing (configured via Dokploy UI)
+    expose:
+      - 8080
+
+    networks:
+      - dokploy-network
+      - backend
+
+    # Stack mode uses simple depends_on (no condition support)
+    # PostgreSQL healthcheck ensures it's ready before backend starts
+    depends_on:
+      - postgresql
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+    # Resource limits (prod-like constraints)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+# ============================================================================
+# Docker Secrets Configuration
+# ============================================================================
+# These secrets must be created in Dokploy BEFORE deployment.
+# They are marked as 'external: true' meaning Docker expects them to already exist.
+#
+# Create them via Dokploy UI (Settings → Secrets) or via CLI:
+#   docker secret create client_secret <(echo -n "your-secret-value")
+#
+# The 'name' field specifies the exact name Docker will look for.
+# ============================================================================
+secrets:
+  client_secret:
+    external: true
+    name: client_secret
+
+  admin_realm_password:
+    external: true
+    name: admin_realm_password
+
+  sendgrid_api_key:
+    external: true
+    name: sendgrid_api_key
+
+  smtp_username:
+    external: true
+    name: smtp_username
+
+  smtp_password:
+    external: true
+    name: smtp_password
+
+  ssl_keystore_password:
+    external: true
+    name: ssl_keystore_password
+
+# ============================================================================
+# Networks Configuration
+# ============================================================================
+networks:
+  # External network managed by Dokploy for Traefik routing
+  dokploy-network:
+    external: true
+
+  # Internal network for backend-database communication
+  backend:

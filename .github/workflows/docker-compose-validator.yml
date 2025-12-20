@@ -28,16 +28,24 @@ jobs:
       - name: Prepare environment files
         run: |
           echo "📦 Preparing environment files for validation..."
-          
+
+          # Verify root .env.example exists before attempting operations
+          if [ ! -f .env.example ]; then
+            echo "❌ ERROR: Root .env.example does not exist!"
+            echo "   This file is required for CI validation."
+            echo "   Please ensure .env.example is committed to the repository."
+            exit 1
+          fi
+
           # Copy root .env.example to infra directory if not exists
           if [ ! -f infra/.env.example ]; then
             echo "⚠️  No infra/.env.example found, using root .env.example"
             cp .env.example infra/.env.example
           fi
-          
+
           # Create .env from .env.example in infra directory
           cp infra/.env.example infra/.env
-          
+
           echo "✅ Environment files prepared"
           echo "📋 Environment variables loaded:"
           grep -v '^#' infra/.env | grep -v '^$' | wc -l | xargs echo "   Total variables:"
@@ -50,22 +58,22 @@ jobs:
           echo "================================================"
           echo "   All compose files are now self-contained using 'include' directives"
           echo ""
-          
+
           # Find all *-compose.yml files (excluding app.yml and app-stack.yml)
           COMPOSE_FILES=$(find . -type f -name "*-compose.yml" | sort)
-          
+
           if [ -z "$COMPOSE_FILES" ]; then
             echo "⚠️  No compose files found!"
             exit 1
           fi
-          
+
           VALIDATED=0
           FAILED=0
-          
+
           for file in $COMPOSE_FILES; do
             echo ""
             echo "📄 Validating: $file"
-            
+
             # Validate syntax and variable interpolation
             if docker compose -f "$file" config > /dev/null 2>&1; then
               echo "   ✅ Valid"
@@ -78,15 +86,15 @@ jobs:
               FAILED=$((FAILED + 1))
             fi
           done
-          
+
           echo ""
           echo "================================================"
           echo "Summary: $VALIDATED validated, $FAILED failed"
-          
+
           if [ $FAILED -gt 0 ]; then
             exit 1
           fi
-          
+
           echo "✅ All individual files validated successfully"
 
       - name: Validate common configuration
@@ -95,7 +103,7 @@ jobs:
           echo ""
           echo "🔍 Validating common.yml..."
           echo "================================================"
-          
+
           if docker compose -f common.yml config > /dev/null 2>&1; then
             echo "✅ common.yml is valid"
           else
@@ -117,7 +125,7 @@ jobs:
           echo "     - postgresql/postgresql-compose.yml"
           echo "     - keycloak/keycloak-compose.yml"
           echo ""
-          
+
           # Validate the main app.yml which includes dependencies
           if docker compose -f app.yml config > /dev/null 2>&1; then
             echo "✅ Full stack validated successfully"
@@ -149,7 +157,7 @@ jobs:
           echo "   This is the Swarm/Stack compatible version"
           echo "   (no 'include' directives, all merged inline)"
           echo ""
-          
+
           if docker compose -f app-stack.yml config > /dev/null 2>&1; then
             echo "✅ Stack file validated successfully"
             echo ""
@@ -169,13 +177,13 @@ jobs:
           echo ""
           echo "🔐 Checking for hardcoded sensitive values..."
           echo "================================================"
-          
+
           # Look for actual hardcoded values, not just keys/labels
           # Patterns like: password: "actual_password" or token: abc123
           # Exclude: variables ${VAR}, secret definitions (file:, external:), comments
-          
+
           FOUND_ISSUES=false
-          
+
           # Check for passwords with actual values (not variables or file references)
           if grep -rE "(PASSWORD|SECRET|TOKEN|KEY)\s*=\s*['\"]?[a-zA-Z0-9]+" app.yml app-stack.yml | \
              grep -v '\${' | \
@@ -184,7 +192,7 @@ jobs:
             echo "⚠️  Warning: Found potentially hardcoded credentials in environment variables"
             FOUND_ISSUES=true
           fi
-          
+
           if [ "$FOUND_ISSUES" = false ]; then
             echo "✅ No hardcoded sensitive values detected"
             echo ""
@@ -199,28 +207,33 @@ jobs:
           echo ""
           echo "🧹 Linting YAML files..."
           echo "================================================"
-          
-          pip install yamllint
-          
-          echo "extends: default" > /tmp/yamllint-config.yml
-          echo "rules:" >> /tmp/yamllint-config.yml
-          echo "  line-length:" >> /tmp/yamllint-config.yml
-          echo "    max: 150" >> /tmp/yamllint-config.yml
-          echo "    level: warning" >> /tmp/yamllint-config.yml
-          echo "  comments:" >> /tmp/yamllint-config.yml
-          echo "    min-spaces-from-content: 1" >> /tmp/yamllint-config.yml
-          echo "  indentation:" >> /tmp/yamllint-config.yml
-          echo "    spaces: 2" >> /tmp/yamllint-config.yml
-          echo "  truthy:" >> /tmp/yamllint-config.yml
-          echo "    allowed-values: ['true', 'false', 'on']" >> /tmp/yamllint-config.yml
-          echo "  document-start: disable" >> /tmp/yamllint-config.yml
-          echo "  comments-indentation: disable" >> /tmp/yamllint-config.yml
-          
+
+          # Pin yamllint to specific version for deterministic builds
+          pip install yamllint==1.35.1
+
+          # Create yamllint configuration using heredoc for readability
+          cat > /tmp/yamllint-config.yml << 'YAMLLINTEOF'
+          extends: default
+          rules:
+            line-length:
+              max: 150
+              level: warning
+            comments:
+              min-spaces-from-content: 1
+            indentation:
+              spaces: 2
+            truthy:
+              allowed-values: ['true', 'false', 'on']
+            document-start: disable
+            comments-indentation: disable
+
           cd infra
-          
+
           echo "Linting compose files..."
-          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -exec yamllint -c /tmp/yamllint-config.yml {} + || echo "⚠️  Some YAML files have linting issues (warnings only)"
-          
+          # Remove || echo to allow step to fail on real linting errors
+          # If advisory-only behavior is needed, use continue-on-error: true on the step
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -exec yamllint -c /tmp/yamllint-config.yml {} +
+
           echo ""
           echo "✅ Linting completed"
 
@@ -238,7 +251,20 @@ jobs:
           echo "Compose files found:"
           find . -type f \( -name "*.yml" -o -name "*.yaml" \) | sed 's/^/   /'
           echo ""
-          echo "✅ All validations completed"
+
+          # Check job status to provide accurate final message
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ All validations completed successfully"
+          else
+            echo "❌ Some validations failed — check previous steps for errors"
+            echo ""
+            echo "💡 Common failure causes:"
+            echo "   - Invalid YAML syntax in compose files"
+            echo "   - Missing required environment variables"
+            echo "   - Hardcoded sensitive values detected"
+            echo "   - yamllint errors (line-length, indentation, etc.)"
+            exit 1
+          fi
 
       - name: Cleanup
         if: always()

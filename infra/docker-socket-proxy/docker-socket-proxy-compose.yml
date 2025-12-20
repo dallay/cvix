@@ -6,7 +6,9 @@
 
 services:
   docker-socket-proxy:
-    image: tecnativa/docker-socket-proxy:latest
+    # Pin to specific version for reproducible builds (not 'latest')
+    # Check https://github.com/Tecnativa/docker-socket-proxy/releases for updates
+    image: tecnativa/docker-socket-proxy:0.2.0
     environment:
       # Disable all endpoints by default
       AUTH: 0

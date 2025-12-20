@@ -162,7 +162,6 @@ services:
       PDF_TIMEOUT_SECONDS: ${PDF_TIMEOUT_SECONDS}
       PDF_MEMORY_LIMIT_MB: ${PDF_MEMORY_LIMIT_MB}
       PDF_CPU_QUOTA: ${PDF_CPU_QUOTA}
-      
       # Docker Socket Proxy configuration
       # Set to 'tcp://docker-socket-proxy:2375' to use the socket proxy
       # For local dev only, you can use 'unix:///var/run/docker.sock' (NOT RECOMMENDED FOR PRODUCTION)

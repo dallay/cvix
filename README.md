@@ -30,7 +30,7 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=dallay_cvix&metric=bugs)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
 ![Website](https://img.shields.io/website?url=https%3A%2F%2Fwww.yunielacosta.com%2F)
-![GitHub repo size](https://img.shields.io/github/repo-size/yacosta738/yacosta738.github.io)
+![GitHub repo size](https://img.shields.io/github/repo-size/dallay/cvix)
 
 
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=dallay_cvix)](https://sonarcloud.io/summary/new_code?id=dallay_cvix)
