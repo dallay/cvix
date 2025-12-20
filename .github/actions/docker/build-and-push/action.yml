@@ -1,0 +1,147 @@
+name: 'Build and Push Docker Image'
+description: 'Builds and pushes Docker images with hybrid cache strategy (GHA + Registry)'
+
+inputs:
+  # Image configuration
+  image-name:
+    description: 'Name of the Docker image (e.g., cvix-engine, cvix-webapp)'
+    required: true
+  image-title:
+    description: 'Human-readable title for the image'
+    required: true
+  image-description:
+    description: 'Description of the image'
+    required: true
+  # Build configuration
+  context:
+    description: 'Build context path'
+    required: false
+    default: '.'
+  dockerfile:
+    description: 'Path to Dockerfile'
+    required: true
+  platforms:
+    description: 'Target platforms (e.g., linux/amd64,linux/arm64)'
+    required: false
+    default: 'linux/amd64,linux/arm64'
+  build-args:
+    description: 'Build arguments (multiline string)'
+    required: false
+    default: ''
+  # Registry configuration
+  registry-ghcr:
+    description: 'GitHub Container Registry URL'
+    required: false
+    default: 'ghcr.io'
+  registry-dockerhub:
+    description: 'Docker Hub registry URL'
+    required: false
+    default: 'docker.io'
+  github-owner:
+    description: 'GitHub repository owner'
+    required: true
+  dockerhub-username:
+    description: 'Docker Hub username'
+    required: true
+  # Authentication
+  github-token:
+    description: 'GitHub token for GHCR authentication'
+    required: true
+  dockerhub-token:
+    description: 'Docker Hub token for authentication'
+    required: true
+  # Versioning
+  version:
+    description: 'Image version tag'
+    required: true
+  major-version:
+    description: 'Major version for tagging'
+    required: true
+
+outputs:
+  tags:
+    description: 'All image tags that were pushed'
+    value: ${{ steps.meta.outputs.tags }}
+  digest:
+    description: 'Image digest'
+    value: ${{ steps.build.outputs.digest }}
+  image-id:
+    description: 'Image ID'
+    value: ${{ steps.build.outputs.imageID }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        registry: ${{ inputs.registry-ghcr }}
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        registry: ${{ inputs.registry-dockerhub }}
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-token }}
+
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
+      with:
+        images: |
+          ${{ inputs.registry-ghcr }}/${{ inputs.github-owner }}/${{ inputs.image-name }}
+          ${{ inputs.registry-dockerhub }}/${{ inputs.dockerhub-username }}/${{ inputs.image-name }}
+        tags: |
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=${{ inputs.version }}
+          type=raw,value=v${{ inputs.major-version }},enable={{is_default_branch}}
+          type=sha,prefix=,format=short
+        labels: |
+          org.opencontainers.image.title=${{ inputs.image-title }}
+          org.opencontainers.image.description=${{ inputs.image-description }}
+          org.opencontainers.image.version=${{ inputs.version }}
+
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        push: true
+        platforms: ${{ inputs.platforms }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        # Multi-source cache with fallback: GHA cache (fast) → Registry cache (reliable)
+        cache-from: |
+          type=gha
+          type=registry,ref=${{ inputs.registry-ghcr }}/${{ inputs.github-owner }}/${{ inputs.image-name }}:buildcache
+        cache-to: |
+          type=gha,mode=max
+          type=registry,ref=${{ inputs.registry-ghcr }}/${{ inputs.github-owner }}/${{ inputs.image-name }}:buildcache,mode=max
+        build-args: ${{ inputs.build-args }}
+
+    - name: Docker Image Summary
+      shell: bash
+      run: |
+        {
+          echo "## 🐳 Docker Images Published: ${{ inputs.image-title }}"
+          echo ""
+          echo "### Tags"
+          echo '```'
+          echo "${{ steps.meta.outputs.tags }}"
+          echo '```'
+          echo ""
+          echo "### Labels"
+          echo '```'
+          echo "${{ steps.meta.outputs.labels }}"
+          echo '```'
+          echo ""
+          echo "### Build Info"
+          echo "- **Digest**: \`${{ steps.build.outputs.digest }}\`"
+          echo "- **Image ID**: \`${{ steps.build.outputs.imageID }}\`"
+          echo "- **Platforms**: ${{ inputs.platforms }}"
+          echo ""
+          echo "✅ All image tags successfully pushed to both registries"
+        } >> "$GITHUB_STEP_SUMMARY"

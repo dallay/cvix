@@ -1,3 +1,96 @@
+## [2.0.0](https://github.com/dallay/cvix/compare/v1.6.3...v2.0.0) (2025-12-20)
+
+### ⚠ BREAKING CHANGES
+
+* All Docker images now built on every release for version consistency
+
+- Remove conditional builds based on frontend_changed/backend_changed
+- All three Docker images (backend, marketing, webapp) now share the same version number
+- Implement hybrid cache strategy: GitHub Actions cache with registry fallback
+- Add multi-source cache-from: GHA cache (fast) → Registry cache (reliable)
+- Add multi-source cache-to: Write to both GHA and registry caches simultaneously
+
+Benefits:
+- Eliminates version mismatch confusion between frontend and backend
+- Ensures atomic deployment with synchronized versions across all services
+- Improves cache reliability during GitHub Actions service outages
+- Simplifies troubleshooting and rollback procedures
+- Follows industry best practices for monolithic application versioning
+
+Trade-offs:
+- Slightly longer CI time when only one component changes
+- Minimal storage impact due to Docker layer caching and deduplication
+
+Resolves version desynchronization in infra/app-stack.yml deployment files
+
+* refactor(ci): 🔧 extract Docker build logic into reusable composite action
+
+- Create .github/actions/docker/build-and-push composite action
+- Encapsulate registry login, metadata extraction, build, push, and summary
+- Implement DRY principle by eliminating code duplication across 3 Docker jobs
+- Reduce release.yml by 162 lines (-83% code reduction)
+- Maintain hybrid cache strategy (GHA + Registry fallback) in centralized action
+- Simplify maintenance: changes to build logic only need single update
+
+Benefits:
+- Single source of truth for Docker build configuration
+- Consistent behavior across backend, marketing, and webapp builds
+- Easier to test, debug, and extend build logic
+- Reduced cognitive load when reviewing workflow changes
+
+Technical details:
+- Composite action accepts 15+ inputs for full customization
+- Outputs include tags, digest, and imageID for downstream jobs
+- Preserves all existing functionality (multi-platform, caching, tagging)
+- No behavioral changes, pure refactoring
+
+* ci: clean up action.yml by removing unnecessary blank lines
+
+* chore(ci): 🔧 remove dead code from release workflow
+
+- Remove unused git-sha input from docker/build-and-push action
+- Remove detect-changes job (outputs no longer consumed)
+- Simplify semantic-release job (no longer depends on path filtering)
+- Remove 'Components Updated' section from release summary
+
+Rationale:
+- git-sha input was never used; type=sha auto-generates from Git context
+- After unified versioning, per-component change detection is obsolete
+- Semantic-release determines releases via commit messages, not file paths
+- Reduces workflow complexity and CI execution time
+
+* chore(ci): 🔒 pin Docker actions to SHA and remove dead GIT_SHA build-arg
+
+Supply Chain Security:
+- Pin docker/login-action to 9780b0c (v3.3.0)
+- Pin docker/metadata-action to 369eb59 (v5.6.1)
+- Pin docker/build-push-action to 48aba3b (v6.10.0)
+- SHA pinning prevents supply chain attacks from compromised upstream actions
+- Dependabot can still update these via PR
+
+Dead Code Removal:
+- Remove GIT_SHA build-arg from backend Docker build (lines 156-158)
+- Backend Dockerfile does not declare ARG GIT_SHA nor reference it
+- Marketing and webapp builds correctly omit GIT_SHA
+- Eliminates misleading unused build argument
+
+Security Impact:
+- ✅ Prevents upstream action compromise (supply chain attack)
+- ✅ Deterministic builds with explicit version control
+- ✅ Cleaner build-args (no dead code passed to Docker)
+
+Rationale:
+- Major version pinning (@v3, @v6) allows automatic minor/patch updates
+  but exposes workflow to supply chain attacks if upstream is compromised
+- SHA pinning with version comments provides maximum security while
+  maintaining readability
+- Backend Dockerfile validation confirmed no GIT_SHA usage:
+  `rg 'ARG GIT_SHA' server/engine/Dockerfile` returns no results
+
+### ⚙️ CI/CD
+
+* docker build ([#444](https://github.com/dallay/cvix/issues/444)) ([50600f3](https://github.com/dallay/cvix/commit/50600f3698a4c7bbe7f8d46bd828e16e27b73f2e)), closes [#437](https://github.com/dallay/cvix/issues/437) [#443](https://github.com/dallay/cvix/issues/443) [#441](https://github.com/dallay/cvix/issues/441)
+
 ## [1.6.3](https://github.com/dallay/cvix/compare/v1.6.2...v1.6.3) (2025-12-20)
 
 ### 🐛 Bug Fixes
