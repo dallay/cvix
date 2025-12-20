@@ -64,7 +64,8 @@ class SubscriptionStoreR2dbcRepository(
     override suspend fun save(subscription: Subscription) {
         log.debug("Saving subscription: {}", subscription.id)
         try {
-            subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity())
+            val rowsAffected = subscriptionR2dbcRepository.saveWithTypecast(subscription.toEntity())
+            log.debug("Subscription saved, rows affected: {}", rowsAffected ?: 0)
         } catch (e: DuplicateKeyException) {
             log.error("Error saving subscription with id: {} - duplicate key", subscription.id, e)
             throw SubscriptionException("Error saving subscription: duplicate key", e)
@@ -95,7 +96,8 @@ class SubscriptionStoreR2dbcRepository(
     suspend fun deleteAllByUserId(userId: UUID) {
         log.debug("Deleting all subscriptions for user: {}", userId)
         try {
-            subscriptionR2dbcRepository.deleteAllByUserId(userId)
+            val rowsDeleted = subscriptionR2dbcRepository.deleteAllByUserId(userId)
+            log.debug("Deleted {} subscriptions for user: {}", rowsDeleted ?: 0, userId)
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscriptions for user: {}", userId, e)
             throw SubscriptionException("Error deleting subscriptions for user", e)

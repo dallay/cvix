@@ -52,6 +52,8 @@ interface SubscriptionR2dbcRepository : CoroutineCrudRepository<SubscriptionEnti
      *
      * This is necessary because R2DBC doesn't automatically handle custom PostgreSQL ENUM types.
      * We need to explicitly cast String values to subscription_tier and subscription_status types.
+     *
+     * Returns the number of rows affected (nullable to handle test contexts where R2DBC may return null).
      */
     @Query(
         """
@@ -67,11 +69,13 @@ interface SubscriptionR2dbcRepository : CoroutineCrudRepository<SubscriptionEnti
             updated_at = CURRENT_TIMESTAMP
         """,
     )
-    suspend fun saveWithTypecast(entity: SubscriptionEntity): Int
+    suspend fun saveWithTypecast(entity: SubscriptionEntity): Int?
 
     /**
      * Deletes all subscriptions for a user (test utility).
+     *
+     * Returns the number of rows deleted (nullable to handle test contexts where R2DBC may return null).
      */
     @Query("DELETE FROM subscriptions WHERE user_id = :userId")
-    suspend fun deleteAllByUserId(userId: UUID): Int
+    suspend fun deleteAllByUserId(userId: UUID): Int?
 }
