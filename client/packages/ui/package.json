@@ -34,24 +34,24 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"embla-carousel-vue": "^8.6.0",
-		"lucide-vue-next": "^0.561.0",
+		"lucide-vue-next": "^0.562.0",
 		"reka-ui": "^2.6.1",
 		"tailwind-merge": "^3.4.0",
 		"tailwindcss": "^4.1.18",
 		"vaul-vue": "^0.4.1",
 		"vee-validate": "^4.15.1",
-		"vue": "^3.5.25",
+		"vue": "^3.5.26",
 		"vue-sonner": "^2.0.9",
 		"zod": "^4.2.1"
 	},
 	"devDependencies": {
 		"@cvix/tsconfig": "workspace:*",
-		"@types/node": "^24.0.0",
+		"@types/node": "^25.0.3",
 		"@vitejs/plugin-vue": "^6.0.3",
 		"autoprefixer": "^10.4.23",
 		"postcss": "^8.5.6",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.0",
-		"vue-tsc": "^3.1.8"
+		"vue-tsc": "^3.2.0"
 	}
 }
