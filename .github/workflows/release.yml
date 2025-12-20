@@ -191,69 +191,22 @@ jobs:
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-engine
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-engine
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-          labels: |
-            org.opencontainers.image.title=cvix-engine
-            org.opencontainers.image.description=ProFileTailors Backend Service
-            org.opencontainers.image.version=${{ needs.semantic-release.outputs.new_release_version }}
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./server/engine/Dockerfile
-          push: true
-          # Build platforms sequentially instead of in parallel to reduce resource contention
-          # This prevents ARM64 builds from being starved on resource-constrained runners
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Multi-source cache with fallback: GHA cache (fast) → Registry cache (reliable)
-          cache-from: |
-            type=gha
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-engine:buildcache
-          cache-to: |
-            type=gha,mode=max
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-engine:buildcache,mode=max
+          image-name: cvix-engine
+          image-title: cvix-engine
+          image-description: ProFileTailors Backend Service
+          dockerfile: ./server/engine/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
             GIT_SHA=${{ github.sha }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 Backend Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - Marketing Site (Multi-Registry)
@@ -272,62 +225,21 @@ jobs:
       - name: Setup Docker Buildx
         uses: ./.github/actions/setup-buildx
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-marketing
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-marketing
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./client/apps/marketing/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Multi-source cache with fallback: GHA cache (fast) → Registry cache (reliable)
-          cache-from: |
-            type=gha
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-marketing:buildcache
-          cache-to: |
-            type=gha,mode=max
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-marketing:buildcache,mode=max
+          image-name: cvix-marketing
+          image-title: cvix-marketing
+          image-description: ProFileTailors Marketing Site
+          dockerfile: ./client/apps/marketing/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 Marketing Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Docker Build & Push - WebApp (Multi-Registry)
@@ -346,62 +258,21 @@ jobs:
       - name: Setup Docker Buildx
         uses: ./.github/actions/setup-buildx
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_DOCKERHUB }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-webapp
-            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/cvix-webapp
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ needs.semantic-release.outputs.new_release_version }}
-            type=raw,value=v${{ needs.semantic-release.outputs.new_release_major_version }},enable={{is_default_branch}}
-            type=sha,prefix=,format=short
-
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: ./.github/actions/docker/build-and-push
         with:
-          context: .
-          file: ./client/apps/webapp/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Multi-source cache with fallback: GHA cache (fast) → Registry cache (reliable)
-          cache-from: |
-            type=gha
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-webapp:buildcache
-          cache-to: |
-            type=gha,mode=max
-            type=registry,ref=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/cvix-webapp:buildcache,mode=max
+          image-name: cvix-webapp
+          image-title: cvix-webapp
+          image-description: ProFileTailors Web Application
+          dockerfile: ./client/apps/webapp/Dockerfile
+          github-owner: ${{ github.repository_owner }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          version: ${{ needs.semantic-release.outputs.new_release_version }}
+          major-version: ${{ needs.semantic-release.outputs.new_release_major_version }}
           build-args: |
             VERSION=${{ needs.semantic-release.outputs.new_release_version }}
-
-      - name: Docker Image Summary
-        run: |
-          {
-            echo "## 🐳 WebApp Docker Images Published"
-            echo ""
-            echo "### Tags"
-            echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ============================================================================
   # Release Summary
