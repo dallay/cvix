@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/dallay/cvix/compare/v2.0.0...v2.0.1) (2025-12-21)
+
+### 🐛 Bug Fixes
+
+* **infra:** 🐛 force services to run on manager node for Dokploy deployment ([c6e3434](https://github.com/dallay/cvix/commit/c6e3434ae10a10a43ddc63a06eb648e5efce8a9d)), closes [#TBD](https://github.com/dallay/cvix/issues/TBD)
+
 ## [2.0.0](https://github.com/dallay/cvix/compare/v1.6.3...v2.0.0) (2025-12-20)
 
 ### ⚠ BREAKING CHANGES
