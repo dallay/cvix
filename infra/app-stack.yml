@@ -1,6 +1,10 @@
 # ============================================================================
-# Stack-compatible compose file (no 'include' support in Stack mode)
-# PostgreSQL and network definitions are merged inline
+# Stack-compatible compose file for Docker Swarm / Dokploy
+# ============================================================================
+# IMPORTANT: This file uses named volumes instead of bind mounts because
+# Docker Swarm does not support relative paths in bind mounts - the paths
+# would need to exist on ALL nodes in the swarm cluster.
+#
 # Stack name is provided via: docker stack deploy -c app-stack.yml <stack-name>
 # ============================================================================
 
@@ -19,8 +23,9 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgresql/data:/var/lib/postgresql/data
-      - ./postgresql/init-scripts:/docker-entrypoint-initdb.d
+      # Named volumes for Swarm compatibility
+      - postgresql_data:/var/lib/postgresql/data
+      # Note: init-scripts removed - use Liquibase migrations in backend instead
     networks:
       - backend
     restart: unless-stopped
@@ -84,36 +89,73 @@ services:
   # Frontend (Vue.js)
   # ========================================
   frontend:
-    image: dallay/cvix-webapp:latest
+    image: dallay/cvix-webapp:2.0.1-beta
     environment:
-      # Frontend runtime configuration
-      VITE_BACKEND_URL: ${BACKEND_URL}
-      VITE_KEYCLOAK_URL: ${OAUTH2_SERVER_URL}
-      VITE_KEYCLOAK_REALM: ${REALM}
-      VITE_KEYCLOAK_CLIENT_ID: ${CLIENT_ID}
+      # Nginx runtime configuration (required by docker-entrypoint.sh)
+      # VITE_* variables are build-time only - they are baked into JS during build
+      BACKEND_URL: ${BACKEND_URL}
+      CSP_SCRIPT_SRC: ${CSP_SCRIPT_SRC:-'self' 'unsafe-inline'}
+      CSP_STYLE_SRC: ${CSP_STYLE_SRC:-'self' 'unsafe-inline'}
 
-      # Public webapp URL
-      PUBLIC_BASE_WEBAPP_URL_PROD: ${PUBLIC_BASE_WEBAPP_URL_PROD}
-
-      # Node environment
-      NODE_ENV: production
-
-    # Port exposed for Traefik routing (configured via Dokploy UI)
+    # Port exposed for Traefik routing
     expose:
       - 8080
 
     networks:
       - dokploy-network
+
     restart: unless-stopped
+
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
 
+    # Traefik labels for Dokploy routing
+    # NOTE: Docker Swarm does NOT interpolate variables in deploy.labels!
+    # Domains must be hardcoded here or use Traefik file provider.
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == fenix-icloud
+      
+      labels:
+        # Enable Traefik for this service
+        - "traefik.enable=true"
+
+        # HTTP Router (port 80)
+        - "traefik.http.routers.cvix-frontend.rule=Host(`app.profiletailors.com`)"
+        - "traefik.http.routers.cvix-frontend.entrypoints=web"
+        - "traefik.http.routers.cvix-frontend.middlewares=redirect-to-https@docker"
+
+        # HTTPS Router (port 443)
+        - "traefik.http.routers.cvix-frontend-secure.rule=Host(`app.profiletailors.com`)"
+        - "traefik.http.routers.cvix-frontend-secure.entrypoints=websecure"
+        - "traefik.http.routers.cvix-frontend-secure.tls=true"
+        - "traefik.http.routers.cvix-frontend-secure.tls.certresolver=letsencrypt"
+
+        # Service configuration
+        - "traefik.http.services.cvix-frontend.loadbalancer.server.port=8080"
+
+        # Security headers middleware (use @swarm since services are deployed via Docker Swarm)
+        - "traefik.http.middlewares.cvix-frontend-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+        - "traefik.http.middlewares.cvix-frontend-headers.headers.stsSeconds=31536000"
+        - "traefik.http.middlewares.cvix-frontend-headers.headers.stsIncludeSubdomains=true"
+        - "traefik.http.middlewares.cvix-frontend-headers.headers.stsPreload=true"
+        - "traefik.http.routers.cvix-frontend-secure.middlewares=cvix-frontend-headers@swarm"
+
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
   backend:
-    image: dallay/cvix-engine:latest
+    image: dallay/cvix-engine:2.0.1-beta
     environment:
       # JVM Options for production-like setup
       JAVA_OPTS: >-
@@ -136,14 +178,14 @@ services:
       # Keycloak / Auth configuration
       REALM: ${REALM}
       CLIENT_ID: ${CLIENT_ID}
-      # Point to secret file location
-      CLIENT_SECRET_FILE: /run/secrets/client_secret
+      # Point to secret file location (Docker mounts with target name in UPPERCASE)
+      CLIENT_SECRET_FILE: /run/secrets/CLIENT_SECRET
 
       # Admin / test helpers
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_REALM: ${ADMIN_REALM}
       ADMIN_REALM_USERNAME: ${ADMIN_REALM_USERNAME}
-      ADMIN_REALM_PASSWORD_FILE: /run/secrets/admin_realm_password
+      ADMIN_REALM_PASSWORD_FILE: /run/secrets/ADMIN_REALM_PASSWORD
 
       # Keycloak host references
       KEYCLOAK_URL: ${KEYCLOAK_URL}
@@ -162,11 +204,11 @@ services:
       PERSIST_LATEX_FILES: ${PERSIST_LATEX_FILES}
 
       # Email / Notification
-      SENDGRID_API_KEY_FILE: /run/secrets/sendgrid_api_key
+      SENDGRID_API_KEY_FILE: /run/secrets/SENDGRID_API_KEY
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
-      SMTP_USERNAME_FILE: /run/secrets/smtp_username
-      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      SMTP_USERNAME_FILE: /run/secrets/SMTP_USERNAME
+      SMTP_PASSWORD_FILE: /run/secrets/SMTP_PASSWORD
       SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
       SMTP_FROM_NAME: ${SMTP_FROM_NAME}
 
@@ -179,35 +221,35 @@ services:
 
       # SSL/TLS
       SSL_KEY_ALIAS: ${SSL_KEY_ALIAS}
-      SSL_KEYSTORE_PASSWORD_FILE: /run/secrets/ssl_keystore_password
+      SSL_KEYSTORE_PASSWORD_FILE: /run/secrets/SSL_KEYSTORE_PASSWORD
       SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
 
       # Docker Socket Proxy for PDF generation (secure remote Docker API)
       DOCKER_HOST: tcp://docker-socket-proxy:2375
+      WAITLIST_IP_HMAC_SECRET: /run/secrets/WAITLIST_IP_HMAC_SECRET
 
     secrets:
       - source: client_secret
-        target: client_secret
+        target: CLIENT_SECRET
       - source: admin_realm_password
-        target: admin_realm_password
+        target: ADMIN_REALM_PASSWORD
       - source: sendgrid_api_key
-        target: sendgrid_api_key
+        target: SENDGRID_API_KEY
       - source: smtp_username
-        target: smtp_username
+        target: SMTP_USERNAME
       - source: smtp_password
-        target: smtp_password
+        target: SMTP_PASSWORD
       - source: ssl_keystore_password
-        target: ssl_keystore_password
+        target: SSL_KEYSTORE_PASSWORD
+      - source: waitlist_ip_hmac_secret
+        target: WAITLIST_IP_HMAC_SECRET
 
     volumes:
-      # Persist LaTeX output if enabled
-      - ./data/latex:/app/latex-output
-
+      # Named volumes for Swarm compatibility
+      # LaTeX output files (if PERSIST_LATEX_FILES=true)
+      - latex_output:/app/latex-output
       # Application logs
-      - ./logs/backend:/app/logs
-
-      # SSL keystore (if using file-based)
-      - ./ssl:/app/ssl:ro
+      - backend_logs:/app/logs
 
     # Port exposed for Traefik routing (configured via Dokploy UI)
     expose:
@@ -226,14 +268,49 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8080' || exit 1"]
+      interval: 60s
+      timeout: 30s
+      retries: 10
+      start_period: 120s
 
-    # Resource limits (prod-like constraints)
+    # Resource limits and Traefik labels
+    # NOTE: Docker Swarm does NOT interpolate variables in deploy.labels!
+    # Domains must be hardcoded here or use Traefik file provider.
     deploy:
+      placement:
+        constraints:
+          - node.hostname == fenix-icloud
+      
+      labels:
+        # Enable Traefik for this service
+        - "traefik.enable=true"
+
+        # HTTP Router (port 80)
+        - "traefik.http.routers.cvix-backend.rule=Host(`api.profiletailors.com`)"
+        - "traefik.http.routers.cvix-backend.entrypoints=web"
+        - "traefik.http.routers.cvix-backend.middlewares=redirect-to-https@docker"
+
+        # HTTPS Router (port 443)
+        - "traefik.http.routers.cvix-backend-secure.rule=Host(`api.profiletailors.com`)"
+        - "traefik.http.routers.cvix-backend-secure.entrypoints=websecure"
+        - "traefik.http.routers.cvix-backend-secure.tls=true"
+        - "traefik.http.routers.cvix-backend-secure.tls.certresolver=letsencrypt"
+
+        # Service configuration
+        - "traefik.http.services.cvix-backend.loadbalancer.server.port=8080"
+
+        # Security headers middleware (use @swarm since services are deployed via Docker Swarm)
+        - "traefik.http.middlewares.cvix-backend-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+        - "traefik.http.middlewares.cvix-backend-headers.headers.stsSeconds=31536000"
+        - "traefik.http.middlewares.cvix-backend-headers.headers.stsIncludeSubdomains=true"
+        - "traefik.http.middlewares.cvix-backend-headers.headers.stsPreload=true"
+        - "traefik.http.routers.cvix-backend-secure.middlewares=cvix-backend-headers@swarm"
+
+        # Rate limiting (optional but recommended for APIs)
+        - "traefik.http.middlewares.cvix-backend-ratelimit.ratelimit.average=100"
+        - "traefik.http.middlewares.cvix-backend-ratelimit.ratelimit.burst=50"
+
       resources:
         limits:
           cpus: '2.0'
@@ -278,6 +355,10 @@ secrets:
     external: true
     name: ssl_keystore_password
 
+  waitlist_ip_hmac_secret:
+    external: true
+    name: waitlist_ip_hmac_secret
+
 # ============================================================================
 # Networks Configuration
 # ============================================================================
@@ -288,3 +369,20 @@ networks:
 
   # Internal network for backend-database communication
   backend:
+
+# ============================================================================
+# Named Volumes Configuration
+# ============================================================================
+# Named volumes are required for Docker Swarm because bind mounts with
+# relative paths don't work - the paths would need to exist on ALL nodes.
+# These volumes are automatically created and managed by Docker.
+# ============================================================================
+volumes:
+  # PostgreSQL data persistence
+  postgresql_data:
+
+  # Backend application logs
+  backend_logs:
+
+  # LaTeX output files for PDF generation
+  latex_output:

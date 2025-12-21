@@ -1,157 +1,316 @@
-# Infrastructure Services
+# Infrastructure
 
-This directory contains the infrastructure configuration for the cvix application, including
-database, authentication, email testing, and SSL certificate management.
+This directory contains all Docker Compose configurations and infrastructure setup for the Resume Generator application.
 
-## Quick Start
+## Directory Structure
 
-### 1. Set Up Environment Variables
-
-Before running any Docker Compose commands, you need to create a `.env` file in this directory (`infra/`):
-
-```bash
-cd infra/
-cp .env.example .env
+```text
+infra/
+├── grafana/                      # Grafana dashboards and configuration
+├── keycloak/                     # Keycloak realm configuration and setup
+├── maildev/                      # Local mail server for development
+├── postgresql/                   # PostgreSQL initialization scripts
+├── prometheus/                   # Prometheus alerts configuration
+├── secrets/                      # Secrets management documentation
+├── .env.example                  # Environment variables template
+├── app-stack.yml                 # Production-ready stack for Docker Swarm/Dokploy ✨
+├── app.yml                       # Main application services (frontend + backend)
+├── common.yml                    # Shared configurations
+├── compose.yaml                  # Root compose file (includes all services)
+├── DOCKER_DEPLOYMENT.md          # Docker Compose deployment guide
+├── DOKPLOY_DEPLOYMENT.md         # Dokploy deployment guide (production) ✨
+└── README.md                     # This file
 ```
 
-Then edit `.env` and adjust the values for your environment (database credentials, URLs, API keys, etc.).
+## Getting Started
 
-**Important**: The `.env` file is automatically loaded by Docker Compose and is gitignored to prevent accidental commits of sensitive data.
+### Prerequisites
 
-### 2. Run Docker Compose
+- Docker 27.4.0+
+- Docker Compose 2.29.0+
+- Make (optional, for convenience)
 
-From the `infra/` directory, start all services:
+### Local Development
+
+1. Copy the environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Start the infrastructure:
+   ```bash
+   docker compose up -d
+   ```
+
+3. Access the services:
+   - Frontend: <http://webapp.localhost>
+   - Backend: <http://backend.localhost>
+   - Keycloak: <http://keycloak.localhost:8080>
+   - Grafana: <http://grafana.localhost:3000>
+   - MailDev: <http://maildev.localhost:1080>
+
+### Production Deployment
+
+We support two production deployment strategies:
+
+#### Option 1: Dokploy (Recommended)
+
+**Dokploy** is a self-hosted PaaS built on Docker Swarm with Traefik for automatic HTTPS and routing.
+
+- **Stack file**: `app-stack.yml`
+- **Guide**: [DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md)
+- **Features**:
+  - Automatic HTTPS with Let's Encrypt
+  - Zero-downtime deployments
+  - Built-in secrets management
+  - Traefik routing and load balancing
+  - Health checks and auto-recovery
+
+**Quick deploy:**
 
 ```bash
-docker-compose -f app.yml up -d
+# Create secrets first (see DOKPLOY_DEPLOYMENT.md)
+docker secret create client_secret <(echo -n "your-secret")
+# ... create other secrets ...
+
+# Deploy stack
+docker stack deploy -c app-stack.yml cvix
 ```
 
-This command will:
+#### Option 2: Docker Compose
 
-- Load all environment variables from `.env`
-- Start PostgreSQL, Keycloak, and other services
-- Include all referenced compose files (`common.yml`, `postgresql/`, `keycloak/`, etc.)
+For simpler deployments without Traefik or orchestration:
 
-### 3. Verify Services
+- **Stack file**: `compose.yaml`
+- **Guide**: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 
-Check that services are running:
+## Services Overview
 
-```bash
-docker-compose -f app.yml ps
-```
+### Application Services (Production)
+
+| Service                | Purpose                                  | Port | Health Check |
+|------------------------|------------------------------------------|------|--------------|
+| **frontend**           | Vue.js SPA served via Nginx              | 8080 | HTTP /       |
+| **backend**            | Spring Boot API with Kotlin              | 8080 | Actuator     |
+| **postgresql**         | PostgreSQL database                      | 5432 | pg_isready   |
+| **docker-socket-proxy**| Secure Docker API proxy for PDF generation | 2375 | TCP check    |
+
+### Infrastructure Services (Development Only)
+
+- **keycloak**: Authentication and authorization
+- **maildev**: Local mail server for development
+- **grafana**: Monitoring dashboards
+- **prometheus**: Metrics collection
 
 ## Environment Variables
 
-All services are configured via environment variables defined in `.env`. Key variables include:
+All required environment variables are documented in `.env.example`. Key variables:
 
-- **Database**: `POSTGRESQL_USER`, `POSTGRESQL_PASSWORD`, `DATABASE_URL`
-- **Keycloak**: `KEYCLOAK_ADMIN`, `KEYCLOAK_ADMIN_PASSWORD`, `KC_HOSTNAME`
-- **Backend**: `BACKEND_URL`, `OAUTH2_SERVER_URL`, `CORS_ALLOWED_ORIGINS`
-- **Email**: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
-- **PDF Generation**: `PDF_DOCKER_IMAGE`, `PDF_MAX_CONCURRENT_CONTAINERS`, etc.
+### Application
 
-For a complete list of variables and their descriptions, see `.env.example`.
+- `BACKEND_URL`: Backend API URL
+- `DATABASE_URL`: PostgreSQL connection string
+- `KEYCLOAK_URL`: Keycloak authentication server URL
+- `CORS_ALLOWED_ORIGINS`: Frontend origins for CORS
 
-## Services
+### Traefik (Dokploy only)
 
-### PostgreSQL Database
+- `FRONTEND_DOMAIN`: Frontend domain (e.g., `app.example.com`)
+- `BACKEND_DOMAIN`: Backend API domain (e.g., `api.example.com`)
+- `CERT_RESOLVER`: Traefik certificate resolver name (e.g., `letsencrypt`)
 
-- **Location**: `postgresql/`
-- **Port**: 5432
-- **Configuration**: Database initialization scripts and Docker Compose setup
+### Security
 
-### Keycloak Authentication
+- `CSP_SCRIPT_SRC`: Content Security Policy script-src directive
+- `CSP_STYLE_SRC`: Content Security Policy style-src directive
 
-- **Location**: `keycloak/`
-- **Port**: 9080 (HTTP), 9443 (HTTPS)
-- **Configuration**: Realm configuration and themes
+**⚠️ Production Security:**
 
-### GreenMail Email Testing
+- **NEVER** use `'unsafe-inline'` in production CSP headers
+- Use **strong, randomly generated passwords** for all credentials
+- Ensure CORS origins are **specific domains**, never `*`
 
-- **Location**: `greenmail/`
-- **Ports**:
-  - 3025 (SMTP)
-  - 3110 (POP3)
-  - 3143 (IMAP)
-  - 3465 (SMTPS)
-  - 3993 (IMAPS)
-  - 3995 (POP3S)
-  - 8080 (Web Interface)
-- **Configuration**: Test email server for development and testing
+See `.env.example` for complete list and descriptions.
 
-### SSL Certificates
+## Secrets Management
 
-- **Location**: `ssl/`
-- **Configuration**: Local SSL certificates for HTTPS development
+For production, **always use Docker secrets** for sensitive values:
 
-## SSL Certificate and Keystore Generation Script
+```bash
+echo -n "secret-value" | docker secret create secret_name -
+```
 
-This repository contains a script to generate SSL certificates and keystores using `mkcert`, and configure them for a Spring Boot application. The script will generate PEM files (`key.pem` and `cert.pem`), a PKCS12 keystore (`keystore.p12`), and optionally a Java KeyStore (JKS) (`keystore.jks`).
+### Required Secrets
 
-## Prerequisites
+| Secret Name               | Purpose                         |
+|---------------------------|---------------------------------|
+| `client_secret`           | OAuth2 client secret            |
+| `admin_realm_password`    | Keycloak admin password         |
+| `sendgrid_api_key`        | SendGrid API key (if using)     |
+| `smtp_username`           | SMTP username                   |
+| `smtp_password`           | SMTP password                   |
+| `ssl_keystore_password`   | SSL keystore password           |
 
-Ensure the following tools are installed on your system:
+See [secrets/README.md](secrets/README.md) for more details.
+
+## Health Checks
+
+All services include health checks. Check status:
+
+### Local Development
+
+```bash
+docker compose ps
+```
+
+### Production (Docker Swarm)
+
+```bash
+docker stack services cvix
+docker service ps cvix_frontend
+docker service ps cvix_backend
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Nginx Permission Denied
+
+**Error:** `nginx: [alert] could not open error log file: open() "/var/log/nginx/error.log" failed (13: Permission denied)`
+
+**Cause:** Volume mount overwriting container permissions.
+
+**Solution:** **Do NOT mount nginx log directories**. Use Docker logs instead:
+
+```bash
+docker logs <container-id> -f
+# or for Docker Swarm:
+docker service logs cvix_frontend -f
+```
+
+#### 2. Traefik Not Routing Traffic
+
+**Symptoms:** 404 or "Service Unavailable" when accessing domains.
+
+**Solutions:**
+
+1. Verify Traefik labels are applied:
+   ```bash
+   docker service inspect cvix_frontend --pretty | grep -A 20 Labels
+   ```
+
+2. Verify `dokploy-network` exists and is attached:
+   ```bash
+   docker network ls | grep dokploy-network
+   docker service inspect cvix_frontend --format '{{json .Spec.Networks}}' | jq
+   ```
+
+3. Check DNS resolution:
+   ```bash
+   nslookup app.example.com
+   ```
+
+#### 3. Backend Can't Connect to PostgreSQL
+
+**Error:** `Connection refused` or `Unknown host: postgresql`
+
+**Solutions:**
+
+1. Wait for PostgreSQL healthcheck to pass:
+   ```bash
+   docker service ps cvix_postgresql
+   ```
+
+2. Verify network connectivity:
+   ```bash
+   docker exec -it $(docker ps -q -f name=cvix_backend) sh
+   nslookup postgresql
+   nc -zv postgresql 5432
+   ```
+
+3. Check database credentials match in `.env` and PostgreSQL service.
+
+### Logs
+
+View service logs:
+
+#### Local Development
+
+```bash
+docker compose logs -f [service_name]
+```
+
+#### Production (Docker Swarm)
+
+```bash
+docker service logs cvix_[service_name] -f
+```
+
+## Monitoring
+
+### Local Development
+
+- **Grafana**: <http://grafana.localhost:3000>
+- **Prometheus**: <http://prometheus.localhost:9090>
+- **MailDev**: <http://maildev.localhost:1080>
+
+### Production
+
+- **Backend Health**: `https://api.example.com/actuator/health`
+- **Frontend Health**: `https://app.example.com/` (should return 200)
+
+## Additional Documentation
+
+- [Docker Deployment Guide](DOCKER_DEPLOYMENT.md) - Standard Docker Compose deployment
+- [Dokploy Deployment Guide](DOKPLOY_DEPLOYMENT.md) - Production deployment with Traefik (recommended)
+- [Secrets Management](secrets/README.md) - How to manage secrets securely
+
+## Production Readiness Checklist
+
+Before deploying to production, ensure:
+
+- [ ] All secrets created in Docker Swarm/Dokploy
+- [ ] Environment variables configured in `.env` (no default/example values)
+- [ ] Domain names configured and DNS pointing to server
+- [ ] SSL certificates configured (Let's Encrypt via Traefik)
+- [ ] CSP headers hardened (no `'unsafe-inline'`)
+- [ ] CORS origins restricted to specific domains
+- [ ] Database backups configured
+- [ ] Monitoring and alerting set up
+- [ ] Log aggregation configured
+- [ ] Incident response procedures documented
+
+See [DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md) for detailed production hardening checklist.
+
+---
+
+## SSL Certificate Generation (Local Development)
+
+For local HTTPS development, use the included script to generate SSL certificates with `mkcert`.
+
+### Prerequisites
 
 - [mkcert](https://github.com/FiloSottile/mkcert)
 - [openssl](https://www.openssl.org/)
 - `keytool` (comes with JDK)
 
-## Script Usage
+### Generate Certificates
+
+```bash
+cd infra/
+./generate-ssl-certificate.sh
+```
 
 The script will:
 
-1. Create an SSL directory.
-2. Generate a private key and certificate using `mkcert`.
-3. Convert the generated PEM files into a PKCS12 keystore.
-4. Optionally convert the PKCS12 keystore to a JKS keystore.
-5. Prompt for a keystore password, use an environment variable if set, or use a default password.
-
-### Running the Script
-
-1. **Clone the repository** (if applicable):
-
-    ```sh
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
-
-2. **Make the script executable**:
-
-    ```sh
-    chmod +x generate-ssl-certificate.sh
-    ```
-
-3. **Run the script**:
-
-    ```sh
-    ./generate-ssl-certificate.sh
-    ```
-
-   You can specify a custom base directory as the first argument:
-
-    ```sh
-    ./generate-ssl-certificate.sh /path/to/directory
-    ```
-
-   The script will prompt you to enter a keystore password. If you don't provide one, it will use the password from the environment variable `SSL_KEYSTORE_PASSWORD` if set, or default to `changeme`.
-
-### Environment Variable
-
-You can set the keystore password via an environment variable `SSL_KEYSTORE_PASSWORD`:
-
-```sh
-export SSL_KEYSTORE_PASSWORD=mysecurepassword
-```
-
-Or in Windows:
-
-```shell
-set SSL_KEYSTORE_PASSWORD=mysecurepassword
-```
+1. Create an `ssl/` directory
+2. Generate private key and certificate using `mkcert`
+3. Convert PEM files to PKCS12 keystore (`keystore.p12`)
+4. Optionally convert to JKS keystore (`keystore.jks`)
+5. Use password from `SSL_KEYSTORE_PASSWORD` env var or prompt
 
 ### Generated Files
-
-The script will generate the following files in the ssl directory:
 
 - `key.pem`: Private key
 - `cert.pem`: Certificate
