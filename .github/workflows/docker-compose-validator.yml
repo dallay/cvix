@@ -101,7 +101,7 @@ jobs:
             -not -name "app.yml" \
             -not -name "app-stack.yml" \
             -not -name "common.yml" \
-            | grep -E "services:|version:|networks:|volumes:" 2>/dev/null || true)
+            -exec grep -l -E "services:|version:|networks:|volumes:" {} \; 2>/dev/null || true)
 
           if [ -n "$SUSPICIOUS_FILES" ]; then
             echo "⚠️  Found YAML files that might be compose files but don't follow naming convention:"
@@ -195,6 +195,7 @@ jobs:
 
       - name: Validate common configuration
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating common.yml..."
           echo "================================================"
@@ -211,6 +212,7 @@ jobs:
 
       - name: Validate full application stack (with includes)
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating app.yml (full stack with includes)..."
           echo "================================================"
@@ -245,6 +247,7 @@ jobs:
 
       - name: Validate stack-compatible compose file
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating app-stack.yml (Swarm-compatible)..."
           echo "================================================"
@@ -315,14 +318,15 @@ jobs:
           echo ""
 
           # Search for TODO, FIXME, XXX, HACK markers in compose files
-          # Exclude comments that are just documentation headers
+          # Exclude comment lines: grep -rn output is "filename:linenum:content"
+          # so we filter lines matching "filename:linenum:# TODO" pattern
           FOUND_MARKERS=false
 
           if grep -rn "TODO\|FIXME\|XXX\|HACK" \
              --include="*.yml" \
              --include="*.yaml" \
              --exclude-dir=".github" \
-             . 2>/dev/null | grep -v "^#.*TODO.*:" ; then
+             . 2>/dev/null | grep -v ":[0-9]\+:[[:space:]]*#.*\(TODO\|FIXME\|XXX\|HACK\)" ; then
             echo ""
             echo "⚠️  Found TODO/FIXME markers in compose files"
             echo ""
@@ -356,6 +360,7 @@ jobs:
 
       - name: Lint compose files with yamllint
         run: |
+          # shellcheck disable=SC2016  # Single quotes in heredoc prevent expansion intentionally
           echo ""
           echo "🧹 Linting YAML files..."
           echo "================================================"
@@ -398,6 +403,7 @@ jobs:
       - name: Generate validation report
         if: always()
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "📊 Validation Report"
           echo "================================================"
@@ -418,11 +424,16 @@ jobs:
             -not -name "app-stack.yml" \
             -not -name "common.yml" | wc -l)
 
+          # Count stack and common files dynamically
+          STACK_COUNT=$(find . -maxdepth 1 -type f \
+            \( -name "app.yml" -o -name "app-stack.yml" \) 2>/dev/null | wc -l)
+          COMMON_COUNT=$(find . -maxdepth 1 -type f -name "common.yml" 2>/dev/null | wc -l)
+
           echo "📈 Statistics:"
           echo "   Total compose files: $TOTAL_COMPOSE"
           echo "   Individual service files: $INDIVIDUAL_COMPOSE"
-          echo "   Stack files: 2 (app.yml, app-stack.yml)"
-          echo "   Common config: 1 (common.yml)"
+          echo "   Stack files: $STACK_COUNT"
+          echo "   Common config: $COMMON_COUNT"
           echo ""
 
           echo "📋 All compose files:"
@@ -453,5 +464,5 @@ jobs:
         run: |
           echo ""
           echo "🧹 Cleaning up temporary files..."
-          rm -f infra/.env
+          rm -f .env
           echo "✅ Cleanup completed"
