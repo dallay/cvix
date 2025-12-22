@@ -71,6 +71,7 @@ jobs:
 
       - name: Validate compose file naming conventions
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "📝 Validating compose file naming conventions..."
           echo "================================================"
@@ -123,6 +124,7 @@ jobs:
 
       - name: Validate individual compose files
         run: |
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           set -euo pipefail  # Strict error handling
 
           echo ""
@@ -246,6 +248,15 @@ jobs:
           echo ""
           echo "🔍 Validating app-stack.yml (Swarm-compatible)..."
           echo "================================================"
+
+          # Check if app-stack.yml exists (optional file)
+          if [ ! -f app-stack.yml ]; then
+            echo "⏭️  Skipping: app-stack.yml does not exist"
+            echo "   This is an optional Swarm/Stack compatible version"
+            echo "   Create it by merging app.yml + included files if needed"
+            exit 0
+          fi
+
           echo "   This is the Swarm/Stack compatible version"
           echo "   (no 'include' directives, all merged inline)"
           echo ""
