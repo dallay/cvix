@@ -334,9 +334,11 @@ test.describe("Security", () => {
 	});
 
 	test("should use HTTPS in URLs", async ({ page }) => {
-		// CI runs on HTTP (baseURL: http://localhost:9876), skip test in CI
+		// Skip this test when running in HTTP mode:
+		// - CI runs on HTTP (baseURL: http://localhost:9876)
+		// - Local dev without SSL certificates (FORCE_HTTP=true)
 		// In deployment/production, this test ensures HTTPS is enforced
-		if (process.env.CI) {
+		if (process.env.CI || process.env.FORCE_HTTP === "true") {
 			test.skip();
 		}
 
