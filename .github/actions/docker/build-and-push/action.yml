@@ -113,12 +113,11 @@ runs:
         platforms: ${{ inputs.platforms }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        # Multi-source cache with fallback: GHA cache (fast) → Registry cache (reliable)
+        # Registry-based cache (GHA cache temporarily disabled due to service outage)
+        # See: https://www.githubstatus.com/
         cache-from: |
-          type=gha
           type=registry,ref=${{ inputs.registry-ghcr }}/${{ inputs.github-owner }}/${{ inputs.image-name }}:buildcache
         cache-to: |
-          type=gha,mode=max
           type=registry,ref=${{ inputs.registry-ghcr }}/${{ inputs.github-owner }}/${{ inputs.image-name }}:buildcache,mode=max
         build-args: ${{ inputs.build-args }}
 
