@@ -172,3 +172,7 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 ## ❓ Questions?
 
 Open an issue, or start with `.ruler/general.md` and `.ruler/reference/architecture.md` for a guided tour of the internals.
+
+
+---
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dallay/cvix)
