@@ -43,29 +43,40 @@ ENV PUBLIC_BASE_URL=${BASE_URL}
 WORKDIR /app/client/apps/marketing
 RUN pnpm build
 
-# Production stage - using nginx for static file serving
-FROM nginx:alpine AS production
+# =============================================================================
+# Production stage - using nginx-unprivileged for non-root operation
+# =============================================================================
+# Why nginx-unprivileged instead of nginx:alpine?
+# - Already configured to run as non-root user (UID 101)
+# - Default port 8080 (non-privileged)
+# - PID file in /tmp/nginx.pid
+# - Temp paths already configured in /tmp/
+# - No permission issues with /dev/stdout or /dev/stderr in Docker Swarm
+# - Maintained by Nginx Inc. with weekly security updates
+# =============================================================================
+FROM nginxinc/nginx-unprivileged:alpine AS production
+
+# Switch to root temporarily to install packages and configure
+USER root
 
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Create required directories with proper permissions for non-root user
-# Nginx uses /tmp/nginx/* for temp files (configured in nginx.conf)
-RUN mkdir -p /tmp/nginx \
-    /var/log/nginx \
-    && chown -R 101:101 /tmp/nginx /var/log/nginx /etc/nginx/conf.d
-
-# Copy custom nginx configuration (must be done as root before switching user)
+# Copy custom nginx configuration
 COPY client/apps/marketing/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files from build stage with proper ownership
-COPY --from=build --chown=101:101 /app/client/apps/marketing/dist /usr/share/nginx/html
+COPY --from=build --chown=nginx:nginx /app/client/apps/marketing/dist /usr/share/nginx/html
 
-# Expose port 8080 (non-privileged port)
+# Create log files and set ownership for non-root user
+RUN touch /tmp/access.log /tmp/error.log && \
+    chown nginx:nginx /tmp/access.log /tmp/error.log
+
+# Expose port 8080 (non-privileged port, nginx-unprivileged default)
 EXPOSE 8080
 
 # Switch to non-root user (nginx)
-USER 101:101
+USER nginx
 
 # Health check using curl to verify the server is responding
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

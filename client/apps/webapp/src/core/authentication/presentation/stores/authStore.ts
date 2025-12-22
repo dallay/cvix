@@ -10,6 +10,14 @@ import { AuthHttpClient } from "../../infrastructure/http/AuthHttpClient.ts";
 import { authSessionStorage } from "../../infrastructure/storage/SessionStorage.ts";
 
 /**
+ * Validates that a user object has the minimum required fields to be considered valid.
+ * This prevents false positives when the API returns malformed data (e.g., HTML instead of JSON).
+ */
+function isValidUser(u: User | null): u is User {
+	return u !== null && typeof u.id === "string" && u.id.length > 0;
+}
+
+/**
  * Authentication store using Pinia
  */
 export const useAuthStore = defineStore("auth", () => {
@@ -20,7 +28,10 @@ export const useAuthStore = defineStore("auth", () => {
 	const error = ref<string | null>(null);
 
 	// Getters
-	const isAuthenticated = computed(() => !!user.value && !!session.value);
+	// User must have valid id to be considered authenticated (prevents HTML response issues)
+	const isAuthenticated = computed(
+		() => isValidUser(user.value) && !!session.value,
+	);
 	const userRoles = computed(() => user.value?.roles ?? []);
 	const hasRole = computed(
 		() => (role: string) => userRoles.value.includes(role),
@@ -120,6 +131,12 @@ export const useAuthStore = defineStore("auth", () => {
 
 		try {
 			const currentUser = await httpClient.getCurrentUser();
+
+			// Validate that we got a proper user object (not malformed data from HTML response)
+			if (!isValidUser(currentUser)) {
+				throw new Error("Invalid user data received from server");
+			}
+
 			user.value = currentUser;
 
 			// If we successfully got the user, it means we have a valid session

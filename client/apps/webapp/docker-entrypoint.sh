@@ -1,8 +1,21 @@
 #!/bin/sh
 set -e
 
-# Substitute environment variables in configuration templates
-# BACKEND_URL, CSP_SCRIPT_SRC, CSP_STYLE_SRC are required to be set
+# =============================================================================
+# Docker Entrypoint for Vue.js Webapp (nginx-unprivileged)
+# =============================================================================
+# This script:
+#   1. Validates required environment variables
+#   2. Substitutes variables in nginx config templates using envsubst
+#   3. Sets up log forwarding from /tmp/*.log to Docker stdout/stderr
+#   4. Drops to non-root user (nginx) and starts nginx
+#
+# Why log forwarding?
+#   - nginx-unprivileged writes logs to /tmp/ (writable by non-root)
+#   - Docker expects logs on /dev/stdout and /dev/stderr
+#   - In Docker Swarm, /dev/stdout is not writable by non-root users
+#   - Solution: Use tail -F to forward logs in background
+# =============================================================================
 
 echo "Validating required environment variables..."
 
@@ -35,6 +48,24 @@ envsubst '${BACKEND_URL} ${CSP_SCRIPT_SRC} ${CSP_STYLE_SRC}' < /etc/nginx/conf.d
 
 echo "✅ Configuration files generated successfully"
 
-# Drop privileges and start nginx as non-root user
-echo "Starting nginx as non-root user (UID 101)..."
-exec su-exec 101:101 nginx -g 'daemon off;'
+# Create empty log files (nginx needs them to exist before tail -F)
+touch /tmp/access.log /tmp/error.log
+chown nginx:nginx /tmp/access.log /tmp/error.log
+
+# Create /var/log/nginx symlinks to /tmp to suppress nginx startup warning
+# nginx binary tries to open /var/log/nginx/error.log BEFORE reading config
+mkdir -p /var/log/nginx
+ln -sf /tmp/error.log /var/log/nginx/error.log
+ln -sf /tmp/access.log /var/log/nginx/access.log
+chown -R nginx:nginx /var/log/nginx
+
+# Set up log forwarding to Docker stdout/stderr
+# This runs as root (PID 1 owns stdout/stderr) and forwards logs from nginx
+echo "Setting up log forwarding to Docker stdout/stderr..."
+tail -F /tmp/access.log &
+tail -F /tmp/error.log >&2 &
+
+# Start nginx as non-root user
+# nginx-unprivileged is already configured to run as UID 101 (nginx user)
+echo "Starting nginx as non-root user..."
+exec su-exec nginx nginx -g 'daemon off;'

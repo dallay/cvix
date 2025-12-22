@@ -275,9 +275,25 @@ export class AuthHttpClient extends BaseHttpClient {
 	/**
 	 * Get the current authenticated user - Maps to GET /api/account
 	 * Note: Error handling is done by the response interceptor
+	 * @throws AuthenticationError if response is not valid JSON or missing required fields
 	 */
 	async getCurrentUser(): Promise<User> {
 		const response = await this.get<UserResponse>("/account");
+
+		// Validate response is a proper object with required fields
+		// This catches cases where the server returns HTML (e.g., SPA fallback) instead of JSON
+		if (
+			!response ||
+			typeof response !== "object" ||
+			typeof response.id !== "string" ||
+			!response.id
+		) {
+			throw new AuthenticationError(
+				"Invalid response from server. Please check your network connection.",
+				"INVALID_RESPONSE",
+				0,
+			);
+		}
 
 		return {
 			id: response.id,
