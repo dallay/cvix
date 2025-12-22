@@ -1,3 +1,9 @@
+## [2.0.4](https://github.com/dallay/cvix/compare/v2.0.3...v2.0.4) (2025-12-22)
+
+### 🐛 Bug Fixes
+
+* form style ([#451](https://github.com/dallay/cvix/issues/451)) ([d37cdb9](https://github.com/dallay/cvix/commit/d37cdb908baee4ed1007ff34db566009987ce707))
+
 ## [2.0.3](https://github.com/dallay/cvix/compare/v2.0.2...v2.0.3) (2025-12-22)
 
 ### 🐛 Bug Fixes
