@@ -24,6 +24,12 @@ http {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
+    # WebSocket connection upgrade mapping
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
     # Log format for structured logging (JSON for easy parsing)
     log_format json_combined escape=json
         '{'
@@ -70,6 +76,89 @@ http {
         root /usr/share/nginx/html;
         index index.html;
 
+        # =================================================================
+        # API Reverse Proxy
+        # =================================================================
+        # Proxies all /api/* requests to the backend server
+        # This enables:
+        #   - Same-origin requests (no CORS issues)
+        #   - Runtime backend URL configuration
+        #   - Centralized API gateway pattern
+        # =================================================================
+        location /api/ {
+            proxy_pass ${BACKEND_URL}/api/;
+            proxy_http_version 1.1;
+
+            # Forward original client information
+            proxy_set_header Host $proxy_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+
+            # WebSocket support
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+
+            # Timeouts
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+
+            # Buffer settings - sized for modern APIs with JWT/OAuth headers
+            # 8k handles most JWT tokens and verbose security headers
+            proxy_buffering on;
+            proxy_buffer_size 8k;
+            proxy_buffers 8 8k;
+
+            # Request body size limit for file uploads (profile photos, PDF imports)
+            client_max_body_size 16m;
+        }
+
+        # OAuth2/Auth endpoints proxy
+        location /oauth2/ {
+            proxy_pass ${BACKEND_URL}/oauth2/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $proxy_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+
+            # Timeouts - OAuth flows can be slow (Keycloak redirects, token exchange)
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+
+            # Larger buffers for OAuth responses (tokens, cookies, security headers)
+            proxy_buffering on;
+            proxy_buffer_size 8k;
+            proxy_buffers 8 8k;
+        }
+
+        # Actuator endpoints proxy (health checks, metrics)
+        # Note: Sensitive actuator endpoints should be secured at Spring Boot level
+        # via management.endpoints.web.exposure.include and Spring Security
+        location /actuator/ {
+            proxy_pass ${BACKEND_URL}/actuator/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $proxy_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+
+            # Shorter timeouts - health checks should be fast
+            proxy_connect_timeout 30s;
+            proxy_send_timeout 30s;
+            proxy_read_timeout 30s;
+        }
+
+        # =================================================================
+        # Static Content & SPA
+        # =================================================================
         location / {
             try_files $uri $uri/ /index.html;
         }
