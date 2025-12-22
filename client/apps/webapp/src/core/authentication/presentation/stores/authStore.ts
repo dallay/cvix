@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useWorkspaceStore } from "@/core/workspace/infrastructure/store/workspaceStore.ts";
+import { AuthenticationError } from "../../domain/errors/auth.errors.ts";
 import type { Session, User } from "../../domain/models/auth.model.ts";
 import type {
 	LoginFormData,
@@ -127,7 +128,11 @@ export const useAuthStore = defineStore("auth", () => {
 
 			// Validate that we got a proper user object (not malformed data from HTML response)
 			if (!isValidUser(currentUser)) {
-				throw new Error("Invalid user data received from server");
+				throw new AuthenticationError(
+					"Invalid user data received from server",
+					"INVALID_RESPONSE",
+					422,
+				);
 			}
 
 			user.value = currentUser;

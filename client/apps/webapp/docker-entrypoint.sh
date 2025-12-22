@@ -63,9 +63,10 @@ chown -R nginx:nginx /var/log/nginx
 cleanup() {
   echo "Shutting down..."
   kill $(jobs -p) 2>/dev/null || true
+  wait 2>/dev/null || true
   exit 0
 }
-trap cleanup SIGTERM SIGINT EXIT
+trap cleanup SIGTERM SIGINT
 
 # Set up log forwarding to Docker stdout/stderr
 # This runs as root (PID 1 owns stdout/stderr) and forwards logs from nginx
