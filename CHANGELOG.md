@@ -1,3 +1,9 @@
+## [2.0.3](https://github.com/dallay/cvix/compare/v2.0.2...v2.0.3) (2025-12-22)
+
+### 🐛 Bug Fixes
+
+* auth verification ([#450](https://github.com/dallay/cvix/issues/450)) ([da9873b](https://github.com/dallay/cvix/commit/da9873b916fb001acd9a2711e8561fb04b87350d))
+
 ## [2.0.2](https://github.com/dallay/cvix/compare/v2.0.1...v2.0.2) (2025-12-22)
 
 ### 🐛 Bug Fixes
