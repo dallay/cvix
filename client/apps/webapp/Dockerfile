@@ -98,6 +98,8 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Entrypoint handles:
 #   1. Validate required environment variables
 #   2. Substitute variables in nginx config templates
-#   3. Start nginx as non-root user
-# Note: We stay as root for entrypoint to do envsubst, then switch to nginx user
+#   3. Start nginx as non-root user using su-exec
+# Note: Entrypoint runs as root initially to perform envsubst,
+#       then explicitly switches to nginx user (UID 101) via su-exec before starting nginx.
+#       Do NOT add USER directive here - it would break envsubst.
 ENTRYPOINT ["/docker-entrypoint.sh"]

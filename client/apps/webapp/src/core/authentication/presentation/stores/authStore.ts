@@ -6,16 +6,9 @@ import type {
 	LoginFormData,
 	RegisterFormData,
 } from "../../domain/validators/auth.schema.ts";
+import { isValidUser } from "../../domain/validators/user.validator.ts";
 import { AuthHttpClient } from "../../infrastructure/http/AuthHttpClient.ts";
 import { authSessionStorage } from "../../infrastructure/storage/SessionStorage.ts";
-
-/**
- * Validates that a user object has the minimum required fields to be considered valid.
- * This prevents false positives when the API returns malformed data (e.g., HTML instead of JSON).
- */
-function isValidUser(u: User | null): u is User {
-	return u !== null && typeof u.id === "string" && u.id.length > 0;
-}
 
 /**
  * Authentication store using Pinia

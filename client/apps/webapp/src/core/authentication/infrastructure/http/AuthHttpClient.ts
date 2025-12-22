@@ -14,6 +14,7 @@ import type {
 	LoginFormData,
 	RegisterFormData,
 } from "../../domain/validators/auth.schema.ts";
+import { isValidUser } from "../../domain/validators/user.validator.ts";
 
 /**
  * Authentication API response types matching the OpenAPI contract
@@ -282,16 +283,11 @@ export class AuthHttpClient extends BaseHttpClient {
 
 		// Validate response is a proper object with required fields
 		// This catches cases where the server returns HTML (e.g., SPA fallback) instead of JSON
-		if (
-			!response ||
-			typeof response !== "object" ||
-			typeof response.id !== "string" ||
-			!response.id
-		) {
+		if (!isValidUser(response as unknown as User)) {
 			throw new AuthenticationError(
 				"Invalid response from server. Please check your network connection.",
 				"INVALID_RESPONSE",
-				0,
+				422,
 			);
 		}
 

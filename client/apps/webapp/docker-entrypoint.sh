@@ -59,11 +59,21 @@ ln -sf /tmp/error.log /var/log/nginx/error.log
 ln -sf /tmp/access.log /var/log/nginx/access.log
 chown -R nginx:nginx /var/log/nginx
 
+# Set up signal trap for graceful shutdown
+cleanup() {
+  echo "Shutting down..."
+  kill $(jobs -p) 2>/dev/null || true
+  exit 0
+}
+trap cleanup SIGTERM SIGINT EXIT
+
 # Set up log forwarding to Docker stdout/stderr
 # This runs as root (PID 1 owns stdout/stderr) and forwards logs from nginx
 echo "Setting up log forwarding to Docker stdout/stderr..."
 tail -F /tmp/access.log &
+ACCESS_PID=$!
 tail -F /tmp/error.log >&2 &
+ERROR_PID=$!
 
 # Start nginx as non-root user
 # nginx-unprivileged is already configured to run as UID 101 (nginx user)
