@@ -1,6 +1,11 @@
 name: common-cvix-infra
 
+# Networks are defined here for standalone usage of individual compose files
+# (e.g., running postgresql-compose.yml or keycloak-compose.yml independently)
+#
+# When these files are included by app.yml, the network definitions are inherited
+# from app.yml to prevent conflicts. Docker Compose merges network definitions
+# from all included files, using the first definition it encounters.
 networks:
   frontend:
-
   backend:

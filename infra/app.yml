@@ -267,3 +267,7 @@ secrets:
     file: ./secrets/smtp_password.txt
   ssl_keystore_password:
     file: ./secrets/ssl_keystore_password.txt
+
+networks:
+  frontend:
+  backend:

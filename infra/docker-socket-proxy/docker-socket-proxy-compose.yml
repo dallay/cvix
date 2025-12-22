@@ -1,8 +1,8 @@
 # Docker Socket Proxy for Backend PDF Generation
 # Provides restricted access to Docker API for creating ephemeral LaTeX containers
 
-# Note: This file is included by app.yml and app-stack.yml
-# It inherits the network definitions from common.yml via parent includes
+# Note: This file is included by app.yml
+# Networks are defined in the parent file (app.yml) to avoid conflicts
 
 services:
   docker-socket-proxy:
@@ -50,9 +50,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
-# Define networks for standalone validation
-# When included by parent files, the parent's network definition takes precedence
-networks:
-  backend:
-    driver: bridge

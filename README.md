@@ -165,7 +165,7 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 - 📖 [Canonical architecture & style rules](.ruler/)
 - 📝 [Docs site](docs/)
 - 🛡️ [Security policy](SECURITY.md)
-- 🐳 [Docker deployment guide](infra/DOCKER_DEPLOYMENT.md)
+- 🐳 [Docker deployment guide](infra/README.md)
 
 ---
 
