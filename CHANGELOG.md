@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/dallay/cvix/compare/v2.0.1...v2.0.2) (2025-12-22)
+
+### 🐛 Bug Fixes
+
+* **waitlist:** ✨ architecture dependencies ([#449](https://github.com/dallay/cvix/issues/449)) ([aac1017](https://github.com/dallay/cvix/commit/aac1017ef57d29009fec5b952c0e040121a9b497))
+
 ## [2.0.1](https://github.com/dallay/cvix/compare/v2.0.0...v2.0.1) (2025-12-21)
 
 ### 🐛 Bug Fixes
