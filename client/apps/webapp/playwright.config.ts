@@ -15,10 +15,13 @@ const defaultBackendForTests =
 	process.env.BACKEND_URL ??
 	"http://localhost:8080";
 
-// In CI, force HTTP mode to avoid SSL certificate issues
-const baseURL = process.env.CI
-	? "http://localhost:9876"
-	: process.env.BASE_URL || "https://localhost:9876";
+// Detect if SSL certificates exist (via FORCE_HTTP env var or presence of cert files)
+// In CI or when FORCE_HTTP is set, use HTTP. In local dev, default to HTTP unless certs exist.
+const hasSSLCerts = process.env.VITE_SSL_ENABLED === "true";
+const baseURL =
+	process.env.CI || process.env.FORCE_HTTP === "true" || !hasSSLCerts
+		? "http://localhost:9876"
+		: process.env.BASE_URL || "https://localhost:9876";
 
 export default defineConfig({
 	testDir: "./e2e",

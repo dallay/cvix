@@ -13,12 +13,9 @@ infra/
 ├── prometheus/                   # Prometheus alerts configuration
 ├── secrets/                      # Secrets management documentation
 ├── .env.example                  # Environment variables template
-├── app-stack.yml                 # Production-ready stack for Docker Swarm/Dokploy ✨
 ├── app.yml                       # Main application services (frontend + backend)
 ├── common.yml                    # Shared configurations
 ├── compose.yaml                  # Root compose file (includes all services)
-├── DOCKER_DEPLOYMENT.md          # Docker Compose deployment guide
-├── DOKPLOY_DEPLOYMENT.md         # Dokploy deployment guide (production) ✨
 └── README.md                     # This file
 ```
 
@@ -49,44 +46,7 @@ infra/
    - Grafana: <http://grafana.localhost:3000>
    - MailDev: <http://maildev.localhost:1080>
 
-### Production Deployment
-
-We support two production deployment strategies:
-
-#### Option 1: Dokploy (Recommended)
-
-**Dokploy** is a self-hosted PaaS built on Docker Swarm with Traefik for automatic HTTPS and routing.
-
-- **Stack file**: `app-stack.yml`
-- **Guide**: [DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md)
-- **Features**:
-  - Automatic HTTPS with Let's Encrypt
-  - Zero-downtime deployments
-  - Built-in secrets management
-  - Traefik routing and load balancing
-  - Health checks and auto-recovery
-
-**Quick deploy:**
-
-```bash
-# Create secrets first (see DOKPLOY_DEPLOYMENT.md)
-docker secret create client_secret <(echo -n "your-secret")
-# ... create other secrets ...
-
-# Deploy stack
-docker stack deploy -c app-stack.yml cvix
-```
-
-#### Option 2: Docker Compose
-
-For simpler deployments without Traefik or orchestration:
-
-- **Stack file**: `compose.yaml`
-- **Guide**: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
-
 ## Services Overview
-
-### Application Services (Production)
 
 | Service                | Purpose                                  | Port | Health Check |
 |------------------------|------------------------------------------|------|--------------|
@@ -94,37 +54,23 @@ For simpler deployments without Traefik or orchestration:
 | **backend**            | Spring Boot API with Kotlin              | 8080 | Actuator     |
 | **postgresql**         | PostgreSQL database                      | 5432 | pg_isready   |
 | **docker-socket-proxy**| Secure Docker API proxy for PDF generation | 2375 | TCP check    |
-
-### Infrastructure Services (Development Only)
-
-- **keycloak**: Authentication and authorization
-- **maildev**: Local mail server for development
-- **grafana**: Monitoring dashboards
-- **prometheus**: Metrics collection
+| **keycloak**           | Authentication and authorization         | 8080 | HTTP /       |
+| **maildev**            | Local mail server for development        | 1080 | HTTP /       |
+| **grafana**            | Monitoring dashboards                    | 3000 | HTTP /       |
+| **prometheus**         | Metrics collection                       | 9090 | HTTP /       |
 
 ## Environment Variables
 
 All required environment variables are documented in `.env.example`. Key variables:
 
-### Application
-
 - `BACKEND_URL`: Backend API URL
 - `DATABASE_URL`: PostgreSQL connection string
 - `KEYCLOAK_URL`: Keycloak authentication server URL
 - `CORS_ALLOWED_ORIGINS`: Frontend origins for CORS
-
-### Traefik (Dokploy only)
-
-- `FRONTEND_DOMAIN`: Frontend domain (e.g., `app.example.com`)
-- `BACKEND_DOMAIN`: Backend API domain (e.g., `api.example.com`)
-- `CERT_RESOLVER`: Traefik certificate resolver name (e.g., `letsencrypt`)
-
-### Security
-
 - `CSP_SCRIPT_SRC`: Content Security Policy script-src directive
 - `CSP_STYLE_SRC`: Content Security Policy style-src directive
 
-**⚠️ Production Security:**
+**⚠️ Security Notes:**
 
 - **NEVER** use `'unsafe-inline'` in production CSP headers
 - Use **strong, randomly generated passwords** for all credentials
@@ -189,29 +135,7 @@ docker logs <container-id> -f
 docker service logs cvix_frontend -f
 ```
 
-#### 2. Traefik Not Routing Traffic
-
-**Symptoms:** 404 or "Service Unavailable" when accessing domains.
-
-**Solutions:**
-
-1. Verify Traefik labels are applied:
-   ```bash
-   docker service inspect cvix_frontend --pretty | grep -A 20 Labels
-   ```
-
-2. Verify `dokploy-network` exists and is attached:
-   ```bash
-   docker network ls | grep dokploy-network
-   docker service inspect cvix_frontend --format '{{json .Spec.Networks}}' | jq
-   ```
-
-3. Check DNS resolution:
-   ```bash
-   nslookup app.example.com
-   ```
-
-#### 3. Backend Can't Connect to PostgreSQL
+#### 2. Backend Can't Connect to PostgreSQL
 
 **Error:** `Connection refused` or `Unknown host: postgresql`
 
@@ -219,12 +143,12 @@ docker service logs cvix_frontend -f
 
 1. Wait for PostgreSQL healthcheck to pass:
    ```bash
-   docker service ps cvix_postgresql
+   docker compose ps
    ```
 
 2. Verify network connectivity:
    ```bash
-   docker exec -it $(docker ps -q -f name=cvix_backend) sh
+   docker exec -it $(docker ps -q -f name=backend) sh
    nslookup postgresql
    nc -zv postgresql 5432
    ```
@@ -235,55 +159,97 @@ docker service logs cvix_frontend -f
 
 View service logs:
 
-#### Local Development
-
 ```bash
 docker compose logs -f [service_name]
 ```
 
-#### Production (Docker Swarm)
-
-```bash
-docker service logs cvix_[service_name] -f
-```
-
 ## Monitoring
-
-### Local Development
 
 - **Grafana**: <http://grafana.localhost:3000>
 - **Prometheus**: <http://prometheus.localhost:9090>
 - **MailDev**: <http://maildev.localhost:1080>
 
-### Production
-
-- **Backend Health**: `https://api.example.com/actuator/health`
-- **Frontend Health**: `https://app.example.com/` (should return 200)
-
 ## Additional Documentation
 
-- [Docker Deployment Guide](DOCKER_DEPLOYMENT.md) - Standard Docker Compose deployment
-- [Dokploy Deployment Guide](DOKPLOY_DEPLOYMENT.md) - Production deployment with Traefik (recommended)
 - [Secrets Management](secrets/README.md) - How to manage secrets securely
 
-## Production Readiness Checklist
+## Docker Compose Network Architecture
 
-Before deploying to production, ensure:
+### How Networks Are Defined
 
-- [ ] All secrets created in Docker Swarm/Dokploy
-- [ ] Environment variables configured in `.env` (no default/example values)
-- [ ] Domain names configured and DNS pointing to server
-- [ ] SSL certificates configured (Let's Encrypt via Traefik)
-- [ ] CSP headers hardened (no `'unsafe-inline'`)
-- [ ] CORS origins restricted to specific domains
-- [ ] Database backups configured
-- [ ] Monitoring and alerting set up
-- [ ] Log aggregation configured
-- [ ] Incident response procedures documented
+This project uses Docker Compose's `include` directive to compose multiple files together. To avoid network conflicts when files are included multiple times in a hierarchy, we follow a **Single Source of Truth** pattern:
 
-See [DOKPLOY_DEPLOYMENT.md](DOKPLOY_DEPLOYMENT.md) for detailed production hardening checklist.
+| File                              | Defines Networks? | Why?                                                    |
+|-----------------------------------|-------------------|---------------------------------------------------------|
+| `common.yml`                      | ✅ **Yes (ONLY)** | **Single source of truth** for all network definitions  |
+| `app.yml`                         | ❌ No             | Inherits networks from `common.yml` via include (line 3)|
+| `postgresql-compose.yml`          | ❌ No             | Inherits networks from `common.yml` via include         |
+| `keycloak-compose.yml`            | ❌ No             | Inherits networks from `common.yml` via include         |
+| `greenmail-compose.yml`           | ❌ No             | Inherits networks from `common.yml` via include         |
+| `maildev-compose.yml`             | ❌ No             | Inherits networks from `common.yml` via include         |
+| `docker-socket-proxy-compose.yml` | ❌ No             | Inherits networks from `common.yml` via include         |
 
----
+### Why This Matters
+
+When a compose file includes another file that also defines networks, Docker Compose will merge those definitions. If the **same network is defined multiple times**, it can cause conflicts or unpredictable behavior depending on the Docker Compose version.
+
+**The Problem We Avoid:**
+
+```text
+app.yml
+├── defines networks: frontend, backend          ← First definition
+├── includes common.yml
+│   └── defines networks: frontend, backend      ← Duplicate! (merge behavior varies by version)
+├── includes postgresql-compose.yml
+│   └── includes common.yml
+│       └── defines networks: frontend, backend  ← Another reference to common.yml's networks
+└── includes keycloak-compose.yml
+    └── includes common.yml
+        └── defines networks: frontend, backend  ← Another reference to common.yml's networks
+```
+
+**Our Solution (DRY Principle):**
+
+- `common.yml` defines networks **once and only once**
+- **All other files** (including `app.yml`) include `common.yml` and inherit network definitions
+- No file redefines networks—they just **reference** the networks in their `services` section
+
+```text
+common.yml
+└── defines networks: frontend, backend (SINGLE SOURCE OF TRUTH)
+
+app.yml
+├── includes common.yml (inherits networks)     ✅
+├── includes postgresql-compose.yml
+│   └── includes common.yml (reuses same networks) ✅
+├── includes keycloak-compose.yml
+│   └── includes common.yml (reuses same networks) ✅
+└── includes docker-socket-proxy-compose.yml
+    └── references networks defined in common.yml ✅
+```
+
+This way:
+- ✅ Individual files can be run standalone (via `common.yml` networks)
+- ✅ The full stack (`app.yml`) works without conflicts
+- ✅ Files included multiple times don't cause duplicate network definitions
+- ✅ We follow the DRY (Don't Repeat Yourself) principle
+- ✅ Network configuration is managed in exactly one place
+
+### Testing Network Configuration
+
+To validate that compose files don't have network conflicts:
+
+```bash
+# Validate individual files
+docker compose -f postgresql/postgresql-compose.yml config > /dev/null
+docker compose -f keycloak/keycloak-compose.yml config > /dev/null
+
+# Validate full stack with includes
+docker compose -f app.yml config > /dev/null
+```
+
+All commands should complete successfully without errors.
+
 
 ## SSL Certificate Generation (Local Development)
 
