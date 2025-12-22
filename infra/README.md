@@ -177,50 +177,63 @@ docker compose logs -f [service_name]
 
 ### How Networks Are Defined
 
-This project uses Docker Compose's `include` directive to compose multiple files together. To avoid network conflicts when files are included multiple times in a hierarchy, we follow this pattern:
+This project uses Docker Compose's `include` directive to compose multiple files together. To avoid network conflicts when files are included multiple times in a hierarchy, we follow a **Single Source of Truth** pattern:
 
-| File                            | Defines Networks? | Why?                                                     |
-|---------------------------------|-------------------|----------------------------------------------------------|
-| `common.yml`                    | ✅ Yes            | Provides shared network definitions for standalone usage |
-| `app.yml`                       | ✅ Yes            | Defines networks for the full application stack          |
-| `postgresql-compose.yml`        | ❌ No             | Inherits networks from `common.yml` via include          |
-| `keycloak-compose.yml`          | ❌ No             | Inherits networks from `common.yml` via include          |
-| `greenmail-compose.yml`         | ❌ No             | Inherits networks from `common.yml` via include          |
-| `maildev-compose.yml`           | ❌ No             | Inherits networks from `common.yml` via include          |
-| `docker-socket-proxy-compose.yml` | ❌ No           | Inherits networks from `app.yml` via include             |
+| File                              | Defines Networks? | Why?                                                    |
+|-----------------------------------|-------------------|---------------------------------------------------------|
+| `common.yml`                      | ✅ **Yes (ONLY)** | **Single source of truth** for all network definitions  |
+| `app.yml`                         | ❌ No             | Inherits networks from `common.yml` via include (line 3)|
+| `postgresql-compose.yml`          | ❌ No             | Inherits networks from `common.yml` via include         |
+| `keycloak-compose.yml`            | ❌ No             | Inherits networks from `common.yml` via include         |
+| `greenmail-compose.yml`           | ❌ No             | Inherits networks from `common.yml` via include         |
+| `maildev-compose.yml`             | ❌ No             | Inherits networks from `common.yml` via include         |
+| `docker-socket-proxy-compose.yml` | ❌ No             | Inherits networks from `common.yml` via include         |
 
 ### Why This Matters
 
-When a compose file includes another file that also defines networks, Docker Compose will merge those definitions. However, if the **same network is defined multiple times** (even with identical configuration), Docker Compose throws an error:
+When a compose file includes another file that also defines networks, Docker Compose will merge those definitions. If the **same network is defined multiple times**, it can cause conflicts or unpredictable behavior depending on the Docker Compose version.
 
-```text
-networks.backend conflicts with imported resource
-```
-
-**The Include Hierarchy:**
+**The Problem We Avoid:**
 
 ```text
 app.yml
-├── includes common.yml (defines networks: frontend, backend)
+├── defines networks: frontend, backend          ← First definition
+├── includes common.yml
+│   └── defines networks: frontend, backend      ← Duplicate! (merge behavior varies by version)
 ├── includes postgresql-compose.yml
-│   └── includes common.yml (defines networks: frontend, backend) ← CONFLICT!
-├── includes keycloak-compose.yml
-│   └── includes common.yml (defines networks: frontend, backend) ← CONFLICT!
-│   └── includes postgresql-compose.yml
-│       └── includes common.yml (defines networks: frontend, backend) ← CONFLICT!
-└── includes docker-socket-proxy-compose.yml (no network definitions)
+│   └── includes common.yml
+│       └── defines networks: frontend, backend  ← Another reference to common.yml's networks
+└── includes keycloak-compose.yml
+    └── includes common.yml
+        └── defines networks: frontend, backend  ← Another reference to common.yml's networks
 ```
 
-**The Solution:**
+**Our Solution (DRY Principle):**
 
-- `common.yml` defines networks **once**
-- All files that include `common.yml` inherit those network definitions
-- No child file redefines networks—they just **reference** the networks in their `services` section
+- `common.yml` defines networks **once and only once**
+- **All other files** (including `app.yml`) include `common.yml` and inherit network definitions
+- No file redefines networks—they just **reference** the networks in their `services` section
+
+```text
+common.yml
+└── defines networks: frontend, backend (SINGLE SOURCE OF TRUTH)
+
+app.yml
+├── includes common.yml (inherits networks)     ✅
+├── includes postgresql-compose.yml
+│   └── includes common.yml (reuses same networks) ✅
+├── includes keycloak-compose.yml
+│   └── includes common.yml (reuses same networks) ✅
+└── includes docker-socket-proxy-compose.yml
+    └── references networks defined in common.yml ✅
+```
 
 This way:
 - ✅ Individual files can be run standalone (via `common.yml` networks)
 - ✅ The full stack (`app.yml`) works without conflicts
 - ✅ Files included multiple times don't cause duplicate network definitions
+- ✅ We follow the DRY (Don't Repeat Yourself) principle
+- ✅ Network configuration is managed in exactly one place
 
 ### Testing Network Configuration
 
