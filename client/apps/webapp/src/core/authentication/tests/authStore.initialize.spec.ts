@@ -231,4 +231,57 @@ describe("authStore.initialize", () => {
 			expect(authStore.isAuthenticated).toBe(false);
 		});
 	});
+
+	describe("isAuthenticated validation", () => {
+		it("should return false when user has no id", async () => {
+			authSessionStorage.setSessionExpiration(3600);
+
+			const authStore = useAuthStore();
+
+			// Manually set invalid user state (simulates corrupted/malformed API response)
+			authStore.user = {
+				id: "", // Empty id should not be valid
+				username: "test",
+				email: "test@example.com",
+				firstName: null,
+				lastName: null,
+				roles: [],
+			};
+			authStore.session = mockSession;
+
+			// Even with session present, empty id should not be authenticated
+			expect(authStore.isAuthenticated).toBe(false);
+		});
+
+		it("should return false when user id is undefined", async () => {
+			authSessionStorage.setSessionExpiration(3600);
+
+			const authStore = useAuthStore();
+
+			// Manually set invalid user state (simulates HTML response parsed as object)
+			authStore.user = {
+				id: undefined as unknown as string, // Type coercion to simulate runtime bug
+				username: undefined as unknown as string,
+				email: undefined as unknown as string,
+				firstName: null,
+				lastName: null,
+				roles: [],
+			};
+			authStore.session = mockSession;
+
+			// Should not be authenticated with undefined id
+			expect(authStore.isAuthenticated).toBe(false);
+		});
+
+		it("should return true when user has valid id", async () => {
+			authSessionStorage.setSessionExpiration(3600);
+
+			const authStore = useAuthStore();
+
+			authStore.user = mockUser;
+			authStore.session = mockSession;
+
+			expect(authStore.isAuthenticated).toBe(true);
+		});
+	});
 });

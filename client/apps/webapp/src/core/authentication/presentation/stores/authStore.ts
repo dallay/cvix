@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useWorkspaceStore } from "@/core/workspace/infrastructure/store/workspaceStore.ts";
+import { AuthenticationError } from "../../domain/errors/auth.errors.ts";
 import type { Session, User } from "../../domain/models/auth.model.ts";
 import type {
 	LoginFormData,
 	RegisterFormData,
 } from "../../domain/validators/auth.schema.ts";
+import { isValidUser } from "../../domain/validators/user.validator.ts";
 import { AuthHttpClient } from "../../infrastructure/http/AuthHttpClient.ts";
 import { authSessionStorage } from "../../infrastructure/storage/SessionStorage.ts";
 
@@ -20,7 +22,10 @@ export const useAuthStore = defineStore("auth", () => {
 	const error = ref<string | null>(null);
 
 	// Getters
-	const isAuthenticated = computed(() => !!user.value && !!session.value);
+	// User must have valid id to be considered authenticated (prevents HTML response issues)
+	const isAuthenticated = computed(
+		() => isValidUser(user.value) && !!session.value,
+	);
 	const userRoles = computed(() => user.value?.roles ?? []);
 	const hasRole = computed(
 		() => (role: string) => userRoles.value.includes(role),
@@ -120,6 +125,16 @@ export const useAuthStore = defineStore("auth", () => {
 
 		try {
 			const currentUser = await httpClient.getCurrentUser();
+
+			// Validate that we got a proper user object (not malformed data from HTML response)
+			if (!isValidUser(currentUser)) {
+				throw new AuthenticationError(
+					"Invalid user data received from server",
+					"INVALID_RESPONSE",
+					422,
+				);
+			}
+
 			user.value = currentUser;
 
 			// If we successfully got the user, it means we have a valid session

@@ -14,6 +14,7 @@ import type {
 	LoginFormData,
 	RegisterFormData,
 } from "../../domain/validators/auth.schema.ts";
+import { isValidUser } from "../../domain/validators/user.validator.ts";
 
 /**
  * Authentication API response types matching the OpenAPI contract
@@ -275,9 +276,20 @@ export class AuthHttpClient extends BaseHttpClient {
 	/**
 	 * Get the current authenticated user - Maps to GET /api/account
 	 * Note: Error handling is done by the response interceptor
+	 * @throws AuthenticationError if response is not valid JSON or missing required fields
 	 */
 	async getCurrentUser(): Promise<User> {
 		const response = await this.get<UserResponse>("/account");
+
+		// Validate response is a proper object with required fields
+		// This catches cases where the server returns HTML (e.g., SPA fallback) instead of JSON
+		if (!isValidUser(response as unknown as User)) {
+			throw new AuthenticationError(
+				"Invalid response from server. Please check your network connection.",
+				"INVALID_RESPONSE",
+				422,
+			);
+		}
 
 		return {
 			id: response.id,
