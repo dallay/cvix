@@ -114,10 +114,8 @@ describe("user.validator", () => {
 				roles: ["USER"],
 			} as User;
 
-			// Note: Current implementation checks length > 0, not trimmed length
-			// Whitespace-only strings will pass length check but should ideally fail
-			// This test documents current behavior
-			expect(isValidUser(userWithWhitespaceId)).toBe(true);
+			// Whitespace-only IDs are invalid
+			expect(isValidUser(userWithWhitespaceId)).toBe(false);
 		});
 
 		it("should return true for user with UUID id", () => {

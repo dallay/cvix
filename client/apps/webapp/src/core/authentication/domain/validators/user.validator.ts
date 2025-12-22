@@ -5,7 +5,7 @@ import type { User } from "../models/auth.model.ts";
  * This prevents false positives when the API returns malformed data (e.g., HTML instead of JSON).
  *
  * @param u - The user object to validate
- * @returns true if the user is valid (has a non-empty string id), false otherwise
+ * @returns true if the user is valid (has a non-empty string id after trimming), false otherwise
  *
  * @example
  * ```typescript
@@ -16,5 +16,5 @@ import type { User } from "../models/auth.model.ts";
  * ```
  */
 export function isValidUser(u: User | null): u is User {
-	return u !== null && typeof u.id === "string" && u.id.length > 0;
+	return u !== null && typeof u.id === "string" && u.id.trim().length > 0;
 }
