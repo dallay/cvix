@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
 
       - name: Cache pip dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.1
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-yamllint-1.37.1
@@ -71,7 +71,6 @@ jobs:
 
       - name: Validate compose file naming conventions
         run: |
-          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "📝 Validating compose file naming conventions..."
           echo "================================================"
@@ -80,18 +79,13 @@ jobs:
 
           NAMING_ISSUES=false
 
-          # Check for inconsistent naming patterns
-          # Expected: <service>-compose.yml or docker-compose-<service>.yml
-          # Special files: app.yml, app-stack.yml, common.yml
-
           echo "📋 Compose files discovered:"
           find . -type f \
             \( -name "*.yml" -o -name "*.yaml" \) \
             -not -path "./.github/*" \
-            | sort | sed 's/^/   /'
+            | sort | while read -r line; do echo "   $line"; done
           echo ""
 
-          # Check for files that might be compose files but don't follow naming convention
           SUSPICIOUS_FILES=$(find . -type f \
             \( -name "*.yml" -o -name "*.yaml" \) \
             -not -path "./.github/*" \
@@ -105,7 +99,7 @@ jobs:
 
           if [ -n "$SUSPICIOUS_FILES" ]; then
             echo "⚠️  Found YAML files that might be compose files but don't follow naming convention:"
-            echo "$SUSPICIOUS_FILES" | sed 's/^/   /'
+            while read -r file; do echo "   $file"; done <<< "$SUSPICIOUS_FILES"
             echo ""
             echo "   Expected patterns:"
             echo "   - <service>-compose.yml (e.g., postgresql-compose.yml)"
@@ -119,13 +113,11 @@ jobs:
           else
             echo ""
             echo "💡 Consider renaming files to follow project conventions"
-            # Don't fail - just warn for now
           fi
 
       - name: Validate individual compose files
         run: |
-          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
-          set -euo pipefail  # Strict error handling
+          set -euo pipefail
 
           echo ""
           echo "🔍 Validating individual Docker Compose files..."
@@ -134,9 +126,6 @@ jobs:
           echo "   Pattern: *compose*.yml, *compose*.yaml, docker-compose*.yml"
           echo ""
 
-          # Dynamic discovery: Find all compose files recursively
-          # Patterns: *compose*.yml, *compose*.yaml, docker-compose*.yml, docker-compose*.yaml
-          # Exclude: .github directory (workflow files), app.yml and app-stack.yml (validated separately)
           COMPOSE_FILES=$(find . -type f \
             \( -name "*compose*.yml" -o -name "*compose*.yaml" -o -name "docker-compose*.yml" -o -name "docker-compose*.yaml" \) \
             -not -path "./.github/*" \
@@ -153,7 +142,7 @@ jobs:
           fi
 
           echo "📋 Discovered files:"
-          echo "$COMPOSE_FILES" | sed 's/^/   /'
+          while read -r file; do echo "   $file"; done <<< "$COMPOSE_FILES"
           echo ""
 
           VALIDATED=0
@@ -162,8 +151,6 @@ jobs:
 
           for file in $COMPOSE_FILES; do
             echo "::group::Validating $file"
-
-            # Validate syntax and variable interpolation
             if OUTPUT=$(docker compose -f "$file" config 2>&1); then
               echo "   ✅ Valid"
               VALIDATED=$((VALIDATED + 1))
@@ -172,7 +159,7 @@ jobs:
               echo "   ❌ Validation failed!"
               echo ""
               echo "   Error details:"
-              echo "$OUTPUT" | head -30 | sed 's/^/      /'
+              echo "$OUTPUT" | head -30 | while read -r line; do echo "      $line"; done
               FAILED=$((FAILED + 1))
               FAILED_FILES="$FAILED_FILES\n   - $file"
             fi
