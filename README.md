@@ -165,10 +165,14 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 - 📖 [Canonical architecture & style rules](.ruler/)
 - 📝 [Docs site](docs/)
 - 🛡️ [Security policy](SECURITY.md)
-- 🐳 [Docker deployment guide](infra/DOCKER_DEPLOYMENT.md)
+- 🐳 [Docker deployment guide](infra/README.md)
 
 ---
 
 ## ❓ Questions?
 
 Open an issue, or start with `.ruler/general.md` and `.ruler/reference/architecture.md` for a guided tour of the internals.
+
+
+---
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dallay/cvix)

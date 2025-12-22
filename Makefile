@@ -327,7 +327,7 @@ _verify-backend-tests:
 	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew test,backend-tests)
 
 _verify-e2e-tests:
-	$(call verify_step,8,Running E2E tests,$(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
+	$(call verify_step,8,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
 
 # Verifies the entire project with all checks, lints, and tests
 # Runs checks in parallel groups for optimal performance

@@ -16,21 +16,39 @@ on:
       - '.env.example'
       - 'infra/.env.example'
 
+# Avoid redundant workflow runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validate Docker Compose Files
     runs-on: ubuntu-latest
 
+    # Set working directory once for all steps
+    defaults:
+      run:
+        working-directory: infra
+
     steps:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v5.0.1
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-yamllint-1.37.1
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Prepare environment files
         run: |
           echo "📦 Preparing environment files for validation..."
 
           # Verify root .env.example exists before attempting operations
-          if [ ! -f .env.example ]; then
+          if [ ! -f ../.env.example ]; then
             echo "❌ ERROR: Root .env.example does not exist!"
             echo "   This file is required for CI validation."
             echo "   Please ensure .env.example is committed to the repository."
@@ -38,54 +56,115 @@ jobs:
           fi
 
           # Copy root .env.example to infra directory if not exists
-          if [ ! -f infra/.env.example ]; then
+          if [ ! -f .env.example ]; then
             echo "⚠️  No infra/.env.example found, using root .env.example"
-            cp .env.example infra/.env.example
+            cp ../.env.example .env.example
           fi
 
           # Create .env from .env.example in infra directory
-          cp infra/.env.example infra/.env
+          cp .env.example .env
 
           echo "✅ Environment files prepared"
           echo "📋 Environment variables loaded:"
-          VAR_COUNT=$(grep -cv '^#\|^$' infra/.env || echo "0")
+          VAR_COUNT=$(grep -cv '^#\|^$' .env || echo "0")
           echo "   Total variables: $VAR_COUNT"
+
+      - name: Validate compose file naming conventions
+        run: |
+          echo ""
+          echo "📝 Validating compose file naming conventions..."
+          echo "================================================"
+          echo "   Enforcing consistent naming patterns"
+          echo ""
+
+          NAMING_ISSUES=false
+
+          echo "📋 Compose files discovered:"
+          find . -type f \
+            \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.github/*" \
+            | sort | while read -r line; do echo "   $line"; done
+          echo ""
+
+          SUSPICIOUS_FILES=$(find . -type f \
+            \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.github/*" \
+            -not -name "*compose*.yml" \
+            -not -name "*compose*.yaml" \
+            -not -name "docker-compose*.yml" \
+            -not -name "app.yml" \
+            -not -name "app-stack.yml" \
+            -not -name "common.yml" \
+            -exec grep -l -E "services:|version:|networks:|volumes:" {} \; 2>/dev/null || true)
+
+          if [ -n "$SUSPICIOUS_FILES" ]; then
+            echo "⚠️  Found YAML files that might be compose files but don't follow naming convention:"
+            while read -r file; do echo "   $file"; done <<< "$SUSPICIOUS_FILES"
+            echo ""
+            echo "   Expected patterns:"
+            echo "   - <service>-compose.yml (e.g., postgresql-compose.yml)"
+            echo "   - docker-compose-<service>.yml"
+            echo "   - app.yml, app-stack.yml, common.yml (special files)"
+            NAMING_ISSUES=true
+          fi
+
+          if [ "$NAMING_ISSUES" = false ]; then
+            echo "✅ All compose files follow naming conventions"
+          else
+            echo ""
+            echo "💡 Consider renaming files to follow project conventions"
+          fi
 
       - name: Validate individual compose files
         run: |
-          cd infra
+          set -euo pipefail
+
           echo ""
           echo "🔍 Validating individual Docker Compose files..."
           echo "================================================"
-          echo "   All compose files are now self-contained using 'include' directives"
+          echo "   Using dynamic discovery for all compose files"
+          echo "   Pattern: *compose*.yml, *compose*.yaml, docker-compose*.yml"
           echo ""
 
-          # Find all *-compose.yml files (excluding app.yml and app-stack.yml)
-          COMPOSE_FILES=$(find . -type f -name "*-compose.yml" | sort)
+          COMPOSE_FILES=$(find . -type f \
+            \( -name "*compose*.yml" -o -name "*compose*.yaml" -o -name "docker-compose*.yml" -o -name "docker-compose*.yaml" \) \
+            -not -path "./.github/*" \
+            -not -name "app.yml" \
+            -not -name "app-stack.yml" \
+            -not -name "common.yml" \
+            | sort)
 
           if [ -z "$COMPOSE_FILES" ]; then
-            echo "⚠️  No compose files found!"
+            echo "::error::No compose files found in expected locations"
+            echo "   Searched for: *compose*.yml, *compose*.yaml, docker-compose*.yml"
+            echo "   Excluded: .github/, app.yml, app-stack.yml, common.yml"
             exit 1
           fi
 
+          echo "📋 Discovered files:"
+          while read -r file; do echo "   $file"; done <<< "$COMPOSE_FILES"
+          echo ""
+
           VALIDATED=0
           FAILED=0
+          FAILED_FILES=""
 
           for file in $COMPOSE_FILES; do
-            echo ""
-            echo "📄 Validating: $file"
-
-            # Validate syntax and variable interpolation
-            if docker compose -f "$file" config > /dev/null 2>&1; then
+            echo "::group::Validating $file"
+            if OUTPUT=$(docker compose -f "$file" config 2>&1); then
               echo "   ✅ Valid"
               VALIDATED=$((VALIDATED + 1))
             else
+              echo "::error file=$file::Docker Compose validation failed"
               echo "   ❌ Validation failed!"
               echo ""
               echo "   Error details:"
-              docker compose -f "$file" config 2>&1 | head -30 | sed 's/^/      /'
+              echo "$OUTPUT" | head -30 | while read -r line; do echo "      $line"; done
               FAILED=$((FAILED + 1))
+              FAILED_FILES="$FAILED_FILES\n   - $file"
             fi
+
+            echo "::endgroup::"
           done
 
           echo ""
@@ -93,6 +172,9 @@ jobs:
           echo "Summary: $VALIDATED validated, $FAILED failed"
 
           if [ $FAILED -gt 0 ]; then
+            echo ""
+            echo "❌ Failed files:"
+            echo -e "$FAILED_FILES"
             exit 1
           fi
 
@@ -100,7 +182,7 @@ jobs:
 
       - name: Validate common configuration
         run: |
-          cd infra
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating common.yml..."
           echo "================================================"
@@ -117,7 +199,7 @@ jobs:
 
       - name: Validate full application stack (with includes)
         run: |
-          cd infra
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating app.yml (full stack with includes)..."
           echo "================================================"
@@ -152,10 +234,19 @@ jobs:
 
       - name: Validate stack-compatible compose file
         run: |
-          cd infra
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "🔍 Validating app-stack.yml (Swarm-compatible)..."
           echo "================================================"
+
+          # Check if app-stack.yml exists (optional file)
+          if [ ! -f app-stack.yml ]; then
+            echo "⏭️  Skipping: app-stack.yml does not exist"
+            echo "   This is an optional Swarm/Stack compatible version"
+            echo "   Create it by merging app.yml + included files if needed"
+            exit 0
+          fi
+
           echo "   This is the Swarm/Stack compatible version"
           echo "   (no 'include' directives, all merged inline)"
           echo ""
@@ -176,7 +267,6 @@ jobs:
 
       - name: Check for hardcoded sensitive values
         run: |
-          cd infra
           echo ""
           echo "🔐 Checking for hardcoded sensitive values..."
           echo "================================================"
@@ -205,14 +295,65 @@ jobs:
             echo "   ✓ Secret definitions use file: or external: references"
           fi
 
+      - name: Quality Gate - TODO/FIXME Audit
+        run: |
+          echo ""
+          echo "🔍 Scanning for TODO/FIXME markers..."
+          echo "================================================"
+          echo "   Branch: ${{ github.ref_name }}"
+          echo "   Strategy: Block on main/master, warn on feature branches"
+          echo ""
+
+          # Search for TODO, FIXME, XXX, HACK markers in compose files
+          # Exclude comment lines: grep -rn output is "filename:linenum:content"
+          # so we filter lines matching "filename:linenum:# TODO" pattern
+          FOUND_MARKERS=false
+
+          if grep -rn "TODO\|FIXME\|XXX\|HACK" \
+             --include="*.yml" \
+             --include="*.yaml" \
+             --exclude-dir=".github" \
+             . 2>/dev/null | grep -v ":[0-9]\+:[[:space:]]*#.*\(TODO\|FIXME\|XXX\|HACK\)" ; then
+            echo ""
+            echo "⚠️  Found TODO/FIXME markers in compose files"
+            echo ""
+            echo "   These markers indicate incomplete work or known issues."
+            FOUND_MARKERS=true
+          fi
+
+          if [ "$FOUND_MARKERS" = true ]; then
+            # Branch-specific governance
+            BRANCH="${{ github.ref_name }}"
+
+            if [[ "$BRANCH" =~ ^(main|master)$ ]]; then
+              echo ""
+              echo "❌ ERROR: Technical debt markers NOT allowed in production branches"
+              echo "   Branch: $BRANCH"
+              echo "   Action: Please resolve all TODO/FIXME markers before merging"
+              exit 1
+            else
+              echo ""
+              echo "⚠️  Warning: Technical debt markers found (not blocking on $BRANCH)"
+              echo "   Consider resolving before merging to production"
+            fi
+          else
+            echo "✅ No TODO/FIXME markers found"
+            echo ""
+            echo "   Quality checks passed:"
+            echo "   ✓ No outstanding TODO markers"
+            echo "   ✓ No FIXME markers"
+            echo "   ✓ Infrastructure code is production-ready"
+          fi
+
       - name: Lint compose files with yamllint
         run: |
+          # shellcheck disable=SC2016  # Single quotes in heredoc prevent expansion intentionally
           echo ""
           echo "🧹 Linting YAML files..."
           echo "================================================"
 
-          # Pin yamllint to specific version for deterministic builds
-          pip install yamllint==1.37.1
+          # Install yamllint (cached by pip cache action)
+          pip install --quiet yamllint==1.37.1
 
           # Create yamllint configuration using heredoc for readability
           cat > /tmp/yamllint-config.yml << 'YAMLLINTEOF'
@@ -231,20 +372,25 @@ jobs:
             comments-indentation: disable
           YAMLLINTEOF
 
-          cd infra
-
           echo "Linting compose files..."
-          # Remove || echo to allow step to fail on real linting errors
-          # If advisory-only behavior is needed, use continue-on-error: true on the step
-          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -exec yamllint -c /tmp/yamllint-config.yml {} +
+          # Use find to get relative paths for better error messages
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.github/*" \
+            -exec yamllint -c /tmp/yamllint-config.yml {} + \
+            || {
+              echo ""
+              echo "::error::yamllint found issues in compose files"
+              echo "Fix linting errors or update yamllint configuration if needed"
+              exit 1
+            }
 
           echo ""
-          echo "✅ Linting completed"
+          echo "✅ Linting completed successfully"
 
       - name: Generate validation report
         if: always()
         run: |
-          cd infra
+          # shellcheck disable=SC2001  # sed in pipes is correct here, not on variables
           echo ""
           echo "📊 Validation Report"
           echo "================================================"
@@ -252,13 +398,43 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
           echo ""
-          echo "Compose files found:"
-          find . -type f \( -name "*.yml" -o -name "*.yaml" \) | sed 's/^/   /'
+
+          # Count different types of compose files
+          TOTAL_COMPOSE=$(find . -type f \
+            \( -name "*compose*.yml" -o -name "*compose*.yaml" -o -name "docker-compose*.yml" \) \
+            -not -path "./.github/*" | wc -l)
+
+          INDIVIDUAL_COMPOSE=$(find . -type f \
+            \( -name "*compose*.yml" -o -name "*compose*.yaml" -o -name "docker-compose*.yml" \) \
+            -not -path "./.github/*" \
+            -not -name "app.yml" \
+            -not -name "app-stack.yml" \
+            -not -name "common.yml" | wc -l)
+
+          # Count stack and common files dynamically
+          STACK_COUNT=$(find . -maxdepth 1 -type f \
+            \( -name "app.yml" -o -name "app-stack.yml" \) 2>/dev/null | wc -l)
+          COMMON_COUNT=$(find . -maxdepth 1 -type f -name "common.yml" 2>/dev/null | wc -l)
+
+          echo "📈 Statistics:"
+          echo "   Total compose files: $TOTAL_COMPOSE"
+          echo "   Individual service files: $INDIVIDUAL_COMPOSE"
+          echo "   Stack files: $STACK_COUNT"
+          echo "   Common config: $COMMON_COUNT"
+          echo ""
+
+          echo "📋 All compose files:"
+          find . -type f \
+            \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "./.github/*" \
+            | sort | sed 's/^/   /'
           echo ""
 
           # Check job status to provide accurate final message
           if [ "${{ job.status }}" = "success" ]; then
             echo "✅ All validations completed successfully"
+            echo ""
+            echo "🎉 Infrastructure is ready for deployment!"
           else
             echo "❌ Some validations failed — check previous steps for errors"
             echo ""
@@ -267,6 +443,7 @@ jobs:
             echo "   - Missing required environment variables"
             echo "   - Hardcoded sensitive values detected"
             echo "   - yamllint errors (line-length, indentation, etc.)"
+            echo "   - Network conflicts or missing includes"
           fi
 
       - name: Cleanup
@@ -274,5 +451,5 @@ jobs:
         run: |
           echo ""
           echo "🧹 Cleaning up temporary files..."
-          rm -f infra/.env
+          rm -f .env
           echo "✅ Cleanup completed"

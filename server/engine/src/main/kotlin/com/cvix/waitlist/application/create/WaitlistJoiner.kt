@@ -9,10 +9,11 @@ import com.cvix.waitlist.domain.EmailAlreadyExistsException
 import com.cvix.waitlist.domain.Language
 import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
+import com.cvix.waitlist.domain.WaitlistMetrics
 import com.cvix.waitlist.domain.WaitlistRepository
+import com.cvix.waitlist.domain.WaitlistSecurityConfig
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
-import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
 import org.slf4j.LoggerFactory
 
 /**
@@ -27,8 +28,8 @@ import org.slf4j.LoggerFactory
 class WaitlistJoiner(
     private val repository: WaitlistRepository,
     eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>,
-    private val metrics: com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics,
-    private val securityProperties: WaitlistSecurityProperties
+    private val metrics: WaitlistMetrics,
+    private val securityConfig: WaitlistSecurityConfig
 ) {
     private val eventBroadcaster = EventBroadcaster<WaitlistEntryCreatedEvent>()
 
@@ -111,10 +112,10 @@ class WaitlistJoiner(
      * @return The HMAC-SHA256 hash as a hexadecimal string.
      */
     private fun hashIpAddress(ipAddress: String): String {
-        require(securityProperties.ipHmacSecret.isNotBlank()) {
+        require(securityConfig.ipHmacSecret.isNotBlank()) {
             "No HMAC secret configured for IP address hashing. Define waitlist.security.ip-hmac-secret"
         }
-        return HashUtils.hmacSha256(ipAddress, securityProperties.ipHmacSecret)
+        return HashUtils.hmacSha256(ipAddress, securityConfig.ipHmacSecret)
     }
 
     companion object {

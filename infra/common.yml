@@ -1,6 +1,26 @@
 name: common-cvix-infra
 
+# ═══════════════════════════════════════════════════════════════════════════
+# NETWORK DEFINITIONS - SINGLE SOURCE OF TRUTH
+# ═══════════════════════════════════════════════════════════════════════════
+# This is the ONLY place where networks are defined in the entire compose stack.
+#
+# WHY HERE?
+# - All compose files (app.yml, postgresql-compose.yml, keycloak-compose.yml, etc.)
+#   include common.yml, so they automatically inherit these network definitions
+# - Services in those files only REFERENCE networks (e.g., `networks: - backend`)
+# - This prevents duplicate network definitions and Docker Compose merge conflicts
+#
+# USAGE:
+# - Standalone files: `docker compose -f postgresql/postgresql-compose.yml up`
+#   → Gets networks from common.yml ✅
+# - Full stack: `docker compose -f app.yml up`
+#   → Gets networks from common.yml via include ✅
+#
+# IMPORTANT:
+# - DO NOT define networks in app.yml or any child compose file
+# - Only REFERENCE them in the services.*.networks sections
+# ═══════════════════════════════════════════════════════════════════════════
 networks:
   frontend:
-
   backend:

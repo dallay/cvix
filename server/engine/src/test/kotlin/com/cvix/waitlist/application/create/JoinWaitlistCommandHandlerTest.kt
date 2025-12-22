@@ -4,13 +4,14 @@ import com.cvix.TestConstants
 import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.waitlist.domain.WaitlistEntry
+import com.cvix.waitlist.domain.WaitlistMetrics
 import com.cvix.waitlist.domain.WaitlistRepository
+import com.cvix.waitlist.domain.WaitlistSecurityConfig
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
-import com.cvix.waitlist.infrastructure.config.WaitlistSecurityProperties
-import com.cvix.waitlist.infrastructure.metrics.WaitlistMetrics
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import java.util.UUID
@@ -25,7 +26,7 @@ internal class JoinWaitlistCommandHandlerTest {
     private lateinit var eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>
     private lateinit var repository: WaitlistRepository
     private lateinit var metrics: WaitlistMetrics
-    private lateinit var securityProperties: WaitlistSecurityProperties
+    private lateinit var securityConfig: WaitlistSecurityConfig
     private lateinit var waitlistJoiner: WaitlistJoiner
     private lateinit var joinWaitlistCommandHandler: JoinWaitlistCommandHandler
     private val faker = Faker()
@@ -35,9 +36,11 @@ internal class JoinWaitlistCommandHandlerTest {
         eventPublisher = mockk(relaxed = true, relaxUnitFun = true)
         repository = mockk(relaxed = true, relaxUnitFun = true)
         metrics = mockk(relaxed = true, relaxUnitFun = true)
-        securityProperties = WaitlistSecurityProperties(ipHmacSecret = TestConstants.TEST_HMAC_SECRET)
+        securityConfig = mockk(relaxed = true) {
+            every { ipHmacSecret } returns TestConstants.TEST_HMAC_SECRET
+        }
 
-        waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics, securityProperties)
+        waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics, securityConfig)
         joinWaitlistCommandHandler = JoinWaitlistCommandHandler(waitlistJoiner)
     }
 

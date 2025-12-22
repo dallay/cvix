@@ -1,5 +1,6 @@
 package com.cvix.waitlist.infrastructure.metrics
 
+import com.cvix.waitlist.domain.WaitlistMetrics
 import com.cvix.waitlist.domain.WaitlistSource
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Component
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component
  * @property meterRegistry Micrometer meter registry for metric registration
  */
 @Component
-class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
+class WaitlistMetrics(private val meterRegistry: MeterRegistry) : WaitlistMetrics {
 
     /**
      * Sanitizes a raw source value to prevent unbounded metric cardinality.
@@ -50,7 +51,7 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
      * @param sourceRaw The raw source string from the client
      * @param sourceNormalized The normalized source enum value
      */
-    fun recordWaitlistJoin(sourceRaw: String, sourceNormalized: WaitlistSource) {
+    override fun recordWaitlistJoin(sourceRaw: String, sourceNormalized: WaitlistSource) {
         val sanitizedRaw = sanitizeSourceForMetrics(sourceRaw)
 
         // Track overall join with both raw and normalized tags
@@ -85,7 +86,7 @@ class WaitlistMetrics(private val meterRegistry: MeterRegistry) {
      * @param sourceRaw The raw source string
      * @param sourceNormalized The normalized source enum value
      */
-    fun recordSourceNormalization(sourceRaw: String, sourceNormalized: WaitlistSource) {
+    override fun recordSourceNormalization(sourceRaw: String, sourceNormalized: WaitlistSource) {
         val sanitizedRaw = sanitizeSourceForMetrics(sourceRaw)
 
         if (sanitizedRaw == sourceNormalized.value) {

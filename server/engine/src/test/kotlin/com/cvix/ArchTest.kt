@@ -17,6 +17,8 @@ internal class ArchTest {
         "workspace",
         "ratelimit",
         "resume",
+        "waitlist",
+        "subscription",
     )
 
     @BeforeEach
@@ -46,8 +48,15 @@ internal class ArchTest {
 
     @Test
     fun applicationShouldNotDependOnInfrastructure() {
+        // Filter contexts that have an application layer
+        val contextsWithApplicationLayer = boundedContexts.filter { context ->
+            importedClasses.any { clazz ->
+                clazz.packageName.startsWith("com.cvix.$context.application")
+            }
+        }
 
-        boundedContexts.forEach { context ->
+        // Validate only contexts with application layer (valid for simple modules to have only domain + infrastructure)
+        contextsWithApplicationLayer.forEach { context ->
             ArchRuleDefinition.noClasses()
                 .that()
                 .resideInAnyPackage("com.cvix.$context.application..")
