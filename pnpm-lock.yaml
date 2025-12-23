@@ -391,6 +391,8 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
 
+  client/packages/ssl-paths: {}
+
   client/packages/tsconfig: {}
 
   client/packages/ui:
