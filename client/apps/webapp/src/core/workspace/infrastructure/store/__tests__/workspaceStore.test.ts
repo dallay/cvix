@@ -18,6 +18,15 @@ vi.mock("../../storage/workspaceLocalStorage", () => ({
 	clearLastSelected: vi.fn(),
 }));
 
+vi.mock("@/shared/WorkspaceContext", () => ({
+	setCurrentWorkspaceId: vi.fn(),
+	clearCurrentWorkspaceId: vi.fn(),
+}));
+
+import {
+	clearCurrentWorkspaceId,
+	setCurrentWorkspaceId,
+} from "@/shared/WorkspaceContext";
 import { WorkspaceErrorCode } from "../../../domain/WorkspaceError.ts";
 import { workspaceHttpClient } from "../../http/workspaceHttpClient.ts";
 import { saveLastSelected } from "../../storage/workspaceLocalStorage.ts";
@@ -315,6 +324,66 @@ describe("workspaceStore", () => {
 			await store.loadWorkspaces();
 
 			expect(store.defaultWorkspace).toBeUndefined();
+		});
+	});
+
+	describe("resetSession", () => {
+		it("should reset all session state", () => {
+			const store = useWorkspaceStore();
+			// Set some state
+			store.currentWorkspace = mockWorkspace1;
+			store.lastSelectedId = mockWorkspace1.id;
+			store.lastSelectedAt = new Date();
+			store.loadedInSession = true;
+			store.error = {
+				code: WorkspaceErrorCode.NETWORK_ERROR,
+				message: "Test error",
+				timestamp: new Date(),
+			};
+
+			store.resetSession();
+
+			expect(store.currentWorkspace).toBeNull();
+			expect(store.lastSelectedId).toBeNull();
+			expect(store.lastSelectedAt).toBeNull();
+			expect(store.loadedInSession).toBe(false);
+			expect(store.error).toBeNull();
+		});
+
+		it("should clear workspace context for HTTP clients", () => {
+			const store = useWorkspaceStore();
+			store.currentWorkspace = mockWorkspace1;
+
+			store.resetSession();
+
+			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
+		});
+	});
+
+	describe("setCurrentWorkspace context sync", () => {
+		it("should sync workspace ID with global context", () => {
+			const store = useWorkspaceStore();
+
+			store.setCurrentWorkspace(mockWorkspace1);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+	});
+
+	describe("selectWorkspace context sync", () => {
+		const userId = "123e4567-e89b-42d3-a456-426614174000";
+
+		it("should sync workspace ID with global context on selection", async () => {
+			// Ensure mocks are reset (previous test may have set saveLastSelected to throw)
+			vi.mocked(saveLastSelected).mockImplementation(() => {});
+
+			const store = useWorkspaceStore();
+			store.workspaces = [...mockWorkspaces];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await store.selectWorkspace(mockWorkspace1.id, userId);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
 		});
 	});
 });
