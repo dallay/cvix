@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -17,7 +19,17 @@ const defaultBackendForTests =
 
 // Detect if SSL certificates exist (via FORCE_HTTP env var or presence of cert files)
 // In CI or when FORCE_HTTP is set, use HTTP. In local dev, default to HTTP unless certs exist.
-const hasSSLCerts = process.env.VITE_SSL_ENABLED === "true";
+function hasSSLCertificates(): boolean {
+	const certPath = fileURLToPath(
+		new URL("../../../infra/ssl/localhost.pem", import.meta.url),
+	);
+	const keyPath = fileURLToPath(
+		new URL("../../../infra/ssl/localhost-key.pem", import.meta.url),
+	);
+	return existsSync(certPath) && existsSync(keyPath);
+}
+
+const hasSSLCerts = hasSSLCertificates();
 const baseURL =
 	process.env.CI || process.env.FORCE_HTTP === "true" || !hasSSLCerts
 		? "http://localhost:9876"
@@ -70,7 +82,7 @@ export default defineConfig({
 		ignoreHTTPSErrors: true, // Required for self-signed certificates
 		env: {
 			BACKEND_URL: defaultBackendForTests,
-			FORCE_HTTP: process.env.CI ? "true" : "false", // Force HTTP in CI
+			FORCE_HTTP: process.env.FORCE_HTTP || (process.env.CI ? "true" : "false"), // Force HTTP in CI or if explicitly set
 			PLAYWRIGHT_TEST: "true",
 		},
 		stdout: "pipe",

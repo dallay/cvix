@@ -360,16 +360,6 @@ describe("workspaceStore", () => {
 		});
 	});
 
-	describe("setCurrentWorkspace context sync", () => {
-		it("should sync workspace ID with global context", () => {
-			const store = useWorkspaceStore();
-
-			store.setCurrentWorkspace(mockWorkspace1);
-
-			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
-		});
-	});
-
 	describe("setCurrentWorkspace", () => {
 		it("should sync workspace ID with global context", () => {
 			const store = useWorkspaceStore();

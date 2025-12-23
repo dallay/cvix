@@ -11,7 +11,7 @@ import {
 
 // Mock the WorkspaceContext module
 vi.mock("@/shared/WorkspaceContext", () => ({
-	getCurrentWorkspaceId: vi.fn(() => "mock-workspace-id"),
+	getCurrentWorkspaceId: vi.fn(() => "9dcb2241-6840-4e77-98a3-ddfa89c7d032"),
 }));
 
 describe("RemoteResumeStorage", () => {
