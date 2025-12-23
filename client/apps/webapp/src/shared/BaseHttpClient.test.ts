@@ -35,7 +35,7 @@ import { BaseHttpClient } from "./BaseHttpClient";
 import { getCurrentWorkspaceId } from "./WorkspaceContext";
 
 describe("BaseHttpClient", () => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: Test mocking requires dynamic typing for interceptor capture
 	let capturedRequestInterceptor: any;
 
 	beforeEach(() => {
