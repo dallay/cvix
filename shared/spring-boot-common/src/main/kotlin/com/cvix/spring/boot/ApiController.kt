@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
 import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.reactor.mono
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -129,6 +130,49 @@ abstract class ApiController(
     }
 
     /**
+     * Retrieves the current workspace ID from the reactive context.
+     *
+     * The workspace ID is expected to be set by [WorkspaceContextWebFilter] from
+     * the `X-Workspace-Id` HTTP header. This is the primary method for obtaining
+     * the workspace context in controllers.
+     *
+     * ## Usage
+     * ```kotlin
+     * @GetMapping("/resume")
+     * suspend fun listResumes(): ResponseEntity<List<Resume>> {
+     *     val workspaceId = workspaceIdFromContext()
+     *     val query = ListResumesQuery(userId = userIdFromToken(), workspaceId = workspaceId)
+     *     return ResponseEntity.ok(ask(query))
+     * }
+     * ```
+     *
+     * @return The workspace UUID from the reactive context
+     * @throws ResponseStatusException with 400 BAD REQUEST if workspace ID is not in context
+     */
+    protected suspend fun workspaceIdFromContext(): UUID {
+        return mono {
+            // This will be populated by contextView in the next step
+        }
+            .transformDeferredContextual { mono, contextView ->
+                if (contextView.hasKey(WORKSPACE_CONTEXT_KEY)) {
+                    reactor.core.publisher.Mono.just(contextView.get<UUID>(WORKSPACE_CONTEXT_KEY))
+                } else {
+                    reactor.core.publisher.Mono.error(
+                        ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
+                        ),
+                    )
+                }
+            }
+            .awaitSingleOrNull()
+            ?: throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
+            )
+    }
+
+    /**
      * Validates a path variable against an allow-list regex (^[a-zA-Z0-9_-]+$)
      * to prevent path traversal and other injection attacks.
      *
@@ -142,5 +186,16 @@ abstract class ApiController(
             "Invalid path variable. Only alphanumeric characters, underscores, and hyphens are allowed."
         }
         return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
+    }
+
+    /**
+     * Context key for storing the workspace ID in the reactive context.
+     * Used for Row-Level Security (RLS) enforcement in PostgreSQL.
+     *
+     * IMPORTANT: This key must match the one used in WorkspaceContextHolder
+     * in server/engine to ensure the decorator can read the workspace ID.
+     */
+    companion object {
+        internal const val WORKSPACE_CONTEXT_KEY = "com.cvix.config.db.WorkspaceContextHolder.WORKSPACE_ID"
     }
 }

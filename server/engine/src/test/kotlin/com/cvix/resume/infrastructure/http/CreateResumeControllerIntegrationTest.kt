@@ -22,10 +22,11 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
     )
     fun `should create a new resume`() {
         val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
-        val request = createResumeRequest(UUID.fromString(workspaceId))
+        val request = createResumeRequest()
         val id = UUID.randomUUID().toString()
         webTestClient.mutateWith(csrf()).put()
             .uri("/api/resume/$id")
+            .header("X-Workspace-Id", workspaceId)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
