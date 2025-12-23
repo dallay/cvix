@@ -5,6 +5,7 @@ import type {
 	ResumeStorage,
 	StorageType,
 } from "@/core/resume/domain/ResumeStorage";
+import { getCurrentWorkspaceId } from "@/shared/WorkspaceContext";
 import {
 	type ResumeDocumentResponse,
 	ResumeHttpClient,
@@ -154,6 +155,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 	async save(
 		resume: Resume | PartialResume,
 	): Promise<PersistenceResult<Resume | PartialResume>> {
+		this.validateWorkspaceContext();
 		let knownNotFound = false;
 		// Validate: only full Resume objects are supported
 		if (!isFullResume(resume)) {
@@ -214,6 +216,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 	}
 
 	async load(): Promise<PersistenceResult<Resume | null>> {
+		this.validateWorkspaceContext();
 		const id = this.currentResumeId;
 		if (!id) {
 			return {
@@ -272,6 +275,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 	}
 
 	async clear(): Promise<void> {
+		this.validateWorkspaceContext();
 		const id = this.currentResumeId;
 		if (!id) {
 			return;
@@ -385,6 +389,18 @@ export class RemoteResumeStorage implements ResumeStorage {
 	 */
 	private mapResponseToResume(response: ResumeDocumentResponse): Resume {
 		return response.content;
+	}
+
+	/**
+	 * Validates that a workspace is selected before performing remote operations.
+	 * Throws an error if no workspace ID is found in the global context.
+	 */
+	private validateWorkspaceContext(): void {
+		if (!getCurrentWorkspaceId()) {
+			throw new Error(
+				"Remote storage operation failed: No workspace selected. You must select a workspace before saving or loading resumes from the cloud.",
+			);
+		}
 	}
 }
 

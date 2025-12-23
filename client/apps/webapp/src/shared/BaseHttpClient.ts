@@ -147,8 +147,17 @@ export class BaseHttpClient {
 		// The backend uses this to set the PostgreSQL session variable
 		// for Row-Level Security policies
 		const workspaceId = getCurrentWorkspaceId();
+
+		// Ensure headers object exists (defensive programming)
+		config.headers = config.headers || {};
+
 		if (workspaceId && !config.headers["X-Workspace-Id"]) {
 			config.headers["X-Workspace-Id"] = workspaceId;
+		} else if (!workspaceId) {
+			console.debug(
+				"[BaseHttpClient] No workspace ID found in context. Skipping X-Workspace-Id header. " +
+					"This is expected for public endpoints but will fail for workspace-scoped resources.",
+			);
 		}
 
 		return config;

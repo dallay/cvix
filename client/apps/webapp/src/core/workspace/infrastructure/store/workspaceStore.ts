@@ -89,10 +89,14 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	/**
 	 * Sets the current workspace
 	 */
-	function setCurrentWorkspace(workspace: Workspace): void {
+	function setCurrentWorkspace(workspace: Workspace | null): void {
 		currentWorkspace.value = workspace;
 		// Sync with global context for HTTP clients
-		setCurrentWorkspaceId(workspace.id);
+		if (workspace) {
+			setCurrentWorkspaceId(workspace.id);
+		} else {
+			clearCurrentWorkspaceId();
+		}
 	}
 
 	/**

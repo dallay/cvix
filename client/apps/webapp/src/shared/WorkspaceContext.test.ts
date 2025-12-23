@@ -38,6 +38,16 @@ describe("WorkspaceContext", () => {
 			setCurrentWorkspaceId(secondId);
 			expect(getCurrentWorkspaceId()).toBe(secondId);
 		});
+
+		it("should handle empty string as a workspace ID", () => {
+			setCurrentWorkspaceId("");
+			expect(getCurrentWorkspaceId()).toBe("");
+		});
+
+		it("should handle whitespace string as a workspace ID", () => {
+			setCurrentWorkspaceId("   ");
+			expect(getCurrentWorkspaceId()).toBe("   ");
+		});
 	});
 
 	describe("getCurrentWorkspaceId", () => {

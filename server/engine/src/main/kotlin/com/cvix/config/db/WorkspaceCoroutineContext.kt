@@ -131,15 +131,7 @@ suspend fun currentWorkspaceId(): UUID? {
 
     // Then check Reactor context (if running in reactive context)
     coroutineContext[ReactorContext]?.context?.let { reactorContext ->
-        // Try to get from WorkspaceContextHolder's key in Reactor context
-        try {
-            val key = WorkspaceContextHolder::class.java.name + ".WORKSPACE_ID"
-            if (reactorContext.hasKey(key)) {
-                return reactorContext.get<UUID>(key)
-            }
-        } catch (_: Exception) {
-            // Key not found or wrong type
-        }
+        return WorkspaceContextHolder.getFromContext(reactorContext)
     }
 
     return null

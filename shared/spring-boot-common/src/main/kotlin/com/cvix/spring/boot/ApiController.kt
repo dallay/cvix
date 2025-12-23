@@ -7,9 +7,11 @@ import com.cvix.common.domain.bus.command.CommandWithResult
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.common.domain.bus.query.QueryHandlerExecutionError
 import com.cvix.common.domain.bus.query.Response
+import com.cvix.config.ContextKeys.WORKSPACE_CONTEXT_KEY
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
 import java.util.UUID
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.springframework.http.HttpStatus
@@ -165,11 +167,7 @@ abstract class ApiController(
                     )
                 }
             }
-            .awaitSingleOrNull()
-            ?: throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
-            )
+            .awaitSingle()
     }
 
     /**
@@ -186,16 +184,5 @@ abstract class ApiController(
             "Invalid path variable. Only alphanumeric characters, underscores, and hyphens are allowed."
         }
         return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
-    }
-
-    /**
-     * Context key for storing the workspace ID in the reactive context.
-     * Used for Row-Level Security (RLS) enforcement in PostgreSQL.
-     *
-     * IMPORTANT: This key must match the one used in WorkspaceContextHolder
-     * in server/engine to ensure the decorator can read the workspace ID.
-     */
-    companion object {
-        internal const val WORKSPACE_CONTEXT_KEY = "com.cvix.config.db.WorkspaceContextHolder.WORKSPACE_ID"
     }
 }

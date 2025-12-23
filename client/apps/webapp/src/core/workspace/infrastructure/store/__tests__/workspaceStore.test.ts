@@ -1,5 +1,5 @@
-// @ts-nocheck - Vitest module mocking with TypeScript is complex, tests pass in runtime
 import { createPinia, setActivePinia } from "pinia";
+import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Workspace } from "../../../domain/WorkspaceEntity.ts";
 import { useWorkspaceStore } from "../workspaceStore.ts";
@@ -56,7 +56,7 @@ describe("workspaceStore", () => {
 
 	beforeEach(() => {
 		setActivePinia(createPinia());
-		vi.clearAllMocks();
+		vi.resetAllMocks();
 		vi.useFakeTimers();
 	});
 
@@ -370,20 +370,50 @@ describe("workspaceStore", () => {
 		});
 	});
 
+	describe("setCurrentWorkspace", () => {
+		it("should sync workspace ID with global context", () => {
+			const store = useWorkspaceStore();
+
+			store.setCurrentWorkspace(mockWorkspace1);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should clear context when setting null workspace", () => {
+			const store = useWorkspaceStore();
+			store.currentWorkspace = mockWorkspace1;
+
+			store.setCurrentWorkspace(null);
+
+			expect(store.currentWorkspace).toBeNull();
+			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
+		});
+	});
+
 	describe("selectWorkspace context sync", () => {
 		const userId = "123e4567-e89b-42d3-a456-426614174000";
 
 		it("should sync workspace ID with global context on selection", async () => {
-			// Ensure mocks are reset (previous test may have set saveLastSelected to throw)
-			vi.mocked(saveLastSelected).mockImplementation(() => {});
-
 			const store = useWorkspaceStore();
 			store.workspaces = [...mockWorkspaces];
-			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+			(workspaceHttpClient.getWorkspace as Mock).mockResolvedValue(null);
 
 			await store.selectWorkspace(mockWorkspace1.id, userId);
 
 			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should not sync context when workspace selection fails", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [];
+			(workspaceHttpClient.getWorkspace as Mock).mockResolvedValue(null);
+			(setCurrentWorkspaceId as Mock).mockClear();
+
+			await expect(
+				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),
+			).rejects.toThrow();
+
+			expect(setCurrentWorkspaceId).not.toHaveBeenCalled();
 		});
 	});
 });

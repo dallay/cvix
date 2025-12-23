@@ -1,5 +1,6 @@
 package com.cvix.config.db
 
+import com.cvix.config.ContextKeys.WORKSPACE_CONTEXT_KEY
 import java.util.UUID
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
@@ -28,14 +29,6 @@ import reactor.util.context.Context
  * @see WorkspaceConnectionFactoryDecorator
  */
 object WorkspaceContextHolder {
-
-    /**
-     * Context key for storing the workspace ID in the reactive context.
-     *
-     * IMPORTANT: This key is shared with ApiController.WORKSPACE_CONTEXT_KEY
-     * in shared/spring-boot-common. Both must use the same value.
-     */
-    private const val WORKSPACE_CONTEXT_KEY = "com.cvix.config.db.WorkspaceContextHolder.WORKSPACE_ID"
 
     /**
      * Creates a context modifier that sets the workspace ID.
@@ -69,6 +62,17 @@ object WorkspaceContextHolder {
             Mono.empty()
         }
     }
+
+    /**
+     * Retrieves the current workspace ID directly from a Reactor Context.
+     * Useful for coroutine bridging or direct context access.
+     */
+    fun getFromContext(context: Context): UUID? =
+        if (context.hasKey(WORKSPACE_CONTEXT_KEY)) {
+            context.get<UUID>(WORKSPACE_CONTEXT_KEY)
+        } else {
+            null
+        }
 
     /**
      * Retrieves the current workspace ID from the reactive context, or throws if not set.
