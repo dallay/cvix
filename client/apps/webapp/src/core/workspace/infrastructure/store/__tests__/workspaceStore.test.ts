@@ -1,5 +1,4 @@
 import { createPinia, setActivePinia } from "pinia";
-import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Workspace } from "../../../domain/WorkspaceEntity.ts";
 import { useWorkspaceStore } from "../workspaceStore.ts";
@@ -386,7 +385,7 @@ describe("workspaceStore", () => {
 		it("should sync workspace ID with global context on selection", async () => {
 			const store = useWorkspaceStore();
 			store.workspaces = [...mockWorkspaces];
-			(workspaceHttpClient.getWorkspace as Mock).mockResolvedValue(null);
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
 
 			await store.selectWorkspace(mockWorkspace1.id, userId);
 
@@ -396,8 +395,7 @@ describe("workspaceStore", () => {
 		it("should not sync context when workspace selection fails", async () => {
 			const store = useWorkspaceStore();
 			store.workspaces = [];
-			(workspaceHttpClient.getWorkspace as Mock).mockResolvedValue(null);
-			(setCurrentWorkspaceId as Mock).mockClear();
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
 
 			await expect(
 				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),

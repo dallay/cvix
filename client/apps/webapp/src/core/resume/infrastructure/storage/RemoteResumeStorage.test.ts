@@ -96,7 +96,7 @@ describe("RemoteResumeStorage", () => {
 			const result = await storage.save(mockResume);
 
 			expect(mockClient.updateResume).toHaveBeenCalled();
-			// workspaceId is now sent via X-Workspace-Id header, not as parameter
+			// workspaceId is sent via X-Workspace-Id header, not as a parameter
 			expect(mockClient.createResume).toHaveBeenCalledWith(
 				"test-resume-id",
 				mockResume,
@@ -106,6 +106,19 @@ describe("RemoteResumeStorage", () => {
 			expect(result.data).toEqual(mockResume);
 			expect(result.storageType).toBe("remote");
 			expect(storage.getResumeId()).toBe(mockResponse.id);
+		});
+
+		it("throws when no workspace is selected", async () => {
+			const { getCurrentWorkspaceId } = await import(
+				"@/shared/WorkspaceContext"
+			);
+			vi.mocked(getCurrentWorkspaceId).mockReturnValueOnce(null);
+
+			config.resumeId = "test-resume-id";
+			storage = new RemoteResumeStorage(config, mockClient);
+
+			await expect(storage.save(mockResume)).rejects.toThrow();
+			expect(mockClient.createResume).not.toHaveBeenCalled();
 		});
 
 		it("updates existing resume when ID exists", async () => {
