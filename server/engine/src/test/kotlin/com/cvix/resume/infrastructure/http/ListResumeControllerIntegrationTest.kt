@@ -23,6 +23,7 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
 
         webTestClient.mutateWith(csrf()).get()
             .uri("/api/resume?workspaceId=$workspaceId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -47,6 +48,7 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
 
         webTestClient.mutateWith(csrf()).get()
             .uri("/api/resume?workspaceId=$workspaceId&limit=2")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -69,6 +71,7 @@ internal class ListResumeControllerIntegrationTest : ControllerIntegrationTest()
 
         webTestClient.mutateWith(csrf()).get()
             .uri("/api/resume?workspaceId=$workspaceId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isOk
             .expectBody()

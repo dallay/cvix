@@ -17,10 +17,12 @@ internal class GetResumeControllerIntegrationTest : ControllerIntegrationTest() 
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
     fun `should return 404 when getting non-existent resume`() {
+        val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
         val resumeId = "f47ac10b-58cc-4372-a567-0e02b2c3d479"
 
         webTestClient.mutateWith(csrf()).get()
             .uri("/api/resume/$resumeId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isNotFound
     }

@@ -22,6 +22,7 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
     fun `should list templates successfully`() {
         webTestClient.get()
             .uri("/api/templates?workspaceId=$workspaceId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -47,6 +48,7 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
     fun `should return 400 when limit is below minimum`() {
         webTestClient.get()
             .uri("/api/templates?workspaceId=$workspaceId&limit=0")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
@@ -73,6 +75,7 @@ internal class TemplateControllerIntegrationTest : ControllerIntegrationTest() {
     fun `should return 400 when limit is above maximum`() {
         webTestClient.get()
             .uri("/api/templates?workspaceId=$workspaceId&limit=51")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()

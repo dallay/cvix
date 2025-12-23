@@ -17,10 +17,12 @@ internal class DeleteResumeControllerIntegrationTest : ControllerIntegrationTest
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
     fun `should return 404 when deleting non-existent resume`() {
+        val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
         val resumeId = "f47ac10b-58cc-4372-a567-0e02b2c3d479"
 
         webTestClient.mutateWith(csrf()).delete()
             .uri("/api/resume/$resumeId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isNotFound
     }
@@ -37,10 +39,12 @@ internal class DeleteResumeControllerIntegrationTest : ControllerIntegrationTest
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
     fun `should delete existing resume`() {
+        val workspaceId = "a0654720-35dc-49d0-b508-1f7df5d915f1"
         val resumeId = "11111111-1111-1111-1111-111111111111"
 
         webTestClient.mutateWith(csrf()).delete()
             .uri("/api/resume/$resumeId")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isNoContent
     }

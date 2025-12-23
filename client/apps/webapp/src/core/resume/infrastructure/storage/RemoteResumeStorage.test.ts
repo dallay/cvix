@@ -9,6 +9,11 @@ import {
 	type RemoteStorageConfig,
 } from "./RemoteResumeStorage";
 
+// Mock the WorkspaceContext module
+vi.mock("@/shared/WorkspaceContext", () => ({
+	getCurrentWorkspaceId: vi.fn(() => "mock-workspace-id"),
+}));
+
 describe("RemoteResumeStorage", () => {
 	let storage: RemoteResumeStorage;
 	let config: RemoteStorageConfig;

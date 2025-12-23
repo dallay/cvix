@@ -62,7 +62,7 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
 ```
 
-### 3. Add RLS Policy (If Tenant-Scoped)
+### 3. Add RLS Policy (If Workspace-Scoped)
 
 Create a separate file: `005b-user-preferences-rls.yaml`
 
@@ -77,30 +77,30 @@ databaseChangeLog:
               ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
               ALTER TABLE user_preferences FORCE ROW LEVEL SECURITY;
 
-              CREATE POLICY tenant_isolation ON user_preferences
-                USING (user_id IN (
-                  SELECT id FROM users
-                  WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
-                ))
-                WITH CHECK (user_id IN (
-                  SELECT id FROM users
-                  WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
-                ));
+              CREATE POLICY workspace_isolation ON user_preferences
+                USING (workspace_id = current_setting('cvix.current_workspace', true)::uuid)
+                WITH CHECK (workspace_id = current_setting('cvix.current_workspace', true)::uuid);
+      rollback:
+        - sql:
+            sql: |
+              DROP POLICY IF EXISTS workspace_isolation ON user_preferences;
+              ALTER TABLE user_preferences NO FORCE ROW LEVEL SECURITY;
+              ALTER TABLE user_preferences DISABLE ROW LEVEL SECURITY;
 ```
 
 ### 4. Add Index for RLS Performance
 
 ```yaml
   - changeSet:
-      id: "005-user-preferences-index-user-id"
+      id: "005-user-preferences-index-workspace-id"
       author: "your-name"
       changes:
         - createIndex:
             tableName: user_preferences
-            indexName: idx_user_preferences_user_id
+            indexName: idx_user_preferences_workspace_id
             columns:
               - column:
-                  name: user_id
+                  name: workspace_id
 ```
 
 ### 5. Update Master Changelog
@@ -155,7 +155,7 @@ For complex changes, include rollback instructions:
 - [ ] Changeset has unique `id` and `author`
 - [ ] UUID used for primary keys
 - [ ] Appropriate indexes created
-- [ ] RLS policy added (if tenant-scoped)
+- [ ] RLS policy added (if workspace-scoped)
 - [ ] Index on RLS policy columns
 - [ ] Added to `master.yaml` in correct order
 - [ ] Tested on clean database
@@ -170,7 +170,7 @@ For complex changes, include rollback instructions:
 | Issue                     | Solution                                           |
 |---------------------------|----------------------------------------------------|
 | Migration already applied | Never modify applied migrations; create a new one  |
-| Missing RLS               | Always add RLS for tenant-scoped tables            |
+| Missing RLS               | Always add RLS for workspace-scoped tables         |
 | Poor index coverage       | Index columns used in WHERE clauses and JOINs      |
 | Large data migrations     | Split into smaller changesets with proper batching |
 

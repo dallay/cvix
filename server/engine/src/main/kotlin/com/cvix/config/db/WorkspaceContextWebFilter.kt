@@ -114,12 +114,14 @@ class WorkspaceContextWebFilter : WebFilter {
             UUID.fromString(value)
         } catch (e: IllegalArgumentException) {
             // Sanitize value for logging to prevent log injection and limit length
-            val sanitized = value.filter { it.isLetterOrDigit() || it == '-' }.take(36)
+            val sanitized = value.filter { it.isLetterOrDigit() || it == '-' }.take(MAX_UUID_LENGTH)
             log.warn("Invalid workspace ID format from {}: [sanitized: {}] - {}", source, sanitized, e.message)
             null
         }
     }
     companion object {
+        private const val MAX_UUID_LENGTH = 36
+
         /**
          * HTTP header name for workspace ID.
          */
