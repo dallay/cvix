@@ -13,7 +13,6 @@ import java.net.URLEncoder
 import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.reactor.mono
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -152,22 +151,18 @@ abstract class ApiController(
      * @throws ResponseStatusException with 400 BAD REQUEST if workspace ID is not in context
      */
     protected suspend fun workspaceIdFromContext(): UUID {
-        return mono {
-            // This will be populated by contextView in the next step
-        }
-            .transformDeferredContextual { mono, contextView ->
-                if (contextView.hasKey(WORKSPACE_CONTEXT_KEY)) {
-                    reactor.core.publisher.Mono.just(contextView.get<UUID>(WORKSPACE_CONTEXT_KEY))
-                } else {
-                    reactor.core.publisher.Mono.error(
-                        ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
-                        ),
-                    )
-                }
+        return reactor.core.publisher.Mono.deferContextual { contextView ->
+            if (contextView.hasKey(WORKSPACE_CONTEXT_KEY)) {
+                reactor.core.publisher.Mono.just(contextView.get<UUID>(WORKSPACE_CONTEXT_KEY))
+            } else {
+                reactor.core.publisher.Mono.error(
+                    ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
+                    ),
+                )
             }
-            .awaitSingle()
+        }.awaitSingle()
     }
 
     /**
