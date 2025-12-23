@@ -1,3 +1,13 @@
+## [2.1.0](https://github.com/dallay/cvix/compare/v2.0.4...v2.1.0) (2025-12-23)
+
+### ✨ Features
+
+* implement dual driver strategy for database operations with R2DBC and JDBC ([#455](https://github.com/dallay/cvix/issues/455)) ([6dc09c9](https://github.com/dallay/cvix/commit/6dc09c9b136c45742d3fd5ad18dfa0411b2c6238))
+
+### 📝 Documentation
+
+* add environment variables for API and Keycloak configuration ([#452](https://github.com/dallay/cvix/issues/452)) ([93e1fe0](https://github.com/dallay/cvix/commit/93e1fe01d2ee3a7343c0875d746044485372e789))
+
 ## [2.0.4](https://github.com/dallay/cvix/compare/v2.0.3...v2.0.4) (2025-12-22)
 
 ### 🐛 Bug Fixes
