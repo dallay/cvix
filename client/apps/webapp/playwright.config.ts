@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+import { SSL_CERT_PATH, SSL_KEY_PATH } from "../../packages/ssl-paths/index.js";
 
 /**
  * Playwright configuration for E2E testing
@@ -20,12 +21,8 @@ const defaultBackendForTests =
 // Detect if SSL certificates exist (via FORCE_HTTP env var or presence of cert files)
 // In CI or when FORCE_HTTP is set, use HTTP. In local dev, default to HTTP unless certs exist.
 const hasSSLCertificates = (): boolean => {
-	const certPath = fileURLToPath(
-		new URL("../../../infra/ssl/localhost.pem", import.meta.url),
-	);
-	const keyPath = fileURLToPath(
-		new URL("../../../infra/ssl/localhost-key.pem", import.meta.url),
-	);
+	const certPath = fileURLToPath(new URL(SSL_CERT_PATH, import.meta.url));
+	const keyPath = fileURLToPath(new URL(SSL_KEY_PATH, import.meta.url));
 	return existsSync(certPath) && existsSync(keyPath);
 };
 

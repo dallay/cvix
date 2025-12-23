@@ -264,6 +264,24 @@ describe("workspaceStore", () => {
 			store.setCurrentWorkspace(mockWorkspace2);
 			expect(store.currentWorkspace).toEqual(mockWorkspace2);
 		});
+
+		it("should sync workspace ID with global context", () => {
+			const store = useWorkspaceStore();
+
+			store.setCurrentWorkspace(mockWorkspace1);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should clear context when setting null workspace", () => {
+			const store = useWorkspaceStore();
+			store.currentWorkspace = mockWorkspace1;
+
+			store.setCurrentWorkspace(null);
+
+			expect(store.currentWorkspace).toBeNull();
+			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
+		});
 	});
 
 	describe("clearError", () => {
@@ -355,26 +373,6 @@ describe("workspaceStore", () => {
 
 			store.resetSession();
 
-			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
-		});
-	});
-
-	describe("setCurrentWorkspace", () => {
-		it("should sync workspace ID with global context", () => {
-			const store = useWorkspaceStore();
-
-			store.setCurrentWorkspace(mockWorkspace1);
-
-			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
-		});
-
-		it("should clear context when setting null workspace", () => {
-			const store = useWorkspaceStore();
-			store.currentWorkspace = mockWorkspace1;
-
-			store.setCurrentWorkspace(null);
-
-			expect(store.currentWorkspace).toBeNull();
 			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
 		});
 	});

@@ -117,7 +117,9 @@ describe("RemoteResumeStorage", () => {
 			config.resumeId = "test-resume-id";
 			storage = new RemoteResumeStorage(config, mockClient);
 
-			await expect(storage.save(mockResume)).rejects.toThrow();
+			await expect(storage.save(mockResume)).rejects.toThrow(
+				"Remote storage operation failed: No workspace selected",
+			);
 			expect(mockClient.createResume).not.toHaveBeenCalled();
 		});
 
