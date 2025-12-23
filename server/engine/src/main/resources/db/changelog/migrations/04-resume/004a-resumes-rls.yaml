@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004a-enable-rls-resumes
+      author: cvix
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              ALTER TABLE resumes ENABLE ROW LEVEL SECURITY;
+              CREATE POLICY resumes_workspace_access_policy ON resumes
+              FOR ALL TO PUBLIC
+              USING (workspace_id = current_setting('cvix.current_workspace')::uuid)
+              WITH CHECK (workspace_id = current_setting('cvix.current_workspace')::uuid);
