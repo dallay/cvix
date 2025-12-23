@@ -2,6 +2,14 @@ server:
   forward-headers-strategy: framework
   shutdown: graceful
 
+spring:
+  liquibase:
+    # Production Liquibase configuration (Dual Driver Strategy)
+    # LIQUIBASE_URL must be set as environment variable with jdbc: prefix
+    url: ${LIQUIBASE_URL}
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
 application:
   security:
     headers:

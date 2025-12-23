@@ -173,3 +173,77 @@ For complex changes, include rollback instructions:
 | Missing RLS               | Always add RLS for tenant-scoped tables            |
 | Poor index coverage       | Index columns used in WHERE clauses and JOINs      |
 | Large data migrations     | Split into smaller changesets with proper batching |
+
+---
+
+## Dual Driver Strategy (R2DBC + JDBC)
+
+This project uses **reactive R2DBC** for database operations but Liquibase requires **traditional JDBC**. We solve this with the "Dual Driver Strategy":
+
+### How It Works
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                     Application Startup                          │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Spring Boot initializes Liquibase with JDBC connection       │
+│     └─► LIQUIBASE_URL=jdbc:postgresql://host:5432/db            │
+│  2. Liquibase runs all pending migrations (blocking)             │
+│  3. JDBC connection pool closes after migrations complete        │
+│  4. Application starts with R2DBC for reactive operations        │
+│     └─► DATABASE_URL=r2dbc:postgresql://host:5432/db            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+
+Two separate database URLs are required:
+
+| Variable         | Protocol | Purpose                              |
+|------------------|----------|--------------------------------------|
+| `DATABASE_URL`   | `r2dbc:` | Reactive database operations         |
+| `LIQUIBASE_URL`  | `jdbc:`  | Schema migrations (Liquibase only)   |
+
+Both URLs point to the same database, just with different drivers.
+
+### Environment Variables
+
+```bash
+# R2DBC for reactive operations
+DATABASE_URL=r2dbc:postgresql://postgresql:5432/cvix
+
+# JDBC for Liquibase migrations
+LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/cvix
+
+# Shared credentials
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=changeme
+```
+
+### Why Two Drivers?
+
+| Aspect           | R2DBC                          | JDBC                              |
+|------------------|--------------------------------|-----------------------------------|
+| **Paradigm**     | Non-blocking, reactive         | Blocking, synchronous             |
+| **Use case**     | Application runtime operations | Schema migrations, DDL statements |
+| **Liquibase**    | ❌ Not supported               | ✅ Required                       |
+| **Spring Data**  | `R2dbcRepository`              | `JpaRepository`                   |
+
+### Dependencies
+
+The following dependencies enable the dual driver strategy (already configured in `build.gradle.kts`):
+
+```kotlin
+// Reactive stack
+implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+implementation("org.postgresql:r2dbc-postgresql")
+
+// Liquibase with JDBC
+implementation("org.liquibase:liquibase-core")
+implementation("org.springframework:spring-jdbc")
+runtimeOnly("org.postgresql:postgresql")  // JDBC driver
+```
+
+### Bean Initialization Order
+
+Spring Boot 3.x automatically ensures Liquibase completes before R2DBC repositories initialize. Manual `@DependsOn("liquibase")` annotations are **not required** unless you're manually creating `ConnectionFactory` beans outside of Spring Boot autoconfiguration.
