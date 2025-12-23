@@ -27,9 +27,9 @@ export interface ResumeRequest {
 
 /**
  * DTO for creating a new resume resource.
+ * Note: workspaceId is sent via X-Workspace-Id header, not in the body.
  */
 export interface CreateResumeRequest {
-	workspaceId: string;
 	title?: string;
 	content: ResumeRequest;
 }

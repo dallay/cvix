@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
+ * REST controller for listing resumes.
+ *
+ * Note: The workspace ID is obtained from the X-Workspace-Id header,
+ * not from query parameters. This ensures a single source of truth
+ * for workspace context and enables Row-Level Security (RLS).
  *
  * @created 20/11/25
  */
@@ -31,16 +36,16 @@ class ListResumeController(
 ) : ApiController(mediator) {
     @Operation(
         summary = "List all resumes for a user in a workspace",
+        description = "Requires X-Workspace-Id header to specify the workspace context",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Resumes retrieved successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request parameters"),
+        ApiResponse(responseCode = "400", description = "Invalid request parameters or missing X-Workspace-Id header"),
         ApiResponse(responseCode = "401", description = "Unauthorized"),
     )
     @GetMapping("/resume")
     suspend fun listResumes(
-        @Parameter(description = "Workspace ID") @RequestParam workspaceId: UUID,
         @Parameter(description = "Maximum number of results (1-100)")
         @RequestParam(defaultValue = "50")
         @Min(1)
@@ -49,6 +54,7 @@ class ListResumeController(
         @Parameter(description = "Cursor for pagination") @RequestParam(required = false) cursor: UUID?,
     ): ResponseEntity<ResumeDocumentResponses> {
         val userId = userIdFromToken()
+        val workspaceId = workspaceIdFromContext()
 
         val maskedUserId = LogMasker.mask(userId)
         log.debug(

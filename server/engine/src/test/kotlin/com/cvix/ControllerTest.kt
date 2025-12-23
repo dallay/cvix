@@ -1,13 +1,14 @@
 package com.cvix
 
 import com.cvix.common.domain.bus.Mediator
+import com.cvix.config.db.WorkspaceContextWebFilter
 import com.cvix.controllers.GlobalExceptionHandler
 import com.cvix.spring.boot.ApiController
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.context.MessageSource
@@ -28,6 +29,7 @@ import reactor.core.publisher.Mono
 abstract class ControllerTest {
     protected val mediator = mockk<Mediator>()
     protected val userId: UUID = UUID.randomUUID()
+    protected val workspaceId: UUID = UUID.randomUUID()
     protected val messageSource = mockk<MessageSource>(relaxed = true)
 
     abstract val webTestClient: WebTestClient
@@ -42,7 +44,8 @@ abstract class ControllerTest {
         mockSecurity(jwtAuthenticationToken)
 
         return WebTestClient.bindToController(controller)
-            .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
+            .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
+            .controllerAdvice(GlobalExceptionHandler(messageSource))
             .apply {
                 csrf()
             }.apply {

@@ -20,13 +20,12 @@ internal class CreateResumeControllerTest : ControllerTest() {
     private lateinit var command: CreateResumeCommand
     private lateinit var request: CreateResumeRequest
     private val resumeId = UUID.randomUUID()
-    private val workspaceId = UUID.randomUUID()
     private val title = "My Resume"
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        request = createResumeRequest(workspaceId = workspaceId, title = title)
+        request = createResumeRequest(title = title)
         val resume = ResumeRequestMapper.toDomain(request.content)
         command = CreateResumeCommand(
             resumeId,
@@ -44,6 +43,7 @@ internal class CreateResumeControllerTest : ControllerTest() {
 
         webTestClient.put()
             .uri("/api/resume/$resumeId")
+            .header("X-Workspace-Id", workspaceId.toString())
             .bodyValue(request)
             .exchange()
             .expectStatus().isCreated

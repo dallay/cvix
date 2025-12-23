@@ -72,8 +72,8 @@ onMounted(async () => {
 		isLoadingTemplates.value = false;
 		return;
 	}
-	// Fetch available templates
-	await fetchTemplates(workspaceId);
+	// Fetch available templates (workspaceId is sent via X-Workspace-Id header)
+	await fetchTemplates();
 
 	// Initialize section visibility
 	if (resumeStore.resume) {

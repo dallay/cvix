@@ -57,8 +57,7 @@ class UpdateResumeController(
         val sanitizedId = sanitizePathVariable(id.toString())
         log.debug("Update resume {}", sanitizedId)
         val userId = userIdFromToken()
-
-        val workspaceId = request.workspaceId
+        val workspaceId = workspaceIdFromContext()
 
         val command = UpdateResumeCommand(
             id = id,

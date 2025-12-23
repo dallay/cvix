@@ -19,6 +19,12 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/master.yaml
     enabled: true
+    # JDBC URL for Liquibase migrations (Liquibase requires JDBC, not R2DBC)
+    # This enables the "Dual Driver Strategy": Liquibase uses JDBC for schema management
+    # while the application uses R2DBC for reactive database operations.
+    url: ${LIQUIBASE_URL:jdbc:postgresql://localhost:5432/postgres}
+    user: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
   main:
     allow-bean-definition-overriding: true
   security:

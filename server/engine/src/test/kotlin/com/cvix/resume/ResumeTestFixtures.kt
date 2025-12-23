@@ -144,10 +144,9 @@ object ResumeTestFixtures {
     )
 
     fun createResumeRequest(
-        workspaceId: UUID = UUID.randomUUID(),
         title: String = "My first resume",
         content: GenerateResumeRequest = createValidResumeRequestContent()
-    ): CreateResumeRequest = CreateResumeRequest(workspaceId, title, content)
+    ): CreateResumeRequest = CreateResumeRequest(title, content)
 
     fun createValidResumeRequestContent(templateId: String = "engineering"): GenerateResumeRequest {
         return GenerateResumeRequest(

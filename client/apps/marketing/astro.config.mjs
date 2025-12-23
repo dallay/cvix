@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
+import { SSL_CERT_PATH, SSL_KEY_PATH } from "../../packages/ssl-paths/index.js";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
@@ -17,8 +18,8 @@ import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
  * @returns {boolean} true if both cert and key files exist
  */
 function hasSSLCertificates() {
-	const certPath = fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url));
-	const keyPath = fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url));
+	const certPath = fileURLToPath(new URL(SSL_CERT_PATH, import.meta.url));
+	const keyPath = fileURLToPath(new URL(SSL_KEY_PATH, import.meta.url));
 	
 	const certExists = existsSync(certPath);
 	const keyExists = existsSync(keyPath);
@@ -51,8 +52,8 @@ function getHttpsConfig() {
 	// Certificates exist, use HTTPS
 	console.log("✅ SSL certificates found, running in HTTPS mode");
 	return {
-		key: fileURLToPath(new URL("../../../infra/ssl/localhost-key.pem", import.meta.url)),
-		cert: fileURLToPath(new URL("../../../infra/ssl/localhost.pem", import.meta.url)),
+		key: fileURLToPath(new URL(SSL_KEY_PATH, import.meta.url)),
+		cert: fileURLToPath(new URL(SSL_CERT_PATH, import.meta.url)),
 	};
 }
 

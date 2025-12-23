@@ -21,7 +21,7 @@ is not allowed to see. This is a **critical component** of our multi-tenant secu
 
 ### RLS Pattern
 
-1. **Tenant Column**: Add a `tenant_id UUID NOT NULL` column to all tenant-scoped tables
+1. **Tenant Column**: Add a `workspace_id UUID NOT NULL` column to all tenant-scoped tables
 
 2. **Enable RLS**: Enable RLS on the table:
 
@@ -30,33 +30,33 @@ is not allowed to see. This is a **critical component** of our multi-tenant secu
     ALTER TABLE my_table FORCE ROW LEVEL SECURITY;
     ```
 
-3. **Create Policy**: Create a policy that checks the `tenant_id` against a session variable:
+3. **Create Policy**: Create a policy that checks the `workspace_id` against a session variable:
 
 ```sql
 CREATE POLICY tenant_isolation ON my_table
-    USING (tenant_id = current_setting('app.current_tenant', true)::uuid)
-    WITH CHECK (tenant_id = current_setting('app.current_tenant', true)::uuid);
+    USING (workspace_id = current_setting('cvix.current_workspace', true)::uuid)
+    WITH CHECK (workspace_id = current_setting('cvix.current_workspace', true)::uuid);
 ```
 
 ### Application Integration
 
-- Set `app.current_tenant` session variable **immediately after acquiring a database connection**
+- Set `cvix.current_workspace` session variable **immediately after acquiring a database connection**
   and **before executing any queries**
 - Use `SET LOCAL` to ensure the setting only lasts for the duration of a transaction:
 
 ```sql
 BEGIN;
-SET LOCAL app.current_tenant = '<the-authenticated-tenant-uuid>';
+SET LOCAL cvix.current_workspace = '<the-authenticated-workspace-uuid>';
 -- Application queries go here
 COMMIT;
 ```
 
 ### Performance
 
-- **Always create an index** on columns used in RLS policies (e.g., `tenant_id`):
+- **Always create an index** on columns used in RLS policies (e.g., `workspace_id`):
 
 ```sql
-CREATE INDEX IF NOT EXISTS idx_my_table_tenant_id ON my_table (tenant_id);
+CREATE INDEX IF NOT EXISTS idx_my_table_workspace_id ON my_table (workspace_id);
 ```
 
 ### Security Notes

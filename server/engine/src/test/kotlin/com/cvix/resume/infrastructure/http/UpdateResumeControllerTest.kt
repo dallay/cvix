@@ -20,7 +20,6 @@ internal class UpdateResumeControllerTest : ControllerTest() {
     private val controller = UpdateResumeController(mediator)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
     private val resumeId = UUID.randomUUID()
-    private val workspaceId = UUID.randomUUID()
     private val title = "Updated Resume"
     private lateinit var request: UpdateResumeRequest
 
@@ -28,7 +27,6 @@ internal class UpdateResumeControllerTest : ControllerTest() {
     override fun setUp() {
         super.setUp()
         request = UpdateResumeRequest(
-            workspaceId = workspaceId,
             title = title,
             content = ResumeTestFixtures.createValidResumeRequestContent(),
             expectedUpdatedAt = Instant.now().toString(),
@@ -40,6 +38,7 @@ internal class UpdateResumeControllerTest : ControllerTest() {
     fun `should update resume successfully`() {
         webTestClient.put()
             .uri("/api/resume/$resumeId/update")
+            .header("X-Workspace-Id", workspaceId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -63,6 +62,7 @@ internal class UpdateResumeControllerTest : ControllerTest() {
     fun `should return 400 for invalid UUID format`() {
         webTestClient.put()
             .uri("/api/resume/invalid-uuid/update")
+            .header("X-Workspace-Id", workspaceId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -75,6 +75,7 @@ internal class UpdateResumeControllerTest : ControllerTest() {
 
         webTestClient.put()
             .uri("/api/resume/$resumeId/update")
+            .header("X-Workspace-Id", workspaceId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(invalidRequest)
             .exchange()

@@ -28,7 +28,8 @@ internal class ListResumeControllerUniqueOrderIntegrationTest : ControllerIntegr
         // This test verifies the distinctBy fix in ResumeCatalog
         // Even if no resumes exist, we verify the endpoint works and returns unique results
         val body = webTestClient.mutateWith(csrf()).get()
-            .uri("/api/resume?workspaceId=$workspaceId")
+            .uri("/api/resume")
+            .header("X-Workspace-Id", workspaceId)
             .exchange()
             .expectStatus().isOk
             .expectBody()

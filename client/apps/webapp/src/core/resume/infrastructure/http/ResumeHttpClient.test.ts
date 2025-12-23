@@ -279,7 +279,6 @@ describe("ResumeHttpClient", () => {
 
 			const result = await client.createResume(
 				"550e8400-e29b-41d4-a716-446655440000",
-				"workspace-456",
 				mockResume,
 				"My Resume",
 			);
@@ -289,7 +288,8 @@ describe("ResumeHttpClient", () => {
 			if (!callArgs) throw new Error("Expected call args to exist");
 			const [url, payload] = callArgs;
 			expect(url).toBe("/resume/550e8400-e29b-41d4-a716-446655440000");
-			expect(payload.workspaceId).toBe("workspace-456");
+			// workspaceId is now sent via header, not in body
+			expect(payload.workspaceId).toBeUndefined();
 			expect(payload.title).toBe("My Resume");
 			expect(payload.content.basics.name).toBe("John Doe");
 			expect(result).toEqual(mockResumeDocumentResponse);
@@ -300,7 +300,6 @@ describe("ResumeHttpClient", () => {
 
 			await client.createResume(
 				"550e8400-e29b-41d4-a716-446655440000",
-				"workspace-456",
 				mockResume,
 			);
 
@@ -419,19 +418,18 @@ describe("ResumeHttpClient", () => {
 		it("fetches list of templates", async () => {
 			getSpy.mockResolvedValue({ data: { data: mockTemplates } });
 
-			const result = await client.getTemplates(templateId);
+			const result = await client.getTemplates();
 
 			expect(getSpy).toHaveBeenCalledTimes(1);
-			expect(getSpy).toHaveBeenCalledWith(
-				`/templates?workspaceId=${templateId}`,
-			);
+			// workspaceId is now sent via X-Workspace-Id header, not query param
+			expect(getSpy).toHaveBeenCalledWith("/templates");
 			expect(result).toEqual(mockTemplates);
 		});
 
 		it("returns empty array when no templates", async () => {
 			getSpy.mockResolvedValue({ data: { data: [] } });
 
-			const result = await client.getTemplates(templateId);
+			const result = await client.getTemplates();
 
 			expect(result).toEqual([]);
 		});

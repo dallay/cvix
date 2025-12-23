@@ -49,8 +49,7 @@ class CreateResumeController(
         val safeIdMasked = LogMasker.mask(id)
         log.debug("Creating new resume: {}", safeIdMasked)
         val userId = userIdFromToken()
-
-        val workspaceId = request.workspaceId
+        val workspaceId = workspaceIdFromContext()
 
         val command = CreateResumeCommand(
             id = id,

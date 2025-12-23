@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,7 +19,6 @@ internal class TemplateControllerTest : ControllerTest() {
     private val controller = TemplateController(mediator)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
     private lateinit var response: TemplateMetadataResponses
-    private val workspaceId = UUID.randomUUID()
 
     @BeforeEach
     override fun setUp() {
@@ -39,7 +37,8 @@ internal class TemplateControllerTest : ControllerTest() {
     @Test
     fun `should list templates successfully`() {
         webTestClient.get()
-            .uri("/api/templates?workspaceId=$workspaceId")
+            .uri("/api/templates")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -86,7 +85,8 @@ internal class TemplateControllerTest : ControllerTest() {
         coEvery { mediator.send(any<ListTemplatesQuery>()) } throws RuntimeException("Internal error")
         val querySlot = slot<ListTemplatesQuery>()
         val result = webTestClient.get()
-            .uri("/api/templates?workspaceId=$workspaceId")
+            .uri("/api/templates")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().is5xxServerError
             .expectBody()

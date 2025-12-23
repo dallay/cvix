@@ -62,7 +62,7 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
 ```
 
-### 3. Add RLS Policy (If Tenant-Scoped)
+### 3. Add RLS Policy (If Workspace-Scoped)
 
 Create a separate file: `005b-user-preferences-rls.yaml`
 
@@ -77,30 +77,30 @@ databaseChangeLog:
               ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
               ALTER TABLE user_preferences FORCE ROW LEVEL SECURITY;
 
-              CREATE POLICY tenant_isolation ON user_preferences
-                USING (user_id IN (
-                  SELECT id FROM users
-                  WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
-                ))
-                WITH CHECK (user_id IN (
-                  SELECT id FROM users
-                  WHERE tenant_id = current_setting('app.current_tenant', true)::uuid
-                ));
+              CREATE POLICY workspace_isolation ON user_preferences
+                USING (workspace_id = current_setting('cvix.current_workspace', true)::uuid)
+                WITH CHECK (workspace_id = current_setting('cvix.current_workspace', true)::uuid);
+      rollback:
+        - sql:
+            sql: |
+              DROP POLICY IF EXISTS workspace_isolation ON user_preferences;
+              ALTER TABLE user_preferences NO FORCE ROW LEVEL SECURITY;
+              ALTER TABLE user_preferences DISABLE ROW LEVEL SECURITY;
 ```
 
 ### 4. Add Index for RLS Performance
 
 ```yaml
   - changeSet:
-      id: "005-user-preferences-index-user-id"
+      id: "005-user-preferences-index-workspace-id"
       author: "your-name"
       changes:
         - createIndex:
             tableName: user_preferences
-            indexName: idx_user_preferences_user_id
+            indexName: idx_user_preferences_workspace_id
             columns:
               - column:
-                  name: user_id
+                  name: workspace_id
 ```
 
 ### 5. Update Master Changelog
@@ -155,7 +155,7 @@ For complex changes, include rollback instructions:
 - [ ] Changeset has unique `id` and `author`
 - [ ] UUID used for primary keys
 - [ ] Appropriate indexes created
-- [ ] RLS policy added (if tenant-scoped)
+- [ ] RLS policy added (if workspace-scoped)
 - [ ] Index on RLS policy columns
 - [ ] Added to `master.yaml` in correct order
 - [ ] Tested on clean database
@@ -170,6 +170,80 @@ For complex changes, include rollback instructions:
 | Issue                     | Solution                                           |
 |---------------------------|----------------------------------------------------|
 | Migration already applied | Never modify applied migrations; create a new one  |
-| Missing RLS               | Always add RLS for tenant-scoped tables            |
+| Missing RLS               | Always add RLS for workspace-scoped tables         |
 | Poor index coverage       | Index columns used in WHERE clauses and JOINs      |
 | Large data migrations     | Split into smaller changesets with proper batching |
+
+---
+
+## Dual Driver Strategy (R2DBC + JDBC)
+
+This project uses **reactive R2DBC** for database operations but Liquibase requires **traditional JDBC**. We solve this with the "Dual Driver Strategy":
+
+### How It Works
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                     Application Startup                          │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Spring Boot initializes Liquibase with JDBC connection       │
+│     └─► LIQUIBASE_URL=jdbc:postgresql://host:5432/db            │
+│  2. Liquibase runs all pending migrations (blocking)             │
+│  3. JDBC connection pool closes after migrations complete        │
+│  4. Application starts with R2DBC for reactive operations        │
+│     └─► DATABASE_URL=r2dbc:postgresql://host:5432/db            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+
+Two separate database URLs are required:
+
+| Variable         | Protocol | Purpose                              |
+|------------------|----------|--------------------------------------|
+| `DATABASE_URL`   | `r2dbc:` | Reactive database operations         |
+| `LIQUIBASE_URL`  | `jdbc:`  | Schema migrations (Liquibase only)   |
+
+Both URLs point to the same database, just with different drivers.
+
+### Environment Variables
+
+```bash
+# R2DBC for reactive operations
+DATABASE_URL=r2dbc:postgresql://postgresql:5432/cvix
+
+# JDBC for Liquibase migrations
+LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/cvix
+
+# Shared credentials
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=changeme
+```
+
+### Why Two Drivers?
+
+| Aspect           | R2DBC                          | JDBC                              |
+|------------------|--------------------------------|-----------------------------------|
+| **Paradigm**     | Non-blocking, reactive         | Blocking, synchronous             |
+| **Use case**     | Application runtime operations | Schema migrations, DDL statements |
+| **Liquibase**    | ❌ Not supported               | ✅ Required                       |
+| **Spring Data**  | `R2dbcRepository`              | `JpaRepository`                   |
+
+### Dependencies
+
+The following dependencies enable the dual driver strategy (already configured in `build.gradle.kts`):
+
+```kotlin
+// Reactive stack
+implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+implementation("org.postgresql:r2dbc-postgresql")
+
+// Liquibase with JDBC
+implementation("org.liquibase:liquibase-core")
+implementation("org.springframework:spring-jdbc")
+runtimeOnly("org.postgresql:postgresql")  // JDBC driver
+```
+
+### Bean Initialization Order
+
+Spring Boot 3.x automatically ensures Liquibase completes before R2DBC repositories initialize. Manual `@DependsOn("liquibase")` annotations are **not required** unless you're manually creating `ConnectionFactory` beans outside of Spring Boot autoconfiguration.

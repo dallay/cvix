@@ -7,9 +7,11 @@ import com.cvix.common.domain.bus.command.CommandWithResult
 import com.cvix.common.domain.bus.query.Query
 import com.cvix.common.domain.bus.query.QueryHandlerExecutionError
 import com.cvix.common.domain.bus.query.Response
+import com.cvix.config.ContextKeys.WORKSPACE_CONTEXT_KEY
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
 import java.util.UUID
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -126,6 +128,41 @@ abstract class ApiController(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user ID format in token", e)
         }
         return userId
+    }
+
+    /**
+     * Retrieves the current workspace ID from the reactive context.
+     *
+     * The workspace ID is expected to be set by [WorkspaceContextWebFilter] from
+     * the `X-Workspace-Id` HTTP header. This is the primary method for obtaining
+     * the workspace context in controllers.
+     *
+     * ## Usage
+     * ```kotlin
+     * @GetMapping("/resume")
+     * suspend fun listResumes(): ResponseEntity<List<Resume>> {
+     *     val workspaceId = workspaceIdFromContext()
+     *     val query = ListResumesQuery(userId = userIdFromToken(), workspaceId = workspaceId)
+     *     return ResponseEntity.ok(ask(query))
+     * }
+     * ```
+     *
+     * @return The workspace UUID from the reactive context
+     * @throws ResponseStatusException with 400 BAD REQUEST if workspace ID is not in context
+     */
+    protected suspend fun workspaceIdFromContext(): UUID {
+        return reactor.core.publisher.Mono.deferContextual { contextView ->
+            if (contextView.hasKey(WORKSPACE_CONTEXT_KEY)) {
+                reactor.core.publisher.Mono.just(contextView.get<UUID>(WORKSPACE_CONTEXT_KEY))
+            } else {
+                reactor.core.publisher.Mono.error(
+                    ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Missing X-Workspace-Id header. All workspace-scoped endpoints require this header.",
+                    ),
+                )
+            }
+        }.awaitSingle()
     }
 
     /**

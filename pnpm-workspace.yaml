@@ -1,3 +1,4 @@
+minimumReleaseAge: 1440
 packages:
   - client/apps/*
   - client/packages/*
@@ -9,10 +10,3 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild
   - lefthook
-  - maplibre-gl
-  - msw
-  - pre-commit
-  - pre-commit-hooks
-  - sharp
-  - spawn-sync
-  - vue-demi

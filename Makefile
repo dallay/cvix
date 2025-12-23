@@ -301,7 +301,7 @@ _verify-frontend-check:
 	$(call verify_step,1,Running frontend checks (Biome),$(PNPM) check,frontend-check)
 
 _verify-backend-check:
-	$(call verify_step,2,Running backend checks (Detekt),./gradlew detektAll,backend-check)
+	$(call verify_step,2,Running backend checks (Detekt),./gradlew --no-daemon detektAll < /dev/null,backend-check)
 
 _verify-markdown:
 	$(call verify_step,3,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
@@ -324,7 +324,7 @@ _verify-frontend-tests:
 	$(call verify_step,6,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
 
 _verify-backend-tests:
-	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew test,backend-tests)
+	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew --no-daemon test < /dev/null,backend-tests)
 
 _verify-e2e-tests:
 	$(call verify_step,8,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)

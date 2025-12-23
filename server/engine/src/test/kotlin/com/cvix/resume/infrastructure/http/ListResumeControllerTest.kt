@@ -17,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 internal class ListResumeControllerTest : ControllerTest() {
     private val controller = ListResumeController(mediator)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
-    private val workspaceId = UUID.randomUUID()
     private lateinit var response: ResumeDocumentResponses
 
     @BeforeEach
@@ -37,7 +36,8 @@ internal class ListResumeControllerTest : ControllerTest() {
     @Test
     fun `should list resumes successfully`() {
         webTestClient.get()
-            .uri("/api/resume?workspaceId=$workspaceId")
+            .uri("/api/resume")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -55,7 +55,8 @@ internal class ListResumeControllerTest : ControllerTest() {
     @Test
     fun `should list resumes with custom limit`() {
         webTestClient.get()
-            .uri("/api/resume?workspaceId=$workspaceId&limit=10")
+            .uri("/api/resume?limit=10")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
 
@@ -69,7 +70,8 @@ internal class ListResumeControllerTest : ControllerTest() {
         val cursor = UUID.randomUUID()
 
         webTestClient.get()
-            .uri("/api/resume?workspaceId=$workspaceId&cursor=$cursor")
+            .uri("/api/resume?cursor=$cursor")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
 
@@ -79,7 +81,7 @@ internal class ListResumeControllerTest : ControllerTest() {
     }
 
     @Test
-    fun `should return 400 when workspaceId is missing`() {
+    fun `should return 400 when X-Workspace-Id header is missing`() {
         webTestClient.get()
             .uri("/api/resume")
             .exchange()
@@ -89,7 +91,8 @@ internal class ListResumeControllerTest : ControllerTest() {
     @Test
     fun `should return 400 when limit exceeds maximum`() {
         webTestClient.get()
-            .uri("/api/resume?workspaceId=$workspaceId&limit=101")
+            .uri("/api/resume?limit=101")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isBadRequest
     }
@@ -97,7 +100,8 @@ internal class ListResumeControllerTest : ControllerTest() {
     @Test
     fun `should return 400 when limit is less than minimum`() {
         webTestClient.get()
-            .uri("/api/resume?workspaceId=$workspaceId&limit=0")
+            .uri("/api/resume?limit=0")
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isBadRequest
     }

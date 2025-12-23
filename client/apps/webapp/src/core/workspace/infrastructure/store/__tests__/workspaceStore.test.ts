@@ -1,4 +1,3 @@
-// @ts-nocheck - Vitest module mocking with TypeScript is complex, tests pass in runtime
 import { createPinia, setActivePinia } from "pinia";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Workspace } from "../../../domain/WorkspaceEntity.ts";
@@ -18,6 +17,15 @@ vi.mock("../../storage/workspaceLocalStorage", () => ({
 	clearLastSelected: vi.fn(),
 }));
 
+vi.mock("@/shared/WorkspaceContext", () => ({
+	setCurrentWorkspaceId: vi.fn(),
+	clearCurrentWorkspaceId: vi.fn(),
+}));
+
+import {
+	clearCurrentWorkspaceId,
+	setCurrentWorkspaceId,
+} from "@/shared/WorkspaceContext";
 import { WorkspaceErrorCode } from "../../../domain/WorkspaceError.ts";
 import { workspaceHttpClient } from "../../http/workspaceHttpClient.ts";
 import { saveLastSelected } from "../../storage/workspaceLocalStorage.ts";
@@ -47,7 +55,7 @@ describe("workspaceStore", () => {
 
 	beforeEach(() => {
 		setActivePinia(createPinia());
-		vi.clearAllMocks();
+		vi.resetAllMocks();
 		vi.useFakeTimers();
 	});
 
@@ -130,6 +138,28 @@ describe("workspaceStore", () => {
 
 			expect(store.currentWorkspace).toEqual(mockWorkspace2);
 			expect(store.error?.code).toBe(WorkspaceErrorCode.SELECTION_FAILED);
+		});
+
+		it("should sync workspace ID with global context on selection", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [...mockWorkspaces];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await store.selectWorkspace(mockWorkspace1.id, userId);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should not sync context when workspace selection fails", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await expect(
+				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),
+			).rejects.toThrow();
+
+			expect(setCurrentWorkspaceId).not.toHaveBeenCalled();
 		});
 	});
 
@@ -256,6 +286,24 @@ describe("workspaceStore", () => {
 			store.setCurrentWorkspace(mockWorkspace2);
 			expect(store.currentWorkspace).toEqual(mockWorkspace2);
 		});
+
+		it("should sync workspace ID with global context", () => {
+			const store = useWorkspaceStore();
+
+			store.setCurrentWorkspace(mockWorkspace1);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should clear context when setting null workspace", () => {
+			const store = useWorkspaceStore();
+			store.currentWorkspace = mockWorkspace1;
+
+			store.setCurrentWorkspace(null);
+
+			expect(store.currentWorkspace).toBeNull();
+			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
+		});
 	});
 
 	describe("clearError", () => {
@@ -315,6 +363,39 @@ describe("workspaceStore", () => {
 			await store.loadWorkspaces();
 
 			expect(store.defaultWorkspace).toBeUndefined();
+		});
+	});
+
+	describe("resetSession", () => {
+		it("should reset all session state", () => {
+			const store = useWorkspaceStore();
+			// Set some state
+			store.currentWorkspace = mockWorkspace1;
+			store.lastSelectedId = mockWorkspace1.id;
+			store.lastSelectedAt = new Date();
+			store.loadedInSession = true;
+			store.error = {
+				code: WorkspaceErrorCode.NETWORK_ERROR,
+				message: "Test error",
+				timestamp: new Date(),
+			};
+
+			store.resetSession();
+
+			expect(store.currentWorkspace).toBeNull();
+			expect(store.lastSelectedId).toBeNull();
+			expect(store.lastSelectedAt).toBeNull();
+			expect(store.loadedInSession).toBe(false);
+			expect(store.error).toBeNull();
+		});
+
+		it("should clear workspace context for HTTP clients", () => {
+			const store = useWorkspaceStore();
+			store.currentWorkspace = mockWorkspace1;
+
+			store.resetSession();
+
+			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
 		});
 	});
 });

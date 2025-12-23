@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -44,9 +43,8 @@ class TemplateController(
     suspend fun listTemplates(
         @RequestParam(name = "limit", required = false)
         @Min(1) @Max(50) limit: Int?,
-        @RequestParam(name = "workspaceId", required = true)
-        workspaceId: UUID
     ): ResponseEntity<TemplateMetadataResponses> {
+        val workspaceId = workspaceIdFromContext()
         log.debug("Fetching templates with limit={} for workspace={}", limit, workspaceId)
         val effectiveLimit = limit ?: DEFAULT_TEMPLATE_LIMIT
         val userId = userIdFromToken()

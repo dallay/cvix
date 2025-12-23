@@ -25,7 +25,6 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
         val resumeId = "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         val workspaceId = UUID.fromString("a0654720-35dc-49d0-b508-1f7df5d915f1")
         val request = UpdateResumeRequest(
-            workspaceId = workspaceId,
             title = "Updated Resume Title",
             content = ResumeTestFixtures.createValidResumeRequestContent(),
             expectedUpdatedAt = null,
@@ -33,6 +32,7 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
 
         webTestClient.mutateWith(csrf()).put()
             .uri("/api/resume/$resumeId/update")
+            .header("X-Workspace-Id", workspaceId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchange()
@@ -51,10 +51,12 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
     )
     fun `should return 400 for invalid request data`() {
         val resumeId = "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        val workspaceId = UUID.fromString("a0654720-35dc-49d0-b508-1f7df5d915f1")
         val invalidRequest = mapOf("invalid" to "data")
 
         webTestClient.mutateWith(csrf()).put()
             .uri("/api/resume/$resumeId/update")
+            .header("X-Workspace-Id", workspaceId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(invalidRequest)
             .exchange()

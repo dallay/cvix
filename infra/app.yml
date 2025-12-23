@@ -110,10 +110,14 @@ services:
         -XX:+UseStringDeduplication
         -Djava.security.egd=file:/dev/./urandom
 
-      # Database (R2DBC)
+      # Database (R2DBC for reactive operations)
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+
+      # Database (JDBC for Liquibase migrations - Dual Driver Strategy)
+      # Liquibase requires JDBC driver, so we provide a separate JDBC URL
+      LIQUIBASE_URL: ${LIQUIBASE_URL}
 
       # Spring profile / server URLs
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}

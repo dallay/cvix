@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume";
+import { getCurrentWorkspaceId } from "@/shared/WorkspaceContext";
 import type {
 	ResumeDocumentResponse,
 	ResumeHttpClient,
@@ -8,6 +9,11 @@ import {
 	RemoteResumeStorage,
 	type RemoteStorageConfig,
 } from "./RemoteResumeStorage";
+
+// Mock the WorkspaceContext module
+vi.mock("@/shared/WorkspaceContext", () => ({
+	getCurrentWorkspaceId: vi.fn(() => "9dcb2241-6840-4e77-98a3-ddfa89c7d032"),
+}));
 
 describe("RemoteResumeStorage", () => {
 	let storage: RemoteResumeStorage;
@@ -68,7 +74,6 @@ describe("RemoteResumeStorage", () => {
 		} as Partial<ResumeHttpClient> as ResumeHttpClient;
 
 		config = {
-			workspaceId: "workspace-id",
 			initialRetryDelay: 0,
 			maxRetryDelay: 0,
 			maxRetries: 2,
@@ -92,9 +97,9 @@ describe("RemoteResumeStorage", () => {
 			const result = await storage.save(mockResume);
 
 			expect(mockClient.updateResume).toHaveBeenCalled();
+			// workspaceId is sent via X-Workspace-Id header, not as a parameter
 			expect(mockClient.createResume).toHaveBeenCalledWith(
 				"test-resume-id",
-				config.workspaceId,
 				mockResume,
 				undefined,
 			);
@@ -102,6 +107,18 @@ describe("RemoteResumeStorage", () => {
 			expect(result.data).toEqual(mockResume);
 			expect(result.storageType).toBe("remote");
 			expect(storage.getResumeId()).toBe(mockResponse.id);
+		});
+
+		it("throws when no workspace is selected", async () => {
+			vi.mocked(getCurrentWorkspaceId).mockReturnValueOnce(null);
+
+			config.resumeId = "test-resume-id";
+			storage = new RemoteResumeStorage(config, mockClient);
+
+			await expect(storage.save(mockResume)).rejects.toThrow(
+				"Remote storage operation failed: No workspace selected",
+			);
+			expect(mockClient.createResume).not.toHaveBeenCalled();
 		});
 
 		it("updates existing resume when ID exists", async () => {
