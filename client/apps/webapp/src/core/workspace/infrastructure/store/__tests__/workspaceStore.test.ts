@@ -139,6 +139,28 @@ describe("workspaceStore", () => {
 			expect(store.currentWorkspace).toEqual(mockWorkspace2);
 			expect(store.error?.code).toBe(WorkspaceErrorCode.SELECTION_FAILED);
 		});
+
+		it("should sync workspace ID with global context on selection", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [...mockWorkspaces];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await store.selectWorkspace(mockWorkspace1.id, userId);
+
+			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
+		});
+
+		it("should not sync context when workspace selection fails", async () => {
+			const store = useWorkspaceStore();
+			store.workspaces = [];
+			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
+
+			await expect(
+				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),
+			).rejects.toThrow();
+
+			expect(setCurrentWorkspaceId).not.toHaveBeenCalled();
+		});
 	});
 
 	describe("initial state", () => {
@@ -374,32 +396,6 @@ describe("workspaceStore", () => {
 			store.resetSession();
 
 			expect(clearCurrentWorkspaceId).toHaveBeenCalled();
-		});
-	});
-
-	describe("selectWorkspace context sync", () => {
-		const userId = "123e4567-e89b-42d3-a456-426614174000";
-
-		it("should sync workspace ID with global context on selection", async () => {
-			const store = useWorkspaceStore();
-			store.workspaces = [...mockWorkspaces];
-			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
-
-			await store.selectWorkspace(mockWorkspace1.id, userId);
-
-			expect(setCurrentWorkspaceId).toHaveBeenCalledWith(mockWorkspace1.id);
-		});
-
-		it("should not sync context when workspace selection fails", async () => {
-			const store = useWorkspaceStore();
-			store.workspaces = [];
-			vi.mocked(workspaceHttpClient.getWorkspace).mockResolvedValue(null);
-
-			await expect(
-				store.selectWorkspace("999e8400-e29b-41d4-a716-446655440999", userId),
-			).rejects.toThrow();
-
-			expect(setCurrentWorkspaceId).not.toHaveBeenCalled();
 		});
 	});
 });

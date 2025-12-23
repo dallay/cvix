@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Resume } from "@/core/resume/domain/Resume";
+import { getCurrentWorkspaceId } from "@/shared/WorkspaceContext";
 import type {
 	ResumeDocumentResponse,
 	ResumeHttpClient,
@@ -109,9 +110,6 @@ describe("RemoteResumeStorage", () => {
 		});
 
 		it("throws when no workspace is selected", async () => {
-			const { getCurrentWorkspaceId } = await import(
-				"@/shared/WorkspaceContext"
-			);
 			vi.mocked(getCurrentWorkspaceId).mockReturnValueOnce(null);
 
 			config.resumeId = "test-resume-id";
