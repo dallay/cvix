@@ -19,11 +19,11 @@ export function usePdf() {
 		}
 	});
 
-	const fetchTemplates = async (workspaceId: string) => {
+	const fetchTemplates = async () => {
 		isLoadingTemplates.value = true;
 		error.value = null;
 		try {
-			templates.value = await resumeHttpClient.getTemplates(workspaceId);
+			templates.value = await resumeHttpClient.getTemplates();
 		} catch (e: unknown) {
 			error.value = e instanceof Error ? e.message : "Failed to load templates";
 		} finally {

@@ -5,6 +5,10 @@ import { WorkspaceId, workspaceHttpClient } from "@/core/workspace";
 import type { WorkspaceError } from "@/core/workspace/domain";
 import { WorkspaceErrorCode } from "@/core/workspace/domain";
 import { saveLastSelected } from "@/core/workspace/infrastructure";
+import {
+	clearCurrentWorkspaceId,
+	setCurrentWorkspaceId,
+} from "@/shared/WorkspaceContext";
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 let loadPromise: Promise<void> | null = null;
@@ -87,6 +91,8 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	 */
 	function setCurrentWorkspace(workspace: Workspace): void {
 		currentWorkspace.value = workspace;
+		// Sync with global context for HTTP clients
+		setCurrentWorkspaceId(workspace.id);
 	}
 
 	/**
@@ -132,6 +138,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 			lastSelectedId.value = workspace.id;
 			lastSelectedAt.value = new Date();
 
+			// Sync with global context for HTTP clients
+			setCurrentWorkspaceId(workspace.id);
+
 			saveLastSelected(userId, workspace.id);
 		} catch (err) {
 			const errorInstance = err instanceof Error ? err : new Error(String(err));
@@ -173,6 +182,8 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 		lastSelectedId.value = null;
 		lastSelectedAt.value = null;
 		error.value = null;
+		// Clear global context for HTTP clients
+		clearCurrentWorkspaceId();
 	}
 
 	return {

@@ -102,8 +102,8 @@ describe("usePdf", () => {
 			vi.mocked(resumeHttpClient.getTemplates).mockResolvedValue(mockTemplates);
 
 			const { fetchTemplates, templates, isLoadingTemplates, error } = usePdf();
-			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
-			await fetchTemplates(workspaceId);
+			// workspaceId is now sent via X-Workspace-Id header automatically
+			await fetchTemplates();
 
 			expect(resumeHttpClient.getTemplates).toHaveBeenCalledOnce();
 			expect(templates.value).toEqual(mockTemplates);
@@ -119,8 +119,8 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, templates, isLoadingTemplates, error } = usePdf();
 
-			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
-			await fetchTemplates(workspaceId);
+			// workspaceId is now sent via X-Workspace-Id header automatically
+			await fetchTemplates();
 
 			expect(templates.value).toEqual([]);
 			expect(isLoadingTemplates.value).toBe(false);
@@ -134,8 +134,8 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, error } = usePdf();
 
-			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
-			await fetchTemplates(workspaceId);
+			// workspaceId is now sent via X-Workspace-Id header automatically
+			await fetchTemplates();
 
 			expect(error.value).toBe("Failed to load templates");
 		});
@@ -149,8 +149,8 @@ describe("usePdf", () => {
 			vi.mocked(resumeHttpClient.getTemplates).mockReturnValue(pendingPromise);
 
 			const { fetchTemplates, isLoadingTemplates } = usePdf();
-			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
-			const fetchPromise = fetchTemplates(workspaceId);
+			// workspaceId is now sent via X-Workspace-Id header automatically
+			const fetchPromise = fetchTemplates();
 
 			expect(isLoadingTemplates.value).toBe(true);
 
@@ -166,11 +166,11 @@ describe("usePdf", () => {
 
 			const { fetchTemplates, error } = usePdf();
 
-			const workspaceId = "f56c10a7-bf5e-4b24-bf8a-35ba8bd1a4f7";
-			await fetchTemplates(workspaceId);
+			// workspaceId is now sent via X-Workspace-Id header automatically
+			await fetchTemplates();
 			expect(error.value).toBe("First error");
 
-			await fetchTemplates(workspaceId);
+			await fetchTemplates();
 			expect(error.value).toBeNull();
 		});
 	});

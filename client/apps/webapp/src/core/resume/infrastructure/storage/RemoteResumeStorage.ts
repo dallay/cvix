@@ -23,9 +23,6 @@ export interface RemoteStorageConfig {
 	/** Maximum number of retry attempts (default: 3) */
 	maxRetries?: number;
 
-	/** Workspace ID for the resume documents */
-	workspaceId: string;
-
 	/** Optional resume ID (if not provided, a new UUID will be generated on save) */
 	resumeId?: string;
 }
@@ -83,6 +80,10 @@ function isAxiosNetworkError(
  * - Server-synced timestamps for "Last saved" indicators
  * - Non-blocking error handling with user warnings
  *
+ * Note: The workspace ID is automatically sent via the X-Workspace-Id header
+ * by the BaseHttpClient. Make sure the workspace is selected before using
+ * this storage.
+ *
  * Best for:
  * - Users wanting cloud backup and cross-device access
  * - Production resume data that should be permanently stored
@@ -91,7 +92,6 @@ function isAxiosNetworkError(
  * @example
  * ```typescript
  * const storage = new RemoteResumeStorage({
- *   workspaceId: 'workspace-uuid',
  *   resumeId: 'resume-uuid' // optional
  * });
  * await storage.save(resume);
@@ -118,7 +118,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 			initialRetryDelay: config.initialRetryDelay ?? 1000,
 			maxRetryDelay: config.maxRetryDelay ?? 30000,
 			maxRetries: config.maxRetries ?? 3,
-			workspaceId: config.workspaceId,
 			resumeId: config.resumeId,
 		};
 		this.currentResumeId = config.resumeId ?? null;
@@ -172,12 +171,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 					const newId = crypto.randomUUID();
 					this.currentResumeId = newId;
 					this.config.resumeId = newId;
-					return await this.client.createResume(
-						newId,
-						this.config.workspaceId,
-						resume,
-						undefined,
-					);
+					return await this.client.createResume(newId, resume, undefined);
 				}
 				// Try update first
 				try {
@@ -185,12 +179,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 				} catch (error) {
 					if (isHttpErrorWithStatus(error) && error.response.status === 404) {
 						knownNotFound = true;
-						return await this.client.createResume(
-							resumeId,
-							this.config.workspaceId,
-							resume,
-							undefined,
-						);
+						return await this.client.createResume(resumeId, resume, undefined);
 					}
 					throw error;
 				}

@@ -4,6 +4,7 @@ import axios, {
 	type AxiosRequestConfig,
 	type InternalAxiosRequestConfig,
 } from "axios";
+import { getCurrentWorkspaceId } from "./WorkspaceContext";
 
 /**
  * Configuration options for BaseHttpClient
@@ -141,6 +142,15 @@ export class BaseHttpClient {
 		if (csrfToken && !config.headers["X-XSRF-TOKEN"]) {
 			config.headers["X-XSRF-TOKEN"] = csrfToken;
 		}
+
+		// Add workspace ID header for multi-tenant RLS support
+		// The backend uses this to set the PostgreSQL session variable
+		// for Row-Level Security policies
+		const workspaceId = getCurrentWorkspaceId();
+		if (workspaceId && !config.headers["X-Workspace-Id"]) {
+			config.headers["X-Workspace-Id"] = workspaceId;
+		}
+
 		return config;
 	}
 

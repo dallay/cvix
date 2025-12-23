@@ -37,20 +37,18 @@ export class ResumeHttpClient
 	/**
 	 * Create a new resume on the server
 	 * @param id Resume ID (UUID)
-	 * @param workspaceId Workspace ID
 	 * @param resume Resume data
 	 * @param title Optional resume title
 	 * @returns Promise with the created resume document
+	 * @note workspaceId is automatically sent via X-Workspace-Id header
 	 */
 
 	async createResume(
 		id: string,
-		workspaceId: string,
 		resume: Resume,
 		title?: string,
 	): Promise<ResumeDocumentResponse> {
 		const request: CreateResumeRequest = {
-			workspaceId,
 			title,
 			content: mapResumeToResumeRequest(resume),
 		};
@@ -151,13 +149,12 @@ export class ResumeHttpClient
 	/**
 	 * Get list of available resume templates
 	 * @returns Promise with list of templates
+	 * @note workspaceId is automatically sent via X-Workspace-Id header
 	 */
-	async getTemplates(workspaceId: string): Promise<TemplateMetadata[]> {
-		// Replace direct interpolation with URLSearchParams for safe encoding
-		const params = new URLSearchParams({ workspaceId });
+	async getTemplates(): Promise<TemplateMetadata[]> {
 		const response = await this.client.get<{
 			data: TemplateMetadata[];
-		}>(`/templates?${params.toString()}`);
+		}>("/templates");
 		return response.data.data;
 	}
 }

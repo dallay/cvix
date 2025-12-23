@@ -68,7 +68,6 @@ describe("RemoteResumeStorage", () => {
 		} as Partial<ResumeHttpClient> as ResumeHttpClient;
 
 		config = {
-			workspaceId: "workspace-id",
 			initialRetryDelay: 0,
 			maxRetryDelay: 0,
 			maxRetries: 2,
@@ -92,9 +91,9 @@ describe("RemoteResumeStorage", () => {
 			const result = await storage.save(mockResume);
 
 			expect(mockClient.updateResume).toHaveBeenCalled();
+			// workspaceId is now sent via X-Workspace-Id header, not as parameter
 			expect(mockClient.createResume).toHaveBeenCalledWith(
 				"test-resume-id",
-				config.workspaceId,
 				mockResume,
 				undefined,
 			);
