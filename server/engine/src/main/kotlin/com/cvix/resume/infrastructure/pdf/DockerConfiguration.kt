@@ -22,6 +22,16 @@ class DockerConfiguration {
 
     private val logger = LoggerFactory.getLogger(DockerConfiguration::class.java)
 
+    /**
+     * Creates and configures a DockerClient used for PDF generation.
+     *
+     * Builds the Docker client configuration and HTTP transport using the provided properties, initializes
+     * the DockerClient instance, and attempts a startup verification against the Docker daemon, logging
+     * success or failure without preventing application startup.
+     *
+     * @param properties Configuration values for the PDF generator (used for timeouts and related settings).
+     * @return A configured DockerClient instance ready for use by PDF generation components.
+     */
     @Bean
     fun dockerClient(properties: DockerPdfGeneratorProperties): DockerClient {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
