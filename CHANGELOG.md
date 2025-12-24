@@ -1,3 +1,9 @@
+## [3.0.1](https://github.com/dallay/cvix/compare/v3.0.0...v3.0.1) (2025-12-24)
+
+### 🐛 Bug Fixes
+
+* correct SHA512 checksum verification in TexLive Dockerfile ([#458](https://github.com/dallay/cvix/issues/458)) ([15cdf68](https://github.com/dallay/cvix/commit/15cdf68bd4a0f35102822373f7983bce91891ac7))
+
 ## [3.0.0](https://github.com/dallay/cvix/compare/v2.1.0...v3.0.0) (2025-12-24)
 
 ### ⚠ BREAKING CHANGES
