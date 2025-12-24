@@ -122,7 +122,7 @@
 			"semanticCommitType": "chore"
 		},
 		{
-			"description": "Pin pre-releases to stable only",
+      "description": "Delay major updates by 3 days for stability",
 			"matchUpdateTypes": ["major"],
 			"stabilityDays": 3,
 			"automerge": false
