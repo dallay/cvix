@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
     inputs:
       texlive_version:
-        description: "TexLive version (e.g., 2024)"
+        description: "TexLive version (e.g., 2025)"
         required: false
-        default: "2024"
+        default: "2025"
   push:
     branches:
       - main
@@ -31,7 +31,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/texlive
-  TEXLIVE_VERSION: ${{ github.event.inputs.texlive_version || '2024' }}
+  TEXLIVE_VERSION: ${{ github.event.inputs.texlive_version || '2025' }}
 
 concurrency:
   group: build-texlive-${{ github.ref }}

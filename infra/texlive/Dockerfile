@@ -14,7 +14,7 @@
 FROM debian:bookworm-slim
 
 ARG TARGETARCH
-ARG TEXLIVE_VERSION=2024
+ARG TEXLIVE_VERSION=2025
 
 LABEL maintainer="CVIX Team"
 LABEL description="Minimal TexLive image for PDF generation (multi-arch)"
@@ -41,10 +41,11 @@ WORKDIR /tmp
 # sometimes serve HTML redirects instead of the actual checksum file
 RUN set -ex; \
     # Define mirrors to try (in order of preference)
+    # Current CTAN mirrors first (have latest version), historic archive last (for older versions)
     MIRRORS=" \
-        https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/${TEXLIVE_VERSION}/tlnet-final \
-        https://ctan.math.illinois.edu/systems/texlive/tlnet \
         https://mirror.ctan.org/systems/texlive/tlnet \
+        https://ctan.math.illinois.edu/systems/texlive/tlnet \
+        https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/${TEXLIVE_VERSION}/tlnet-final \
     "; \
     # Try each mirror until one works
     for MIRROR in $MIRRORS; do \
