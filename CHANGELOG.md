@@ -1,3 +1,9 @@
+## [3.0.2](https://github.com/dallay/cvix/compare/v3.0.1...v3.0.2) (2025-12-24)
+
+### 🐛 Bug Fixes
+
+* **texlive:** 🐛 remove non-existent package names from tlmgr install ([c9fa699](https://github.com/dallay/cvix/commit/c9fa699d78b17c4fe3929307f0ce1b7d782840b3))
+
 ## [3.0.1](https://github.com/dallay/cvix/compare/v3.0.0...v3.0.1) (2025-12-24)
 
 ### 🐛 Bug Fixes
