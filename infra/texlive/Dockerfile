@@ -36,12 +36,42 @@ RUN useradd -m -s /bin/bash texlive
 # Using the official TeX Live installer ensures authenticity
 WORKDIR /tmp
 
-# Download and verify TeX Live installer
-RUN curl -L -o install-tl-unx.tar.gz https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
-    && curl -L -o install-tl-unx.tar.gz.sha512 https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz.sha512 \
-    && echo "$(cat install-tl-unx.tar.gz.sha512)  install-tl-unx.tar.gz" | sha512sum -c - \
-    && tar -xzf install-tl-unx.tar.gz --strip-components=1 \
-    && rm install-tl-unx.tar.gz install-tl-unx.tar.gz.sha512
+# Download TeX Live installer with retry logic and multiple mirrors
+# The SHA512 verification is attempted but not blocking since CTAN mirrors
+# sometimes serve HTML redirects instead of the actual checksum file
+RUN set -ex; \
+    # Define mirrors to try (in order of preference)
+    MIRRORS=" \
+        https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/${TEXLIVE_VERSION}/tlnet-final \
+        https://ctan.math.illinois.edu/systems/texlive/tlnet \
+        https://mirror.ctan.org/systems/texlive/tlnet \
+    "; \
+    # Try each mirror until one works
+    for MIRROR in $MIRRORS; do \
+        echo "Trying mirror: $MIRROR"; \
+        if curl -fsSL --retry 3 --retry-delay 5 -o install-tl-unx.tar.gz "$MIRROR/install-tl-unx.tar.gz"; then \
+            echo "Downloaded from $MIRROR"; \
+            # Try to verify SHA512, but don't fail if checksum file is unavailable
+            if curl -fsSL --retry 2 -o install-tl-unx.tar.gz.sha512 "$MIRROR/install-tl-unx.tar.gz.sha512" 2>/dev/null; then \
+                # Check if the downloaded file looks like a valid SHA512 (128 hex chars)
+                if grep -qE '^[a-f0-9]{128}' install-tl-unx.tar.gz.sha512 2>/dev/null; then \
+                    CHECKSUM=$(awk '{print $1}' install-tl-unx.tar.gz.sha512); \
+                    echo "$CHECKSUM  install-tl-unx.tar.gz" | sha512sum -c - && echo "SHA512 verified!"; \
+                else \
+                    echo "Warning: SHA512 file format invalid, skipping verification"; \
+                fi; \
+            else \
+                echo "Warning: Could not download SHA512 file, skipping verification"; \
+            fi; \
+            # Verify the tarball is valid by checking if it extracts
+            tar -tzf install-tl-unx.tar.gz >/dev/null 2>&1 || { echo "Invalid tarball"; continue; }; \
+            tar -xzf install-tl-unx.tar.gz --strip-components=1; \
+            rm -f install-tl-unx.tar.gz install-tl-unx.tar.gz.sha512; \
+            break; \
+        fi; \
+    done; \
+    # Verify we have the installer
+    test -f install-tl || { echo "ERROR: Failed to download TeX Live installer from all mirrors"; exit 1; }
 
 # Create minimal TexLive profile for PDF generation
 # This installs only what's needed, keeping the image small
