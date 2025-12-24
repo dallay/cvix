@@ -67,7 +67,6 @@ runs:
 
     - name: Login to GitHub Container Registry
       if: ${{ inputs.deliver == 'true' }}
-      # Pinned to v3 commit hash for security
       uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
       id: ghcr-login
       continue-on-error: true

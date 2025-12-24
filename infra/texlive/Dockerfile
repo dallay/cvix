@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fontconfig \
     libfontconfig1 \
     perl \
-    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Create texlive user for security (non-root execution)
@@ -37,9 +36,12 @@ RUN useradd -m -s /bin/bash texlive
 # Using the official TeX Live installer ensures authenticity
 WORKDIR /tmp
 
-# Download installer from official CTAN mirror
-RUN curl -L https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
-    | tar -xz --strip-components=1
+# Download and verify TeX Live installer
+RUN curl -L -o install-tl-unx.tar.gz https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
+    && curl -L -o install-tl-unx.tar.gz.sha512 https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz.sha512 \
+    && sha512sum -c install-tl-unx.tar.gz.sha512 \
+    && tar -xzf install-tl-unx.tar.gz --strip-components=1 \
+    && rm install-tl-unx.tar.gz install-tl-unx.tar.gz.sha512
 
 # Create minimal TexLive profile for PDF generation
 # This installs only what's needed, keeping the image small
@@ -111,8 +113,16 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     xunicode \
     xltxtra
 
-# Set up PATH based on architecture
-ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/x86_64-linux:/usr/local/texlive/${TEXLIVE_VERSION}/bin/aarch64-linux:${PATH}"
+# Map TARGETARCH to TeX Live architecture names and set PATH
+RUN case ${TARGETARCH} in \
+      amd64) TEXARCH=x86_64-linux ;; \
+      arm64) TEXARCH=aarch64-linux ;; \
+      *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1 ;; \
+    esac \
+    && echo "export PATH=\"/usr/local/texlive/${TEXLIVE_VERSION}/bin/${TEXARCH}:${PATH}\"" >> /etc/profile.d/texlive.sh
+
+# Update PATH environment variable
+ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/${TARGETARCH}-linux:${PATH}"
 
 # Update font cache
 RUN fc-cache -fv

@@ -16,22 +16,26 @@ on:
   workflow_dispatch:
     inputs:
       texlive_version:
-        description: 'TexLive version (e.g., 2024)'
+        description: "TexLive version (e.g., 2024)"
         required: false
-        default: '2024'
+        default: "2024"
   push:
     branches:
       - main
     paths:
-      - 'infra/texlive/**'
+      - "infra/texlive/**"
   schedule:
     # Run weekly on Sunday at 3:00 UTC to pick up any TexLive updates
-    - cron: '0 3 * * 0'
+    - cron: "0 3 * * 0"
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/texlive
   TEXLIVE_VERSION: ${{ github.event.inputs.texlive_version || '2024' }}
+
+concurrency:
+  group: build-texlive-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push:
@@ -59,7 +63,7 @@ jobs:
 
       - name: Extract metadata (tags, labels)
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |

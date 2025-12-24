@@ -210,7 +210,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
         "docker.apiVersion": "1.43",
         "docker.os": "linux",
         "docker.arch": "amd64",
-        "texlive.image": "ghcr.io/cvix/texlive:2024",
+        "texlive.image": "ghcr.io/cvix/texlive",
         "concurrent.max": 10,
         "timeout.seconds": 30
       }
