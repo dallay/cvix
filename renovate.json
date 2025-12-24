@@ -78,29 +78,25 @@
 		{
 			"description": "Astro ecosystem",
 			"groupName": "Astro ecosystem",
-			"matchPackageNames": ["astro"],
-			"matchPackagePrefixes": ["@astrojs/"],
+			"matchPackagePatterns": ["^astro$", "^@astrojs/"],
 			"semanticCommitType": "chore"
 		},
 		{
 			"description": "Vite and Vitest",
 			"groupName": "Vite tooling",
-			"matchPackageNames": ["vite", "vitest"],
-			"matchPackagePrefixes": ["@vitejs/"],
+			"matchPackagePatterns": ["^vite$", "^vitest$", "^@vitejs/"],
 			"semanticCommitType": "chore"
 		},
 		{
 			"description": "Tailwind CSS",
 			"groupName": "Tailwind CSS",
-			"matchPackageNames": ["tailwindcss"],
-			"matchPackagePrefixes": ["@tailwindcss/"],
+			"matchPackagePatterns": ["^tailwindcss$", "^@tailwindcss/"],
 			"semanticCommitType": "chore"
 		},
 		{
 			"description": "TypeScript and type definitions",
 			"groupName": "TypeScript",
-			"matchPackageNames": ["typescript"],
-			"matchPackagePrefixes": ["@types/"],
+			"matchPackagePatterns": ["^typescript$", "^@types/"],
 			"semanticCommitType": "chore"
 		},
 		{
