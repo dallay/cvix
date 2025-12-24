@@ -18,6 +18,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.context.jdbc.Sql
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Suppress("NestedBlockDepth")
 internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationTest() {
 
     @Autowired
@@ -33,6 +34,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         // The PostConstruct method starts the pull in a background thread
         // Wait for it to complete by checking if we can generate a minimal PDF
         var attempts = 0
+        var lastException: Exception? = null
         while (System.currentTimeMillis() - startTime < maxWaitMillis) {
             try {
                 attempts++
@@ -48,21 +50,41 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
                 dockerPdfGenerator.generatePdf(testLatex, "en").block()
                 println("Docker image ready after $attempts attempts (${System.currentTimeMillis() - startTime}ms)")
                 return
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                lastException = e
                 // Image not ready yet or pull in progress, wait and retry
                 if (attempts % 6 == 0) { // Log every minute
                     println(
                         "Waiting for Docker image pull to complete... " +
                             "(attempt $attempts, ${(System.currentTimeMillis() - startTime) / 1000}s elapsed)",
                     )
+                    println("Last error: ${e.javaClass.simpleName}: ${e.message}")
+                    e.cause?.let { cause ->
+                        println("Caused by: ${cause.javaClass.simpleName}: ${cause.message}")
+                    }
                 }
                 Thread.sleep(10_000) // Wait 10 seconds between attempts
             }
         }
 
+        // Log final error details before throwing
+        println("=== Docker Integration Test Failure Details ===")
+        println("Total attempts: $attempts")
+        println("Total wait time: ${(System.currentTimeMillis() - startTime) / 1000}s")
+        lastException?.let { e ->
+            println("Final exception: ${e.javaClass.name}: ${e.message}")
+            e.cause?.let { cause ->
+                println("Caused by: ${cause.javaClass.name}: ${cause.message}")
+            }
+            e.printStackTrace()
+        }
+        println("=== End of Docker Integration Test Failure Details ===")
+
         throw IllegalStateException(
             "Docker image not ready after ${maxWaitMillis / 1000} seconds. " +
-                "Please ensure Docker is running and has sufficient resources.",
+                "Please ensure Docker is running and has sufficient resources. " +
+                "Last error: ${lastException?.message}",
+            lastException,
         )
     }
 
