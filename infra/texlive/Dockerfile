@@ -108,11 +108,15 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     fontawesome5 \
     lm \
     lm-math \
+    charter \
     # Layout and formatting
     geometry \
     titlesec \
     enumitem \
     parskip \
+    changepage \
+    paracol \
+    needspace \
     # Tables and lists (tabularx is part of 'tools' package)
     multirow \
     # Colors and graphics (graphicx is part of 'graphics', tikz is part of 'pgf')
@@ -124,6 +128,10 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     etoolbox \
     xifthen \
     ifmtarg \
+    eso-pic \
+    bookmark \
+    lastpage \
+    iftex \
     # Modern CV/Resume packages
     moderncv \
     # Additional font support
