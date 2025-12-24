@@ -68,7 +68,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
 **Remediation**:
 
 - Increase `resume.pdf.docker.maxConcurrentContainers` if pool is saturated
-- Pre-pull TeX Live image to avoid pull delays: `docker pull ghcr.io/cvix/texlive:2024`
+- Pre-pull TeX Live image to avoid pull delays: `docker pull ghcr.io/dallay/texlive:2025`
 - Increase Docker resource limits (memory/CPU) if host has capacity
 - Review LaTeX templates for complexity (nested tables, large images)
 - Consider adding a template compilation cache
@@ -210,7 +210,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
         "docker.apiVersion": "1.43",
         "docker.os": "linux",
         "docker.arch": "amd64",
-        "texlive.image": "ghcr.io/cvix/texlive",
+        "texlive.image": "ghcr.io/dallay/texlive",
         "concurrent.max": 10,
         "timeout.seconds": 30
       }
@@ -235,7 +235,7 @@ This document describes the monitoring, alerting, and SLO (Service Level Objecti
       "status": "DOWN",
       "details": {
         "error": "Docker daemon is not accessible",
-        "texlive.image": "ghcr.io/cvix/texlive:2024"
+        "texlive.image": "ghcr.io/dallay/texlive:2025"
       }
     }
   }
@@ -364,7 +364,7 @@ Alert Contacts: [on-call-email, slack-webhook, pagerduty-integration]
 resume:
   pdf:
     docker:
-      image: ghcr.io/cvix/texlive:2024
+      image: ghcr.io/dallay/texlive:2025
       maxConcurrentContainers: 10  # Adjust based on host capacity
       timeoutSeconds: 30
       memoryLimitMb: 512
