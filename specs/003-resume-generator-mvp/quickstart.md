@@ -52,13 +52,13 @@ The resume generator uses a TeX Live Docker image to compile LaTeX templates int
 
 ```bash
 # Pull TeX Live base image (historic 2024 snapshot)
-docker pull texlive/texlive:TL2024-historic
+docker pull ghcr.io/cvix/texlive:2024
 
 # Verify image is available
 docker images | grep texlive
 ```
 
-**Note**: The `texlive/texlive:TL2024-historic` base image already includes `pdflatex` and commonly used packages. If you need additional LaTeX packages, you can build a custom image (see Advanced Setup section).
+**Note**: The `ghcr.io/cvix/texlive:2024` base image already includes `pdflatex` and commonly used packages. If you need additional LaTeX packages, you can build a custom image (see Advanced Setup section).
 
 ### 3. Start Infrastructure Services
 
@@ -104,7 +104,7 @@ spring:
 resume:
   pdf:
     docker:
-      image: texlive/texlive:TL2024-historic
+      image: ghcr.io/cvix/texlive:2024
       maxConcurrentContainers: 10
       timeoutSeconds: 30
     rate-limit:
@@ -379,7 +379,7 @@ docker run hello-world
 ```bash
 # Create Dockerfile
 cat > Dockerfile.texlive <<EOF
-FROM texlive/texlive:TL2024-historic
+FROM ghcr.io/cvix/texlive:2024
 RUN tlmgr install babel datetime2 geometry titlesec etoolbox
 EOF
 

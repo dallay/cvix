@@ -1,0 +1,90 @@
+# =============================================================================
+# Build and Publish TexLive Docker Image
+# =============================================================================
+# Builds a multi-architecture (amd64/arm64) TexLive Docker image and publishes
+# it to GitHub Container Registry (ghcr.io).
+#
+# Triggers:
+# - Manual dispatch (workflow_dispatch)
+# - Push to main when infra/texlive/** changes
+# - Weekly schedule to pick up TexLive updates
+# =============================================================================
+
+name: Build TexLive Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      texlive_version:
+        description: 'TexLive version (e.g., 2024)'
+        required: false
+        default: '2024'
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/texlive/**'
+  schedule:
+    # Run weekly on Sunday at 3:00 UTC to pick up any TexLive updates
+    - cron: '0 3 * * 0'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/texlive
+  TEXLIVE_VERSION: ${{ github.event.inputs.texlive_version || '2024' }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.TEXLIVE_VERSION }}
+            type=sha,prefix=${{ env.TEXLIVE_VERSION }}-
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75
+        with:
+          context: ./infra/texlive
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            TEXLIVE_VERSION=${{ env.TEXLIVE_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify image
+        run: |
+          echo "Verifying amd64 image..."
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+
+          echo "Verifying arm64 image..."
+          docker run --rm --platform linux/arm64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest pdflatex --version

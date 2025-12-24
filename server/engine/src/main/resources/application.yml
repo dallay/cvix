@@ -232,7 +232,7 @@ resume:
   pdf:
     docker:
       # Use the full texlive image which includes pdflatex
-      image: ${PDF_DOCKER_IMAGE:texlive/texlive:TL2024-historic}
+      image: ${PDF_DOCKER_IMAGE:ghcr.io/cvix/texlive:2024}
       max-concurrent-containers: ${PDF_MAX_CONCURRENT_CONTAINERS:10}
       timeout-seconds: ${PDF_TIMEOUT_SECONDS:30}
       memory-limit-mb: ${PDF_MEMORY_LIMIT_MB:512}

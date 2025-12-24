@@ -85,11 +85,11 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 
 ```yaml
 - name: Set up Docker Buildx
-  uses: docker/setup-buildx-action@v3.4.0
+  uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca
 - name: Extract metadata
   uses: docker/metadata-action@v5.5.1
 - name: Build and push
-  uses: docker/build-push-action@v6.0.0
+  uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75
   with:
     context: .
     file: ./server/engine/Dockerfile
