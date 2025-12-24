@@ -194,6 +194,11 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Setup Java
         uses: ./.github/actions/setup/java
+      - name: Pre-pull TexLive Docker image
+        run: |
+          echo "Pre-pulling TexLive Docker image for PDF generation tests..."
+          docker pull ghcr.io/dallay/texlive:2025
+          echo "Docker image pulled successfully"
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
       - name: Run tests
