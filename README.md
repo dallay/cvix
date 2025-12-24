@@ -108,6 +108,7 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 ### 🔄 Tooling & CI
 
 - 🛠️ GitHub Actions, Lefthook, Biome, Detekt, Kover, Playwright & Vitest
+- 🔄 Renovate for automated dependency management
 - 🐳 Docker Compose stack (1-command everything)
 
 ---

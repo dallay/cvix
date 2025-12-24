@@ -145,3 +145,6 @@ temporal-docs/
 *.synctex.gz
 # Qodana analysis results
 *_qodana.sarif.json
+
+# Playwright reports
+playwright-report/
