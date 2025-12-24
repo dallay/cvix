@@ -113,16 +113,9 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     xunicode \
     xltxtra
 
-# Map TARGETARCH to TeX Live architecture names and set PATH
-RUN case ${TARGETARCH} in \
-      amd64) TEXARCH=x86_64-linux ;; \
-      arm64) TEXARCH=aarch64-linux ;; \
-      *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1 ;; \
-    esac \
-    && echo "export PATH=\"/usr/local/texlive/${TEXLIVE_VERSION}/bin/${TEXARCH}:${PATH}\"" >> /etc/profile.d/texlive.sh
-
-# Update PATH environment variable
-ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/${TARGETARCH}-linux:${PATH}"
+# Update PATH environment variable for both architectures
+# Docker will use whichever path exists based on the actual build architecture
+ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/x86_64-linux:/usr/local/texlive/${TEXLIVE_VERSION}/bin/aarch64-linux:${PATH}"
 
 # Update font cache
 RUN fc-cache -fv
