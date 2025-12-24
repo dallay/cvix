@@ -1,3 +1,50 @@
+## [3.0.0](https://github.com/dallay/cvix/compare/v2.1.0...v3.0.0) (2025-12-24)
+
+### ⚠ BREAKING CHANGES
+
+* Dependabot is removed, use Renovate for all dependency updates
+
+* fix: 🐛 correct renovate config and documentation errors
+
+- Remove duplicate test-results/ entry in .gitignore
+- Fix Vue ecosystem grouping in renovate.json (was using AND logic)
+- Move ignoreUnstable to root level in renovate.json for global scope
+- Replace non-existent @astrojs/seo with custom SEO component
+- Add version column to webapp tech stack table
+- Fix missing onMounted import in webapp README example
+- Correct repository URL in RENOVATE_CHANGES.md
+
+Closes configuration issues that would prevent proper dependency grouping
+
+* fix: 🐛 resolve AND logic in Astro, Vite, Tailwind, and TypeScript groups
+
+Replace matchPackageNames + matchPackagePrefixes (AND logic) with
+matchPackagePatterns (OR logic) for proper package matching:
+
+- Astro: Now matches 'astro' AND '@astrojs/*' packages
+- Vite: Now matches 'vite', 'vitest' AND '@vitejs/*' packages
+- Tailwind: Now matches 'tailwindcss' AND '@tailwindcss/*' packages
+- TypeScript: Now matches 'typescript' AND '@types/*' packages
+
+Previous config used AND logic which excluded packages:
+- 'astro' failed @astrojs/ prefix check
+- 'vite'/'vitest' failed @vitejs/ prefix check
+- 'tailwindcss' failed @tailwindcss/ prefix check
+- 'typescript' failed @types/ prefix check
+
+Changed from:
+  matchPackageNames + matchPackagePrefixes (both must match)
+To:
+  matchPackagePatterns with regex (either can match)
+
+Addresses PR review feedback on AND logic issue affecting all frontend tooling groups.
+
+* chore: update renovate configuration to delay major updates for stability
+
+### 🔧 Maintenance
+
+* 🔧 optimize dependency management and update documentation ([#457](https://github.com/dallay/cvix/issues/457)) ([806268d](https://github.com/dallay/cvix/commit/806268d14fab5010bf02704f85f787692fe58793))
+
 ## [2.1.0](https://github.com/dallay/cvix/compare/v2.0.4...v2.1.0) (2025-12-23)
 
 ### ✨ Features
