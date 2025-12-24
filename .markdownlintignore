@@ -8,3 +8,5 @@ dist/
 build/
 CHANGELOG.md
 .opencode/**
+playwright-report/
+test-results/

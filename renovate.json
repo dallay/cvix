@@ -4,41 +4,135 @@
 		"config:recommended",
 		"group:monorepos",
 		":dependencyDashboard",
+		":semanticCommits",
+		":semanticCommitTypeAll(chore)",
 		"schedule:monthly"
 	],
 	"reviewers": ["yacosta738"],
+	"timezone": "America/Havana",
 	"schedule": [
 		"after 10pm every weekday",
 		"before 5am every weekday",
 		"every weekend"
 	],
 	"automergeSchedule": ["before 4am on the first day of the month"],
-	"semanticCommits": "enabled",
-	"semanticCommitType": "chore",
+	"prConcurrentLimit": 5,
+	"prCreation": "not-pending",
+	"platformAutomerge": true,
+	"ignoreDeps": [],
+	"postUpdateOptions": ["gomodTidy", "npmDedupe", "pnpmDedupe"],
+	"lockFileMaintenance": {
+		"enabled": true,
+		"schedule": ["before 5am on the first day of the month"]
+	},
+	"rangeStrategy": "bump",
+	"separateMinorPatch": false,
 	"packageRules": [
 		{
+			"description": "Automerge non-breaking updates for stable versions",
 			"matchUpdateTypes": ["minor", "patch"],
 			"matchCurrentVersion": "!/^0/",
 			"automerge": true,
-			"semanticCommitType": "chore"
+			"automergeType": "pr",
+			"requiredStatusChecks": [],
+			"platformAutomerge": true
 		},
 		{
+			"description": "Kotlin ecosystem",
 			"extends": ["monorepo:kotlin"],
-			"groupName": "kotlin monorepo",
+			"groupName": "Kotlin monorepo",
 			"matchUpdateTypes": ["digest", "patch", "minor", "major"],
-			"semanticCommitType": "chore"
+			"schedule": ["before 5am on the first day of the month"]
 		},
 		{
-			"groupName": "spring backend",
-			"matchDepNames": ["org.springframework"],
-			"matchPackageNames": ["org.springframework:{/,}**"],
+			"description": "Spring Boot ecosystem",
+			"groupName": "Spring Boot",
+			"matchPackagePrefixes": ["org.springframework.boot:"],
+			"matchUpdateTypes": ["minor", "patch"],
+			"semanticCommitType": "fix",
+			"automerge": false
+		},
+		{
+			"description": "Spring Framework",
+			"groupName": "Spring Framework",
+			"matchPackagePrefixes": ["org.springframework:"],
+			"matchUpdateTypes": ["minor", "patch"],
 			"semanticCommitType": "fix"
 		},
 		{
-			"extends": ["monorepo:github-workflows-kt"],
-			"groupName": "github-workflows-kt monorepo",
-			"matchUpdateTypes": ["digest", "patch", "minor", "major"],
+			"description": "Vue.js ecosystem",
+			"groupName": "Vue ecosystem",
+			"matchPackageNames": ["vue"],
+			"matchPackagePrefixes": ["@vue/", "@vueuse/"],
+			"matchPackagePatterns": ["^vee-validate$", "^pinia$", "^vue-.*"],
 			"semanticCommitType": "chore"
+		},
+		{
+			"description": "Astro ecosystem",
+			"groupName": "Astro ecosystem",
+			"matchPackageNames": ["astro"],
+			"matchPackagePrefixes": ["@astrojs/"],
+			"semanticCommitType": "chore"
+		},
+		{
+			"description": "Vite and Vitest",
+			"groupName": "Vite tooling",
+			"matchPackageNames": ["vite", "vitest"],
+			"matchPackagePrefixes": ["@vitejs/"],
+			"semanticCommitType": "chore"
+		},
+		{
+			"description": "Tailwind CSS",
+			"groupName": "Tailwind CSS",
+			"matchPackageNames": ["tailwindcss"],
+			"matchPackagePrefixes": ["@tailwindcss/"],
+			"semanticCommitType": "chore"
+		},
+		{
+			"description": "TypeScript and type definitions",
+			"groupName": "TypeScript",
+			"matchPackageNames": ["typescript"],
+			"matchPackagePrefixes": ["@types/"],
+			"semanticCommitType": "chore"
+		},
+		{
+			"description": "Gradle wrapper",
+			"matchPackageNames": ["gradle"],
+			"enabled": false,
+			"groupName": "Gradle wrapper (manual update)"
+		},
+		{
+			"description": "GitHub Actions",
+			"matchManagers": ["github-actions"],
+			"groupName": "GitHub Actions",
+			"schedule": ["before 5am on the first day of the month"],
+			"automerge": true,
+			"semanticCommitType": "ci"
+		},
+		{
+			"description": "Docker images",
+			"matchDatasources": ["docker"],
+			"groupName": "Docker images",
+			"schedule": ["before 5am on the first day of the month"],
+			"automerge": false,
+			"semanticCommitType": "chore"
+		},
+		{
+			"description": "Pin pre-releases to stable only",
+			"matchUpdateTypes": ["major"],
+			"stabilityDays": 3,
+			"automerge": false
+		},
+		{
+			"description": "Ignore pre-release versions",
+			"matchPackagePatterns": [".*"],
+			"ignoreUnstable": true
 		}
-	]
+	],
+	"vulnerabilityAlerts": {
+		"enabled": true,
+		"labels": ["security"],
+		"assignees": ["yacosta738"],
+		"automerge": false
+	}
 }
