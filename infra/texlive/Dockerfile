@@ -113,13 +113,10 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     titlesec \
     enumitem \
     parskip \
-    # Tables and lists
-    tabularx \
+    # Tables and lists (tabularx is part of 'tools' package)
     multirow \
-    # Colors and graphics
+    # Colors and graphics (graphicx is part of 'graphics', tikz is part of 'pgf')
     xcolor \
-    graphicx \
-    tikz \
     pgf \
     # Utilities
     hyperref \
