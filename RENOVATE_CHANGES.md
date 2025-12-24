@@ -79,7 +79,7 @@ Only automerges when:
 ## Next Steps
 
 1. **Monitor the Dependency Dashboard**: 
-   Check `https://github.com/yacosta738/cvix/issues` for Renovate's dashboard issue
+   Check `https://github.com/dallay/cvix/issues` for Renovate's dashboard issue
 
 2. **First Run**: 
    Wait for Renovate to create the initial batch of PRs (should be grouped properly)

@@ -24,19 +24,19 @@ This is the **main web application** where users create, edit, and manage their 
 
 ## Tech Stack
 
-| Technology        | Purpose                              |
-|-------------------|--------------------------------------|
-| **Vue 3**         | Progressive JavaScript framework     |
-| **TypeScript**    | Type-safe development                |
-| **Vite**          | Build tool and dev server            |
-| **Pinia**         | State management                     |
-| **Vue Router**    | Client-side routing                  |
-| **Vee-Validate**  | Form validation                      |
-| **Zod**           | Schema validation                    |
-| **TailwindCSS**   | Utility-first styling                |
-| **Shadcn-Vue**    | UI component library                 |
-| **Vitest**        | Unit and component testing           |
-| **Playwright**    | End-to-end testing                   |
+| Technology        | Version         | Purpose                              |
+|-------------------|-----------------|--------------------------------------|
+| **Vue 3**         | 3.5.17          | Progressive JavaScript framework     |
+| **TypeScript**    | (strict mode)   | Type-safe development                |
+| **Vite**          | 7.0.4           | Build tool and dev server            |
+| **Pinia**         | 3.0.3           | State management                     |
+| **Vue Router**    | Latest          | Client-side routing                  |
+| **Vee-Validate**  | 4.x             | Form validation                      |
+| **Zod**           | 3.x             | Schema validation                    |
+| **TailwindCSS**   | 4.1.11          | Utility-first styling                |
+| **Shadcn-Vue**    | Latest          | UI component library                 |
+| **Vitest**        | Latest          | Unit and component testing           |
+| **Playwright**    | Latest          | End-to-end testing                   |
 
 ---
 
@@ -238,6 +238,7 @@ export const useUserStore = defineStore('user', () => {
 
 ```vue
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();

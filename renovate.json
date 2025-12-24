@@ -27,6 +27,7 @@
 	},
 	"rangeStrategy": "bump",
 	"separateMinorPatch": false,
+	"ignoreUnstable": true,
 	"packageRules": [
 		{
 			"description": "Automerge non-breaking updates for stable versions",
@@ -62,9 +63,16 @@
 		{
 			"description": "Vue.js ecosystem",
 			"groupName": "Vue ecosystem",
-			"matchPackageNames": ["vue"],
-			"matchPackagePrefixes": ["@vue/", "@vueuse/"],
-			"matchPackagePatterns": ["^vee-validate$", "^pinia$", "^vue-.*"],
+			"matchPackageNames": ["vue", "pinia", "vee-validate"],
+			"matchPackagePrefixes": ["@vue/", "@vueuse/", "@astrojs/vue"],
+			"matchPackagePatterns": [
+				"^vue-.*",
+				".*-vue$",
+				"^@tanstack/vue-.*",
+				"^vaul-vue$",
+				"^lucide-vue-next$",
+				"^embla-carousel-vue$"
+			],
 			"semanticCommitType": "chore"
 		},
 		{
@@ -122,11 +130,6 @@
 			"matchUpdateTypes": ["major"],
 			"stabilityDays": 3,
 			"automerge": false
-		},
-		{
-			"description": "Ignore pre-release versions",
-			"matchPackagePatterns": [".*"],
-			"ignoreUnstable": true
 		}
 	],
 	"vulnerabilityAlerts": {

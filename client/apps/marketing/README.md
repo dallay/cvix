@@ -217,23 +217,66 @@ See `../../config/styles/README.md` for the complete design system.
 
 ```astro
 ---
-import { SEO } from '@astrojs/seo';
+// src/components/SEO.astro
+type Props = {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  twitterHandle?: string;
+};
+
+const {
+  title,
+  description,
+  image = '/og-image.jpg',
+  type = 'website',
+  twitterHandle = '@profiletailors',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const fullImageURL = new URL(image, Astro.site);
 ---
 
-<SEO
-  title="ProFileTailors - Professional Resume Generator"
-  description="Create polished, ATS-friendly resumes in minutes"
-  openGraph={{
-    basic: {
-      title: "ProFileTailors",
-      type: "website",
-      image: "/og-image.jpg",
-    }
-  }}
-  twitter={{
-    creator: "@profiletailors",
-  }}
-/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={fullImageURL} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={fullImageURL} />
+<meta property="twitter:creator" content={twitterHandle} />
+```
+
+**Usage in a page:**
+
+```astro
+---
+import SEO from '../components/SEO.astro';
+---
+
+<head>
+  <SEO
+    title="ProFileTailors - Professional Resume Generator"
+    description="Create polished, ATS-friendly resumes in minutes"
+    image="/og-image.jpg"
+  />
+</head>
 ```
 
 ### Structured Data
