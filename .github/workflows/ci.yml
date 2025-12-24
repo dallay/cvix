@@ -60,9 +60,9 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.github/actions/setup/java/**'
             pdf:
-              - 'server/**/pdf/**'
+              - 'server/**/infrastructure/pdf/**'
+              - 'server/**/application/generate/**'
               - 'server/**/DockerPdfGenerator*'
-              - 'server/**/resume/**'
               - 'infra/texlive/**'
             frontend:
               - 'client/**'
