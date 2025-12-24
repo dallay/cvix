@@ -39,7 +39,7 @@ WORKDIR /tmp
 # Download and verify TeX Live installer
 RUN curl -L -o install-tl-unx.tar.gz https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
     && curl -L -o install-tl-unx.tar.gz.sha512 https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz.sha512 \
-    && sha512sum -c install-tl-unx.tar.gz.sha512 \
+    && echo "$(cat install-tl-unx.tar.gz.sha512)  install-tl-unx.tar.gz" | sha512sum -c - \
     && tar -xzf install-tl-unx.tar.gz --strip-components=1 \
     && rm install-tl-unx.tar.gz install-tl-unx.tar.gz.sha512
 
