@@ -85,10 +85,12 @@ COPY --from=build --chown=nginx:nginx /app/client/apps/webapp/dist /usr/share/ng
 #   CSP_SCRIPT_SRC: 'self' 'sha256-HASH1' 'sha256-HASH2' (remove 'unsafe-inline')
 #   CSP_STYLE_SRC: 'self' 'sha256-HASH1' (remove 'unsafe-inline')
 #   CSP_CONNECT_SRC: 'self' https://api.yourdomain.com https://auth.yourdomain.com
+#   CSP_OBJECT_SRC: 'self' blob: (for PDF preview), or 'none' for strict security
 ENV BACKEND_URL=https://backend.localhost \
     CSP_SCRIPT_SRC="'self' 'unsafe-inline'" \
     CSP_STYLE_SRC="'self' 'unsafe-inline'" \
-    CSP_CONNECT_SRC="'self' https://backend.localhost"
+    CSP_CONNECT_SRC="'self' https://backend.localhost" \
+    CSP_OBJECT_SRC="'self' blob:"
 
 # Expose port 8080 (non-privileged port, nginx-unprivileged default)
 EXPOSE 8080
