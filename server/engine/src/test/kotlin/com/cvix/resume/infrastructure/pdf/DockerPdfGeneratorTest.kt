@@ -87,11 +87,12 @@ class DockerPdfGeneratorTest {
         every { createContainerCmd.withAttachStdout(any()) } returns createContainerCmd
         every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
         every { createContainerCmd.exec() } answers {
-            // Capture the temp dir by finding all resume-pdf-* directories
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir")))
-                .filter { it.fileName.toString().startsWith("resume-pdf-") }
-                .findFirst()
-                .orElse(null)
+            // Capture the temp dir using .use {} to properly close the stream
+            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                    .findFirst()
+                    .orElse(null)
+            }
 
             // Create the PDF file in the captured directory
             actualTempDir?.let { dir ->
@@ -142,10 +143,9 @@ class DockerPdfGeneratorTest {
         resultStream.shouldBeInstanceOf<ByteArrayInputStream>()
         requireNotNull(resultStream).readAllBytes() shouldBe pdfContent
 
-        // Verify cleanup happened
-        actualTempDir?.let { dir ->
-            Files.exists(dir) shouldBe false
-        }
+        // Verify cleanup happened - actualTempDir must exist during test and be cleaned up
+        requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(actualTempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
     }
@@ -168,11 +168,13 @@ class DockerPdfGeneratorTest {
         every { createContainerCmd.withAttachStdout(any()) } returns createContainerCmd
         every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
         every { createContainerCmd.exec() } answers {
-            // Capture the temp dir but DON'T create PDF (simulate failure)
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir")))
-                .filter { it.fileName.toString().startsWith("resume-pdf-") }
-                .findFirst()
-                .orElse(null)
+            // Capture the temp dir using .use {} to properly close the stream
+            // Simulate failure: DON'T create the PDF file
+            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                    .findFirst()
+                    .orElse(null)
+            }
 
             createContainerResponse
         }
@@ -220,10 +222,9 @@ class DockerPdfGeneratorTest {
 
         exception.message shouldContain "PDF file was not generated"
 
-        // Verify cleanup happened even on failure
-        actualTempDir?.let { dir ->
-            Files.exists(dir) shouldBe false
-        }
+        // Verify cleanup happened even on failure - actualTempDir must exist during test and be cleaned up
+        requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(actualTempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
     }
@@ -256,10 +257,12 @@ class DockerPdfGeneratorTest {
         every { createContainerCmd.withAttachStdout(any()) } returns createContainerCmd
         every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
         every { createContainerCmd.exec() } answers {
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir")))
-                .filter { it.fileName.toString().startsWith("resume-pdf-") }
-                .findFirst()
-                .orElse(null)
+            // Capture the temp dir using .use {} to properly close the stream
+            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                    .findFirst()
+                    .orElse(null)
+            }
 
             createContainerResponse
         }
@@ -299,22 +302,10 @@ class DockerPdfGeneratorTest {
 
         exception.message shouldContain "timed out"
 
-        // Verify cleanup happened on timeout
-        actualTempDir?.let { dir ->
-            Files.exists(dir) shouldBe false
-        }
+        // Verify cleanup happened on timeout - actualTempDir must exist during test and be cleaned up
+        requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(actualTempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
-    }
-
-    @Test
-    fun `should use correct Docker image from properties`() {
-        // Assert
-        properties.image shouldBe "ghcr.io/dallay/texlive:2025"
-        properties.timeoutSeconds shouldBe 30L
-        properties.memoryLimitMb shouldBe 512L
-        properties.cpuQuota shouldBe 0.5
-        properties.maxConcurrentContainers shouldBe 10
-        properties.containerUser shouldBe "999"
     }
 }
