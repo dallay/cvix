@@ -1,3 +1,9 @@
+## [3.0.4](https://github.com/dallay/cvix/compare/v3.0.3...v3.0.4) (2025-12-25)
+
+### 🐛 Bug Fixes
+
+* csp connect src ([#463](https://github.com/dallay/cvix/issues/463)) ([f7bb881](https://github.com/dallay/cvix/commit/f7bb881568f7bee6d322859bef6d764796730a94))
+
 ## [3.0.3](https://github.com/dallay/cvix/compare/v3.0.2...v3.0.3) (2025-12-25)
 
 ### 🐛 Bug Fixes
