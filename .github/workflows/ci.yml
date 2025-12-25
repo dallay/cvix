@@ -43,6 +43,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      pdf: ${{ steps.filter.outputs.pdf }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -58,6 +59,11 @@ jobs:
               - 'gradle/**'
               - '.github/workflows/ci.yml'
               - '.github/actions/setup/java/**'
+            pdf:
+              - 'server/**/infrastructure/pdf/**'
+              - 'server/**/application/generate/**'
+              - 'server/**/DockerPdfGenerator*'
+              - 'infra/texlive/**'
             frontend:
               - 'client/**'
               - 'package.json'
@@ -195,10 +201,23 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
+        if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
+        timeout-minutes: 10
         run: |
           echo "Pre-pulling TexLive Docker image for PDF generation tests..."
-          docker pull ghcr.io/dallay/texlive:2025
-          echo "Docker image pulled successfully"
+          for i in 1 2 3; do
+            if docker pull ghcr.io/dallay/texlive:2025; then
+              echo "Docker image pulled successfully"
+              break
+            fi
+            if [ $i -lt 3 ]; then
+              echo "Pull attempt $i failed, retrying in 10s..."
+              sleep 10
+            else
+              echo "Failed to pull image after 3 attempts"
+              exit 1
+            fi
+          done
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
       - name: Run tests

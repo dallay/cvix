@@ -20,15 +20,25 @@ private const val MAX_CONNECTIONS = 100
 @EnableConfigurationProperties(DockerPdfGeneratorProperties::class)
 class DockerConfiguration {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
+    private val logger = LoggerFactory.getLogger(DockerConfiguration::class.java)
 
+    /**
+     * Creates and configures a DockerClient used for PDF generation.
+     *
+     * Builds the Docker client configuration and HTTP transport using the provided properties, initializes
+     * the DockerClient instance, and attempts a startup verification against the Docker daemon, logging
+     * success or failure without preventing application startup.
+     *
+     * @param properties Configuration values for the PDF generator (used for timeouts and related settings).
+     * @return A configured DockerClient instance ready for use by PDF generation components.
+     */
     @Bean
     fun dockerClient(properties: DockerPdfGeneratorProperties): DockerClient {
         val config = DefaultDockerClientConfig.createDefaultConfigBuilder()
             .build()
 
-        logger.info("Initializing Docker client with host: ${config.dockerHost}")
-        logger.info("DOCKER_HOST env: ${System.getenv("DOCKER_HOST") ?: "not set"}")
+        logger.info("Initializing Docker client with host: {}", config.dockerHost)
+        logger.info("DOCKER_HOST env: {}", System.getenv("DOCKER_HOST") ?: "not set")
 
         val httpClient = ApacheDockerHttpClient.Builder()
             .dockerHost(config.dockerHost)
@@ -43,13 +53,13 @@ class DockerConfiguration {
         // Verify Docker connection on startup
         try {
             val version = client.versionCmd().exec()
-            logger.info("Docker connection successful. Version: ${version.version}, API: ${version.apiVersion}")
+            logger.info("Docker connection successful. Version: {}, API: {}", version.version, version.apiVersion)
         } catch (e: com.github.dockerjava.api.exception.DockerException) {
-            logger.error("Failed to connect to Docker daemon at ${config.dockerHost}: ${e.message}", e)
+            logger.error("Failed to connect to Docker daemon at {}: {}", config.dockerHost, e.message, e)
         } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
             // RuntimeException is intentionally caught here to log ANY Docker connection failure
             // (including transport errors, timeouts, etc.) without crashing the application.
-            logger.error("Docker connection error at ${config.dockerHost}: ${e.message}", e)
+            logger.error("Docker connection error at {}: {}", config.dockerHost, e.message, e)
         }
 
         return client
