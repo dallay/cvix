@@ -144,8 +144,8 @@ class DockerPdfGeneratorTest {
         requireNotNull(resultStream).readAllBytes() shouldBe pdfContent
 
         // Verify cleanup happened - actualTempDir must exist during test and be cleaned up
-        requireNotNull(actualTempDir) { "Temp directory should have been created" }
-        Files.exists(actualTempDir) shouldBe false
+        val tempDir = requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(tempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
     }
@@ -223,8 +223,8 @@ class DockerPdfGeneratorTest {
         exception.message shouldContain "PDF file was not generated"
 
         // Verify cleanup happened even on failure - actualTempDir must exist during test and be cleaned up
-        requireNotNull(actualTempDir) { "Temp directory should have been created" }
-        Files.exists(actualTempDir) shouldBe false
+        val tempDir = requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(tempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
     }
@@ -303,8 +303,8 @@ class DockerPdfGeneratorTest {
         exception.message shouldContain "timed out"
 
         // Verify cleanup happened on timeout - actualTempDir must exist during test and be cleaned up
-        requireNotNull(actualTempDir) { "Temp directory should have been created" }
-        Files.exists(actualTempDir) shouldBe false
+        val tempDir = requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(tempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
     }
