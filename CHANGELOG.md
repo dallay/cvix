@@ -1,3 +1,9 @@
+## [3.0.3](https://github.com/dallay/cvix/compare/v3.0.2...v3.0.3) (2025-12-25)
+
+### 🐛 Bug Fixes
+
+* **pdf:** 🔒 run TexLive container with same UID as backend for secure file access ([#462](https://github.com/dallay/cvix/issues/462)) ([79b4776](https://github.com/dallay/cvix/commit/79b4776e37d7caf379b22c187687b3e812628022))
+
 ## [3.0.2](https://github.com/dallay/cvix/compare/v3.0.1...v3.0.2) (2025-12-24)
 
 ### 🐛 Bug Fixes
