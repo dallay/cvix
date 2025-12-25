@@ -39,8 +39,9 @@ RUN ./gradlew :server:engine:bootJar \
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:25.0.1_8-jre-jammy
 
-# Create a non-root user
-RUN groupadd -r spring && useradd -r -g spring spring
+# Create a non-root user with explicit UID/GID for predictable file permissions
+# UID 999 is used to match the containerUser in DockerPdfGeneratorProperties
+RUN groupadd -r -g 999 spring && useradd -r -u 999 -g spring spring
 
 # Set working directory
 WORKDIR /app

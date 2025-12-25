@@ -12,5 +12,13 @@ data class DockerPdfGeneratorProperties(
     val maxConcurrentContainers: Int = 10,
     val timeoutSeconds: Long = 60, // Increased to 60s for CI environments
     val memoryLimitMb: Long = 512,
-    val cpuQuota: Double = 0.5
+    val cpuQuota: Double = 0.5,
+    /**
+     * User ID for running TexLive container.
+     * Must match the backend process UID so the container can access temp files
+     * without requiring world-readable permissions (security best practice).
+     * Default "999" matches the 'spring' user created in the backend Dockerfile.
+     * Override via RESUME_PDF_DOCKER_CONTAINER_USER env var if your setup differs.
+     */
+    val containerUser: String = "999"
 )

@@ -325,6 +325,7 @@ class DockerPdfGenerator(
             .withNetworkMode("none") // Security: no network access
             .withAutoRemove(false) // We handle cleanup manually
         val response: CreateContainerResponse = dockerClient.createContainerCmd(properties.image)
+            .withUser(properties.containerUser) // Run as same UID as backend for file access
             .withWorkingDir(WORK_DIR)
             .withCmd("pdflatex", "-interaction=nonstopmode", "-halt-on-error", LATEX_FILE)
             .withHostConfig(hostConfig)
