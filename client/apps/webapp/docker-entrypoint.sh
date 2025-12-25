@@ -25,6 +25,7 @@ MISSING_VARS=""
 [ -z "$CSP_SCRIPT_SRC" ] && MISSING_VARS="$MISSING_VARS CSP_SCRIPT_SRC"
 [ -z "$CSP_STYLE_SRC" ] && MISSING_VARS="$MISSING_VARS CSP_STYLE_SRC"
 [ -z "$CSP_CONNECT_SRC" ] && MISSING_VARS="$MISSING_VARS CSP_CONNECT_SRC"
+[ -z "$CSP_OBJECT_SRC" ] && MISSING_VARS="$MISSING_VARS CSP_OBJECT_SRC"
 
 if [ -n "$MISSING_VARS" ]; then
   echo "❌ ERROR: Required environment variables are not set:$MISSING_VARS" >&2
@@ -34,6 +35,7 @@ if [ -n "$MISSING_VARS" ]; then
   echo "  CSP_SCRIPT_SRC    - CSP script-src directive (e.g., 'self' 'unsafe-inline')" >&2
   echo "  CSP_STYLE_SRC     - CSP style-src directive (e.g., 'self' 'unsafe-inline')" >&2
   echo "  CSP_CONNECT_SRC   - CSP connect-src directive (e.g., 'self' https://api.example.com)" >&2
+  echo "  CSP_OBJECT_SRC    - CSP object-src directive (e.g., 'self' blob: for PDF preview)" >&2
   echo "" >&2
   echo "See Dockerfile ENV section or infra/.env.example for defaults." >&2
   exit 1
@@ -44,10 +46,11 @@ echo "   BACKEND_URL: $BACKEND_URL"
 echo "   CSP_SCRIPT_SRC: $CSP_SCRIPT_SRC"
 echo "   CSP_STYLE_SRC: $CSP_STYLE_SRC"
 echo "   CSP_CONNECT_SRC: $CSP_CONNECT_SRC"
+echo "   CSP_OBJECT_SRC: $CSP_OBJECT_SRC"
 
 echo "Substituting environment variables in nginx configuration..."
-envsubst '${BACKEND_URL} ${CSP_SCRIPT_SRC} ${CSP_STYLE_SRC} ${CSP_CONNECT_SRC}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-envsubst '${BACKEND_URL} ${CSP_SCRIPT_SRC} ${CSP_STYLE_SRC} ${CSP_CONNECT_SRC}' < /etc/nginx/conf.d/security-headers.conf.template > /etc/nginx/conf.d/security-headers.conf
+envsubst '${BACKEND_URL} ${CSP_SCRIPT_SRC} ${CSP_STYLE_SRC} ${CSP_CONNECT_SRC} ${CSP_OBJECT_SRC}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+envsubst '${BACKEND_URL} ${CSP_SCRIPT_SRC} ${CSP_STYLE_SRC} ${CSP_CONNECT_SRC} ${CSP_OBJECT_SRC}' < /etc/nginx/conf.d/security-headers.conf.template > /etc/nginx/conf.d/security-headers.conf
 
 echo "✅ Configuration files generated successfully"
 

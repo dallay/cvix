@@ -6,10 +6,12 @@
 #   - CSP_STYLE_SRC: CSP style-src directive (e.g., 'self' 'sha256-...')
 #   - CSP_CONNECT_SRC: CSP connect-src directive for allowed fetch/XHR/WebSocket origins
 #                      (e.g., 'self' https://api.example.com https://auth.example.com)
+#   - CSP_OBJECT_SRC: CSP object-src directive for <object>, <embed>, <applet> elements
+#                     (e.g., 'none' for maximum security, or 'self' blob: for PDF preview)
 
 add_header X-Frame-Options "SAMEORIGIN" always;
 add_header X-Content-Type-Options "nosniff" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src ${CSP_SCRIPT_SRC}; style-src ${CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src ${CSP_CONNECT_SRC}; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src ${CSP_SCRIPT_SRC}; style-src ${CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src ${CSP_CONNECT_SRC}; frame-ancestors 'self'; object-src ${CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'" always;
 add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
