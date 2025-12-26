@@ -23,10 +23,12 @@ import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import org.apache.hc.core5.http.NoHttpResponseException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import reactor.util.retry.Retry
 
 /**
  * Adapter that generates PDFs from LaTeX source using Docker containers.
@@ -71,6 +73,10 @@ class DockerPdfGenerator(
     )
     private val containerCleanupCounter: Counter = meterRegistry.counter(
         "docker.container.cleanup",
+        METRICS_TAG, METRICS_COMPONENT,
+    )
+    private val containerRetryCounter: Counter = meterRegistry.counter(
+        "docker.container.retry",
         METRICS_TAG, METRICS_COMPONENT,
     )
     private val containerExecutionTimer: Timer = meterRegistry.timer(
@@ -118,8 +124,62 @@ class DockerPdfGenerator(
     override fun generatePdf(latexSource: String, locale: String): Mono<InputStream> {
         return Mono.fromCallable { acquireAndRunPdfGeneration(latexSource, locale) }
             .subscribeOn(Schedulers.boundedElastic())
+            .retryWhen(
+                Retry.backoff(MAX_RETRIES, Duration.ofMillis(RETRY_INITIAL_BACKOFF_MS))
+                    .maxBackoff(Duration.ofSeconds(RETRY_MAX_BACKOFF_SECONDS))
+                    .filter { error -> isRetryableError(error) }
+                    .doBeforeRetry { signal ->
+                        containerRetryCounter.increment()
+                        val attempt = signal.totalRetries() + 1
+                        val errorMsg = signal.failure().message
+                        logger.warn(
+                            "Retrying PDF generation after transient error " +
+                                "(attempt $attempt/$MAX_RETRIES): $errorMsg",
+                        )
+                    },
+            )
             .timeout(Duration.ofSeconds(properties.timeoutSeconds + TIMEOUT_BUFFER_SECONDS))
             .onErrorMap(this::mapPdfGenerationError)
+    }
+
+    /**
+     * Determines if an error is transient and should trigger a retry.
+     * Retryable errors include:
+     * - NoHttpResponseException: Docker socket proxy didn't respond (connection issues)
+     * - Connection reset/refused errors
+     * - AsynchronousCloseException: Connection closed during operation
+     */
+    private fun isRetryableError(error: Throwable): Boolean {
+        val rootCause = getRootCause(error)
+        return when {
+            // NoHttpResponseException from Apache HttpClient5 - proxy didn't respond
+            rootCause is NoHttpResponseException -> true
+            // Connection was closed during operation
+            rootCause is AsynchronousCloseException -> true
+            // Connection reset by peer
+            rootCause is java.net.SocketException &&
+                rootCause.message?.contains("reset", ignoreCase = true) == true -> true
+            // Connection refused
+            rootCause is java.net.ConnectException -> true
+            // Check message for common transient patterns
+            rootCause.message?.let { msg ->
+                msg.contains("failed to respond", ignoreCase = true) ||
+                    msg.contains("connection reset", ignoreCase = true) ||
+                    msg.contains("broken pipe", ignoreCase = true)
+            } == true -> true
+
+            else -> false
+        }
+    }
+
+    private fun getRootCause(error: Throwable): Throwable {
+        var cause = error
+        var next = cause.cause
+        while (next != null && next != cause) {
+            cause = next
+            next = cause.cause
+        }
+        return cause
     }
 
     private fun acquireAndRunPdfGeneration(latexSource: String, locale: String): InputStream {
@@ -472,5 +532,10 @@ class DockerPdfGenerator(
         private const val SEMAPHORE_TIMEOUT_BUFFER = 60L // Increased to 60s
         private const val STOP_TIMEOUT_SECONDS = 5
         private const val UNABLE_TO_RETRIEVE_LOGS = "Unable to retrieve logs"
+
+        // Retry configuration for transient Docker socket proxy errors
+        private const val MAX_RETRIES = 3L
+        private const val RETRY_INITIAL_BACKOFF_MS = 500L // Start with 500ms backoff
+        private const val RETRY_MAX_BACKOFF_SECONDS = 5L // Max 5s between retries
     }
 }

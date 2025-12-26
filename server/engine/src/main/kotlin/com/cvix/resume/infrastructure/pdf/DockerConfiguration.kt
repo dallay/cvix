@@ -10,11 +10,26 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
+/**
+ * Maximum number of concurrent HTTP connections to Docker daemon.
+ * This should be >= maxConcurrentContainers to avoid connection pool exhaustion.
+ */
 private const val MAX_CONNECTIONS = 100
+
+/**
+ * Connection timeout for establishing new connections to Docker daemon.
+ * Keep this short - if the proxy is down, we want to fail fast.
+ */
+private const val CONNECTION_TIMEOUT_SECONDS = 10L
 
 /**
  * Docker configuration for PDF generation.
  * Configures Docker client and resource limits per security requirements.
+ *
+ * Note: Connection stability with docker-socket-proxy is handled via:
+ * 1. Short connection timeout to fail fast on dead connections
+ * 2. Response timeout matching the PDF generation timeout
+ * 3. Retry logic in DockerPdfGenerator for transient failures
  */
 @Configuration
 @EnableConfigurationProperties(DockerPdfGeneratorProperties::class)
@@ -44,7 +59,9 @@ class DockerConfiguration {
             .dockerHost(config.dockerHost)
             .sslConfig(config.sslConfig)
             .maxConnections(MAX_CONNECTIONS)
-            .connectionTimeout(Duration.ofSeconds(properties.timeoutSeconds))
+            // Short connection timeout - fail fast if proxy is unresponsive
+            .connectionTimeout(Duration.ofSeconds(CONNECTION_TIMEOUT_SECONDS))
+            // Response timeout should match PDF generation timeout
             .responseTimeout(Duration.ofSeconds(properties.timeoutSeconds))
             .build()
 
@@ -59,7 +76,7 @@ class DockerConfiguration {
         } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
             // RuntimeException is intentionally caught here to log ANY Docker connection failure
             // (including transport errors, timeouts, etc.) without crashing the application.
-            logger.error("Docker connection error at {}: {}", config.dockerHost, e.message, e)
+            logger.error("Docker connection error at {}: {}", config.dockerHost, e.message)
         }
 
         return client
