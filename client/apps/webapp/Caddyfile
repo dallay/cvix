@@ -47,7 +47,8 @@
 		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
-			header_up X-Forwarded-For {remote_host}
+			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
+			header_up X-Forwarded-For {remote_host} {header.X-Forwarded-For}
 			header_up X-Forwarded-Proto {scheme}
 			header_up X-Forwarded-Host {host}
 
@@ -67,7 +68,8 @@
 		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
-			header_up X-Forwarded-For {remote_host}
+			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
+			header_up X-Forwarded-For {remote_host} {header.X-Forwarded-For}
 			header_up X-Forwarded-Proto {scheme}
 			header_up X-Forwarded-Host {host}
 
@@ -86,7 +88,8 @@
 		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
-			header_up X-Forwarded-For {remote_host}
+			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
+			header_up X-Forwarded-For {remote_host} {header.X-Forwarded-For}
 			header_up X-Forwarded-Proto {scheme}
 			header_up X-Forwarded-Host {host}
 

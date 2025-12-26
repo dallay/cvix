@@ -26,6 +26,37 @@
 		X-Frame-Options "SAMEORIGIN"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		
+		# Content Security Policy
+		# -----------------------------------------------------------------------
+		# ⚠️  KNOWN SECURITY TRADEOFF: 'unsafe-inline' for scripts and styles
+		# -----------------------------------------------------------------------
+		# WHY 'unsafe-inline' IS CURRENTLY REQUIRED:
+		#
+		# 1. Astro Framework Patterns:
+		#    - Astro injects inline <script> tags for hydration and islands
+		#    - Using `is:inline` directive generates non-extractable inline scripts
+		#    - View Transitions API requires inline initialization code
+		#
+		# 2. SEO & Structured Data:
+		#    - JSON-LD blocks (<script type="application/ld+json">) are inline by design
+		#    - Critical for search engine visibility and rich snippets
+		#
+		# 3. Performance Optimizations:
+		#    - Critical CSS is inlined for faster First Contentful Paint (FCP)
+		#    - Inline font declarations avoid FOIT (Flash of Invisible Text)
+		#
+		# 4. Third-Party Integrations:
+		#    - Analytics snippets (Google Analytics, Plausible, etc.) often require inline execution
+		#
+		# FUTURE IMPROVEMENTS (Roadmap):
+		# - Investigate Astro's experimental nonce support for dynamic scripts
+		# - Externalize non-critical scripts where feasible
+		# - Implement subresource integrity (SRI) for external scripts
+		# - Re-evaluate CSP after Astro 5.x stabilizes server-side nonce injection
+		#
+		# LAST REVIEWED: 2025-01-XX (update when changes are made)
+		# -----------------------------------------------------------------------
 		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
 		# Remove server identification header
