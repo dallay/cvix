@@ -1,3 +1,9 @@
+## [3.1.0](https://github.com/dallay/cvix/compare/v3.0.6...v3.1.0) (2025-12-26)
+
+### ✨ Features
+
+* pdf generator ([#467](https://github.com/dallay/cvix/issues/467)) ([996c84c](https://github.com/dallay/cvix/commit/996c84c25f16ef42605f67943ab6e90d75b6eb31))
+
 ## [3.0.6](https://github.com/dallay/cvix/compare/v3.0.5...v3.0.6) (2025-12-26)
 
 ### 🐛 Bug Fixes
