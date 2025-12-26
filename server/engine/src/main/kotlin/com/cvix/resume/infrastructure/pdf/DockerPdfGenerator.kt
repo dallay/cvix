@@ -174,8 +174,10 @@ class DockerPdfGenerator(
 
     private fun getRootCause(error: Throwable): Throwable {
         var cause = error
-        while (cause.cause != null && cause.cause != cause) {
-            cause = cause.cause!!
+        var next = cause.cause
+        while (next != null && next != cause) {
+            cause = next
+            next = cause.cause
         }
         return cause
     }

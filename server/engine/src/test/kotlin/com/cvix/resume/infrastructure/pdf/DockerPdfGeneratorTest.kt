@@ -395,6 +395,12 @@ class DockerPdfGeneratorTest {
         resultStream.shouldBeInstanceOf<ByteArrayInputStream>()
         requireNotNull(resultStream).readAllBytes() shouldBe pdfContent
 
+        // Verify cleanup happened
+        val tempDir = requireNotNull(actualTempDir) { "Temp directory should have been created" }
+        Files.exists(tempDir) shouldBe false
+
+        verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
+
         // Verify retry metric was incremented (2 retries before success)
         val retryCounter = meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
         retryCounter.count() shouldBe 2.0
