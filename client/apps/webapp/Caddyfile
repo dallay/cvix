@@ -131,9 +131,8 @@
 	# to load old asset versions even after new deployments
 	handle {
 		root * /srv
-		# Prevent caching of HTML files
-		@html path *.html /
-		header @html Cache-Control "no-cache, must-revalidate"
+		# Prevent caching of SPA entrypoint (index.html) on ALL routes
+		header Cache-Control "no-cache, must-revalidate"
 		try_files {path} /index.html
 		file_server
 	}

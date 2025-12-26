@@ -60,7 +60,7 @@
 		# Production CSP allows:
 		# - script-src: Ahrefs analytics (https://analytics.ahrefs.com) via partytown
 		# - connect-src: Backend API for EmailCaptureForm waitlist submissions
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://analytics.ahrefs.com http://localhost:8080 https://api.cvix.dev; frame-ancestors 'self'"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://analytics.ahrefs.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://analytics.ahrefs.com https://api.cvix.dev; frame-ancestors 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
 		
 		# HSTS: Handled by TLS terminator (Traefik/Ingress) in production
@@ -97,9 +97,8 @@
 	# to load old asset versions even after new deployments
 	handle {
 		root * /srv
-		# Prevent caching of HTML files
-		@html path *.html /
-		header @html Cache-Control "no-cache, must-revalidate"
+		# Prevent caching of SPA entrypoint (index.html) on ALL routes
+		header Cache-Control "no-cache, must-revalidate"
 		try_files {path} /index.html
 		file_server
 	}
