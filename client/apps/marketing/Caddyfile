@@ -55,7 +55,7 @@
 		# - Implement subresource integrity (SRI) for external scripts
 		# - Re-evaluate CSP after Astro 5.x stabilizes server-side nonce injection
 		#
-		# LAST REVIEWED: 2025-01-XX (update when changes are made)
+		# LAST REVIEWED: 2025-12-26 (update when changes are made)
 		# -----------------------------------------------------------------------
 		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
