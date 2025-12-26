@@ -30,7 +30,7 @@
 		X-Frame-Options "SAMEORIGIN"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
-		Content-Security-Policy "default-src 'self'; script-src {$CSP_SCRIPT_SRC}; style-src {$CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src {$CSP_CONNECT_SRC}; frame-ancestors 'self'; object-src {$CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'"
+		Content-Security-Policy "default-src 'self'; script-src {$CSP_SCRIPT_SRC}; style-src {$CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src {$CSP_CONNECT_SRC}; frame-src 'self' blob:; frame-ancestors 'self'; object-src {$CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
 		
 		# HSTS: Set here for direct HTTPS, but should be overridden at TLS terminator (Traefik/Ingress)
