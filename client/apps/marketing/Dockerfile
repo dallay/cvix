@@ -44,43 +44,32 @@ WORKDIR /app/client/apps/marketing
 RUN pnpm build
 
 # =============================================================================
-# Production stage - using nginx-unprivileged for non-root operation
+# Production stage - using Caddy for serving static files
 # =============================================================================
-# Why nginx-unprivileged instead of nginx:alpine?
-# - Already configured to run as non-root user (UID 101)
-# - Default port 8080 (non-privileged)
-# - PID file in /tmp/nginx.pid
-# - Temp paths already configured in /tmp/
-# - No permission issues with /dev/stdout or /dev/stderr in Docker Swarm
-# - Maintained by Nginx Inc. with weekly security updates
+# Why Caddy?
+# - Non-root by default (runs as UID 1000)
+# - Logs to stdout/stderr by default (Docker native)
+# - Automatic compression (gzip/zstd)
+# - Simple, readable configuration
+# - Automatic HTTPS if needed (not used here, but available)
 # =============================================================================
-FROM nginxinc/nginx-unprivileged:alpine AS production
-
-# Switch to root temporarily to install packages and configure
-USER root
+FROM caddy:2-alpine AS production
 
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Copy custom nginx configuration
-COPY client/apps/marketing/nginx.conf /etc/nginx/nginx.conf
+# Copy Caddy configuration
+COPY client/apps/marketing/Caddyfile /etc/caddy/Caddyfile
 
-# Copy built files from build stage with proper ownership
-COPY --from=build --chown=nginx:nginx /app/client/apps/marketing/dist /usr/share/nginx/html
+# Copy built files from build stage
+COPY --from=build /app/client/apps/marketing/dist /srv
 
-# Create log files and set ownership for non-root user
-RUN touch /tmp/access.log /tmp/error.log && \
-    chown nginx:nginx /tmp/access.log /tmp/error.log
-
-# Expose port 8080 (non-privileged port, nginx-unprivileged default)
+# Expose port 8080 (non-privileged port)
 EXPOSE 8080
-
-# Switch to non-root user (nginx)
-USER nginx
 
 # Health check using curl to verify the server is responding
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Caddy runs as non-root by default and handles signals properly
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

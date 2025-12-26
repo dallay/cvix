@@ -44,40 +44,26 @@ WORKDIR /app/client/apps/webapp
 RUN pnpm build
 
 # =============================================================================
-# Production stage - using nginx-unprivileged for non-root operation
+# Production stage - using Caddy for serving static files
 # =============================================================================
-# Why nginx-unprivileged instead of nginx:alpine?
-# - Already configured to run as non-root user (UID 101)
-# - Default port 8080 (non-privileged)
-# - PID file in /tmp/nginx.pid
-# - Temp paths already configured in /tmp/
-# - No permission issues with /dev/stdout or /dev/stderr
-# - Maintained by Nginx Inc. with weekly security updates
+# Why Caddy?
+# - Non-root by default (runs as UID 1000)
+# - Native environment variable support in Caddyfile (no envsubst needed)
+# - Logs to stdout/stderr by default (Docker native)
+# - Automatic compression (gzip/zstd)
+# - Simple, readable configuration
+# - Automatic HTTPS if needed (not used here, but available)
 # =============================================================================
-FROM nginxinc/nginx-unprivileged:alpine AS production
+FROM caddy:2-alpine AS production
 
-# Switch to root temporarily to install packages and configure
-USER root
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
-# Install required packages:
-#   curl: for healthcheck
-#   gettext: for envsubst (environment variable substitution)
-#   su-exec: for dropping privileges after config generation
-RUN apk add --no-cache curl gettext su-exec
+# Copy Caddy configuration
+COPY client/apps/webapp/Caddyfile /etc/caddy/Caddyfile
 
-# Copy nginx configuration templates
-COPY client/apps/webapp/nginx.conf.template /etc/nginx/nginx.conf.template
-COPY client/apps/webapp/security-headers.conf.template /etc/nginx/conf.d/security-headers.conf.template
-
-# Copy entrypoint script and make it executable
-COPY client/apps/webapp/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-# Ensure config directory is writable by nginx user for envsubst output
-RUN chown -R nginx:nginx /etc/nginx/conf.d
-
-# Copy built files from build stage with proper ownership
-COPY --from=build --chown=nginx:nginx /app/client/apps/webapp/dist /usr/share/nginx/html
+# Copy built files from build stage
+COPY --from=build /app/client/apps/webapp/dist /srv
 
 # Environment variables for CSP and backend URL (set defaults for local dev)
 # Override these in production:
@@ -92,18 +78,12 @@ ENV BACKEND_URL=https://backend.localhost \
     CSP_CONNECT_SRC="'self' https://backend.localhost" \
     CSP_OBJECT_SRC="'self' blob:"
 
-# Expose port 8080 (non-privileged port, nginx-unprivileged default)
+# Expose port 8080 (non-privileged port)
 EXPOSE 8080
 
 # Health check using curl to verify the server is responding
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ || exit 1
 
-# Entrypoint handles:
-#   1. Validate required environment variables
-#   2. Substitute variables in nginx config templates
-#   3. Start nginx as non-root user using su-exec
-# Note: Entrypoint runs as root initially to perform envsubst,
-#       then explicitly switches to nginx user (UID 101) via su-exec before starting nginx.
-#       Do NOT add USER directive here - it would break envsubst.
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Caddy runs as non-root by default and handles signals properly
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
