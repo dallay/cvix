@@ -1,3 +1,9 @@
+## [3.0.6](https://github.com/dallay/cvix/compare/v3.0.5...v3.0.6) (2025-12-26)
+
+### 🐛 Bug Fixes
+
+* **csp:** add frame-src directive for PDF iframe preview in Caddyfile ([27d4b8c](https://github.com/dallay/cvix/commit/27d4b8cf269d61068e37de55bde40a8aa74a6ff9))
+
 ## [3.0.5](https://github.com/dallay/cvix/compare/v3.0.4...v3.0.5) (2025-12-25)
 
 ### 🐛 Bug Fixes
