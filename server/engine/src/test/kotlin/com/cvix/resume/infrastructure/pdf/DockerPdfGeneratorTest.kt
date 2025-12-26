@@ -14,6 +14,7 @@ import com.github.dockerjava.api.command.StartContainerCmd
 import com.github.dockerjava.api.command.StopContainerCmd
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
@@ -25,6 +26,7 @@ import java.io.ByteArrayInputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicInteger
+import org.apache.hc.core5.http.NoHttpResponseException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -307,5 +309,111 @@ class DockerPdfGeneratorTest {
         Files.exists(tempDir) shouldBe false
 
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
+    }
+
+    @Test
+    fun `should retry on transient NoHttpResponseException and succeed`() {
+        val containerId = "retry-success-container"
+        val pdfContent = "retry-pdf-content".toByteArray()
+        val attemptCounter = AtomicInteger(0)
+
+        var actualTempDir: Path? = null
+        val createContainerCmd = mockk<CreateContainerCmd>(relaxed = true)
+        val createContainerResponse = mockk<CreateContainerResponse>()
+
+        every { createContainerResponse.id } returns containerId
+        every { dockerClient.createContainerCmd(any()) } returns createContainerCmd
+        every { createContainerCmd.withUser(any()) } returns createContainerCmd
+        every { createContainerCmd.withWorkingDir(any()) } returns createContainerCmd
+        every { createContainerCmd.withCmd(any(), any(), any(), any()) } returns createContainerCmd
+        every { createContainerCmd.withHostConfig(any()) } returns createContainerCmd
+        every { createContainerCmd.withTty(any()) } returns createContainerCmd
+        every { createContainerCmd.withAttachStdout(any()) } returns createContainerCmd
+        every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
+
+        val inspectImageCmd = mockk<InspectImageCmd>(relaxed = true)
+        every { dockerClient.inspectImageCmd(any()) } returns inspectImageCmd
+        every { inspectImageCmd.exec() } answers {
+            val attempt = attemptCounter.incrementAndGet()
+            if (attempt <= 2) {
+                // First two attempts fail with NoHttpResponseException (transient error)
+                throw RuntimeException(NoHttpResponseException("docker-socket-proxy:2375 failed to respond"))
+            }
+            // Third attempt succeeds
+            mockk()
+        }
+
+        every { createContainerCmd.exec() } answers {
+            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                    .findFirst()
+                    .orElse(null)
+            }
+
+            actualTempDir?.let { dir ->
+                Files.write(dir.resolve("resume.pdf"), pdfContent)
+            }
+
+            createContainerResponse
+        }
+
+        val startContainerCmd = mockk<StartContainerCmd>(relaxed = true)
+        every { dockerClient.startContainerCmd(containerId) } returns startContainerCmd
+        every { startContainerCmd.exec() } returns mockk()
+
+        val inspectContainerCmd = mockk<InspectContainerCmd>(relaxed = true)
+        every { dockerClient.inspectContainerCmd(containerId) } returns inspectContainerCmd
+
+        val inspectCallCounter = AtomicInteger()
+        every { inspectContainerCmd.exec() } answers {
+            val response = mockk<InspectContainerResponse>()
+            val state = mockk<InspectContainerResponse.ContainerState>()
+            if (inspectCallCounter.getAndIncrement() == 0) {
+                every { state.running } returns true
+                every { state.exitCodeLong } returns null
+            } else {
+                every { state.running } returns false
+                every { state.exitCodeLong } returns 0L
+            }
+            every { response.state } returns state
+            response
+        }
+
+        val stopContainerCmd = mockk<StopContainerCmd>(relaxed = true)
+        every { dockerClient.stopContainerCmd(containerId) } returns stopContainerCmd
+        every { stopContainerCmd.withTimeout(any()) } returns stopContainerCmd
+        every { stopContainerCmd.exec() } returns mockk()
+
+        val removeContainerCmd = mockk<RemoveContainerCmd>(relaxed = true)
+        every { dockerClient.removeContainerCmd(containerId) } returns removeContainerCmd
+        every { removeContainerCmd.withForce(any()) } returns removeContainerCmd
+        every { removeContainerCmd.exec() } returns mockk()
+
+        val resultStream = adapter.generatePdf(latexSource, "en").block()
+
+        resultStream.shouldBeInstanceOf<ByteArrayInputStream>()
+        requireNotNull(resultStream).readAllBytes() shouldBe pdfContent
+
+        // Verify retry metric was incremented (2 retries before success)
+        val retryCounter = meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
+        retryCounter.count() shouldBe 2.0
+    }
+
+    @Test
+    fun `should not retry on non-transient errors`() {
+        val inspectImageCmd = mockk<InspectImageCmd>(relaxed = true)
+        every { dockerClient.inspectImageCmd(any()) } returns inspectImageCmd
+        // Non-transient error - should NOT retry
+        every { inspectImageCmd.exec() } throws PdfGenerationException("LaTeX compilation error - invalid syntax")
+
+        val exception = shouldThrow<PdfGenerationException> {
+            adapter.generatePdf(latexSource, "en").block()
+        }
+
+        exception.message shouldContain "LaTeX compilation error"
+
+        // Verify NO retries happened for non-transient errors
+        val retryCounter = meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
+        retryCounter.count() shouldBe 0.0
     }
 }
