@@ -30,14 +30,14 @@ check_nonroot() {
         return 1
     fi
     
-    # Check user ID
+    # Check user ID (Caddy runs as non-root by default)
     print_status "$YELLOW" "  Checking user ID..."
     local user_id
     user_id=$(docker run --rm "${image_name}:test" id -u)
-    if [ "$user_id" -eq 101 ]; then
-        print_status "$GREEN" "  ✅ Running as UID 101 (non-root)"
+    if [ "$user_id" -ne 0 ]; then
+        print_status "$GREEN" "  ✅ Running as UID ${user_id} (non-root)"
     else
-        print_status "$RED" "  ❌ Running as UID ${user_id} (expected 101)"
+        print_status "$RED" "  ❌ Running as root (UID 0)"
         return 1
     fi
     
@@ -76,10 +76,10 @@ check_nonroot() {
     print_status "$YELLOW" "  Checking process ownership..."
     local process_user
     process_user=$(docker top "test-${container_name}" -o user | tail -n +2 | head -n1)
-    if [ "$process_user" = "nginx" ] || [ "$process_user" = "101" ]; then
-        print_status "$GREEN" "  ✅ NGINX process running as non-root user"
+    if [ "$process_user" != "root" ] && [ "$process_user" != "0" ]; then
+        print_status "$GREEN" "  ✅ Caddy process running as non-root user (${process_user})"
     else
-        print_status "$RED" "  ❌ NGINX process running as: ${process_user}"
+        print_status "$RED" "  ❌ Caddy process running as root"
         docker rm -f "test-${container_name}" 2>/dev/null || true
         return 1
     fi

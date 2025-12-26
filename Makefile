@@ -147,7 +147,7 @@ docker-clean:
 	@echo "✅ Docker images with tag '$(TAG)' removed"
 
 # Verifies Docker containers are running as non-root users
-# Tests that all frontend containers properly run as UID 101 (nginx user)
+# Tests that all frontend containers properly run as non-root user
 docker-verify-nonroot:
 	@bash ./scripts/verify-nonroot-docker.sh
 

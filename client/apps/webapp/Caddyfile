@@ -1,0 +1,120 @@
+# =============================================================================
+# Caddy Configuration for Vue.js SPA
+# =============================================================================
+# Environment Variables (required):
+#   - BACKEND_URL: Backend API endpoint (e.g., https://api.example.com)
+#   - CSP_SCRIPT_SRC: CSP script-src directive (e.g., 'self' 'unsafe-inline')
+#   - CSP_STYLE_SRC: CSP style-src directive (e.g., 'self' 'unsafe-inline')
+#   - CSP_CONNECT_SRC: CSP connect-src for fetch/XHR/WebSocket origins
+#   - CSP_OBJECT_SRC: CSP object-src directive (e.g., 'self' blob: for PDF preview)
+# =============================================================================
+
+:8080 {
+	# ==========================================================================
+	# Logging (JSON format, outputs to stdout by default)
+	# ==========================================================================
+	log {
+		output stdout
+		format json
+	}
+
+	# ==========================================================================
+	# Compression (gzip and zstd enabled by default in Caddy)
+	# ==========================================================================
+	encode gzip zstd
+
+	# ==========================================================================
+	# Security Headers (applied globally)
+	# ==========================================================================
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "default-src 'self'; script-src {$CSP_SCRIPT_SRC}; style-src {$CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src {$CSP_CONNECT_SRC}; frame-ancestors 'self'; object-src {$CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# Remove server identification header
+		-Server
+	}
+
+	# ==========================================================================
+	# API Reverse Proxy
+	# ==========================================================================
+	# Proxies all /api/* requests to the backend server
+	# Enables same-origin requests (no CORS issues) and runtime backend config
+	# ==========================================================================
+	handle /api/* {
+		reverse_proxy {$BACKEND_URL} {
+			header_up Host {upstream_hostport}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+
+			# Timeouts
+			transport http {
+				dial_timeout 60s
+				read_timeout 60s
+				write_timeout 60s
+			}
+		}
+	}
+
+	# ==========================================================================
+	# OAuth2/Auth endpoints proxy
+	# ==========================================================================
+	handle /oauth2/* {
+		reverse_proxy {$BACKEND_URL} {
+			header_up Host {upstream_hostport}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+
+			transport http {
+				dial_timeout 60s
+				read_timeout 60s
+				write_timeout 60s
+			}
+		}
+	}
+
+	# ==========================================================================
+	# Actuator endpoints proxy (health checks, metrics)
+	# ==========================================================================
+	handle /actuator/* {
+		reverse_proxy {$BACKEND_URL} {
+			header_up Host {upstream_hostport}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+
+			transport http {
+				dial_timeout 30s
+				read_timeout 30s
+				write_timeout 30s
+			}
+		}
+	}
+
+	# ==========================================================================
+	# Static Assets Caching
+	# ==========================================================================
+	@static {
+		path *.css *.js *.svg *.ttf *.woff *.woff2 *.eot *.png *.jpg *.jpeg *.gif *.ico *.webp
+	}
+	handle @static {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# ==========================================================================
+	# SPA Fallback (Vue Router history mode)
+	# ==========================================================================
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

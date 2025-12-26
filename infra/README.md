@@ -121,13 +121,9 @@ docker service ps cvix_backend
 
 ### Common Issues
 
-#### 1. Nginx Permission Denied
+#### 1. Frontend Container Logs
 
-**Error:** `nginx: [alert] could not open error log file: open() "/var/log/nginx/error.log" failed (13: Permission denied)`
-
-**Cause:** Volume mount overwriting container permissions.
-
-**Solution:** **Do NOT mount nginx log directories**. Use Docker logs instead:
+**Viewing Logs:** Caddy logs to stdout/stderr by default, so use Docker logs:
 
 ```bash
 docker logs <container-id> -f
