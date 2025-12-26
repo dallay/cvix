@@ -32,7 +32,11 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Content-Security-Policy "default-src 'self'; script-src {$CSP_SCRIPT_SRC}; style-src {$CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src {$CSP_CONNECT_SRC}; frame-ancestors 'self'; object-src {$CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		
+		# HSTS: Set here for direct HTTPS, but should be overridden at TLS terminator (Traefik/Ingress)
+		# in production to ensure consistent HSTS policy across all services
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		
 		# Remove server identification header
 		-Server
 	}
@@ -102,10 +106,17 @@
 	}
 
 	# ==========================================================================
+	# Health Check Endpoint (for container orchestration probes)
+	# ==========================================================================
+	handle /health {
+		respond "OK" 200
+	}
+
+	# ==========================================================================
 	# Static Assets Caching
 	# ==========================================================================
 	@static {
-		path *.css *.js *.svg *.ttf *.woff *.woff2 *.eot *.png *.jpg *.jpeg *.gif *.ico *.webp
+		path *.css *.js *.svg *.ttf *.woff *.woff2 *.eot *.png *.jpg *.jpeg *.gif *.ico *.webp *.avif
 	}
 	handle @static {
 		header Cache-Control "public, max-age=31536000, immutable"
@@ -115,8 +126,14 @@
 	# ==========================================================================
 	# SPA Fallback (Vue Router history mode)
 	# ==========================================================================
+	# CRITICAL: HTML files must NOT be cached to prevent stale app versions
+	# index.html references content-hashed assets - caching it causes users
+	# to load old asset versions even after new deployments
 	handle {
 		root * /srv
+		# Prevent caching of HTML files
+		@html path *.html /
+		header @html Cache-Control "no-cache, must-revalidate"
 		try_files {path} /index.html
 		file_server
 	}
