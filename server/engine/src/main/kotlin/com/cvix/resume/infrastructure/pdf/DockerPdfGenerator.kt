@@ -130,8 +130,11 @@ class DockerPdfGenerator(
                     .filter { error -> isRetryableError(error) }
                     .doBeforeRetry { signal ->
                         containerRetryCounter.increment()
+                        val attempt = signal.totalRetries() + 1
+                        val errorMsg = signal.failure().message
                         logger.warn(
-                            "Retrying PDF generation after transient error (attempt ${signal.totalRetries() + 1}/$MAX_RETRIES): ${signal.failure().message}",
+                            "Retrying PDF generation after transient error " +
+                                "(attempt $attempt/$MAX_RETRIES): $errorMsg",
                         )
                     },
             )

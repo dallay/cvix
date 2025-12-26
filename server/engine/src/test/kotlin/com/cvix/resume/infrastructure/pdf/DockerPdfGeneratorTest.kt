@@ -336,6 +336,8 @@ class DockerPdfGeneratorTest {
             val attempt = attemptCounter.incrementAndGet()
             if (attempt <= 2) {
                 // First two attempts fail with NoHttpResponseException (transient error)
+                // Wrapped in RuntimeException as docker-java client does
+                @Suppress("TooGenericExceptionThrown")
                 throw RuntimeException(NoHttpResponseException("docker-socket-proxy:2375 failed to respond"))
             }
             // Third attempt succeeds
