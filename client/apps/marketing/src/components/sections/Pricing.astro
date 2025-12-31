@@ -1,8 +1,9 @@
 ---
-import { Icon } from "astro-icon/components";
-import Link from "@/components/Link.astro";
+import Link from "@cvix/astro-ui/components/ui/link/Link.astro";
+import { type Lang } from "@cvix/i18n/astro";
 import { Card } from "@cvix/ui/components/ui/card";
-import { type Lang, useTranslations } from "@/i18n";
+import { Icon } from "astro-icon/components";
+import { useTranslations } from "@/i18n/i18n";
 import { getPricingPlans } from "@/models/pricing/pricing.service";
 
 const lang = Astro.currentLocale as Lang;
@@ -11,8 +12,8 @@ const plans = await getPricingPlans({ lang });
 ---
 {plans && plans.length > 0 && (
   <section class="bg-background">
-    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-      <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
+    <div class="py-8 px-4 mx-auto max-w-7xl lg:py-16 lg:px-6">
+      <div class="mx-auto max-w-3xl text-center mb-8 lg:mb-12">
         <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-foreground">{t('pricing.heading')}</h2>
         <p class="mb-5 text-muted-foreground text-base sm:text-xl">{t('pricing.subheading')}</p>
       </div>

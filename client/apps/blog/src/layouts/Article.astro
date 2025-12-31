@@ -1,0 +1,53 @@
+---
+import { WEBAPP_URL } from "astro:env/client";
+import { Button, DefaultLayout as Layout } from "@cvix/astro-ui";
+import { getOgImagePath } from "@cvix/lib";
+import HeaderProgressBar from "@/components/HeaderProgressBar.astro";
+import { type Lang, useTranslations } from "@/i18n/i18n.ts";
+import type Article from "@/models/article/article.model";
+
+const { lang } = Astro.params;
+const currentLocale = lang as Lang;
+const t = useTranslations(currentLocale);
+
+interface Props extends Article {
+	url: string;
+	minutesRead: string;
+}
+
+const {
+	title,
+	description,
+	tags = [],
+	url = Astro.request.url,
+	minutesRead,
+} = Astro.props;
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+---
+
+<Layout {title} {description} {og}>
+  <Button slot="header-cta" href={`${WEBAPP_URL}/register`} class="hidden md:inline-flex">
+    {
+      t({
+        en: "Get Started",
+        es: "Comenzar",
+      })
+    }
+  </Button>
+  <HeaderProgressBar
+    title={title}
+    description={description}
+    url={url}
+    tags={tags.map((tag) => tag.title)}
+    minutesRead={minutesRead}
+/>
+  <article class="py-28">
+    <slot />
+  </article>
+</Layout>

@@ -22,7 +22,7 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
-    private val email = "john.doe@cvix.com"
+    private val email = "john.doe@profiletailors.com"
     private val password = "S3cr3tP@ssw0rd*123"
     private var accessToken: AccessToken? = null
 

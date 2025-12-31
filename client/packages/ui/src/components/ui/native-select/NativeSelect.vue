@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue"
-import { reactiveOmit } from "@vueuse/core"
-import { ChevronDownIcon } from "lucide-vue-next"
-import { cn } from "../../../lib/utils.ts"
+import { cn } from "@cvix/lib";
+import { reactiveOmit } from "@vueuse/core";
+import { ChevronDownIcon } from "lucide-vue-next";
+import type { HTMLAttributes } from "vue";
 
 defineOptions({
-  inheritAttrs: false,
-})
+	inheritAttrs: false,
+});
 
-const props = defineProps<{ class?: HTMLAttributes["class"] }>()
-const delegatedProps = reactiveOmit(props, "class")
+const props = defineProps<{ class?: HTMLAttributes["class"] }>();
+const delegatedProps = reactiveOmit(props, "class");
 </script>
 
 <template>

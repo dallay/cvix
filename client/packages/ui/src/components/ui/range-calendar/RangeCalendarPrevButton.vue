@@ -1,11 +1,11 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { ChevronLeft } from "lucide-vue-next";
 import type { RangeCalendarPrevProps } from "reka-ui";
 import { RangeCalendarPrev, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { buttonVariants } from "../button/index.ts";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	RangeCalendarPrevProps & { class?: HTMLAttributes["class"] }

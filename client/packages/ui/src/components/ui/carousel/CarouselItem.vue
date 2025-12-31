@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from "../../../lib/utils.ts";
+import { cn } from "@cvix/lib";
 import type { WithClassAsProps } from "./interface.ts";
 import { useCarousel } from "./useCarousel.ts";
 

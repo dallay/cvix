@@ -1,0 +1,29 @@
+---
+import type { UIMultilingual } from "@cvix/i18n/astro";
+import { footerNavLinks } from "@cvix/lib";
+import { Footer } from "../../sections/footers/footer";
+import { BaseLayout } from "../base-layout";
+
+interface Props {
+	title: string;
+	description: string;
+	og: {
+		image?: string | URL;
+		xAccount?: string;
+	};
+	frontmatter?: undefined;
+	ui?: UIMultilingual | undefined;
+}
+
+const { title, description, og, ui } = Astro.props.frontmatter || Astro.props;
+---
+
+<BaseLayout {title} {description} {og} {ui}>
+  <slot name="header-nav" slot="header-nav" />
+  <slot name="header-cta" slot="header-cta" />
+  <slot name="subheader" slot="subheader" />
+  <slot />
+  <slot name="footer">
+    <Footer links={footerNavLinks} {ui} />
+  </slot>
+</BaseLayout>

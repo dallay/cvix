@@ -1,10 +1,10 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { RangeCalendarCellTriggerProps } from "reka-ui";
 import { RangeCalendarCellTrigger, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { buttonVariants } from "../button/index.ts";
-import { cn } from "../../../lib/utils.ts";
 
 const props = withDefaults(
 	defineProps<

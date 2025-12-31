@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { ChevronRight } from "lucide-vue-next";
 import type { AccordionTriggerProps } from "reka-ui";
 import { AccordionHeader, AccordionTrigger } from "reka-ui";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<AccordionTriggerProps & { class?: string }>();
 </script>

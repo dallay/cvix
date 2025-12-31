@@ -33,9 +33,9 @@ function keepStyling() {
 			"text-sm",
 		];
 
-		elements?.forEach((el) =>
-			el.classList.add(...classes, "!inline-flex", "!mr-2"),
-		);
+		elements?.forEach((el) => {
+			el.classList.add(...classes, "!inline-flex", "!mr-2");
+		});
 	});
 }
 

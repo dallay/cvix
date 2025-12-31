@@ -1,11 +1,14 @@
 ---
+import { WEBAPP_URL } from "astro:env/client";
+import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { Icon } from "astro-icon/components";
-import { DEFAULT_LOCALE, LOCALES, useTranslations, type Lang } from "@/i18n";
-import { BASE_WEBAPP_URL } from "@/consts";
+import { useTranslations } from "@/i18n/i18n";
 
 const astroLocale = Astro.currentLocale;
 const lang: Lang =
-  astroLocale && LOCALES[astroLocale as Lang] ? (astroLocale as Lang) : DEFAULT_LOCALE;
+	astroLocale && LOCALES[astroLocale as Lang]
+		? (astroLocale as Lang)
+		: DEFAULT_LOCALE;
 const t = useTranslations(lang);
 ---
 
@@ -25,8 +28,8 @@ const t = useTranslations(lang);
         class="flex flex-col items-center justify-center gap-4 sm:flex-row fade-in-section delay-300"
       >
         <a
-          href={BASE_WEBAPP_URL}
-          class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
+          href={WEBAPP_URL}
+          class="inline-flex min-w-50 items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
           aria-label={t("cta.button")}
         >
           {t("cta.button")}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import type { AccordionContentProps } from "reka-ui";
 import { AccordionContent } from "reka-ui";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<AccordionContentProps & { class?: string }>();
 </script>

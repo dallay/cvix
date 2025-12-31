@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { ArrowLeft } from "lucide-vue-next";
 import type { ButtonVariants } from "../button/index.ts";
 import { Button } from "../button/index.ts";
-import { cn } from "../../../lib/utils.ts";
 import type { WithClassAsProps } from "./interface.ts";
 import { useCarousel } from "./useCarousel.ts";
 

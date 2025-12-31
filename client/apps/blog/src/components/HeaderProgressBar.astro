@@ -1,0 +1,167 @@
+---
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+import { type Lang, useTranslations } from "@/i18n/i18n.ts";
+import ReadingTime from "./ReadingTime.astro";
+import SocialMediaShare from "./SocialMediaShare.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+	title: string;
+	description: string;
+	url: string;
+	tags: string[];
+	minutesRead: string;
+}
+
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+const {
+	title,
+	description,
+	url = Astro.request.url,
+	tags,
+	minutesRead,
+	...attr
+} = Astro.props;
+---
+
+<div
+  id="progress-bar"
+  class={cn(
+    "fixed -top-[70px] left-0 w-full h-[86px] px-3 md:px-16 pb-1 z-[5000] opacity-0 flex items-center justify-between gap-8",
+    "bg-white dark:bg-gray-900 border-b border-[rgba(51,49,49,0.12)] transition-all duration-[350ms] ease-in-out",
+    attr.class,
+  )}
+  data-progress-bar
+>
+  <div class="flex items-center gap-2.5 py-3">
+    <span
+      class="font-inter text-sm md:text-xl font-semibold leading-[130%] tracking-tighter text-gray-900 dark:text-white"
+    >
+      {title}
+    </span>
+    <ReadingTime readingTime={minutesRead} />
+  </div>
+  <div class="hidden md:flex items-center justify-center">
+    <SocialMediaShare title={title} description={description} url={url} tags={tags} />
+  </div>
+
+  <div class="absolute left-0 bottom-0 w-full h-1">
+    <div
+      id="progress-indicator"
+      class="h-full w-0 bg-gray-900 dark:bg-white rounded-r-lg transition-all duration-150"
+      aria-label={`${t("progress.aria.label")}: 0%`}
+      role="progressbar"
+      aria-valuenow="0"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuetext={t("progress.aria.label")}
+    >
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reading Progress Bar Control
+  document.addEventListener("DOMContentLoaded", () => {
+    const progressBar = document.getElementById("progress-bar");
+    const progressIndicator = document.getElementById("progress-indicator");
+    const header = document.getElementById("header");
+
+    if (!progressBar || !progressIndicator) return;
+
+    const headerHeight = header ? header.offsetHeight : 80;
+    let mobileMenuState = { isOpened: false };
+
+    // Function to determine if mobile menu is open
+    const mobileMenuButton = document.getElementById("mobile-menu-button");
+    if (mobileMenuButton) {
+      mobileMenuButton.addEventListener("click", () => {
+        mobileMenuState.isOpened = !mobileMenuState.isOpened;
+      });
+    }
+
+    // Update the progress indicator width
+    const updateProgress = () => {
+      // Find content container - look for common content selectors
+      const content = document.querySelector("main");
+
+      if (!content) return;
+
+      // Calculate scroll position relative to content
+      const scrollY = window.scrollY;
+      const animatedPageHead = document.querySelector(".animated-page-head");
+      const animatedHeadHeight = animatedPageHead
+        ? (animatedPageHead as HTMLElement).clientHeight
+        : 0;
+      const contentHeight = content.clientHeight + animatedHeadHeight;
+      const windowHeight = window.innerHeight;
+
+      // Calculate progress percentage
+      const scrollPosition = scrollY - animatedHeadHeight;
+      const totalScrollable = contentHeight - windowHeight;
+      let progress = (scrollPosition / totalScrollable) * 100;
+
+      // Clamp progress between 0 and 100
+      progress = Math.max(0, Math.min(100, progress));
+
+      // Only update if menu is not opened
+      if (!mobileMenuState.isOpened) {
+        progressIndicator.style.width = `${progress}%`;
+        // Update aria-label with current progress
+        progressIndicator.setAttribute(
+          "aria-label",
+          `${progressIndicator.getAttribute("aria-label")?.split(":")[0]}: ${Math.round(progress)}%`,
+        );
+      }
+
+      requestAnimationFrame(updateProgress);
+    };
+
+    // Start the progress update loop
+    requestAnimationFrame(updateProgress);
+
+    // Show/hide progress bar based on scroll position
+    const handleScroll = () => {
+      const content = document.querySelector("main");
+
+      if (!content) return;
+
+      // Get positions for showing/hiding
+      const scrollY = window.scrollY;
+      const contentRect = content.getBoundingClientRect();
+      const contentBottom = contentRect.bottom + scrollY;
+
+      // Check header position for interaction
+      const isHeaderScrolled =
+        header && header.classList.contains("scrolled") && !header.classList.contains("hide");
+
+      // Show progress bar when scrolled past header but still in content
+      if (scrollY > headerHeight && scrollY < contentBottom - window.innerHeight / 2) {
+        // Apply classes that were previously in CSS
+        progressBar.classList.remove("-top-[70px]");
+        progressBar.classList.remove("opacity-0");
+
+        // Position based on header state
+        if (isHeaderScrolled) {
+          // We want the progress bar to show below the header
+          // If header height is 80px, we can offset it
+          // The user mentioned the Header should be "por encima" (on top)
+          // With Header z-index higher, it will naturally overlap if they share space.
+          progressBar.style.top = "0";
+        } else {
+          progressBar.style.top = "0";
+        }
+
+        progressBar.classList.add("opacity-100");
+      } else {
+        progressBar.classList.add("-top-[70px]");
+        progressBar.classList.add("opacity-0");
+        progressBar.classList.remove("opacity-100");
+        progressBar.style.top = "";
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  });
+</script>

@@ -29,7 +29,7 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
             .expectBody()
             .jsonPath("$.id").isEqualTo("c4af4e2f-b432-4c3b-8405-cca86cd5b97b")
             .jsonPath("$.username").isEqualTo("user")
-            .jsonPath("$.email").isEqualTo("user@cvix.com")
+            .jsonPath("$.email").isEqualTo("user@profiletailors.com")
             .jsonPath("$.firstname").isEqualTo("Basic")
             .jsonPath("$.lastname").isEqualTo("User")
             .jsonPath("$.authorities").isArray.jsonPath("$.authorities[0]")
@@ -47,7 +47,7 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
             .expectBody()
             .jsonPath("$.id").isEqualTo("c4af4e2f-b432-4c3b-8405-cca86cd5b97b")
             .jsonPath("$.username").isEqualTo("user")
-            .jsonPath("$.email").isEqualTo("user@cvix.com")
+            .jsonPath("$.email").isEqualTo("user@profiletailors.com")
             .jsonPath("$.firstname").isEqualTo("Basic")
             .jsonPath("$.lastname").isEqualTo("User")
             .jsonPath("$.authorities").isArray.jsonPath("$.authorities[0]")
@@ -59,7 +59,7 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
     private fun oAuth2LoginMutator(
         userId: String = "c4af4e2f-b432-4c3b-8405-cca86cd5b97b",
         username: String = "user",
-        email: String = "user@cvix.com",
+        email: String = "user@profiletailors.com",
         firstname: String = "Basic",
         lastname: String = "User",
         roles: List<String> = listOf(AuthoritiesConstants.USER)

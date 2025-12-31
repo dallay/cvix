@@ -23,7 +23,7 @@ import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
-private const val CLAIM_URL = "https://cvix.com"
+private const val CLAIM_URL = "https://profiletailors.com"
 
 @UnitTest
 @ExtendWith(MockitoExtension::class)

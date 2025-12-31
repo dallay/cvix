@@ -1,22 +1,15 @@
+import {
+	DEFAULT_LOCALE,
+	LANGUAGES,
+	SUPPORTED_LOCALES,
+	type SupportedLocale,
+} from "@cvix/i18n";
 import { createI18n } from "vue-i18n";
 import { getLocaleModules, getLocaleModulesSync } from "./load.locales";
 
-export interface Language {
-	name: string;
-	code: string;
-}
-
-export const LANGUAGES: ReadonlyArray<Language> = [
-	{ name: "English", code: "en" },
-	{ name: "Español", code: "es" },
-] as const;
-
-export const SUPPORTED_LOCALES = LANGUAGES.map(
-	(lang) => lang.code,
-) as readonly Language["code"][];
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
-
-export const DEFAULT_LOCALE: SupportedLocale = LANGUAGES[0]?.code ?? "en";
+// Re-export for backward compatibility
+export { LANGUAGES, SUPPORTED_LOCALES, DEFAULT_LOCALE };
+export type { SupportedLocale };
 
 export const LANGUAGE_STORAGE_KEY = "currentLanguage";
 

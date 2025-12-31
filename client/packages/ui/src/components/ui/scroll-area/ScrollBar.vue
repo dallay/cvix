@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { ScrollAreaScrollbarProps } from "reka-ui";
 import { ScrollAreaScrollbar, ScrollAreaThumb } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = withDefaults(
 	defineProps<ScrollAreaScrollbarProps & { class?: HTMLAttributes["class"] }>(),

@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 import * as z from "zod";
-import { type Lang, useTranslations } from "@/i18n";
+import { type Lang, useTranslations } from "@/i18n/i18n.ts";
 
 export interface EmailValidationOptions {
 	lang?: Lang;
@@ -18,7 +18,7 @@ export function useEmailValidation(options: EmailValidationOptions = {}) {
 	// Create validation schema based on options
 	const validationSchema = computed(() => {
 		let schema = z.email({
-      message: customMessage ?? t("form.email.invalid"),
+			message: customMessage ?? t("form.email.invalid"),
 		});
 
 		if (required) {

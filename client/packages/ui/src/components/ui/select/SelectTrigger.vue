@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { ChevronDown } from "lucide-vue-next";
 import type { SelectTriggerProps } from "reka-ui";
 import { SelectIcon, SelectTrigger, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = withDefaults(
 	defineProps<

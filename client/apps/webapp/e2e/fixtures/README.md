@@ -37,8 +37,8 @@ HAR (HTTP Archive) files contain recorded API request/response pairs from real i
 
 | File | Description | Test User |
 |------|-------------|-----------|
-| `auth-flow-login.har` | Login flow for existing user | `john.doe@cvix.com` |
-| `auth-flow-register.har` | Registration flow | `jane.doe@cvix.com` |
+| `auth-flow-login.har` | Login flow for existing user | `john.doe@profiletailors.com` |
+| `auth-flow-register.har` | Registration flow | `jane.doe@profiletailors.com` |
 
 ---
 
@@ -103,11 +103,11 @@ test('should show error for invalid credentials', async ({ page }) => {
 import { TEST_USERS } from './helpers/auth.helper';
 
 // Existing user (for login tests)
-TEST_USERS.existingUser.email     // "john.doe@cvix.com"
+TEST_USERS.existingUser.email     // "john.doe@profiletailors.com"
 TEST_USERS.existingUser.password  // "S3cr3tP@ssw0rd*123"
 
 // New user (for registration tests)
-TEST_USERS.newUser.email          // "jane.doe@cvix.com"
+TEST_USERS.newUser.email          // "jane.doe@profiletailors.com"
 TEST_USERS.newUser.password       // "S3cr3tP@ssw0rd*123"
 ```
 

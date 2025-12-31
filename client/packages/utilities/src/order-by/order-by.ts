@@ -16,35 +16,35 @@ export type Order = "asc" | "desc";
  * // Returns: [{name: 'banana', type: 'fruit'}, {name: 'apple', type: 'fruit'}]
  */
 export function orderBy<T>(
-  array: T[],
-  keys: (keyof T)[],
-  orders: Order[],
+	array: T[],
+	keys: (keyof T)[],
+	orders: Order[],
 ): T[] {
-  if (keys.length !== orders.length) {
-    throw new Error("The number of keys must match the number of orders");
-  }
-  return [...array].sort((a, b) => {
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]!;
-      const order = orders[i]!;
+	if (keys.length !== orders.length) {
+		throw new Error("The number of keys must match the number of orders");
+	}
+	return [...array].sort((a, b) => {
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i]!;
+			const order = orders[i]!;
 
-      const aValue = a[key];
-      const bValue = b[key];
+			const aValue = a[key];
+			const bValue = b[key];
 
-      // Handle null/undefined values
-      const aIsNullish = aValue === null || aValue === undefined;
-      const bIsNullish = bValue === null || bValue === undefined;
-      if (aIsNullish && bIsNullish) continue; // Proceed to next key if both are nullish
-      if (aIsNullish) {
-        return order === "asc" ? -1 : 1;
-      }
-      if (bIsNullish) {
-        return order === "asc" ? 1 : -1;
-      }
+			// Handle null/undefined values
+			const aIsNullish = aValue === null || aValue === undefined;
+			const bIsNullish = bValue === null || bValue === undefined;
+			if (aIsNullish && bIsNullish) continue; // Proceed to next key if both are nullish
+			if (aIsNullish) {
+				return order === "asc" ? -1 : 1;
+			}
+			if (bIsNullish) {
+				return order === "asc" ? 1 : -1;
+			}
 
-      if (aValue > bValue) return order === "asc" ? 1 : -1;
-      if (aValue < bValue) return order === "asc" ? -1 : 1;
-    }
-    return 0;
-  });
+			if (aValue > bValue) return order === "asc" ? 1 : -1;
+			if (aValue < bValue) return order === "asc" ? -1 : 1;
+		}
+		return 0;
+	});
 }

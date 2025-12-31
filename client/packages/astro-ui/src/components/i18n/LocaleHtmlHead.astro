@@ -1,0 +1,16 @@
+---
+import type { Lang } from "@cvix/i18n/astro";
+
+const locale = Astro.currentLocale as Lang;
+---
+
+{
+  /**
+   * Font loading for supported locales (en, es).
+   * Both use Noto Sans as the primary font.
+   * Add additional locale-specific font loading here if needed in the future.
+   */
+  (locale === "en" || locale === "es") ? (
+    <style>body{ font-family: "Noto Sans", sans-serif; }</style>
+  ) : null
+}

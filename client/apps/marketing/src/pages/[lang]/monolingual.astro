@@ -1,16 +1,29 @@
 ---
+import NotTranslateCaution from "@cvix/astro-ui/components/i18n/NotTranslateCaution.astro";
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
+import { getOgImagePath } from "@cvix/lib";
 import PageHeadline from "@/components/PageHeadline.astro";
 import { localeParams } from "@/i18n";
-import NotTranslateCaution from "@/i18n/components/NotTranslateCaution.astro";
-import Layout from "@/layouts/Base.astro";
 
 const title = "Monolingual Page";
+const description = "This is a sample monolingual page.";
 export const getStaticPaths = () => localeParams;
+
+// Safe OG image path that works during static build
+const pathname = Astro.url?.pathname ?? "/monolingual";
+const origin = Astro.url?.origin ?? "";
+const ogImage = origin
+	? new URL(getOgImagePath(pathname), origin).href
+	: getOgImagePath(pathname);
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
 ---
 
-<Layout {title}>
+<Layout {title} {description} {og}>
   <NotTranslateCaution usedLangs={["en"]} />
-  <PageHeadline {title} />
+  <PageHeadline title={title} />
 
   <p>Here is a sample page when only one language is set.</p>
 

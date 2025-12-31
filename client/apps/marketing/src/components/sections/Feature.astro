@@ -1,39 +1,40 @@
 ---
+import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { Icon } from "astro-icon/components";
-import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+import { useTranslations } from "@/i18n/i18n";
 
 // Determine the language to use
 const astroLocale = Astro.currentLocale;
 let langToUse: Lang;
 
 if (astroLocale && LOCALES[astroLocale as Lang]) {
-  langToUse = astroLocale as Lang;
+	langToUse = astroLocale as Lang;
 } else {
-  langToUse = DEFAULT_LOCALE;
+	langToUse = DEFAULT_LOCALE;
 }
 const t = useTranslations(langToUse);
 
 const features = [
-  {
-    icon: "tabler:layout-dashboard",
-    titleKey: "features.guidedForm.title",
-    descKey: "features.guidedForm.description",
-  },
-  {
-    icon: "tabler:wand",
-    titleKey: "features.instantPDF.title",
-    descKey: "features.instantPDF.description",
-  },
-  {
-    icon: "tabler:shield-check",
-    titleKey: "features.privacy.title",
-    descKey: "features.privacy.description",
-  },
-  {
-    icon: "tabler:device-mobile",
-    titleKey: "features.mobileFirst.title",
-    descKey: "features.mobileFirst.description",
-  },
+	{
+		icon: "tabler:layout-dashboard",
+		titleKey: "features.guidedForm.title",
+		descKey: "features.guidedForm.description",
+	},
+	{
+		icon: "tabler:wand",
+		titleKey: "features.instantPDF.title",
+		descKey: "features.instantPDF.description",
+	},
+	{
+		icon: "tabler:shield-check",
+		titleKey: "features.privacy.title",
+		descKey: "features.privacy.description",
+	},
+	{
+		icon: "tabler:device-mobile",
+		titleKey: "features.mobileFirst.title",
+		descKey: "features.mobileFirst.description",
+	},
 ];
 ---
 

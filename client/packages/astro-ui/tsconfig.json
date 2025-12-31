@@ -1,0 +1,9 @@
+{
+	"extends": "astro/tsconfigs/strictest",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"target": "ESNext"
+	},
+	"exclude": ["dist"],
+	"include": ["src/**/*", "env.d.ts"]
+}

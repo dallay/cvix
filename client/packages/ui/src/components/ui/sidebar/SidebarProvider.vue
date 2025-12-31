@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import {
 	defaultDocument,
 	useEventListener,
@@ -8,7 +9,6 @@ import {
 import { TooltipProvider } from "reka-ui";
 import type { HTMLAttributes, Ref } from "vue";
 import { computed, ref } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import {
 	provideSidebarContext,
 	SIDEBAR_COOKIE_MAX_AGE,

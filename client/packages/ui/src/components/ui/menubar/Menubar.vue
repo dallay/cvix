@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { MenubarRootEmits, MenubarRootProps } from "reka-ui";
 import { MenubarRoot, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	MenubarRootProps & { class?: HTMLAttributes["class"] }

@@ -1,0 +1,144 @@
+---
+import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
+import {
+	isExternalUrl,
+	isValidImage,
+} from "@cvix/astro-ui/image/image-utils.ts";
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "astro-icon/components";
+import { type Lang, useTranslations } from "@/i18n/i18n.ts";
+import { prepareImageForOptimizedPicture } from "@/utils/images";
+
+type Article = {
+	title?: string;
+	description?: string;
+	url?: string;
+	slug?: string;
+	_id?: string;
+	image?: ImageMetadata | string;
+	author?: {
+		name: string;
+	};
+	date?: string | Date;
+};
+
+interface Props extends HTMLAttributes<"article"> {
+	title?: string;
+	description?: string;
+	url?: string;
+	image?: ImageMetadata | string;
+	loading?: "lazy" | "eager" | undefined;
+	// allow passing the whole article object
+	article?: Article;
+}
+
+const {
+	article,
+	image: propImage,
+	title: propTitle,
+	description: propDescription,
+	url: propUrl,
+	loading = undefined,
+	...attrs
+} = Astro.props as Props;
+
+// If an article object is passed, prefer its fields
+const title = propTitle || article?.title || "";
+const description = propDescription || article?.description || "";
+const url = propUrl || article?.url || article?.slug || article?._id || "#";
+const image = propImage || article?.image || null;
+const authorName = article?.author?.name || "CVIX Team";
+let date = "";
+if (article?.date) {
+	const parsed = new Date(article.date);
+	if (!Number.isNaN(parsed.getTime())) {
+		date = parsed.toLocaleDateString(Astro.currentLocale, {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+		});
+	}
+}
+
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+
+// Prepare the image for rendering
+const resolvedImage = image
+	? await prepareImageForOptimizedPicture(image)
+	: undefined;
+const hasValidImage = isValidImage(resolvedImage);
+const hasExternalImage = isExternalUrl(resolvedImage);
+---
+
+<article
+  class={cn("group flex flex-col h-full overflow-hidden bg-transparent", attrs.class)}
+  {...attrs}
+>
+  <a
+    href={url}
+    class="flex flex-col h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    aria-label={`${t("blog.read.article")}: ${title}`}
+  >
+    <div class="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-muted mb-4">
+      {
+        hasValidImage ? (
+          hasExternalImage ? (
+            <img
+              src={resolvedImage as string}
+              alt={title}
+              loading={loading}
+              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <OptimizedPicture
+              src={resolvedImage}
+              alt={title}
+              loading={loading}
+              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )
+        ) : (
+          <div class="flex items-center justify-center h-full w-full bg-linear-to-br from-primary/10 to-primary/5">
+            <Icon name="tabler:photo" class="w-12 h-12 text-muted-foreground/50" />
+          </div>
+        )
+      }
+    </div>
+
+    <div class="flex flex-col flex-1 space-y-3">
+      <div class="flex items-center text-xs font-medium text-primary uppercase tracking-wider">
+        <span>{authorName}</span>
+        {
+          date && (
+            <>
+              <span class="mx-2">•</span>
+              <span>{date}</span>
+            </>
+          )
+        }
+      </div>
+
+      <h2
+        class="text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-2"
+      >
+        {title}
+      </h2>
+
+      {
+        description && (
+          <p class="text-muted-foreground text-sm line-clamp-3 leading-relaxed">{description}</p>
+        )
+      }
+
+      <div class="pt-2 mt-auto flex items-center text-sm font-semibold text-primary">
+        {t("blog.read.article")}
+        <Icon
+          name="tabler:arrow-right"
+          class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+        />
+      </div>
+    </div>
+  </a>
+</article>

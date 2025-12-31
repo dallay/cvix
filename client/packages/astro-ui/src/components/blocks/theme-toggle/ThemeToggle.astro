@@ -1,0 +1,72 @@
+---
+import { cn } from "@cvix/lib";
+import Button from "../../ui/button/Button.astro";
+import { Icon } from "../../ui/icon";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<Button
+  data-slot="theme-toggle"
+  variant="ghost"
+  size="icon-sm"
+  aria-label="Toggle theme"
+  class={cn("relative", className)}
+>
+  <Icon
+      name="tabler:sun"
+      class="size-5 dark:hidden"
+  />
+  <Icon
+      name="tabler:moon"
+      class="size-5 hidden dark:block"
+  />
+</Button>
+
+<style>
+  /* Disable transitions during theme toggle to prevent flashing */
+  :global(html.no-transitions *) {
+    @apply transition-none! duration-0!;
+  }
+</style>
+
+<script is:inline>
+  // Prevent multiple handler registrations
+  if (!window.__themeHandlersInitialized) {
+    window.__themeHandlersInitialized = true
+
+    // Initialize all theme toggle buttons on the page
+    document
+      .querySelectorAll("[data-slot='theme-toggle']")
+      .forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const element = document.documentElement
+
+          // Disable transitions temporarily to prevent flash
+          element.classList.add("no-transitions")
+
+          // Toggle dark class
+          element.classList.toggle("dark")
+
+          // Determine new theme
+          const isDark = element.classList.contains("dark")
+          const newTheme = isDark ? "dark" : "light"
+
+          // Persist to localStorage
+          localStorage.setItem("theme", newTheme)
+
+          // Update data attribute for CSS selectors
+          element.setAttribute("data-theme", newTheme)
+
+          // Re-enable transitions on next frame
+          requestAnimationFrame(() => {
+            element.classList.remove("no-transitions")
+          })
+        })
+      })
+  }
+</script>

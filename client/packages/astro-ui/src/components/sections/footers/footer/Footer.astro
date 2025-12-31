@@ -1,0 +1,117 @@
+---
+import { getFlatTranslations, type SupportedLocale } from "@cvix/i18n";
+import {
+	type Lang,
+	type UIMultilingual,
+	useTranslatedPath,
+	useTranslations,
+} from "@cvix/i18n/astro";
+import { filterMenuItems, type MenuItem } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+import { Brand } from "../../../blocks/brand";
+import { LinkList as FooterLinkList } from "../../../blocks/link-list";
+import { Icon } from "../../../ui/icon";
+
+interface Props extends HTMLAttributes<"footer"> {
+	links: Array<MenuItem>;
+	ui?: UIMultilingual | undefined;
+}
+const { links = [], ui, ...attrs } = Astro.props as Props;
+// Get the current language from Astro context
+const lang = (Astro.currentLocale || "en") as Lang;
+const commonUI = {
+	en: getFlatTranslations("en" as SupportedLocale),
+	es: getFlatTranslations("es" as SupportedLocale),
+};
+const t = useTranslations(lang, { ...commonUI, ...ui });
+const translatePath = useTranslatedPath(lang);
+
+// Filter footer links based on their conditions
+const visibleFooterLinks = filterMenuItems(links);
+
+// Group footer links into categories
+const companyLinks = visibleFooterLinks.filter((link) =>
+	["footer.about", "footer.contact"].includes(link.translationKey),
+);
+
+const resourceLinks = visibleFooterLinks.filter((link) =>
+	["footer.donate", "footer.rss"].includes(link.translationKey),
+);
+
+const legalLinks = visibleFooterLinks.filter((link) =>
+	["footer.privacyPolicy", "footer.termsOfUse"].includes(link.translationKey),
+);
+---
+
+<footer class="bg-background border-t border-border fade-in-section" {...attrs}>
+  <div class="mx-auto w-full max-w-7xl p-4 py-16 lg:py-24">
+    <div class="md:flex md:justify-between">
+      <div class="mb-12 md:mb-0">
+        <Brand siteTitle="ProfileTailors" />
+        <p class="mt-8 max-w-sm text-muted-foreground">
+          {t("footer.description")}
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-8 sm:gap-10 sm:grid-cols-3">
+        <div>
+          <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.company")}</h2>
+          <FooterLinkList links={companyLinks} lang={lang} />
+        </div>
+        <div>
+          <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.resources")}</h2>
+          <FooterLinkList links={resourceLinks} lang={lang} />
+        </div>
+        <div>
+          <h2 class="mb-8 text-lg font-bold font-serif text-foreground">{t("footer.legal")}</h2>
+          <FooterLinkList links={legalLinks} lang={lang} />
+        </div>
+      </div>
+    </div>
+    <hr class="my-10 border-border lg:my-12" />
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <span class="text-base text-muted-foreground sm:text-center">
+        © {new Date().getFullYear()}
+        <a href={translatePath("/")} class="hover:underline">{t("footer.brand")}</a>. {
+          t("footer.allRightsReserved")
+        }
+      </span>
+      <div class="flex mt-6 space-x-5 sm:justify-center sm:mt-0">
+        <a
+          href="https://www.facebook.com/yacosta738"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon name="tabler:brand-facebook" class="w-5 h-5" />
+          <span class="sr-only">Facebook page</span>
+        </a>
+        <a
+          href="https://www.instagram.com/yacosta738"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon name="tabler:brand-instagram" class="w-5 h-5" />
+          <span class="sr-only">Instagram page</span>
+        </a>
+        <a
+          href="https://www.x.com/yacosta738"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon name="tabler:brand-x" class="w-5 h-5" />
+          <span class="sr-only">Twitter page</span>
+        </a>
+        <a
+          href="https://www.github.com/yacosta738"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon name="tabler:brand-github" class="w-5 h-5" />
+          <span class="sr-only">GitHub account</span>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/yacosta738"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon name="tabler:brand-linkedin" class="w-5 h-5" />
+          <span class="sr-only">LinkedIn account</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

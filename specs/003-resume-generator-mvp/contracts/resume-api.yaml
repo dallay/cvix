@@ -21,7 +21,7 @@ info:
   version: 1.0.0
   contact:
     name: ProFileTailors Support
-    email: support@cvix.com
+    email: support@profiletailors.com
 
 security:
   - bearerAuth: []

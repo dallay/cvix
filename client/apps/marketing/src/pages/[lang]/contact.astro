@@ -1,7 +1,11 @@
 ---
-import Footer from "@/components/sections/Footer.astro";
-import { type Lang, LOCALES, useTranslations } from "@/i18n";
-import Layout from "@/layouts/Base.astro";
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
+import Footer from "@cvix/astro-ui/components/sections/footers/footer/Footer.astro";
+import { LOCALES } from "@cvix/i18n";
+import { type Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { useTranslations } from "@/i18n/i18n";
+import { footerNavLinks } from "@/models/menu";
 
 const locale = Astro.currentLocale as Lang;
 const t = useTranslations(locale);
@@ -10,12 +14,18 @@ export const getStaticPaths = () =>
 	Object.keys(LOCALES).map((lang) => ({
 		params: { lang },
 	}));
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
 ---
 
-<Layout title={t('contact.title')} description={t('contact.description')}>
+<Layout title={t('contact.title')} description={t('contact.description')} {og} >
   <main class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-4">{t('contact.title')}</h1>
     <p>{t('contact.contentPlaceholder')}</p>
   </main>
-  <Footer />
+  <Footer links={footerNavLinks}/>
 </Layout>

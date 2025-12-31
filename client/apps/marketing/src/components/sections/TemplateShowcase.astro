@@ -1,23 +1,44 @@
 ---
-import { type Lang, useTranslations } from "@/i18n";
-import {BASE_WEBAPP_URL} from "@/consts.ts";
+import { WEBAPP_URL } from "astro:env/client";
+import { type Lang } from "@cvix/i18n/astro";
+import { useTranslations } from "@/i18n/i18n";
 
 const lang = Astro.currentLocale as Lang;
 const t = useTranslations(lang);
 
 export interface TemplateShowcase {
-  id: string;
-  name: string;
-  url: string;
-  color: string;
+	id: string;
+	name: string;
+	url: string;
+	color: string;
 }
 
 const templates: TemplateShowcase[] = [
-      { id: "executive", name: t("templates.executive"), url: `${BASE_WEBAPP_URL}/templates/executive`, color: "bg-stone-100" },
-      { id: "creative", name: t("templates.creative"), url: `${BASE_WEBAPP_URL}/templates/creative`, color: "bg-rose-50" },
-      { id: "minimal", name: t("templates.minimal"), url: `${BASE_WEBAPP_URL}/templates/minimal`, color: "bg-white" },
-      { id: "modern", name: t("templates.modern"), url: `${BASE_WEBAPP_URL}/templates/modern`, color: "bg-slate-50" },
-    ];
+	{
+		id: "executive",
+		name: t("templates.executive"),
+		url: `${WEBAPP_URL}/templates/executive`,
+		color: "bg-stone-100",
+	},
+	{
+		id: "creative",
+		name: t("templates.creative"),
+		url: `${WEBAPP_URL}/templates/creative`,
+		color: "bg-rose-50",
+	},
+	{
+		id: "minimal",
+		name: t("templates.minimal"),
+		url: `${WEBAPP_URL}/templates/minimal`,
+		color: "bg-white",
+	},
+	{
+		id: "modern",
+		name: t("templates.modern"),
+		url: `${WEBAPP_URL}/templates/modern`,
+		color: "bg-slate-50",
+	},
+];
 ---
 
 <section class="py-24 bg-secondary/30">

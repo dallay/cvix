@@ -1,17 +1,15 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
-import { SSL_CERT_PATH, SSL_KEY_PATH } from "../../packages/ssl-paths/index.js";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
+import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
+import { BASE_URL, BASE_WEBAPP_URL, LANDING_PAGE_PORT } from "@cvix/lib";
+import { BASE_API_URL } from "@cvix/lib/consts/config.ts";
+import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import tailwindcss from "@tailwindcss/vite";
-import {defineConfig, envField} from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import icon from "astro-icon";
-import { BASE_URL } from "./src/consts.ts";
-import { DEFAULT_LOCALE_SETTING, LOCALES_SETTING } from "./src/i18n/locales";
-import { getSiteUrl } from "./src/utils/config.ts";
-
-import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
 /**
  * Check if SSL certificates exist for HTTPS development
@@ -20,10 +18,10 @@ import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 function hasSSLCertificates() {
 	const certPath = fileURLToPath(new URL(SSL_CERT_PATH, import.meta.url));
 	const keyPath = fileURLToPath(new URL(SSL_KEY_PATH, import.meta.url));
-	
+
 	const certExists = existsSync(certPath);
 	const keyExists = existsSync(keyPath);
-	
+
 	return certExists && keyExists;
 }
 
@@ -60,24 +58,24 @@ function getHttpsConfig() {
 // https://astro.build/config
 export default defineConfig({
 	server: {
-		port: 7766,
+		port: LANDING_PAGE_PORT,
 	},
 
 	// Configure Sharp image service explicitly
 	image: {
 		service: {
-			entrypoint: 'astro/assets/services/sharp',
+			entrypoint: "astro/assets/services/sharp",
 			config: {
 				limitInputPixels: false,
 			},
 		},
 	},
-	// Set your site's URL
-	site: getSiteUrl(),
+
+	site: BASE_URL,
 
 	i18n: {
-		defaultLocale: DEFAULT_LOCALE_SETTING,
-		locales: Object.keys(LOCALES_SETTING),
+		defaultLocale: DEFAULT_LOCALE,
+		locales: Object.keys(LOCALES),
 		routing: {
 			prefixDefaultLocale: true,
 			redirectToDefaultLocale: false,
@@ -89,9 +87,9 @@ export default defineConfig({
 		sitemap({
 			filter: (page) => page !== `${BASE_URL}/admin/`,
 			i18n: {
-				defaultLocale: DEFAULT_LOCALE_SETTING,
+				defaultLocale: DEFAULT_LOCALE,
 				locales: Object.fromEntries(
-					Object.entries(LOCALES_SETTING).map(([key, value]) => [
+					Object.entries(LOCALES).map(([key, value]) => [
 						key,
 						value.lang ?? key,
 					]),
@@ -108,30 +106,37 @@ export default defineConfig({
 		vue(),
 	],
 
-  env: {
-    schema: {
-      BACKEND_URL: envField.string({ context: "client", access: "public", optional: true }),
-    }
-  },
+	env: {
+		schema: {
+			BACKEND_URL: envField.string({
+				context: "client",
+				access: "public",
+				optional: true,
+				default: BASE_API_URL,
+			}),
+			WEBAPP_URL: envField.string({
+				context: "client",
+				access: "public",
+				default: BASE_WEBAPP_URL,
+			}),
+		},
+	},
 
 	vite: {
 		plugins: [tailwindcss()],
-		resolve: {
-			alias: {
-				"~": "/src",
-				"@cvix/ui": fileURLToPath(
-					new URL("../../packages/ui/src", import.meta.url),
-				),
-				"@cvix/assets": fileURLToPath(
-					new URL("../../packages/assets/src", import.meta.url),
-				),
-			},
+		ssr: {
+			noExternal: [
+				"@cvix/assets",
+				"@cvix/astro-ui",
+				"@cvix/i18n",
+				"@cvix/lib",
+				"@cvix/tsconfig",
+				"@cvix/ui",
+				"@cvix/utilities",
+			],
 		},
 		server: {
 			https: getHttpsConfig(),
 		},
-	},
-	markdown: {
-		remarkPlugins: [remarkReadingTime],
 	},
 });

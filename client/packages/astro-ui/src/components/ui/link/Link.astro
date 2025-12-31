@@ -1,0 +1,18 @@
+---
+import Button from "../button/Button.astro";
+
+const { href, target, rel, class: className, ...props } = Astro.props;
+
+const slot = await Astro.slots.render("default");
+---
+
+<Button
+  href={href}
+  target={target}
+  rel={rel}
+  class={className}
+  variant="link"
+  {...props}
+>
+  <Fragment set:html={slot} />
+</Button>

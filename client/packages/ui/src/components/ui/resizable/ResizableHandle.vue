@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { GripVertical } from "lucide-vue-next";
 import type {
@@ -7,7 +8,6 @@ import type {
 } from "reka-ui";
 import { SplitterResizeHandle, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	SplitterResizeHandleProps & {

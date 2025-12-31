@@ -1,0 +1,96 @@
+---
+import Layout from "@cvix/astro-ui/components/layouts/default-layout/DefaultLayout.astro";
+import { LOCALES } from "@cvix/i18n";
+import { type Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import AuthorProfileCard from "@/components/AuthorProfileCard.astro";
+import PageHeadline from "@/components/PageHeadline.astro";
+import Pagination from "@/components/Pagination.astro";
+import { useTranslations } from "@/i18n/i18n";
+import { countArticlesByAuthor, getAuthors } from "@/models/author";
+
+const { lang } = Astro.params;
+const currentLocale = lang as Lang;
+const t = useTranslations(currentLocale);
+
+// Get authors using the author service
+const authors = await getAuthors({
+	lang: currentLocale,
+});
+
+const postsPerPage = 16;
+const totalPages = Math.max(1, Math.ceil(authors.length / postsPerPage));
+const basePath = `/${currentLocale}/authors/page`;
+const indexUrl = `/${currentLocale}/authors`;
+
+// authors for the first page
+const pageAuthors = authors.slice(0, postsPerPage);
+
+// fetch article counts for authors on this page in parallel
+const counts = await Promise.all(
+	pageAuthors.map((a) => countArticlesByAuthor(a.id, currentLocale)),
+);
+
+const title = t("authors.title");
+const subtitle = t("authors.subtitle");
+const description = t("authors.description");
+
+export const getStaticPaths = () =>
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+---
+
+<Layout title={title} description={description} {og} >
+	<PageHeadline
+		title={title}
+		subtitle={subtitle}
+		placeholder={t("authors.searchPlaceholder")}
+		clearLabel={t("authors.clearLabel")}
+	>
+		<p class="text-xl text-gray-900 dark:text-white">
+			{description}
+		</p>
+	</PageHeadline>
+
+	<section class="container mx-auto px-4 py-12">
+		{authors.length > 0 ? (
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+				{authors.slice(0, postsPerPage).map((author, idx) => (
+					<AuthorProfileCard
+						author={author}
+						articlesCount={counts[idx] ?? 0}
+					/>
+				))}
+			</div>
+		) : (
+			<div class="text-center py-16">
+				<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+				</svg>
+				<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+					{t("authors.noAuthorsFound")}
+				</h3>
+			</div>
+		)}
+
+    {authors.length > postsPerPage && (
+      <Pagination
+        currentPage={1}
+        lastPage={totalPages}
+        urlPrev={null}
+        urlNext={totalPages > 1 ? `${basePath}/2` : null}
+        basePath={basePath}
+        maxDisplayedPages={5}
+        firstPageUrl={indexUrl}
+      />
+    )}
+	</section>
+</Layout>

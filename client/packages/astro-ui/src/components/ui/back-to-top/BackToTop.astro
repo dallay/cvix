@@ -1,0 +1,65 @@
+---
+import { getFlatTranslations, type SupportedLocale } from "@cvix/i18n";
+import { type Lang, useTranslations } from "@cvix/i18n/astro";
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "../icon";
+
+interface Props extends HTMLAttributes<"button"> {}
+const { ...attrs } = Astro.props;
+
+const currentLocale = (Astro.currentLocale || "en") as Lang;
+const commonUI = {
+	en: getFlatTranslations("en" as SupportedLocale),
+	es: getFlatTranslations("es" as SupportedLocale),
+};
+const t = useTranslations(currentLocale, commonUI);
+---
+
+<button
+  id="back-to-top"
+  aria-label={t("accessibility.backToTop")}
+  type="button"
+  class={
+    cn(
+      "fixed bottom-6 right-6 rounded-full p-3 shadow-lg opacity-0 translate-y-8 transition-all duration-300 z-50",
+      "bg-slate-600 hover:bg-slate-700",
+      "dark:bg-slate-500 dark:hover:bg-slate-600",
+      "text-white dark:text-white",
+      attrs.class)
+  }
+  {...attrs}
+>
+  <Icon name="tabler:chevron-up" class="size-5 cursor-pointer" />
+  <span class="sr-only">{t("accessibility.backToTop")}</span>
+</button>
+
+<script>
+  // Get the button element
+  const backToTopButton = document.getElementById("back-to-top");
+
+  // Show button when user scrolls down 300px from the top
+  function toggleBackToTopButton() {
+    if (window.scrollY > 300) {
+      backToTopButton?.classList.remove("opacity-0", "translate-y-8");
+      backToTopButton?.classList.add("opacity-100", "translate-y-0");
+    } else {
+      backToTopButton?.classList.remove("opacity-100", "translate-y-0");
+      backToTopButton?.classList.add("opacity-0", "translate-y-8");
+    }
+  }
+
+  // Scroll to top when button is clicked
+  backToTopButton?.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+
+  // Listen for scroll events
+  window.addEventListener("scroll", toggleBackToTopButton);
+
+  // Initialize button state on page load
+  document.addEventListener("DOMContentLoaded", toggleBackToTopButton);
+</script>

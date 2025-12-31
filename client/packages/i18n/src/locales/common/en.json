@@ -1,0 +1,149 @@
+{
+	"common": {
+		"loading": "Loading...",
+		"error": "An error occurred",
+		"retry": "Retry",
+		"cancel": "Cancel",
+		"confirm": "Confirm",
+		"save": "Save",
+		"delete": "Delete",
+		"edit": "Edit",
+		"create": "Create",
+		"update": "Update",
+		"close": "Close",
+		"back": "Back",
+		"next": "Next",
+		"previous": "Previous",
+		"submit": "Submit",
+		"search": "Search",
+		"clear": "Clear",
+		"yes": "Yes",
+		"no": "No",
+		"ok": "OK",
+		"done": "Done",
+		"continue": "Continue",
+		"skip": "Skip",
+		"view": "View",
+		"backToHome": "Back to Home",
+		"processing": "Processing...",
+		"pleaseWait": "Please wait..."
+	},
+	"validation": {
+		"required": "This field is required",
+		"email": "Please enter a valid email address",
+		"emailInvalid": "Invalid email address. Please enter a valid email.",
+		"emailRequired": "Email address is required.",
+		"minLength": "Must be at least {min} characters",
+		"maxLength": "Must be at most {max} characters",
+		"passwordMismatch": "Passwords do not match",
+		"invalidFormat": "Invalid format",
+		"usernameRequired": "Username is required",
+		"passwordRequired": "Password is required"
+	},
+	"auth": {
+		"signIn": "Sign In",
+		"signOut": "Sign Out",
+		"signUp": "Sign Up",
+		"login": "Log In",
+		"logout": "Log Out",
+		"register": "Register",
+		"forgotPassword": "Forgot Password?",
+		"resetPassword": "Reset Password",
+		"email": "Email",
+		"username": "Username",
+		"password": "Password",
+		"confirmPassword": "Confirm Password",
+		"rememberMe": "Remember Me",
+		"dontHaveAccount": "Don't have an account?",
+		"alreadyHaveAccount": "Already have an account?",
+		"loggingIn": "Logging in..."
+	},
+	"errors": {
+		"title": "Error Occurred",
+		"notFound": "Page not found",
+		"notFoundMessage": "The page you are looking for could not be found.",
+		"unauthorized": "You are not authorized to view this page",
+		"forbidden": "Access denied",
+		"serverError": "Something went wrong. Please try again later.",
+		"networkError": "Network error. Please check your connection.",
+		"timeout": "Request timed out. Please try again.",
+		"unknown": "An unexpected error occurred",
+		"submissionError": "There was an error submitting. Please try again.",
+		"submissionSuccess": "Submitted successfully!"
+	},
+	"navigation": {
+		"home": "Home",
+		"dashboard": "Dashboard",
+		"settings": "Settings",
+		"profile": "Profile",
+		"help": "Help",
+		"about": "About",
+		"contact": "Contact",
+		"account": "Account",
+		"admin": "Admin",
+		"blog": "Blog",
+		"pricing": "Pricing",
+		"products": "Products",
+		"resources": "Resources",
+		"documentation": "Documentation",
+		"faq": "FAQ"
+	},
+	"time": {
+		"justNow": "Just now",
+		"minutesAgo": "{count} minute ago | {count} minutes ago",
+		"hoursAgo": "{count} hour ago | {count} hours ago",
+		"daysAgo": "{count} day ago | {count} days ago",
+		"weeksAgo": "{count} week ago | {count} weeks ago",
+		"monthsAgo": "{count} month ago | {count} months ago",
+		"yearsAgo": "{count} year ago | {count} years ago"
+	},
+	"accessibility": {
+		"skipToContent": "Skip to main content",
+		"openMenu": "Open menu",
+		"closeMenu": "Close menu",
+		"toggleTheme": "Toggle theme",
+		"toggleLanguage": "Change language",
+		"externalLink": "Opens in a new tab",
+		"backToTop": "Back to top"
+	},
+	"select": {
+		"language": "Select language"
+	},
+	"logo": {
+		"description": "Go to homepage"
+	},
+	"legal": {
+		"privacyPolicy": "Privacy Policy",
+		"termsOfUse": "Terms of Use",
+		"allRightsReserved": "All rights reserved."
+	},
+	"footer": {
+		"description": "A production-ready SaaS starter template that bundles auth, billing, docs and marketing so teams can move faster.",
+		"company": "Company",
+		"resources": "Resources",
+		"legal": "Legal",
+		"brand": "ProfileTailors",
+		"allRightsReserved": "All rights reserved.",
+		"about": "About Us",
+		"contact": "Contact",
+		"donate": "Support Us",
+		"rss": "RSS Feed",
+		"privacyPolicy": "Privacy Policy",
+		"termsOfUse": "Terms of Use"
+	},
+	"actions": {
+		"getStarted": "Get Started",
+		"learnMore": "Learn More",
+		"subscribe": "Subscribe",
+		"unsubscribe": "Unsubscribe"
+	},
+	"theme": {
+		"toggle": {
+			"button": "Toggle theme",
+			"tooltip": "Switch between light and dark mode"
+		},
+		"light": "Light",
+		"dark": "Dark",
+		"system": "System"
+	}
+}

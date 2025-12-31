@@ -3,7 +3,7 @@ package com.cvix.controllers
 const val DEFAULT_PRECEDENCE = 2000
 const val MESSAGE_KEY = "message"
 
-const val ERROR_PAGE = "https://cvix.com/errors"
+const val ERROR_PAGE = "https://profiletailors.com/errors"
 
 const val TIMESTAMP = "timestamp"
 

@@ -1,0 +1,149 @@
+{
+	"common": {
+		"loading": "Cargando...",
+		"error": "Ha ocurrido un error",
+		"retry": "Reintentar",
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"save": "Guardar",
+		"delete": "Eliminar",
+		"edit": "Editar",
+		"create": "Crear",
+		"update": "Actualizar",
+		"close": "Cerrar",
+		"back": "Atrás",
+		"next": "Siguiente",
+		"previous": "Anterior",
+		"submit": "Enviar",
+		"search": "Buscar",
+		"clear": "Limpiar",
+		"yes": "Sí",
+		"no": "No",
+		"ok": "Aceptar",
+		"done": "Hecho",
+		"continue": "Continuar",
+		"skip": "Omitir",
+		"view": "Ver",
+		"backToHome": "Volver al inicio",
+		"processing": "Procesando...",
+		"pleaseWait": "Por favor espera..."
+	},
+	"validation": {
+		"required": "Este campo es obligatorio",
+		"email": "Por favor, introduce un correo electrónico válido",
+		"emailInvalid": "Dirección de correo inválida. Por favor ingresa un correo válido.",
+		"emailRequired": "La dirección de correo es requerida.",
+		"minLength": "Debe tener al menos {min} caracteres",
+		"maxLength": "Debe tener como máximo {max} caracteres",
+		"passwordMismatch": "Las contraseñas no coinciden",
+		"invalidFormat": "Formato inválido",
+		"usernameRequired": "El nombre de usuario es requerido",
+		"passwordRequired": "La contraseña es requerida"
+	},
+	"auth": {
+		"signIn": "Iniciar Sesión",
+		"signOut": "Cerrar Sesión",
+		"signUp": "Registrarse",
+		"login": "Acceder",
+		"logout": "Salir",
+		"register": "Registrarse",
+		"forgotPassword": "¿Olvidaste tu contraseña?",
+		"resetPassword": "Restablecer Contraseña",
+		"email": "Correo electrónico",
+		"username": "Nombre de usuario",
+		"password": "Contraseña",
+		"confirmPassword": "Confirmar Contraseña",
+		"rememberMe": "Recordarme",
+		"dontHaveAccount": "¿No tienes una cuenta?",
+		"alreadyHaveAccount": "¿Ya tienes una cuenta?",
+		"loggingIn": "Iniciando sesión..."
+	},
+	"errors": {
+		"title": "Ha Ocurrido un Error",
+		"notFound": "Página no encontrada",
+		"notFoundMessage": "La página que estás buscando no se pudo encontrar.",
+		"unauthorized": "No tienes autorización para ver esta página",
+		"forbidden": "Acceso denegado",
+		"serverError": "Algo salió mal. Por favor, inténtalo de nuevo más tarde.",
+		"networkError": "Error de red. Por favor, verifica tu conexión.",
+		"timeout": "La solicitud ha expirado. Por favor, inténtalo de nuevo.",
+		"unknown": "Ha ocurrido un error inesperado",
+		"submissionError": "Hubo un error al enviar. Por favor intenta de nuevo.",
+		"submissionSuccess": "¡Enviado exitosamente!"
+	},
+	"navigation": {
+		"home": "Inicio",
+		"dashboard": "Panel",
+		"settings": "Configuración",
+		"profile": "Perfil",
+		"help": "Ayuda",
+		"about": "Acerca de",
+		"contact": "Contacto",
+		"account": "Cuenta",
+		"admin": "Administración",
+		"blog": "Blog",
+		"pricing": "Precios",
+		"products": "Productos",
+		"resources": "Recursos",
+		"documentation": "Documentación",
+		"faq": "Preguntas Frecuentes"
+	},
+	"time": {
+		"justNow": "Ahora mismo",
+		"minutesAgo": "Hace {count} minuto | Hace {count} minutos",
+		"hoursAgo": "Hace {count} hora | Hace {count} horas",
+		"daysAgo": "Hace {count} día | Hace {count} días",
+		"weeksAgo": "Hace {count} semana | Hace {count} semanas",
+		"monthsAgo": "Hace {count} mes | Hace {count} meses",
+		"yearsAgo": "Hace {count} año | Hace {count} años"
+	},
+	"accessibility": {
+		"skipToContent": "Ir al contenido principal",
+		"openMenu": "Abrir menú",
+		"closeMenu": "Cerrar menú",
+		"toggleTheme": "Cambiar tema",
+		"toggleLanguage": "Cambiar idioma",
+		"externalLink": "Se abre en una nueva pestaña",
+		"backToTop": "Volver arriba"
+	},
+	"select": {
+		"language": "Seleccionar idioma"
+	},
+	"logo": {
+		"description": "Ir a la página principal"
+	},
+	"legal": {
+		"privacyPolicy": "Política de Privacidad",
+		"termsOfUse": "Términos de Uso",
+		"allRightsReserved": "Todos los derechos reservados."
+	},
+	"footer": {
+		"description": "Una plantilla inicial para SaaS lista para producción que agrupa autenticación, facturación, documentación y marketing para que los equipos avancen más rápido.",
+		"company": "Compañía",
+		"resources": "Recursos",
+		"legal": "Legal",
+		"brand": "ProfileTailors",
+		"allRightsReserved": "Todos los derechos reservados.",
+		"about": "Sobre Nosotros",
+		"contact": "Contacto",
+		"donate": "Apóyanos",
+		"rss": "Canal RSS",
+		"privacyPolicy": "Política de Privacidad",
+		"termsOfUse": "Términos de Uso"
+	},
+	"actions": {
+		"getStarted": "Comenzar",
+		"learnMore": "Saber Más",
+		"subscribe": "Suscribirse",
+		"unsubscribe": "Cancelar suscripción"
+	},
+	"theme": {
+		"toggle": {
+			"button": "Cambiar tema",
+			"tooltip": "Alternar entre modo claro y oscuro"
+		},
+		"light": "Claro",
+		"dark": "Oscuro",
+		"system": "Sistema"
+	}
+}

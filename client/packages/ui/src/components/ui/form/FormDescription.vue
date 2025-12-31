@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import { useFormField } from "./useFormField.ts";
 
 const props = defineProps<{

@@ -1,0 +1,12 @@
+{
+	"extends": "@cvix/tsconfig/tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"strict": true
+	},
+	"include": ["src/**/*.ts", "src/**/*.json"],
+	"exclude": ["node_modules", "dist"]
+}

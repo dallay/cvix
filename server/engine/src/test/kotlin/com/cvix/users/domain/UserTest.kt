@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 
 @UnitTest
 internal class UserTest {
-    private val emailOrUsername = "test@cvix.com"
+    private val emailOrUsername = "test@profiletailors.com"
     private val firstname = "cvix"
     private val lastname = "cvix"
     private val password = "Th1sIsA$5tr0ngP@ssw0rd"

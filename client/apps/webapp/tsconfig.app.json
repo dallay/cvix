@@ -25,6 +25,7 @@
 			"@cvix/utilities/*": ["../../packages/utilities/src/*"],
 			"@cvix/assets": ["../../packages/assets/src/index.ts"],
 			"@cvix/assets/*": ["../../packages/assets/src/*"]
-		}
+		},
+		"types": ["node"]
 	}
 }

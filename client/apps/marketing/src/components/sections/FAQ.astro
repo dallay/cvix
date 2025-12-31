@@ -1,28 +1,29 @@
 ---
+import { type Lang } from "@cvix/i18n/astro";
 import { Icon } from "astro-icon/components";
-import { type Lang, useTranslations } from "@/i18n";
+import { useTranslations } from "@/i18n/i18n";
 
 const currentLanguage = Astro.currentLocale as Lang;
 const t = useTranslations(currentLanguage);
 
 // Define FAQ items directly from translations
 const faqItems = [
-  {
-    question: t("faq.question1"),
-    answer: t("faq.answer1"),
-  },
-  {
-    question: t("faq.question2"),
-    answer: t("faq.answer2"),
-  },
-  {
-    question: t("faq.question3"),
-    answer: t("faq.answer3"),
-  },
-  {
-    question: t("faq.question4"),
-    answer: t("faq.answer4"),
-  },
+	{
+		question: t("faq.question1"),
+		answer: t("faq.answer1"),
+	},
+	{
+		question: t("faq.question2"),
+		answer: t("faq.answer2"),
+	},
+	{
+		question: t("faq.question3"),
+		answer: t("faq.answer3"),
+	},
+	{
+		question: t("faq.question4"),
+		answer: t("faq.answer4"),
+	},
 ];
 ---
 

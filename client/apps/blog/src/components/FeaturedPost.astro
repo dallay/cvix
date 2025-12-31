@@ -1,0 +1,119 @@
+---
+import { render } from "astro:content";
+import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
+import {
+	isExternalUrl,
+	isValidImage,
+} from "@cvix/astro-ui/image/image-utils.ts";
+import { cn } from "@cvix/lib";
+import { Icon } from "astro-icon/components";
+import { type Lang, useTranslations } from "@/i18n/i18n.ts";
+import type Article from "@/models/article/article.model";
+import { cleanEntityId } from "@/utils/collection.entity";
+import { prepareImageForOptimizedPicture } from "@/utils/images";
+
+interface Props {
+	post: Article;
+	class?: string;
+}
+
+const { post, class: className } = Astro.props;
+const currentLocale = Astro.currentLocale as Lang;
+const t = useTranslations(currentLocale);
+
+const coverImage = post.cover
+	? await prepareImageForOptimizedPicture(post.cover)
+	: undefined;
+
+const hasValidImage = isValidImage(coverImage);
+const hasExternalImage = isExternalUrl(coverImage);
+
+const url = `/${currentLocale}/post/${cleanEntityId(post.id)}`;
+
+let remarkPluginFrontmatter;
+if (post.entry) {
+	const rendered = await render(post.entry);
+	remarkPluginFrontmatter = rendered.remarkPluginFrontmatter;
+}
+---
+
+<article
+  class={cn(
+    "relative overflow-hidden rounded-3xl bg-card border border-border/50 shadow-sm",
+    className,
+  )}
+>
+  <div class="grid lg:grid-cols-2 gap-0">
+    <!-- Image Section -->
+    <div class="relative aspect-video lg:aspect-auto lg:min-h-[400px] overflow-hidden bg-muted">
+      {
+        hasValidImage ? (
+          hasExternalImage ? (
+            <img
+              src={coverImage as string}
+              alt={post.title}
+              loading="eager"
+              class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          ) : (
+            <OptimizedPicture
+              src={coverImage}
+              alt={post.title}
+              loading="eager"
+              class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          )
+        ) : (
+          <div class="flex items-center justify-center h-full w-full bg-linear-to-br from-primary/10 to-primary/5">
+            <Icon
+              name="tabler:photo"
+              class="w-16 h-16 text-muted-foreground/50"
+              aria-hidden="true"
+            />
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Content Section -->
+    <div class="flex flex-col justify-center p-8 lg:p-12 space-y-6">
+      <div class="flex items-center gap-3">
+        {
+          post.category && (
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
+              {post.category.title}
+            </span>
+          )
+        }
+        <span class="text-sm text-muted-foreground">
+          {t("blog.minRead", { min: remarkPluginFrontmatter?.minutesRead ?? 1 })}
+        </span>
+      </div>
+
+      <h2
+        class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-foreground"
+      >
+        <a href={url} class="hover:text-primary transition-colors">
+          {post.title}
+        </a>
+      </h2>
+
+      <p class="text-lg text-muted-foreground leading-relaxed line-clamp-3">
+        {post.description}
+      </p>
+
+      <div class="pt-4">
+        <a
+          href={url}
+          class="inline-flex items-center text-primary font-semibold hover:text-primary/80 transition-colors group"
+        >
+          {t("blog.read.article")}
+          <Icon
+            name="tabler:arrow-right"
+            class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+</article>

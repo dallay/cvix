@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type {
 	DropdownMenuSubContentEmits,
@@ -6,7 +7,6 @@ import type {
 } from "reka-ui";
 import { ContextMenuSubContent, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	DropdownMenuSubContentProps & { class?: HTMLAttributes["class"] }

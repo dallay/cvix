@@ -1,0 +1,101 @@
+---
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
+import { LOCALES } from "@cvix/i18n";
+import {
+	type Lang,
+	localeParams,
+	SUPPORTED_LOCALES,
+	useTranslations,
+} from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+
+const t = useTranslations(Astro.currentLocale as Lang);
+
+const title = t({
+	en: "Page Not Found",
+	es: "Página No Encontrada",
+});
+
+const description = t({
+	en: "The page you are looking for could not be found.",
+	es: "La página que estás buscando no se pudo encontrar.",
+});
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+
+export const getStaticPaths = () => localeParams;
+---
+
+<Layout {title} {description} {og} >
+  <section class="text-center p-8 rounded-2xl min-w-screen flex justify-center items-center flex-col mt-24">
+    <h1 class="text-caution text-2xl">
+      <b class="block text-9xl font-black -tracking-wider opacity-60">404</b>
+      {title}
+    </h1>
+
+    <p class="mt-4">
+      {
+        t({
+          en: "The page you are looking for could not be found. Please return to the top or try another language.",
+          es: "La página que estás buscando no se pudo encontrar. Por favor, vuelve al inicio o prueba en otro idioma.",
+        })
+      }
+    </p>
+
+    <a href="/" class="inline-block mt-4 px-6 py-2 rounded-full text-xl font-bold bg-theme">
+      {
+        t({
+          en: "Top Page",
+          es: "Página Principal",
+        })
+      }
+    </a>
+
+    <section class="mt-8">
+      <h2>
+        {
+          t({
+            en: "View in other languages",
+            es: "Ver en otros idiomas",
+          })
+        }
+      </h2>
+
+      <ul class="mt-4 flex gap-4 justify-center">
+        {
+          SUPPORTED_LOCALES.map((lang) => (
+              <li>
+                <a
+                    href={`/${lang}/`}
+                    data-lang-path={lang}
+                    onclick={`localStorage.selectedLang = "${lang}"`}
+                    dir={LOCALES[lang].dir || null}
+                    class="text-theme underline"
+                >
+                  {LOCALES[lang].label}
+                </a>
+              </li>
+          ))
+        }
+      </ul>
+    </section>
+  </section>
+</Layout>
+
+<script is:inline>
+  if (localStorage.userAccessPath) {
+    history.replaceState("", "", localStorage.userAccessPath);
+
+    document.querySelectorAll("a[data-lang-path]").forEach((a) => {
+      const pathnames = localStorage.userAccessPath.split("/");
+      pathnames[1] = a.getAttribute("data-lang-path");
+      a.href = pathnames.join("/");
+    });
+
+    localStorage.removeItem("userAccessPath");
+  }
+</script>

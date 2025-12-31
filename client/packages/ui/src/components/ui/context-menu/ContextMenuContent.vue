@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { ContextMenuContentEmits, ContextMenuContentProps } from "reka-ui";
 import {
@@ -7,7 +8,6 @@ import {
 	useForwardPropsEmits,
 } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	ContextMenuContentProps & { class?: HTMLAttributes["class"] }
