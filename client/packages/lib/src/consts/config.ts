@@ -49,22 +49,45 @@ export const BACKEND_PORT: number = 8443;
  * @type {string}
  * @private
  */
+// Protocols
 const HTTP = "http://";
-/**
- * HTTPS protocol string.
- * @type {string}
- * @private
- */
 const HTTPS = "https://";
+
+/**
+ * Safely access environment variables in both Node.js and browser environments.
+ * @param key The name of the environment variable.
+ * @returns The value of the environment variable, or undefined.
+ */
+const getEnv = (key: string): string | undefined => {
+	// Try process.env (Node.js)
+	if (typeof process !== "undefined" && process.env) {
+		return process.env[key];
+	}
+
+	// Try import.meta.env (Vite/Astro)
+	// @ts-expect-error
+	if (typeof import.meta !== "undefined" && import.meta.env) {
+		return (
+			// @ts-expect-error
+			import.meta.env[key] ||
+			// @ts-expect-error
+			import.meta.env[`PUBLIC_${key}`] ||
+			// @ts-expect-error
+			import.meta.env[`VITE_${key}`]
+		);
+	}
+
+	return undefined;
+};
 
 /**
  * The base URL for the landing page, resolved from environment variables or defaults to localhost.
  * @type {string}
  */
 export const BASE_URL =
-	process.env.BASE_URL ||
-	process.env.SITE_URL ||
-	process.env.CF_PAGES_URL ||
+	getEnv("BASE_URL") ||
+	getEnv("SITE_URL") ||
+	getEnv("CF_PAGES_URL") ||
 	`${HTTP}localhost:${LANDING_PAGE_PORT}`;
 
 /**
@@ -72,8 +95,8 @@ export const BASE_URL =
  * @type {string}
  */
 export const BASE_DOCS_URL =
-	process.env.BASE_DOCS_URL ||
-	process.env.CF_PAGES_URL ||
+	getEnv("BASE_DOCS_URL") ||
+	getEnv("CF_PAGES_URL") ||
 	`${HTTP}localhost:${DOCS_PORT}`;
 
 /**
@@ -81,8 +104,8 @@ export const BASE_DOCS_URL =
  * @type {string}
  */
 export const BASE_WEBAPP_URL =
-	process.env.BASE_WEBAPP_URL ||
-	process.env.CF_PAGES_URL ||
+	getEnv("BASE_WEBAPP_URL") ||
+	getEnv("CF_PAGES_URL") ||
 	`${HTTP}localhost:${WEBAPP_PORT}`;
 
 /**
@@ -90,8 +113,8 @@ export const BASE_WEBAPP_URL =
  * @type {string}
  */
 export const BLOG_URL =
-	process.env.BLOG_URL ||
-	process.env.CF_PAGES_URL ||
+	getEnv("BLOG_URL") ||
+	getEnv("CF_PAGES_URL") ||
 	`${HTTP}localhost:${BLOG_PORT}`;
 
 /**
@@ -99,4 +122,4 @@ export const BLOG_URL =
  * @type {string}
  */
 export const BASE_API_URL =
-	process.env.BASE_API_URL || `${HTTPS}localhost:${BACKEND_PORT}`;
+	getEnv("BASE_API_URL") || `${HTTPS}localhost:${BACKEND_PORT}`;
