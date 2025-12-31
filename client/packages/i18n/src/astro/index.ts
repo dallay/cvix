@@ -46,7 +46,7 @@ export const SHOW_DEFAULT_LANG_IN_URL = true;
  * - Multilingual objects that contain translations for multiple languages
  *
  * @param lang - The current language code
- * @param ui - Optional UI dictionary with translations (defaults to empty)
+ * @param uiDict - Optional UI dictionary with translations
  * @returns A function that translates keys or multilingual objects
  *
  * @example

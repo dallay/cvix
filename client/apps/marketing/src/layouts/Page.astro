@@ -5,6 +5,7 @@ import {
 	Header,
 	LocaleSuggest,
 } from "@cvix/astro-ui";
+import type { Lang } from "@cvix/i18n/astro";
 import { footerNavLinks, getOgImagePath } from "@cvix/lib";
 
 interface Props {
@@ -31,5 +32,5 @@ const og = {
   <div class="container mx-auto px-4 pt-24 prose lg:prose-xl xl:prose-2xl dark:prose-invert">
     <slot />
   </div>
-  <Footer links={footerNavLinks}/>
+  <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Base>

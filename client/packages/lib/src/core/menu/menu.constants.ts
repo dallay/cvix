@@ -1,4 +1,5 @@
-import { BASE_DOCS_URL } from "../../consts/config";
+import type { Lang } from "@cvix/i18n/astro";
+import { BASE_DOCS_URL, BLOG_URL } from "../../consts/config";
 import type { MenuItem } from "./menu.type.ts";
 
 export const headerMenuItems: MenuItem[] = [
@@ -10,7 +11,7 @@ export const headerMenuItems: MenuItem[] = [
 	},
 	{
 		type: "link",
-		href: "/blog",
+		href: BLOG_URL,
 		translationKey: "header.nav.blog",
 		condition: true,
 	},
@@ -48,62 +49,50 @@ export const headerMenuItems: MenuItem[] = [
 ];
 
 // Navigation links array with translation keys and conditions
-export const footerNavLinks: MenuItem[] = [
-	{
-		type: "link",
-		href: "/about/",
-		translationKey: "footer.about",
-		ariaLabelKey: "footer.aria.about",
-		condition: true,
-	},
-	{
-		type: "link",
-		href: "/contact/",
-		translationKey: "footer.contact",
-		ariaLabelKey: "footer.aria.contact",
-		condition: true,
-	},
-	{
-		type: "link",
-		href: "/sponsor/",
-		translationKey: "footer.sponsors",
-		ariaLabelKey: "footer.aria.sponsors",
-		condition: false,
-	},
-	{
-		type: "link",
-		href: "/support/",
-		translationKey: "footer.donate",
-		ariaLabelKey: "footer.aria.donate",
-		condition: true,
-	},
-	{
-		type: "link",
-		href: "#/portal",
-		translationKey: "footer.subscribe",
-		ariaLabelKey: "footer.aria.subscribe",
-		condition: false, // Could be dynamically set based on user login status
-	},
-	{
-		type: "link",
-		href: "/rss.xml",
-		translationKey: "footer.rss",
-		ariaLabelKey: "footer.aria.rss",
-		target: "_blank",
-		condition: true,
-	},
-	{
-		type: "link",
-		href: "/privacy-policy/",
-		translationKey: "footer.privacyPolicy",
-		ariaLabelKey: "footer.aria.privacyPolicy",
-		condition: true,
-	},
-	{
-		type: "link",
-		href: "/terms-of-use/",
-		translationKey: "footer.termsOfUse",
-		ariaLabelKey: "footer.aria.termsOfUse",
-		condition: true,
-	},
-];
+export function footerNavLinks(lang: Lang): MenuItem[] {
+	return [
+		{
+			type: "link",
+			href: "/about/",
+			translationKey: "footer.about",
+			ariaLabelKey: "footer.aria.about",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/contact/",
+			translationKey: "footer.contact",
+			ariaLabelKey: "footer.aria.contact",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/support/",
+			translationKey: "footer.donate",
+			ariaLabelKey: "footer.aria.donate",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: `${BLOG_URL}/${lang}/rss.xml`,
+			translationKey: "footer.rss",
+			ariaLabelKey: "footer.aria.rss",
+			target: "_blank",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/privacy-policy/",
+			translationKey: "footer.privacyPolicy",
+			ariaLabelKey: "footer.aria.privacyPolicy",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/terms-of-use/",
+			translationKey: "footer.termsOfUse",
+			ariaLabelKey: "footer.aria.termsOfUse",
+			condition: true,
+		},
+	];
+}

@@ -58,5 +58,5 @@ const og = {
   <Feature />
   <FAQ />
   <CTA />
-  <Footer links={footerNavLinks} />
+  <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Layout>

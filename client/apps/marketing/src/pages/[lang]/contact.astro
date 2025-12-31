@@ -1,6 +1,5 @@
 ---
-import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
-import Footer from "@cvix/astro-ui/components/sections/footers/footer/Footer.astro";
+import { Footer, BaseLayout as Layout } from "@cvix/astro-ui";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
 import { getOgImagePath } from "@cvix/lib";
@@ -27,5 +26,5 @@ const og = {
     <h1 class="text-4xl font-bold mb-4">{t('contact.title')}</h1>
     <p>{t('contact.contentPlaceholder')}</p>
   </main>
-  <Footer links={footerNavLinks}/>
+  <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Layout>
