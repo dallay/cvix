@@ -14,6 +14,6 @@
 		"@cvix/assets": "workspace:*",
 		"astro": "catalog:",
 		"sharp": "catalog:",
-		"zod": "catalog:"
+		"zod": "^4.2.1"
 	}
 }

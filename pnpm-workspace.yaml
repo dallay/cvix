@@ -1,4 +1,3 @@
-minimumReleaseAge: 4320
 packages:
   - client/apps/*
   - client/packages/*
@@ -69,8 +68,11 @@ catalog:
 catalogs:
   peers:
     astro: ^4.5 || ^5.0.0-beta.0
-    vite: ^5.0.0 || ^6.0.0
     tailwindcss: ^4.1.18
+    vite: ^5.0.0 || ^6.0.0
+
+minimumReleaseAge: 4320
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - esbuild
