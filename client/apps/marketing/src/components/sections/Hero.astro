@@ -1,5 +1,5 @@
 ---
-import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
+import { OptimizedPicture } from "@cvix/astro-ui";
 import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { useTranslations } from "@/i18n/i18n";
 
@@ -14,11 +14,11 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
 const t = useTranslations(langToUse);
 
 import { WEBAPP_URL } from "astro:env/client";
-import VideoPlaceholder from "@/assets/video-placeholder.png";
+import CvixSystemImage from "@cvix/assets/images/cvix-system.png";
 ---
 
 <section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden fade-in-section">
-  <div class="container mx-auto max-w-screen-xl px-4 text-center">
+  <div class="container mx-auto max-w-7xl px-4 text-center">
     <div
       class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 fade-in-section delay-100"
     >
@@ -63,7 +63,7 @@ import VideoPlaceholder from "@/assets/video-placeholder.png";
       >
       </div>
       <OptimizedPicture
-        src={VideoPlaceholder}
+        src={CvixSystemImage}
         alt={t("hero.mockup.alt")}
         class="relative rounded-2xl shadow-2xl border border-border bg-background"
       />
