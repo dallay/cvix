@@ -1,0 +1,13 @@
+---
+
+---
+
+
+<!-- Load CSRF helper and expose globally for inline script -->
+<script>
+  import { csrfLoader, getCsrfToken } from "./csrf";
+
+  // Expose globally for inline script compatibility
+  window.csrfLoader = csrfLoader;
+  window.getCsrfToken = getCsrfToken;
+</script>

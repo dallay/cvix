@@ -1,44 +1,63 @@
 ---
+import { WEBAPP_URL } from "astro:env/client";
+import { Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import Button from "@cvix/astro-ui/components/ui/button/Button.astro";
+import type { Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
 import CTA from "@/components/sections/CTA.astro";
 import FAQ from "@/components/sections/FAQ.astro";
 import Feature from "@/components/sections/Feature.astro";
-import Footer from "@/components/sections/Footer.astro";
 import Hero from "@/components/sections/Hero.astro";
 import TemplateShowcase from "@/components/sections/TemplateShowcase.astro";
 import TrustMetrics from "@/components/sections/TrustMetrics.astro";
-import { type Lang, LOCALES, useTranslations } from "@/i18n";
-import Layout from "@/layouts/Base.astro";
+import { LOCALES, useTranslations } from "@/i18n";
+import { footerNavLinks } from "@/models/menu";
 
 const locale = Astro.currentLocale as Lang;
 const t = useTranslations(locale);
 
 export const getStaticPaths = () =>
-  Object.keys(LOCALES).map((lang) => ({
-    params: { lang },
-  }));
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
 
 // SEO structured data for SoftwareApplication
 const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Civix",
-  applicationCategory: "BusinessApplication",
-  description: t("home.description"),
-  operatingSystem: "Web Browser",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    ratingCount: "500",
-  },
+	"@context": "https://schema.org",
+	"@type": "SoftwareApplication",
+	name: "Civix",
+	applicationCategory: "BusinessApplication",
+	description: t("home.description"),
+	operatingSystem: "Web Browser",
+	offers: {
+		"@type": "Offer",
+		price: "0",
+		priceCurrency: "USD",
+	},
+	aggregateRating: {
+		"@type": "AggregateRating",
+		ratingValue: "4.8",
+		ratingCount: "500",
+	},
+};
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
 };
 ---
 
-<Layout title={t("home.title")} description={t("home.description")}>
+<Layout title={t("home.title")} description={t("home.description")} {og}>
+  <Button slot="header-cta" href={`${WEBAPP_URL}/login`} class="hidden md:inline-flex">
+    {
+      t({
+        en: "Get Started",
+        es: "Comenzar",
+      })
+    }
+  </Button>
+
   <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   <Hero />
   <TemplateShowcase />
@@ -46,5 +65,5 @@ const structuredData = {
   <Feature />
   <FAQ />
   <CTA />
-  <Footer />
+  <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Layout>

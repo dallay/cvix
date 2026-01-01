@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from "../../../lib/utils.ts";
+import { cn } from "@cvix/lib";
 import type {
 	CarouselEmits,
 	CarouselProps,

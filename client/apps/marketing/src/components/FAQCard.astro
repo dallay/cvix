@@ -1,9 +1,10 @@
 ---
 import { render } from "astro:content";
+import { type Lang } from "@cvix/i18n/astro";
+import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "astro/types";
 import { Icon } from "astro-icon/components";
-import { type Lang, useTranslations } from "@/i18n";
-import { cn } from "@cvix/ui/lib/utils";
+import { useTranslations } from "@/i18n/i18n";
 import type FAQ from "@/models/faq/faq.model";
 
 interface Props extends HTMLAttributes<"details"> {

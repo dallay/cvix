@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
+import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import { defineConfig, devices } from "@playwright/test";
-import { SSL_CERT_PATH, SSL_KEY_PATH } from "../../packages/ssl-paths/index.js";
 
 /**
  * Playwright configuration for E2E testing

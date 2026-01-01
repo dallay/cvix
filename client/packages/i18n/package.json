@@ -1,0 +1,59 @@
+{
+	"name": "@cvix/i18n",
+	"version": "1.0.0",
+	"description": "Shared internationalization utilities and locale configuration for CVIX monorepo",
+	"author": "CVIX Team <team@profiletailors.com>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dallay/cvix.git",
+		"directory": "client/packages/i18n"
+	},
+	"homepage": "https://profiletailors.com/",
+	"bugs": {
+		"url": "https://github.com/dallay/cvix/issues"
+	},
+	"keywords": [
+		"i18n",
+		"internationalization",
+		"localization",
+		"cvix",
+		"shared"
+	],
+	"packageManager": "pnpm@10.26.2",
+	"type": "module",
+	"files": [
+		"src"
+	],
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./astro": "./src/astro/index.ts",
+		"./types": "./src/types.ts",
+		"./config": "./src/config.ts",
+		"./locales": "./src/locales/index.ts",
+		"./locales/*": "./src/locales/*",
+		"./*": "./src/*"
+	},
+	"typesVersions": {
+		"*": {
+			"*": [
+				"./src/*"
+			]
+		}
+	},
+	"sideEffects": false,
+	"scripts": {
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"lint": "biome check .",
+		"format": "biome format . --write",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@cvix/tsconfig": "workspace:*",
+		"typescript": "catalog:"
+	}
+}

@@ -2,9 +2,9 @@ export { default as DonutChart } from "./DonutChart.vue";
 
 import type { Spacing } from "@unovis/ts";
 
-type KeyOf<T extends Record<string, any>> = Extract<keyof T, string>;
+type KeyOf<T extends Record<string, unknown>> = Extract<keyof T, string>;
 
-export interface DonutChartProps<T extends Record<string, any>> {
+export interface DonutChartProps<T extends Record<string, unknown>> {
 	/**
 	 * The source data, in which each entry is a dictionary.
 	 */

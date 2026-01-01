@@ -27,7 +27,7 @@ export const TEST_USERS = {
 	 * Existing user for login tests
 	 */
 	existingUser: {
-		email: "john.doe@cvix.com",
+		email: "john.doe@profiletailors.com",
 		password: "S3cr3tP@ssw0rd*123",
 		firstName: "John",
 		lastName: "Doe",
@@ -36,7 +36,7 @@ export const TEST_USERS = {
 	 * New user for registration tests
 	 */
 	newUser: {
-		email: "jane.doe@cvix.com",
+		email: "jane.doe@profiletailors.com",
 		password: "S3cr3tP@ssw0rd*123",
 		firstName: "Jane",
 		lastName: "Doe",
@@ -54,7 +54,7 @@ const MOCK_RESPONSES = {
 	accountUnauthenticated: {
 		status: 401,
 		body: {
-			type: "https://cvix.com/problems/unauthorized",
+			type: "https://profiletailors.com/problems/unauthorized",
 			title: "Unauthorized",
 			status: 401,
 			detail: "Authentication required",
@@ -227,7 +227,7 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 				status: 401,
 				contentType: API_CONTENT_TYPE,
 				body: JSON.stringify({
-					type: "https://cvix.com/problems/unauthorized",
+					type: "https://profiletailors.com/problems/unauthorized",
 					title: "Unauthorized",
 					status: 401,
 					detail: "No valid refresh token",
@@ -319,7 +319,7 @@ export const mockApiErrors = {
 				status: 401,
 				contentType: API_CONTENT_TYPE,
 				body: JSON.stringify({
-					type: "https://cvix.com/problems/invalid-credentials",
+					type: "https://profiletailors.com/problems/invalid-credentials",
 					title: "Invalid Credentials",
 					status: 401,
 					detail: "The email or password you entered is incorrect.",
@@ -345,7 +345,7 @@ export const mockApiErrors = {
 					"X-RateLimit-Remaining": "0",
 				},
 				body: JSON.stringify({
-					type: "https://cvix.com/problems/rate-limit-exceeded",
+					type: "https://profiletailors.com/problems/rate-limit-exceeded",
 					title: "Too Many Requests",
 					status: 429,
 					detail:
@@ -377,7 +377,7 @@ export const mockApiErrors = {
 				status: 409,
 				contentType: API_CONTENT_TYPE,
 				body: JSON.stringify({
-					type: "https://cvix.com/problems/email-already-exists",
+					type: "https://profiletailors.com/problems/email-already-exists",
 					title: "Conflict",
 					status: 409,
 					detail:

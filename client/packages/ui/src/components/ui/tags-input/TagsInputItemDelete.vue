@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { X } from "lucide-vue-next";
 import type { TagsInputItemDeleteProps } from "reka-ui";
 import { TagsInputItemDelete, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 
 const props = defineProps<
 	TagsInputItemDeleteProps & { class?: HTMLAttributes["class"] }

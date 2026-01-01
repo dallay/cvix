@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { ChevronLeftIcon } from "lucide-vue-next";
 import type { PaginationFirstProps } from "reka-ui";
@@ -6,7 +7,6 @@ import { PaginationFirst, useForwardProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import type { ButtonVariants } from "../button/index.ts";
 import { buttonVariants } from "../button/index.ts";
-import { cn } from "../../../lib/utils.ts";
 
 const props = withDefaults(
 	defineProps<

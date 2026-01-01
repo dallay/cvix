@@ -1,4 +1,4 @@
-import type { Lang } from "@/i18n";
+import type { Lang } from "@cvix/i18n/astro";
 
 /**
  * Interface for pricing plan filtering criteria

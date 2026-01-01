@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { ToggleEmits, ToggleProps } from "reka-ui";
 import { Toggle, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import type { ToggleVariants } from "./index.ts";
 import { toggleVariants } from "./index.ts";
 

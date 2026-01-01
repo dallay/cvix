@@ -1,10 +1,10 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T extends Record<string, unknown>">
+import { cn } from "@cvix/lib";
 import { Donut } from "@unovis/ts";
 import { VisDonut, VisSingleContainer } from "@unovis/vue";
 import { useMounted } from "@vueuse/core";
 import { type Component, computed, ref } from "vue";
 import { ChartSingleTooltip, defaultColors } from "../chart/index.ts";
-import { cn } from "../../../lib/utils.ts";
 import type { DonutChartProps } from "./index.ts";
 
 const props = withDefaults(
@@ -31,7 +31,7 @@ const props = withDefaults(
 			/**
 			 * Function to sort the segment
 			 */
-			sortFunction?: (a: any, b: any) => number | undefined;
+			sortFunction?: (a: T, b: T) => number | undefined;
 			/**
 			 * Controls the formatting for the label.
 			 */

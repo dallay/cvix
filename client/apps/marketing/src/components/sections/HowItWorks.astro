@@ -1,6 +1,7 @@
 ---
+import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { Icon } from "astro-icon/components";
-import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+import { useTranslations } from "@/i18n/i18n";
 
 const astroLocale = Astro.currentLocale;
 let langToUse: Lang;
@@ -51,7 +52,7 @@ const steps = [
           <div class="mb-4 text-6xl font-bold text-gray-200 dark:text-gray-700">
             {step.number}
           </div>
-          
+
           {/* Icon */}
           <div class="flex items-center justify-center w-16 h-16 mb-6 bg-primary-100 dark:bg-primary-900 rounded-full">
             <Icon name={step.icon} class="w-8 h-8 text-primary-600 dark:text-primary-400" />
@@ -67,9 +68,9 @@ const steps = [
 
           {/* Connector Arrow (hidden on mobile, shown on md+, not on last item) */}
           {index < steps.length - 1 && (
-            <Icon 
-              name="tabler:arrow-right" 
-              class="hidden md:block absolute top-20 -right-6 lg:-right-8 w-12 h-12 text-gray-300 dark:text-gray-600" 
+            <Icon
+              name="tabler:arrow-right"
+              class="hidden md:block absolute top-20 -right-6 lg:-right-8 w-12 h-12 text-gray-300 dark:text-gray-600"
             />
           )}
         </div>

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import type { DialogContentEmits, DialogContentProps } from "reka-ui";
 import { useForwardPropsEmits } from "reka-ui";
 import { DrawerContent, DrawerPortal } from "vaul-vue";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import DrawerOverlay from "./DrawerOverlay.vue";
 
 const props = defineProps<

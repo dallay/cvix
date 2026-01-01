@@ -1,19 +1,20 @@
 ---
-import OptimizedPicture from "@/components/OptimizedPicture.astro";
-import { DEFAULT_LOCALE, type Lang, LOCALES, useTranslations } from "@/i18n";
+import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
+import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
+import { useTranslations } from "@/i18n/i18n";
 
 const astroLocale = Astro.currentLocale;
 let langToUse: Lang;
 
 if (astroLocale && LOCALES[astroLocale as Lang]) {
-  langToUse = astroLocale as Lang;
+	langToUse = astroLocale as Lang;
 } else {
-  langToUse = DEFAULT_LOCALE;
+	langToUse = DEFAULT_LOCALE;
 }
 const t = useTranslations(langToUse);
 
+import { WEBAPP_URL } from "astro:env/client";
 import VideoPlaceholder from "@/assets/video-placeholder.png";
-import { BASE_WEBAPP_URL } from "@/consts";
 ---
 
 <section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden fade-in-section">
@@ -41,7 +42,7 @@ import { BASE_WEBAPP_URL } from "@/consts";
       class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 fade-in-section delay-400"
     >
       <a
-        href={`${BASE_WEBAPP_URL}/resume/editor`}
+        href={`${WEBAPP_URL}/resume/editor`}
         class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-primary-foreground transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25"
         aria-label={t("hero.cta.primary")}
       >

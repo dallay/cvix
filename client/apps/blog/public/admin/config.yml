@@ -1,0 +1,182 @@
+local_backend: true
+
+logo_url: /favicon.svg
+
+backend:
+  name: github
+  repo: dallay/cvix
+  branch: main
+  base_url: https://sveltia-cms-auth.yunielacosta738.workers.dev/
+
+publish_mode: editorial_workflow
+
+slug:
+  encoding: 'ascii'
+  clean_accents: true
+  sanitize_replacement: '-'
+
+
+media_folder: "client/apps/blog/src/assets/images"  # Location where files will be stored in the repo
+public_folder: "client/apps/blog/src/assets/images"  # The src attribute for uploaded media
+
+i18n:
+  structure: 'multiple_folders'
+  locales: ['en', 'es']
+  default_locale: 'en'
+
+
+collections:
+  - name: 'articles'
+    label: 'Articles'
+    label_singular: 'Article'
+    folder: client/apps/blog/src/data/blog
+    create: true
+    path: '{{year}}/{{month}}/{{day}}/{{slug}}'
+    extension: mdx
+    i18n: true
+    fields:
+      - name: 'title'
+        widget: 'string'
+        label: 'Title'
+        i18n: true
+      - name: 'description'
+        widget: 'string'
+        label: 'Description'
+        i18n: true
+      - name: 'date'
+        widget: 'datetime'
+        label: 'Publish Date'
+        i18n: 'duplicate'
+      - name: 'lastModified'
+        widget: 'datetime'
+        label: 'Last Modified'
+        required: false
+        default: "{{now}}"
+        i18n: 'duplicate'
+      - name: 'author'
+        widget: 'relation'
+        collection: 'authors'
+        value_field: '{{locale}}/{{slug}}'
+        search_fields: ['name']
+        display_fields: ['name']
+        multiple: false
+        i18n: 'duplicate'
+      - name: 'cover'
+        widget: 'image'
+        label: 'Cover'
+        i18n: 'duplicate'
+        default: 'src/assets/images/blog-placeholder-1.avif'
+      - name: 'tags'
+        widget: 'relation'
+        collection: 'tags'
+        value_field: '{{locale}}/{{slug}}'
+        search_fields: ['title']
+        display_fields: ['title']
+        multiple: true
+        i18n: 'duplicate'
+      - name: 'category'
+        widget: 'relation'
+        collection: 'categories'
+        value_field: '{{locale}}/{{slug}}'
+        search_fields: ['title']
+        display_fields: ['title']
+        multiple: false
+        i18n: 'duplicate'
+      - name: 'draft'
+        widget: 'boolean'
+        label: 'Draft'
+        default: true
+        i18n: 'duplicate'
+      - name: 'body'
+        widget: 'markdown'
+        label: 'Body'
+        i18n: true
+
+  - name: categories
+    label: Categories
+    label_singular: Category
+    folder: client/apps/blog/src/data/categories
+    slug: '{{title}}'
+    create: true
+    i18n: true
+    fields:
+      - name: title
+        widget: string
+        label: Title
+        i18n: true
+      - name: order
+        widget: number
+        label: Order
+        required: false
+        value_type: int
+        min: -1000
+        max: 1000
+        step: 1
+        default: 0
+        i18n: 'duplicate'
+
+  - name: tags
+    label: Tags
+    label_singular: Tag
+    folder: client/apps/blog/src/data/tags
+    slug: '{{title}}'
+    create: true
+    i18n: true
+    fields:
+      - name: title
+        widget: string
+        label: Title
+        i18n: true
+
+  - name: 'authors'
+    label: 'Authors'
+    label_singular: 'Author'
+    folder: client/apps/blog/src/data/authors
+    slug: '{{name}}'
+    create: true
+    extension: json
+    i18n: true
+    fields:
+      - name: 'name'
+        widget: 'string'
+        label: 'Name'
+        i18n: 'duplicate'
+      - name: 'email'
+        widget: 'string'
+        label: 'Email'
+        i18n: 'duplicate'
+      - name: 'avatar'
+        widget: 'image'
+        label: 'Avatar'
+        i18n: 'duplicate'
+      - name: 'bio'
+        widget: 'markdown'
+        label: 'Bio'
+        i18n: true
+      - name: role
+        widget: string
+        label: Role
+        i18n: true
+      - name: location
+        widget: string
+        label: Location
+        i18n: true
+      - name: socials
+        widget: list
+        label: Social Media
+        i18n: 'duplicate'
+        required: false
+        summary: '{{fields.name}}'
+        fields:
+          - name: name
+            widget: string
+            label: Platform Name
+            i18n: true
+          - name: url
+            widget: string
+            label: Profile URL
+            i18n: 'duplicate'
+          - name: icon
+            widget: string
+            label: Icon (e.g., tabler:brand-github)
+            i18n: 'duplicate'

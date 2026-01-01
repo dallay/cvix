@@ -1,0 +1,152 @@
+---
+import { type Lang, LOCALES } from "@cvix/i18n/astro";
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "../ui/icon";
+
+interface Props extends HTMLAttributes<"div"> {
+	position?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
+}
+
+const { position = "bottom-left", ...attr } = Astro.props;
+const currentLocale = Astro.currentLocale as Lang;
+
+// Generate position classes based on the selected position
+const getPositionClasses = () => {
+	switch (position) {
+		case "bottom-left":
+			return "bottom-4 left-4 translate-x-0";
+		case "bottom-right":
+			return "bottom-4 right-4 translate-x-0";
+		case "top-left":
+			return "top-4 left-4 translate-x-0";
+		case "top-right":
+			return "top-4 right-4 translate-x-0";
+		default:
+			return "bottom-4 left-4 translate-x-0";
+	}
+};
+
+const positionClasses = getPositionClasses();
+---
+
+<div id="js-languageSuggest" class={cn("fixed hidden z-50 opacity-0 transition-all duration-300 ease-in-out", positionClasses, attr.class)}>
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex items-center px-4 py-3 gap-3 w-auto max-w-md">
+    <div class="shrink-0">
+      <Icon name="tabler:language" class="size-5 mr-2 text-blue-500 dark:text-blue-400" />
+    </div>
+
+    <div class="grow">
+      <p class="text-sm text-gray-700 dark:text-gray-300">
+        <span class="font-medium ml-2" id="js-suggestionText"></span>
+        <a id="js-link" href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          <span id="js-linkText"></span>
+        </a>
+      </p>
+    </div>
+
+    <button id="js-close" class="shrink-0 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 ease-in-out" aria-label="Close">
+      <Icon name="tabler:x" class="size-4 text-gray-500 dark:text-gray-400" />
+      <span class="sr-only" id="js-closeText"></span>
+    </button>
+  </div>
+</div>
+
+<script is:inline define:vars={{ currentLocale, LOCALES, position }}>
+  const browserLang = navigator.language.toLowerCase();
+  const suggest = document.getElementById("js-languageSuggest");
+
+  // Prepare translations for all languages for client-side use
+  const allTranslations = Object.fromEntries(
+  	Object.keys(LOCALES).map((lang) => {
+  		const t = temporaryTranslations(lang); // Placeholder for actual translation fetching
+  		return [
+  			lang,
+  			{
+  				suggestion: t("language.suggestion"), // These will need to be fetched or passed differently
+  				close: t("close"),
+  			},
+  		];
+  	}),
+  );
+
+  // A temporary placeholder for the translation function in the client script
+  // You'll need to replace this with your actual client-side translation mechanism
+  function temporaryTranslations(lang) {
+    // This is a simplified mock. In a real scenario, you would have
+    // a more robust way to access translations on the client side.
+    const translations = {
+      en: { "language.suggestion": "This page is also available in English", "close": "Close" },
+      es: { "language.suggestion": "Esta página también está disponible en español", "close": "Cerrar" },
+      // Add other languages as needed
+    };
+    return (key) => translations[lang]?.[key] || translations['en']?.[key] || key;
+  }
+
+
+  // Get the best matching translation based on browser language
+  function getBrowserTranslations() {
+    // Try exact match first
+    if (allTranslations[browserLang]) {
+      return allTranslations[browserLang];
+    }
+
+    // Try base language match (e.g., "en" from "en-US")
+    const baseLang = browserLang.split("-")[0];
+    if (allTranslations[baseLang]) {
+      return allTranslations[baseLang];
+    }
+
+    // Fallback to currentLocale if no match
+    return allTranslations[currentLocale] || allTranslations["en"];
+  }
+
+  const translations = getBrowserTranslations();
+
+  // Set UI texts based on browser language
+  document.getElementById("js-suggestionText").innerText = translations.suggestion + ": ";
+  document.getElementById("js-closeText").innerText = translations.close;
+
+  const showSuggest = (lang) => {
+    const pathnames = location.pathname.split("/");
+    const link = document.getElementById("js-link");
+    const linkText = document.getElementById("js-linkText");
+
+    pathnames[1] = lang;
+    link.href = pathnames.join("/");
+    linkText.innerText = LOCALES[lang].label;
+
+    // Show with animation
+    suggest.style.display = "block";
+    setTimeout(() => {
+      suggest.style.opacity = "1";
+
+      // No transform needed when using fixed positioning at corners
+      if (position.includes("left") || position.includes("right")) {
+        suggest.style.transform = "translateY(0)";
+      }
+    }, 100);
+  };
+
+  if (
+    currentLocale === browserLang ||
+    currentLocale === browserLang.split("-")[0] ||
+    localStorage.languageSuggestDenied ||
+    localStorage.selectedLang
+  ) {
+    return;
+  } else if (Object.keys(LOCALES).includes(browserLang)) {
+    showSuggest(browserLang);
+  } else if (Object.keys(LOCALES).includes(browserLang.split("-")[0])) {
+    showSuggest(browserLang.split("-")[0]);
+  }
+
+  document.getElementById("js-close").addEventListener("click", () => {
+    // Hide with animation
+    suggest.style.opacity = "0";
+    setTimeout(() => {
+      suggest.style.display = "none";
+    }, 300);
+    localStorage.languageSuggestDenied = true;
+  });
+</script>

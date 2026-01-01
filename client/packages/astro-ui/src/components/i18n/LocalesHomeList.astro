@@ -1,0 +1,17 @@
+---
+import { LOCALES, SUPPORTED_LOCALES } from "@cvix/i18n";
+---
+
+{
+  SUPPORTED_LOCALES.map((lang) => (
+    <li>
+      <a
+        href={`/${lang}/`}
+        onclick={`localStorage.selectedLang = "${lang}"`}
+        dir={LOCALES[lang].dir || null}
+      >
+        {LOCALES[lang].label}
+      </a>
+    </li>
+  ))
+}

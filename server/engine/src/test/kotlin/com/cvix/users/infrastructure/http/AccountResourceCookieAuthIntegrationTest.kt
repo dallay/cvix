@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("MultilineRawStringIndentation")
 internal class AccountResourceCookieAuthIntegrationTest : ControllerIntegrationTest() {
-    private val email = "john.doe@cvix.com"
+    private val email = "john.doe@profiletailors.com"
     private val password = "S3cr3tP@ssw0rd*123"
     private var accessToken: AccessToken? = null
 
@@ -29,7 +29,7 @@ internal class AccountResourceCookieAuthIntegrationTest : ControllerIntegrationT
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.username").isEqualTo("john.doe")
-            .jsonPath("$.email").isEqualTo("john.doe@cvix.com")
+            .jsonPath("$.email").isEqualTo("john.doe@profiletailors.com")
             .jsonPath("$.firstname").isEqualTo("John")
             .jsonPath("$.lastname").isEqualTo("Doe")
             .jsonPath("$.authorities").isArray.jsonPath("$.authorities[0]")

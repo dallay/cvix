@@ -1,0 +1,43 @@
+---
+import { getFlatTranslations, type SupportedLocale } from "@cvix/i18n";
+import {
+	type Lang,
+	useTranslatedPath,
+	useTranslations,
+} from "@cvix/i18n/astro";
+import type { MenuItem } from "@cvix/lib";
+import Link from "../../ui/link/Link.astro";
+
+interface Props {
+	links: MenuItem[];
+	lang: Lang;
+}
+
+const { links, lang } = Astro.props;
+const commonUI = {
+	en: getFlatTranslations("en" as SupportedLocale),
+	es: getFlatTranslations("es" as SupportedLocale),
+};
+const t = useTranslations(lang, commonUI);
+const translatePath = useTranslatedPath(lang);
+---
+
+<ul class="text-muted-foreground font-medium space-y-5">
+  {
+    links.map(
+      (link) =>
+        link.type === "link" && (
+          <li>
+            <Link
+              href={translatePath(link.href)}
+              aria-label={link.ariaLabelKey ? t(link.ariaLabelKey) : undefined}
+              target={link.target}
+            >
+              {t(link.translationKey)}
+            </Link>
+          </li>
+        ),
+    )
+  }
+</ul>
+

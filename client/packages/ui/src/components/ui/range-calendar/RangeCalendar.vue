@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { RangeCalendarRootEmits, RangeCalendarRootProps } from "reka-ui";
 import { RangeCalendarRoot, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import {
 	RangeCalendarCell,
 	RangeCalendarCellTrigger,

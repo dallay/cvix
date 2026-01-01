@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
+import { cn } from "@cvix/lib";
 import {
 	Axis,
 	type BulletLegendItemInterface,
@@ -8,12 +9,7 @@ import {
 import { VisAxis, VisLine, VisXYContainer } from "@unovis/vue";
 import { useMounted } from "@vueuse/core";
 import { type Component, computed, ref } from "vue";
-import {
-	ChartCrosshair,
-	ChartLegend,
-	defaultColors,
-} from "../chart/index.ts";
-import { cn } from "../../../lib/utils.ts";
+import { ChartCrosshair, ChartLegend, defaultColors } from "../chart/index.ts";
 import type { BaseChartProps } from "../chart/interface";
 
 const props = withDefaults(

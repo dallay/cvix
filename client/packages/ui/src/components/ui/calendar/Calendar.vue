@@ -1,45 +1,82 @@
 <script lang="ts" setup>
-import type { CalendarRootEmits, CalendarRootProps, DateValue } from "reka-ui"
-import type { HTMLAttributes, Ref } from "vue"
-import type { LayoutTypes } from "./index.ts"
-import { getLocalTimeZone, today } from "@internationalized/date"
-import { createReusableTemplate, reactiveOmit, useVModel } from "@vueuse/core"
-import { CalendarRoot, useDateFormatter, useForwardPropsEmits } from "reka-ui"
-import { createYear, createYearRange, toDate } from "reka-ui/date"
-import { computed, toRaw } from "vue"
-import { cn } from "../../../lib/utils.ts"
-import { NativeSelect, NativeSelectOption } from '../native-select/index.ts'
-import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNextButton, CalendarPrevButton } from "./index.ts"
+import { cn } from "@cvix/lib";
+import { getLocalTimeZone, today } from "@internationalized/date";
+import { createReusableTemplate, reactiveOmit, useVModel } from "@vueuse/core";
+import type { CalendarRootEmits, CalendarRootProps, DateValue } from "reka-ui";
+import { CalendarRoot, useDateFormatter, useForwardPropsEmits } from "reka-ui";
+import { createYear, createYearRange, toDate } from "reka-ui/date";
+import type { HTMLAttributes, Ref } from "vue";
+import { computed, toRaw } from "vue";
+import { NativeSelect, NativeSelectOption } from "../native-select/index.ts";
+import type { LayoutTypes } from "./index.ts";
+import {
+	CalendarCell,
+	CalendarCellTrigger,
+	CalendarGrid,
+	CalendarGridBody,
+	CalendarGridHead,
+	CalendarGridRow,
+	CalendarHeadCell,
+	CalendarHeader,
+	CalendarHeading,
+	CalendarNextButton,
+	CalendarPrevButton,
+} from "./index.ts";
 
-const props = withDefaults(defineProps<CalendarRootProps & { class?: HTMLAttributes["class"], layout?: LayoutTypes, yearRange?: DateValue[] }>(), {
-  modelValue: undefined,
-  layout: undefined,
-})
-const emits = defineEmits<CalendarRootEmits>()
+const props = withDefaults(
+	defineProps<
+		CalendarRootProps & {
+			class?: HTMLAttributes["class"];
+			layout?: LayoutTypes;
+			yearRange?: DateValue[];
+		}
+	>(),
+	{
+		modelValue: undefined,
+		layout: undefined,
+	},
+);
+const emits = defineEmits<CalendarRootEmits>();
 
-const delegatedProps = reactiveOmit(props, "class", "layout", "placeholder")
+const delegatedProps = reactiveOmit(props, "class", "layout", "placeholder");
 
 const placeholder = useVModel(props, "placeholder", emits, {
-  passive: true,
-  defaultValue: (props.defaultPlaceholder ?? today(getLocalTimeZone())) as DateValue,
-}) as Ref<DateValue>
+	passive: true,
+	defaultValue: (props.defaultPlaceholder ??
+		today(getLocalTimeZone())) as DateValue,
+}) as Ref<DateValue>;
 
-const formatter = useDateFormatter(props.locale ?? "en")
+const formatter = useDateFormatter(props.locale ?? "en");
 
 const yearRange = computed(() => {
-  return props.yearRange ?? createYearRange({
-    start: (props?.minValue ?? (toRaw(props.placeholder) ?? props.defaultPlaceholder ?? today(getLocalTimeZone()))
-      .cycle("year", -100)) as DateValue,
+	return (
+		props.yearRange ??
+		createYearRange({
+			start: (props?.minValue ??
+				(
+					toRaw(props.placeholder) ??
+					props.defaultPlaceholder ??
+					today(getLocalTimeZone())
+				).cycle("year", -100)) as DateValue,
 
-    end: (props?.maxValue ?? (toRaw(props.placeholder) ?? props.defaultPlaceholder ?? today(getLocalTimeZone()))
-      .cycle("year", 10)) as DateValue,
-  })
-})
+			end: (props?.maxValue ??
+				(
+					toRaw(props.placeholder) ??
+					props.defaultPlaceholder ??
+					today(getLocalTimeZone())
+				).cycle("year", 10)) as DateValue,
+		})
+	);
+});
 
-const [DefineMonthTemplate, ReuseMonthTemplate] = createReusableTemplate<{ date: DateValue }>()
-const [DefineYearTemplate, ReuseYearTemplate] = createReusableTemplate<{ date: DateValue }>()
+const [DefineMonthTemplate, ReuseMonthTemplate] = createReusableTemplate<{
+	date: DateValue;
+}>();
+const [DefineYearTemplate, ReuseYearTemplate] = createReusableTemplate<{
+	date: DateValue;
+}>();
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits)
+const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>

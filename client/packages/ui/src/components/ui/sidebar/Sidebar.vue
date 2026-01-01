@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { Sheet, SheetContent } from "../sheet/index.ts";
 import SheetDescription from "../sheet/SheetDescription.vue";
 import SheetHeader from "../sheet/SheetHeader.vue";
 import SheetTitle from "../sheet/SheetTitle.vue";
-import { cn } from "../../../lib/utils.ts";
 import type { SidebarProps } from "./index.ts";
 import { SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils.ts";
 

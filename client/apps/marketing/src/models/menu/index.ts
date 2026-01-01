@@ -1,3 +1,6 @@
-export * from "./menu.constants";
-export * from "./menu.service";
-export * from "./menu.type";
+export type { MenuItem } from "@cvix/lib";
+export {
+	filterMenuItems,
+	footerNavLinks,
+	headerMenuItems,
+} from "@cvix/lib";

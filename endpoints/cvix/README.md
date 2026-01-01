@@ -323,7 +323,7 @@ POST /api/auth/login
 X-XSRF-TOKEN: {{xsrfToken}}
 
 {
-  "email": "john.doe@cvix.com",
+  "email": "john.doe@profiletailors.com",
   "password": "S3cr3tP@ssw0rd*123",
   "rememberMe": false
 }
@@ -337,7 +337,7 @@ X-XSRF-TOKEN: {{xsrfToken}}
 
 ```json
 {
-    "email": "john.doe@cvix.com",
+    "email": "john.doe@profiletailors.com",
     "password": "S3cr3tP@ssw0rd*123",
     "rememberMe": false
 }

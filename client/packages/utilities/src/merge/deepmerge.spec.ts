@@ -121,16 +121,13 @@ describe("deepmerge", () => {
 	});
 
 	it("deepmerge.all throws error when first argument is not an array", () => {
-		expect(() => deepmerge.all({} as unknown[]))
-			.toThrow("first argument should be an array");
+		expect(() => deepmerge.all({} as unknown[])).toThrow(
+			"first argument should be an array",
+		);
 	});
 
 	it("deepmerge.all merges multiple objects", () => {
-		const result = deepmerge.all([
-			{ a: 1 },
-			{ b: 2 },
-			{ c: 3 }
-		]);
+		const result = deepmerge.all([{ a: 1 }, { b: 2 }, { c: 3 }]);
 		expect(result).toEqual({ a: 1, b: 2, c: 3 });
 	});
 });

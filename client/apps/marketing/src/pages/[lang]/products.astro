@@ -1,7 +1,10 @@
 ---
-import Footer from "@/components/sections/Footer.astro";
-import { type Lang, LOCALES, useTranslations } from "@/i18n";
-import Layout from "@/layouts/Base.astro";
+import { Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import { LOCALES } from "@cvix/i18n";
+import { type Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { useTranslations } from "@/i18n/i18n";
+import { footerNavLinks } from "@/models/menu";
 
 const t = useTranslations(Astro.currentLocale as Lang);
 
@@ -9,12 +12,18 @@ export const getStaticPaths = () =>
 	Object.keys(LOCALES).map((lang) => ({
 		params: { lang },
 	}));
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
 ---
 
-<Layout title={t('products.title')} description={t('products.description')}>
+<Layout title={t('products.title')} description={t('products.description')} {og} >
   <main class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-4">{t('products.title')}</h1>
     <p>{t('products.contentPlaceholder')}</p>
   </main>
-  <Footer />
+  <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Layout>

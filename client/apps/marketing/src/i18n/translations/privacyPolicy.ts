@@ -1,4 +1,4 @@
-import type { UIMultilingual } from "@i18n";
+import type { UIMultilingual } from "@cvix/i18n/astro";
 
 export const privacyPolicy: UIMultilingual = {
 	en: {

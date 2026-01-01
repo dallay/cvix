@@ -22,6 +22,7 @@ PNPM := pnpm
 # Project specific variables
 CLIENT_LANDING_FILTER := --filter @cvix/marketing
 CLIENT_WEBAPP_FILTER := --filter @cvix/webapp
+CLIENT_BLOG_FILTER := --filter @cvix/blog
 CLIENT_DOCS_FILTER := --filter @cvix/docs
 
 # Build configuration
@@ -92,6 +93,10 @@ dev-web:
 # Runs the documentation in development mode.
 dev-docs:
 	@$(PNPM) $(CLIENT_DOCS_FILTER) dev
+
+# Runs the blog in development mode.
+dev-blog:
+	@$(PNPM) $(CLIENT_BLOG_FILTER) dev
 
 # ------------------------------------------------------------------------------------
 # LOCAL DEVELOPMENT UTILITIES
@@ -176,6 +181,14 @@ build-web:
 # Builds the documentation.
 build-docs:
 	@$(PNPM) $(CLIENT_DOCS_FILTER) build
+
+# Builds the blog.
+build-blog:
+	@$(PNPM) $(CLIENT_BLOG_FILTER) build
+
+# Previews the blog.
+preview-blog:
+	@$(PNPM) $(CLIENT_BLOG_FILTER) preview
 
 # ------------------------------------------------------------------------------------
 # TESTING & LINTING
@@ -373,4 +386,4 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs build build-landing preview-landing build-web build-docs test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets

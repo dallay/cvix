@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { PrimitiveProps } from "reka-ui";
 import { Primitive } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import type { BadgeVariants } from "./index.ts";
 import { badgeVariants } from "./index.ts";
 

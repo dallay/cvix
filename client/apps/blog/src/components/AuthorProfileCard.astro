@@ -1,0 +1,133 @@
+---
+import { OptimizedPicture } from "@cvix/astro-ui";
+import { cn } from "@cvix/lib";
+import { initials } from "@cvix/utilities";
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "astro-icon/components";
+import { type Lang, useTranslations } from "@/i18n";
+import type Author from "@/models/author/author.model";
+import { cleanEntityId } from "@/utils/collection.entity";
+
+interface Props extends HTMLAttributes<"article"> {
+	author: Author;
+	articlesCount?: number;
+	loading?: "lazy" | "eager" | undefined;
+}
+
+const {
+	author,
+	articlesCount = 0,
+	loading = undefined,
+	class: className,
+	...attrs
+} = Astro.props;
+
+const { lang } = Astro.params;
+const currentLocale = lang as Lang;
+const t = useTranslations(currentLocale);
+
+const getInitials = (name: string): string => initials(name);
+
+const authorProfileUrl = `/${currentLocale}/authors/${cleanEntityId(author.id).toLowerCase()}`;
+---
+
+<article
+    class={cn(
+        "group relative bg-white dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out",
+        "border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600",
+        "overflow-hidden hover:-translate-y-1",
+        className
+    )}
+    {...attrs}
+>
+  <div class="p-6">
+    <div class="flex items-center mb-4">
+      <div class="relative h-16 w-16 mr-4 flex shrink-0 overflow-hidden rounded-full border bg-gray-100 border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+        {author.avatar ? (
+            <OptimizedPicture
+                src={author.avatar}
+                alt={author.name}
+                width={64}
+                height={64}
+                loading={loading}
+                class="aspect-square h-full w-full object-cover"
+            />
+        ) : (
+            <div class="flex h-full w-full items-center justify-center bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300 font-medium text-lg">
+              {getInitials(author.name)}
+            </div>
+        )}
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+          {author.name}
+        </h3>
+        {author.role && (
+            <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
+              {author.role}
+            </p>
+        )}
+      </div>
+    </div>
+
+
+    {author.bio && (
+        <p class="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
+          {author.bio}
+        </p>
+    )}
+
+
+    <div class="flex items-center justify-between mb-4">
+      {author.location && (
+          <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            <svg class="w-3 h-3 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+            </svg>
+            <span class="truncate">{author.location}</span>
+          </div>
+      )}
+
+      {articlesCount > 0 && (
+          <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+            <svg class="w-3 h-3 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+            <span> {t("authors.articlesCount", { count: articlesCount })}</span>
+          </div>
+      )}
+    </div>
+
+
+    {author.socials && author.socials.length > 0 && (
+        <div class="flex gap-2 mb-4">
+          {author.socials.slice(0, 3).map((social) => (
+              <a
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  aria-label={`Follow on ${social.name}`}
+                  title={social.name}
+              >
+                <span class="sr-only">{social.name}</span>
+                <Icon name={social.icon} class="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              </a>
+          ))}
+        </div>
+    )}
+
+
+    <a
+        href={authorProfileUrl}
+        class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+        aria-label={`View profile - ${author.name}`}
+    >
+      {t("author.profile.viewProfile")}
+      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+  </div>
+</article>

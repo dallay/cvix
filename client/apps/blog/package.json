@@ -1,0 +1,81 @@
+{
+	"name": "@cvix/blog",
+	"description": "ProFileTailors blog built with Astro - articles, tutorials, and insights",
+	"version": "1.0.0",
+	"private": true,
+	"license": "MIT",
+	"type": "module",
+	"homepage": "https://blog.profiletailors.com",
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.13.1"
+	},
+	"packageManager": "pnpm@10.26.2",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dallay/cvix.git",
+		"directory": "client/apps/blog",
+		"branch": "main"
+	},
+	"bugs": {
+		"url": "https://github.com/dallay/cvix/issues"
+	},
+	"keywords": [
+		"cvix",
+		"blog",
+		"astro",
+		"articles",
+		"profiletailors"
+	],
+	"author": "ProFileTailors Team",
+	"scripts": {
+		"update": "pnpm update",
+		"update-interactive": "pnpm update --interactive",
+		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev",
+		"dev:http": "FORCE_HTTP=true astro dev",
+		"start": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev --open",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"check": "astro check",
+		"astro:check": "astro check",
+		"format": "biome format . --write",
+		"astro": "astro",
+		"test": "echo 'No tests configured for @cvix/blog'",
+		"test:ui": "echo 'No tests configured for @cvix/blog'",
+		"test:coverage": "echo 'No tests configured for @cvix/blog'"
+	},
+	"dependencies": {
+		"@astrojs/mdx": "catalog:",
+		"@astrojs/rss": "catalog:",
+		"@astrojs/sitemap": "catalog:",
+		"@astrojs/vue": "catalog:",
+		"@cvix/assets": "workspace:*",
+		"@cvix/astro-ui": "workspace:*",
+		"@cvix/lib": "workspace:*",
+		"@cvix/i18n": "workspace:*",
+		"@cvix/ui": "workspace:*",
+		"@cvix/utilities": "workspace:*",
+		"@iconify-json/openmoji": "catalog:",
+		"@iconify-json/tabler": "catalog:",
+		"@tailwindcss/vite": "catalog:",
+		"@vueuse/core": "catalog:",
+		"astro": "catalog:",
+		"astro-icon": "catalog:",
+		"lucide-vue-next": "catalog:",
+		"mdast-util-to-string": "catalog:",
+		"reading-time": "catalog:",
+		"tailwindcss": "catalog:",
+		"tw-animate-css": "catalog:",
+		"vue": "catalog:"
+	},
+	"devDependencies": {
+		"@astrojs/check": "catalog:",
+		"@cvix/config": "workspace:*",
+		"@tailwindcss/typography": "catalog:",
+		"@vitest/coverage-v8": "catalog:",
+		"happy-dom": "catalog:",
+		"sharp": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

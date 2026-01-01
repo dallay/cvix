@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import { X } from "lucide-vue-next";
 import type { DialogContentEmits, DialogContentProps } from "reka-ui";
@@ -9,7 +10,6 @@ import {
 	useForwardPropsEmits,
 } from "reka-ui";
 import type { HTMLAttributes } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import DialogOverlay from "./DialogOverlay.vue";
 
 const props = defineProps<

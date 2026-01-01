@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { VariantProps } from "class-variance-authority";
 import type { ToggleGroupRootEmits, ToggleGroupRootProps } from "reka-ui";
@@ -6,7 +7,6 @@ import { ToggleGroupRoot, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { provide } from "vue";
 import type { toggleVariants } from "../toggle/index.ts";
-import { cn } from "../../../lib/utils.ts";
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;
 

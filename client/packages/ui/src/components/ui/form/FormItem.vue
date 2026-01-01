@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { cn } from "@cvix/lib";
 import { useId } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import { provide } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import { FORM_ITEM_INJECTION_KEY } from "./injectionKeys.ts";
 
 const props = defineProps<{

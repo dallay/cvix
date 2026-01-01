@@ -1,0 +1,192 @@
+---
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
+import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
+import { LOCALES } from "@cvix/i18n";
+import { type Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { Icon } from "astro-icon/components";
+import ArticleCard from "@/components/ArticleCard.astro";
+import { useTranslations } from "@/i18n/i18n";
+import { getArticles } from "@/models/article";
+import { countArticlesByAuthor, getAuthors } from "@/models/author";
+import type Author from "@/models/author/author.model";
+import { cleanEntityId } from "@/utils/collection.entity";
+import { prepareImageForOptimizedPicture } from "@/utils/images";
+
+export const getStaticPaths = async () => {
+	const allPaths = [];
+
+	for (const lang of Object.keys(LOCALES)) {
+		const authors = await getAuthors({ lang: lang as Lang });
+
+		for (const author of authors) {
+			const cleanId = cleanEntityId(author.id).toLowerCase();
+			allPaths.push({
+				params: {
+					lang,
+					id: cleanId,
+				},
+				props: { author },
+			});
+		}
+	}
+
+	return allPaths;
+};
+
+interface Props {
+	author: Author;
+}
+
+const { lang, id } = Astro.params;
+const { author } = Astro.props as Props;
+
+const currentLocale = lang as Lang;
+const t = useTranslations(currentLocale);
+
+// Get articles by this author
+const allArticles = await getArticles({ lang: currentLocale });
+const authorArticles = allArticles.filter(
+	(article) =>
+		article.author?.id === author.id ||
+		cleanEntityId(article.author?.id || "").toLowerCase() === id,
+);
+
+// Prepare cover images for all articles
+const articlesWithPreparedImages = await Promise.all(
+	authorArticles.map(async (article) => ({
+		...article,
+		cover: article.cover
+			? await prepareImageForOptimizedPicture(article.cover)
+			: undefined,
+	})),
+);
+
+function isValidImage(img: unknown): img is ImageMetadata | string {
+	return (
+		typeof img === "string" ||
+		(typeof img === "object" && img !== null && "src" in img)
+	);
+}
+
+// compute articles count (use the service which may normalize ids)
+const articlesCount = await countArticlesByAuthor(author.id, currentLocale);
+
+const getInitials = (name: string): string => {
+	if (!name) return "";
+	const names = name.trim().split(/\s+/);
+	if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
+	return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase();
+};
+
+const defaultRole = currentLocale === "en" ? "Author" : "Autor";
+const title = `${author.name} - ${t("author.profile.title")}`;
+const description = t("author.meta.description", {
+	name: author.name,
+	role: author.role || defaultRole,
+});
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+---
+
+<Layout title={title} description={description} {og}>
+  <section
+    class="max-w-4xl mx-auto rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 overflow-hidden p-10 mt-24 text-center"
+  >
+    <div
+      class="mx-auto mb-6 w-32 h-32 rounded-full border-4 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center text-4xl font-semibold text-gray-600 dark:text-gray-300"
+    >
+      {
+        author.avatar ? (
+          <OptimizedPicture
+            src={author.avatar}
+            alt={author.name}
+            width={128}
+            height={128}
+            loading="eager"
+            class="aspect-square h-full w-full object-cover rounded-full"
+          />
+        ) : (
+          <span>{getInitials(author.name)}</span>
+        )
+      }
+    </div>
+
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{author.name}</h1>
+
+    {author.role && <p class="text-lg text-gray-600 dark:text-gray-400 mb-2">{author.role}</p>}
+
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+      {author.location && <span>{author.location} &middot; </span>}
+      <span>{t("author.profile.articlesCount", { count: articlesCount })}</span>
+    </p>
+
+    {
+      author.bio && (
+        <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{author.bio}</p>
+      )
+    }
+
+    {
+      author.socials && author.socials.length > 0 && (
+        <div class="flex justify-center items-center gap-2 mb-4">
+          {author.socials.slice(0, 3).map((social) => (
+            <a
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              aria-label={`Follow on ${social.name}`}
+              title={social.name}
+            >
+              <span class="sr-only">{social.name}</span>
+              <Icon name={social.icon} class="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-10 text-center">Latest Post</h2>
+
+    {
+      authorArticles.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {articlesWithPreparedImages.map((article) => (
+            <ArticleCard
+              image={isValidImage(article.cover) ? article.cover : undefined}
+              title={article.title}
+              description={article.description}
+              url={`/${currentLocale}/post/${cleanEntityId(article.id)}`}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">
+            {t("author.profile.noArticles")}
+          </h3>
+        </div>
+      )
+    }
+  </section>
+</Layout>

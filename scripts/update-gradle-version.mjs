@@ -10,8 +10,8 @@
  * Example: node scripts/update-gradle-version.mjs 1.2.3
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -59,7 +59,9 @@ try {
 		writeFileSync(gradlePropertiesPath, updatedContent, "utf8");
 	}
 
-	console.log(`✅ Successfully updated gradle.properties to version ${version}`);
+	console.log(
+		`✅ Successfully updated gradle.properties to version ${version}`,
+	);
 } catch (error) {
 	console.error(`❌ Error updating gradle.properties: ${error.message}`);
 	process.exit(1);

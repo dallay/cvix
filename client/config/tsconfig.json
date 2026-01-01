@@ -1,5 +1,5 @@
 {
-  "extends": "@cvix/tsconfig/tsconfig.node.json",
+	"extends": "@cvix/tsconfig/tsconfig.node.json",
 	"compilerOptions": {
 		"composite": true,
 		"declaration": true

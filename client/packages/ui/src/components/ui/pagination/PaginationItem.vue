@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
 import type { PaginationListItemProps } from "reka-ui";
 import { PaginationListItem } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 import type { ButtonVariants } from "../button/index.ts";
 import { buttonVariants } from "../button/index.ts";
-import { cn } from "../../../lib/utils.ts";
 
 const props = withDefaults(
 	defineProps<

@@ -1,0 +1,22 @@
+/**
+ * Global Styles for Astro UI Package
+ *
+ * This file imports centralized design tokens and base styles from the config package
+ * to ensure consistency across all apps using @cvix/astro-ui.
+ *
+ * Each app can extend these styles by importing this file and adding app-specific styles.
+ *
+ * DO NOT duplicate CSS variables here. All variables are defined in:
+ * - client/config/styles/variables.css (design tokens)
+ * - client/config/styles/base.css (base styles, scrollbars)
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../../../../config/styles/variables.css";
+@import "../../../../config/styles/base.css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+@source "../components/**/*.astro";
+@source "../../../../ui/src/**/*.astro";

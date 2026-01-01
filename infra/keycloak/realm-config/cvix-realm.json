@@ -1,8 +1,8 @@
 {
-  "id": "cvix",
-  "realm": "cvix",
-  "displayName": "cvix",
-  "displayNameHtml": "cvix",
+	"id": "cvix",
+	"realm": "cvix",
+	"displayName": "cvix",
+	"displayNameHtml": "cvix",
 	"notBefore": 0,
 	"defaultSignatureAlgorithm": "RS256",
 	"revokeRefreshToken": false,
@@ -50,10 +50,10 @@
 			{
 				"id": "8e986fb5-dafb-43bf-a7c2-7e57572d3d80",
 				"name": "ROLE_ADMIN",
-        "description": "cvix administrator role",
+				"description": "cvix administrator role",
 				"composite": false,
 				"clientRole": false,
-        "containerId": "cvix",
+				"containerId": "cvix",
 				"attributes": {}
 			},
 			{
@@ -62,21 +62,21 @@
 				"description": "${role_offline-access}",
 				"composite": false,
 				"clientRole": false,
-        "containerId": "cvix",
+				"containerId": "cvix",
 				"attributes": {}
 			},
 			{
 				"id": "ec5705e1-fc1d-4d21-8364-abd3bd4efcd0",
 				"name": "ROLE_USER",
-        "description": "cvix user role",
+				"description": "cvix user role",
 				"composite": false,
 				"clientRole": false,
-        "containerId": "cvix",
+				"containerId": "cvix",
 				"attributes": {}
 			},
 			{
 				"id": "d2b73e7b-a2d7-40e9-8ebc-2af00454e8aa",
-        "name": "default-roles-cvix",
+				"name": "default-roles-cvix",
 				"description": "${role_default-roles}",
 				"composite": true,
 				"composites": {
@@ -86,7 +86,7 @@
 					}
 				},
 				"clientRole": false,
-        "containerId": "cvix",
+				"containerId": "cvix",
 				"attributes": {}
 			},
 			{
@@ -95,12 +95,12 @@
 				"description": "${role_uma_authorization}",
 				"composite": false,
 				"clientRole": false,
-        "containerId": "cvix",
+				"containerId": "cvix",
 				"attributes": {}
 			}
 		],
 		"client": {
-      "cvix-control-center": [],
+			"cvix-control-center": [],
 			"internal": [],
 			"realm-management": [
 				{
@@ -423,11 +423,11 @@
 	],
 	"defaultRole": {
 		"id": "d2b73e7b-a2d7-40e9-8ebc-2af00454e8aa",
-    "name": "default-roles-cvix",
+		"name": "default-roles-cvix",
 		"description": "${role_default-roles}",
 		"composite": true,
 		"clientRole": false,
-    "containerId": "cvix"
+		"containerId": "cvix"
 	},
 	"requiredCredentials": ["password"],
 	"otpPolicyType": "totp",
@@ -473,9 +473,7 @@
 			"serviceAccountClientId": "internal",
 			"disableableCredentialTypes": [],
 			"requiredActions": [],
-      "realmRoles": [
-        "default-roles-cvix"
-      ],
+			"realmRoles": ["default-roles-cvix"],
 			"notBefore": 0,
 			"groups": []
 		},
@@ -488,7 +486,7 @@
 			"emailVerified": true,
 			"firstName": "Admin",
 			"lastName": "Administrator",
-      "email": "admin@cvix.com",
+			"email": "admin@profiletailors.com",
 			"credentials": [
 				{
 					"id": "b860462b-9b02-48ba-9523-d3a8926a917b",
@@ -516,7 +514,7 @@
 			"emailVerified": true,
 			"firstName": "",
 			"lastName": "User",
-      "email": "user@cvix.com",
+			"email": "user@profiletailors.com",
 			"credentials": [
 				{
 					"id": "7821832b-1e82-45a2-b8d3-f1a6ad909e64",
@@ -545,7 +543,7 @@
 			"emailVerified": true,
 			"firstName": "John",
 			"lastName": "Doe",
-      "email": "john.doe@cvix.com",
+			"email": "john.doe@profiletailors.com",
 			"credentials": [
 				{
 					"id": "dbfb1777-f99c-423c-bff8-23d08d489267",
@@ -585,15 +583,13 @@
 			"clientId": "account",
 			"name": "${client_account}",
 			"rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/cvix/account/",
+			"baseUrl": "/realms/cvix/account/",
 			"surrogateAuthRequired": false,
 			"enabled": true,
 			"alwaysDisplayInConsole": false,
 			"clientAuthenticatorType": "client-secret",
 			"secret": "**********",
-      "redirectUris": [
-        "/realms/cvix/account/*"
-      ],
+			"redirectUris": ["/realms/cvix/account/*"],
 			"webOrigins": [],
 			"notBefore": 0,
 			"bearerOnly": false,
@@ -624,15 +620,13 @@
 			"clientId": "account-console",
 			"name": "${client_account-console}",
 			"rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/cvix/account/",
+			"baseUrl": "/realms/cvix/account/",
 			"surrogateAuthRequired": false,
 			"enabled": true,
 			"alwaysDisplayInConsole": false,
 			"clientAuthenticatorType": "client-secret",
 			"secret": "**********",
-      "redirectUris": [
-        "/realms/cvix/account/*"
-      ],
+			"redirectUris": ["/realms/cvix/account/*"],
 			"webOrigins": [],
 			"notBefore": 0,
 			"bearerOnly": false,
@@ -835,7 +829,7 @@
 		},
 		{
 			"id": "1acf7ad0-68cb-46a6-a3e4-8b2f2abecb85",
-      "clientId": "cvix-control-center",
+			"clientId": "cvix-control-center",
 			"rootUrl": "http://localhost:7419",
 			"adminUrl": "http://localhost:7419",
 			"surrogateAuthRequired": false,
@@ -884,7 +878,7 @@
 			"defaultClientScopes": [
 				"web-origins",
 				"roles",
-        "cvix",
+				"cvix",
 				"profile",
 				"email",
 				"openid"
@@ -936,15 +930,13 @@
 			"clientId": "security-admin-console",
 			"name": "${client_security-admin-console}",
 			"rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/cvix/console/",
+			"baseUrl": "/admin/cvix/console/",
 			"surrogateAuthRequired": false,
 			"enabled": true,
 			"alwaysDisplayInConsole": false,
 			"clientAuthenticatorType": "client-secret",
 			"secret": "**********",
-      "redirectUris": [
-        "/admin/cvix/console/*"
-      ],
+			"redirectUris": ["/admin/cvix/console/*"],
 			"webOrigins": ["+"],
 			"notBefore": 0,
 			"bearerOnly": false,
@@ -1045,7 +1037,7 @@
 			"defaultClientScopes": [
 				"web-origins",
 				"roles",
-        "cvix",
+				"cvix",
 				"profile",
 				"email",
 				"openid"
@@ -1279,8 +1271,8 @@
 		},
 		{
 			"id": "9816de82-24b7-42fe-a85a-1264868ec293",
-      "name": "cvix",
-      "description": "cvix specific claims",
+			"name": "cvix",
+			"description": "cvix specific claims",
 			"protocol": "openid-connect",
 			"attributes": {
 				"include.in.token.scope": "false",
@@ -1634,17 +1626,17 @@
 		"strictTransportSecurity": "max-age=31536000; includeSubDomains"
 	},
 	"smtpServer": {
-    "replyToDisplayName": "cvix",
+		"replyToDisplayName": "cvix",
 		"starttls": "false",
 		"auth": "false",
 		"envelopeFrom": "",
 		"ssl": "false",
 		"password": "secret",
 		"port": "3025",
-    "replyTo": "noreply@cvix.local",
+		"replyTo": "noreply@cvix.local",
 		"host": "greenmail",
-    "from": "noreply@cvix.local",
-    "fromDisplayName": "cvix Development",
+		"from": "noreply@cvix.local",
+		"fromDisplayName": "cvix Development",
 		"user": "developer"
 	},
 	"eventsEnabled": false,

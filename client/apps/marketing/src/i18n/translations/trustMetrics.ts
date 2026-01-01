@@ -1,4 +1,4 @@
-import type {UIMultilingual} from "@i18n";
+import type { UIMultilingual } from "@cvix/i18n/astro";
 
 export const trustMetrics: UIMultilingual = {
 	en: {
@@ -52,6 +52,7 @@ export const trustMetrics: UIMultilingual = {
 		"trustMetrics.feature2.description":
 			"Obtén sugerencias de palabras clave según la descripción del puesto.",
 		"trustMetrics.mockup.score": "Puntaje 98%",
-		"trustMetrics.mockup.message": "Tu CV está optimizado para ATS. Todas las secciones son legibles.",
+		"trustMetrics.mockup.message":
+			"Tu CV está optimizado para ATS. Todas las secciones son legibles.",
 	},
 };

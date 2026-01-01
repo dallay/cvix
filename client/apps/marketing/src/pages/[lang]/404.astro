@@ -1,8 +1,9 @@
 ---
-export const prerender = true;
-
-import { type Lang, LOCALES, localeParams, useTranslations } from "@/i18n";
-import Layout from "@/layouts/Base.astro";
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
+import { LOCALES } from "@cvix/i18n";
+import { type Lang, localeParams, SUPPORTED_LOCALES } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { useTranslations } from "@/i18n/i18n";
 
 const t = useTranslations(Astro.currentLocale as Lang);
 
@@ -11,10 +12,21 @@ const title = t({
 	es: "Página No Encontrada",
 });
 
+const description = t({
+	en: "The page you are looking for could not be found.",
+	es: "La página que estás buscando no se pudo encontrar.",
+});
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+
 export const getStaticPaths = () => localeParams;
 ---
 
-<Layout {title}>
+<Layout {title} {description} {og} >
   <section class="text-center p-8 rounded-2xl min-w-screen flex justify-center items-center flex-col mt-24">
     <h1 class="text-caution text-2xl">
       <b class="block text-9xl font-black -tracking-wider opacity-60">404</b>
@@ -51,7 +63,7 @@ export const getStaticPaths = () => localeParams;
 
       <ul class="mt-4 flex gap-4 justify-center">
         {
-          Object.entries(LOCALES).map(([lang, { label }]) => (
+          SUPPORTED_LOCALES.map((lang) => (
               <li>
                 <a
                     href={`/${lang}/`}
@@ -60,7 +72,7 @@ export const getStaticPaths = () => localeParams;
                     dir={LOCALES[lang].dir || null}
                     class="text-theme underline"
                 >
-                  {label}
+                  {LOCALES[lang].label}
                 </a>
               </li>
           ))
@@ -76,8 +88,7 @@ export const getStaticPaths = () => localeParams;
 
     document.querySelectorAll("a[data-lang-path]").forEach((a) => {
       const pathnames = localStorage.userAccessPath.split("/");
-      const lang = a.getAttribute("data-lang-path");
-      pathnames[1] = lang;
+      pathnames[1] = a.getAttribute("data-lang-path");
       a.href = pathnames.join("/");
     });
 

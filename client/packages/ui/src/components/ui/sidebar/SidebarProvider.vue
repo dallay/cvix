@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from "@cvix/lib";
 import {
 	defaultDocument,
 	useEventListener,
@@ -8,7 +9,6 @@ import {
 import { TooltipProvider } from "reka-ui";
 import type { HTMLAttributes, Ref } from "vue";
 import { computed, ref } from "vue";
-import { cn } from "../../../lib/utils.ts";
 import {
 	provideSidebarContext,
 	SIDEBAR_COOKIE_MAX_AGE,
@@ -48,6 +48,7 @@ function setOpen(value: boolean) {
 	open.value = value; // emits('update:open', value)
 
 	// This sets the cookie to keep the sidebar state.
+	// biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API is experimental and not widely supported
 	document.cookie = `${SIDEBAR_COOKIE_NAME}=${open.value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 }
 

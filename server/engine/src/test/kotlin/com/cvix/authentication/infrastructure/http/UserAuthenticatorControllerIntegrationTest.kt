@@ -22,7 +22,7 @@ private const val ERROR_CATEGORY = "AUTHENTICATION"
 @AutoConfigureWebTestClient
 internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestContainers() {
     // this user is created by default in Keycloak container (see demo-realm-test.json)
-    private val email = "john.doe@cvix.com"
+    private val email = "john.doe@profiletailors.com"
     private val username = "john.doe"
     private val password = "S3cr3tP@ssw0rd*123"
 
@@ -140,7 +140,7 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
             .bodyValue(
                 """
                 {
-                    "email": "invalid.user@cvix.com",
+                    "email": "invalid.user@profiletailors.com",
                     "password": "$password"
                 }
                 """.trimIndent(),

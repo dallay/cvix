@@ -1,0 +1,68 @@
+---
+import { getFlatTranslations, type SupportedLocale } from "@cvix/i18n";
+import {
+	type Lang,
+	useTranslatedPath,
+	useTranslations,
+} from "@cvix/i18n/astro";
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+	siteTitle: string;
+}
+const { siteTitle, class: className, ...attrs } = Astro.props as Props;
+const lang = (Astro.currentLocale || "en") as Lang;
+const commonUI = {
+	en: getFlatTranslations("en" as SupportedLocale),
+	es: getFlatTranslations("es" as SupportedLocale),
+};
+const t = useTranslations(lang, commonUI);
+const translatePath = useTranslatedPath(lang);
+
+import LogoDark from "@cvix/assets/logos/dark-isotype.svg";
+import LogoLight from "@cvix/assets/logos/light-isotype.svg";
+---
+
+<a
+  href={translatePath("/")}
+  id="site-title"
+  class={cn(
+    "items-start gap-1 flex-[0_0_auto] inline-flex relative",
+    "transition-colors",
+    className,
+  )}
+  {...attrs}
+  aria-label={t("logo.description")}
+>
+  <LogoLight
+    width={32}
+    height={32}
+    fill="currentColor"
+    class="relative flex-[0_0_auto] text-gray-800 block dark:hidden"
+  />
+
+  <LogoDark
+    width={32}
+    height={32}
+    fill="currentColor"
+    class="relative flex-[0_0_auto] text-white hidden dark:block"
+  />
+  <div class="inline-flex flex-col items-end justify-center relative flex-[0_0_auto] -gap-1">
+    <div
+      class="relative w-fit text-xl font-semibold text-gray-800 dark:text-white whitespace-nowrap"
+    >
+      {siteTitle}
+    </div>
+    <div
+      class="relative w-fit font-normal text-xs leading-[140%] text-gray-600 dark:text-gray-400 whitespace-nowrap"
+    >
+      {
+        t({
+          en: "for Astrum",
+          es: "por Astrum",
+        })
+      }
+    </div>
+  </div>
+</a>

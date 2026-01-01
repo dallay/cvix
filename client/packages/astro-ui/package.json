@@ -1,0 +1,62 @@
+{
+	"name": "@cvix/astro-ui",
+	"version": "0.0.1",
+	"description": "Shared Astro UI components and design tokens for CVIX apps",
+	"author": "CVIX Team <team@profiletailors.com>",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dallay/cvix.git",
+		"directory": "client/packages/astro-ui"
+	},
+	"homepage": "https://github.com/dallay/cvix#readme",
+	"bugs": {
+		"url": "https://github.com/dallay/cvix/issues"
+	},
+	"keywords": [
+		"astro",
+		"ui",
+		"components",
+		"design-system",
+		"cvix"
+	],
+	"packageManager": "pnpm@10.26.2",
+	"exports": {
+		".": "./index.ts",
+		"./styles/global.css": "./src/styles/global.css",
+		"./components/*": "./src/components/*",
+		"./*": "./src/*"
+	},
+	"files": [
+		"src",
+		"index.ts"
+	],
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
+	"sideEffects": false,
+	"scripts": {},
+	"dependencies": {
+		"@cvix/assets": "workspace:*",
+		"@cvix/i18n": "workspace:*",
+		"@cvix/lib": "workspace:*",
+		"@iconify-json/openmoji": "catalog:",
+		"@iconify-json/tabler": "catalog:",
+		"astro-icon": "catalog:",
+		"class-variance-authority": "catalog:"
+	},
+	"devDependencies": {
+		"astro": "catalog:",
+		"tailwindcss": "catalog:",
+		"tw-animate-css": "catalog:",
+		"@tailwindcss/typography": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:"
+	},
+	"peerDependencies": {
+		"astro": "catalog:peers",
+		"tailwindcss": "catalog:peers",
+		"vite": "catalog:peers"
+	}
+}
