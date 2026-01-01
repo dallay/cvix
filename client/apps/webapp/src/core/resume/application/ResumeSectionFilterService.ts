@@ -104,7 +104,9 @@ export class ResumeSectionFilterService {
 		// ⚡ Bolt: Performance Optimization
 		// If all items are visible, return a shallow copy of the original array to avoid unnecessary filtering.
 		// This preserves the performance benefit while ensuring the function's contract (always return a new array).
-		const hasHiddenItems = visibility.items.some((isVisible) => isVisible === false);
+		const hasHiddenItems = visibility.items.some(
+			(isVisible) => isVisible === false,
+		);
 		if (!hasHiddenItems) {
 			return [...items];
 		}
