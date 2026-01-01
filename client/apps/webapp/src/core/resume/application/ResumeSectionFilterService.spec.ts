@@ -333,9 +333,9 @@ describe("ResumeSectionFilterService", () => {
 		describe("early return optimization when all items visible", () => {
 			it("should return shallow copy when all items are explicitly true", () => {
 				const items = [
-					{ id: '1', company: 'Company A' },
-					{ id: '2', company: 'Company B' },
-					{ id: '3', company: 'Company C' },
+					{ id: "1", company: "Company A" },
+					{ id: "2", company: "Company B" },
+					{ id: "3", company: "Company C" },
 				];
 				const visibility: ArraySectionVisibility = {
 					section: 'work',
