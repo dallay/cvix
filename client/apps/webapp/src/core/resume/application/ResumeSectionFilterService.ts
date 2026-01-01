@@ -101,6 +101,14 @@ export class ResumeSectionFilterService {
 			return [];
 		}
 
+		// ⚡ Bolt: Performance Optimization
+		// If all items are visible, return a shallow copy of the original array to avoid unnecessary filtering.
+		// This preserves the performance benefit while ensuring the function's contract (always return a new array).
+		const hasHiddenItems = visibility.items.some((isVisible) => isVisible === false);
+		if (!hasHiddenItems) {
+			return [...items];
+		}
+
 		// Filter items based on their visibility flags.
 		// Items without a corresponding visibility entry (e.g., newly added)
 		// are shown by default (undefined !== false).
