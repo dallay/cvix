@@ -10,6 +10,15 @@ const lang: Lang =
 		: DEFAULT_LOCALE;
 const t = useTranslations(lang);
 
+// Static delay classes to ensure Tailwind JIT includes them at build time
+// Dynamic class generation like `delay-${n}` won't be detected by Tailwind's purge
+const delayClasses = [
+	"delay-300",
+	"delay-400",
+	"delay-500",
+	"delay-600",
+] as const;
+
 const audiences = [
 	{
 		icon: "tabler:code",
@@ -50,7 +59,7 @@ const audiences = [
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {audiences.map((audience, index) => (
         <div
-          class={`bg-card rounded-2xl border border-border p-6 text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300 fade-in-section delay-${(index + 3) * 100}`}
+          class={`bg-card rounded-2xl border border-border p-6 text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300 fade-in-section ${delayClasses[index]}`}
         >
           <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
             <Icon name={audience.icon} class="w-7 h-7 text-primary" />

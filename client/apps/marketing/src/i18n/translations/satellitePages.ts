@@ -195,6 +195,11 @@ export const satellitePages: UIMultilingual = {
 		"satellite.schema.ats.name": "Civix ATS Resume Builder",
 		"satellite.schema.latex.name": "Civix LaTeX Resume Builder",
 		"satellite.schema.tech.name": "Civix Tech Resume Templates",
+
+		// Internal cross-links between satellite pages
+		"satellite.links.ats": "ATS Resume Builder →",
+		"satellite.links.latex": "LaTeX Resume Builder →",
+		"satellite.links.tech": "Tech Resume Templates →",
 	},
 	es: {
 		// ==========================================
@@ -391,5 +396,10 @@ export const satellitePages: UIMultilingual = {
 		"satellite.schema.ats.name": "Civix Generador de CV ATS",
 		"satellite.schema.latex.name": "Civix Generador de CV LaTeX",
 		"satellite.schema.tech.name": "Civix Plantillas de CV Tech",
+
+		// Internal cross-links between satellite pages
+		"satellite.links.ats": "Generador de CV ATS →",
+		"satellite.links.latex": "Generador de CV LaTeX →",
+		"satellite.links.tech": "Plantillas de CV Tech →",
 	},
 };
