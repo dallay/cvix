@@ -344,7 +344,7 @@ describe("ResumeSectionFilterService", () => {
 					items: [true, true, true],
 				};
 
-				const result = service['filterVisibleItems'](items, visibility);
+				const result = service["filterVisibleItems"](items, visibility);
 
 				expect(result).toEqual(items);
 				expect(result).not.toBe(items); // Must be a new array instance
