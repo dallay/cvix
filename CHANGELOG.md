@@ -1,3 +1,9 @@
+## [3.1.1](https://github.com/dallay/cvix/compare/v3.1.0...v3.1.1) (2026-01-01)
+
+### ♻️ Refactors
+
+* split blog and landing page into two different projects ([#468](https://github.com/dallay/cvix/issues/468)) ([c423f5b](https://github.com/dallay/cvix/commit/c423f5b3559a5d97108114c12c3c1b8ad63cf8f2))
+
 ## [3.1.0](https://github.com/dallay/cvix/compare/v3.0.6...v3.1.0) (2025-12-26)
 
 ### ✨ Features
