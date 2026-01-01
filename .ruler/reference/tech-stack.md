@@ -31,9 +31,9 @@
 | **Build Tool**       | Vite                                 | 7.0.4   |
 | **Package Manager**  | pnpm (monorepo with workspaces)      | 10.27.0 |
 
-> **Note:** pnpm@10.27.0 is the required minimum for this monorepo. It introduces a breaking change in the virtual store layout (all unscoped packages are now moved under @/). All contributors must use pnpm@10.27.0 or newer and clean previous node_modules/.pnpm after upgrading. For details see the [pnpm 10.27.0 release notes](https://github.com/pnpm/pnpm/releases/tag/v10.27.0).
+> **Warning:** pnpm@10.27.0 is **required** for this monorepo. This version introduces a breaking change in the virtual store layout: all unscoped packages now reside under an "@/" directory, which may affect tooling or scripts that depend on the old store structure.
 >
-> **Note:** pnpm@10.27.0 introduces a semi-breaking change: all unscoped packages in the virtual store now reside under an "@" directory (see [pnpm virtual store re-org](https://github.com/pnpm/pnpm/releases/tag/v10.24.0)). After upgrading, your node_modules/.pnpm layout will change. This may affect tooling or scripts that rely on the old store structure. All contributors must upgrade their local pnpm installation to 10.27.0 and clean previous virtual store state (`pnpm store prune` and fresh installs recommended).
+> **Action required:** Upgrade to pnpm@10.27.0 or newer, run `pnpm store prune`, and perform a fresh install to rebuild node_modules with the new layout. For details, see the [pnpm 10.27.0 release notes](https://github.com/pnpm/pnpm/releases/tag/v10.27.0) and [virtual store re-organization](https://github.com/pnpm/pnpm/releases/tag/v10.24.0).
 
 ---
 

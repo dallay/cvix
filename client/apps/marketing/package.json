@@ -8,7 +8,7 @@
 	"homepage": "https://example.com",
 	"engines": {
 		"node": ">=22.0.0",
-		"pnpm": ">=10.0.0"
+		"pnpm": ">=10.27.0"
 	},
 	"packageManager": "pnpm@10.27.0",
 	"repository": {
