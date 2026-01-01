@@ -364,7 +364,7 @@ describe("ResumeSectionFilterService", () => {
 					items: [undefined, undefined, undefined] as unknown as boolean[],
 				};
 
-				const result = service['filterVisibleItems'](items, visibility);
+				const result = service["filterVisibleItems"](items, visibility);
 
 				expect(result).toEqual(items);
 				expect(result).not.toBe(items);
