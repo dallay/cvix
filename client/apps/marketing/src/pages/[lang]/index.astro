@@ -8,6 +8,7 @@ import CTA from "@/components/sections/CTA.astro";
 import FAQ from "@/components/sections/FAQ.astro";
 import Feature from "@/components/sections/Feature.astro";
 import Hero from "@/components/sections/Hero.astro";
+import TargetAudience from "@/components/sections/TargetAudience.astro";
 import TemplateShowcase from "@/components/sections/TemplateShowcase.astro";
 import TrustMetrics from "@/components/sections/TrustMetrics.astro";
 import { LOCALES, useTranslations } from "@/i18n";
@@ -34,11 +35,6 @@ const structuredData = {
 		price: "0",
 		priceCurrency: "USD",
 	},
-	aggregateRating: {
-		"@type": "AggregateRating",
-		ratingValue: "4.8",
-		ratingCount: "500",
-	},
 };
 const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
 	.href;
@@ -60,6 +56,7 @@ const og = {
 
   <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   <Hero />
+  <TargetAudience />
   <TemplateShowcase />
   <TrustMetrics />
   <Feature />

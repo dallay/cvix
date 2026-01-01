@@ -12,7 +12,7 @@ const { ...attrs } = Astro.props as Props;
 <header
   id="header"
   class={cn(
-    "fixed top-0 left-0 w-full z-[6000] bg-transparent border-b border-b-slate-300 dark:border-b-slate-700",
+    "fixed top-0 left-0 w-full z-[6000] bg-transparent border-b border-border/30",
     "transition-all duration-400 ease-in-out [transition-property:top,background-color,border-bottom-color]",
   )}
   {...attrs}
@@ -43,34 +43,18 @@ const { ...attrs } = Astro.props as Props;
 
   header.scrolled {
     border-bottom-width: 1px;
-    border-bottom-color: rgb(203 213 225 / 0.6);
-    background-color: white;
+    border-bottom-color: var(--border);
+    background-color: var(--background);
   }
 
-  :global(.dark) header.scrolled {
-    border-bottom-color: rgb(51 65 85 / 0.6);
-    background-color: rgb(17 24 39);
-  }
-
-  /* Alternative approach using CSS variables */
   header.scrolled #site-title,
   header.scrolled nav a,
   header.scrolled button:not(.bg-white):not(.bg-gray-900) {
-    color: var(--colors-main-light);
-  }
-
-  :global(.dark) header.scrolled #site-title,
-  :global(.dark) header.scrolled nav a,
-  :global(.dark) header.scrolled button:not(.bg-white):not(.bg-gray-900) {
-    color: var(--colors-main-dark);
+    color: var(--foreground);
   }
 
   header.scrolled nav a:hover {
-    color: rgb(107 114 128);
-  }
-
-  :global(.dark) header.scrolled nav a:hover {
-    color: rgb(156 163 175);
+    color: var(--muted-foreground);
   }
 
   header.hide {

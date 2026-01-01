@@ -22,9 +22,9 @@ const og = {
 ---
 
 <Layout title={t('contact.title')} description={t('contact.description')} {og} >
-  <main class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-4">{t('contact.title')}</h1>
     <p>{t('contact.contentPlaceholder')}</p>
-  </main>
+  </div>
   <Footer links={footerNavLinks(Astro.currentLocale as Lang)}/>
 </Layout>

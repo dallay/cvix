@@ -1,3 +1,9 @@
+## [3.2.0](https://github.com/dallay/cvix/compare/v3.1.1...v3.2.0) (2026-01-01)
+
+### ✨ Features
+
+* Waitlist page ([#470](https://github.com/dallay/cvix/issues/470)) ([d9cc507](https://github.com/dallay/cvix/commit/d9cc5072e9bf166020715384c5202bbb384a8647))
+
 ## [3.1.1](https://github.com/dallay/cvix/compare/v3.1.0...v3.1.1) (2026-01-01)
 
 ### ♻️ Refactors
