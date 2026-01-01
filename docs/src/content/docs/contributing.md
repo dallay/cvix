@@ -96,4 +96,4 @@ Please follow the project's Code of Conduct in `CODE_OF_CONDUCT.md` when interac
 ---
 
 Thank you — your contributions make ProFileTailors better for everyone. If you want, I can add a PR
-template or a small CONTRIBUTING checklist file at the repo root.
+checklist file at the repo root.

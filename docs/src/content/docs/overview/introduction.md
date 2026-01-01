@@ -1,19 +1,15 @@
 ---
 title: "Overview"
-description: "Sample documentation page for the ProFileTailors."
+description: "An overview of the ProFileTailors platform."
 ---
 
 ## Overview — ProFileTailors
 
-This is a sample documentation page for the ProFileTailors (ProFileTailors).
+This documentation provides an overview of the ProFileTailors platform.
 
-Contents:
+## What is this platform?
 
-- Quick next steps
-
-## What is this template?
-
-A starter repository for building SaaS applications with a frontend and backend, configured with:
+A platform for building SaaS applications with a frontend and backend, configured with:
 
 - A monorepo layout with shared packages under `shared/` and `client/`.
 

@@ -7,7 +7,7 @@ next: false
 
 ## Changelog
 
-This file is a changelog template to record important updates.
+This file is a changelog to record important updates.
 
 ## Suggested format
 
