@@ -338,7 +338,7 @@ describe("ResumeSectionFilterService", () => {
 					{ id: "3", company: "Company C" },
 				];
 				const visibility: ArraySectionVisibility = {
-					section: 'work',
+					section: "work",
 					enabled: true,
 					expanded: false,
 					items: [true, true, true],
