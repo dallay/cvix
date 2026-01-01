@@ -351,7 +351,7 @@ describe("ResumeSectionFilterService", () => {
 				expect(result.length).toBe(3);
 			});
 
-			it('should return shallow copy when all items are undefined (default visible)', () => {
+			it("should return shallow copy when all items are undefined (default visible)", () => {
 				const items = [
 					{ id: '1', skill: 'JavaScript' },
 					{ id: '2', skill: 'TypeScript' },
