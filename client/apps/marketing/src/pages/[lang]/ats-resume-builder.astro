@@ -29,7 +29,8 @@ const structuredData = {
 	},
 };
 
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin).href;
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
 const og = {
 	image: ogImage,
 	xAccount: "@yacosta738",
