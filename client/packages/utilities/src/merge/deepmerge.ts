@@ -215,7 +215,7 @@ export const deepmerge: DeepMergeFn & {
 	}
 
 	return sourceIsArray
-		? opts.arrayMerge!(target as unknown[], source as unknown[], opts)
+		? opts.arrayMerge?.(target as unknown[], source as unknown[], opts)
 		: mergeObject(target as MergeableObject, source as MergeableObject, opts);
 };
 

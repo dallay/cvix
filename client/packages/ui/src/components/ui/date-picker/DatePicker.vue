@@ -105,7 +105,7 @@ const value = computed<DateValue | undefined>({
 						) as unknown as DateValue;
 						errorMessage.value = null;
 						return date;
-					} catch (e: any) {
+					} catch (e: unknown) {
 						const message = e instanceof Error ? e.message : "Invalid date";
 						errorMessage.value = message;
 						emit("validation-error", { value: props.modelValue, message });
@@ -119,7 +119,7 @@ const value = computed<DateValue | undefined>({
 					emit("validation-error", { value: props.modelValue, message });
 					return undefined;
 				}
-			} catch (e: any) {
+			} catch (e: unknown) {
 				const message = e instanceof Error ? e.message : "Error parsing date";
 				errorMessage.value = message;
 				emit("validation-error", { value: props.modelValue, message });

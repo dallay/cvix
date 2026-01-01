@@ -57,7 +57,7 @@ function filterItems() {
 	// Check which groups have at least 1 item shown
 	for (const [groupId, group] of allGroups.value) {
 		for (const itemId of group) {
-			if (filterState.filtered.items.get(itemId)! > 0) {
+			if ((filterState.filtered.items.get(itemId) ?? 0) > 0) {
 				filterState.filtered.groups.add(groupId);
 				break;
 			}

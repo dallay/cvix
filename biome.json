@@ -63,11 +63,7 @@
 			}
 		},
 		{
-			"includes": [
-				"**/*.svelte",
-				"**/*.astro",
-				"**/*.vue"
-			],
+			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -82,9 +78,7 @@
 			}
 		},
 		{
-			"includes": [
-				"**/*.css"
-			],
+			"includes": ["**/*.css"],
 			"linter": {
 				"rules": {
 					"suspicious": {

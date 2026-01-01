@@ -14,8 +14,12 @@ const props = defineProps<{
 }>();
 
 // Use weakmap to store reference to each datapoint for Tooltip
-const wm = new WeakMap();
-function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
+const wm = new WeakMap<object, string>();
+function template(
+	d: Record<string, unknown> & { data?: Record<string, unknown> },
+	i: number,
+	elements: (HTMLElement | SVGElement)[],
+) {
 	const valueFormatter = props.valueFormatter ?? ((tick: number) => `${tick}`);
 	if (props.index in d) {
 		if (wm.has(d)) {
@@ -25,7 +29,7 @@ function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
 		const omittedData = Object.entries(omit(d, [props.index])).map(
 			([key, value]) => {
 				const legendReference = props.items?.find((i) => i.name === key);
-				return { ...legendReference, value: valueFormatter(value) };
+				return { ...legendReference, value: valueFormatter(value as number) };
 			},
 		);
 		const TooltipComponent = props.customTooltip ?? ChartTooltip;

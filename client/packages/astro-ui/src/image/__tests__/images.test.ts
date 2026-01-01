@@ -221,9 +221,14 @@ describe("images.ts - Path Normalization", () => {
 		});
 		it("should differentiate string path vs object by return type", async () => {
 			const stringPath = "/images/photo.jpg";
-			const objectInput = { src: "/images/photo.jpg" };
+			const objectInput = {
+				src: "/images/photo.jpg",
+				width: 100,
+				height: 100,
+				format: "jpg" as const,
+			};
 			const resultString = await findImage(stringPath);
-			const resultObject = await findImage(objectInput as any);
+			const resultObject = await findImage(objectInput);
 			expect(resultString).toBe(stringPath);
 			expect(resultObject).toEqual(objectInput);
 		});

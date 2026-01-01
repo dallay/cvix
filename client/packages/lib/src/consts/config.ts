@@ -65,14 +65,10 @@ const getEnv = (key: string): string | undefined => {
 	}
 
 	// Try import.meta.env (Vite/Astro)
-	// @ts-expect-error
 	if (typeof import.meta !== "undefined" && import.meta.env) {
 		return (
-			// @ts-expect-error
 			import.meta.env[key] ||
-			// @ts-expect-error
 			import.meta.env[`PUBLIC_${key}`] ||
-			// @ts-expect-error
 			import.meta.env[`VITE_${key}`]
 		);
 	}

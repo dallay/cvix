@@ -30,10 +30,12 @@ const hasExternalImage = isExternalUrl(coverImage);
 
 const url = `/${currentLocale}/post/${cleanEntityId(post.id)}`;
 
-let remarkPluginFrontmatter;
+let remarkPluginFrontmatter: { minutesRead?: number } | undefined;
 if (post.entry) {
 	const rendered = await render(post.entry);
-	remarkPluginFrontmatter = rendered.remarkPluginFrontmatter;
+	remarkPluginFrontmatter = rendered.remarkPluginFrontmatter as {
+		minutesRead?: number;
+	};
 }
 ---
 

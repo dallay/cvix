@@ -25,8 +25,8 @@ export function orderBy<T>(
 	}
 	return [...array].sort((a, b) => {
 		for (let i = 0; i < keys.length; i++) {
-			const key = keys[i]!;
-			const order = orders[i]!;
+			const key = keys[i] as keyof T;
+			const order = orders[i] as Order;
 
 			const aValue = a[key];
 			const bValue = b[key];
