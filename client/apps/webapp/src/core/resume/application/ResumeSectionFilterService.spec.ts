@@ -329,53 +329,53 @@ describe("ResumeSectionFilterService", () => {
 		});
 	});
 
-	describe("filterVisibleItems - Performance Optimization (Bolt)", () => {
-		describe("early return optimization when all items visible", () => {
-			it("should return shallow copy when all items are explicitly true", () => {
+	describe('filterVisibleItems - Performance Optimization (Bolt)', () => {
+		describe('early return optimization when all items visible', () => {
+			it('should return shallow copy when all items are explicitly true', () => {
 				const items = [
-					{ id: "1", company: "Company A" },
-					{ id: "2", company: "Company B" },
-					{ id: "3", company: "Company C" },
+					{ id: '1', company: 'Company A' },
+					{ id: '2', company: 'Company B' },
+					{ id: '3', company: 'Company C' },
 				];
 				const visibility: ArraySectionVisibility = {
-					section: "work",
+					section: 'work',
 					enabled: true,
 					expanded: false,
 					items: [true, true, true],
 				};
 
-				const result = service["filterVisibleItems"](items, visibility);
+				const result = service['filterVisibleItems'](items, visibility);
 
 				expect(result).toEqual(items);
 				expect(result).not.toBe(items); // Must be a new array instance
 				expect(result.length).toBe(3);
 			});
 
-			it("should return shallow copy when all items are undefined (default visible)", () => {
+			it('should return shallow copy when all items are undefined (default visible)', () => {
 				const items = [
-					{ id: "1", skill: "JavaScript" },
-					{ id: "2", skill: "TypeScript" },
-					{ id: "3", skill: "React" },
+					{ id: '1', skill: 'JavaScript' },
+					{ id: '2', skill: 'TypeScript' },
+					{ id: '3', skill: 'React' },
 				];
 				const visibility: ArraySectionVisibility = {
-					section: "skills",
+					section: 'skills',
 					enabled: true,
 					expanded: false,
 					items: [undefined, undefined, undefined] as unknown as boolean[],
 				};
 
-				const result = service["filterVisibleItems"](items, visibility);
+				const result = service['filterVisibleItems'](items, visibility);
 
 				expect(result).toEqual(items);
 				expect(result).not.toBe(items);
 				expect(result.length).toBe(3);
 			});
 
-			it("should return shallow copy when mix of true and undefined", () => {
+			it('should return shallow copy when mix of true and undefined', () => {
 				const items = [
-					{ id: "1", degree: "Bachelor" },
-					{ id: "2", degree: "Master" },
-					{ id: "3", degree: "PhD" },
+					{ id: '1', degree: 'Bachelor' },
+					{ id: '2', degree: 'Master' },
+					{ id: '3', degree: 'PhD' },
 				];
 				const visibility: ArraySectionVisibility = {
 					section: 'education',
