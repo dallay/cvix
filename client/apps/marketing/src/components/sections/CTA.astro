@@ -1,5 +1,4 @@
 ---
-import { WEBAPP_URL } from "astro:env/client";
 import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { Icon } from "astro-icon/components";
 import { useTranslations } from "@/i18n/i18n";
@@ -12,7 +11,7 @@ const lang: Lang =
 const t = useTranslations(lang);
 ---
 
-<section class="py-24 bg-secondary/30 fade-in-section">
+<section id="cta-waitlist" class="py-24 bg-background fade-in-section">
   <div class="container mx-auto max-w-7xl px-4 text-center">
     <div class="max-w-3xl mx-auto">
       <h2
@@ -20,28 +19,58 @@ const t = useTranslations(lang);
       >
         {t("cta.heading")}
       </h2>
-      <p class="text-xl text-muted-foreground mb-10 fade-in-section delay-200">
+      <p class="text-xl text-muted-foreground mb-6 fade-in-section delay-200">
         {t("cta.description")}
+      </p>
+      
+      <!-- Social proof / urgency indicator -->
+      <p class="text-lg text-primary font-medium mb-10 fade-in-section delay-250">
+        {t("cta.urgency")}
       </p>
 
       <div
-        class="flex flex-col items-center justify-center gap-4 sm:flex-row fade-in-section delay-300"
+        class="flex flex-col items-center justify-center gap-4 fade-in-section delay-300"
       >
+        <!-- Single CTA button that scrolls to hero form -->
         <a
-          href={WEBAPP_URL}
-          class="inline-flex min-w-50 items-center justify-center rounded-full bg-primary px-8 py-4 text-lg font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25"
-          aria-label={t("cta.button")}
+          href="#hero-waitlist"
+          class="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold text-primary-foreground transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25 hover:scale-105"
+          aria-label={t("cta.button.aria")}
         >
+          <Icon name="tabler:rocket" class="w-5 h-5 mr-2" />
           {t("cta.button")}
         </a>
       </div>
 
       <p
-        class="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground fade-in-section delay-400"
+        class="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground fade-in-section delay-400"
       >
-        <Icon name="tabler:check" class="h-4 w-4 text-green-600" />
+        <Icon name="tabler:shield-check" class="h-4 w-4 text-green-600" />
         {t("cta.microcopy")}
       </p>
     </div>
   </div>
 </section>
+
+<script>
+  // Smooth scroll to hero form
+  document.addEventListener('astro:page-load', () => {
+    const ctaLinks = document.querySelectorAll('a[href="#hero-waitlist"]');
+    ctaLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const heroSection = document.getElementById('hero-waitlist');
+        if (heroSection) {
+          heroSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Focus on email input after scroll
+          setTimeout(() => {
+            const emailInput = heroSection.querySelector('input[type="email"]');
+            if (emailInput) {
+              (emailInput as HTMLInputElement).focus();
+            }
+          }, 500);
+        }
+      });
+    });
+  });
+</script>

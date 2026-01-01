@@ -11,7 +11,17 @@ interface Props extends HTMLAttributes<"label"> {
 }
 
 const lang = Astro.currentLocale as Lang;
-const t = useTranslations(lang);
+
+const commonUI = {
+	en: {
+		"select.language": "Select language",
+	},
+	es: {
+		"select.language": "Seleccionar idioma",
+	},
+};
+
+const t = useTranslations(lang, commonUI);
 const DEFAULT_FLAG = "openmoji:flag-united-nations";
 
 const { variant = "text", width, ...attrs } = Astro.props;

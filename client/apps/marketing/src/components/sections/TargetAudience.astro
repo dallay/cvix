@@ -1,0 +1,75 @@
+---
+import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
+import { Icon } from "astro-icon/components";
+import { useTranslations } from "@/i18n/i18n";
+
+const astroLocale = Astro.currentLocale;
+const lang: Lang =
+	astroLocale && LOCALES[astroLocale as Lang]
+		? (astroLocale as Lang)
+		: DEFAULT_LOCALE;
+const t = useTranslations(lang);
+
+const audiences = [
+	{
+		icon: "tabler:code",
+		titleKey: "targetAudience.dev.title",
+		descKey: "targetAudience.dev.description",
+	},
+	{
+		icon: "tabler:chart-line",
+		titleKey: "targetAudience.pm.title",
+		descKey: "targetAudience.pm.description",
+	},
+	{
+		icon: "tabler:building-skyscraper",
+		titleKey: "targetAudience.exec.title",
+		descKey: "targetAudience.exec.description",
+	},
+	{
+		icon: "tabler:school",
+		titleKey: "targetAudience.grad.title",
+		descKey: "targetAudience.grad.description",
+	},
+];
+---
+
+<section class="py-24 bg-background fade-in-section">
+  <div class="container mx-auto max-w-screen-xl px-4">
+    <div class="text-center mb-16">
+      <h2
+        class="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6 fade-in-section delay-100"
+      >
+        {t("targetAudience.heading")}
+      </h2>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto fade-in-section delay-200">
+        {t("targetAudience.subtitle")}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {audiences.map((audience, index) => (
+        <div
+          class={`bg-card rounded-2xl border border-border p-6 text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300 fade-in-section delay-${(index + 3) * 100}`}
+        >
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+            <Icon name={audience.icon} class="w-7 h-7 text-primary" />
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-2">
+            {t(audience.titleKey)}
+          </h3>
+          <p class="text-muted-foreground text-sm">
+            {t(audience.descKey)}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- SEO-rich content block -->
+    <div class="mt-16 text-center fade-in-section delay-700">
+      <p class="text-muted-foreground max-w-3xl mx-auto">
+        {t("targetAudience.seoText")}
+      </p>
+    </div>
+  </div>
+</section>
