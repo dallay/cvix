@@ -353,9 +353,9 @@ describe("ResumeSectionFilterService", () => {
 
 			it("should return shallow copy when all items are undefined (default visible)", () => {
 				const items = [
-					{ id: '1', skill: 'JavaScript' },
-					{ id: '2', skill: 'TypeScript' },
-					{ id: '3', skill: 'React' },
+					{ id: "1", skill: "JavaScript" },
+					{ id: "2", skill: "TypeScript" },
+					{ id: "3", skill: "React" },
 				];
 				const visibility: ArraySectionVisibility = {
 					section: 'skills',
