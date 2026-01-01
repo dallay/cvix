@@ -49,7 +49,7 @@ const roles = [
 <Layout title={t("tech.title")} description={t("tech.description")} {og}>
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 	
-	<main class="pt-24 pb-16 bg-background">
+	<div class="pt-24 pb-16 bg-background">
 		<!-- Back to Home -->
 		<div class="container mx-auto max-w-6xl px-4 mb-8">
 			<a href={`/${locale}`} class="text-primary hover:underline text-sm">
@@ -257,7 +257,7 @@ const roles = [
 				</div>
 			</div>
 		</section>
-	</main>
+	</div>
 
 	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
 </Layout>

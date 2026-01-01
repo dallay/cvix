@@ -14,17 +14,18 @@ jobs:
       contains(github.event.comment.body, ' /opencode') ||
       startsWith(github.event.comment.body, '/opencode')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
-      id-token: write
-      contents: read
-      pull-requests: read
-      issues: read
+      id-token: write       # Required for OIDC token exchange with OpenCode API
+      contents: write       # Required to push commits to branches
+      pull-requests: write  # Required to create pull requests
+      issues: write         # Required to create and update comments
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Run opencode
-        uses: sst/opencode/github@latest
+        uses: sst/opencode/github@10375263ef03740d530cbc626ee775914fbffacc # github-v1.2.6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
