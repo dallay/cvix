@@ -373,9 +373,9 @@ describe("ResumeSectionFilterService", () => {
 
 			it("should return shallow copy when mix of true and undefined", () => {
 				const items = [
-					{ id: '1', degree: 'Bachelor' },
-					{ id: '2', degree: 'Master' },
-					{ id: '3', degree: 'PhD' },
+					{ id: "1", degree: "Bachelor" },
+					{ id: "2", degree: "Master" },
+					{ id: "3", degree: "PhD" },
 				];
 				const visibility: ArraySectionVisibility = {
 					section: 'education',
