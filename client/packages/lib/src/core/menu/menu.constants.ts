@@ -72,6 +72,28 @@ export function footerNavLinks(lang: Lang): MenuItem[] {
 			ariaLabelKey: "footer.aria.donate",
 			condition: true,
 		},
+		// SEO Satellite Pages
+		{
+			type: "link",
+			href: "/ats-resume-builder/",
+			translationKey: "footer.atsResumeBuilder",
+			ariaLabelKey: "footer.aria.atsResumeBuilder",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/latex-resume-builder/",
+			translationKey: "footer.latexResumeBuilder",
+			ariaLabelKey: "footer.aria.latexResumeBuilder",
+			condition: true,
+		},
+		{
+			type: "link",
+			href: "/tech-resume-template/",
+			translationKey: "footer.techResumeTemplate",
+			ariaLabelKey: "footer.aria.techResumeTemplate",
+			condition: true,
+		},
 		{
 			type: "link",
 			href: `${BLOG_URL}/${lang}/rss.xml`,

@@ -4,7 +4,7 @@ export const footer: UIMultilingual = {
 	en: {
 		// Footer description
 		"footer.description":
-			"A production-ready SaaS starter template that bundles auth, billing, docs and marketing so teams can move faster.",
+			"Professional resumes powered by LaTeX. Join the waitlist for early access to ATS-optimized resume generation.",
 
 		// Footer section headers
 		"footer.company": "Company",
@@ -20,6 +20,16 @@ export const footer: UIMultilingual = {
 		"footer.aria.sponsors": "Go to Sponsors page",
 		"footer.donate": "Support Us",
 		"footer.aria.donate": "Support our project",
+
+		// SEO Satellite Pages
+		"footer.tools": "Tools",
+		"footer.atsResumeBuilder": "ATS Resume Builder",
+		"footer.aria.atsResumeBuilder": "Build an ATS-optimized resume",
+		"footer.latexResumeBuilder": "LaTeX Resume Builder",
+		"footer.aria.latexResumeBuilder": "Create a professional LaTeX resume",
+		"footer.techResumeTemplate": "Tech Resume Templates",
+		"footer.aria.techResumeTemplate":
+			"Browse resume templates for tech professionals",
 		"footer.subscribe": "Subscribe",
 		"footer.aria.subscribe": "Subscribe to our newsletter",
 		"footer.rss": "RSS Feed",
@@ -31,12 +41,12 @@ export const footer: UIMultilingual = {
 		"footer.allRightsReserved": "All rights reserved.",
 
 		// Brand name used in the footer
-		"footer.brand": "ProFileTailors",
+		"footer.brand": "Civix",
 	},
 	es: {
 		// Footer description
 		"footer.description":
-			"Una plantilla inicial para SaaS lista para producción que agrupa autenticación, facturación, documentación y marketing para que los equipos avancen más rápido.",
+			"CVs profesionales potenciados por LaTeX. Únete a la lista de espera para acceso anticipado a generación de CVs optimizados para ATS.",
 
 		// Footer section headers
 		"footer.company": "Empresa",
@@ -52,6 +62,16 @@ export const footer: UIMultilingual = {
 		"footer.aria.sponsors": "Ir a la página de Patrocinadores",
 		"footer.donate": "Apóyanos",
 		"footer.aria.donate": "Apoya nuestro proyecto",
+
+		// SEO Satellite Pages
+		"footer.tools": "Herramientas",
+		"footer.atsResumeBuilder": "Generador de CV ATS",
+		"footer.aria.atsResumeBuilder": "Crea un CV optimizado para ATS",
+		"footer.latexResumeBuilder": "Generador de CV LaTeX",
+		"footer.aria.latexResumeBuilder": "Crea un CV profesional con LaTeX",
+		"footer.techResumeTemplate": "Plantillas para Tech",
+		"footer.aria.techResumeTemplate":
+			"Explora plantillas de CV para profesionales tech",
 		"footer.subscribe": "Suscribirse",
 		"footer.aria.subscribe": "Suscríbete a nuestro boletín",
 		"footer.rss": "Canal RSS",
@@ -63,6 +83,6 @@ export const footer: UIMultilingual = {
 		"footer.allRightsReserved": "Todos los derechos reservados.",
 
 		// Brand name used in the footer
-		"footer.brand": "Plantilla SaaS",
+		"footer.brand": "Civix",
 	},
 };
