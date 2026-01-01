@@ -371,7 +371,7 @@ describe("ResumeSectionFilterService", () => {
 				expect(result.length).toBe(3);
 			});
 
-			it('should return shallow copy when mix of true and undefined', () => {
+			it("should return shallow copy when mix of true and undefined", () => {
 				const items = [
 					{ id: '1', degree: 'Bachelor' },
 					{ id: '2', degree: 'Master' },
