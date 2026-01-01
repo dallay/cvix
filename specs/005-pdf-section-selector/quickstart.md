@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-- Node.js 20+ with pnpm 10.13.1+
+- Node.js 20+ with pnpm 10.27.0+
 - Docker (for backend services if running full stack)
 - Access to Figma
   design: [cvix Figma](https://www.figma.com/design/RdLso6u4iuoulszrHaaraY/cvix?node-id=1-2)

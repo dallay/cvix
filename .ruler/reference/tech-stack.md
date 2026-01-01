@@ -29,7 +29,11 @@
 | **Form Validation**  | Vee-Validate with Zod schemas        | -       |
 | **UI Components**    | Reka UI, Lucide icons, vue-shadcn UI | -       |
 | **Build Tool**       | Vite                                 | 7.0.4   |
-| **Package Manager**  | pnpm (monorepo with workspaces)      | 10.13.1 |
+| **Package Manager**  | pnpm (monorepo with workspaces)      | 10.27.0 |
+
+> **Note:** pnpm@10.27.0 is the required minimum for this monorepo. It introduces a breaking change in the virtual store layout (all unscoped packages are now moved under @/). All contributors must use pnpm@10.27.0 or newer and clean previous node_modules/.pnpm after upgrading. For details see the [pnpm 10.27.0 release notes](https://github.com/pnpm/pnpm/releases/tag/v10.27.0).
+>
+> **Note:** pnpm@10.27.0 introduces a semi-breaking change: all unscoped packages in the virtual store now reside under an "@" directory (see [pnpm virtual store re-org](https://github.com/pnpm/pnpm/releases/tag/v10.24.0)). After upgrading, your node_modules/.pnpm layout will change. This may affect tooling or scripts that rely on the old store structure. All contributors must upgrade their local pnpm installation to 10.27.0 and clean previous virtual store state (`pnpm store prune` and fresh installs recommended).
 
 ---
 
