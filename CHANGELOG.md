@@ -1,3 +1,9 @@
+## [3.3.0](https://github.com/dallay/cvix/compare/v3.2.0...v3.3.0) (2026-01-01)
+
+### ✨ Features
+
+* **webapp:** Optimize resume filtering to avoid unnecessary iteration ([#472](https://github.com/dallay/cvix/issues/472)) ([4f4b149](https://github.com/dallay/cvix/commit/4f4b149da1f37c3e5cc24f68f6e1c5ab5ce576d2))
+
 ## [3.2.0](https://github.com/dallay/cvix/compare/v3.1.1...v3.2.0) (2026-01-01)
 
 ### ✨ Features
