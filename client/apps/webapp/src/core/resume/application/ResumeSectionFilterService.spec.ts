@@ -242,335 +242,6 @@ describe("ResumeSectionFilterService", () => {
 			expect(service.countVisibleItems(visibility)).toBe(0);
 		});
 	});
-	});
-
-	describe("filterArray performance optimization", () => {
-		it("should return a new array when all items are visible (optimization path)", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// All items are visible by default
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should return new arrays (not the same reference)
-			expect(filtered.work).not.toBe(resume.work);
-			expect(filtered.education).not.toBe(resume.education);
-			expect(filtered.skills).not.toBe(resume.skills);
-			// But content should be equal
-			expect(filtered.work).toEqual(resume.work);
-			expect(filtered.education).toEqual(resume.education);
-			expect(filtered.skills).toEqual(resume.skills);
-		});
-
-		it("should use optimization path when all visibility items are true", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Explicitly set all items to true
-			visibility.work.items = [true, true];
-			visibility.education.items = [true];
-			visibility.skills.items = [true, true, true];
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// All items should be preserved
-			expect(filtered.work).toHaveLength(2);
-			expect(filtered.education).toHaveLength(1);
-			expect(filtered.skills).toHaveLength(3);
-			// Arrays should be new references (shallow copies)
-			expect(filtered.work).not.toBe(resume.work);
-		});
-
-		it("should use optimization path when visibility items are undefined", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Set items to undefined (no visibility preferences set)
-			visibility.work.items = [];
-			visibility.education.items = [];
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Undefined items should be treated as visible
-			expect(filtered.work).toHaveLength(2);
-			expect(filtered.education).toHaveLength(1);
-		});
-
-		it("should use filtering path when at least one item is false", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			visibility.work.items = [true, false]; // One item hidden
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should filter out the hidden item
-			expect(filtered.work).toHaveLength(1);
-			expect(filtered.work[0]?.name).toBe("Company A");
-		});
-
-		it("should use filtering path when items have mixed true/false/undefined", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			visibility.work.items = [true, false]; // Mixed visibility
-			visibility.skills.items = [true, undefined, false]; // Mixed with undefined
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Work: second item hidden
-			expect(filtered.work).toHaveLength(1);
-			expect(filtered.work[0]?.name).toBe("Company A");
-			// Skills: third item hidden, undefined treated as visible
-			expect(filtered.skills).toHaveLength(2);
-			expect(filtered.skills[0]?.name).toBe("JavaScript");
-			expect(filtered.skills[1]?.name).toBe("TypeScript");
-		});
-
-		it("should return empty array when section is disabled (short-circuit)", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			visibility.work.enabled = false;
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should short-circuit before checking visibility.items
-			expect(filtered.work).toEqual([]);
-		});
-
-		it("should handle empty items array with optimization", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			visibility.work.items = []; // No visibility preferences
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should use optimization path (no false values found)
-			expect(filtered.work).toHaveLength(2);
-			expect(filtered.work).not.toBe(resume.work);
-		});
-
-		it("should preserve array immutability in optimization path", () => {
-			const resume = createTestResume();
-			const originalWork = resume.work;
-			const visibility = createDomainVisibility("test-resume", resume);
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Original should be unchanged
-			expect(resume.work).toBe(originalWork);
-			expect(resume.work).toEqual(originalWork);
-			// Filtered should be a new array
-			expect(filtered.work).not.toBe(originalWork);
-			expect(filtered.work).toEqual(originalWork);
-		});
-
-		it("should handle all sections with optimization when no items are hidden", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// All sections should use optimization path
-			expect(filtered.work).not.toBe(resume.work);
-			expect(filtered.education).not.toBe(resume.education);
-			expect(filtered.skills).not.toBe(resume.skills);
-			expect(filtered.projects).not.toBe(resume.projects);
-			expect(filtered.certificates).not.toBe(resume.certificates);
-			expect(filtered.volunteer).not.toBe(resume.volunteer);
-			expect(filtered.awards).not.toBe(resume.awards);
-			expect(filtered.publications).not.toBe(resume.publications);
-			expect(filtered.languages).not.toBe(resume.languages);
-			expect(filtered.interests).not.toBe(resume.interests);
-			expect(filtered.references).not.toBe(resume.references);
-			// But all should have same content
-			expect(filtered.work).toEqual(resume.work);
-			expect(filtered.education).toEqual(resume.education);
-		});
-
-		it("should correctly detect hidden items with explicit false values", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			visibility.skills.items = [true, true, false]; // Last item explicitly false
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should use filtering path, not optimization
-			expect(filtered.skills).toHaveLength(2);
-			expect(filtered.skills[0]?.name).toBe("JavaScript");
-			expect(filtered.skills[1]?.name).toBe("TypeScript");
-			// Python should be filtered out
-			expect(filtered.skills.find((s) => s.name === "Python")).toBeUndefined();
-		});
-
-		it("should handle visibility with only undefined values (new items)", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Simulate newly added items without visibility preferences
-			visibility.work.items = [undefined, undefined];
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should use optimization path (no false values)
-			expect(filtered.work).toHaveLength(2);
-			expect(filtered.work).toEqual(resume.work);
-		});
-
-		it("should handle large arrays efficiently with optimization", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Simulate a large array with all items visible
-			const largeArray = Array(1000).fill(true);
-			visibility.work.items = largeArray;
-
-			// Add corresponding work items to resume (for realistic test)
-			const largeWorkArray = Array(1000)
-				.fill(null)
-				.map((_, i) => ({
-					name: `Company ${i}`,
-					position: `Position ${i}`,
-					url: "",
-					startDate: "2020-01-01",
-					endDate: "2021-01-01",
-					summary: "",
-					highlights: [],
-				}));
-			const modifiedResume = { ...resume, work: largeWorkArray };
-
-			const filtered = service.filterResume(modifiedResume, visibility);
-
-			// Should use optimization path (all true, no filtering needed)
-			expect(filtered.work).toHaveLength(1000);
-			expect(filtered.work).not.toBe(modifiedResume.work);
-		});
-
-		it("should handle sections with zero-length arrays", () => {
-			const resume: Resume = {
-				...createTestResume(),
-				work: [],
-				education: [],
-			};
-			const visibility = createDomainVisibility("test-resume", resume);
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Empty arrays should remain empty
-			expect(filtered.work).toEqual([]);
-			expect(filtered.education).toEqual([]);
-			// But should be new array references
-			expect(filtered.work).not.toBe(resume.work);
-		});
-
-		it("should treat null and undefined differently from false", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Mix of null, undefined, true - no explicit false
-			visibility.work.items = [true, null as any, undefined];
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Should use optimization path (no false values)
-			// null and undefined are not === false
-			expect(filtered.work).toHaveLength(2);
-		});
-
-		it("should handle Boolean false vs falsy values correctly", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("test-resume", resume);
-			// Only boolean false should trigger filtering
-			visibility.work.items = [true, false]; // Explicit false
-			visibility.skills.items = [true, 0 as any, "" as any]; // Falsy but not false
-
-			const filtered = service.filterResume(resume, visibility);
-
-			// Work should filter (has explicit false)
-			expect(filtered.work).toHaveLength(1);
-			// Skills should use optimization (falsy values !== false)
-			expect(filtered.skills).toHaveLength(3);
-		});
-	});
-
-			const resume: Resume = {
-				basics: {
-					name: "Test User",
-					label: "",
-					image: "",
-					email: "",
-					phone: "",
-					url: "",
-					summary: "",
-					location: {
-						address: "",
-						postalCode: "",
-						city: "",
-						countryCode: "",
-						region: "",
-					},
-					profiles: [],
-				},
-				work: [],
-				education: [],
-				skills: [],
-				projects: [],
-				certificates: [],
-				volunteer: [],
-				awards: [],
-				publications: [],
-				languages: [],
-				interests: [],
-				references: [],
-			};
-
-			const visibility: SectionVisibility = {
-				resumeId: "empty-resume",
-				personalDetails: {
-					enabled: true,
-					expanded: false,
-					fields: {
-						image: true,
-						email: true,
-						phone: true,
-						location: {
-							address: true,
-							postalCode: true,
-							city: true,
-							countryCode: true,
-							region: true,
-						},
-						summary: true,
-						url: true,
-						profiles: {},
-					},
-				},
-				work: { enabled: true, expanded: false, items: [] },
-				education: { enabled: true, expanded: false, items: [] },
-				skills: { enabled: true, expanded: false, items: [] },
-				projects: { enabled: true, expanded: false, items: [] },
-				certificates: { enabled: true, expanded: false, items: [] },
-				volunteer: { enabled: true, expanded: false, items: [] },
-				awards: { enabled: true, expanded: false, items: [] },
-				publications: { enabled: true, expanded: false, items: [] },
-				languages: { enabled: true, expanded: false, items: [] },
-				interests: { enabled: true, expanded: false, items: [] },
-				references: { enabled: true, expanded: false, items: [] },
-			};
-
-			const filtered = service.filterResume(resume, visibility);
-
-			expect(filtered.basics.name).toBe("Test User");
-			expect(filtered.work).toEqual([]);
-			expect(filtered.education).toEqual([]);
-		});
-
-		it("should handle all profiles hidden", () => {
-			const resume = createTestResume();
-			const visibility = createDomainVisibility("resume-123", resume);
-			visibility.personalDetails.fields.profiles.GitHub = false;
-			visibility.personalDetails.fields.profiles.LinkedIn = false;
-
-			const filtered = service.filterResume(resume, visibility);
-
-			expect(filtered.basics.profiles).toEqual([]);
-		});
-	});
-});
-	});
 
 	describe("edge cases", () => {
 		it("should handle resume with empty arrays", () => {
@@ -655,6 +326,363 @@ describe("ResumeSectionFilterService", () => {
 			const filtered = service.filterResume(resume, visibility);
 
 			expect(filtered.basics.profiles).toEqual([]);
+		});
+	});
+
+	describe('filterVisibleItems - Performance Optimization (Bolt)', () => {
+		describe('early return optimization when all items visible', () => {
+			it('should return shallow copy when all items are explicitly true', () => {
+				const items = [
+					{ id: '1', company: 'Company A' },
+					{ id: '2', company: 'Company B' },
+					{ id: '3', company: 'Company C' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, true, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items); // Must be a new array instance
+				expect(result.length).toBe(3);
+			});
+
+			it('should return shallow copy when all items are undefined (default visible)', () => {
+				const items = [
+					{ id: '1', skill: 'JavaScript' },
+					{ id: '2', skill: 'TypeScript' },
+					{ id: '3', skill: 'React' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'skills',
+					enabled: true,
+					expanded: false,
+					items: [undefined, undefined, undefined] as unknown as boolean[],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+				expect(result.length).toBe(3);
+			});
+
+			it('should return shallow copy when mix of true and undefined', () => {
+				const items = [
+					{ id: '1', degree: 'Bachelor' },
+					{ id: '2', degree: 'Master' },
+					{ id: '3', degree: 'PhD' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'education',
+					enabled: true,
+					expanded: false,
+					items: [true, undefined, true] as unknown as boolean[],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+			});
+
+			it('should skip filtering for large arrays when all items visible', () => {
+				// Test performance optimization with large dataset
+				const items = Array.from({ length: 100 }, (_, i) => ({
+					id: `item-${i}`,
+					value: `Value ${i}`,
+				}));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: Array(100).fill(true),
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+				expect(result.length).toBe(100);
+			});
+
+			it('should preserve object references in shallow copy', () => {
+				const item1 = { id: '1', name: 'Item 1' };
+				const item2 = { id: '2', name: 'Item 2' };
+				const items = [item1, item2];
+				const visibility: ArraySectionVisibility = {
+					section: 'projects',
+					enabled: true,
+					expanded: false,
+					items: [true, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result[0]).toBe(item1);
+				expect(result[1]).toBe(item2);
+			});
+		});
+
+		describe('filtering behavior when hidden items exist', () => {
+			it('should filter when at least one item is explicitly false', () => {
+				const items = [
+					{ id: '1', title: 'Award 1' },
+					{ id: '2', title: 'Award 2' },
+					{ id: '3', title: 'Award 3' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'awards',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([
+					{ id: '1', title: 'Award 1' },
+					{ id: '3', title: 'Award 3' },
+				]);
+				expect(result.length).toBe(2);
+			});
+
+			it('should filter when multiple items are false', () => {
+				const items = [
+					{ id: '1', name: 'Project A' },
+					{ id: '2', name: 'Project B' },
+					{ id: '3', name: 'Project C' },
+					{ id: '4', name: 'Project D' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'projects',
+					enabled: true,
+					expanded: false,
+					items: [true, false, false, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(2);
+				expect(result[0].id).toBe('1');
+				expect(result[1].id).toBe('4');
+			});
+
+			it('should return empty array when all items are false', () => {
+				const items = [
+					{ id: '1', cert: 'Cert A' },
+					{ id: '2', cert: 'Cert B' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'certificates',
+					enabled: true,
+					expanded: false,
+					items: [false, false],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should handle single false in large array', () => {
+				const items = Array.from({ length: 50 }, (_, i) => ({
+					id: `${i}`,
+					data: `Data ${i}`,
+				}));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: Array.from({ length: 50 }, (_, i) => i !== 25), // Only index 25 is false
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(49);
+				expect(result.find((item) => item.id === '25')).toBeUndefined();
+			});
+		});
+
+		describe('performance characteristics and edge cases', () => {
+			it('should handle empty items array efficiently', () => {
+				const items: unknown[] = [];
+				const visibility: ArraySectionVisibility = {
+					section: 'languages',
+					enabled: true,
+					expanded: false,
+					items: [],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should handle mismatched visibility array lengths', () => {
+				const items = [
+					{ id: '1' },
+					{ id: '2' },
+					{ id: '3' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [false, true], // Fewer visibility flags than items
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// First item hidden, others visible by default
+				expect(result.length).toBe(2);
+				expect(result[0].id).toBe('2');
+				expect(result[1].id).toBe('3');
+			});
+
+			it('should handle more visibility flags than items', () => {
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'interests',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true, false], // More flags than items
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe('1');
+			});
+
+			it('should not mutate original items array', () => {
+				const items = [
+					{ id: '1', mutable: true },
+					{ id: '2', mutable: true },
+				];
+				const originalItems = JSON.parse(JSON.stringify(items));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, false],
+				} as any;
+
+				service['filterVisibleItems'](items, visibility);
+
+				expect(items).toEqual(originalItems);
+			});
+
+			it('should handle complex nested objects', () => {
+				const items = [
+					{
+						id: '1',
+						company: 'Tech Corp',
+						position: { title: 'Engineer', level: 'Senior' },
+						skills: ['TypeScript', 'React'],
+					},
+					{
+						id: '2',
+						company: 'Design Inc',
+						position: { title: 'Designer', level: 'Lead' },
+						skills: ['Figma', 'Sketch'],
+					},
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [false, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(1);
+				expect(result[0]).toEqual(items[1]);
+			});
+		});
+
+		describe('boolean comparison strictness', () => {
+			it('should treat only explicit false as hidden', () => {
+				const items = [{ id: '1' }, { id: '2' }, { id: '3' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [null, 0, ''] as unknown as boolean[], // Falsy but not false
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Only explicit false should hide items
+				expect(result.length).toBe(3);
+			});
+
+			it('should correctly identify when hasHiddenItems is false', () => {
+				// This tests the optimization condition
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Should use shallow copy optimization
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+			});
+
+			it('should correctly identify when hasHiddenItems is true', () => {
+				const items = [{ id: '1' }, { id: '2' }, { id: '3' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Should use filtering logic
+				expect(result.length).toBe(2);
+			});
+		});
+
+		describe('integration with disabled sections', () => {
+			it('should return empty array when section is disabled regardless of visibility', () => {
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: false,
+					expanded: false,
+					items: [true, true],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should return empty array when disabled even with all false', () => {
+				const items = [{ id: '1' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: false,
+					expanded: false,
+					items: [false],
+				} as any;
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
 		});
 	});
 });
