@@ -328,4 +328,361 @@ describe("ResumeSectionFilterService", () => {
 			expect(filtered.basics.profiles).toEqual([]);
 		});
 	});
+
+	describe('filterVisibleItems - Performance Optimization (Bolt)', () => {
+		describe('early return optimization when all items visible', () => {
+			it('should return shallow copy when all items are explicitly true', () => {
+				const items = [
+					{ id: '1', company: 'Company A' },
+					{ id: '2', company: 'Company B' },
+					{ id: '3', company: 'Company C' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, true, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items); // Must be a new array instance
+				expect(result.length).toBe(3);
+			});
+
+			it('should return shallow copy when all items are undefined (default visible)', () => {
+				const items = [
+					{ id: '1', skill: 'JavaScript' },
+					{ id: '2', skill: 'TypeScript' },
+					{ id: '3', skill: 'React' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'skills',
+					enabled: true,
+					expanded: false,
+					items: [undefined, undefined, undefined] as unknown as boolean[],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+				expect(result.length).toBe(3);
+			});
+
+			it('should return shallow copy when mix of true and undefined', () => {
+				const items = [
+					{ id: '1', degree: 'Bachelor' },
+					{ id: '2', degree: 'Master' },
+					{ id: '3', degree: 'PhD' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'education',
+					enabled: true,
+					expanded: false,
+					items: [true, undefined, true] as unknown as boolean[],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+			});
+
+			it('should skip filtering for large arrays when all items visible', () => {
+				// Test performance optimization with large dataset
+				const items = Array.from({ length: 100 }, (_, i) => ({
+					id: `item-${i}`,
+					value: `Value ${i}`,
+				}));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: Array(100).fill(true),
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+				expect(result.length).toBe(100);
+			});
+
+			it('should preserve object references in shallow copy', () => {
+				const item1 = { id: '1', name: 'Item 1' };
+				const item2 = { id: '2', name: 'Item 2' };
+				const items = [item1, item2];
+				const visibility: ArraySectionVisibility = {
+					section: 'projects',
+					enabled: true,
+					expanded: false,
+					items: [true, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result[0]).toBe(item1);
+				expect(result[1]).toBe(item2);
+			});
+		});
+
+		describe('filtering behavior when hidden items exist', () => {
+			it('should filter when at least one item is explicitly false', () => {
+				const items = [
+					{ id: '1', title: 'Award 1' },
+					{ id: '2', title: 'Award 2' },
+					{ id: '3', title: 'Award 3' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'awards',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([
+					{ id: '1', title: 'Award 1' },
+					{ id: '3', title: 'Award 3' },
+				]);
+				expect(result.length).toBe(2);
+			});
+
+			it('should filter when multiple items are false', () => {
+				const items = [
+					{ id: '1', name: 'Project A' },
+					{ id: '2', name: 'Project B' },
+					{ id: '3', name: 'Project C' },
+					{ id: '4', name: 'Project D' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'projects',
+					enabled: true,
+					expanded: false,
+					items: [true, false, false, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(2);
+				expect(result[0].id).toBe('1');
+				expect(result[1].id).toBe('4');
+			});
+
+			it('should return empty array when all items are false', () => {
+				const items = [
+					{ id: '1', cert: 'Cert A' },
+					{ id: '2', cert: 'Cert B' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'certificates',
+					enabled: true,
+					expanded: false,
+					items: [false, false],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should handle single false in large array', () => {
+				const items = Array.from({ length: 50 }, (_, i) => ({
+					id: `${i}`,
+					data: `Data ${i}`,
+				}));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: Array.from({ length: 50 }, (_, i) => i !== 25), // Only index 25 is false
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(49);
+				expect(result.find((item) => item.id === '25')).toBeUndefined();
+			});
+		});
+
+		describe('performance characteristics and edge cases', () => {
+			it('should handle empty items array efficiently', () => {
+				const items: unknown[] = [];
+				const visibility: ArraySectionVisibility = {
+					section: 'languages',
+					enabled: true,
+					expanded: false,
+					items: [],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should handle mismatched visibility array lengths', () => {
+				const items = [
+					{ id: '1' },
+					{ id: '2' },
+					{ id: '3' },
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [false, true], // Fewer visibility flags than items
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// First item hidden, others visible by default
+				expect(result.length).toBe(2);
+				expect(result[0].id).toBe('2');
+				expect(result[1].id).toBe('3');
+			});
+
+			it('should handle more visibility flags than items', () => {
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'interests',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true, false], // More flags than items
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe('1');
+			});
+
+			it('should not mutate original items array', () => {
+				const items = [
+					{ id: '1', mutable: true },
+					{ id: '2', mutable: true },
+				];
+				const originalItems = JSON.parse(JSON.stringify(items));
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, false],
+				};
+
+				service['filterVisibleItems'](items, visibility);
+
+				expect(items).toEqual(originalItems);
+			});
+
+			it('should handle complex nested objects', () => {
+				const items = [
+					{
+						id: '1',
+						company: 'Tech Corp',
+						position: { title: 'Engineer', level: 'Senior' },
+						skills: ['TypeScript', 'React'],
+					},
+					{
+						id: '2',
+						company: 'Design Inc',
+						position: { title: 'Designer', level: 'Lead' },
+						skills: ['Figma', 'Sketch'],
+					},
+				];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [false, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result.length).toBe(1);
+				expect(result[0]).toEqual(items[1]);
+			});
+		});
+
+		describe('boolean comparison strictness', () => {
+			it('should treat only explicit false as hidden', () => {
+				const items = [{ id: '1' }, { id: '2' }, { id: '3' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [null, 0, ''] as unknown as boolean[], // Falsy but not false
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Only explicit false should hide items
+				expect(result.length).toBe(3);
+			});
+
+			it('should correctly identify when hasHiddenItems is false', () => {
+				// This tests the optimization condition
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Should use shallow copy optimization
+				expect(result).toEqual(items);
+				expect(result).not.toBe(items);
+			});
+
+			it('should correctly identify when hasHiddenItems is true', () => {
+				const items = [{ id: '1' }, { id: '2' }, { id: '3' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: true,
+					expanded: false,
+					items: [true, false, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				// Should use filtering logic
+				expect(result.length).toBe(2);
+			});
+		});
+
+		describe('integration with disabled sections', () => {
+			it('should return empty array when section is disabled regardless of visibility', () => {
+				const items = [{ id: '1' }, { id: '2' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: false,
+					expanded: false,
+					items: [true, true],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should return empty array when disabled even with all false', () => {
+				const items = [{ id: '1' }];
+				const visibility: ArraySectionVisibility = {
+					section: 'work',
+					enabled: false,
+					expanded: false,
+					items: [false],
+				};
+
+				const result = service['filterVisibleItems'](items, visibility);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });
