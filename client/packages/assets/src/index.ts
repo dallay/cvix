@@ -32,6 +32,7 @@ export const IMAGES = {
 	ctaDashboardMockup: "images/cta-dashboard-mockup.svg",
 	ctaDashboardMockupDark: "images/cta-dashboard-mockup-dark.svg",
 	videoPlaceholder: "images/video-placeholder.png",
+	landingPage: "images/cvix-system.png",
 	pet: "images/pet.svg",
 	petPng: "images/pet.png",
 } as const;

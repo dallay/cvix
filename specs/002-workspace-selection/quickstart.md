@@ -7,7 +7,7 @@
 Before you begin, ensure you have:
 
 - **Node.js** 18.x or higher
-- **pnpm** 10.13.1 or higher
+- **pnpm** 10.27.0 or higher
 - **Backend service** running on `http://localhost:8080` (or configured endpoint)
 - **Authentication** configured (Keycloak token available)
 

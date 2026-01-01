@@ -1,6 +1,6 @@
 # 🧑‍💻 ProFileTailors
 
-![ProFileTailors Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![ProFileTailors Logo](client/packages/assets/src/images/cvix-system.png)
 
 > **Modern Resume Generator Platform**
 > Build, manage, and export professional résumés from a robust, accessible, cloud-ready system.

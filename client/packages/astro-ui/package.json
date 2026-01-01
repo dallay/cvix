@@ -20,7 +20,7 @@
 		"design-system",
 		"cvix"
 	],
-	"packageManager": "pnpm@10.26.2",
+	"packageManager": "pnpm@10.27.0",
 	"exports": {
 		".": "./index.ts",
 		"./styles/global.css": "./src/styles/global.css",

@@ -4,7 +4,7 @@
 FROM node:24-alpine AS build
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 # Install git
 RUN apk add --no-cache git

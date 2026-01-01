@@ -12,7 +12,7 @@
 	],
 	"engines": {
 		"node": ">=22.0.0",
-		"pnpm": ">=10.0.0"
+		"pnpm": ">=10.27.0"
 	},
 	"files": [
 		"stylelint.config.cjs",
@@ -41,7 +41,7 @@
 		"postcss": "catalog:",
 		"stylelint": "catalog:",
 		"stylelint-config-standard-scss": "^16.0.0",
-		"stylelint-order": "^7.0.0",
+		"stylelint-order": "^7.0.1",
 		"tailwindcss": "catalog:",
 		"vite-tsconfig-paths": "catalog:",
 		"vitest": "catalog:"

@@ -19,7 +19,7 @@ Before starting, ensure you have the following installed:
 
 - **JDK 21+** (Kotlin 2.0.20 requirement)
 - **Docker Desktop** (for PDF generation containers)
-- **pnpm 10.13.1+** (JavaScript package manager)
+- **pnpm 10.27.0+** (JavaScript package manager)
 - **Git** (version control)
 
 Verify installations:
