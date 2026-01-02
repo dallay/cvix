@@ -281,7 +281,14 @@ class UserStoreR2DbcRepository(
 ```
 
 ```kotlin
-// Example: Use Kotlin coroutines for concurrent API calls
+// ⚠️ ILLUSTRATIVE EXAMPLE - Current codebase uses simple suspend functions
+// Use this pattern ONLY when you need explicit concurrent composition of multiple async calls
+// For single async operations, plain suspend functions are preferred and simpler
+//
+// Note: The codebase currently prefers straightforward suspend functions like:
+//   suspend fun fetchUserData(): UserData
+// This coroutineScope/async pattern adds complexity. Use it only when you truly need
+// to execute multiple independent async operations concurrently and compose their results.
 @Service
 class DataAggregatorService {
 
@@ -299,7 +306,15 @@ class DataAggregatorService {
 ```
 
 ```kotlin
-// Example: Add caching for expensive operations
+// ⚠️ ASPIRATIONAL EXAMPLE - Cache infrastructure is configured but not yet applied
+// The project has @EnableCaching in CacheConfig.kt and spring-boot-starter-cache dependency,
+// but @Cacheable annotations are not currently used in service methods.
+//
+// To add caching:
+// 1. Ensure CacheConfig.kt is properly configured with a cache provider (e.g., Caffeine, Redis)
+// 2. Add @Cacheable to methods that perform expensive operations
+// 3. Use @CachePut for updates and @CacheEvict for deletions
+// 4. Test cache behavior and configure appropriate TTL/eviction policies
 @Service
 class ProductService {
 
