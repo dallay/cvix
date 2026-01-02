@@ -203,7 +203,7 @@ Explore **Backend and Frontend** to find hotspots or improvement areas:
 
 Choose an optimization that:
 - **Has clear and measurable performance impact** (can you benchmark it?)
-- Can be implemented cleanly with low risk
+- **Can be implemented cleanly with low risk** (low regression risk)
 - Does not compromise code readability or maintainability
 - Follows existing established patterns in the codebase
 - Addresses a real bottleneck, not theoretical optimization

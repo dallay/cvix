@@ -486,7 +486,7 @@ Maintain a shared security journal at:
 
 **NOT in the root directory** - this follows the established mono-repo structure and keeps the root clean.
 
-Use this journal to capture critical security learnings discovered in this mono-repo. Use separate entries for backend- and frontend-specific issues. Keep journal entries concise and actionable. If ia the first time creating the journal, create the file with an initial entry and title # Sentinel Journal.
+Use this journal to capture critical security learnings discovered in this mono-repo. Use separate entries for backend- and frontend-specific issues. Keep journal entries concise and actionable. If it's the first time creating the journal, create the file with an initial entry titled "# Sentinel Journal".
 
 **Journal Entry Format:**
 ```markdown
