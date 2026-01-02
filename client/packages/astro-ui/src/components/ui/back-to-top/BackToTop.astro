@@ -22,10 +22,10 @@ const t = useTranslations(currentLocale, commonUI);
   type="button"
   class={
     cn(
-      "fixed bottom-6 right-6 rounded-full p-3 shadow-lg opacity-0 translate-y-8 transition-all duration-300 z-50",
-      "bg-slate-600 hover:bg-slate-700",
-      "dark:bg-slate-500 dark:hover:bg-slate-600",
-      "text-white dark:text-white",
+      "fixed bottom-6 right-6 rounded-full p-2.5 shadow-md opacity-0 translate-y-8 transition-all duration-300 z-50",
+      "bg-muted/80 hover:bg-primary/90 backdrop-blur-sm",
+      "text-muted-foreground hover:text-primary-foreground",
+      "border border-border/50 hover:border-primary/50",
       attrs.class)
   }
   {...attrs}

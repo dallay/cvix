@@ -14,7 +14,7 @@ if (astroLocale && LOCALES[astroLocale as Lang]) {
 const t = useTranslations(langToUse);
 ---
 
-<section class="py-24 bg-secondary/30 fade-in-section">
+<section class="py-24 bg-background fade-in-section">
   <div class="container mx-auto max-w-screen-xl px-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
       <!-- Content -->
@@ -58,11 +58,11 @@ const t = useTranslations(langToUse);
         </div>
 
         <a
-          href="#"
+          href="#cta-waitlist"
           class="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-primary-foreground transition-all bg-primary rounded-full hover:bg-primary/90 shadow-lg hover:shadow-primary/25 fade-in-section delay-400"
-          aria-label="Check for ATS errors"
+          aria-label={t("trustMetrics.cta.aria")}
         >
-          Check for ATS errors
+          {t("trustMetrics.cta")}
         </a>
       </div>
 
