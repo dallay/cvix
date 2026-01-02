@@ -1,0 +1,263 @@
+---
+import { BACKEND_URL } from "astro:env/client";
+import { EmailCaptureForm, Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import type { Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { LOCALES, useTranslations } from "@/i18n";
+import { footerNavLinks } from "@/models/menu";
+
+const locale = Astro.currentLocale as Lang;
+const t = useTranslations(locale);
+
+export const getStaticPaths = () =>
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
+
+// SEO structured data
+const structuredData = {
+	"@context": "https://schema.org",
+	"@type": "SoftwareApplication",
+	name: t("satellite.schema.tech.name"),
+	applicationCategory: "BusinessApplication",
+	description: t("tech.description"),
+	operatingSystem: "Web Browser",
+	offers: {
+		"@type": "Offer",
+		price: "0",
+		priceCurrency: "USD",
+	},
+};
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+
+const roles = [
+	{ key: "swe", icon: "💻" },
+	{ key: "frontend", icon: "🎨" },
+	{ key: "backend", icon: "⚙️" },
+	{ key: "devops", icon: "🔧" },
+	{ key: "data", icon: "📊" },
+	{ key: "manager", icon: "👥" },
+];
+---
+
+<Layout title={t("tech.title")} description={t("tech.description")} {og}>
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+	
+	<div class="pt-24 pb-16 bg-background">
+		<!-- Back to Home -->
+		<div class="container mx-auto max-w-6xl px-4 mb-8">
+			<a href={`/${locale}`} class="text-primary hover:underline text-sm">
+				{t("satellite.backToHome")}
+			</a>
+		</div>
+
+		<!-- Hero Section -->
+		<section class="container mx-auto max-w-6xl px-4 text-center mb-20">
+			<h1 class="text-5xl md:text-6xl font-serif font-bold text-foreground mb-4">
+				{t("tech.h1")}
+			</h1>
+			<p class="text-2xl text-primary font-medium mb-6">
+				{t("tech.h1.subtitle")}
+			</p>
+			<p class="text-lg text-muted-foreground max-w-3xl mx-auto mb-10">
+				{t("tech.intro")}
+			</p>
+		</section>
+
+		<!-- Role Templates Section -->
+		<section class="bg-muted/30 py-20 mb-20">
+			<div class="container mx-auto max-w-6xl px-4">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+					{t("tech.roles.title")}
+				</h2>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{roles.map((role) => (
+						<div class="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors">
+							<div class="text-4xl mb-4">{role.icon}</div>
+							<h3 class="text-xl font-semibold text-foreground mb-2">
+								{t(`tech.roles.${role.key}.title`)}
+							</h3>
+							<p class="text-muted-foreground text-sm">
+								{t(`tech.roles.${role.key}.description`)}
+							</p>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section class="container mx-auto max-w-6xl px-4 mb-20">
+			<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+				{t("tech.features.title")}
+			</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+				<div class="flex gap-4">
+					<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+						<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+						</svg>
+					</div>
+					<div>
+						<h3 class="text-xl font-semibold text-foreground mb-2">
+							{t("tech.features.feature1.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("tech.features.feature1.description")}
+						</p>
+					</div>
+				</div>
+
+				<div class="flex gap-4">
+					<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+						<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+						</svg>
+					</div>
+					<div>
+						<h3 class="text-xl font-semibold text-foreground mb-2">
+							{t("tech.features.feature2.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("tech.features.feature2.description")}
+						</p>
+					</div>
+				</div>
+
+				<div class="flex gap-4">
+					<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+						<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+						</svg>
+					</div>
+					<div>
+						<h3 class="text-xl font-semibold text-foreground mb-2">
+							{t("tech.features.feature3.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("tech.features.feature3.description")}
+						</p>
+					</div>
+				</div>
+
+				<div class="flex gap-4">
+					<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+						<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+						</svg>
+					</div>
+					<div>
+						<h3 class="text-xl font-semibold text-foreground mb-2">
+							{t("tech.features.feature4.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("tech.features.feature4.description")}
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Companies Section -->
+		<section class="bg-muted/30 py-16 mb-20">
+			<div class="container mx-auto max-w-4xl px-4 text-center">
+				<h2 class="text-2xl font-serif font-bold text-foreground mb-4">
+					{t("tech.companies.title")}
+				</h2>
+				<p class="text-muted-foreground mb-8">
+					{t("tech.companies.subtitle")}
+				</p>
+				<div class="flex flex-wrap justify-center gap-6 text-lg font-medium text-muted-foreground">
+					{t("tech.companies.list").split(", ").map((company: string) => (
+						<span class="px-4 py-2 bg-card border border-border rounded-full">
+							{company}
+						</span>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ Section -->
+		<section class="container mx-auto max-w-4xl px-4 mb-20">
+			<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+				{t("tech.faq.title")}
+			</h2>
+
+			<div class="space-y-6">
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("tech.faq.q1")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("tech.faq.a1")}
+					</p>
+				</details>
+
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("tech.faq.q2")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("tech.faq.a2")}
+					</p>
+				</details>
+
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("tech.faq.q3")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("tech.faq.a3")}
+					</p>
+				</details>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="bg-muted/30 py-20">
+			<div class="container mx-auto max-w-4xl px-4 text-center">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+					{t("tech.cta.title")}
+				</h2>
+				<p class="text-lg text-muted-foreground mb-8">
+					{t("tech.cta.subtitle")}
+				</p>
+
+				<div class="max-w-md mx-auto">
+					<EmailCaptureForm
+						apiUrl={`${BACKEND_URL}/api/waitlist`}
+						emailPlaceholder={t("hero.email.placeholder")}
+						buttonText={t("tech.cta.button")}
+						successMessage={t("hero.email.success")}
+						errorMessage={t("hero.email.error")}
+						rateLimitMessage={t("hero.email.rateLimit")}
+						source="tech-resume-template"
+					/>
+				</div>
+
+				<!-- Internal Links -->
+				<div class="flex flex-wrap justify-center gap-4 mt-12">
+					<a href={`/${locale}/ats-resume-builder`} class="text-primary hover:underline">
+						{t("satellite.links.ats")}
+					</a>
+					<a href={`/${locale}/latex-resume-builder`} class="text-primary hover:underline">
+						{t("satellite.links.latex")}
+					</a>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
+</Layout>

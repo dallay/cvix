@@ -9,6 +9,9 @@ export const pricing: UIMultilingual = {
 		"pricing.heading.alt": "Choose the right plan to power your product",
 		"pricing.subheading.alt":
 			"All plans include access to core infrastructure features and developer tooling.",
+		"pricing.cta": "Join waitlist",
+		"pricing.cta.aria":
+			"Join the waitlist to get notified when this plan is available",
 	},
 	es: {
 		"pricing.heading": "Planes flexibles para equipos en crecimiento",
@@ -18,5 +21,8 @@ export const pricing: UIMultilingual = {
 		"pricing.heading.alt": "Elige el plan que potencie tu producto",
 		"pricing.subheading.alt":
 			"Todos los planes incluyen acceso a las funciones de infraestructura y herramientas de desarrollo.",
+		"pricing.cta": "Unirse a la lista",
+		"pricing.cta.aria":
+			"Únete a la lista de espera para ser notificado cuando este plan esté disponible",
 	},
 };

@@ -1,0 +1,324 @@
+---
+import { BACKEND_URL } from "astro:env/client";
+import { EmailCaptureForm, Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import type { Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { LOCALES, useTranslations } from "@/i18n";
+import { footerNavLinks } from "@/models/menu";
+
+const locale = Astro.currentLocale as Lang;
+const t = useTranslations(locale);
+
+export const getStaticPaths = () =>
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
+
+// SEO structured data
+const structuredData = {
+	"@context": "https://schema.org",
+	"@type": "SoftwareApplication",
+	name: t("satellite.schema.latex.name"),
+	applicationCategory: "BusinessApplication",
+	description: t("latex.description"),
+	operatingSystem: "Web Browser",
+	offers: {
+		"@type": "Offer",
+		price: "0",
+		priceCurrency: "USD",
+	},
+};
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+---
+
+<Layout title={t("latex.title")} description={t("latex.description")} {og}>
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+	
+	<div class="pt-24 pb-16 bg-background">
+		<!-- Back to Home -->
+		<div class="container mx-auto max-w-6xl px-4 mb-8">
+			<a href={`/${locale}`} class="text-primary hover:underline text-sm">
+				{t("satellite.backToHome")}
+			</a>
+		</div>
+
+		<!-- Hero Section -->
+		<section class="container mx-auto max-w-6xl px-4 text-center mb-20">
+			<h1 class="text-5xl md:text-6xl font-serif font-bold text-foreground mb-4">
+				{t("latex.h1")}
+			</h1>
+			<p class="text-2xl text-primary font-medium mb-6">
+				{t("latex.h1.subtitle")}
+			</p>
+			<p class="text-lg text-muted-foreground max-w-3xl mx-auto mb-10">
+				{t("latex.intro")}
+			</p>
+		</section>
+
+		<!-- Why LaTeX Section -->
+		<section class="bg-muted/30 py-20 mb-20">
+			<div class="container mx-auto max-w-6xl px-4">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+					{t("latex.why.title")}
+				</h2>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.why.feature1.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.why.feature1.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.why.feature2.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.why.feature2.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.why.feature3.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.why.feature3.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.why.feature4.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.why.feature4.description")}
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Comparison Section -->
+		<section class="container mx-auto max-w-6xl px-4 mb-20">
+			<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+				{t("latex.comparison.title")}
+			</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+				<!-- Word Side -->
+				<div class="bg-card border border-destructive/30 rounded-xl p-8">
+					<div class="flex items-center gap-3 mb-6">
+						<div class="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
+							<span class="text-destructive font-bold">W</span>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground">
+							{t("latex.comparison.word.label")}
+						</h3>
+					</div>
+					<div class="bg-muted/50 rounded-lg p-4 font-mono text-sm mb-4 border-2 border-dashed border-destructive/20">
+						<div class="space-y-2 text-muted-foreground">
+							<div class="flex items-center gap-2">
+								<span class="text-destructive">✗</span>
+								<span style="letter-spacing: 0.15em">Inconsistent   spacing</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="text-destructive">✗</span>
+								<span class="blur-[0.5px]">Blurry font rendering</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="text-destructive">✗</span>
+								<span>Different on each device</span>
+							</div>
+						</div>
+					</div>
+					<p class="text-muted-foreground text-sm">
+						{t("latex.comparison.word.issues")}
+					</p>
+				</div>
+
+				<!-- LaTeX Side -->
+				<div class="bg-card border border-primary/30 rounded-xl p-8">
+					<div class="flex items-center gap-3 mb-6">
+						<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+							<span class="text-primary font-bold">Lx</span>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground">
+							{t("latex.comparison.latex.label")}
+						</h3>
+					</div>
+					<div class="bg-muted/50 rounded-lg p-4 font-serif text-sm mb-4 border-2 border-primary/20">
+						<div class="space-y-2 text-foreground">
+							<div class="flex items-center gap-2">
+								<span class="text-primary">✓</span>
+								<span style="letter-spacing: 0.02em">Perfect character spacing</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="text-primary">✓</span>
+								<span>Crystal clear typography</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="text-primary">✓</span>
+								<span>Identical on every device</span>
+							</div>
+						</div>
+					</div>
+					<p class="text-muted-foreground text-sm">
+						{t("latex.comparison.latex.benefits")}
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- How It Works -->
+		<section class="bg-muted/30 py-20 mb-20">
+			<div class="container mx-auto max-w-6xl px-4">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+					{t("latex.howItWorks.title")}
+				</h2>
+
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<div class="text-center">
+						<div class="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+							1
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.howItWorks.step1.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.howItWorks.step1.description")}
+						</p>
+					</div>
+
+					<div class="text-center">
+						<div class="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+							2
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.howItWorks.step2.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.howItWorks.step2.description")}
+						</p>
+					</div>
+
+					<div class="text-center">
+						<div class="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+							3
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("latex.howItWorks.step3.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("latex.howItWorks.step3.description")}
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ Section -->
+		<section class="container mx-auto max-w-4xl px-4 mb-20">
+			<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+				{t("latex.faq.title")}
+			</h2>
+
+			<div class="space-y-6">
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("latex.faq.q1")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("latex.faq.a1")}
+					</p>
+				</details>
+
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("latex.faq.q2")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("latex.faq.a2")}
+					</p>
+				</details>
+
+				<details class="bg-card border border-border rounded-xl p-6 group">
+					<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+						{t("latex.faq.q3")}
+						<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+					</summary>
+					<p class="text-muted-foreground mt-4">
+						{t("latex.faq.a3")}
+					</p>
+				</details>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="bg-muted/30 py-20">
+			<div class="container mx-auto max-w-4xl px-4 text-center">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+					{t("latex.cta.title")}
+				</h2>
+				<p class="text-lg text-muted-foreground mb-8">
+					{t("latex.cta.subtitle")}
+				</p>
+
+				<div class="max-w-md mx-auto">
+					<EmailCaptureForm
+						apiUrl={`${BACKEND_URL}/api/waitlist`}
+						emailPlaceholder={t("hero.email.placeholder")}
+						buttonText={t("latex.cta.button")}
+						successMessage={t("hero.email.success")}
+						errorMessage={t("hero.email.error")}
+						rateLimitMessage={t("hero.email.rateLimit")}
+						source="latex-resume-builder"
+					/>
+				</div>
+
+				<!-- Internal Links -->
+				<div class="flex flex-wrap justify-center gap-4 mt-12">
+					<a href={`/${locale}/ats-resume-builder`} class="text-primary hover:underline">
+						{t("satellite.links.ats")}
+					</a>
+					<a href={`/${locale}/tech-resume-template`} class="text-primary hover:underline">
+						{t("satellite.links.tech")}
+					</a>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
+</Layout>

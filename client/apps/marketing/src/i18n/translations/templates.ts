@@ -13,6 +13,9 @@ export const templates: UIMultilingual = {
 			"Pick a template, enter your content, and get a professional resume in minutes.",
 		"template.showcase.useTemplate": "Use {template}",
 		"template.showcase.viewAll": "View all templates",
+		"template.showcase.joinWaitlist": "Join waitlist for early access",
+		"template.showcase.joinWaitlist.aria":
+			"Join the waitlist to get early access to all templates",
 	},
 	es: {
 		"templates.executive": "Ejecutivo",
@@ -25,5 +28,8 @@ export const templates: UIMultilingual = {
 			"Elige una plantilla, ingresa tu contenido y obtén un CV profesional en minutos.",
 		"template.showcase.useTemplate": "Usar {template}",
 		"template.showcase.viewAll": "Ver todas las plantillas",
+		"template.showcase.joinWaitlist": "Únete a la lista de espera",
+		"template.showcase.joinWaitlist.aria":
+			"Únete a la lista de espera para acceso anticipado a todas las plantillas",
 	},
 };
