@@ -3,6 +3,7 @@
 [allowlist]
 description = "Allowlist for gitleaks"
 paths = [
-    '''gitleaks.toml''',
+    '''.gitleaks.toml''',
     '''.pre-commit-config.yaml''',
+    '''.*src/test.*''',
 ]
