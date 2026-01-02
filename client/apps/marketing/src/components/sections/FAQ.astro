@@ -24,6 +24,10 @@ const faqItems = [
 		question: t("faq.question4"),
 		answer: t("faq.answer4"),
 	},
+	{
+		question: t("faq.question5"),
+		answer: t("faq.answer5"),
+	},
 ];
 ---
 
@@ -44,7 +48,7 @@ const faqItems = [
       {
         faqItems.map((faq, index) => {
           // Static class mapping for Tailwind JIT compiler
-          const delayClasses = ["delay-300", "delay-400", "delay-500", "delay-600"];
+          const delayClasses = ["delay-300", "delay-400", "delay-500", "delay-600", "delay-700"];
           const delayClass = delayClasses[Math.min(index, delayClasses.length - 1)];
           return (
             <details

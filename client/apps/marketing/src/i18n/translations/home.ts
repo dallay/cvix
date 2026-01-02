@@ -2,40 +2,56 @@ import type { UIMultilingual } from "@cvix/i18n/astro";
 
 export const home: UIMultilingual = {
 	en: {
-		"home.title": "Civix — Professional resumes in 60 seconds",
+		// SEO-optimized title and description (keyword-first)
+		"home.title":
+			"ATS-Optimized LaTeX Resume Builder | Professional Resume in 60s — Civix",
 		"home.description":
-			"Civix transforms your data into a professional LaTeX-quality PDF resume in less than 60 seconds. Fast, private, and ATS-optimized.",
+			"Create ATS-optimized, LaTeX-quality resumes in under 60 seconds. Built by engineers for tech professionals. No design skills needed. Join the waitlist.",
 		// Hero section
-		"hero.badge": "New",
-		"hero.badge.text": "Civix — LaTeX Resume Generator",
-		"hero.title": "Create a Professional Resume in 60 Seconds",
+		"hero.badge": "Coming Soon",
+		"hero.badge.text": "Early Access — Limited to First 500 Users",
+		"hero.title": "ATS-Optimized LaTeX Resume Builder",
 		"hero.subtitle":
-			"LaTeX-quality typography. ATS-friendly. No complications.",
-		"hero.cta.primary": "Generate My Resume Now",
-		"hero.cta.secondary": "Watch Demo (30s)",
+			"Create professional resumes that pass ATS screening. LaTeX-quality typography, optimized for tech roles. Ready in 60 seconds.",
+		"hero.cta.primary": "Get Early Access",
+		"hero.cta.secondary": "Learn More",
+		"hero.earlyAccess":
+			"🔒 Early users get lifetime pricing + priority templates",
 		"hero.email.placeholder": "Enter your email",
-		"hero.email.button": "Get early access",
-		"hero.email.success": "Thanks — we'll be in touch with next steps.",
+		"hero.email.button": "Join Waitlist (Limited Spots)",
+		"hero.email.success":
+			"You're in! Check your inbox for confirmation and next steps.",
 		"hero.email.error": "Please enter a valid email address.",
-		"hero.mockup.alt": "Civix resume builder interface preview",
+		"hero.email.rateLimit": "Too many requests. Please try again later.",
+		"hero.email.privacy": "No spam, ever. Unsubscribe anytime.",
+		"hero.mockup.alt":
+			"Civix ATS resume builder interface showing LaTeX resume generation",
 	},
 	es: {
-		"home.title": "Civix — CVs profesionales en 60 segundos",
+		// SEO-optimized title and description (keyword-first)
+		"home.title":
+			"Generador de CVs LaTeX Optimizado para ATS | CV Profesional en 60s — Civix",
 		"home.description":
-			"Civix transforma tus datos en un CV profesional en PDF (LaTeX-quality) en menos de 60 segundos. Rápido, privado y optimizado para ATS.",
+			"Crea CVs optimizados para ATS con calidad LaTeX en menos de 60 segundos. Hecho por ingenieros para profesionales tech. Sin habilidades de diseño. Únete a la lista de espera.",
 		// Sección Hero
-		"hero.badge": "Nuevo",
-		"hero.badge.text": "Civix — Generador de CVs LaTeX",
-		"hero.title": "Crea un CV Profesional en 60 Segundos",
+		"hero.badge": "Próximamente",
+		"hero.badge.text": "Acceso Anticipado — Limitado a los Primeros 500",
+		"hero.title": "Generador de CVs LaTeX Optimizado para ATS",
 		"hero.subtitle":
-			"Tipografía LaTeX, compatible con ATS y listo para descargar — sin instalaciones ni configuración.",
-		"hero.cta.primary": "Generar mi CV ahora",
-		"hero.cta.secondary": "Ver demo (30s)",
+			"Crea CVs profesionales que pasan el filtro ATS. Tipografía LaTeX, optimizado para roles tech. Listo en 60 segundos.",
+		"hero.cta.primary": "Solicitar Acceso",
+		"hero.cta.secondary": "Más Información",
+		"hero.earlyAccess":
+			"🔒 Usuarios early access obtienen precio de por vida + plantillas prioritarias",
 		"hero.email.placeholder": "Escribe tu correo",
-		"hero.email.button": "Solicitar acceso",
-		"hero.email.success": "Gracias — te contactaremos con los próximos pasos.",
+		"hero.email.button": "Unirme a la Lista (Cupos Limitados)",
+		"hero.email.success":
+			"¡Estás dentro! Revisa tu bandeja para confirmación y próximos pasos.",
 		"hero.email.error": "Por favor ingresa una dirección de correo válida.",
+		"hero.email.rateLimit":
+			"Demasiadas solicitudes. Intenta de nuevo más tarde.",
+		"hero.email.privacy": "Sin spam, nunca. Cancela cuando quieras.",
 		"hero.mockup.alt":
-			"Vista previa de la interfaz del constructor de CVs Civix",
+			"Interfaz del generador de CVs ATS Civix mostrando generación de CV LaTeX",
 	},
 };

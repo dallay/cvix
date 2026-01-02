@@ -1,0 +1,246 @@
+---
+import { BACKEND_URL } from "astro:env/client";
+import { EmailCaptureForm, Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import type { Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
+import { LOCALES, useTranslations } from "@/i18n";
+import { footerNavLinks } from "@/models/menu";
+
+const locale = Astro.currentLocale as Lang;
+const t = useTranslations(locale);
+
+export const getStaticPaths = () =>
+	Object.keys(LOCALES).map((lang) => ({
+		params: { lang },
+	}));
+
+// SEO structured data
+const structuredData = {
+	"@context": "https://schema.org",
+	"@type": "SoftwareApplication",
+	name: t("satellite.schema.ats.name"),
+	applicationCategory: "BusinessApplication",
+	description: t("ats.description"),
+	operatingSystem: "Web Browser",
+	offers: {
+		"@type": "Offer",
+		price: "0",
+		priceCurrency: "USD",
+	},
+};
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+---
+
+<Layout title={t("ats.title")} description={t("ats.description")} {og}>
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+	
+	<div class="pt-24 pb-16 bg-background">
+		<!-- Back to Home -->
+		<div class="container mx-auto max-w-6xl px-4 mb-8">
+			<a href={`/${locale}`} class="text-primary hover:underline text-sm">
+				{t("satellite.backToHome")}
+			</a>
+		</div>
+
+		<!-- Hero Section -->
+		<section class="container mx-auto max-w-6xl px-4 text-center mb-20">
+			<h1 class="text-5xl md:text-6xl font-serif font-bold text-foreground mb-4">
+				{t("ats.h1")}
+			</h1>
+			<p class="text-2xl text-primary font-medium mb-6">
+				{t("ats.h1.subtitle")}
+			</p>
+			<p class="text-lg text-muted-foreground max-w-3xl mx-auto mb-10">
+				{t("ats.intro")}
+			</p>
+
+			<!-- Stats -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
+				<div class="bg-card border border-border rounded-xl p-6">
+					<div class="text-4xl font-bold text-destructive mb-2">
+						{t("ats.problem.stat1.number")}
+					</div>
+					<div class="text-muted-foreground">
+						{t("ats.problem.stat1.label")}
+					</div>
+				</div>
+				<div class="bg-card border border-border rounded-xl p-6">
+					<div class="text-4xl font-bold text-primary mb-2">
+						{t("ats.problem.stat2.number")}
+					</div>
+					<div class="text-muted-foreground">
+						{t("ats.problem.stat2.label")}
+					</div>
+				</div>
+				<div class="bg-card border border-border rounded-xl p-6">
+					<div class="text-4xl font-bold text-amber-500 mb-2">
+						{t("ats.problem.stat3.number")}
+					</div>
+					<div class="text-muted-foreground">
+						{t("ats.problem.stat3.label")}
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Solution Section -->
+		<section class="bg-muted/30 py-20 mb-20">
+			<div class="container mx-auto max-w-6xl px-4">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+					{t("ats.solution.title")}
+				</h2>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("ats.solution.feature1.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("ats.solution.feature1.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("ats.solution.feature2.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("ats.solution.feature2.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("ats.solution.feature3.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("ats.solution.feature3.description")}
+						</p>
+					</div>
+
+					<div class="bg-card border border-border rounded-xl p-8">
+						<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+							<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+							</svg>
+						</div>
+						<h3 class="text-xl font-semibold text-foreground mb-3">
+							{t("ats.solution.feature4.title")}
+						</h3>
+						<p class="text-muted-foreground">
+							{t("ats.solution.feature4.description")}
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Testimonial -->
+		<section class="container mx-auto max-w-4xl px-4 mb-20">
+			<blockquote class="bg-card border border-border rounded-2xl p-10 text-center">
+				<p class="text-xl md:text-2xl text-foreground italic mb-6">
+					"{t("ats.testimonial.quote")}"
+				</p>
+				<cite class="text-muted-foreground not-italic">
+					— {t("ats.testimonial.author")}
+				</cite>
+			</blockquote>
+		</section>
+
+		<!-- FAQ Section -->
+		<section class="bg-muted/30 py-20 mb-20">
+			<div class="container mx-auto max-w-4xl px-4">
+				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
+					{t("ats.faq.title")}
+				</h2>
+
+				<div class="space-y-6">
+					<details class="bg-card border border-border rounded-xl p-6 group">
+						<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+							{t("ats.faq.q1")}
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-muted-foreground mt-4">
+							{t("ats.faq.a1")}
+						</p>
+					</details>
+
+					<details class="bg-card border border-border rounded-xl p-6 group">
+						<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+							{t("ats.faq.q2")}
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-muted-foreground mt-4">
+							{t("ats.faq.a2")}
+						</p>
+					</details>
+
+					<details class="bg-card border border-border rounded-xl p-6 group">
+						<summary class="font-semibold text-foreground cursor-pointer list-none flex justify-between items-center">
+							{t("ats.faq.q3")}
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-muted-foreground mt-4">
+							{t("ats.faq.a3")}
+						</p>
+					</details>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="container mx-auto max-w-4xl px-4 text-center">
+			<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+				{t("ats.cta.title")}
+			</h2>
+			<p class="text-lg text-muted-foreground mb-8">
+				{t("ats.cta.subtitle")}
+			</p>
+
+			<div class="max-w-md mx-auto">
+				<EmailCaptureForm
+					apiUrl={`${BACKEND_URL}/api/waitlist`}
+					emailPlaceholder={t("hero.email.placeholder")}
+					buttonText={t("ats.cta.button")}
+					successMessage={t("hero.email.success")}
+					errorMessage={t("hero.email.error")}
+					rateLimitMessage={t("hero.email.rateLimit")}
+					source="ats-resume-builder"
+				/>
+			</div>
+
+			<!-- Internal Links -->
+			<div class="flex flex-wrap justify-center gap-4 mt-12">
+				<a href={`/${locale}/latex-resume-builder`} class="text-primary hover:underline">
+					{t("satellite.links.latex")}
+				</a>
+				<a href={`/${locale}/tech-resume-template`} class="text-primary hover:underline">
+					{t("satellite.links.tech")}
+				</a>
+			</div>
+		</section>
+	</div>
+
+	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
+</Layout>
