@@ -1,5 +1,9 @@
-[allowlist]
-paths = [
-  ".*src/test.*"
-]
+# .gitleaks.toml
 
+[allowlist]
+description = "Allowlist for gitleaks"
+paths = [
+    '''.gitleaks.toml''',
+    '''.pre-commit-config.yaml''',
+    '''.*src/test.*''',
+]
