@@ -71,9 +71,10 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 
 ---
 
-## 🖼️ Example Screens (coming soon)
+## 🖼️ Example Screens
 
-<!-- Insert GIF/screenshots here when available -->
+![Light Mockup](client/packages/assets/src/images/cta-dashboard-mockup.svg)
+![Dark Mockup](client/packages/assets/src/images/cta-dashboard-mockup-dark.svg)
 
 ---
 
