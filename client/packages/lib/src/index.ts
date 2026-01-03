@@ -3,7 +3,7 @@
 // Re-export types if needed
 export type { ClassValue } from "clsx";
 // Constants
-export * from "./consts";
+export * from "./consts/index";
 
 // Core functionality
 export * from "./core/menu";
