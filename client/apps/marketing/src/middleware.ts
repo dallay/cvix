@@ -38,7 +38,8 @@ export const redirectToDefaultLocale = defineMiddleware(
 		const { pathname, search } = context.url;
 
 		// Skip static assets and API routes
-		const ext = pathname.substring(pathname.lastIndexOf("."));
+		const lastDotIndex = pathname.lastIndexOf(".");
+		const ext = lastDotIndex !== -1 ? pathname.substring(lastDotIndex) : "";
 		const isStaticAsset =
 			SKIP_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
 			STATIC_EXTENSIONS.has(ext);

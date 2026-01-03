@@ -197,60 +197,6 @@ export const CVIX_OAUTH_URL = resolveUrl({
 });
 
 // ============================================================================
-// BACKWARD COMPATIBILITY (Deprecated - Remove in v2.0)
-// ============================================================================
-
-/**
- * @deprecated Use CVIX_MARKETING_URL instead
- */
-export const BASE_URL = CVIX_MARKETING_URL;
-
-/**
- * @deprecated Use CVIX_WEBAPP_URL instead
- */
-export const BASE_WEBAPP_URL = CVIX_WEBAPP_URL;
-
-/**
- * @deprecated Use CVIX_API_URL instead
- */
-export const BASE_API_URL = CVIX_API_URL;
-
-/**
- * @deprecated Use CVIX_DOCS_URL instead
- */
-export const BASE_DOCS_URL = CVIX_DOCS_URL;
-
-/**
- * @deprecated Use CVIX_BLOG_URL instead
- */
-export const BLOG_URL = CVIX_BLOG_URL;
-
-/**
- * @deprecated Use PORTS.MARKETING instead
- */
-export const LANDING_PAGE_PORT = PORTS.MARKETING;
-
-/**
- * @deprecated Use PORTS.WEBAPP instead
- */
-export const WEBAPP_PORT = PORTS.WEBAPP;
-
-/**
- * @deprecated Use PORTS.DOCS instead
- */
-export const DOCS_PORT = PORTS.DOCS;
-
-/**
- * @deprecated Use PORTS.BLOG instead
- */
-export const BLOG_PORT = PORTS.BLOG;
-
-/**
- * @deprecated Use PORTS.API instead
- */
-export const BACKEND_PORT = PORTS.API;
-
-// ============================================================================
 // BRAND CONSTANTS (unchanged)
 // ============================================================================
 
