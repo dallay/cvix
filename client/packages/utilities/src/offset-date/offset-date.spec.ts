@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import offsetDate from "./offset-date";
+import offsetDate from "./offset-date.js";
 
 describe("offsetDate", () => {
 	it("returns the current date when no offset is provided", () => {

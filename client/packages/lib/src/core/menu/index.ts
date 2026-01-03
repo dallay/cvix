@@ -1,3 +1,3 @@
-export * from "./menu.constants";
-export * from "./menu.service";
-export * from "./menu.type";
+export * from "./menu.constants.js";
+export * from "./menu.service.js";
+export * from "./menu.type.js";

@@ -1,5 +1,5 @@
 ---
-import { WEBAPP_URL } from "astro:env/client";
+import { CVIX_WEBAPP_URL } from "astro:env/client";
 import { type Lang } from "@cvix/i18n/astro";
 import { useTranslations } from "@/i18n/i18n";
 
@@ -17,25 +17,25 @@ const templates: TemplateShowcase[] = [
 	{
 		id: "executive",
 		name: t("templates.executive"),
-		url: `${WEBAPP_URL}/templates/executive`,
+		url: `${CVIX_WEBAPP_URL}/templates/executive`,
 		color: "bg-stone-100",
 	},
 	{
 		id: "creative",
 		name: t("templates.creative"),
-		url: `${WEBAPP_URL}/templates/creative`,
+		url: `${CVIX_WEBAPP_URL}/templates/creative`,
 		color: "bg-rose-50",
 	},
 	{
 		id: "minimal",
 		name: t("templates.minimal"),
-		url: `${WEBAPP_URL}/templates/minimal`,
+		url: `${CVIX_WEBAPP_URL}/templates/minimal`,
 		color: "bg-white",
 	},
 	{
 		id: "modern",
 		name: t("templates.modern"),
-		url: `${WEBAPP_URL}/templates/modern`,
+		url: `${CVIX_WEBAPP_URL}/templates/modern`,
 		color: "bg-slate-50",
 	},
 ];

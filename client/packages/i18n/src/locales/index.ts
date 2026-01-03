@@ -8,8 +8,8 @@
 import type { NestedTranslations, SupportedLocale } from "../types";
 
 // Import common translations
-import en from "./common/en.json";
-import es from "./common/es.json";
+import en from "./common/en.json" with { type: "json" };
+import es from "./common/es.json" with { type: "json" };
 
 /**
  * Common translations for all supported locales.

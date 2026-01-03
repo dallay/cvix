@@ -1,5 +1,5 @@
 ---
-import { BACKEND_URL } from "astro:env/client";
+import { CVIX_API_URL } from "astro:env/client";
 import { EmailCaptureForm, Footer, BaseLayout as Layout } from "@cvix/astro-ui";
 import type { Lang } from "@cvix/i18n/astro";
 import { getOgImagePath } from "@cvix/lib";
@@ -48,7 +48,7 @@ const roles = [
 
 <Layout title={t("tech.title")} description={t("tech.description")} {og}>
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-	
+
 	<div class="pt-24 pb-16 bg-background">
 		<!-- Back to Home -->
 		<div class="container mx-auto max-w-6xl px-4 mb-8">
@@ -76,7 +76,7 @@ const roles = [
 				<h2 class="text-3xl md:text-4xl font-serif font-bold text-foreground text-center mb-12">
 					{t("tech.roles.title")}
 				</h2>
-				
+
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{roles.map((role) => (
 						<div class="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors">
@@ -236,7 +236,7 @@ const roles = [
 
 				<div class="max-w-md mx-auto">
 					<EmailCaptureForm
-						apiUrl={`${BACKEND_URL}/api/waitlist`}
+						apiUrl={`${CVIX_API_URL}/api/waitlist`}
 						emailPlaceholder={t("hero.email.placeholder")}
 						buttonText={t("tech.cta.button")}
 						successMessage={t("hero.email.success")}

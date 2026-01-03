@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { randomElement } from "./random-element";
+import { randomElement } from "./random-element.js";
 
 describe("randomElement", () => {
 	it("should return an element from the array", () => {

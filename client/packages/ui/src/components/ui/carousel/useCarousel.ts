@@ -5,7 +5,7 @@ import type {
 	UnwrapRefCarouselApi as CarouselApi,
 	CarouselEmits,
 	CarouselProps,
-} from "./interface.ts";
+} from "./interface.js";
 
 const [useProvideCarousel, useInjectCarousel] = createInjectionState(
 	({ opts, orientation, plugins }: CarouselProps, emits: CarouselEmits) => {

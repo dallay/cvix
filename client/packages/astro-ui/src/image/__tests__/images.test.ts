@@ -1,6 +1,6 @@
 import type { ImageMetadata } from "astro";
 import { describe, expect, it, vi } from "vitest";
-import { createImageResolver } from "../images.ts";
+import { createImageResolver } from "../images.js";
 
 /**
  * FAKE image mapping para los tests unitarios.

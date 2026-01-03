@@ -26,6 +26,6 @@
 			"@cvix/assets": ["../../packages/assets/src/index.ts"],
 			"@cvix/assets/*": ["../../packages/assets/src/*"]
 		},
-		"types": ["node"]
+		"types": ["node", "vite/client"]
 	}
 }
