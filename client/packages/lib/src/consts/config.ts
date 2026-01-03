@@ -65,8 +65,10 @@ function resolveUrl(config: {
 	};
 	genericDefault?: string; // Generic convention (SITE_URL)
 	localPort?: number; // Localhost port for development
+	protocol?: "http" | "https"; // Protocol for localhost (default: http)
 }): string {
-	const { envKey, providerDefaults, genericDefault, localPort } = config;
+	const { envKey, providerDefaults, genericDefault, localPort, protocol } =
+		config;
 
 	// 1. Explicit environment variable (highest priority)
 	const explicitUrl = getEnv(envKey);
@@ -101,11 +103,15 @@ function resolveUrl(config: {
 
 	// 4. Localhost development fallback
 	if (localPort) {
-		return `http://localhost:${localPort}`;
+		const proto = protocol ?? "http";
+		return `${proto}://localhost:${localPort}`;
 	}
 
 	// 5. Last resort: empty string (should never happen)
-	console.warn(`⚠️  No URL found for ${envKey}`);
+	// Only warn in development to avoid polluting production logs
+	if (import.meta.env?.DEV) {
+		console.warn(`⚠️  No URL found for ${envKey}`);
+	}
 	return "";
 }
 
@@ -173,20 +179,22 @@ export const CVIX_BLOG_URL = resolveUrl({
  * - Explicit: CVIX_API_URL
  * - Fallback: https://localhost:8443 (HTTPS for OAuth)
  */
-export const CVIX_API_URL =
-	resolveUrl({
-		envKey: "CVIX_API_URL",
-	}) || `https://localhost:${PORTS.API}`;
+export const CVIX_API_URL = resolveUrl({
+	envKey: "CVIX_API_URL",
+	localPort: PORTS.API,
+	protocol: "https", // OAuth requires HTTPS
+});
 
 /**
  * OAuth/Keycloak server URL
- * - Production: CVIX_OAUTH_URL or OAUTH2_SERVER_URL
+ * - Production: CVIX_OAUTH_URL or OAUTH2_SERVER_URL (legacy)
  * - Local: http://localhost:9080
  */
-export const CVIX_OAUTH_URL =
-	getEnv("CVIX_OAUTH_URL") ||
-	getEnv("OAUTH2_SERVER_URL") ||
-	"http://localhost:9080";
+export const CVIX_OAUTH_URL = resolveUrl({
+	envKey: "CVIX_OAUTH_URL",
+	genericDefault: "OAUTH2_SERVER_URL", // Legacy fallback
+	localPort: 9080,
+});
 
 // ============================================================================
 // BACKWARD COMPATIBILITY (Deprecated - Remove in v2.0)
