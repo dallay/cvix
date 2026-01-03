@@ -112,13 +112,13 @@ export default defineConfig({
 
 	env: {
 		schema: {
-			BACKEND_URL: envField.string({
+			CVIX_API_URL: envField.string({
 				context: "client",
 				access: "public",
 				optional: true,
 				default: CVIX_API_URL,
 			}),
-			WEBAPP_URL: envField.string({
+			CVIX_WEBAPP_URL: envField.string({
 				context: "client",
 				access: "public",
 				default: CVIX_WEBAPP_URL,

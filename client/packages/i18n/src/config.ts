@@ -106,6 +106,6 @@ export function extractBaseLocale(languageTag: string): SupportedLocale {
 	return normalizeLocale(baseLocale);
 }
 
-export type { LanguageOption, LocaleConfig, SupportedLocale } from "./types.js";
+export type { LanguageOption, LocaleConfig, SupportedLocale } from "./types";
 // Re-export types and constants for convenience
-export { SUPPORTED_LOCALES } from "./types.js";
+export { SUPPORTED_LOCALES } from "./types";
