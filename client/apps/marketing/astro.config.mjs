@@ -5,9 +5,9 @@ import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
 import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
 import {
+	CVIX_API_URL,
 	CVIX_MARKETING_URL,
 	CVIX_WEBAPP_URL,
-	CVIX_API_URL,
 	PORTS,
 } from "@cvix/lib";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
