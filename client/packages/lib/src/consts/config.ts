@@ -17,7 +17,6 @@ function detectProvider(): DeploymentProvider {
 }
 
 const DEPLOYMENT_PROVIDER = detectProvider();
-const IS_PRODUCTION = getEnv("NODE_ENV") === "production";
 
 // ============================================================================
 // ENVIRONMENT VARIABLE ACCESS
@@ -58,8 +57,7 @@ function getEnv(key: string): string | undefined {
  * Resolve URL with intelligent defaults based on provider and environment
  */
 function resolveUrl(config: {
-	envKey: string; // Primary env var name (CVIX_MARKETING_URL)
-	prodEnvKey?: string; // Production override (CVIX_MARKETING_URL_PROD)
+	envKey: string; // Environment variable name (CVIX_MARKETING_URL)
 	providerDefaults?: {
 		// Provider-specific auto-detection
 		cloudflare?: string; // CF_PAGES_URL
@@ -68,20 +66,13 @@ function resolveUrl(config: {
 	genericDefault?: string; // Generic convention (SITE_URL)
 	localPort?: number; // Localhost port for development
 }): string {
-	const { envKey, prodEnvKey, providerDefaults, genericDefault, localPort } =
-		config;
+	const { envKey, providerDefaults, genericDefault, localPort } = config;
 
-	// 1. Production override (highest priority in production)
-	if (IS_PRODUCTION && prodEnvKey) {
-		const prodUrl = getEnv(prodEnvKey);
-		if (prodUrl) return prodUrl;
-	}
-
-	// 2. Explicit environment variable
+	// 1. Explicit environment variable (highest priority)
 	const explicitUrl = getEnv(envKey);
 	if (explicitUrl) return explicitUrl;
 
-	// 3. Provider-specific auto-detection
+	// 2. Provider-specific auto-detection
 	if (providerDefaults) {
 		switch (DEPLOYMENT_PROVIDER) {
 			case "cloudflare": {
@@ -102,18 +93,18 @@ function resolveUrl(config: {
 		}
 	}
 
-	// 4. Generic convention
+	// 3. Generic convention
 	if (genericDefault) {
 		const genericUrl = getEnv(genericDefault);
 		if (genericUrl) return genericUrl;
 	}
 
-	// 5. Localhost development fallback
+	// 4. Localhost development fallback
 	if (localPort) {
 		return `http://localhost:${localPort}`;
 	}
 
-	// 6. Last resort: empty string (should never happen)
+	// 5. Last resort: empty string (should never happen)
 	console.warn(`⚠️  No URL found for ${envKey}`);
 	return "";
 }
@@ -136,13 +127,12 @@ export const PORTS = {
 
 /**
  * Marketing/Landing page URL
- * - Production: CVIX_MARKETING_URL_PROD or CVIX_MARKETING_URL
- * - Cloudflare: CF_PAGES_URL
- * - Local: http://localhost:7766
+ * - Explicit: CVIX_MARKETING_URL
+ * - Cloudflare: CF_PAGES_URL (auto-detected)
+ * - Fallback: http://localhost:7766
  */
 export const CVIX_MARKETING_URL = resolveUrl({
 	envKey: "CVIX_MARKETING_URL",
-	prodEnvKey: "CVIX_MARKETING_URL_PROD",
 	providerDefaults: { cloudflare: "CF_PAGES_URL" },
 	genericDefault: "SITE_URL",
 	localPort: PORTS.MARKETING,
@@ -150,46 +140,42 @@ export const CVIX_MARKETING_URL = resolveUrl({
 
 /**
  * Main web application URL (Vue.js SPA)
- * - Production: CVIX_WEBAPP_URL_PROD or CVIX_WEBAPP_URL
- * - Local: http://localhost:9876
+ * - Explicit: CVIX_WEBAPP_URL
+ * - Fallback: http://localhost:9876
  */
 export const CVIX_WEBAPP_URL = resolveUrl({
 	envKey: "CVIX_WEBAPP_URL",
-	prodEnvKey: "CVIX_WEBAPP_URL_PROD",
 	localPort: PORTS.WEBAPP,
 });
 
 /**
  * Documentation site URL
- * - Production: CVIX_DOCS_URL_PROD or CVIX_DOCS_URL
- * - Local: http://localhost:4321
+ * - Explicit: CVIX_DOCS_URL
+ * - Fallback: http://localhost:4321
  */
 export const CVIX_DOCS_URL = resolveUrl({
 	envKey: "CVIX_DOCS_URL",
-	prodEnvKey: "CVIX_DOCS_URL_PROD",
 	localPort: PORTS.DOCS,
 });
 
 /**
  * Blog site URL
- * - Production: CVIX_BLOG_URL_PROD or CVIX_BLOG_URL
- * - Local: http://localhost:7767
+ * - Explicit: CVIX_BLOG_URL
+ * - Fallback: http://localhost:7767
  */
 export const CVIX_BLOG_URL = resolveUrl({
 	envKey: "CVIX_BLOG_URL",
-	prodEnvKey: "CVIX_BLOG_URL_PROD",
 	localPort: PORTS.BLOG,
 });
 
 /**
  * Backend REST API URL
- * - Production: CVIX_API_URL_PROD or CVIX_API_URL
- * - Local: https://localhost:8443 (HTTPS for OAuth)
+ * - Explicit: CVIX_API_URL
+ * - Fallback: https://localhost:8443 (HTTPS for OAuth)
  */
 export const CVIX_API_URL =
 	resolveUrl({
 		envKey: "CVIX_API_URL",
-		prodEnvKey: "CVIX_API_URL_PROD",
 	}) || `https://localhost:${PORTS.API}`;
 
 /**
