@@ -1,5 +1,5 @@
 import { DEFAULT_LOCALE } from "@cvix/i18n";
-import { BRAND_NAME } from "../consts";
+import { BRAND_NAME } from "../consts/index.ts";
 import type { OgData } from "./og.types";
 
 /**

@@ -1,3 +1,3 @@
-export * from "./menu.constants";
-export * from "./menu.service";
-export * from "./menu.type";
+export * from "./menu.constants.ts";
+export * from "./menu.service.ts";
+export * from "./menu.type.ts";

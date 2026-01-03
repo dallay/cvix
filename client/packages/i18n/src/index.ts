@@ -27,13 +27,13 @@ export {
 	LANGUAGES,
 	LOCALES,
 	normalizeLocale,
-} from "./config";
+} from "./config.ts";
 // Locale utilities (re-exported for convenience)
 export {
 	commonTranslations,
 	getCommonTranslations,
 	getFlatTranslations,
-} from "./locales";
+} from "./locales/index.ts";
 // Types
 export type {
 	LanguageOption,
@@ -43,5 +43,5 @@ export type {
 	NestedTranslations,
 	SupportedLocale,
 	TranslationDict,
-} from "./types";
-export { isSupportedLocale, SUPPORTED_LOCALES } from "./types";
+} from "./types.ts";
+export { isSupportedLocale, SUPPORTED_LOCALES } from "./types.ts";

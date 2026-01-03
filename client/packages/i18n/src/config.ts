@@ -10,8 +10,8 @@ import type {
 	LocaleConfig,
 	LocalesConfig,
 	SupportedLocale,
-} from "./types";
-import { SUPPORTED_LOCALES } from "./types";
+} from "./types.ts";
+import { SUPPORTED_LOCALES } from "./types.ts";
 
 /**
  * Default locale for the application.
@@ -106,6 +106,6 @@ export function extractBaseLocale(languageTag: string): SupportedLocale {
 	return normalizeLocale(baseLocale);
 }
 
-export type { LanguageOption, LocaleConfig, SupportedLocale } from "./types";
+export type { LanguageOption, LocaleConfig, SupportedLocale } from "./types.ts";
 // Re-export types and constants for convenience
-export { SUPPORTED_LOCALES } from "./types";
+export { SUPPORTED_LOCALES } from "./types.ts";

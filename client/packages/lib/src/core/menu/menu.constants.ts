@@ -1,5 +1,5 @@
 import type { Lang } from "@cvix/i18n/astro";
-import { BASE_DOCS_URL, BLOG_URL } from "../../consts/config";
+import { BASE_DOCS_URL, BLOG_URL } from "../../consts/config.ts";
 import type { MenuItem } from "./menu.type.ts";
 
 export const headerMenuItems: MenuItem[] = [

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import getAvatarUrl from "./avatar";
+import getAvatarUrl from "./avatar.ts";
 
 describe("getAvatarUrl", () => {
 	it("returns a valid gravatar URL for a given email", () => {

@@ -27,4 +27,4 @@ export {
 	SITE_TITLE,
 	WEBAPP_PORT,
 	X_ACCOUNT,
-} from "./config";
+} from "./config.ts";
