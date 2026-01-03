@@ -16,7 +16,7 @@
  * ```
  */
 
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "../config.ts";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "../config.js";
 import type {
 	Lang,
 	LocalePath,
@@ -24,7 +24,7 @@ import type {
 	TranslatePathFunction,
 	TranslationFunction,
 	UIMultilingual,
-} from "./types.ts";
+} from "./types.js";
 
 /**
  * Configuration to determine if default language should be shown in URLs.
@@ -284,7 +284,7 @@ export function mergeTranslationModules(
 }
 
 // Re-export config values commonly used in Astro apps
-export { DEFAULT_LOCALE, LOCALES, SUPPORTED_LOCALES } from "../config.ts";
+export { DEFAULT_LOCALE, LOCALES, SUPPORTED_LOCALES } from "../config.js";
 // Re-export types for convenience
 export type {
 	AstroLocaleConfig,
@@ -297,4 +297,4 @@ export type {
 	Translations,
 	UIDict,
 	UIMultilingual,
-} from "./types.ts";
+} from "./types.js";

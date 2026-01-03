@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chunk } from "./chunk.ts";
+import { chunk } from "./chunk.js";
 
 describe("chunk", () => {
 	it("should divide an array into chunks of the specified size", () => {

@@ -22,4 +22,4 @@ export function defaultColors(count = 3) {
 	];
 }
 
-export * from "./interface.ts";
+export * from "./interface.js";

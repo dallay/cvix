@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import generateRandomWords from "./random-word.ts";
+import generateRandomWords from "./random-word.js";
 
 describe("generateRandomWords", () => {
 	it("returns a string with the default number of words when no arguments are provided", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { orderBy } from "./order-by.ts";
+import { orderBy } from "./order-by.js";
 
 describe("orderBy", () => {
 	it("sorts items by multiple keys and orders", () => {

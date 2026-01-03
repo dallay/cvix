@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupBy } from "./group-by.ts";
+import { groupBy } from "./group-by.js";
 
 describe("groupBy", () => {
 	it("groups items by string length", () => {

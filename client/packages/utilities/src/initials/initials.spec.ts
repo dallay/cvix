@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import initials from "./initials.ts";
+import initials from "./initials.js";
 
 describe("initials", () => {
 	it("returns initials for a single name", () => {

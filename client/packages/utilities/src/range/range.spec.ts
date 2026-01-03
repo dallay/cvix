@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { range } from "./range.ts";
+import { range } from "./range.js";
 
 describe("range", () => {
 	test("returns an array of numbers from start to end with positive step", () => {

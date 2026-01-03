@@ -1,5 +1,5 @@
 import type { ImageMetadata } from "astro";
-import { isExternalUrl, isImageMetadata } from "./image-utils.ts";
+import { isExternalUrl, isImageMetadata } from "./image-utils.js";
 
 export interface ImageGlobs {
 	[key: string]: () => Promise<{ default: ImageMetadata }>;

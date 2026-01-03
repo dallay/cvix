@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deepmerge } from "./deepmerge.ts";
+import { deepmerge } from "./deepmerge.js";
 
 describe("deepmerge", () => {
 	it("merges two simple objects", () => {
