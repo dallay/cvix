@@ -7,6 +7,11 @@
  */
 type DeploymentProvider = "cloudflare" | "vercel" | "netlify" | "local";
 
+/**
+ * Detects the current deployment provider from environment variables.
+ *
+ * @returns One of `"cloudflare"`, `"vercel"`, `"netlify"`, or `"local"` indicating the detected deployment provider.
+ */
 function detectProvider(): DeploymentProvider {
 	if (typeof process !== "undefined" && process.env) {
 		if (process.env.CF_PAGES) return "cloudflare";
@@ -54,7 +59,27 @@ export const getEnv = (key: string): string | undefined => {
 // ============================================================================
 
 /**
- * Resolve URL with intelligent defaults based on provider and environment
+ * Resolve a base URL using an explicit environment key, provider-specific defaults,
+ * a generic fallback, and an optional localhost fallback for development.
+ *
+ * @param config.envKey - Environment variable name to check first (e.g., `CVIX_MARKETING_URL`)
+ * @param config.providerDefaults - Optional provider-specific environment keys to consult:
+ *   - `cloudflare`: env var to use for Cloudflare Pages (falls back to `CF_PAGES_URL` if unspecified)
+ *   - `vercel`: env var to use for Vercel (falls back to `VERCEL_URL` if unspecified; `https://` is prepended)
+ * @param config.genericDefault - Optional generic environment variable to use as a fallback (e.g., `SITE_URL`)
+ * @param config.localPort - Optional localhost port to use when no environment-derived URL is found
+ * @param config.protocol - Protocol to use for the localhost fallback (`"http"` or `"https"`, default: `"http"`)
+ * @returns The resolved URL as a string, or an empty string if no URL could be determined
+ *
+ * @example
+ * // Resolve marketing site URL: explicit CVIX_MARKETING_URL, provider auto-detection, SITE_URL, then localhost:7766
+ * resolveUrl({
+ *   envKey: "CVIX_MARKETING_URL",
+ *   providerDefaults: { cloudflare: "CF_PAGES_URL", vercel: "VERCEL_URL" },
+ *   genericDefault: "SITE_URL",
+ *   localPort: 7766,
+ *   protocol: "http"
+ * });
  */
 function resolveUrl(config: {
 	envKey: string; // Environment variable name (CVIX_MARKETING_URL)
