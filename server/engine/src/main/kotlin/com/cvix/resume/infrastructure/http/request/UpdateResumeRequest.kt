@@ -18,7 +18,7 @@ data class UpdateResumeRequest(
 
     @field:NotNull(message = "Resume content is required")
     @field:Valid
-    val content: GenerateResumeRequest,
+    val content: ResumeContentRequest,
 
     /**
      * Expected last update timestamp for optimistic locking.

@@ -7,6 +7,7 @@ import {
 } from "./factory";
 import { IndexedDBResumeStorage } from "./IndexedDBResumeStorage";
 import { LocalStorageResumeStorage } from "./LocalStorageResumeStorage";
+import { RemoteResumeStorage } from "./RemoteResumeStorage";
 import { SessionStorageResumeStorage } from "./SessionStorageResumeStorage";
 
 describe("Storage Factory", () => {
@@ -29,10 +30,10 @@ describe("Storage Factory", () => {
 			expect(storage.type()).toBe("indexeddb");
 		});
 
-		it("should throw error for remote storage type", () => {
-			expect(() => createResumeStorage("remote")).toThrow(
-				"Remote storage is not yet implemented",
-			);
+		it("should create remote storage instance", () => {
+			const storage = createResumeStorage("remote");
+			expect(storage).toBeInstanceOf(RemoteResumeStorage);
+			expect(storage.type()).toBe("remote");
 		});
 
 		it("should throw error for unknown storage type", () => {
@@ -74,11 +75,12 @@ describe("Storage Factory", () => {
 		it("should return metadata for all storage types", () => {
 			const metadata = getStorageMetadata();
 
-			expect(metadata).toHaveLength(3);
+			expect(metadata).toHaveLength(4);
 			expect(metadata.map((m) => m.type)).toEqual([
 				"session",
 				"local",
 				"indexeddb",
+				"remote",
 			]);
 		});
 
@@ -156,9 +158,13 @@ describe("Storage Factory", () => {
 			expect(metadata).toBeUndefined();
 		});
 
-		it("should return undefined for remote storage type", () => {
+		it("should return metadata for remote storage type", () => {
 			const metadata = getStorageMetadataByType("remote");
-			expect(metadata).toBeUndefined();
+
+			expect(metadata).toBeDefined();
+			expect(metadata?.type).toBe("remote");
+			expect(metadata?.label).toBe("Cloud Storage");
+			expect(metadata?.recommended).toBe(true);
 		});
 	});
 });

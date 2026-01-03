@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 import type { Resume } from "@/core/resume/domain/Resume";
 import type {
+	PartialResume,
+	PersistenceResult,
 	ResumeStorage,
 	StorageType,
 } from "@/core/resume/domain/ResumeStorage";
@@ -64,18 +66,16 @@ const createMockStorage = (
 ): ResumeStorage => {
 	const mockResume = hasData ? createMockResume() : null;
 	return {
-		save: vi
-			.fn()
-			.mockResolvedValue({
-				data: mockResume,
-				timestamp: new Date().toISOString(),
-			}),
-		load: vi
-			.fn()
-			.mockResolvedValue({
-				data: mockResume,
-				timestamp: new Date().toISOString(),
-			}),
+		save: vi.fn().mockResolvedValue({
+			data: mockResume,
+			timestamp: new Date().toISOString(),
+			storageType: type,
+		}),
+		load: vi.fn().mockResolvedValue({
+			data: mockResume,
+			timestamp: new Date().toISOString(),
+			storageType: type,
+		}),
 		clear: vi.fn().mockResolvedValue(undefined),
 		type: () => type,
 	};
@@ -250,7 +250,7 @@ describe("StorageSelector.vue", () => {
 			// Click Apply
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises(); // Wait for async checkOldStorageForData
 			await nextTick();
 
@@ -287,7 +287,7 @@ describe("StorageSelector.vue", () => {
 			// Click Apply
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await nextTick();
 
 			// Wait for async operations
@@ -301,21 +301,22 @@ describe("StorageSelector.vue", () => {
 
 		it("should display loading state during storage check", async () => {
 			// Create a mock that takes time to resolve
-			const slowMockStorage = {
+			const slowLoadFn = (): Promise<PersistenceResult<Resume | null>> =>
+				new Promise((resolve) =>
+					setTimeout(
+						() =>
+							resolve({
+								data: createMockResume(),
+								timestamp: new Date().toISOString(),
+								storageType: "local",
+							}),
+						100,
+					),
+				);
+
+			const slowMockStorage: ResumeStorage = {
 				...createMockStorage("local", true),
-				load: vi.fn(
-					() =>
-						new Promise((resolve) =>
-							setTimeout(
-								() =>
-									resolve({
-										data: createMockResume(),
-										timestamp: new Date().toISOString(),
-									}),
-								100,
-							),
-						),
-				),
+				load: vi.fn(slowLoadFn),
 			};
 
 			vi.spyOn(storageFactory, "createResumeStorage").mockReturnValue(
@@ -334,14 +335,14 @@ describe("StorageSelector.vue", () => {
 			// Click Apply
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await nextTick();
 
 			// Should show "Checking..." text
 			expect(wrapper.text()).toContain("Checking...");
 
 			// Button should be disabled
-			expect(applyButton.attributes("disabled")).toBeDefined();
+			expect(applyButton?.attributes("disabled")).toBeDefined();
 
 			// Wait for operation to complete
 			await new Promise((resolve) => setTimeout(resolve, 150));
@@ -374,7 +375,7 @@ describe("StorageSelector.vue", () => {
 			// Clear any previous calls from component initialization
 			createStorageSpy.mockClear();
 
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 
 			// Wait aggressively for async checkOldStorageForData and Vue re-render
 			await flushPromises();
@@ -429,7 +430,7 @@ describe("StorageSelector.vue", () => {
 
 			// Click Apply to trigger dialog
 			const applyButton = findButtonByText(testWrapper, "Apply Changes");
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
@@ -445,13 +446,13 @@ describe("StorageSelector.vue", () => {
 			expect(dialogElement).toBeDefined();
 
 			const cancelButton = Array.from(
-				dialogElement!.querySelectorAll("button"),
+				dialogElement?.querySelectorAll("button") ?? [],
 			).find(
 				(btn) => btn.textContent?.trim() === "Cancel",
 			) as HTMLButtonElement;
 
 			expect(cancelButton).toBeDefined();
-			cancelButton!.click();
+			cancelButton?.click();
 
 			await flushPromises();
 			await nextTick();
@@ -470,12 +471,10 @@ describe("StorageSelector.vue", () => {
 			const mockNewStorage = createMockStorage("session", false);
 			const mockResume = createMockResume();
 
-			mockOldStorage.load = vi
-				.fn()
-				.mockResolvedValue({
-					data: mockResume,
-					timestamp: new Date().toISOString(),
-				});
+			mockOldStorage.load = vi.fn().mockResolvedValue({
+				data: mockResume,
+				timestamp: new Date().toISOString(),
+			});
 
 			vi.spyOn(storageFactory, "createResumeStorage")
 				.mockReturnValueOnce(mockOldStorage) // checkOldStorageForData
@@ -499,7 +498,7 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(testWrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
@@ -508,7 +507,7 @@ describe("StorageSelector.vue", () => {
 			expect(migrateButton).toBeDefined();
 
 			// Use DOM click event instead of wrapper.trigger
-			migrateButton!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+			migrateButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 			await flushPromises();
 			await nextTick();
 			await flushPromises(); // Extra flush for async operations
@@ -548,7 +547,7 @@ describe("StorageSelector.vue", () => {
 
 			// Click Apply to trigger dialog
 			const applyButton = findButtonByText(testWrapper, "Apply Changes");
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
@@ -562,7 +561,7 @@ describe("StorageSelector.vue", () => {
 			expect(noMigrateButton).toBeDefined();
 
 			// Use DOM click event
-			noMigrateButton!.dispatchEvent(
+			noMigrateButton?.dispatchEvent(
 				new MouseEvent("click", { bubbles: true }),
 			);
 			await flushPromises();
@@ -588,12 +587,10 @@ describe("StorageSelector.vue", () => {
 			const mockNewStorage = createMockStorage("session", false);
 			const mockResume = createMockResume();
 
-			mockOldStorage.load = vi
-				.fn()
-				.mockResolvedValue({
-					data: mockResume,
-					timestamp: new Date().toISOString(),
-				});
+			mockOldStorage.load = vi.fn().mockResolvedValue({
+				data: mockResume,
+				timestamp: new Date().toISOString(),
+			});
 
 			vi.spyOn(storageFactory, "createResumeStorage")
 				.mockReturnValueOnce(mockOldStorage) // checkOldStorageForData
@@ -616,14 +613,14 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises(); // Wait for dialog to appear
 			await nextTick();
 
 			// Find button in portal
 			const migrateButton = findButtonInDocument("Migrate & Switch");
 			expect(migrateButton).toBeDefined();
-			migrateButton!.click();
+			migrateButton?.click();
 			await flushPromises();
 			await nextTick();
 
@@ -660,14 +657,14 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises(); // Wait for dialog to appear
 			await nextTick();
 
 			// Find button in portal
 			const migrateButton = findButtonInDocument("Migrate & Switch");
 			expect(migrateButton).toBeDefined();
-			migrateButton!.click();
+			migrateButton?.click();
 			await flushPromises();
 			await nextTick();
 
@@ -679,18 +676,26 @@ describe("StorageSelector.vue", () => {
 
 		it("should disable buttons during migration", async () => {
 			const mockOldStorage = createMockStorage("local", true);
-			const mockNewStorage = {
+
+			// Create a typed slow save function
+			const slowSaveFn = (): Promise<
+				PersistenceResult<Resume | PartialResume>
+			> =>
+				new Promise((resolve) =>
+					setTimeout(
+						() =>
+							resolve({
+								data: null as unknown as Resume,
+								timestamp: new Date().toISOString(),
+								storageType: "session",
+							}),
+						100,
+					),
+				);
+
+			const mockNewStorage: ResumeStorage = {
 				...createMockStorage("session", false),
-				save: vi.fn(
-					() =>
-						new Promise((resolve) =>
-							setTimeout(
-								() =>
-									resolve({ data: null, timestamp: new Date().toISOString() }),
-								100,
-							),
-						),
-				),
+				save: vi.fn(slowSaveFn),
 			};
 
 			vi.spyOn(storageFactory, "createResumeStorage")
@@ -713,18 +718,18 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises(); // Wait for dialog to appear
 			await nextTick();
 
 			// Find button in portal
 			const migrateButton = findButtonInDocument("Migrate & Switch");
 			expect(migrateButton).toBeDefined();
-			migrateButton!.click();
+			migrateButton?.click();
 			await nextTick();
 
 			// Buttons should be disabled during migration
-			expect(migrateButton.disabled).toBe(true);
+			expect(migrateButton?.disabled).toBe(true);
 
 			// Wait for migration to complete
 			await new Promise((resolve) => setTimeout(resolve, 150));
@@ -758,7 +763,7 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
@@ -804,14 +809,14 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
 			// Find button in portal
 			const migrateButton = findButtonInDocument("Migrate & Switch");
 			expect(migrateButton).toBeDefined();
-			migrateButton!.click();
+			migrateButton?.click();
 			await flushPromises();
 			await nextTick();
 
@@ -853,7 +858,7 @@ describe("StorageSelector.vue", () => {
 
 			const applyButton = findButtonByText(wrapper, "Apply Changes");
 			expect(applyButton).toBeDefined();
-			await applyButton!.trigger("click");
+			await applyButton?.trigger("click");
 			await flushPromises();
 			await nextTick();
 
@@ -890,7 +895,7 @@ describe("StorageSelector.vue", () => {
 			// Click Cancel
 			const cancelButton = findButtonByText(wrapper, "Cancel");
 			expect(cancelButton).toBeDefined();
-			await cancelButton!.trigger("click");
+			await cancelButton?.trigger("click");
 			await nextTick();
 
 			// Apply button should disappear (selection reverted)

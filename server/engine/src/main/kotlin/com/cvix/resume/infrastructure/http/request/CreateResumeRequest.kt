@@ -18,5 +18,5 @@ data class CreateResumeRequest(
 
     @field:NotNull(message = "Resume content is required")
     @field:Valid
-    val content: GenerateResumeRequest,
+    val content: ResumeContentRequest,
 )

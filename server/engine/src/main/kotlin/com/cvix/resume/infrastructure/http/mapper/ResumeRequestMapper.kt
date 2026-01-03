@@ -29,7 +29,9 @@ import com.cvix.resume.domain.Url
 import com.cvix.resume.domain.Volunteer
 import com.cvix.resume.domain.WorkExperience
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
+import com.cvix.resume.infrastructure.http.request.ResumeContentRequest
 import com.cvix.resume.infrastructure.http.request.dto.AwardDto
+import com.cvix.resume.infrastructure.http.request.dto.BasicsDto
 import com.cvix.resume.infrastructure.http.request.dto.CertificateDto
 import com.cvix.resume.infrastructure.http.request.dto.EducationDto
 import com.cvix.resume.infrastructure.http.request.dto.InterestDto
@@ -45,7 +47,7 @@ import java.time.LocalDate
 object ResumeRequestMapper {
     fun toDomain(request: GenerateResumeRequest): Resume {
         return Resume(
-            basics = mapBasics(request),
+            basics = mapBasics(request.basics),
             work = request.work?.map { mapWork(it) } ?: emptyList(),
             education = request.education?.map { mapEducation(it) } ?: emptyList(),
             skills = request.skills?.map { mapSkill(it) } ?: emptyList(),
@@ -60,8 +62,24 @@ object ResumeRequestMapper {
         )
     }
 
-    private fun mapBasics(request: GenerateResumeRequest): Basics {
-        val basics = request.basics
+    fun toDomain(request: ResumeContentRequest): Resume {
+        return Resume(
+            basics = mapBasics(request.basics),
+            work = request.work?.map { mapWork(it) } ?: emptyList(),
+            education = request.education?.map { mapEducation(it) } ?: emptyList(),
+            skills = request.skills?.map { mapSkill(it) } ?: emptyList(),
+            languages = request.languages?.map { mapLanguage(it) } ?: emptyList(),
+            projects = request.projects?.map { mapProject(it) } ?: emptyList(),
+            volunteer = request.volunteer?.map { mapVolunteer(it) } ?: emptyList(),
+            awards = request.awards?.map { mapAward(it) } ?: emptyList(),
+            certificates = request.certificates?.map { mapCertificate(it) } ?: emptyList(),
+            publications = request.publications?.map { mapPublication(it) } ?: emptyList(),
+            interests = request.interests?.map { mapInterest(it) } ?: emptyList(),
+            references = request.references?.map { mapReference(it) } ?: emptyList(),
+        )
+    }
+
+    private fun mapBasics(basics: BasicsDto): Basics {
         return Basics(
             name = FullName(basics.name),
             label = basics.label?.let { JobTitle(it) },

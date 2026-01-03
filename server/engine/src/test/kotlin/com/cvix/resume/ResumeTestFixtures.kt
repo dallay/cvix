@@ -17,6 +17,7 @@ import com.cvix.resume.domain.ResumeDocumentId
 import com.cvix.resume.domain.WorkExperience
 import com.cvix.resume.infrastructure.http.request.CreateResumeRequest
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
+import com.cvix.resume.infrastructure.http.request.ResumeContentRequest
 import com.cvix.resume.infrastructure.http.request.dto.AwardDto
 import com.cvix.resume.infrastructure.http.request.dto.BasicsDto
 import com.cvix.resume.infrastructure.http.request.dto.CertificateDto
@@ -145,8 +146,25 @@ object ResumeTestFixtures {
 
     fun createResumeRequest(
         title: String = "My first resume",
-        content: GenerateResumeRequest = createValidResumeRequestContent()
+        content: ResumeContentRequest = createResumeContentRequest()
     ): CreateResumeRequest = CreateResumeRequest(title, content)
+
+    fun createResumeContentRequest(): ResumeContentRequest {
+        return ResumeContentRequest(
+            basics = basicsDto(),
+            work = workExperienceDtos(),
+            volunteer = volunteerDtos(),
+            education = educationDtos(),
+            awards = awardDtos(),
+            certificates = certificateDtos(),
+            publications = publicationDtos(),
+            skills = skillCategoryDtos(),
+            languages = languageDtos(),
+            interests = interestDtos(),
+            references = referenceDtos(),
+            projects = projectDtos(),
+        )
+    }
 
     fun createValidResumeRequestContent(templateId: String = "engineering"): GenerateResumeRequest {
         return GenerateResumeRequest(

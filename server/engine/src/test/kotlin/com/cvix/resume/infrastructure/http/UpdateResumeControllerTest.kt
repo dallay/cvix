@@ -28,7 +28,7 @@ internal class UpdateResumeControllerTest : ControllerTest() {
         super.setUp()
         request = UpdateResumeRequest(
             title = title,
-            content = ResumeTestFixtures.createValidResumeRequestContent(),
+            content = ResumeTestFixtures.createResumeContentRequest(),
             expectedUpdatedAt = Instant.now().toString(),
         )
         coEvery { mediator.send(any<UpdateResumeCommand>()) } returns Unit

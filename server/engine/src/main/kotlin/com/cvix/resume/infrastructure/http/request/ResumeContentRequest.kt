@@ -1,0 +1,64 @@
+package com.cvix.resume.infrastructure.http.request
+
+import com.cvix.resume.infrastructure.http.request.dto.AwardDto
+import com.cvix.resume.infrastructure.http.request.dto.BasicsDto
+import com.cvix.resume.infrastructure.http.request.dto.CertificateDto
+import com.cvix.resume.infrastructure.http.request.dto.EducationDto
+import com.cvix.resume.infrastructure.http.request.dto.InterestDto
+import com.cvix.resume.infrastructure.http.request.dto.LanguageDto
+import com.cvix.resume.infrastructure.http.request.dto.ProjectDto
+import com.cvix.resume.infrastructure.http.request.dto.PublicationDto
+import com.cvix.resume.infrastructure.http.request.dto.ReferenceDto
+import com.cvix.resume.infrastructure.http.request.dto.SkillCategoryDto
+import com.cvix.resume.infrastructure.http.request.dto.VolunteerDto
+import com.cvix.resume.infrastructure.http.request.dto.WorkExperienceDto
+import com.cvix.resume.infrastructure.validation.ValidResumeContent
+import jakarta.validation.Valid
+
+/**
+ * DTO for resume content following JSON Resume schema.
+ * Used for create and update operations (CRUD).
+ * Schema reference: https://jsonresume.org/schema/
+ * Per FR-001: Must have at least one of work, education, or skills.
+ *
+ * Note: This differs from GenerateResumeRequest which requires a templateId
+ * for PDF generation. This DTO is for pure resume data storage.
+ */
+@ValidResumeContent
+data class ResumeContentRequest(
+    @field:Valid
+    val basics: BasicsDto,
+
+    @field:Valid
+    val work: List<WorkExperienceDto>? = null,
+
+    @field:Valid
+    val volunteer: List<VolunteerDto>? = null,
+
+    @field:Valid
+    val education: List<EducationDto>? = null,
+
+    @field:Valid
+    val awards: List<AwardDto>? = null,
+
+    @field:Valid
+    val certificates: List<CertificateDto>? = null,
+
+    @field:Valid
+    val publications: List<PublicationDto>? = null,
+
+    @field:Valid
+    val skills: List<SkillCategoryDto>? = null,
+
+    @field:Valid
+    val languages: List<LanguageDto>? = null,
+
+    @field:Valid
+    val interests: List<InterestDto>? = null,
+
+    @field:Valid
+    val references: List<ReferenceDto>? = null,
+
+    @field:Valid
+    val projects: List<ProjectDto>? = null
+)

@@ -26,7 +26,7 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
         val workspaceId = UUID.fromString("a0654720-35dc-49d0-b508-1f7df5d915f1")
         val request = UpdateResumeRequest(
             title = "Updated Resume Title",
-            content = ResumeTestFixtures.createValidResumeRequestContent(),
+            content = ResumeTestFixtures.createResumeContentRequest(),
             expectedUpdatedAt = null,
         )
 
