@@ -8,10 +8,28 @@
  */
 
 import { sequence } from "astro:middleware";
-import { DEFAULT_LOCALE } from "@cvix/i18n";
+import { DEFAULT_LOCALE, isSupportedLocale } from "@cvix/i18n";
 import type { APIContext, MiddlewareNext } from "astro";
 
-const SUPPORTED_LOCALES = ["en", "es"] as const;
+/**
+ * Static file extensions to skip i18n processing
+ */
+const STATIC_EXTENSIONS = new Set([
+	".txt",
+	".xml",
+	".json",
+	".ico",
+	".png",
+	".svg",
+	".jpg",
+	".webp",
+	".avif",
+]);
+
+/**
+ * Path prefixes to skip i18n processing
+ */
+const SKIP_PATH_PREFIXES = ["/_astro/", "/admin", "/cdn-cgi/"];
 
 /**
  * Middleware to redirect non-localized paths to the default locale
@@ -23,29 +41,19 @@ async function redirectToDefaultLocale(
 	const { pathname, search } = context.url;
 
 	// Skip static assets and API routes
-	if (
-		pathname.startsWith("/_astro/") ||
-		pathname.startsWith("/admin") ||
-		pathname.endsWith(".txt") ||
-		pathname.endsWith(".xml") ||
-		pathname.endsWith(".json") ||
-		pathname.endsWith(".ico") ||
-		pathname.endsWith(".png") ||
-		pathname.endsWith(".svg") ||
-		pathname.endsWith(".jpg") ||
-		pathname.endsWith(".webp") ||
-		pathname.endsWith(".avif") ||
-		pathname.startsWith("/cdn-cgi/")
-	) {
+	const ext = pathname.substring(pathname.lastIndexOf("."));
+	const isStaticAsset =
+		SKIP_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+		STATIC_EXTENSIONS.has(ext);
+
+	if (isStaticAsset) {
 		return next();
 	}
 
 	// Check if path already has a locale prefix
 	const pathSegments = pathname.split("/").filter(Boolean);
 	const firstSegment = pathSegments[0];
-	const hasLocalePrefix = SUPPORTED_LOCALES.includes(
-		firstSegment as (typeof SUPPORTED_LOCALES)[number],
-	);
+	const hasLocalePrefix = isSupportedLocale(firstSegment);
 
 	// If already has locale prefix, continue
 	if (hasLocalePrefix) {

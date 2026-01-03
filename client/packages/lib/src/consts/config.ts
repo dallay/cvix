@@ -87,7 +87,7 @@ function resolveUrl(config: {
 				const vercelUrl = providerDefaults.vercel
 					? getEnv(providerDefaults.vercel)
 					: getEnv("VERCEL_URL");
-				if (vercelUrl) return vercelUrl ? `https://${vercelUrl}` : "";
+				if (vercelUrl) return `https://${vercelUrl}`;
 				break;
 			}
 		}

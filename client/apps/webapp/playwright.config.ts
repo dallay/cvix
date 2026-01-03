@@ -17,7 +17,19 @@ import { defineConfig, devices } from "@playwright/test";
 const defaultBackendForTests =
 	process.env.PLAYWRIGHT_BACKEND_URL ??
 	process.env.BACKEND_URL ??
-	CVIX_API_URL.replace("https://", "http://").replace(":8443", ":8080");
+	(() => {
+		try {
+			const url = new URL(CVIX_API_URL);
+			url.protocol = "http:";
+			if (url.port === "8443") {
+				url.port = "8080";
+			}
+			return url.toString();
+		} catch {
+			// Fallback to original value if URL parsing fails
+			return CVIX_API_URL;
+		}
+	})();
 
 // Detect if SSL certificates exist (via FORCE_HTTP env var or presence of cert files)
 // In CI or when FORCE_HTTP is set, use HTTP. In local dev, default to HTTP unless certs exist.

@@ -1,10 +1,11 @@
 ---
 import { WEBAPP_URL } from "astro:env/client";
+import { LOCALES } from "@cvix/i18n";
+
 /**
  * Login redirect page (localized)
  * Redirects users to the webapp login page
  */
-import { LOCALES } from "@cvix/i18n";
 
 // Generate paths for all supported locales
 export function getStaticPaths() {

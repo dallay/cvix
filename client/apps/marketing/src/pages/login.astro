@@ -1,9 +1,10 @@
 ---
+import { WEBAPP_URL } from "astro:env/client";
+
 /**
  * Login redirect page
  * Redirects users to the webapp login page
  */
-import { WEBAPP_URL } from "astro:env/client";
 
 // Redirect to webapp login
 return Astro.redirect(`${WEBAPP_URL}/login`, 301);
