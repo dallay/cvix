@@ -137,15 +137,6 @@ actionlint
 test-results/
 temporal-docs/
 
-# Temporary environment centralization documentation (Phase 1-3 tracking)
-# Keep: ENV_CENTRALIZATION_PLAN.md, ENV_CENTRALIZATION_SUMMARY.md (permanent docs)
-# Ignore: all others (temporary tracking)
-ENV_PHASE*.md
-ENV_PROJECT_STATUS.md
-ENV_ARCHITECTURE_DIAGRAM.md
-ENV_IMPLEMENTATION_CHECKLIST.md
-CONTINUATION_PROMPT.md
-
 # LaTeX build artifacts
 *.aux
 *.fdb_latexmk
