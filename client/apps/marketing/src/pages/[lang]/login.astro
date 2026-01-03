@@ -1,6 +1,6 @@
 ---
 import { WEBAPP_URL } from "astro:env/client";
-import { LOCALES } from "@cvix/i18n";
+import { SUPPORTED_LOCALES } from "@cvix/i18n";
 
 /**
  * Login redirect page (localized)
@@ -9,7 +9,7 @@ import { LOCALES } from "@cvix/i18n";
 
 // Generate paths for all supported locales
 export function getStaticPaths() {
-	return Object.keys(LOCALES).map((lang) => ({ params: { lang } }));
+	return Object.keys(SUPPORTED_LOCALES).map((lang) => ({ params: { lang } }));
 }
 
 // Redirect to webapp login

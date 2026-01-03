@@ -26,7 +26,7 @@ const DEPLOYMENT_PROVIDER = detectProvider();
  * Access environment variables across Node.js, Vite, and Astro
  * Checks multiple sources in order of precedence
  */
-function getEnv(key: string): string | undefined {
+export const getEnv = (key: string): string | undefined => {
 	// Node.js environment
 	if (typeof process !== "undefined" && process.env?.[key]) {
 		return process.env[key];
@@ -47,7 +47,7 @@ function getEnv(key: string): string | undefined {
 	}
 
 	return undefined;
-}
+};
 
 // ============================================================================
 // URL RESOLUTION FUNCTIONS
