@@ -48,7 +48,12 @@ export const headerMenuItems: MenuItem[] = [
 	},
 ];
 
-// Navigation links array with translation keys and conditions
+/**
+ * Build the list of footer navigation items with translation and accessibility keys.
+ *
+ * @param lang - Locale code used to construct language-specific links (e.g., RSS feed)
+ * @returns An array of `MenuItem` objects representing footer links and their metadata
+ */
 export function footerNavLinks(lang: Lang): MenuItem[] {
 	return [
 		{

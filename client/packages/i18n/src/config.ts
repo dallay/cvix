@@ -96,10 +96,15 @@ export function normalizeLocale(
 }
 
 /**
- * Extract the base locale from a BCP 47 language tag.
- * For example, "en-US" becomes "en".
- * @param languageTag - The BCP 47 language tag
- * @returns The base locale code or default if not supported
+ * Extracts the base locale from a BCP 47 language tag and returns it as a supported locale.
+ *
+ * Example: `"en-US"` becomes `"en"`.
+ *
+ * @param languageTag - A BCP 47 language tag (for example, `"en-US"`, `"es-ES"`).
+ * @returns The normalized base locale code; returns `DEFAULT_LOCALE` when the extracted base is not a supported locale.
+ * @example
+ * // returns "en"
+ * extractBaseLocale("en-US");
  */
 export function extractBaseLocale(languageTag: string): SupportedLocale {
 	const baseLocale = languageTag.split("-")[0]?.toLowerCase();
