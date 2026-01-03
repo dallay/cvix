@@ -1,0 +1,16 @@
+---
+/**
+ * Login redirect page (localized)
+ * Redirects users to the webapp login page
+ */
+import { LOCALES } from "@cvix/i18n";
+import { WEBAPP_URL } from "astro:env/client";
+
+// Generate paths for all supported locales
+export function getStaticPaths() {
+	return Object.keys(LOCALES).map((lang) => ({ params: { lang } }));
+}
+
+// Redirect to webapp login
+return Astro.redirect(`${WEBAPP_URL}/login`, 301);
+---

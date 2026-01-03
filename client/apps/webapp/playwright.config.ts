@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
+import { CVIX_API_URL, CVIX_WEBAPP_URL, PORTS } from "@cvix/lib";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import { defineConfig, devices } from "@playwright/test";
 
@@ -11,12 +12,12 @@ import { defineConfig, devices } from "@playwright/test";
 // Choose a safe backend target for local Playwright runs to avoid Vite proxying to
 // an unavailable HTTPS dev backend (e.g., https://localhost:8443). Priority:
 // 1. PLAYWRIGHT_BACKEND_URL (explicit override for tests)
-// 2. If running on CI: use BACKEND_URL (if provided) or fallback to http://localhost:8080
-// 3. Local dev: default to http://localhost:8080
+// 2. BACKEND_URL (if provided)
+// 3. CVIX_API_URL with HTTP (fallback for tests - replaces https with http for stability)
 const defaultBackendForTests =
 	process.env.PLAYWRIGHT_BACKEND_URL ??
 	process.env.BACKEND_URL ??
-	"http://localhost:8080";
+	CVIX_API_URL.replace("https://", "http://").replace(":8443", ":8080");
 
 // Detect if SSL certificates exist (via FORCE_HTTP env var or presence of cert files)
 // In CI or when FORCE_HTTP is set, use HTTP. In local dev, default to HTTP unless certs exist.
@@ -32,8 +33,8 @@ const useHttp =
 	process.env.FORCE_HTTP === "true" ||
 	!hasSSLCerts;
 const baseURL = useHttp
-	? "http://localhost:9876"
-	: process.env.BASE_URL || "https://localhost:9876";
+	? `http://localhost:${PORTS.WEBAPP}`
+	: process.env.BASE_URL || CVIX_WEBAPP_URL;
 
 export default defineConfig({
 	testDir: "./e2e",
