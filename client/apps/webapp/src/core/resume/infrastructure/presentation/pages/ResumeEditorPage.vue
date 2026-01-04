@@ -285,30 +285,24 @@ async function processUpload(file: File) {
 				);
 			}
 
-			toast({
-				title: t("resume.messages.importSuccess"),
+			toast.success(t("resume.messages.importSuccess"), {
 				description: t("resume.messages.importSuccessDescription"),
-				variant: "default",
 			});
 		} else {
 			// Show validation errors
 			showValidationPanel.value = true;
-			toast({
-				title: t("resume.messages.importFailed"),
+			toast.error(t("resume.messages.importFailed"), {
 				description: t("resume.messages.importFailedDescription", {
 					count: result.errors?.length || 0,
 				}),
-				variant: "destructive",
 			});
 		}
 	} catch (error) {
-		toast({
-			title: t("resume.messages.importError"),
+		toast.error(t("resume.messages.importError"), {
 			description:
 				error instanceof Error
 					? error.message
 					: t("resume.messages.importFailed"),
-			variant: "destructive",
 		});
 	}
 }
@@ -318,10 +312,8 @@ async function processUpload(file: File) {
  */
 function handleExportJson() {
 	if (!resume.value) {
-		toast({
-			title: t("resume.messages.noDataToExport"),
+		toast.error(t("resume.messages.noDataToExport"), {
 			description: t("resume.messages.fillResumeFirst"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -329,17 +321,13 @@ function handleExportJson() {
 	const success = exportJson(resume.value, "resume.json");
 
 	if (success) {
-		toast({
-			title: t("resume.messages.exportSuccess"),
+		toast.success(t("resume.messages.exportSuccess"), {
 			description: t("resume.messages.exportSuccessDescription"),
-			variant: "default",
 		});
 	} else {
 		showValidationPanel.value = true;
-		toast({
-			title: t("resume.messages.exportFailed"),
+		toast.error(t("resume.messages.exportFailed"), {
 			description: t("resume.messages.exportFailedDescription"),
-			variant: "destructive",
 		});
 	}
 }
@@ -349,10 +337,8 @@ function handleExportJson() {
  */
 function handleValidateJson() {
 	if (!resume.value) {
-		toast({
-			title: t("resume.messages.noDataToValidate"),
+		toast.error(t("resume.messages.noDataToValidate"), {
 			description: t("resume.messages.fillResumeFirst"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -375,10 +361,8 @@ function handleJumpTo(section: string, path: string) {
  */
 function handleResetForm() {
 	if (!resume.value) {
-		toast({
-			title: t("resume.messages.noDataToReset"),
+		toast(t("resume.messages.noDataToReset"), {
 			description: t("resume.messages.formAlreadyEmpty"),
-			variant: "default",
 		});
 		return;
 	}
@@ -402,17 +386,13 @@ async function confirmReset() {
 
 		hasUnsavedChanges.value = false;
 
-		toast({
-			title: "Form reset",
+		toast.success("Form reset", {
 			description: "All resume data has been cleared.",
-			variant: "default",
 		});
 	} catch (error) {
-		toast({
-			title: "Reset failed",
+		toast.error("Reset failed", {
 			description:
 				error instanceof Error ? error.message : "Failed to reset form",
-			variant: "destructive",
 		});
 	}
 }
