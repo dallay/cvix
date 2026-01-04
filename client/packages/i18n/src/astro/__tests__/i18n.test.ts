@@ -5,7 +5,7 @@ import {
 	localeParams,
 	useTranslatedPath,
 	useTranslations,
-} from "../index.ts";
+} from "../index.js";
 
 // Mock UI data for testing
 const mockUI = {

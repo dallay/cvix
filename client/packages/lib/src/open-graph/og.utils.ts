@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from "@cvix/i18n";
 import { type Lang, useTranslations } from "@cvix/i18n/astro";
-import { SITE_TITLE } from "../consts/config";
+import { SITE_TITLE } from "../consts/config.js";
 
 const currentLang =
 	(typeof process !== "undefined" && (process.env.LANG as Lang)) ||

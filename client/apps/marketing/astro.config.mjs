@@ -4,8 +4,12 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
 import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
-import { BASE_URL, BASE_WEBAPP_URL, LANDING_PAGE_PORT } from "@cvix/lib";
-import { BASE_API_URL } from "@cvix/lib/consts/config.ts";
+import {
+	CVIX_API_URL,
+	CVIX_MARKETING_URL,
+	CVIX_WEBAPP_URL,
+	PORTS,
+} from "@cvix/lib";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
@@ -58,7 +62,7 @@ function getHttpsConfig() {
 // https://astro.build/config
 export default defineConfig({
 	server: {
-		port: LANDING_PAGE_PORT,
+		port: PORTS.MARKETING,
 	},
 
 	// Configure Sharp image service explicitly
@@ -71,7 +75,7 @@ export default defineConfig({
 		},
 	},
 
-	site: BASE_URL,
+	site: CVIX_MARKETING_URL,
 
 	i18n: {
 		defaultLocale: DEFAULT_LOCALE,
@@ -85,7 +89,7 @@ export default defineConfig({
 	integrations: [
 		mdx(),
 		sitemap({
-			filter: (page) => page !== `${BASE_URL}/admin/`,
+			filter: (page) => page !== `${CVIX_MARKETING_URL}/admin/`,
 			i18n: {
 				defaultLocale: DEFAULT_LOCALE,
 				locales: Object.fromEntries(
@@ -108,16 +112,16 @@ export default defineConfig({
 
 	env: {
 		schema: {
-			BACKEND_URL: envField.string({
+			CVIX_API_URL: envField.string({
 				context: "client",
 				access: "public",
 				optional: true,
-				default: BASE_API_URL,
+				default: CVIX_API_URL,
 			}),
-			WEBAPP_URL: envField.string({
+			CVIX_WEBAPP_URL: envField.string({
 				context: "client",
 				access: "public",
-				default: BASE_WEBAPP_URL,
+				default: CVIX_WEBAPP_URL,
 			}),
 		},
 	},

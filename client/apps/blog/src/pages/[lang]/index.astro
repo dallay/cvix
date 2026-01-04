@@ -1,5 +1,5 @@
 ---
-import { WEBAPP_URL } from "astro:env/client";
+import { CVIX_WEBAPP_URL } from "astro:env/client";
 import { Button, BaseLayout as Layout } from "@cvix/astro-ui";
 import { LOCALES } from "@cvix/i18n";
 import { getOgImagePath } from "@cvix/lib";
@@ -46,7 +46,7 @@ const og = {
 ---
 
 <Layout title={title} description={subtitle} {og}>
-  <Button slot="header-cta" href={`${WEBAPP_URL}/login`} class="hidden md:inline-flex">
+  <Button slot="header-cta" href={`${CVIX_WEBAPP_URL}/login`} class="hidden md:inline-flex">
     {
       t({
         en: "Get Started",

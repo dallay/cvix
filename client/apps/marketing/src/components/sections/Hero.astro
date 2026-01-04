@@ -1,5 +1,5 @@
 ---
-import { BACKEND_URL } from "astro:env/client";
+import { CVIX_API_URL } from "astro:env/client";
 import { EmailCaptureForm, OptimizedPicture } from "@cvix/astro-ui";
 import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { useTranslations } from "@/i18n/i18n";
@@ -52,7 +52,7 @@ import CvixSystemImage from "@cvix/assets/images/cvix-system.png";
     >
       <div class="w-full max-w-md">
         <EmailCaptureForm
-          apiUrl={`${BACKEND_URL}/api/waitlist`}
+          apiUrl={`${CVIX_API_URL}/api/waitlist`}
           emailPlaceholder={t("hero.email.placeholder")}
           buttonText={t("hero.email.button")}
           successMessage={t("hero.email.success")}
