@@ -24,6 +24,7 @@ export {
 
 // Infrastructure layer
 export {
+	getUserStoragePreference,
 	LocalStorageSettingsRepository,
 	SETTINGS_REPOSITORY_KEY,
 	USER_SETTINGS_STORAGE_KEY,

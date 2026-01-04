@@ -101,6 +101,7 @@ const changeStorageSelection = async (
 	targetType: StorageType,
 ) => {
 	// Access the exposed ref and set it directly
+	// biome-ignore lint/suspicious/noExplicitAny: Test utility needs direct access to component internals
 	(wrapper.vm as any).selectedStorage = targetType;
 	await nextTick();
 };

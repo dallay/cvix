@@ -33,9 +33,9 @@ class ResumeContentValidatorTest {
                 WorkExperienceDto(
                     name = "Acme Corp",
                     position = "Software Engineer",
-                    startDate = "2020-01-01"
-                )
-            )
+                    startDate = "2020-01-01",
+                ),
+            ),
         )
 
         // Act
@@ -54,9 +54,9 @@ class ResumeContentValidatorTest {
             education = listOf(
                 EducationDto(
                     institution = "University of Example",
-                    startDate = "2015-09-01"
-                )
-            )
+                    startDate = "2015-09-01",
+                ),
+            ),
         )
 
         // Act
@@ -75,9 +75,9 @@ class ResumeContentValidatorTest {
             skills = listOf(
                 SkillCategoryDto(
                     name = "Programming",
-                    keywords = listOf("Kotlin", "TypeScript")
-                )
-            )
+                    keywords = listOf("Kotlin", "TypeScript"),
+                ),
+            ),
         )
 
         // Act
@@ -97,21 +97,21 @@ class ResumeContentValidatorTest {
                 WorkExperienceDto(
                     name = "Acme Corp",
                     position = "Software Engineer",
-                    startDate = "2020-01-01"
-                )
+                    startDate = "2020-01-01",
+                ),
             ),
             education = listOf(
                 EducationDto(
                     institution = "University of Example",
-                    startDate = "2015-09-01"
-                )
+                    startDate = "2015-09-01",
+                ),
             ),
             skills = listOf(
                 SkillCategoryDto(
                     name = "Programming",
-                    keywords = listOf("Kotlin", "TypeScript")
-                )
-            )
+                    keywords = listOf("Kotlin", "TypeScript"),
+                ),
+            ),
         )
 
         // Act
@@ -129,7 +129,7 @@ class ResumeContentValidatorTest {
             basics = createBasics(),
             work = emptyList(),
             education = emptyList(),
-            skills = emptyList()
+            skills = emptyList(),
         )
 
         // Act
@@ -144,7 +144,7 @@ class ResumeContentValidatorTest {
         // Arrange
         val request = GenerateResumeRequest(
             templateId = "template-123",
-            basics = createBasics()
+            basics = createBasics(),
         )
 
         // Act
@@ -157,7 +157,7 @@ class ResumeContentValidatorTest {
     private fun createBasics() = BasicsDto(
         name = "John Doe",
         email = "john.doe@example.com",
-        phone = "+1234567890"
+        phone = "+1234567890",
     )
 }
 
@@ -183,9 +183,9 @@ class ResumeContentRequestValidatorTest {
                 WorkExperienceDto(
                     name = "Acme Corp",
                     position = "Software Engineer",
-                    startDate = "2020-01-01"
-                )
-            )
+                    startDate = "2020-01-01",
+                ),
+            ),
         )
 
         // Act
@@ -203,9 +203,9 @@ class ResumeContentRequestValidatorTest {
             education = listOf(
                 EducationDto(
                     institution = "University of Example",
-                    startDate = "2015-09-01"
-                )
-            )
+                    startDate = "2015-09-01",
+                ),
+            ),
         )
 
         // Act
@@ -223,9 +223,9 @@ class ResumeContentRequestValidatorTest {
             skills = listOf(
                 SkillCategoryDto(
                     name = "Programming",
-                    keywords = listOf("Kotlin", "TypeScript")
-                )
-            )
+                    keywords = listOf("Kotlin", "TypeScript"),
+                ),
+            ),
         )
 
         // Act
@@ -242,7 +242,7 @@ class ResumeContentRequestValidatorTest {
             basics = createBasics(),
             work = emptyList(),
             education = emptyList(),
-            skills = emptyList()
+            skills = emptyList(),
         )
 
         // Act
@@ -256,7 +256,7 @@ class ResumeContentRequestValidatorTest {
     fun `should return false when all sections are null`() {
         // Arrange
         val request = ResumeContentRequest(
-            basics = createBasics()
+            basics = createBasics(),
         )
 
         // Act
@@ -269,6 +269,6 @@ class ResumeContentRequestValidatorTest {
     private fun createBasics() = BasicsDto(
         name = "John Doe",
         email = "john.doe@example.com",
-        phone = "+1234567890"
+        phone = "+1234567890",
     )
 }

@@ -15,10 +15,7 @@ import {
 import { ResumeHttpClient } from "@/core/resume/infrastructure/http/ResumeHttpClient";
 import { createResumeStorage } from "@/core/resume/infrastructure/storage/factory";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation";
-import {
-	DEFAULT_USER_SETTINGS,
-	isValidStoragePreference,
-} from "@/core/settings/domain/UserSettings";
+import { getUserStoragePreference } from "@/core/settings";
 import type { ProblemDetail } from "@/shared/BaseHttpClient.ts";
 
 /**
@@ -52,36 +49,6 @@ function getGenerator(): ResumeGenerator {
 	return new ResumeHttpClient();
 }
 
-import { USER_SETTINGS_STORAGE_KEY } from "@/core/settings/infrastructure/storage/LocalStorageSettingsRepository";
-
-/**
- * Storage key for user settings in localStorage.
- * Imported from LocalStorageSettingsRepository to ensure consistency.
- */
-const SETTINGS_STORAGE_KEY = USER_SETTINGS_STORAGE_KEY;
-
-/**
- * Reads the user's persisted storage preference from localStorage.
- * This is a synchronous read to allow proper initialization of the resume store.
- *
- * @returns The storage type preference or the default if not found/invalid
- */
-function getPersistedStoragePreference(): StorageType {
-	try {
-		const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
-		if (stored) {
-			const parsed = JSON.parse(stored);
-			const preference = parsed?.storagePreference;
-			if (isValidStoragePreference(preference)) {
-				return preference;
-			}
-		}
-	} catch {
-		// Failed to read or parse, use default
-	}
-	return DEFAULT_USER_SETTINGS.storagePreference;
-}
-
 /**
  * Gets the storage instance using Vue's provide/inject system.
  * Falls back to creating a storage based on the user's persisted preference.
@@ -98,7 +65,7 @@ function getStorage(): ResumeStorage {
 	}
 
 	// Read the persisted storage preference and create the appropriate storage
-	const preferredStorageType = getPersistedStoragePreference();
+	const preferredStorageType = getUserStoragePreference();
 	return createResumeStorage(preferredStorageType);
 }
 
