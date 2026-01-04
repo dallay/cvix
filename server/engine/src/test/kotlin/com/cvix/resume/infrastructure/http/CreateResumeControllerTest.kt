@@ -1,7 +1,9 @@
 package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerTest
+import com.cvix.resume.ResumeTestFixtures.createResumeDocument
 import com.cvix.resume.ResumeTestFixtures.createResumeRequest
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.application.create.CreateResumeCommand
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.CreateResumeRequest
@@ -35,7 +37,15 @@ internal class CreateResumeControllerTest : ControllerTest() {
             content = resume,
             createdBy = userId.toString(),
         )
-        coEvery { mediator.send(any<CreateResumeCommand>()) } returns Unit
+        val mockDocument = createResumeDocument(
+            id = resumeId,
+            userId = userId,
+            workspaceId = workspaceId,
+            title = title,
+            content = resume,
+        )
+        val mockResponse = ResumeDocumentResponse.from(mockDocument)
+        coEvery { mediator.send(any<CreateResumeCommand>()) } returns mockResponse
     }
 
     @Test
@@ -47,7 +57,9 @@ internal class CreateResumeControllerTest : ControllerTest() {
             .bodyValue(request)
             .exchange()
             .expectStatus().isCreated
-            .expectBody().isEmpty
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(resumeId.toString())
+            .jsonPath("$.title").isEqualTo(title)
         val commandSlot = slot<CreateResumeCommand>()
         coVerify(exactly = 1) { mediator.send(capture(commandSlot)) }
         assertEquals(resumeId, commandSlot.captured.id)

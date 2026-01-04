@@ -2,6 +2,8 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerTest
 import com.cvix.resume.ResumeTestFixtures
+import com.cvix.resume.ResumeTestFixtures.createResumeDocument
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.application.update.UpdateResumeCommand
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.UpdateResumeRequest
@@ -31,7 +33,16 @@ internal class UpdateResumeControllerTest : ControllerTest() {
             content = ResumeTestFixtures.createResumeContentRequest(),
             expectedUpdatedAt = Instant.now().toString(),
         )
-        coEvery { mediator.send(any<UpdateResumeCommand>()) } returns Unit
+        val resume = ResumeRequestMapper.toDomain(request.content)
+        val mockDocument = createResumeDocument(
+            id = resumeId,
+            userId = userId,
+            workspaceId = workspaceId,
+            title = title,
+            content = resume,
+        )
+        val mockResponse = ResumeDocumentResponse.from(mockDocument)
+        coEvery { mediator.send(any<UpdateResumeCommand>()) } returns mockResponse
     }
 
     @Test
@@ -44,7 +55,8 @@ internal class UpdateResumeControllerTest : ControllerTest() {
             .exchange()
             .expectStatus().isOk
             .expectBody()
-            .jsonPath("$.message").exists()
+            .jsonPath("$.id").isEqualTo(resumeId.toString())
+            .jsonPath("$.title").isEqualTo(title)
 
         val commandSlot = slot<UpdateResumeCommand>()
         coVerify(exactly = 1) { mediator.send(capture(commandSlot)) }

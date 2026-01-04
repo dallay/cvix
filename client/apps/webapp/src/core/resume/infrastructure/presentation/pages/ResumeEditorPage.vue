@@ -21,8 +21,12 @@ import { useMagicKeys } from "@vueuse/core";
 import {
 	CheckCircle,
 	Download,
+	Eye,
+	EyeOff,
 	FileText,
+	Loader2,
 	RotateCcw,
+	Save,
 	Upload,
 } from "lucide-vue-next";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
@@ -72,11 +76,42 @@ watch(
 	{ deep: true },
 );
 
+// Auto-refresh trigger for timestamp (updates every minute)
+const timestampRefreshTrigger = ref(0);
+
 // Format last saved timestamp
 const lastSavedText = computed(() => {
-	// TODO: Implement timestamp tracking when autosave/persistence is connected
-	// For now, return placeholder
-	return null;
+	// Access the trigger to make this computed reactive to timer updates
+	void timestampRefreshTrigger.value;
+
+	if (!resumeStore.lastSavedAt) {
+		return null;
+	}
+
+	const savedDate = new Date(resumeStore.lastSavedAt);
+	const now = new Date();
+	const diffMs = now.getTime() - savedDate.getTime();
+	const diffMinutes = Math.floor(diffMs / 60000);
+	const diffHours = Math.floor(diffMs / 3600000);
+	const diffDays = Math.floor(diffMs / 86400000);
+
+	// Use i18n for relative time formatting
+	if (diffMinutes < 1) {
+		return t("resume.messages.savedJustNow");
+	}
+	if (diffMinutes < 60) {
+		return t("resume.messages.savedMinutesAgo", { count: diffMinutes });
+	}
+	if (diffHours < 24) {
+		return t("resume.messages.savedHoursAgo", { count: diffHours });
+	}
+	if (diffDays < 7) {
+		return t("resume.messages.savedDaysAgo", { count: diffDays });
+	}
+	// For older dates, show the actual date
+	return t("resume.messages.savedOnDate", {
+		date: savedDate.toLocaleDateString(),
+	});
 });
 
 // Prevent browser default Save dialog on Cmd/Ctrl+S
@@ -84,7 +119,7 @@ function handleSaveShortcut(event: KeyboardEvent) {
 	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
 		event.preventDefault();
 		event.stopPropagation();
-		handleExportJson();
+		handleSave();
 	}
 }
 
@@ -98,10 +133,18 @@ function handleBeforeUnload(event: BeforeUnloadEvent) {
 	}
 }
 
+// Timestamp auto-refresh interval
+let timestampInterval: number | null = null;
+
 onMounted(() => {
 	if (typeof window !== "undefined") {
 		window.addEventListener("keydown", handleSaveShortcut);
 		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		// Auto-refresh timestamp display every minute
+		timestampInterval = window.setInterval(() => {
+			timestampRefreshTrigger.value++;
+		}, 60000); // 60 seconds
 	}
 });
 
@@ -109,6 +152,12 @@ onUnmounted(() => {
 	if (typeof window !== "undefined") {
 		window.removeEventListener("keydown", handleSaveShortcut);
 		window.removeEventListener("beforeunload", handleBeforeUnload);
+
+		// Clean up interval timer
+		if (timestampInterval !== null) {
+			clearInterval(timestampInterval);
+			timestampInterval = null;
+		}
 	}
 });
 
@@ -117,16 +166,55 @@ const keys = useMagicKeys();
 const cmdS = keys["Meta+KeyS"];
 const ctrlS = keys["Ctrl+KeyS"];
 
-// Handle Cmd/Ctrl+S for export
+// Handle Cmd/Ctrl+S for save
 watch([cmdS, ctrlS], ([cmd, ctrl]) => {
 	if (cmd || ctrl) {
-		handleExportJson();
+		handleSave();
 	}
 });
 
 const togglePreview = () => {
 	showPreview.value = !showPreview.value;
 };
+
+/**
+ * Saves the current resume to storage
+ */
+async function handleSave() {
+	if (!resume.value) {
+		toast({
+			title: t("resume.messages.noDataToSave") || "No data to save",
+			description:
+				t("resume.messages.fillResumeFirst") ||
+				"Please fill in some resume information first.",
+			variant: "destructive",
+		});
+		return;
+	}
+
+	// Sync the composable state to the store before saving
+	resumeStore.setResume(resume.value);
+
+	try {
+		await resumeStore.saveToStorage();
+		hasUnsavedChanges.value = false;
+
+		toast({
+			title: t("resume.messages.saveSuccess") || "Resume saved",
+			description:
+				t("resume.messages.saveSuccessDescription") ||
+				"Your resume has been saved successfully.",
+			variant: "default",
+		});
+	} catch (error) {
+		toast({
+			title: t("resume.messages.saveError") || "Save failed",
+			description:
+				error instanceof Error ? error.message : "Failed to save resume",
+			variant: "destructive",
+		});
+	}
+}
 
 /**
  * Triggers the hidden file input for upload
@@ -192,25 +280,42 @@ async function processUpload(file: File) {
 			// that bind to its refs via v-model. Use sync helper to centralize optional component calls.
 			syncFormWithComposable("load", result.data);
 
+			// Persist to user's configured storage
+			resumeStore.setResume(result.data);
+			try {
+				await resumeStore.saveToStorage();
+				hasUnsavedChanges.value = false;
+			} catch (storageError) {
+				// Log but don't fail the import - data is loaded in memory
+				console.warn(
+					"[ResumeEditorPage] Failed to persist imported resume to storage:",
+					storageError,
+				);
+			}
+
 			toast({
-				title: "Import successful",
-				description: "Your resume has been loaded successfully.",
+				title: t("resume.messages.importSuccess"),
+				description: t("resume.messages.importSuccessDescription"),
 				variant: "default",
 			});
 		} else {
 			// Show validation errors
 			showValidationPanel.value = true;
 			toast({
-				title: "Import failed",
-				description: `Found ${result.errors?.length || 0} validation errors.`,
+				title: t("resume.messages.importFailed"),
+				description: t("resume.messages.importFailedDescription", {
+					count: result.errors?.length || 0,
+				}),
 				variant: "destructive",
 			});
 		}
 	} catch (error) {
 		toast({
-			title: "Import error",
+			title: t("resume.messages.importError"),
 			description:
-				error instanceof Error ? error.message : "Failed to import resume",
+				error instanceof Error
+					? error.message
+					: t("resume.messages.importFailed"),
 			variant: "destructive",
 		});
 	}
@@ -222,8 +327,8 @@ async function processUpload(file: File) {
 function handleExportJson() {
 	if (!resume.value) {
 		toast({
-			title: "No data to export",
-			description: "Please fill in some resume information first.",
+			title: t("resume.messages.noDataToExport"),
+			description: t("resume.messages.fillResumeFirst"),
 			variant: "destructive",
 		});
 		return;
@@ -233,15 +338,15 @@ function handleExportJson() {
 
 	if (success) {
 		toast({
-			title: "Export successful",
-			description: "Your resume has been downloaded as resume.json",
+			title: t("resume.messages.exportSuccess"),
+			description: t("resume.messages.exportSuccessDescription"),
 			variant: "default",
 		});
 	} else {
 		showValidationPanel.value = true;
 		toast({
-			title: "Export failed",
-			description: "Please fix validation errors before exporting.",
+			title: t("resume.messages.exportFailed"),
+			description: t("resume.messages.exportFailedDescription"),
 			variant: "destructive",
 		});
 	}
@@ -253,8 +358,8 @@ function handleExportJson() {
 function handleValidateJson() {
 	if (!resume.value) {
 		toast({
-			title: "No data to validate",
-			description: "Please fill in some resume information first.",
+			title: t("resume.messages.noDataToValidate"),
+			description: t("resume.messages.fillResumeFirst"),
 			variant: "destructive",
 		});
 		return;
@@ -279,8 +384,8 @@ function handleJumpTo(section: string, path: string) {
 function handleResetForm() {
 	if (!resume.value) {
 		toast({
-			title: "No data to reset",
-			description: "The form is already empty.",
+			title: t("resume.messages.noDataToReset"),
+			description: t("resume.messages.formAlreadyEmpty"),
 			variant: "default",
 		});
 		return;
@@ -410,8 +515,8 @@ function syncFormWithComposable(
 <template>
   <DashboardLayout>
     <div class="container mx-auto py-8 px-4">
-      <!-- Header with Action Buttons -->
-      <div class="mb-4 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+      <!-- Header with Action Buttons - Sticky -->
+      <div class="mb-4 flex flex-col gap-4 md:flex-row md:justify-between md:items-center sticky top-0 z-10 bg-background py-4 -mt-4 border-b border-border">
         <div>
           <h1 class="text-3xl font-bold text-foreground">
             {{ t("resume.title") }}
@@ -423,10 +528,36 @@ function syncFormWithComposable(
 
         <!-- Utility Bar -->
         <div class="flex flex-wrap gap-2">
-          <!-- Last saved indicator -->
-          <div v-if="lastSavedText" class="flex items-center text-sm text-muted-foreground px-3">
-            {{ lastSavedText }}
+          <!-- Last saved indicator with unsaved changes badge -->
+          <div 
+            v-if="hasUnsavedChanges || lastSavedText" 
+            class="flex items-center text-sm px-3"
+            :class="hasUnsavedChanges ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-muted-foreground'"
+          >
+            <span v-if="hasUnsavedChanges" class="mr-2">●</span>
+            {{ hasUnsavedChanges ? t('resume.messages.unsavedChanges') : lastSavedText }}
           </div>
+
+          <!-- Save Button with unsaved indicator -->
+          <Button
+              variant="default"
+              size="sm"
+              @click="handleSave"
+              :disabled="resumeStore.isSaving || !resume"
+              :title="t('resume.buttons.saveHint') || 'Save resume (Cmd/Ctrl+S)'"
+              :class="hasUnsavedChanges ? 'relative' : ''"
+          >
+            <Loader2 v-if="resumeStore.isSaving" class="h-4 w-4 mr-2 animate-spin" />
+            <Save v-else class="h-4 w-4 mr-2" />
+            <span class="relative">
+              {{ t('resume.buttons.save') || 'Save' }}
+              <span 
+                v-if="hasUnsavedChanges" 
+                class="absolute -top-1 -right-2 h-2 w-2 bg-amber-500 rounded-full"
+                aria-label="Unsaved changes indicator"
+              />
+            </span>
+          </Button>
 
           <Button
               variant="outline"
@@ -471,7 +602,7 @@ function syncFormWithComposable(
           <Button
               size="sm"
               :title="t('resume.buttons.generatePdfHint')"
-              variant="default"
+              variant="outline"
               @click="router.push('/resume/pdf')"
           >
             <FileText class="h-4 w-4 mr-2"/>
@@ -480,38 +611,13 @@ function syncFormWithComposable(
 
           <Button
               variant="outline"
+              size="sm"
               @click="togglePreview"
               class="hidden lg:flex"
               :title="showPreview ? t('resume.preview.hide') : t('resume.preview.show')"
           >
-            <svg
-                class="h-4 w-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-              <path
-                  v-if="showPreview"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-              />
-              <g v-else>
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </g>
-            </svg>
+            <EyeOff v-if="showPreview" class="h-4 w-4 mr-2" />
+            <Eye v-else class="h-4 w-4 mr-2" />
             {{ showPreview ? t('resume.preview.hide') : t('resume.buttons.preview') }}
           </Button>
         </div>

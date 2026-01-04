@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: "004b-fix-project-date-arrays"
+      author: "system"
+      comment: "Convert array-format dates in projects to ISO 8601 string format"
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: resumes
+      changes:
+        - sql:
+            sql: |
+              -- Convert project startDate from array [YYYY, M, D] to ISO string "YYYY-MM-DD"
+              UPDATE resumes
+              SET data = jsonb_set(
+                data,
+                '{projects}',
+                (
+                  SELECT jsonb_agg(
+                    CASE
+                      WHEN jsonb_typeof(project->'startDate') = 'array' THEN
+                        project || jsonb_build_object(
+                          'startDate',
+                          to_jsonb(
+                            format(
+                              '%s-%s-%s',
+                              project->'startDate'->0,
+                              lpad((project->'startDate'->1)::text, 2, '0'),
+                              lpad((project->'startDate'->2)::text, 2, '0')
+                            )
+                          )
+                        )
+                      ELSE project
+                    END
+                  )
+                  FROM jsonb_array_elements(data->'projects') AS project
+                )
+              )
+              WHERE jsonb_typeof(data->'projects') = 'array'
+                AND EXISTS (
+                  SELECT 1
+                  FROM jsonb_array_elements(data->'projects') AS project
+                  WHERE jsonb_typeof(project->'startDate') = 'array'
+                );
+
+              -- Convert project endDate from array [YYYY, M, D] to ISO string "YYYY-MM-DD"
+              UPDATE resumes
+              SET data = jsonb_set(
+                data,
+                '{projects}',
+                (
+                  SELECT jsonb_agg(
+                    CASE
+                      WHEN jsonb_typeof(project->'endDate') = 'array' THEN
+                        project || jsonb_build_object(
+                          'endDate',
+                          to_jsonb(
+                            format(
+                              '%s-%s-%s',
+                              project->'endDate'->0,
+                              lpad((project->'endDate'->1)::text, 2, '0'),
+                              lpad((project->'endDate'->2)::text, 2, '0')
+                            )
+                          )
+                        )
+                      ELSE project
+                    END
+                  )
+                  FROM jsonb_array_elements(data->'projects') AS project
+                )
+              )
+              WHERE jsonb_typeof(data->'projects') = 'array'
+                AND EXISTS (
+                  SELECT 1
+                  FROM jsonb_array_elements(data->'projects') AS project
+                  WHERE jsonb_typeof(project->'endDate') = 'array'
+                );
+      rollback:
+        - sql:
+            sql: |
+              -- Rollback is not straightforward as we're converting from invalid to valid data
+              -- Manual intervention required if rollback is needed
+              SELECT 'Manual rollback required - original data format was invalid';

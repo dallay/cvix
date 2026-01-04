@@ -12,7 +12,9 @@ import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import java.net.URI
 import java.time.Instant
 import java.util.Locale
+import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
+import org.springframework.core.codec.DecodingException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
 import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 
 /**
@@ -38,6 +41,9 @@ import reactor.core.publisher.Mono
 class GlobalExceptionHandler(
     private val messageSource: MessageSource
 ) : ResponseEntityExceptionHandler() {
+
+    private val log = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+
     /**
      * Handles the [UserAuthenticationException] by creating a ProblemDetail object with the appropriate status,
      * detail and properties.
@@ -194,6 +200,104 @@ class GlobalExceptionHandler(
         problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
         problemDetail.setProperty(TRACE_ID, exchange.request.id)
         return problemDetail
+    }
+
+    /**
+     * Handles JSON deserialization exceptions from Spring WebFlux.
+     * This occurs when Jackson cannot parse the request body into the expected DTO.
+     *
+     * @param ex The DecodingException containing the parsing error details.
+     * @param exchange The server web exchange.
+     * @return A ProblemDetail with detailed information about the deserialization failure.
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DecodingException::class)
+    fun handleDecodingException(
+        ex: DecodingException,
+        exchange: ServerWebExchange
+    ): ProblemDetail {
+        // Log the full exception for debugging
+        log.error(
+            "JSON deserialization failed for request {} {}",
+            exchange.request.method,
+            exchange.request.path,
+            ex,
+        )
+
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val title = messageSource.getMessage(
+            "error.json.parsing.title",
+            emptyArray(),
+            "Invalid Request Body",
+            locale,
+        )
+
+        // Extract the root cause message which usually contains the field name
+        val rootCause = ex.mostSpecificCause
+        val detailMessage = rootCause.message ?: ex.message ?: "Failed to parse request body"
+
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.title = title
+        problemDetail.detail = detailMessage
+        problemDetail.type = URI.create("$ERROR_PAGE/json-parsing-error")
+        problemDetail.instance = URI.create(exchange.request.path.toString())
+        problemDetail.setProperty(ERROR_CATEGORY, "JSON_PARSING")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty("rootCause", rootCause::class.simpleName)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        return problemDetail
+    }
+
+    /**
+     * Overrides the parent handler for ServerWebInputException to provide detailed error logging.
+     * This handles deserialization errors not caught by handleDecodingException.
+     *
+     * @param ex The ServerWebInputException.
+     * @param headers The HTTP headers.
+     * @param status The HTTP status.
+     * @param exchange The server web exchange.
+     * @return A Mono with a ResponseEntity containing the ProblemDetail.
+     */
+    override fun handleServerWebInputException(
+        ex: ServerWebInputException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<Any>> {
+        // Log the full exception for debugging
+        log.error(
+            "Server web input exception for request {} {}",
+            exchange.request.method,
+            exchange.request.path,
+            ex,
+        )
+
+        val locale = exchange.localeContext.locale ?: Locale.getDefault()
+        val title = messageSource.getMessage(
+            "error.input.invalid.title",
+            emptyArray(),
+            "Invalid Input",
+            locale,
+        )
+
+        // Try to get a meaningful error message from the cause chain
+        val rootCause = ex.mostSpecificCause
+        val detailMessage = when {
+            rootCause is DecodingException -> rootCause.mostSpecificCause.message
+            rootCause.message != null -> rootCause.message
+            else -> ex.reason ?: "Invalid input data"
+        }
+
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.title = title
+        problemDetail.detail = detailMessage
+        problemDetail.type = URI.create("$ERROR_PAGE/input-error")
+        problemDetail.instance = URI.create(exchange.request.path.toString())
+        problemDetail.setProperty(ERROR_CATEGORY, "INPUT_ERROR")
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty("rootCause", rootCause::class.simpleName)
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
     }
 
     /**

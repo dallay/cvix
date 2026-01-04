@@ -150,6 +150,9 @@
 		"buttons": {
 			"add": "Add",
 			"remove": "Remove",
+			"save": "Save",
+			"saving": "Saving...",
+			"saveHint": "Save resume (Cmd/Ctrl+S)",
 			"addExperience": "Add Experience",
 			"addEducation": "Add Education",
 			"addSkillCategory": "Add Skill Category",
@@ -348,7 +351,31 @@
 			"courses": "Relevant Courses"
 		},
 		"messages": {
-			"noDataPreview": "Start filling out the form to see your resume preview"
+			"noDataPreview": "Start filling out the form to see your resume preview",
+			"noDataToSave": "No data to save",
+			"fillResumeFirst": "Please fill in some resume information first.",
+			"saveSuccess": "Resume saved",
+			"saveSuccessDescription": "Your resume has been saved successfully.",
+			"saveError": "Save failed",
+			"noDataToExport": "No data to export",
+			"exportSuccess": "Export successful",
+			"exportSuccessDescription": "Your resume has been downloaded as resume.json",
+			"exportFailed": "Export failed",
+			"exportFailedDescription": "Please fix validation errors before exporting.",
+			"noDataToValidate": "No data to validate",
+			"importSuccess": "Import successful",
+			"importSuccessDescription": "Your resume has been loaded successfully.",
+			"importFailed": "Import failed",
+			"importFailedDescription": "Found {count} validation errors.",
+			"importError": "Import error",
+			"noDataToReset": "No data to reset",
+			"formAlreadyEmpty": "The form is already empty.",
+			"savedJustNow": "Saved just now",
+			"savedMinutesAgo": "Saved {count} min ago | Saved {count} mins ago",
+			"savedHoursAgo": "Saved {count} hour ago | Saved {count} hours ago",
+			"savedDaysAgo": "Saved {count} day ago | Saved {count} days ago",
+			"savedOnDate": "Saved on {date}",
+			"unsavedChanges": "Unsaved changes"
 		},
 		"resetDialog": {
 			"title": "Reset form?",

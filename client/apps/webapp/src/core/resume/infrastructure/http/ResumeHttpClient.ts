@@ -52,6 +52,7 @@ export class ResumeHttpClient
 			title,
 			content: mapResumeToResumeRequest(resume),
 		};
+
 		const response = await this.client.put<ResumeDocumentResponse>(
 			`/resume/${id}`,
 			request,
@@ -87,6 +88,7 @@ export class ResumeHttpClient
 			title,
 			content: mapResumeToResumeRequest(resume),
 		};
+
 		const response = await this.client.put<ResumeDocumentResponse>(
 			`/resume/${id}/update`,
 			request,

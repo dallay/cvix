@@ -176,9 +176,8 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.title").isEqualTo("Bad Request")
+            .jsonPath("$.title").isEqualTo("Invalid Input")
             .jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
-            .jsonPath("$.detail").isEqualTo("Failed to read HTTP message")
             .jsonPath("$.instance").isEqualTo("/api/resume/generate")
     }
 }

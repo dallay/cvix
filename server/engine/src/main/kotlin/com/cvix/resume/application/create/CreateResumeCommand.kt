@@ -1,12 +1,16 @@
 package com.cvix.resume.application.create
 
-import com.cvix.common.domain.bus.command.Command
+import com.cvix.common.domain.bus.command.CommandWithResult
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.domain.Resume
 import java.util.UUID
 
 /**
  * Command to create a new resume document.
  * Part of the CQRS pattern in the application layer.
+ *
+ * Returns [ResumeDocumentResponse] containing the created resume with server-generated
+ * timestamps, allowing clients to track the resume ID and display "last saved" indicators.
  *
  * @property id The unique identifier for the new resume
  * @property userId The authenticated user creating the resume
@@ -22,4 +26,4 @@ data class CreateResumeCommand(
     val title: String?,
     val content: Resume,
     val createdBy: String,
-) : Command
+) : CommandWithResult<ResumeDocumentResponse>

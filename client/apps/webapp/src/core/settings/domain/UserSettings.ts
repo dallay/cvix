@@ -77,7 +77,7 @@ export interface NotificationSettings {
  * Used when no settings are persisted or when creating a new settings instance.
  */
 export const DEFAULT_USER_SETTINGS: UserSettings = {
-	storagePreference: "local",
+	storagePreference: "remote",
 	theme: "system",
 	language: "en",
 	notifications: {

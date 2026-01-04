@@ -125,6 +125,88 @@ export class RemoteResumeStorage implements ResumeStorage {
 	}
 
 	/**
+	 * LocalStorage key for persisting the current resume ID across sessions.
+	 * Format: cvix:remote-resume-id:{workspaceId}
+	 */
+	private getStorageKey(): string {
+		const workspaceId = getCurrentWorkspaceId();
+		return `cvix:remote-resume-id:${workspaceId}`;
+	}
+
+	/**
+	 * Persist the current resume ID to localStorage for recovery after page reload.
+	 */
+	private persistResumeId(id: string | null): void {
+		try {
+			const key = this.getStorageKey();
+			if (id) {
+				localStorage.setItem(key, id);
+			} else {
+				localStorage.removeItem(key);
+			}
+		} catch {
+			// localStorage might be unavailable, ignore
+		}
+	}
+
+	/**
+	 * Try to recover the resume ID from localStorage.
+	 */
+	private recoverPersistedResumeId(): string | null {
+		try {
+			const key = this.getStorageKey();
+			return localStorage.getItem(key);
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * Discover an existing resume for the current workspace.
+	 * This is called when no resumeId is configured, to recover from page reloads
+	 * or find previously created resumes.
+	 *
+	 * Priority:
+	 * 1. Check localStorage for persisted resumeId
+	 * 2. Query the server for existing resumes and use the most recently updated one
+	 */
+	private async discoverExistingResume(): Promise<void> {
+		// First, try to recover from localStorage
+		const persistedId = this.recoverPersistedResumeId();
+		if (persistedId) {
+			this.currentResumeId = persistedId;
+			this.config.resumeId = persistedId;
+			return;
+		}
+
+		// If no persisted ID, query the server for existing resumes
+		try {
+			const resumes = await this.client.listResumes();
+			if (resumes.length > 0) {
+				// Sort by most recently updated (updatedAt descending, fallback to createdAt)
+				const sorted = resumes.sort((a, b) => {
+					const dateA = new Date(a.updatedAt ?? a.createdAt).getTime();
+					const dateB = new Date(b.updatedAt ?? b.createdAt).getTime();
+					return dateB - dateA;
+				});
+				const mostRecent = sorted[0];
+				if (mostRecent) {
+					this.currentResumeId = mostRecent.id;
+					this.config.resumeId = mostRecent.id;
+					// Persist for future page loads
+					this.persistResumeId(mostRecent.id);
+				}
+			}
+		} catch (error) {
+			// If discovery fails (network error, etc.), we'll just start fresh
+			console.warn(
+				"[RemoteResumeStorage] Failed to discover existing resumes:",
+				error,
+			);
+		}
+	}
+
+	/**
 	 * Get the current resume ID being used for operations
 	 */
 	getResumeId(): string | null {
@@ -199,6 +281,8 @@ export class RemoteResumeStorage implements ResumeStorage {
 		this.lastServerTimestamp = response.updatedAt;
 		this.currentResumeId = response.id;
 		this.config.resumeId = response.id;
+		// Persist the ID for recovery after page reload
+		this.persistResumeId(response.id);
 
 		return {
 			data: resume,
@@ -217,6 +301,12 @@ export class RemoteResumeStorage implements ResumeStorage {
 
 	async load(): Promise<PersistenceResult<Resume | null>> {
 		this.validateWorkspaceContext();
+
+		// If no resume ID is known, try to discover existing resumes for this workspace
+		if (!this.currentResumeId) {
+			await this.discoverExistingResume();
+		}
+
 		const id = this.currentResumeId;
 		if (!id) {
 			return {
@@ -278,6 +368,8 @@ export class RemoteResumeStorage implements ResumeStorage {
 		this.validateWorkspaceContext();
 		const id = this.currentResumeId;
 		if (!id) {
+			// Also clear persisted ID even if currentResumeId is null
+			this.persistResumeId(null);
 			return;
 		}
 		await this.withRetry(
@@ -289,6 +381,8 @@ export class RemoteResumeStorage implements ResumeStorage {
 		this.lastServerTimestamp = null;
 		this.retryCount = 0;
 		this.config.resumeId = undefined;
+		// Clear persisted ID
+		this.persistResumeId(null);
 	}
 
 	type(): StorageType {

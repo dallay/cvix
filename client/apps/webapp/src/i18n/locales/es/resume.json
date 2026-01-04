@@ -150,6 +150,9 @@
 		"buttons": {
 			"add": "Agregar",
 			"remove": "Eliminar",
+			"save": "Guardar",
+			"saving": "Guardando...",
+			"saveHint": "Guardar currículum (Cmd/Ctrl+S)",
 			"addExperience": "Agregar Experiencia",
 			"addEducation": "Agregar Educación",
 			"addSkillCategory": "Agregar Categoría de Habilidades",
@@ -348,7 +351,31 @@
 			"courses": "Cursos Relevantes"
 		},
 		"messages": {
-			"noDataPreview": "Comienza a llenar el formulario para ver la vista previa de tu currículum"
+			"noDataPreview": "Comienza a llenar el formulario para ver la vista previa de tu currículum",
+			"noDataToSave": "No hay datos para guardar",
+			"fillResumeFirst": "Por favor, completa primero la información del currículum.",
+			"saveSuccess": "Currículum guardado",
+			"saveSuccessDescription": "Tu currículum ha sido guardado exitosamente.",
+			"saveError": "Error al guardar",
+			"noDataToExport": "No hay datos para exportar",
+			"exportSuccess": "Exportación exitosa",
+			"exportSuccessDescription": "Tu currículum ha sido descargado como resume.json",
+			"exportFailed": "Exportación fallida",
+			"exportFailedDescription": "Por favor, corrige los errores de validación antes de exportar.",
+			"noDataToValidate": "No hay datos para validar",
+			"importSuccess": "Importación exitosa",
+			"importSuccessDescription": "Tu currículum ha sido cargado exitosamente.",
+			"importFailed": "Importación fallida",
+			"importFailedDescription": "Se encontraron {count} errores de validación.",
+			"importError": "Error de importación",
+			"noDataToReset": "No hay datos para restablecer",
+			"formAlreadyEmpty": "El formulario ya está vacío.",
+			"savedJustNow": "Guardado hace un momento",
+			"savedMinutesAgo": "Guardado hace {count} min | Guardado hace {count} mins",
+			"savedHoursAgo": "Guardado hace {count} hora | Guardado hace {count} horas",
+			"savedDaysAgo": "Guardado hace {count} día | Guardado hace {count} días",
+			"savedOnDate": "Guardado el {date}",
+			"unsavedChanges": "Cambios sin guardar"
 		},
 		"resetDialog": {
 			"title": "¿Restablecer el formulario?",
