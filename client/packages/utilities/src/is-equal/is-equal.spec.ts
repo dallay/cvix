@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isEqual } from "./is-equal";
+import { isEqual } from "./is-equal.js";
 
 describe("isEqual", () => {
 	it("should return true for identical primitive values", () => {

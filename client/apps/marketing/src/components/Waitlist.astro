@@ -1,5 +1,5 @@
 ---
-import { BACKEND_URL } from "astro:env/client";
+import { CVIX_API_URL } from "astro:env/client";
 import { EmailCaptureForm } from "@cvix/astro-ui";
 import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "astro/types";
@@ -55,7 +55,7 @@ const t = useTranslations(currentLocale);
           })}
 				</p>
 				<div class="flex mt-6 w-full">
-					<EmailCaptureForm apiUrl={`${BACKEND_URL}/api/waitlist`}
+					<EmailCaptureForm apiUrl={`${CVIX_API_URL}/api/waitlist`}
 						emailPlaceholder={t({
 							en: "Enter your email",
 							es: "Ingresa tu correo electrónico",

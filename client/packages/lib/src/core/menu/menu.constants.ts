@@ -1,6 +1,6 @@
 import type { Lang } from "@cvix/i18n/astro";
-import { BASE_DOCS_URL, BLOG_URL } from "../../consts/config";
-import type { MenuItem } from "./menu.type.ts";
+import { CVIX_BLOG_URL, CVIX_DOCS_URL } from "../../consts/config";
+import type { MenuItem } from "./menu.type";
 
 export const headerMenuItems: MenuItem[] = [
 	{
@@ -11,7 +11,7 @@ export const headerMenuItems: MenuItem[] = [
 	},
 	{
 		type: "link",
-		href: BLOG_URL,
+		href: CVIX_BLOG_URL,
 		translationKey: "header.nav.blog",
 		condition: true,
 	},
@@ -32,7 +32,7 @@ export const headerMenuItems: MenuItem[] = [
 		children: [
 			{
 				type: "link",
-				href: BASE_DOCS_URL,
+				href: CVIX_DOCS_URL,
 				translationKey: "header.nav.resources.docs",
 				condition: true,
 			},
@@ -96,7 +96,7 @@ export function footerNavLinks(lang: Lang): MenuItem[] {
 		},
 		{
 			type: "link",
-			href: `${BLOG_URL}/${lang}/rss.xml`,
+			href: `${CVIX_BLOG_URL}/${lang}/rss.xml`,
 			translationKey: "footer.rss",
 			ariaLabelKey: "footer.aria.rss",
 			target: "_blank",

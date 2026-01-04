@@ -4,15 +4,14 @@
 // import them directly from '@cvix/lib/src/consts/ssl-paths'.
 
 export {
-	BASE_DOCS_URL,
-	BASE_URL,
-	BASE_WEBAPP_URL,
-	BLOG_PORT,
-	BLOG_URL,
 	BRAND_NAME,
-	DOCS_PORT,
-	LANDING_PAGE_PORT,
+	CVIX_API_URL,
+	CVIX_BLOG_URL,
+	CVIX_DOCS_URL,
+	CVIX_MARKETING_URL,
+	CVIX_OAUTH_URL,
+	CVIX_WEBAPP_URL,
+	PORTS,
 	SITE_TITLE,
-	WEBAPP_PORT,
 	X_ACCOUNT,
 } from "./config";

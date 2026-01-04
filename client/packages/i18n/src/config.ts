@@ -10,8 +10,8 @@ import type {
 	LocaleConfig,
 	LocalesConfig,
 	SupportedLocale,
-} from "./types";
-import { SUPPORTED_LOCALES } from "./types";
+} from "./types.js";
+import { SUPPORTED_LOCALES } from "./types.js";
 
 /**
  * Default locale for the application.

@@ -3,15 +3,17 @@
  * Centralized configuration for all E2E test environment variables
  */
 
+import { CVIX_API_URL, CVIX_OAUTH_URL, CVIX_WEBAPP_URL } from "@cvix/lib";
+
 export const E2E_CONFIG = {
 	/** Base URL for the frontend application */
-	baseURL: process.env.BASE_URL || "http://localhost:9876",
+	baseURL: process.env.BASE_URL || CVIX_WEBAPP_URL,
 
 	/** Base URL for API calls */
-	apiBaseURL: process.env.API_BASE_URL || "http://localhost:8080/api",
+	apiBaseURL: process.env.API_BASE_URL || `${CVIX_API_URL}/api`,
 
 	/** Keycloak authentication URL */
-	keycloakURL: process.env.KEYCLOAK_URL || "http://localhost:9080/realms/cvix",
+	keycloakURL: process.env.KEYCLOAK_URL || `${CVIX_OAUTH_URL}/realms/cvix`,
 
 	/** Keycloak client ID */
 	keycloakClientId: process.env.KEYCLOAK_CLIENT_ID || "cvix-client",
