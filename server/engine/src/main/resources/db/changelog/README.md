@@ -29,7 +29,7 @@ This directory contains all Liquibase database migration files for the cvix appl
 | 002a-f    | Workspace triggers, RLS, sessions, auth events | 2024-10-21 |
 | 003       | Session optimization                           | 2024-10-25 |
 | 004       | Resume documents (JSONB storage)               | 2024-11-01 |
-| 006       | Fix project date arrays → ISO strings          | 2026-01-03 |
+| 004b      | Fix project date arrays → ISO strings          | 2026-01-03 |
 
 ### Data Migrations
 
@@ -39,7 +39,7 @@ This directory contains all Liquibase database migration files for the cvix appl
 
 ## Special Notes
 
-### Migration 006: Project Date Format Fix
+### Migration 004b: Project Date Format Fix
 
 **Problem**: Legacy resume data stored project dates as JSON arrays `[YYYY, M, D]` instead of ISO
 8601 strings `"YYYY-MM-DD"`.

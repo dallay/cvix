@@ -29,6 +29,10 @@ import org.springframework.web.reactive.config.WebFluxConfigurer
 @Configuration
 class JacksonConfig : WebFluxConfigurer {
 
+    // Lazy-initialized ObjectMapper to avoid duplicate instantiation
+    // in configureHttpMessageCodecs
+    private val mapper: ObjectMapper by lazy { objectMapper() }
+
     /**
      * Primary ObjectMapper bean used throughout the application.
      * Configured to serialize dates as ISO-8601 strings.
@@ -60,7 +64,6 @@ class JacksonConfig : WebFluxConfigurer {
      * This ensures all HTTP request/response serialization uses the correct date format.
      */
     override fun configureHttpMessageCodecs(configurer: ServerCodecConfigurer) {
-        val mapper = objectMapper()
         configurer.defaultCodecs().jackson2JsonEncoder(Jackson2JsonEncoder(mapper))
         configurer.defaultCodecs().jackson2JsonDecoder(Jackson2JsonDecoder(mapper))
     }

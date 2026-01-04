@@ -7,6 +7,7 @@ import com.cvix.resume.domain.Resume
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.domain.event.ResumeUpdatedEvent
+import com.cvix.resume.domain.exception.OptimisticLockException
 import com.cvix.resume.domain.exception.ResumeNotFoundException
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -78,7 +79,7 @@ class ResumeUpdater(
                 expectedUpdatedAt,
                 existing.updatedAt,
             )
-            throw com.cvix.resume.domain.exception.OptimisticLockException(
+            throw OptimisticLockException(
                 resumeId = existing.id.id,
                 expectedUpdatedAt = expectedUpdatedAt,
                 actualUpdatedAt = existing.updatedAt,
