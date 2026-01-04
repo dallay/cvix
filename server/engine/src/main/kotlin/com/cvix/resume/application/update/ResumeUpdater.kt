@@ -4,8 +4,10 @@ import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventBroadcaster
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.resume.domain.Resume
+import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeRepository
 import com.cvix.resume.domain.event.ResumeUpdatedEvent
+import com.cvix.resume.domain.exception.OptimisticLockException
 import com.cvix.resume.domain.exception.ResumeNotFoundException
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -37,6 +39,7 @@ class ResumeUpdater(
      * @param updatedBy The username or email of the updater
      * @param expectedUpdatedAt The expected last update timestamp (optimistic locking, nullable)
      *
+     * @return The updated [ResumeDocument] with server-generated timestamps
      * @throws ResumeNotFoundException if the resume does not exist
      * @throws com.cvix.resume.domain.exception.OptimisticLockException if the updatedAt timestamp
      * does not match expectedUpdatedAt
@@ -49,55 +52,57 @@ class ResumeUpdater(
         content: Resume,
         updatedBy: String,
         expectedUpdatedAt: java.time.Instant? = null
-    ) {
+    ): ResumeDocument {
         log.debug(
             "Updating resume document - id={}, userId={}, workspaceId={}, title={}",
             id, userId, workspaceId, title,
         )
-        resumeRepository.findById(id, userId)?.let { existing ->
-            // Validate workspaceId matches persisted resume
-            if (workspaceId != existing.workspaceId) {
-                log.error(
-                    "WorkspaceId mismatch: supplied={}, persisted={}",
-                    workspaceId,
-                    existing.workspaceId,
-                )
-                throw IllegalArgumentException("WorkspaceId does not match persisted resume workspace")
+        val existing = resumeRepository.findById(id, userId)
+            ?: run {
+                log.warn("Resume document not found for update - id={}, userId={}", id, userId)
+                throw ResumeNotFoundException("Resume not found: $id")
             }
-            // Optimistic locking check
-            if (expectedUpdatedAt != null && existing.updatedAt != expectedUpdatedAt) {
-                log.error(
-                    "Optimistic lock failed: expectedUpdatedAt={}, actualUpdatedAt={}",
-                    expectedUpdatedAt,
-                    existing.updatedAt,
-                )
-                throw com.cvix.resume.domain.exception.OptimisticLockException(
-                    resumeId = existing.id.id,
-                    expectedUpdatedAt = expectedUpdatedAt,
-                    actualUpdatedAt = existing.updatedAt,
-                )
-            }
-            val updatedDocument = existing.update(
-                title = title,
-                newContent = content,
-                updatedBy = updatedBy,
+
+        // Validate workspaceId matches persisted resume
+        if (workspaceId != existing.workspaceId) {
+            log.error(
+                "WorkspaceId mismatch: supplied={}, persisted={}",
+                workspaceId,
+                existing.workspaceId,
             )
-            val savedDocument = resumeRepository.save(updatedDocument)
-            log.debug(
-                "Resume document updated successfully - id={}, title={}",
-                savedDocument.id, savedDocument.title,
-            )
-            eventBroadcaster.publish(
-                ResumeUpdatedEvent(
-                    resumeId = savedDocument.id.id,
-                    userId = userId,
-                    workspaceId = savedDocument.workspaceId,
-                ),
-            )
-        } ?: run {
-            log.warn("Resume document not found for update - id={}, userId={}", id, userId)
-            throw ResumeNotFoundException("Resume not found: $id")
+            throw IllegalArgumentException("WorkspaceId does not match persisted resume workspace")
         }
+        // Optimistic locking check
+        if (expectedUpdatedAt != null && existing.updatedAt != expectedUpdatedAt) {
+            log.error(
+                "Optimistic lock failed: expectedUpdatedAt={}, actualUpdatedAt={}",
+                expectedUpdatedAt,
+                existing.updatedAt,
+            )
+            throw OptimisticLockException(
+                resumeId = existing.id.id,
+                expectedUpdatedAt = expectedUpdatedAt,
+                actualUpdatedAt = existing.updatedAt,
+            )
+        }
+        val updatedDocument = existing.update(
+            title = title,
+            newContent = content,
+            updatedBy = updatedBy,
+        )
+        val savedDocument = resumeRepository.save(updatedDocument)
+        log.debug(
+            "Resume document updated successfully - id={}, title={}",
+            savedDocument.id, savedDocument.title,
+        )
+        eventBroadcaster.publish(
+            ResumeUpdatedEvent(
+                resumeId = savedDocument.id.id,
+                userId = userId,
+                workspaceId = savedDocument.workspaceId,
+            ),
+        )
+        return savedDocument
     }
 
     companion object {

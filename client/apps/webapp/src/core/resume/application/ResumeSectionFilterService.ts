@@ -70,17 +70,19 @@ export class ResumeSectionFilterService {
 			phone: fields.phone ? basics.phone : "",
 			url: fields.url ? basics.url : "",
 			summary: fields.summary ? basics.summary : "",
-			location: {
-				address: fields.location.address ? basics.location.address : "",
-				postalCode: fields.location.postalCode
-					? basics.location.postalCode
-					: "",
-				city: fields.location.city ? basics.location.city : "",
-				countryCode: fields.location.countryCode
-					? basics.location.countryCode
-					: "",
-				region: fields.location.region ? basics.location.region : "",
-			},
+			location: basics.location
+				? {
+						address: fields.location.address ? basics.location.address : "",
+						postalCode: fields.location.postalCode
+							? basics.location.postalCode
+							: "",
+						city: fields.location.city ? basics.location.city : "",
+						countryCode: fields.location.countryCode
+							? basics.location.countryCode
+							: "",
+						region: fields.location.region ? basics.location.region : "",
+					}
+				: null,
 			profiles: basics.profiles.filter((profile) => {
 				// If the profile network is explicitly marked false, filter it out
 				// We use !== false to allow undefined (new profiles) to be visible by default

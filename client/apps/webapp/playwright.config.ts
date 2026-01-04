@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
-import { CVIX_API_URL, CVIX_WEBAPP_URL, PORTS } from "@cvix/lib";
+import { CVIX_API_URL, PORTS } from "@cvix/lib";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import { defineConfig, devices } from "@playwright/test";
 
@@ -8,6 +8,13 @@ import { defineConfig, devices } from "@playwright/test";
  * Playwright configuration for E2E testing
  * @see https://playwright.dev/docs/test-configuration
  */
+
+// HAR Mocking Strategy:
+// Use HAR files to mock API responses and avoid backend dependencies in E2E tests.
+// Set USE_HAR=true to enable HAR replay mode (CI/CD default).
+// Set USE_HAR=false or RECORD_HAR=true to record new HAR files (requires backend running).
+const useHarMocking =
+	process.env.USE_HAR === "true" || process.env.CI === "true";
 
 // Choose a safe backend target for local Playwright runs to avoid Vite proxying to
 // an unavailable HTTPS dev backend (e.g., https://localhost:8443). Priority:
@@ -46,7 +53,7 @@ const useHttp =
 	!hasSSLCerts;
 const baseURL = useHttp
 	? `http://localhost:${PORTS.WEBAPP}`
-	: process.env.BASE_URL || CVIX_WEBAPP_URL;
+	: `https://localhost:${PORTS.WEBAPP}`;
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -84,6 +91,13 @@ export default defineConfig({
 		ignoreHTTPSErrors: true, // Required for self-signed certificates in dev
 		actionTimeout: 15_000,
 		navigationTimeout: 30_000,
+		// HAR replay: Disable automation detection for better HAR replay fidelity
+		// (Actual HAR routing with fallback is configured in harFixture.ts)
+		...(useHarMocking && {
+			launchOptions: {
+				args: ["--disable-blink-features=AutomationControlled"],
+			},
+		}),
 	},
 
 	// Development server configuration - auto-start on test run

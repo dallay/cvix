@@ -55,10 +55,11 @@ describe("ResumeSectionFilterService", () => {
 
 			const filtered = service.filterResume(resume, visibility);
 
-			expect(filtered.basics.location.address).toBe("123 Main St");
-			expect(filtered.basics.location.city).toBe("");
-			expect(filtered.basics.location.postalCode).toBe("");
-			expect(filtered.basics.location.countryCode).toBe("US");
+			expect(filtered.basics.location).not.toBeNull();
+			expect(filtered.basics.location?.address).toBe("123 Main St");
+			expect(filtered.basics.location?.city).toBe("");
+			expect(filtered.basics.location?.postalCode).toBe("");
+			expect(filtered.basics.location?.countryCode).toBe("US");
 		});
 
 		it("should filter out hidden profiles", () => {

@@ -5,6 +5,7 @@ import type {
 import {
 	IndexedDBResumeStorage,
 	LocalStorageResumeStorage,
+	RemoteResumeStorage,
 	SessionStorageResumeStorage,
 } from "@/core/resume/infrastructure/storage";
 
@@ -13,7 +14,7 @@ import {
  *
  * @param type - Storage type to instantiate (`"session"`, `"local"`, `"indexeddb"`, or `"remote"`)
  * @returns A ResumeStorage instance corresponding to `type`
- * @throws Error if `type` is `"remote"` (not implemented) or an unknown storage type
+ * @throws Error if an unknown storage type is provided
  */
 export function createResumeStorage(type: StorageType): ResumeStorage {
 	switch (type) {
@@ -27,9 +28,7 @@ export function createResumeStorage(type: StorageType): ResumeStorage {
 			return new IndexedDBResumeStorage();
 
 		case "remote":
-			throw new Error(
-				"Remote storage is not yet implemented. Coming soon in a future release.",
-			);
+			return new RemoteResumeStorage({});
 
 		default:
 			// TypeScript ensures exhaustiveness, but we add this for runtime safety
@@ -76,6 +75,7 @@ export interface StorageMetadata {
 	type: StorageType;
 	label: string;
 	description: string;
+	/** Lucide icon name (e.g., "lock", "hard-drive", "database", "cloud") */
 	icon: string;
 	persistence: "session" | "permanent";
 	capacity: string;
@@ -94,7 +94,7 @@ export function getStorageMetadata(): StorageMetadata[] {
 			label: "Session Storage",
 			description:
 				"Data is stored temporarily and cleared when you close the browser tab. Best for privacy.",
-			icon: "🔒",
+			icon: "lock",
 			persistence: "session",
 			capacity: "~5-10 MB",
 		},
@@ -103,7 +103,7 @@ export function getStorageMetadata(): StorageMetadata[] {
 			label: "Local Storage",
 			description:
 				"Data persists across browser sessions. Your resume will be available next time you visit.",
-			icon: "💾",
+			icon: "hard-drive",
 			persistence: "permanent",
 			capacity: "~5-10 MB",
 			recommended: true,
@@ -113,9 +113,20 @@ export function getStorageMetadata(): StorageMetadata[] {
 			label: "IndexedDB",
 			description:
 				"Advanced storage for large resumes. Best performance for complex data.",
-			icon: "🗄️",
+			icon: "database",
 			persistence: "permanent",
 			capacity: "~50+ MB",
+		},
+		{
+			type: "remote",
+			label: "Cloud Storage",
+			description:
+				"Your data is securely stored in our servers. Access your resumes from any device.",
+			icon: "cloud",
+			persistence: "permanent",
+			capacity: "Server quota",
+			// TODO: Mark as recommended when user is authenticated
+			// recommended: true,
 		},
 	];
 }

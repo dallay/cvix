@@ -2,7 +2,7 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.common.domain.bus.Mediator
 import com.cvix.common.domain.bus.command.CommandHandlerExecutionError
-import com.cvix.common.domain.presentation.SimpleMessageResponse
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.application.update.UpdateResumeCommand
 import com.cvix.resume.domain.exception.ResumeNotFoundException
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
@@ -53,7 +53,7 @@ class UpdateResumeController(
         @PathVariable
         id: UUID,
         @Valid @Validated @RequestBody request: UpdateResumeRequest
-    ): ResponseEntity<SimpleMessageResponse> {
+    ): ResponseEntity<ResumeDocumentResponse> {
         val sanitizedId = sanitizePathVariable(id.toString())
         log.debug("Update resume {}", sanitizedId)
         val userId = userIdFromToken()
@@ -68,19 +68,19 @@ class UpdateResumeController(
             updatedBy = userEmail() ?: userId.toString(),
             expectedUpdatedAt = request.expectedUpdatedAt?.let { java.time.Instant.parse(it) },
         )
-        try {
+        val response = try {
             dispatch(command)
         } catch (e: ResumeNotFoundException) {
             log.warn("Resume not found for update: {}", sanitizedId, e)
             return ResponseEntity.notFound().build()
         } catch (e: CommandHandlerExecutionError) {
-            log.error("Error creating resume with ID: {}", sanitizedId, e)
+            log.error("Error updating resume with ID: {}", sanitizedId, e)
             throw e
         }
         return ResponseEntity
             .ok()
             .location(URI.create("/api/resume/$sanitizedId"))
-            .body(SimpleMessageResponse("Resume with ID $sanitizedId updated successfully."))
+            .body(response)
     }
 
     companion object {

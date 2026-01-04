@@ -381,9 +381,12 @@ describe("mapResumeToBackendRequest", () => {
 		const resume = createTestResume({
 			basics: {
 				name: "Alice Cooper",
+				label: "",
+				image: "",
 				email: "alice@example.com",
 				phone: "+1-555-0400",
-				// @ts-expect-error Testing runtime null handling
+				url: "",
+				summary: "",
 				location: null,
 				profiles: [],
 			},

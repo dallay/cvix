@@ -13,8 +13,9 @@ import {
 	RESUME_VALIDATOR_KEY,
 } from "@/core/resume/infrastructure/di";
 import { ResumeHttpClient } from "@/core/resume/infrastructure/http/ResumeHttpClient";
-import { SessionStorageResumeStorage } from "@/core/resume/infrastructure/storage";
+import { createResumeStorage } from "@/core/resume/infrastructure/storage/factory";
 import { JsonResumeValidator } from "@/core/resume/infrastructure/validation";
+import { getUserStoragePreference } from "@/core/settings";
 import type { ProblemDetail } from "@/shared/BaseHttpClient.ts";
 
 /**
@@ -50,7 +51,8 @@ function getGenerator(): ResumeGenerator {
 
 /**
  * Gets the storage instance using Vue's provide/inject system.
- * Falls back to SessionStorageResumeStorage if no storage is provided.
+ * Falls back to creating a storage based on the user's persisted preference.
+ * If no preference is found, uses the default from settings.
  *
  * @returns The storage instance
  */
@@ -61,7 +63,10 @@ function getStorage(): ResumeStorage {
 			RESUME_STORAGE_KEY as symbol
 		] as ResumeStorage;
 	}
-	return new SessionStorageResumeStorage();
+
+	// Read the persisted storage preference and create the appropriate storage
+	const preferredStorageType = getUserStoragePreference();
+	return createResumeStorage(preferredStorageType);
 }
 
 /**
@@ -100,6 +105,7 @@ export const useResumeStore = defineStore("resume", () => {
 	const isLoading = ref(false);
 	const storageError = ref<Error | null>(null);
 	const currentStorageType = ref<StorageType>(initialStorage.type());
+	const lastSavedAt = ref<string | null>(null);
 
 	// Navigation context for preview-to-form
 	const activeSection = ref<string | null>(null);
@@ -233,7 +239,10 @@ export const useResumeStore = defineStore("resume", () => {
 			isSaving.value = true;
 			storageError.value = null;
 
-			await currentStorage.value.save(resume.value);
+			const result = await currentStorage.value.save(resume.value);
+
+			// Track the timestamp from the persistence result
+			lastSavedAt.value = result.timestamp;
 
 			isSaving.value = false;
 		} catch (error) {
@@ -258,6 +267,8 @@ export const useResumeStore = defineStore("resume", () => {
 
 			if (result.data) {
 				resume.value = result.data;
+				// Track when the loaded data was last saved
+				lastSavedAt.value = result.timestamp;
 			}
 
 			isLoading.value = false;
@@ -354,6 +365,7 @@ export const useResumeStore = defineStore("resume", () => {
 		isLoading,
 		storageError,
 		currentStorageType,
+		lastSavedAt,
 		activeSection,
 		highlightedEntry,
 

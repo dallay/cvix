@@ -72,7 +72,7 @@ export interface Basics {
 	summary: string;
 
 	/** Geographic location details */
-	location: Location;
+	location: Location | null;
 
 	/** Links to social or professional profiles */
 	profiles: ReadonlyArray<Profile>;

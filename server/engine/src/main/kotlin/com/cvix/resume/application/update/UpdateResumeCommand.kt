@@ -1,6 +1,7 @@
 package com.cvix.resume.application.update
 
-import com.cvix.common.domain.bus.command.Command
+import com.cvix.common.domain.bus.command.CommandWithResult
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.domain.Resume
 import java.util.UUID
 
@@ -9,6 +10,9 @@ import java.util.UUID
  * Part of the CQRS pattern in the application layer.
  *
  * Implements optimistic locking by checking updatedAt timestamp.
+ *
+ * Returns [ResumeDocumentResponse] containing the updated resume with server-generated
+ * timestamps, allowing clients to track the resume ID and display "last saved" indicators.
  *
  * @property id The resume document ID to update
  * @property userId The authenticated user (must be owner)
@@ -30,4 +34,4 @@ data class UpdateResumeCommand(
      * ISO-8601 UTC format (e.g., 2025-11-22T12:34:56Z).
      */
     val expectedUpdatedAt: java.time.Instant? = null,
-) : Command
+) : CommandWithResult<ResumeDocumentResponse>

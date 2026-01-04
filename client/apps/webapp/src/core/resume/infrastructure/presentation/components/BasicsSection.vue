@@ -9,12 +9,33 @@ import {
 } from "@cvix/ui/components/ui/field";
 import { Input } from "@cvix/ui/components/ui/input";
 import { Textarea } from "@cvix/ui/components/ui/textarea";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Basics } from "@/core/resume/domain/Resume";
+import type { Basics, Location } from "@/core/resume/domain/Resume";
 
 const { t } = useI18n();
 
 const basics = defineModel<Basics>({ required: true });
+
+// Ensure location is never null for v-model binding
+const location = computed<Location>({
+	get() {
+		// If location is null, initialize it
+		if (!basics.value.location) {
+			basics.value.location = {
+				address: "",
+				postalCode: "",
+				city: "",
+				countryCode: "",
+				region: "",
+			};
+		}
+		return basics.value.location;
+	},
+	set(newValue: Location) {
+		basics.value.location = newValue;
+	},
+});
 </script>
 
 <template>
@@ -124,7 +145,7 @@ const basics = defineModel<Basics>({ required: true });
             </FieldLabel>
             <Input
               id="street"
-              v-model="basics.location.address"
+              v-model="location.address"
               type="text"
               :placeholder="t('resume.placeholders.location.address')"
             />
@@ -136,7 +157,7 @@ const basics = defineModel<Basics>({ required: true });
               </FieldLabel>
               <Input
                 id="city"
-                v-model="basics.location.city"
+                v-model="location.city"
                 type="text"
                 :placeholder="t('resume.placeholders.location.city')"
               />
@@ -147,7 +168,7 @@ const basics = defineModel<Basics>({ required: true });
               </FieldLabel>
               <Input
                 id="zip"
-                v-model="basics.location.postalCode"
+                v-model="location.postalCode"
                 type="text"
                 :placeholder="t('resume.placeholders.location.postalCode')"
               />
@@ -158,7 +179,7 @@ const basics = defineModel<Basics>({ required: true });
               </FieldLabel>
               <Input
                 id="countryCode"
-                v-model="basics.location.countryCode"
+                v-model="location.countryCode"
                 type="text"
                 :placeholder="t('resume.placeholders.location.countryCode')"
               />
@@ -169,7 +190,7 @@ const basics = defineModel<Basics>({ required: true });
               </FieldLabel>
               <Input
                 id="region"
-                v-model="basics.location.region"
+                v-model="location.region"
                 type="text"
                 :placeholder="t('resume.placeholders.location.region')"
               />

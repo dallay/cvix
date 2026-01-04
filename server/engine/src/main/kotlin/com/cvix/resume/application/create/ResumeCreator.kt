@@ -35,6 +35,7 @@ class ResumeCreator(
      * @param content The resume data following JSON Resume schema
      * @param createdBy The username or email of the creator
      *
+     * @return The created [ResumeDocument] with server-generated timestamps
      * @throws Exception if there is an error during creation
      */
     suspend fun create(
@@ -44,7 +45,7 @@ class ResumeCreator(
         title: String,
         content: Resume,
         createdBy: String
-    ) {
+    ): ResumeDocument {
         log.debug(
             "Creating resume document - id={}, userId={}, workspaceId={}, title={}",
             id, userId, workspaceId, title,
@@ -67,6 +68,8 @@ class ResumeCreator(
 
         val domainEvents = savedDocument.pullDomainEvents()
         domainEvents.filterIsInstance<ResumeCreatedEvent>().forEach { eventBroadcaster.publish(it) }
+
+        return savedDocument
     }
 
     companion object {

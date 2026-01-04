@@ -15,6 +15,28 @@ vi.mock("@/shared/WorkspaceContext", () => ({
 	getCurrentWorkspaceId: vi.fn(() => "9dcb2241-6840-4e77-98a3-ddfa89c7d032"),
 }));
 
+// Mock localStorage
+const localStorageMock = (() => {
+	let store: Record<string, string> = {};
+	return {
+		getItem: vi.fn((key: string) => store[key] ?? null),
+		setItem: vi.fn((key: string, value: string) => {
+			store[key] = value;
+		}),
+		removeItem: vi.fn((key: string) => {
+			delete store[key];
+		}),
+		clear: vi.fn(() => {
+			store = {};
+		}),
+	};
+})();
+
+Object.defineProperty(globalThis, "localStorage", {
+	value: localStorageMock,
+	writable: true,
+});
+
 describe("RemoteResumeStorage", () => {
 	let storage: RemoteResumeStorage;
 	let config: RemoteStorageConfig;
@@ -65,12 +87,14 @@ describe("RemoteResumeStorage", () => {
 
 	beforeEach(() => {
 		vi.resetAllMocks();
+		localStorageMock.clear();
 
 		mockClient = {
 			createResume: vi.fn(),
 			updateResume: vi.fn(),
 			getResume: vi.fn(),
 			deleteResume: vi.fn(),
+			listResumes: vi.fn().mockResolvedValue([]),
 		} as Partial<ResumeHttpClient> as ResumeHttpClient;
 
 		config = {
@@ -162,14 +186,81 @@ describe("RemoteResumeStorage", () => {
 			await expect(storage.save(mockResume)).rejects.toThrow();
 			expect(mockClient.updateResume).toHaveBeenCalledTimes(3);
 		});
+
+		it("persists resume ID to localStorage after successful save", async () => {
+			(mockClient.updateResume as ReturnType<typeof vi.fn>).mockRejectedValue({
+				response: { status: 404 },
+			});
+			(mockClient.createResume as ReturnType<typeof vi.fn>).mockResolvedValue(
+				mockResponse,
+			);
+
+			await storage.save(mockResume);
+
+			expect(localStorageMock.setItem).toHaveBeenCalledWith(
+				"cvix:remote-resume-id:9dcb2241-6840-4e77-98a3-ddfa89c7d032",
+				mockResponse.id,
+			);
+		});
 	});
 
 	describe("load", () => {
-		it("returns null when no ID is configured", async () => {
+		it("returns null when no ID is configured and no resumes exist", async () => {
+			(mockClient.listResumes as ReturnType<typeof vi.fn>).mockResolvedValue(
+				[],
+			);
+
 			const result = await storage.load();
 
 			expect(result.data).toBeNull();
+			expect(mockClient.listResumes).toHaveBeenCalled();
 			expect(mockClient.getResume).not.toHaveBeenCalled();
+		});
+
+		it("discovers and loads most recent resume when no ID configured", async () => {
+			const olderResume: ResumeDocumentResponse = {
+				...mockResponse,
+				id: "older-id",
+				updatedAt: "2024-01-01T00:00:00Z",
+			};
+			const newerResume: ResumeDocumentResponse = {
+				...mockResponse,
+				id: "newer-id",
+				updatedAt: "2024-01-15T00:00:00Z",
+			};
+
+			(mockClient.listResumes as ReturnType<typeof vi.fn>).mockResolvedValue([
+				olderResume,
+				newerResume,
+			]);
+			(mockClient.getResume as ReturnType<typeof vi.fn>).mockResolvedValue(
+				newerResume,
+			);
+
+			const result = await storage.load();
+
+			expect(mockClient.listResumes).toHaveBeenCalled();
+			expect(mockClient.getResume).toHaveBeenCalledWith("newer-id");
+			expect(result.data).toEqual(mockResume);
+			expect(storage.getResumeId()).toBe("newer-id");
+			// Verify localStorage persistence
+			expect(localStorageMock.setItem).toHaveBeenCalledWith(
+				"cvix:remote-resume-id:9dcb2241-6840-4e77-98a3-ddfa89c7d032",
+				"newer-id",
+			);
+		});
+
+		it("recovers resume ID from localStorage without calling listResumes", async () => {
+			localStorageMock.getItem.mockReturnValue("persisted-id");
+			(mockClient.getResume as ReturnType<typeof vi.fn>).mockResolvedValue(
+				mockResponse,
+			);
+
+			const result = await storage.load();
+
+			expect(mockClient.listResumes).not.toHaveBeenCalled();
+			expect(mockClient.getResume).toHaveBeenCalledWith("persisted-id");
+			expect(result.data).toEqual(mockResume);
 		});
 
 		it("loads resume from server when id is provided", async () => {
@@ -210,13 +301,16 @@ describe("RemoteResumeStorage", () => {
 	});
 
 	describe("clear", () => {
-		it("does nothing when no ID exists", async () => {
+		it("clears localStorage even when no ID exists in memory", async () => {
 			await storage.clear();
 
 			expect(mockClient.deleteResume).not.toHaveBeenCalled();
+			expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+				"cvix:remote-resume-id:9dcb2241-6840-4e77-98a3-ddfa89c7d032",
+			);
 		});
 
-		it("deletes resume from server when id exists", async () => {
+		it("deletes resume from server and clears localStorage when id exists", async () => {
 			config.resumeId = "test-id";
 			storage = new RemoteResumeStorage(config, mockClient);
 			(mockClient.deleteResume as ReturnType<typeof vi.fn>).mockResolvedValue(
@@ -228,6 +322,9 @@ describe("RemoteResumeStorage", () => {
 			expect(mockClient.deleteResume).toHaveBeenCalledWith("test-id");
 			expect(storage.getResumeId()).toBeNull();
 			expect(storage.getLastServerTimestamp()).toBeNull();
+			expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+				"cvix:remote-resume-id:9dcb2241-6840-4e77-98a3-ddfa89c7d032",
+			);
 		});
 	});
 

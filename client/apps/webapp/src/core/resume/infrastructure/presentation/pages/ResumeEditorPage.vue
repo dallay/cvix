@@ -21,8 +21,12 @@ import { useMagicKeys } from "@vueuse/core";
 import {
 	CheckCircle,
 	Download,
+	Eye,
+	EyeOff,
 	FileText,
+	Loader2,
 	RotateCcw,
+	Save,
 	Upload,
 } from "lucide-vue-next";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
@@ -72,21 +76,43 @@ watch(
 	{ deep: true },
 );
 
+// Auto-refresh trigger for timestamp (updates every minute)
+const timestampRefreshTrigger = ref(0);
+
 // Format last saved timestamp
 const lastSavedText = computed(() => {
-	// TODO: Implement timestamp tracking when autosave/persistence is connected
-	// For now, return placeholder
-	return null;
-});
+	// Access the trigger to make this computed reactive to timer updates
+	void timestampRefreshTrigger.value;
 
-// Prevent browser default Save dialog on Cmd/Ctrl+S
-function handleSaveShortcut(event: KeyboardEvent) {
-	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
-		event.preventDefault();
-		event.stopPropagation();
-		handleExportJson();
+	if (!resumeStore.lastSavedAt) {
+		return null;
 	}
-}
+
+	const savedDate = new Date(resumeStore.lastSavedAt);
+	const now = new Date();
+	const diffMs = now.getTime() - savedDate.getTime();
+	const diffMinutes = Math.floor(diffMs / 60000);
+	const diffHours = Math.floor(diffMs / 3600000);
+	const diffDays = Math.floor(diffMs / 86400000);
+
+	// Use i18n for relative time formatting
+	if (diffMinutes < 1) {
+		return t("resume.messages.savedJustNow");
+	}
+	if (diffMinutes < 60) {
+		return t("resume.messages.savedMinutesAgo", { count: diffMinutes });
+	}
+	if (diffHours < 24) {
+		return t("resume.messages.savedHoursAgo", { count: diffHours });
+	}
+	if (diffDays < 7) {
+		return t("resume.messages.savedDaysAgo", { count: diffDays });
+	}
+	// For older dates, show the actual date
+	return t("resume.messages.savedOnDate", {
+		date: savedDate.toLocaleDateString(),
+	});
+});
 
 // Warn user about unsaved changes before navigating away
 function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -98,35 +124,87 @@ function handleBeforeUnload(event: BeforeUnloadEvent) {
 	}
 }
 
+// Timestamp auto-refresh interval
+let timestampInterval: number | null = null;
+
 onMounted(() => {
 	if (typeof window !== "undefined") {
-		window.addEventListener("keydown", handleSaveShortcut);
 		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		// Auto-refresh timestamp display every minute
+		timestampInterval = window.setInterval(() => {
+			timestampRefreshTrigger.value++;
+		}, 60000); // 60 seconds
 	}
 });
 
 onUnmounted(() => {
 	if (typeof window !== "undefined") {
-		window.removeEventListener("keydown", handleSaveShortcut);
 		window.removeEventListener("beforeunload", handleBeforeUnload);
+
+		// Clean up interval timer
+		if (timestampInterval !== null) {
+			clearInterval(timestampInterval);
+			timestampInterval = null;
+		}
 	}
 });
 
-// Keyboard shortcuts
-const keys = useMagicKeys();
+// Keyboard shortcuts with preventDefault to stop browser save dialog
+const keys = useMagicKeys({
+	passive: false,
+	onEventFired(e) {
+		// Prevent browser default save dialog for Cmd/Ctrl+S
+		if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	},
+});
 const cmdS = keys["Meta+KeyS"];
 const ctrlS = keys["Ctrl+KeyS"];
 
-// Handle Cmd/Ctrl+S for export
+// Handle Cmd/Ctrl+S for save
 watch([cmdS, ctrlS], ([cmd, ctrl]) => {
 	if (cmd || ctrl) {
-		handleExportJson();
+		handleSave();
 	}
 });
 
 const togglePreview = () => {
 	showPreview.value = !showPreview.value;
 };
+
+/**
+ * Saves the current resume to storage
+ */
+async function handleSave() {
+	if (!resume.value) {
+		toast.error(t("resume.messages.noDataToSave"), {
+			description: t("resume.messages.fillResumeFirst"),
+		});
+		return;
+	}
+
+	// Sync the composable state to the store before saving
+	resumeStore.setResume(resume.value);
+
+	try {
+		await resumeStore.saveToStorage();
+		hasUnsavedChanges.value = false;
+
+		toast.success(t("resume.messages.saveSuccess"), {
+			description: t("resume.messages.saveSuccessDescription"),
+		});
+	} catch (error) {
+		toast.error(t("resume.messages.saveError"), {
+			description:
+				error instanceof Error
+					? error.message
+					: t("resume.toast.saveError.description"),
+		});
+	}
+}
 
 /**
  * Triggers the hidden file input for upload
@@ -192,26 +270,37 @@ async function processUpload(file: File) {
 			// that bind to its refs via v-model. Use sync helper to centralize optional component calls.
 			syncFormWithComposable("load", result.data);
 
-			toast({
-				title: "Import successful",
-				description: "Your resume has been loaded successfully.",
-				variant: "default",
+			// Persist to user's configured storage
+			resumeStore.setResume(result.data);
+			try {
+				await resumeStore.saveToStorage();
+				hasUnsavedChanges.value = false;
+			} catch (storageError) {
+				// Log but don't fail the import - data is loaded in memory
+				console.warn(
+					"[ResumeEditorPage] Failed to persist imported resume to storage:",
+					storageError,
+				);
+			}
+
+			toast.success(t("resume.messages.importSuccess"), {
+				description: t("resume.messages.importSuccessDescription"),
 			});
 		} else {
 			// Show validation errors
 			showValidationPanel.value = true;
-			toast({
-				title: "Import failed",
-				description: `Found ${result.errors?.length || 0} validation errors.`,
-				variant: "destructive",
+			toast.error(t("resume.messages.importFailed"), {
+				description: t("resume.messages.importFailedDescription", {
+					count: result.errors?.length || 0,
+				}),
 			});
 		}
 	} catch (error) {
-		toast({
-			title: "Import error",
+		toast.error(t("resume.messages.importError"), {
 			description:
-				error instanceof Error ? error.message : "Failed to import resume",
-			variant: "destructive",
+				error instanceof Error
+					? error.message
+					: t("resume.messages.importFailed"),
 		});
 	}
 }
@@ -221,10 +310,8 @@ async function processUpload(file: File) {
  */
 function handleExportJson() {
 	if (!resume.value) {
-		toast({
-			title: "No data to export",
-			description: "Please fill in some resume information first.",
-			variant: "destructive",
+		toast.error(t("resume.messages.noDataToExport"), {
+			description: t("resume.messages.fillResumeFirst"),
 		});
 		return;
 	}
@@ -232,17 +319,13 @@ function handleExportJson() {
 	const success = exportJson(resume.value, "resume.json");
 
 	if (success) {
-		toast({
-			title: "Export successful",
-			description: "Your resume has been downloaded as resume.json",
-			variant: "default",
+		toast.success(t("resume.messages.exportSuccess"), {
+			description: t("resume.messages.exportSuccessDescription"),
 		});
 	} else {
 		showValidationPanel.value = true;
-		toast({
-			title: "Export failed",
-			description: "Please fix validation errors before exporting.",
-			variant: "destructive",
+		toast.error(t("resume.messages.exportFailed"), {
+			description: t("resume.messages.exportFailedDescription"),
 		});
 	}
 }
@@ -252,10 +335,8 @@ function handleExportJson() {
  */
 function handleValidateJson() {
 	if (!resume.value) {
-		toast({
-			title: "No data to validate",
-			description: "Please fill in some resume information first.",
-			variant: "destructive",
+		toast.error(t("resume.messages.noDataToValidate"), {
+			description: t("resume.messages.fillResumeFirst"),
 		});
 		return;
 	}
@@ -278,10 +359,8 @@ function handleJumpTo(section: string, path: string) {
  */
 function handleResetForm() {
 	if (!resume.value) {
-		toast({
-			title: "No data to reset",
-			description: "The form is already empty.",
-			variant: "default",
+		toast(t("resume.messages.noDataToReset"), {
+			description: t("resume.messages.formAlreadyEmpty"),
 		});
 		return;
 	}
@@ -305,17 +384,15 @@ async function confirmReset() {
 
 		hasUnsavedChanges.value = false;
 
-		toast({
-			title: "Form reset",
-			description: "All resume data has been cleared.",
-			variant: "default",
+		toast.success(t("resume.toast.formCleared.title"), {
+			description: t("resume.toast.formCleared.description"),
 		});
 	} catch (error) {
-		toast({
-			title: "Reset failed",
+		toast.error(t("resume.messages.resetError"), {
 			description:
-				error instanceof Error ? error.message : "Failed to reset form",
-			variant: "destructive",
+				error instanceof Error
+					? error.message
+					: t("resume.messages.resetErrorDescription"),
 		});
 	}
 }
@@ -410,8 +487,8 @@ function syncFormWithComposable(
 <template>
   <DashboardLayout>
     <div class="container mx-auto py-8 px-4">
-      <!-- Header with Action Buttons -->
-      <div class="mb-4 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+      <!-- Header with Action Buttons - Sticky -->
+      <div class="mb-4 flex flex-col gap-4 md:flex-row md:justify-between md:items-center sticky top-0 z-10 bg-background py-4 -mt-4 border-b border-border">
         <div>
           <h1 class="text-3xl font-bold text-foreground">
             {{ t("resume.title") }}
@@ -423,10 +500,36 @@ function syncFormWithComposable(
 
         <!-- Utility Bar -->
         <div class="flex flex-wrap gap-2">
-          <!-- Last saved indicator -->
-          <div v-if="lastSavedText" class="flex items-center text-sm text-muted-foreground px-3">
-            {{ lastSavedText }}
+          <!-- Last saved indicator with unsaved changes badge -->
+          <div
+            v-if="hasUnsavedChanges || lastSavedText"
+            class="flex items-center text-sm px-3"
+            :class="hasUnsavedChanges ? 'text-warning font-medium' : 'text-muted-foreground'"
+          >
+            <span v-if="hasUnsavedChanges" class="mr-2">●</span>
+            {{ hasUnsavedChanges ? t('resume.messages.unsavedChanges') : lastSavedText }}
           </div>
+
+          <!-- Save Button with unsaved indicator -->
+          <Button
+              variant="default"
+              size="sm"
+              @click="handleSave"
+              :disabled="resumeStore.isSaving || !resume"
+              :title="t('resume.buttons.saveHint')"
+              :class="hasUnsavedChanges ? 'relative' : ''"
+          >
+            <Loader2 v-if="resumeStore.isSaving" class="h-4 w-4 mr-2 animate-spin" />
+            <Save v-else class="h-4 w-4 mr-2" />
+            <span class="relative">
+              {{ t('resume.buttons.save') }}
+              <span
+                v-if="hasUnsavedChanges"
+                class="absolute -top-1 -right-2 h-2 w-2 bg-warning rounded-full"
+                :aria-label="t('resume.messages.unsavedChangesIndicator')"
+              />
+            </span>
+          </Button>
 
           <Button
               variant="outline"
@@ -471,7 +574,7 @@ function syncFormWithComposable(
           <Button
               size="sm"
               :title="t('resume.buttons.generatePdfHint')"
-              variant="default"
+              variant="outline"
               @click="router.push('/resume/pdf')"
           >
             <FileText class="h-4 w-4 mr-2"/>
@@ -480,38 +583,13 @@ function syncFormWithComposable(
 
           <Button
               variant="outline"
+              size="sm"
               @click="togglePreview"
               class="hidden lg:flex"
               :title="showPreview ? t('resume.preview.hide') : t('resume.preview.show')"
           >
-            <svg
-                class="h-4 w-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-              <path
-                  v-if="showPreview"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-              />
-              <g v-else>
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </g>
-            </svg>
+            <EyeOff v-if="showPreview" class="h-4 w-4 mr-2" />
+            <Eye v-else class="h-4 w-4 mr-2" />
             {{ showPreview ? t('resume.preview.hide') : t('resume.buttons.preview') }}
           </Button>
         </div>
@@ -534,7 +612,7 @@ function syncFormWithComposable(
               {{ t("resume.sections.personalDetails") }}
             </CardTitle>
             <CardDescription>
-              Fill out the form to create your resume
+              {{ t("resume.sections.formDescription") }}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -544,20 +622,20 @@ function syncFormWithComposable(
 
         <!-- Preview Section -->
         <Card v-if="showPreview"
-              class="hidden lg:flex lg:flex-col sticky top-8 max-h-[calc(100vh-6rem)] overflow-hidden">
+              class="hidden lg:flex lg:flex-col sticky top-24 max-h-[calc(100vh-8rem)] overflow-hidden">
           <CardHeader class="flex-none">
             <CardTitle>
               {{ t('resume.buttons.preview') }}
             </CardTitle>
             <CardDescription>
-              Live preview of your resume
+              {{ t("resume.sections.previewDescription") }}
             </CardDescription>
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
               <ResumePreview v-if="resume" :data="resume" @navigate-section="handlePreviewNavigate"/>
               <div v-else class="flex items-center justify-center h-full text-muted-foreground">
-                {{ t('resume.messages.noDataPreview') || 'Add resume data to see preview' }}
+                {{ t('resume.messages.noDataPreview') }}
               </div>
             </div>
           </CardContent>
@@ -569,15 +647,15 @@ function syncFormWithComposable(
     <AlertDialog v-model:open="showUploadConfirmation">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Replace existing data?</AlertDialogTitle>
+          <AlertDialogTitle>{{ t("resume.uploadDialog.title") }}</AlertDialogTitle>
           <AlertDialogDescription>
-            You have unsaved changes in your resume. Uploading a new JSON file will replace all current data. This action cannot be undone.
+            {{ t("resume.uploadDialog.description") }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel @click="cancelUpload">Cancel</AlertDialogCancel>
+          <AlertDialogCancel @click="cancelUpload">{{ t("resume.resetDialog.cancel") }}</AlertDialogCancel>
           <AlertDialogAction @click="confirmUpload">
-            Continue
+            {{ t("resume.uploadDialog.confirm") }}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

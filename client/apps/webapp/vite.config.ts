@@ -76,6 +76,11 @@ export default defineConfig(({ mode }) => {
 	// Make backend proxy target configurable via BACKEND_URL env var (fallback: http://localhost:8080)
 	const backendTarget: string = env.BACKEND_URL ?? "http://localhost:8080";
 
+	// Disable proxy during E2E tests when using mocked APIs (manual mocking or HAR files)
+	// Playwright handles the mocking at the browser level, so Vite proxy should be bypassed
+	const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "true";
+	const disableProxy = isPlaywrightTest;
+
 	return {
 		plugins: [
 			vue(),
@@ -119,47 +124,50 @@ export default defineConfig(({ mode }) => {
 			host: true,
 			port: 9876,
 			https: getHttpsConfig(),
-			proxy: {
-				"/api": {
-					target: backendTarget,
-					secure: false,
-					changeOrigin: true,
-					ws: true,
-					// Preserve cookies between proxy and backend
-					cookieDomainRewrite: {
-						"*": "",
+			// Disable proxy during E2E tests - Playwright handles API mocking
+			proxy: disableProxy
+				? undefined
+				: {
+						"/api": {
+							target: backendTarget,
+							secure: false,
+							changeOrigin: true,
+							ws: true,
+							// Preserve cookies between proxy and backend
+							cookieDomainRewrite: {
+								"*": "",
+							},
+							configure: (proxy, _options) => {
+								proxy.on("error", (err, _req, _res) => {
+									console.error("proxy error", err);
+								});
+							},
+						},
+						"/actuator": {
+							target: backendTarget,
+							secure: false,
+							changeOrigin: true,
+							cookieDomainRewrite: {
+								"*": "",
+							},
+						},
+						"/oauth2": {
+							target: backendTarget,
+							secure: false,
+							changeOrigin: true,
+							cookieDomainRewrite: {
+								"*": "",
+							},
+						},
+						"/v3/api-docs": {
+							target: backendTarget,
+							secure: false,
+							changeOrigin: true,
+							cookieDomainRewrite: {
+								"*": "",
+							},
+						},
 					},
-					configure: (proxy, _options) => {
-						proxy.on("error", (err, _req, _res) => {
-							console.error("proxy error", err);
-						});
-					},
-				},
-				"/actuator": {
-					target: backendTarget,
-					secure: false,
-					changeOrigin: true,
-					cookieDomainRewrite: {
-						"*": "",
-					},
-				},
-				"/oauth2": {
-					target: backendTarget,
-					secure: false,
-					changeOrigin: true,
-					cookieDomainRewrite: {
-						"*": "",
-					},
-				},
-				"/v3/api-docs": {
-					target: backendTarget,
-					secure: false,
-					changeOrigin: true,
-					cookieDomainRewrite: {
-						"*": "",
-					},
-				},
-			},
 		},
 	};
 });

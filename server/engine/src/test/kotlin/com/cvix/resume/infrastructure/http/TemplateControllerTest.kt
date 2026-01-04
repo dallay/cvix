@@ -94,11 +94,18 @@ internal class TemplateControllerTest : ControllerTest() {
         val responseBody = result.responseBody?.toString(Charsets.UTF_8)
         val objectMapper = ObjectMapper()
         val json = responseBody?.let { objectMapper.readTree(it) }
+        // Verify that the generic error message is returned (not the actual exception message)
+        // This is a security feature to prevent information leakage
         val errorFields = listOf("message", "detail", "error", "title")
-        val found = errorFields.any { field ->
+        val foundGenericMessage = errorFields.any { field ->
+            json?.get(field)?.asText()?.contains("internal server error", ignoreCase = true) == true
+        }
+        // Ensure the actual exception message does NOT leak to the client
+        val leakedMessage = errorFields.any { field ->
             json?.get(field)?.asText()?.contains("Internal error") == true
         }
-        assert(found) { "Expected error message to contain 'Internal error', but got: $responseBody" }
+        assert(foundGenericMessage) { "Expected generic error message, but got: $responseBody" }
+        assert(!leakedMessage) { "Security issue: Exception message leaked to client: $responseBody" }
         coVerify(exactly = 1) { mediator.send(capture(querySlot)) }
         assertEquals(workspaceId, querySlot.captured.workspaceId)
     }

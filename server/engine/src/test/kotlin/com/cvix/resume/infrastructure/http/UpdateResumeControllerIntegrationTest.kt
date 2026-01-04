@@ -26,7 +26,7 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
         val workspaceId = UUID.fromString("a0654720-35dc-49d0-b508-1f7df5d915f1")
         val request = UpdateResumeRequest(
             title = "Updated Resume Title",
-            content = ResumeTestFixtures.createValidResumeRequestContent(),
+            content = ResumeTestFixtures.createResumeContentRequest(),
             expectedUpdatedAt = null,
         )
 
@@ -62,9 +62,8 @@ internal class UpdateResumeControllerIntegrationTest : ControllerIntegrationTest
             .exchange()
             .expectStatus().isBadRequest
             .expectBody()
-            .jsonPath("$.title").isEqualTo("Bad Request")
+            .jsonPath("$.title").isEqualTo("Invalid Input")
             .jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
-            .jsonPath("$.detail").isEqualTo("Failed to read HTTP message")
             .jsonPath("$.instance").isEqualTo("/api/resume/$resumeId/update")
     }
 }

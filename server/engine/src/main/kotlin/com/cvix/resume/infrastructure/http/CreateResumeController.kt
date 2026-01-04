@@ -2,6 +2,7 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.common.domain.bus.Mediator
 import com.cvix.common.domain.bus.command.CommandHandlerExecutionError
+import com.cvix.resume.application.ResumeDocumentResponse
 import com.cvix.resume.application.create.CreateResumeCommand
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.CreateResumeRequest
@@ -45,7 +46,7 @@ class CreateResumeController(
         @PathVariable
         id: UUID,
         @Valid @RequestBody request: CreateResumeRequest
-    ): ResponseEntity<String> {
+    ): ResponseEntity<ResumeDocumentResponse> {
         val safeIdMasked = LogMasker.mask(id)
         log.debug("Creating new resume: {}", safeIdMasked)
         val userId = userIdFromToken()
@@ -59,7 +60,7 @@ class CreateResumeController(
             content = ResumeRequestMapper.toDomain(request.content),
             createdBy = userId.toString(),
         )
-        try {
+        val response = try {
             dispatch(command)
         } catch (e: CommandHandlerExecutionError) {
             log.error("Error creating resume/cv with ID: {}", safeIdMasked, e)
@@ -67,7 +68,7 @@ class CreateResumeController(
         }
         return ResponseEntity.created(
             URI.create("/api/resume/${sanitizePathVariable(id.toString())}"),
-        ).build()
+        ).body(response)
     }
 
     companion object {

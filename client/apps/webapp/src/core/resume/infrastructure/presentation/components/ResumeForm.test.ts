@@ -1,39 +1,35 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { toast } from "vue-sonner";
 import type { Resume } from "@/core/resume/domain/Resume";
-import { useResumeStore } from "@/core/resume/infrastructure/store/resume.store.ts";
 import { createTestI18n } from "@/test-utils/i18n-helper";
 import ResumeForm from "./ResumeForm.vue";
 
-// Mock vue-sonner
-vi.mock("vue-sonner", () => ({
-	toast: {
-		error: vi.fn(),
-		success: vi.fn(),
-	},
-}));
+// Mock the useResumeForm composable
+const mockLoadResume = vi.fn();
+const mockClearForm = vi.fn();
 
-// Mock the ResumeHttpClient
-vi.mock("@/core/resume/infrastructure/http/ResumeHttpClient", () => {
-	const MockResumeHttpClient = class {
-		async generatePdf() {
-			return new Blob(["fake pdf"], { type: "application/pdf" });
-		}
-	};
-
-	return {
-		ResumeHttpClient: MockResumeHttpClient,
-	};
-});
-
-// Mock window.confirm
-globalThis.confirm = vi.fn(() => true);
-
-// Mock URL.createObjectURL and revokeObjectURL
-globalThis.URL.createObjectURL = vi.fn(() => "blob:mock-url");
-globalThis.URL.revokeObjectURL = vi.fn();
+vi.mock(
+	"@/core/resume/infrastructure/presentation/composables/useResumeForm",
+	() => ({
+		useResumeForm: () => ({
+			basics: { value: { name: "", label: "", profiles: [] } },
+			workExperiences: { value: [] },
+			volunteers: { value: [] },
+			education: { value: [] },
+			awards: { value: [] },
+			certificates: { value: [] },
+			publications: { value: [] },
+			skills: { value: [] },
+			languages: { value: [] },
+			interests: { value: [] },
+			references: { value: [] },
+			projects: { value: [] },
+			clearForm: mockClearForm,
+			loadResume: mockLoadResume,
+		}),
+	}),
+);
 
 const createMockResume = (): Resume => ({
 	basics: {
@@ -90,317 +86,175 @@ describe("ResumeForm.vue", () => {
 					InterestSection: true,
 					ReferenceSection: true,
 					ProjectSection: true,
+					Accordion: {
+						template: '<div class="accordion"><slot /></div>',
+					},
+					AccordionItem: {
+						template: '<div class="accordion-item"><slot /></div>',
+						props: ["value"],
+					},
+					AccordionTrigger: {
+						template: '<button class="accordion-trigger"><slot /></button>',
+					},
+					AccordionContent: {
+						template: '<div class="accordion-content"><slot /></div>',
+					},
+					FieldGroup: {
+						template: '<div class="field-group"><slot /></div>',
+					},
+					FieldSet: {
+						template: '<fieldset class="field-set"><slot /></fieldset>',
+					},
 				},
 			},
 		});
 	};
 
 	describe("rendering", () => {
-		it("should render the form with submit, generate PDF, and cancel buttons", () => {
+		it("should render all accordion sections", () => {
 			const wrapper = mountComponent();
 
-			const buttons = wrapper.findAll("button");
-			expect(buttons.length).toBeGreaterThanOrEqual(3);
+			// The component should render accordion items for each section
+			const accordionItems = wrapper.findAll(".accordion-item");
+			expect(accordionItems.length).toBe(12); // 12 sections total
 
-			const submitButton = wrapper.find('button[type="submit"]');
-			expect(submitButton.exists()).toBe(true);
-			expect(submitButton.text()).toBe("Submit");
+			// Check that section triggers are rendered with correct labels
+			const triggers = wrapper.findAll(".accordion-trigger");
+			expect(triggers.length).toBeGreaterThan(0);
+		});
+
+		it("should render BasicsSection component", () => {
+			const wrapper = mountComponent();
+
+			const basicsSection = wrapper.findComponent({ name: "BasicsSection" });
+			expect(basicsSection.exists()).toBe(true);
+		});
+
+		it("should render ProfilesField component", () => {
+			const wrapper = mountComponent();
+
+			const profilesField = wrapper.findComponent({ name: "ProfilesField" });
+			expect(profilesField.exists()).toBe(true);
+		});
+
+		it("should render WorkExperienceSection component", () => {
+			const wrapper = mountComponent();
+
+			const workSection = wrapper.findComponent({
+				name: "WorkExperienceSection",
+			});
+			expect(workSection.exists()).toBe(true);
+		});
+
+		it("should render EducationSection component", () => {
+			const wrapper = mountComponent();
+
+			const educationSection = wrapper.findComponent({
+				name: "EducationSection",
+			});
+			expect(educationSection.exists()).toBe(true);
+		});
+
+		it("should render SkillSection component", () => {
+			const wrapper = mountComponent();
+
+			const skillSection = wrapper.findComponent({ name: "SkillSection" });
+			expect(skillSection.exists()).toBe(true);
+		});
+
+		it("should render ProjectSection component", () => {
+			const wrapper = mountComponent();
+
+			const projectSection = wrapper.findComponent({ name: "ProjectSection" });
+			expect(projectSection.exists()).toBe(true);
 		});
 	});
 
-	describe("form submission", () => {
-		it("should show validation error when submitting invalid data", async () => {
+	describe("exposed methods", () => {
+		it("should expose loadResume method", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
 
-			// Mock validation to return false
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(false);
-
-			const form = wrapper.find("form");
-			await form.trigger("submit");
-			await flushPromises();
-
-			expect(toast.error).toHaveBeenCalledWith(
-				"Validation Error",
-				expect.objectContaining({
-					description: "Please check all required fields.",
-				}),
-			);
+			expect(wrapper.vm.loadResume).toBeDefined();
+			expect(typeof wrapper.vm.loadResume).toBe("function");
 		});
 
-		it("should save to storage and show success message on valid submission", async () => {
+		it("should expose clearForm method", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
 
-			// Set valid resume data
-			resumeStore.setResume(createMockResume());
-
-			// Mock validation to return true
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(true);
-
-			// Mock saveToStorage
-			const saveToStorageSpy = vi
-				.spyOn(resumeStore, "saveToStorage")
-				.mockResolvedValue();
-
-			const form = wrapper.find("form");
-			await form.trigger("submit");
-			await flushPromises();
-
-			expect(saveToStorageSpy).toHaveBeenCalled();
-			expect(toast.success).toHaveBeenCalledWith(
-				"Success",
-				expect.objectContaining({
-					description: "Resume saved successfully!",
-				}),
-			);
+			expect(wrapper.vm.clearForm).toBeDefined();
+			expect(typeof wrapper.vm.clearForm).toBe("function");
 		});
 
-		it("should show error message when storage fails", async () => {
+		it("should call composable loadResume when exposed method is called", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
+			const mockResume = createMockResume();
 
-			// Set valid resume data
-			resumeStore.setResume(createMockResume());
+			wrapper.vm.loadResume(mockResume);
 
-			// Mock validation to return true
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(true);
-
-			// Mock saveToStorage to fail
-			vi.spyOn(resumeStore, "saveToStorage").mockRejectedValue(
-				new Error("Storage error"),
-			);
-			const form = wrapper.find("form");
-			await form.trigger("submit");
-			await flushPromises();
-
-			expect(toast.error).toHaveBeenCalledWith(
-				"Error",
-				expect.objectContaining({
-					description: "Failed to save resume.",
-				}),
-			);
-		});
-	});
-
-	describe("PDF generation", () => {
-		it("should generate PDF and show success message", async () => {
-			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
-
-			// Set valid resume data
-			resumeStore.setResume(createMockResume());
-
-			// Find and click the generate PDF button
-			const generateButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text().includes("Generate PDF"));
-			expect(generateButton).toBeTruthy();
-
-			await generateButton?.trigger("click");
-			await flushPromises();
-
-			expect(toast.success).toHaveBeenCalledWith(
-				"PDF Generated",
-				expect.objectContaining({
-					description: "Your resume has been generated successfully!",
-				}),
-			);
+			expect(mockLoadResume).toHaveBeenCalledWith(mockResume);
 		});
 
-		it("should show error message when PDF generation fails", async () => {
+		it("should call composable clearForm when exposed method is called", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
 
-			// Mock generatePdf to fail
-			vi.spyOn(resumeStore, "generatePdf").mockRejectedValue(
-				new Error("Generation error"),
-			);
+			wrapper.vm.clearForm();
 
-			const generateButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text().includes("Generate PDF"));
-
-			await generateButton?.trigger("click");
-			await flushPromises();
-
-			expect(toast.error).toHaveBeenCalledWith(
-				"Generation Failed",
-				expect.objectContaining({
-					description: "Failed to generate PDF.",
-				}),
-			);
-		});
-	});
-
-	describe("form cancellation", () => {
-		it("should clear form when cancel is confirmed", async () => {
-			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
-
-			// Set some data
-			resumeStore.setResume(createMockResume());
-
-			const cancelButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text() === "Cancel");
-			expect(cancelButton).toBeTruthy();
-
-			await cancelButton?.trigger("click");
-			await flushPromises();
-
-			expect(globalThis.confirm).toHaveBeenCalledWith(
-				"Are you sure you want to clear all form data?",
-			);
-			expect(toast.success).toHaveBeenCalledWith(
-				"Form Cleared",
-				expect.objectContaining({
-					description: "All form data has been reset.",
-				}),
-			);
-		});
-
-		it("should not clear form when cancel is not confirmed", async () => {
-			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
-
-			// Mock confirm to return false
-			vi.mocked(globalThis.confirm).mockReturnValue(false);
-
-			// Set some data
-			resumeStore.setResume(createMockResume());
-
-			const cancelButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text() === "Cancel");
-
-			await cancelButton?.trigger("click");
-			await flushPromises();
-
-			// Should not show success toast
-			expect(toast.success).not.toHaveBeenCalled();
+			expect(mockClearForm).toHaveBeenCalled();
 		});
 	});
 
 	describe("internationalization", () => {
-		it("should render buttons in English by default", () => {
+		it("should render section labels using i18n", () => {
 			const wrapper = mountComponent();
 
-			const submitButton = wrapper.find('button[type="submit"]');
-			expect(submitButton.text()).toBe("Submit");
+			// Check that at least one trigger has translated text
+			const triggers = wrapper.findAll(".accordion-trigger");
+			expect(triggers.length).toBeGreaterThan(0);
 
-			const cancelButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text() === "Cancel");
-			expect(cancelButton?.text()).toBe("Cancel");
+			// The first trigger should have the "Personal Details" label
+			// (from the test i18n helper)
+			const firstTrigger = triggers[0];
+			expect(firstTrigger).toBeDefined();
+			expect(firstTrigger?.text()).toBeTruthy();
 		});
 
-		it("should render buttons in Spanish when locale is changed", async () => {
+		it("should render in Spanish when locale is changed", async () => {
 			const i18n = createTestI18n();
 			i18n.global.locale.value = "es";
 			const wrapper = mountComponent(i18n);
 
-			const submitButton = wrapper.find('button[type="submit"]');
-			expect(submitButton.text()).toBe("Enviar");
-
-			const cancelButton = wrapper
-				.findAll("button")
-				.find((btn) => btn.text() === "Cancelar");
-			expect(cancelButton?.text()).toBe("Cancelar");
+			const triggers = wrapper.findAll(".accordion-trigger");
+			expect(triggers.length).toBeGreaterThan(0);
 
 			// Reset locale
 			i18n.global.locale.value = "en";
 		});
-
-		it("should show Spanish error messages when locale is es", async () => {
-			const i18n = createTestI18n();
-			i18n.global.locale.value = "es";
-			const wrapper = mountComponent(i18n);
-			const resumeStore = useResumeStore();
-
-			// Mock validation to return false
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(false);
-
-			const form = wrapper.find("form");
-			await form.trigger("submit");
-			await flushPromises();
-
-			expect(toast.error).toHaveBeenCalledWith(
-				"Error de Validación",
-				expect.objectContaining({
-					description: "Por favor, verifica todos los campos requeridos.",
-				}),
-			);
-		});
 	});
 
-	describe("button states", () => {
-		it("should disable submit button when submitting", async () => {
+	describe("structure", () => {
+		it("should NOT render a form element (buttons moved to parent)", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
-
-			resumeStore.setResume(createMockResume());
-
-			// Mock validation to return true
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(true);
-
-			// Create a promise that we control
-			let resolveStorage: (() => void) | undefined;
-			const storagePromise = new Promise<void>((resolve) => {
-				resolveStorage = resolve;
-			});
-
-			vi.spyOn(resumeStore, "saveToStorage").mockReturnValue(storagePromise);
 
 			const form = wrapper.find("form");
-			await form.trigger("submit");
-
-			// Wait for the component to update
-			await wrapper.vm.$nextTick();
-			await wrapper.vm.$nextTick();
-
-			const submitButton = wrapper.find('button[type="submit"]');
-			// Button should be disabled while submitting
-			expect(submitButton.attributes("disabled")).toBeDefined();
-
-			// Resolve the storage operation
-			if (resolveStorage) {
-				resolveStorage();
-			}
-			await flushPromises();
+			expect(form.exists()).toBe(false);
 		});
 
-		it("should show 'Saving...' text while submitting", async () => {
+		it("should NOT render submit/cancel buttons (moved to parent)", () => {
 			const wrapper = mountComponent();
-			const resumeStore = useResumeStore();
-
-			resumeStore.setResume(createMockResume());
-
-			// Mock validation to return true
-			vi.spyOn(resumeStore, "validateResume").mockReturnValue(true);
-
-			let resolveStorage: (() => void) | undefined;
-			const storagePromise = new Promise<void>((resolve) => {
-				resolveStorage = resolve;
-			});
-
-			vi.spyOn(resumeStore, "saveToStorage").mockReturnValue(storagePromise);
-
-			const form = wrapper.find("form");
-			await form.trigger("submit");
-
-			// Wait for the component to update
-			await wrapper.vm.$nextTick();
-			await wrapper.vm.$nextTick();
 
 			const submitButton = wrapper.find('button[type="submit"]');
-			// Button text should change to "Saving..."
-			expect(submitButton.text()).toBe("Saving...");
+			expect(submitButton.exists()).toBe(false);
 
-			if (resolveStorage) {
-				resolveStorage();
-			}
-			await flushPromises();
+			const buttons = wrapper.findAll("button");
+			const cancelButton = buttons.find((btn) => btn.text() === "Cancel");
+			expect(cancelButton).toBeUndefined();
+		});
+
+		it("should have accordion as root structure", () => {
+			const wrapper = mountComponent();
+
+			const accordion = wrapper.find(".accordion");
+			expect(accordion.exists()).toBe(true);
 		});
 	});
 });

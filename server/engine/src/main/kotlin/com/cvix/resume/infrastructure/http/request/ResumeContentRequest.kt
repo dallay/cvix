@@ -14,18 +14,18 @@ import com.cvix.resume.infrastructure.http.request.dto.VolunteerDto
 import com.cvix.resume.infrastructure.http.request.dto.WorkExperienceDto
 import com.cvix.resume.infrastructure.validation.ValidResumeContent
 import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
 
 /**
- * DTO for resume generation request following JSON Resume schema.
+ * DTO for resume content following JSON Resume schema.
+ * Used for create and update operations (CRUD).
  * Schema reference: https://jsonresume.org/schema/
  * Per FR-001: Must have at least one of work, education, or skills.
+ *
+ * Note: This differs from GenerateResumeRequest which requires a templateId
+ * for PDF generation. This DTO is for pure resume data storage.
  */
 @ValidResumeContent
-data class GenerateResumeRequest(
-    @field:NotBlank(message = "Template ID is required")
-    val templateId: String,
-
+data class ResumeContentRequest(
     @field:Valid
     override val basics: BasicsDto,
 

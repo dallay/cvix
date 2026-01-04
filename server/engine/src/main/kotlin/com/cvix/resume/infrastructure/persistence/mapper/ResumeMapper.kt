@@ -31,6 +31,12 @@ object ResumeMapper {
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
             false,
         )
+        // CRITICAL: Write dates as ISO-8601 strings, NOT as arrays
+        // Without this, LocalDate serializes as [2018, 9, 5] instead of "2018-09-05"
+        configure(
+            com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+            false,
+        )
         // Include non-null values only
         setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
     }

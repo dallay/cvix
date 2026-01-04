@@ -32,7 +32,9 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .exchange()
             .expectStatus().isCreated
             .expectHeader().valueMatches("Location", "/api/resume/$id")
-            .expectBody().isEmpty
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(id)
+            .jsonPath("$.title").isEqualTo("My first resume")
 
         // Follow-up GET to verify persistence
         verifyPersistence(id, workspaceId)
@@ -210,12 +212,8 @@ internal class CreateResumeControllerIntegrationTest : ControllerIntegrationTest
             .jsonPath("$.content.projects[0].description")
             .isEqualTo("A SaaS for generating professional resumes.")
             .jsonPath("$.content.projects[0].url").isEqualTo("https://resume-gen.dev")
-            .jsonPath("$.content.projects[0].startDate[0]").isEqualTo(2023)
-            .jsonPath("$.content.projects[0].startDate[1]").isEqualTo(2)
-            .jsonPath("$.content.projects[0].startDate[2]").isEqualTo(1)
-            .jsonPath("$.content.projects[0].endDate[0]").isEqualTo(2023)
-            .jsonPath("$.content.projects[0].endDate[1]").isEqualTo(8)
-            .jsonPath("$.content.projects[0].endDate[2]").isEqualTo(1)
+            .jsonPath("$.content.projects[0].startDate").isEqualTo("2023-02-01")
+            .jsonPath("$.content.projects[0].endDate").isEqualTo("2023-08-01")
             .jsonPath("$.content.projects[0].highlights[0]").isEqualTo("Used Kotlin and Vue.js")
             .jsonPath("$.content.projects[0].highlights[1]").isEqualTo("Deployed on AWS")
             .jsonPath("$.content.projects[0].keywords[0]").isEqualTo("Kotlin")

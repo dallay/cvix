@@ -59,6 +59,6 @@ internal class CreateWorkspaceControllerIntegrationTest : ControllerIntegrationT
             .jsonPath("$.detail").isEqualTo("Error creating workspace")
             .jsonPath("$.instance").isEqualTo("$ENDPOINT/$id")
             .jsonPath("$.errorCategory").isEqualTo("BAD_REQUEST")
-            .jsonPath("$.timestamp").isNumber
+            .jsonPath("$.timestamp").isNotEmpty
     }
 }

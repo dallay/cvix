@@ -23,13 +23,12 @@ internal class GlobalExceptionHandlerTest {
 
     @Test
     fun `should return bad request problem detail when illegal argument exception occurs`() {
-        val exception = mockk<IllegalArgumentException>()
+        val exception = IllegalArgumentException("Invalid argument")
         val requestMock = mockk<ServerHttpRequest>()
         val localeContextMock = mockk<LocaleContext>()
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
-        every { exception.message } returns "Invalid argument"
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         // Generic mock: return the default message (3rd argument) for any getMessage call
@@ -74,21 +73,22 @@ internal class GlobalExceptionHandlerTest {
 
     @Test
     fun `should return internal server error problem detail when exception occurs`() {
-        val exception = mockk<Exception>()
+        // Use a real exception instead of a mock to avoid recursion issues with logging
+        val exception = RuntimeException("Unexpected error")
         val requestMock = mockk<ServerHttpRequest>()
         val localeContextMock = mockk<LocaleContext>()
 
         every { exchange.request } returns requestMock
         every { requestMock.id } returns "test-trace-id"
-        every { exception.message } returns "Unexpected error"
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         // Mock for 3-argument getMessage(String, Array?, Locale) signature
-        every { messageSource.getMessage(any<String>(), any(), any<Locale>()) } returns "Internal server error"
+        every { messageSource.getMessage(any<String>(), isNull(), any<Locale>()) } returns "Internal server error"
 
         val problemDetail = handler.handleGenericException(exception, exchange)
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
+        assertEquals("An internal server error occurred", problemDetail.detail)
         assertNotNull(problemDetail.title)
         assertNotNull(problemDetail.properties?.get("localizedMessage"))
         assertNotNull(problemDetail.properties?.get("message"))

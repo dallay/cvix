@@ -75,9 +75,13 @@ export interface NotificationSettings {
 /**
  * Default user settings.
  * Used when no settings are persisted or when creating a new settings instance.
+ *
+ * NOTE: Default storage preference is "local" for now.
+ * TODO: When authentication is implemented, default to "remote" for authenticated users
+ * to enable cross-device synchronization.
  */
-export const DEFAULT_USER_SETTINGS: UserSettings = {
-	storagePreference: "session",
+export const DEFAULT_USER_SETTINGS: Readonly<UserSettings> = {
+	storagePreference: "local",
 	theme: "system",
 	language: "en",
 	notifications: {
