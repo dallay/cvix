@@ -88,7 +88,10 @@ async function checkOldStorageForData(): Promise<boolean> {
 		const result = await oldStorage.load();
 		return result.data !== null;
 	} catch (error) {
-		console.warn("[StorageSelector] Failed to check old storage:", error);
+		console.warn("[StorageSelector] Failed to check old storage", {
+			storagePreference: storagePreference.value,
+			error,
+		});
 		// Assume there might be data if we can't check
 		return true;
 	} finally {
@@ -266,7 +269,7 @@ defineExpose({
                 </span>
                 <span
                   v-if="isPersistent(option.type)"
-                  class="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 whitespace-nowrap"
+                  class="text-xs px-2 py-0.5 rounded-full bg-success/10 text-success whitespace-nowrap"
                 >
                   Persistent
                 </span>
@@ -348,7 +351,7 @@ defineExpose({
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle class="flex items-center gap-2">
-          <AlertTriangle class="h-5 w-5 text-amber-600 dark:text-amber-500" />
+          <AlertTriangle class="h-5 w-5 text-warning" />
           Switch Storage Location?
         </AlertDialogTitle>
         <AlertDialogDescription class="space-y-3 pt-2">

@@ -12,12 +12,6 @@ import { DEFAULT_USER_SETTINGS } from "../../domain";
 export const USER_SETTINGS_STORAGE_KEY = "cvix:user-settings";
 
 /**
- * @deprecated Use USER_SETTINGS_STORAGE_KEY instead
- * @internal
- */
-const STORAGE_KEY = USER_SETTINGS_STORAGE_KEY;
-
-/**
  * LocalStorage implementation of the SettingsRepository.
  *
  * This adapter persists user settings to the browser's localStorage.
@@ -46,7 +40,7 @@ export class LocalStorageSettingsRepository implements SettingsRepository {
 	 */
 	async load(): Promise<SettingsResult<UserSettings | null>> {
 		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
+			const stored = localStorage.getItem(USER_SETTINGS_STORAGE_KEY);
 
 			if (!stored) {
 				return { success: true, data: null };
@@ -79,7 +73,7 @@ export class LocalStorageSettingsRepository implements SettingsRepository {
 	async save(settings: UserSettings): Promise<SettingsResult<void>> {
 		try {
 			const serialized = JSON.stringify(settings);
-			localStorage.setItem(STORAGE_KEY, serialized);
+			localStorage.setItem(USER_SETTINGS_STORAGE_KEY, serialized);
 			return { success: true, data: undefined };
 		} catch (error) {
 			return {
@@ -97,7 +91,7 @@ export class LocalStorageSettingsRepository implements SettingsRepository {
 	 */
 	async clear(): Promise<SettingsResult<void>> {
 		try {
-			localStorage.removeItem(STORAGE_KEY);
+			localStorage.removeItem(USER_SETTINGS_STORAGE_KEY);
 			return { success: true, data: undefined };
 		} catch (error) {
 			return {

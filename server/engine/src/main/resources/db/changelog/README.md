@@ -11,7 +11,7 @@ This directory contains all Liquibase database migration files for the cvix appl
 ## Migration Naming Convention
 
 | Pattern                 | Purpose                           | Example                             |
-|-------------------------|-----------------------------------|-------------------------------------|
+| ----------------------- | --------------------------------- | ----------------------------------- |
 | `NNN-feature-name.yaml` | Main schema changes               | `004-resumes.yaml`                  |
 | `NNNa-feature-*.yaml`   | Triggers for the feature          | `004a-resumes-triggers.yaml`        |
 | `NNNb-feature-*.yaml`   | Row-Level Security (RLS) policies | `004b-resumes-rls.yaml`             |
@@ -23,23 +23,24 @@ This directory contains all Liquibase database migration files for the cvix appl
 ### Core Schema Migrations
 
 | Migration | Description                                    | Date       |
-|-----------|------------------------------------------------|------------|
+| --------- | ---------------------------------------------- | ---------- |
 | 001       | Initial schema (users, authorities)            | 2024-10-15 |
 | 002       | Workspaces and multi-tenancy                   | 2024-10-20 |
 | 002a-f    | Workspace triggers, RLS, sessions, auth events | 2024-10-21 |
 | 003       | Session optimization                           | 2024-10-25 |
 | 004       | Resume documents (JSONB storage)               | 2024-11-01 |
-| 004b      | Fix project date arrays → ISO strings          | 2026-01-03 |
+| 004b      | Resume RLS policies                            | 2024-11-01 |
+| 004d      | Fix project date arrays → ISO strings          | 2026-01-03 |
 
 ### Data Migrations
 
 | Migration | Description            | Environment |
-|-----------|------------------------|-------------|
+| --------- | ---------------------- | ----------- |
 | 99900001  | Development test users | dev/test    |
 
 ## Special Notes
 
-### Migration 004b: Project Date Format Fix
+### Migration 004d: Project Date Format Fix
 
 **Problem**: Legacy resume data stored project dates as JSON arrays `[YYYY, M, D]` instead of ISO
 8601 strings `"YYYY-MM-DD"`.

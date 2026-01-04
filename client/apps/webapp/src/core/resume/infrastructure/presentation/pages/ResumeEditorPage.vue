@@ -180,12 +180,10 @@ const togglePreview = () => {
  */
 async function handleSave() {
 	if (!resume.value) {
-		toast({
-			title: t("resume.messages.noDataToSave") || "No data to save",
+		toast.error(t("resume.messages.noDataToSave") || "No data to save", {
 			description:
 				t("resume.messages.fillResumeFirst") ||
 				"Please fill in some resume information first.",
-			variant: "destructive",
 		});
 		return;
 	}
@@ -197,19 +195,15 @@ async function handleSave() {
 		await resumeStore.saveToStorage();
 		hasUnsavedChanges.value = false;
 
-		toast({
-			title: t("resume.messages.saveSuccess") || "Resume saved",
+		toast.success(t("resume.messages.saveSuccess") || "Resume saved", {
 			description:
 				t("resume.messages.saveSuccessDescription") ||
 				"Your resume has been saved successfully.",
-			variant: "default",
 		});
 	} catch (error) {
-		toast({
-			title: t("resume.messages.saveError") || "Save failed",
+		toast.error(t("resume.messages.saveError") || "Save failed", {
 			description:
 				error instanceof Error ? error.message : "Failed to save resume",
-			variant: "destructive",
 		});
 	}
 }
@@ -527,10 +521,10 @@ function syncFormWithComposable(
         <!-- Utility Bar -->
         <div class="flex flex-wrap gap-2">
           <!-- Last saved indicator with unsaved changes badge -->
-          <div 
-            v-if="hasUnsavedChanges || lastSavedText" 
+          <div
+            v-if="hasUnsavedChanges || lastSavedText"
             class="flex items-center text-sm px-3"
-            :class="hasUnsavedChanges ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-muted-foreground'"
+            :class="hasUnsavedChanges ? 'text-warning font-medium' : 'text-muted-foreground'"
           >
             <span v-if="hasUnsavedChanges" class="mr-2">●</span>
             {{ hasUnsavedChanges ? t('resume.messages.unsavedChanges') : lastSavedText }}
@@ -549,9 +543,9 @@ function syncFormWithComposable(
             <Save v-else class="h-4 w-4 mr-2" />
             <span class="relative">
               {{ t('resume.buttons.save') || 'Save' }}
-              <span 
-                v-if="hasUnsavedChanges" 
-                class="absolute -top-1 -right-2 h-2 w-2 bg-amber-500 rounded-full"
+              <span
+                v-if="hasUnsavedChanges"
+                class="absolute -top-1 -right-2 h-2 w-2 bg-warning rounded-full"
                 aria-label="Unsaved changes indicator"
               />
             </span>

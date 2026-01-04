@@ -124,7 +124,7 @@ export function getStorageMetadata(): StorageMetadata[] {
 				"Your data is securely stored in our servers. Access your resumes from any device.",
 			icon: "cloud",
 			persistence: "permanent",
-			capacity: "Unlimited",
+			capacity: "Server quota",
 			// TODO: Mark as recommended when user is authenticated
 			// recommended: true,
 		},

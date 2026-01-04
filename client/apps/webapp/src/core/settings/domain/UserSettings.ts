@@ -80,7 +80,7 @@ export interface NotificationSettings {
  * TODO: When authentication is implemented, default to "remote" for authenticated users
  * to enable cross-device synchronization.
  */
-export const DEFAULT_USER_SETTINGS: UserSettings = {
+export const DEFAULT_USER_SETTINGS: Readonly<UserSettings> = {
 	storagePreference: "local",
 	theme: "system",
 	language: "en",
