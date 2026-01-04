@@ -274,13 +274,11 @@ jobs:
         uses: ./.github/actions/setup/node
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Run Biome with Reviewdog
-        uses: mongolyy/reviewdog-action-biome@b4c782dce3ab3e02c475c3e2f798b7955f067cc8
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workdir: ./client
-          reporter: github-pr-review
-          fail_level: error
+      - name: Run Biome Check
+        working-directory: ./client
+        run: |
+          # Run Biome CI command - will fail if there are errors
+          pnpm biome ci --reporter=github
 
   frontend-pipeline:
     name: Frontend Build & Test
