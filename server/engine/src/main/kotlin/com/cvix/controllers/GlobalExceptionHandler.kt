@@ -61,15 +61,16 @@ class GlobalExceptionHandler(
         exchange: ServerWebExchange
     ): ProblemDetail {
         val localizedMessage = getLocalizedMessage(exchange, MSG_AUTHENTICATION_FAILED)
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.message)
-        problemDetail.title = "User authentication failed"
-        problemDetail.type = URI.create("$ERROR_PAGE/user-authentication-failed")
-        problemDetail.setProperty("errorCategory", "AUTHENTICATION")
-        problemDetail.setProperty("timestamp", Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_AUTHENTICATION_FAILED)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        val problemDetail = createProblemDetail(
+            status = HttpStatus.UNAUTHORIZED,
+            title = "User authentication failed",
+            detail = e.message,
+            typeSuffix = "user-authentication-failed",
+            errorCategory = "AUTHENTICATION",
+            exchange = exchange,
+            messageKey = MSG_AUTHENTICATION_FAILED,
+            localizedMessage = localizedMessage,
+        )
         AuthCookieBuilder.clearCookies(response)
         return problemDetail
     }
@@ -82,15 +83,16 @@ class GlobalExceptionHandler(
         exchange: ServerWebExchange
     ): ProblemDetail {
         val localizedMessage = getLocalizedMessage(exchange, MSG_AUTHORIZATION_FAILED)
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.message)
-        problemDetail.title = "Workspace access forbidden"
-        problemDetail.type = URI.create("$ERROR_PAGE/workspace-authorization-failed")
-        problemDetail.setProperty("errorCategory", "AUTHORIZATION")
-        problemDetail.setProperty("timestamp", Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_AUTHORIZATION_FAILED)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        val problemDetail = createProblemDetail(
+            status = HttpStatus.FORBIDDEN,
+            title = "Workspace access forbidden",
+            detail = e.message,
+            typeSuffix = "workspace-authorization-failed",
+            errorCategory = "AUTHORIZATION",
+            exchange = exchange,
+            messageKey = MSG_AUTHORIZATION_FAILED,
+            localizedMessage = localizedMessage,
+        )
         AuthCookieBuilder.clearCookies(response)
         return problemDetail
     }
@@ -101,16 +103,16 @@ class GlobalExceptionHandler(
     )
     fun handleEntityNotFound(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val localizedMessage = getLocalizedMessage(exchange, MSG_ENTITY_NOT_FOUND)
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.message ?: ENTITY_NOT_FOUND)
-        problemDetail.title = ENTITY_NOT_FOUND
-        problemDetail.type = URI.create("$ERROR_PAGE/entity-not-found")
-        problemDetail.setProperty(ERROR_CATEGORY, "NOT_FOUND")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_ENTITY_NOT_FOUND)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        return problemDetail
+        return createProblemDetail(
+            status = HttpStatus.NOT_FOUND,
+            title = ENTITY_NOT_FOUND,
+            detail = e.message ?: ENTITY_NOT_FOUND,
+            typeSuffix = "entity-not-found",
+            errorCategory = "NOT_FOUND",
+            exchange = exchange,
+            messageKey = MSG_ENTITY_NOT_FOUND,
+            localizedMessage = localizedMessage,
+        )
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -132,18 +134,16 @@ class GlobalExceptionHandler(
             locale,
         )
 
-        val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.CONFLICT,
-            localizedDetail,
+        return createProblemDetail(
+            status = HttpStatus.CONFLICT,
+            title = localizedTitle,
+            detail = localizedDetail,
+            typeSuffix = "waitlist/email-already-exists",
+            errorCategory = "EMAIL_ALREADY_EXISTS",
+            exchange = exchange,
+            localizedMessage = localizedTitle,
+            includeInstance = true,
         )
-        problemDetail.title = localizedTitle
-        problemDetail.type = URI.create("$ERROR_PAGE/waitlist/email-already-exists")
-        problemDetail.instance = URI.create(exchange.request.path.toString())
-        problemDetail.setProperty(ERROR_CATEGORY, "EMAIL_ALREADY_EXISTS")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedTitle)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        return problemDetail
     }
 
     /**
@@ -164,15 +164,16 @@ class GlobalExceptionHandler(
         val locale = exchange.localeContext.locale ?: java.util.Locale.getDefault()
         val localizedTitle = messageSource.getMessage(TITLE_INVALID_INPUT, emptyArray(), "Invalid Input", locale)
         val detail = e.message ?: messageSource.getMessage(MSG_BAD_REQUEST, emptyArray(), "Bad request", locale)
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.title = localizedTitle
-        problemDetail.detail = detail
-        problemDetail.type = URI.create("$ERROR_PAGE/bad-request")
-        problemDetail.setProperty(ERROR_CATEGORY, "BAD_REQUEST")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_BAD_REQUEST)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedTitle)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        return createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = localizedTitle,
+            detail = detail,
+            typeSuffix = "bad-request",
+            errorCategory = "BAD_REQUEST",
+            exchange = exchange,
+            messageKey = MSG_BAD_REQUEST,
+            localizedMessage = localizedTitle,
+        )
         return problemDetail
     }
     /**
@@ -189,17 +190,17 @@ class GlobalExceptionHandler(
         exchange: ServerWebExchange
     ): ProblemDetail {
         val localizedMessage = getLocalizedMessage(exchange, MSG_MISSING_COOKIE)
-
         response.statusCode = HttpStatus.BAD_REQUEST
-        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.message)
-        problemDetail.title = "Missing cookie"
-        problemDetail.type = URI.create("$ERROR_PAGE/missing-cookie")
-        problemDetail.setProperty(ERROR_CATEGORY, "MISSING_COOKIE")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_MISSING_COOKIE)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        return problemDetail
+        return createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = "Missing cookie",
+            detail = e.message,
+            typeSuffix = "missing-cookie",
+            errorCategory = "MISSING_COOKIE",
+            exchange = exchange,
+            messageKey = MSG_MISSING_COOKIE,
+            localizedMessage = localizedMessage,
+        )
     }
 
     /**
@@ -216,13 +217,7 @@ class GlobalExceptionHandler(
         ex: DecodingException,
         exchange: ServerWebExchange
     ): ProblemDetail {
-        // Log the full exception for debugging
-        log.error(
-            "JSON deserialization failed for request {} {}",
-            exchange.request.method,
-            exchange.request.path,
-            ex,
-        )
+        logRequestException("JSON deserialization failed", exchange, ex)
 
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
         val title = messageSource.getMessage(
@@ -236,16 +231,16 @@ class GlobalExceptionHandler(
         val rootCause = ex.mostSpecificCause
         val detailMessage = rootCause.message ?: ex.message ?: "Failed to parse request body"
 
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.title = title
-        problemDetail.detail = detailMessage
-        problemDetail.type = URI.create("$ERROR_PAGE/json-parsing-error")
-        problemDetail.instance = URI.create(exchange.request.path.toString())
-        problemDetail.setProperty(ERROR_CATEGORY, "JSON_PARSING")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty("rootCause", rootCause::class.simpleName)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        return problemDetail
+        return createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = title,
+            detail = detailMessage,
+            typeSuffix = "json-parsing-error",
+            errorCategory = "JSON_PARSING",
+            exchange = exchange,
+            additionalProperties = mapOf("rootCause" to (rootCause::class.simpleName ?: "Unknown")),
+            includeInstance = true,
+        )
     }
 
     /**
@@ -264,13 +259,7 @@ class GlobalExceptionHandler(
         status: HttpStatusCode,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Any>> {
-        // Log the full exception for debugging
-        log.error(
-            "Server web input exception for request {} {}",
-            exchange.request.method,
-            exchange.request.path,
-            ex,
-        )
+        logRequestException("Server web input exception", exchange, ex)
 
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
         val title = messageSource.getMessage(
@@ -288,15 +277,16 @@ class GlobalExceptionHandler(
             else -> ex.reason ?: "Invalid input data"
         }
 
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.title = title
-        problemDetail.detail = detailMessage
-        problemDetail.type = URI.create("$ERROR_PAGE/input-error")
-        problemDetail.instance = URI.create(exchange.request.path.toString())
-        problemDetail.setProperty(ERROR_CATEGORY, "INPUT_ERROR")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty("rootCause", rootCause::class.simpleName)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        val problemDetail = createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = title,
+            detail = detailMessage,
+            typeSuffix = "input-error",
+            errorCategory = "INPUT_ERROR",
+            exchange = exchange,
+            additionalProperties = mapOf("rootCause" to (rootCause::class.simpleName ?: "Unknown")),
+            includeInstance = true,
+        )
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
     }
 
@@ -331,16 +321,17 @@ class GlobalExceptionHandler(
                 "rejectedValue" to fieldError.rejectedValue,
             )
         }
-        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        problemDetail.title = title
-        problemDetail.detail = detail
-        problemDetail.type = URI.create("$ERROR_PAGE/validation-error")
-        problemDetail.setProperty(ERROR_CATEGORY, "VALIDATION")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_VALIDATION_ERROR)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, title)
-        problemDetail.setProperty("errors", fieldErrors)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        val problemDetail = createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = title,
+            detail = detail,
+            typeSuffix = "validation-error",
+            errorCategory = "VALIDATION",
+            exchange = exchange,
+            messageKey = MSG_VALIDATION_ERROR,
+            localizedMessage = title,
+            additionalProperties = mapOf("errors" to fieldErrors),
+        )
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail))
     }
 
@@ -348,23 +339,85 @@ class GlobalExceptionHandler(
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val localizedMessage = getLocalizedMessage(exchange, MSG_INTERNAL_SERVER_ERROR)
-
-        val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            e.message ?: "Internal server error",
+        return createProblemDetail(
+            status = HttpStatus.INTERNAL_SERVER_ERROR,
+            title = "Internal server error",
+            detail = e.message ?: "Internal server error",
+            typeSuffix = "internal-server-error",
+            errorCategory = "INTERNAL_SERVER_ERROR",
+            exchange = exchange,
+            messageKey = MSG_INTERNAL_SERVER_ERROR,
+            localizedMessage = localizedMessage,
         )
-        problemDetail.title = "Internal server error"
-        problemDetail.type = URI.create("$ERROR_PAGE/internal-server-error")
-        problemDetail.setProperty(ERROR_CATEGORY, "INTERNAL_SERVER_ERROR")
-        problemDetail.setProperty(TIMESTAMP, Instant.now())
-        problemDetail.setProperty(MESSAGE_KEY, MSG_INTERNAL_SERVER_ERROR)
-        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
-        problemDetail.setProperty(TRACE_ID, exchange.request.id)
-        return problemDetail
     }
 
     private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
         return messageSource.getMessage(messageKey, null, locale)
+    }
+
+    /**
+     * Logs request exceptions with consistent formatting.
+     */
+    private fun logRequestException(message: String, exchange: ServerWebExchange, ex: Exception) {
+        log.error(
+            "$message for request {} {}",
+            exchange.request.method,
+            exchange.request.path,
+            ex,
+        )
+    }
+
+    /**
+     * Creates a ProblemDetail with common properties set.
+     * Reduces code duplication across exception handlers.
+     *
+     * @param status HTTP status code
+     * @param title Human-readable title
+     * @param detail Detailed error message
+     * @param typeSuffix URL path suffix for the problem type (e.g., "authentication-failed")
+     * @param errorCategory Error category for client-side filtering/handling
+     * @param exchange Server web exchange for extracting request information
+     * @param messageKey Optional i18n message key
+     * @param localizedMessage Optional localized message
+     * @param additionalProperties Optional map of additional properties to set on the ProblemDetail
+     * @param includeInstance If true, sets the instance property to the request path
+     * @return Configured ProblemDetail instance
+     */
+    private fun createProblemDetail(
+        status: HttpStatus,
+        title: String,
+        detail: String?,
+        typeSuffix: String,
+        errorCategory: String,
+        exchange: ServerWebExchange,
+        messageKey: String? = null,
+        localizedMessage: String? = null,
+        additionalProperties: Map<String, Any>? = null,
+        includeInstance: Boolean = false,
+    ): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(status, detail ?: title)
+        problemDetail.title = title
+        problemDetail.type = URI.create("$ERROR_PAGE/$typeSuffix")
+        problemDetail.setProperty(ERROR_CATEGORY, errorCategory)
+        problemDetail.setProperty(TIMESTAMP, Instant.now())
+        problemDetail.setProperty(TRACE_ID, exchange.request.id)
+        
+        if (includeInstance) {
+            problemDetail.instance = URI.create(exchange.request.path.toString())
+        }
+        
+        if (messageKey != null) {
+            problemDetail.setProperty(MESSAGE_KEY, messageKey)
+        }
+        if (localizedMessage != null) {
+            problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+        }
+        
+        additionalProperties?.forEach { (key, value) ->
+            problemDetail.setProperty(key, value)
+        }
+        
+        return problemDetail
     }
 }
