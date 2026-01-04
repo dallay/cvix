@@ -347,11 +347,15 @@ class GlobalExceptionHandler(
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
+        // Log full exception details server-side for debugging
+        log.error("Unhandled exception: ${e.message}", e)
+
         val localizedMessage = getLocalizedMessage(exchange, MSG_INTERNAL_SERVER_ERROR)
 
+        // Never expose exception details to clients (security risk)
         val problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            e.message ?: "Internal server error",
+            "An internal server error occurred",
         )
         problemDetail.title = "Internal server error"
         problemDetail.type = URI.create("$ERROR_PAGE/internal-server-error")

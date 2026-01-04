@@ -175,7 +175,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 		const persistedId = this.recoverPersistedResumeId();
 		if (persistedId) {
 			this.currentResumeId = persistedId;
-			this.config.resumeId = persistedId;
 			return;
 		}
 
@@ -192,7 +191,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 				const mostRecent = sorted[0];
 				if (mostRecent) {
 					this.currentResumeId = mostRecent.id;
-					this.config.resumeId = mostRecent.id;
 					// Persist for future page loads
 					this.persistResumeId(mostRecent.id);
 				}
@@ -254,7 +252,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 					// Generate a new UUID for creation
 					const newId = crypto.randomUUID();
 					this.currentResumeId = newId;
-					this.config.resumeId = newId;
 					return await this.client.createResume(newId, resume, undefined);
 				}
 				// Try update first
@@ -280,7 +277,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 		// Store server timestamp and ID
 		this.lastServerTimestamp = response.updatedAt;
 		this.currentResumeId = response.id;
-		this.config.resumeId = response.id;
 		// Persist the ID for recovery after page reload
 		this.persistResumeId(response.id);
 
@@ -346,7 +342,6 @@ export class RemoteResumeStorage implements ResumeStorage {
 			if (isHttpErrorWithStatus(error) && error.response.status === 404) {
 				attemptsUsed = this.retryCount;
 				this.currentResumeId = null;
-				this.config.resumeId = undefined;
 				this.retryCount = 0;
 				// Reset consecutiveFailures since 404 is a valid "no data" state, not a failure
 				this.consecutiveFailures = 0;
