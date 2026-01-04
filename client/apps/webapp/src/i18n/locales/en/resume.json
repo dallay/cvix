@@ -20,7 +20,9 @@
 			"interests": "Interests and Hobbies",
 			"references": "References",
 			"projects": "Projects",
-			"certifications": "Certifications"
+			"certifications": "Certifications",
+			"formDescription": "Fill out the form to create your resume",
+			"previewDescription": "Live preview of your resume"
 		},
 		"fields": {
 			"name": "Full Name",
@@ -375,13 +377,21 @@
 			"savedHoursAgo": "Saved {count} hour ago | Saved {count} hours ago",
 			"savedDaysAgo": "Saved {count} day ago | Saved {count} days ago",
 			"savedOnDate": "Saved on {date}",
-			"unsavedChanges": "Unsaved changes"
+			"unsavedChanges": "Unsaved changes",
+			"unsavedChangesIndicator": "Unsaved changes indicator",
+			"resetError": "Reset failed",
+			"resetErrorDescription": "Failed to reset form"
 		},
 		"resetDialog": {
 			"title": "Reset form?",
 			"description": "This will clear all resume data from the form and storage. This action cannot be undone. Make sure to download your resume first if you want to keep it.",
 			"cancel": "Cancel",
 			"reset": "Reset"
+		},
+		"uploadDialog": {
+			"title": "Replace existing data?",
+			"description": "You have unsaved changes in your resume. Uploading a new JSON file will replace all current data. This action cannot be undone.",
+			"confirm": "Continue"
 		},
 		"pdfSelector": {
 			"templateLabel": "Template",

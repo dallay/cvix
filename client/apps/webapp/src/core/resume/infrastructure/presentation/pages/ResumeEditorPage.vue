@@ -180,10 +180,8 @@ const togglePreview = () => {
  */
 async function handleSave() {
 	if (!resume.value) {
-		toast.error(t("resume.messages.noDataToSave") || "No data to save", {
-			description:
-				t("resume.messages.fillResumeFirst") ||
-				"Please fill in some resume information first.",
+		toast.error(t("resume.messages.noDataToSave"), {
+			description: t("resume.messages.fillResumeFirst"),
 		});
 		return;
 	}
@@ -195,15 +193,15 @@ async function handleSave() {
 		await resumeStore.saveToStorage();
 		hasUnsavedChanges.value = false;
 
-		toast.success(t("resume.messages.saveSuccess") || "Resume saved", {
-			description:
-				t("resume.messages.saveSuccessDescription") ||
-				"Your resume has been saved successfully.",
+		toast.success(t("resume.messages.saveSuccess"), {
+			description: t("resume.messages.saveSuccessDescription"),
 		});
 	} catch (error) {
-		toast.error(t("resume.messages.saveError") || "Save failed", {
+		toast.error(t("resume.messages.saveError"), {
 			description:
-				error instanceof Error ? error.message : "Failed to save resume",
+				error instanceof Error
+					? error.message
+					: t("resume.toast.saveError.description"),
 		});
 	}
 }
@@ -386,13 +384,15 @@ async function confirmReset() {
 
 		hasUnsavedChanges.value = false;
 
-		toast.success("Form reset", {
-			description: "All resume data has been cleared.",
+		toast.success(t("resume.toast.formCleared.title"), {
+			description: t("resume.toast.formCleared.description"),
 		});
 	} catch (error) {
-		toast.error("Reset failed", {
+		toast.error(t("resume.messages.resetError"), {
 			description:
-				error instanceof Error ? error.message : "Failed to reset form",
+				error instanceof Error
+					? error.message
+					: t("resume.messages.resetErrorDescription"),
 		});
 	}
 }
@@ -516,17 +516,17 @@ function syncFormWithComposable(
               size="sm"
               @click="handleSave"
               :disabled="resumeStore.isSaving || !resume"
-              :title="t('resume.buttons.saveHint') || 'Save resume (Cmd/Ctrl+S)'"
+              :title="t('resume.buttons.saveHint')"
               :class="hasUnsavedChanges ? 'relative' : ''"
           >
             <Loader2 v-if="resumeStore.isSaving" class="h-4 w-4 mr-2 animate-spin" />
             <Save v-else class="h-4 w-4 mr-2" />
             <span class="relative">
-              {{ t('resume.buttons.save') || 'Save' }}
+              {{ t('resume.buttons.save') }}
               <span
                 v-if="hasUnsavedChanges"
                 class="absolute -top-1 -right-2 h-2 w-2 bg-warning rounded-full"
-                aria-label="Unsaved changes indicator"
+                :aria-label="t('resume.messages.unsavedChangesIndicator')"
               />
             </span>
           </Button>
@@ -612,7 +612,7 @@ function syncFormWithComposable(
               {{ t("resume.sections.personalDetails") }}
             </CardTitle>
             <CardDescription>
-              Fill out the form to create your resume
+              {{ t("resume.sections.formDescription") }}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -628,14 +628,14 @@ function syncFormWithComposable(
               {{ t('resume.buttons.preview') }}
             </CardTitle>
             <CardDescription>
-              Live preview of your resume
+              {{ t("resume.sections.previewDescription") }}
             </CardDescription>
           </CardHeader>
           <CardContent class="flex-1 p-0 overflow-hidden">
             <div class="h-full overflow-y-auto">
               <ResumePreview v-if="resume" :data="resume" @navigate-section="handlePreviewNavigate"/>
               <div v-else class="flex items-center justify-center h-full text-muted-foreground">
-                {{ t('resume.messages.noDataPreview') || 'Add resume data to see preview' }}
+                {{ t('resume.messages.noDataPreview') }}
               </div>
             </div>
           </CardContent>
@@ -647,15 +647,15 @@ function syncFormWithComposable(
     <AlertDialog v-model:open="showUploadConfirmation">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Replace existing data?</AlertDialogTitle>
+          <AlertDialogTitle>{{ t("resume.uploadDialog.title") }}</AlertDialogTitle>
           <AlertDialogDescription>
-            You have unsaved changes in your resume. Uploading a new JSON file will replace all current data. This action cannot be undone.
+            {{ t("resume.uploadDialog.description") }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel @click="cancelUpload">Cancel</AlertDialogCancel>
+          <AlertDialogCancel @click="cancelUpload">{{ t("resume.resetDialog.cancel") }}</AlertDialogCancel>
           <AlertDialogAction @click="confirmUpload">
-            Continue
+            {{ t("resume.uploadDialog.confirm") }}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
