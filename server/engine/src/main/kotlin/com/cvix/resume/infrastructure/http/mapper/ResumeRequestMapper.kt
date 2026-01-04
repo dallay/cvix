@@ -30,6 +30,7 @@ import com.cvix.resume.domain.Volunteer
 import com.cvix.resume.domain.WorkExperience
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import com.cvix.resume.infrastructure.http.request.ResumeContentRequest
+import com.cvix.resume.infrastructure.http.request.ResumeDataDto
 import com.cvix.resume.infrastructure.http.request.dto.AwardDto
 import com.cvix.resume.infrastructure.http.request.dto.BasicsDto
 import com.cvix.resume.infrastructure.http.request.dto.CertificateDto
@@ -45,37 +46,24 @@ import com.cvix.resume.infrastructure.http.request.dto.WorkExperienceDto
 import java.time.LocalDate
 
 object ResumeRequestMapper {
-    fun toDomain(request: GenerateResumeRequest): Resume {
-        return Resume(
-            basics = mapBasics(request.basics),
-            work = request.work?.map { mapWork(it) } ?: emptyList(),
-            education = request.education?.map { mapEducation(it) } ?: emptyList(),
-            skills = request.skills?.map { mapSkill(it) } ?: emptyList(),
-            languages = request.languages?.map { mapLanguage(it) } ?: emptyList(),
-            projects = request.projects?.map { mapProject(it) } ?: emptyList(),
-            volunteer = request.volunteer?.map { mapVolunteer(it) } ?: emptyList(),
-            awards = request.awards?.map { mapAward(it) } ?: emptyList(),
-            certificates = request.certificates?.map { mapCertificate(it) } ?: emptyList(),
-            publications = request.publications?.map { mapPublication(it) } ?: emptyList(),
-            interests = request.interests?.map { mapInterest(it) } ?: emptyList(),
-            references = request.references?.map { mapReference(it) } ?: emptyList(),
-        )
-    }
+    fun toDomain(request: GenerateResumeRequest): Resume = mapResumeData(request)
 
-    fun toDomain(request: ResumeContentRequest): Resume {
+    fun toDomain(request: ResumeContentRequest): Resume = mapResumeData(request)
+
+    private fun mapResumeData(data: ResumeDataDto): Resume {
         return Resume(
-            basics = mapBasics(request.basics),
-            work = request.work?.map { mapWork(it) } ?: emptyList(),
-            education = request.education?.map { mapEducation(it) } ?: emptyList(),
-            skills = request.skills?.map { mapSkill(it) } ?: emptyList(),
-            languages = request.languages?.map { mapLanguage(it) } ?: emptyList(),
-            projects = request.projects?.map { mapProject(it) } ?: emptyList(),
-            volunteer = request.volunteer?.map { mapVolunteer(it) } ?: emptyList(),
-            awards = request.awards?.map { mapAward(it) } ?: emptyList(),
-            certificates = request.certificates?.map { mapCertificate(it) } ?: emptyList(),
-            publications = request.publications?.map { mapPublication(it) } ?: emptyList(),
-            interests = request.interests?.map { mapInterest(it) } ?: emptyList(),
-            references = request.references?.map { mapReference(it) } ?: emptyList(),
+            basics = mapBasics(data.basics),
+            work = data.work?.map { mapWork(it) } ?: emptyList(),
+            education = data.education?.map { mapEducation(it) } ?: emptyList(),
+            skills = data.skills?.map { mapSkill(it) } ?: emptyList(),
+            languages = data.languages?.map { mapLanguage(it) } ?: emptyList(),
+            projects = data.projects?.map { mapProject(it) } ?: emptyList(),
+            volunteer = data.volunteer?.map { mapVolunteer(it) } ?: emptyList(),
+            awards = data.awards?.map { mapAward(it) } ?: emptyList(),
+            certificates = data.certificates?.map { mapCertificate(it) } ?: emptyList(),
+            publications = data.publications?.map { mapPublication(it) } ?: emptyList(),
+            interests = data.interests?.map { mapInterest(it) } ?: emptyList(),
+            references = data.references?.map { mapReference(it) } ?: emptyList(),
         )
     }
 

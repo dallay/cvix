@@ -27,38 +27,38 @@ import jakarta.validation.Valid
 @ValidResumeContent
 data class ResumeContentRequest(
     @field:Valid
-    val basics: BasicsDto,
+    override val basics: BasicsDto,
 
     @field:Valid
-    val work: List<WorkExperienceDto>? = null,
+    override val work: List<WorkExperienceDto>? = null,
 
     @field:Valid
-    val volunteer: List<VolunteerDto>? = null,
+    override val volunteer: List<VolunteerDto>? = null,
 
     @field:Valid
-    val education: List<EducationDto>? = null,
+    override val education: List<EducationDto>? = null,
 
     @field:Valid
-    val awards: List<AwardDto>? = null,
+    override val awards: List<AwardDto>? = null,
 
     @field:Valid
-    val certificates: List<CertificateDto>? = null,
+    override val certificates: List<CertificateDto>? = null,
 
     @field:Valid
-    val publications: List<PublicationDto>? = null,
+    override val publications: List<PublicationDto>? = null,
 
     @field:Valid
-    val skills: List<SkillCategoryDto>? = null,
+    override val skills: List<SkillCategoryDto>? = null,
 
     @field:Valid
-    val languages: List<LanguageDto>? = null,
+    override val languages: List<LanguageDto>? = null,
 
     @field:Valid
-    val interests: List<InterestDto>? = null,
+    override val interests: List<InterestDto>? = null,
 
     @field:Valid
-    val references: List<ReferenceDto>? = null,
+    override val references: List<ReferenceDto>? = null,
 
     @field:Valid
-    val projects: List<ProjectDto>? = null
-)
+    override val projects: List<ProjectDto>? = null
+) : ResumeDataDto
