@@ -83,7 +83,7 @@ internal class GlobalExceptionHandlerTest {
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         // Mock for 3-argument getMessage(String, Array?, Locale) signature
-        every { messageSource.getMessage(any<String>(), any(), any<Locale>()) } returns "Internal server error"
+        every { messageSource.getMessage(any<String>(), isNull(), any<Locale>()) } returns "Internal server error"
 
         val problemDetail = handler.handleGenericException(exception, exchange)
 

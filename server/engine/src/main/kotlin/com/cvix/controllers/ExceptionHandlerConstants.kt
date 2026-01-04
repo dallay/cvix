@@ -27,3 +27,6 @@ const val MSG_AUTHORIZATION_FAILED = "authorization.failed"
 const val TITLE_BAD_REQUEST = "error.bad_request.title"
 const val TITLE_VALIDATION_ERROR = "error.validation_error.title"
 const val TITLE_INVALID_INPUT = "error.invalid_input.title"
+
+// Default error messages (fallbacks when i18n messages are unavailable)
+const val DEFAULT_INVALID_INPUT = "Invalid Input"

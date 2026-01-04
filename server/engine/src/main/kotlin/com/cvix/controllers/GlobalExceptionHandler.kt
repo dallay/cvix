@@ -121,18 +121,18 @@ class GlobalExceptionHandler(
         exchange: ServerWebExchange
     ): ProblemDetail {
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val localizedTitle = messageSource.getMessage(
+        val localizedTitle: String = messageSource.getMessage(
             "error.email.already.exists.title",
             emptyArray(),
             "Conflict",
             locale,
-        )
-        val localizedDetail = messageSource.getMessage(
+        ) ?: "Conflict"
+        val localizedDetail: String = messageSource.getMessage(
             "error.email.already.exists.detail",
             emptyArray(),
             "This email is already on the waitlist",
             locale,
-        )
+        ) ?: "This email is already on the waitlist"
 
         return createProblemDetail(
             status = HttpStatus.CONFLICT,
@@ -162,8 +162,19 @@ class GlobalExceptionHandler(
     )
     fun handleIllegalArgumentException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
         val locale = exchange.localeContext.locale ?: java.util.Locale.getDefault()
-        val localizedTitle = messageSource.getMessage(TITLE_INVALID_INPUT, emptyArray(), "Invalid Input", locale)
-        val detail = e.message ?: messageSource.getMessage(MSG_BAD_REQUEST, emptyArray(), "Bad request", locale)
+        val defaultDetail = "Bad request"
+        val localizedTitle: String = messageSource.getMessage(
+            TITLE_INVALID_INPUT,
+            emptyArray(),
+            DEFAULT_INVALID_INPUT,
+            locale,
+        ) ?: DEFAULT_INVALID_INPUT
+        val detail: String = e.message ?: messageSource.getMessage(
+            MSG_BAD_REQUEST,
+            emptyArray(),
+            defaultDetail,
+            locale,
+        ) ?: defaultDetail
         return createProblemDetail(
             status = HttpStatus.BAD_REQUEST,
             title = localizedTitle,
@@ -219,16 +230,16 @@ class GlobalExceptionHandler(
         logRequestException("JSON deserialization failed", exchange, ex)
 
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val title = messageSource.getMessage(
+        val title: String = messageSource.getMessage(
             "error.json.parsing.title",
             emptyArray(),
             "Invalid Request Body",
             locale,
-        )
+        ) ?: "Invalid Request Body"
 
         // Extract the root cause message which usually contains the field name
         val rootCause = ex.mostSpecificCause
-        val detailMessage = rootCause.message ?: ex.message ?: "Failed to parse request body"
+        val detailMessage: String = rootCause.message ?: ex.message ?: "Failed to parse request body"
 
         return createProblemDetail(
             status = HttpStatus.BAD_REQUEST,
@@ -261,20 +272,20 @@ class GlobalExceptionHandler(
         logRequestException("Server web input exception", exchange, ex)
 
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        val title = messageSource.getMessage(
+        val title: String = messageSource.getMessage(
             "error.input.invalid.title",
             emptyArray(),
-            "Invalid Input",
+            DEFAULT_INVALID_INPUT,
             locale,
-        )
+        ) ?: DEFAULT_INVALID_INPUT
 
         // Try to get a meaningful error message from the cause chain
         val rootCause = ex.mostSpecificCause
-        val detailMessage = when {
+        val detailMessage: String = when {
             rootCause is DecodingException -> rootCause.mostSpecificCause.message
             rootCause.message != null -> rootCause.message
-            else -> ex.reason ?: "Invalid input data"
-        }
+            else -> ex.reason
+        } ?: "Invalid input data"
 
         val problemDetail = createProblemDetail(
             status = HttpStatus.BAD_REQUEST,
@@ -306,13 +317,14 @@ class GlobalExceptionHandler(
         exchange: ServerWebExchange,
     ): Mono<ResponseEntity<Any>> {
         val locale = exchange.localeContext.locale ?: java.util.Locale.getDefault()
-        val title = messageSource.getMessage(TITLE_VALIDATION_ERROR, emptyArray(), "Validation Failed", locale)
-        val detail = messageSource.getMessage(
+        val title: String = messageSource.getMessage(TITLE_VALIDATION_ERROR, emptyArray(), "Validation Failed", locale)
+            ?: "Validation Failed"
+        val detail: String = messageSource.getMessage(
             MSG_VALIDATION_ERROR,
             emptyArray(),
             "Request validation failed. Please check the provided data.",
             locale,
-        )
+        ) ?: "Request validation failed. Please check the provided data."
         val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError ->
             mapOf(
                 "field" to fieldError.field,
@@ -337,11 +349,16 @@ class GlobalExceptionHandler(
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception, exchange: ServerWebExchange): ProblemDetail {
+        // Log full exception details server-side for debugging
+        log.error("Unhandled exception: ${e.message}", e)
+
         val localizedMessage = getLocalizedMessage(exchange, MSG_INTERNAL_SERVER_ERROR)
+
+        // Never expose exception details to clients (security risk)
         return createProblemDetail(
             status = HttpStatus.INTERNAL_SERVER_ERROR,
             title = "Internal server error",
-            detail = e.message ?: "Internal server error",
+            detail = "An internal server error occurred",
             typeSuffix = "internal-server-error",
             errorCategory = "INTERNAL_SERVER_ERROR",
             exchange = exchange,
@@ -352,7 +369,7 @@ class GlobalExceptionHandler(
 
     private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        return messageSource.getMessage(messageKey, null, locale)
+        return messageSource.getMessage(messageKey, null, locale) ?: messageKey
     }
 
     /**

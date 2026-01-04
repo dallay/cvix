@@ -37,6 +37,17 @@ abstract class ControllerTest {
     @BeforeEach
     protected open fun setUp() {
         mockSecurity()
+        mockMessageSource()
+    }
+
+    private fun mockMessageSource() {
+        // Mock for 3-argument getMessage(String, Array?, Locale)
+        // This is used by getLocalizedMessage() method
+        every { messageSource.getMessage(any<String>(), isNull(), any<Locale>()) } returns "Internal server error"
+
+        // Mock for 4-argument getMessage(String, Array?, String, Locale)
+        // This is used by most exception handlers with a default message
+        every { messageSource.getMessage(any<String>(), any(), any<String>(), any<Locale>()) } answers { thirdArg() }
     }
 
     protected fun buildWebTestClient(controller: ApiController): WebTestClient {
