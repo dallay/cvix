@@ -162,6 +162,30 @@ export class RemoteResumeStorage implements ResumeStorage {
 	}
 
 	/**
+	 * Creates a PersistenceResult with metadata from a resume response.
+	 * Reduces code duplication between save and load operations.
+	 */
+	private createResultWithMetadata(
+		resume: Resume,
+		response: ResumeDocumentResponse,
+		retryCount: number,
+	): PersistenceResult<Resume> {
+		return {
+			data: resume,
+			timestamp: response.updatedAt ?? response.createdAt,
+			storageType: "remote" as StorageType,
+			metadata: {
+				id: response.id,
+				userId: response.userId,
+				workspaceId: response.workspaceId,
+				createdAt: response.createdAt,
+				updatedAt: response.updatedAt,
+				retryCount,
+			},
+		};
+	}
+
+	/**
 	 * Discover an existing resume for the current workspace.
 	 * This is called when no resumeId is configured, to recover from page reloads
 	 * or find previously created resumes.
@@ -280,19 +304,7 @@ export class RemoteResumeStorage implements ResumeStorage {
 		// Persist the ID for recovery after page reload
 		this.persistResumeId(response.id);
 
-		return {
-			data: resume,
-			timestamp: response.updatedAt ?? response.createdAt,
-			storageType: "remote",
-			metadata: {
-				id: response.id,
-				userId: response.userId,
-				workspaceId: response.workspaceId,
-				createdAt: response.createdAt,
-				updatedAt: response.updatedAt,
-				retryCount: this.retryCount,
-			},
-		};
+		return this.createResultWithMetadata(resume, response, this.retryCount);
 	}
 
 	async load(): Promise<PersistenceResult<Resume | null>> {
@@ -324,19 +336,11 @@ export class RemoteResumeStorage implements ResumeStorage {
 			this.currentResumeId = response.id;
 			this.lastServerTimestamp = response.updatedAt;
 			this.retryCount = 0;
-			return {
-				data: this.mapResponseToResume(response),
-				timestamp: response.updatedAt ?? response.createdAt,
-				storageType: "remote",
-				metadata: {
-					id: response.id,
-					userId: response.userId,
-					workspaceId: response.workspaceId,
-					createdAt: response.createdAt,
-					updatedAt: response.updatedAt,
-					retryCount: attemptsUsed,
-				},
-			};
+			return this.createResultWithMetadata(
+				this.mapResponseToResume(response),
+				response,
+				attemptsUsed,
+			);
 		} catch (error) {
 			// If resume not found, return null instead of throwing
 			if (isHttpErrorWithStatus(error) && error.response.status === 404) {
