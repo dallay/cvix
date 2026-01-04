@@ -42,10 +42,10 @@ All colors are defined using the **OKLCH color space** for better perceptual uni
 |--------------------------|--------------------------------------------|---------------------------------------|-------------------------------------|
 | `--destructive`          | Destructive actions and errors             | `oklch(0.577 0.245 27.325)`           | `oklch(0.704 0.191 22.216)`         |
 | `--destructive-foreground` | Text on destructive elements             | `oklch(0.969 0.016 293.756)`          | `oklch(0.985 0 0)`                  |
-| `--warning`              | Warning messages and alerts                | `oklch(0.769 0.188 70.08)`            | `oklch(0.70 0.17 70.08)` (adjusted) |
-| `--warning-foreground`   | Text on warning elements                   | `oklch(0.141 0.005 285.823)`          | `oklch(0.985 0 0)` (adjusted)       |
-| `--success`              | Success messages and confirmations         | `oklch(0.627 0.194 149.214)`          | `oklch(0.58 0.18 149.214)` (adjusted)|
-| `--success-foreground`   | Text on success elements                   | `oklch(1 0 0)`                        | `oklch(0.985 0 0)` (adjusted)       |
+| `--warning`              | Warning messages and alerts                | `oklch(0.769 0.188 70.08)`            | `oklch(0.70 0.17 70.08)` (WCAG AA)  |
+| `--warning-foreground`   | Text on warning elements                   | `oklch(0.141 0.005 285.823)`          | `oklch(0.985 0 0)` (WCAG AA)        |
+| `--success`              | Success messages and confirmations         | `oklch(0.627 0.194 149.214)`          | `oklch(0.58 0.18 149.214)` (WCAG AA)|
+| `--success-foreground`   | Text on success elements                   | `oklch(1 0 0)`                        | `oklch(0.985 0 0)` (WCAG AA)        |
 | `--muted`                | Muted background for subtle elements       | `oklch(0.967 0.001 286.375)`          | `oklch(0.274 0.006 286.033)`        |
 | `--muted-foreground`     | Text for muted elements                    | `oklch(0.552 0.016 285.938)`          | `oklch(0.705 0.015 286.067)`        |
 

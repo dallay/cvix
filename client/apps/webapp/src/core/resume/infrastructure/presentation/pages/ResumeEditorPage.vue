@@ -622,7 +622,7 @@ function syncFormWithComposable(
 
         <!-- Preview Section -->
         <Card v-if="showPreview"
-              class="hidden lg:flex lg:flex-col sticky top-8 max-h-[calc(100vh-6rem)] overflow-hidden">
+              class="hidden lg:flex lg:flex-col sticky top-24 max-h-[calc(100vh-8rem)] overflow-hidden">
           <CardHeader class="flex-none">
             <CardTitle>
               {{ t('resume.buttons.preview') }}
