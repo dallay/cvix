@@ -20,7 +20,9 @@
 			"interests": "Intereses y Pasatiempos",
 			"references": "Referencias",
 			"projects": "Proyectos",
-			"certifications": "Certificaciones"
+			"certifications": "Certificaciones",
+			"formDescription": "Completa el formulario para crear tu currículum",
+			"previewDescription": "Vista previa en vivo de tu currículum"
 		},
 		"fields": {
 			"name": "Nombre Completo",
@@ -375,13 +377,21 @@
 			"savedHoursAgo": "Guardado hace {count} hora | Guardado hace {count} horas",
 			"savedDaysAgo": "Guardado hace {count} día | Guardado hace {count} días",
 			"savedOnDate": "Guardado el {date}",
-			"unsavedChanges": "Cambios sin guardar"
+			"unsavedChanges": "Cambios sin guardar",
+			"unsavedChangesIndicator": "Indicador de cambios sin guardar",
+			"resetError": "Error al restablecer",
+			"resetErrorDescription": "No se pudo restablecer el formulario"
 		},
 		"resetDialog": {
 			"title": "¿Restablecer el formulario?",
 			"description": "Esto borrará todos los datos del currículum del formulario y el almacenamiento. Esta acción no se puede deshacer. Asegúrate de descargar tu currículum primero si deseas conservarlo.",
 			"cancel": "Cancelar",
 			"reset": "Restablecer"
+		},
+		"uploadDialog": {
+			"title": "¿Reemplazar datos existentes?",
+			"description": "Tienes cambios sin guardar en tu currículum. Subir un nuevo archivo JSON reemplazará todos los datos actuales. Esta acción no se puede deshacer.",
+			"confirm": "Continuar"
 		},
 		"pdfSelector": {
 			"templateLabel": "Plantilla",
