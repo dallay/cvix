@@ -174,7 +174,6 @@ class GlobalExceptionHandler(
             messageKey = MSG_BAD_REQUEST,
             localizedMessage = localizedTitle,
         )
-        return problemDetail
     }
     /**
      * Exception handler for missing cookies.
