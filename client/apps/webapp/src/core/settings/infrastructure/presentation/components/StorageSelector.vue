@@ -199,7 +199,13 @@ function isPersistent(type: StorageType): boolean {
 	return meta?.persistence === "permanent";
 }
 
-// Expose refs for testing
+/**
+ * Exposed component refs for testing purposes.
+ *
+ * @internal These properties are exposed solely for unit testing and should not be
+ * relied upon in production code. The component's public API is defined by its props
+ * and emitted events.
+ */
 defineExpose({
 	selectedStorage,
 	showConfirmDialog,

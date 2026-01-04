@@ -26,6 +26,7 @@ export {
 export {
 	LocalStorageSettingsRepository,
 	SETTINGS_REPOSITORY_KEY,
+	USER_SETTINGS_STORAGE_KEY,
 	useSettingsStore,
 } from "./infrastructure";
 

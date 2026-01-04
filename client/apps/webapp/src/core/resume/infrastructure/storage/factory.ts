@@ -125,7 +125,8 @@ export function getStorageMetadata(): StorageMetadata[] {
 			icon: "cloud",
 			persistence: "permanent",
 			capacity: "Unlimited",
-			recommended: true,
+			// TODO: Mark as recommended when user is authenticated
+			// recommended: true,
 		},
 	];
 }

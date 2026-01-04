@@ -52,11 +52,13 @@ function getGenerator(): ResumeGenerator {
 	return new ResumeHttpClient();
 }
 
+import { USER_SETTINGS_STORAGE_KEY } from "@/core/settings/infrastructure/storage/LocalStorageSettingsRepository";
+
 /**
  * Storage key for user settings in localStorage.
- * Must match the key used by LocalStorageSettingsRepository.
+ * Imported from LocalStorageSettingsRepository to ensure consistency.
  */
-const SETTINGS_STORAGE_KEY = "cvix:user-settings";
+const SETTINGS_STORAGE_KEY = USER_SETTINGS_STORAGE_KEY;
 
 /**
  * Reads the user's persisted storage preference from localStorage.

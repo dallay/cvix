@@ -7,6 +7,7 @@ import { createResumeStorage } from "./core/resume/infrastructure/storage";
 import {
 	LocalStorageSettingsRepository,
 	SETTINGS_REPOSITORY_KEY,
+	USER_SETTINGS_STORAGE_KEY,
 } from "./core/settings";
 import { i18n } from "./i18n";
 import router from "./router";
@@ -24,7 +25,7 @@ import type { StorageType } from "./core/resume/domain/ResumeStorage";
  */
 function getUserStoragePreference(): StorageType {
 	try {
-		const saved = localStorage.getItem("cvix:user-settings");
+		const saved = localStorage.getItem(USER_SETTINGS_STORAGE_KEY);
 		if (saved) {
 			const settings = JSON.parse(saved);
 			const preference = settings.storagePreference;

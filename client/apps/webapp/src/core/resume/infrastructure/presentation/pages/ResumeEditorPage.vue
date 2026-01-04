@@ -114,15 +114,6 @@ const lastSavedText = computed(() => {
 	});
 });
 
-// Prevent browser default Save dialog on Cmd/Ctrl+S
-function handleSaveShortcut(event: KeyboardEvent) {
-	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
-		event.preventDefault();
-		event.stopPropagation();
-		handleSave();
-	}
-}
-
 // Warn user about unsaved changes before navigating away
 function handleBeforeUnload(event: BeforeUnloadEvent) {
 	if (hasUnsavedChanges.value && resume.value) {
@@ -138,7 +129,6 @@ let timestampInterval: number | null = null;
 
 onMounted(() => {
 	if (typeof window !== "undefined") {
-		window.addEventListener("keydown", handleSaveShortcut);
 		window.addEventListener("beforeunload", handleBeforeUnload);
 
 		// Auto-refresh timestamp display every minute
@@ -150,7 +140,6 @@ onMounted(() => {
 
 onUnmounted(() => {
 	if (typeof window !== "undefined") {
-		window.removeEventListener("keydown", handleSaveShortcut);
 		window.removeEventListener("beforeunload", handleBeforeUnload);
 
 		// Clean up interval timer
@@ -161,8 +150,17 @@ onUnmounted(() => {
 	}
 });
 
-// Keyboard shortcuts
-const keys = useMagicKeys();
+// Keyboard shortcuts with preventDefault to stop browser save dialog
+const keys = useMagicKeys({
+	passive: false,
+	onEventFired(e) {
+		// Prevent browser default save dialog for Cmd/Ctrl+S
+		if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	},
+});
 const cmdS = keys["Meta+KeyS"];
 const ctrlS = keys["Ctrl+KeyS"];
 

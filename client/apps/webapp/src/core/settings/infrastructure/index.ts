@@ -6,5 +6,8 @@
  */
 
 export { SETTINGS_REPOSITORY_KEY } from "./di";
-export { LocalStorageSettingsRepository } from "./storage";
+export {
+	LocalStorageSettingsRepository,
+	USER_SETTINGS_STORAGE_KEY,
+} from "./storage";
 export { useSettingsStore } from "./store";

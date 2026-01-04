@@ -213,8 +213,9 @@ describe("ResumeForm.vue", () => {
 
 			// The first trigger should have the "Personal Details" label
 			// (from the test i18n helper)
-			const firstTrigger = triggers[0]!;
-			expect(firstTrigger.text()).toBeTruthy();
+			const firstTrigger = triggers[0];
+			expect(firstTrigger).toBeDefined();
+			expect(firstTrigger?.text()).toBeTruthy();
 		});
 
 		it("should render in Spanish when locale is changed", async () => {

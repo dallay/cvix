@@ -4,4 +4,7 @@
  * This module provides concrete implementations of the SettingsRepository interface.
  */
 
-export { LocalStorageSettingsRepository } from "./LocalStorageSettingsRepository";
+export {
+	LocalStorageSettingsRepository,
+	USER_SETTINGS_STORAGE_KEY,
+} from "./LocalStorageSettingsRepository";

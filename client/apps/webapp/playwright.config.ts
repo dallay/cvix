@@ -91,10 +91,10 @@ export default defineConfig({
 		ignoreHTTPSErrors: true, // Required for self-signed certificates in dev
 		actionTimeout: 15_000,
 		navigationTimeout: 30_000,
-		// HAR replay: Mock API responses from recorded HAR files
+		// HAR replay: Disable automation detection for better HAR replay fidelity
+		// (Actual HAR routing with fallback is configured in harFixture.ts)
 		...(useHarMocking && {
 			launchOptions: {
-				// HAR mode with fallback to pass-through if HAR doesn't have the route
 				args: ["--disable-blink-features=AutomationControlled"],
 			},
 		}),

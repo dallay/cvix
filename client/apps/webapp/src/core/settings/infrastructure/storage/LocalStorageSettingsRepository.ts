@@ -7,8 +7,15 @@ import { DEFAULT_USER_SETTINGS } from "../../domain";
 
 /**
  * Storage key for user settings in localStorage.
+ * Exported to ensure consistency across all settings storage operations.
  */
-const STORAGE_KEY = "cvix:user-settings";
+export const USER_SETTINGS_STORAGE_KEY = "cvix:user-settings";
+
+/**
+ * @deprecated Use USER_SETTINGS_STORAGE_KEY instead
+ * @internal
+ */
+const STORAGE_KEY = USER_SETTINGS_STORAGE_KEY;
 
 /**
  * LocalStorage implementation of the SettingsRepository.

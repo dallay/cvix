@@ -164,7 +164,8 @@ describe("Storage Factory", () => {
 			expect(metadata).toBeDefined();
 			expect(metadata?.type).toBe("remote");
 			expect(metadata?.label).toBe("Cloud Storage");
-			expect(metadata?.recommended).toBe(true);
+			// Remote storage is not recommended until authentication is implemented
+			expect(metadata?.recommended).toBeUndefined();
 		});
 	});
 });
