@@ -2,6 +2,7 @@ package com.cvix.resume.infrastructure.validation
 
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import com.cvix.resume.infrastructure.http.request.ResumeContentRequest
+import com.cvix.resume.infrastructure.http.request.ResumeDataDto
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
@@ -23,25 +24,30 @@ annotation class ValidResumeContent(
 )
 
 /**
+ * Common validation logic for resume content.
+ * Extracted to reduce duplication between GenerateResumeRequest and ResumeContentRequest validators.
+ */
+private fun hasResumeContent(request: ResumeDataDto?): Boolean {
+    if (request == null) {
+        return true // Let @NotNull handle null validation
+    }
+
+    val hasWorkExperience = !request.work.isNullOrEmpty()
+    val hasEducation = !request.education.isNullOrEmpty()
+    val hasSkills = !request.skills.isNullOrEmpty()
+
+    return hasWorkExperience || hasEducation || hasSkills
+}
+
+/**
  * Validator implementation for ValidResumeContent annotation.
  * Validates that a GenerateResumeRequest contains at least one content section.
  */
 class ResumeContentValidator : ConstraintValidator<ValidResumeContent, GenerateResumeRequest> {
-
     override fun isValid(
         request: GenerateResumeRequest?,
         context: ConstraintValidatorContext?
-    ): Boolean {
-        if (request == null) {
-            return true // Let @NotNull handle null validation
-        }
-
-        val hasWorkExperience = !request.work.isNullOrEmpty()
-        val hasEducation = !request.education.isNullOrEmpty()
-        val hasSkills = !request.skills.isNullOrEmpty()
-
-        return hasWorkExperience || hasEducation || hasSkills
-    }
+    ): Boolean = hasResumeContent(request)
 }
 
 /**
@@ -49,19 +55,8 @@ class ResumeContentValidator : ConstraintValidator<ValidResumeContent, GenerateR
  * Validates that a ResumeContentRequest contains at least one content section.
  */
 class ResumeContentRequestValidator : ConstraintValidator<ValidResumeContent, ResumeContentRequest> {
-
     override fun isValid(
         request: ResumeContentRequest?,
         context: ConstraintValidatorContext?
-    ): Boolean {
-        if (request == null) {
-            return true // Let @NotNull handle null validation
-        }
-
-        val hasWorkExperience = !request.work.isNullOrEmpty()
-        val hasEducation = !request.education.isNullOrEmpty()
-        val hasSkills = !request.skills.isNullOrEmpty()
-
-        return hasWorkExperience || hasEducation || hasSkills
-    }
+    ): Boolean = hasResumeContent(request)
 }
