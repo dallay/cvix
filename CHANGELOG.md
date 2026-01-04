@@ -1,3 +1,13 @@
+## [3.3.1](https://github.com/dallay/cvix/compare/v3.3.0...v3.3.1) (2026-01-04)
+
+### 🐛 Bug Fixes
+
+* **config:** 🐛 update constants, clean deprecated URLs, and improve locale import handling ([#484](https://github.com/dallay/cvix/issues/484)) ([504f2e2](https://github.com/dallay/cvix/commit/504f2e271ade9e8b4778a6d07578e4d0e372ec65)), closes [#XXX](https://github.com/dallay/cvix/issues/XXX)
+
+### 📝 Documentation
+
+* Align Documentation with Project Identity ([#473](https://github.com/dallay/cvix/issues/473)) ([8a54deb](https://github.com/dallay/cvix/commit/8a54deb3a1e7b64250fc562ff04482a1fe3b8a97))
+
 ## [3.3.0](https://github.com/dallay/cvix/compare/v3.2.0...v3.3.0) (2026-01-01)
 
 ### ✨ Features
