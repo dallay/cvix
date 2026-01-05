@@ -6,6 +6,7 @@ import vue from "@astrojs/vue";
 import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
 import {
 	CVIX_API_URL,
+	CVIX_BLOG_URL,
 	CVIX_MARKETING_URL,
 	CVIX_WEBAPP_URL,
 	PORTS,
@@ -122,6 +123,11 @@ export default defineConfig({
 				context: "client",
 				access: "public",
 				default: CVIX_WEBAPP_URL,
+			}),
+			CVIX_BLOG_URL: envField.string({
+				context: "client",
+				access: "public",
+				default: CVIX_BLOG_URL,
 			}),
 		},
 	},
