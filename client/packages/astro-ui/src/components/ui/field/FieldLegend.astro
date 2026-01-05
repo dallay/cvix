@@ -1,15 +1,14 @@
 ---
-import type { HTMLAttributes } from "astro/types"
-
 import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"legend"> {
-  variant?: "legend" | "label"
+	variant?: "legend" | "label";
 }
 
-const { class: className, variant = "legend", ...props } = Astro.props
+const { class: className, variant = "legend", ...props } = Astro.props;
 
-const slot = await Astro.slots.render("default")
+const slot = await Astro.slots.render("default");
 ---
 
 {

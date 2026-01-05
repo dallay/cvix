@@ -32,6 +32,13 @@ export const contact: UIMultilingual = {
 		"contact.formMessagePlaceholder":
 			"Tell us more about your question or concern...",
 		"contact.formSubmit": "Send Message",
+		"contact.formSending": "Sending...",
+		"contact.formSuccess":
+			"Message sent successfully! We'll get back to you soon.",
+		"contact.formError":
+			"Failed to send message. Please try again or email us directly.",
+		"contact.captchaRequired": "Please complete the captcha verification.",
+		"contact.captchaError": "Captcha verification failed. Please try again.",
 	},
 	es: {
 		"contact.title": "Contáctanos",
@@ -64,5 +71,14 @@ export const contact: UIMultilingual = {
 		"contact.formMessagePlaceholder":
 			"Cuéntanos más sobre tu pregunta o inquietud...",
 		"contact.formSubmit": "Enviar Mensaje",
+		"contact.formSending": "Enviando...",
+		"contact.formSuccess":
+			"¡Mensaje enviado con éxito! Te responderemos pronto.",
+		"contact.formError":
+			"Error al enviar el mensaje. Por favor, inténtalo de nuevo o envíanos un correo directamente.",
+		"contact.captchaRequired":
+			"Por favor, completa la verificación del captcha.",
+		"contact.captchaError":
+			"Falló la verificación del captcha. Por favor, inténtalo de nuevo.",
 	},
 };

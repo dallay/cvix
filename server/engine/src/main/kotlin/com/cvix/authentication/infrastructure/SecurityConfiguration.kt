@@ -205,6 +205,7 @@ class SecurityConfiguration(
                 "/v3/api-docs/**", "/v3/api-docs.yaml",
             ).permitAll()
             .pathMatchers(HttpMethod.POST, "/api/waitlist").permitAll()
+            .pathMatchers(HttpMethod.POST, "/api/contact").permitAll()
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()

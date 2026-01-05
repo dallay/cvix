@@ -1,8 +1,0 @@
----
-// Read AHREFS key from environment safely
-const AHREFS_KEY =
-	import.meta.env.PUBLIC_AHREFS_KEY || import.meta.env.AHREFS_KEY;
----
-{AHREFS_KEY && (
-	<script type="text/partytown" is:inline src="https://analytics.ahrefs.com/analytics.js" data-key={AHREFS_KEY} async></script>
-)}

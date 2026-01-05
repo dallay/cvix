@@ -1,12 +1,16 @@
 ---
+import { CVIX_API_URL, CVIX_HCAPTCHA_SITE_KEY } from "astro:env/client";
 import {
 	Button,
+	CsrfToken,
 	Field,
 	FieldDescription,
 	FieldGroup,
 	FieldLabel,
 	FieldSet,
 	Footer,
+	HCaptcha,
+	Icon,
 	Input,
 	BaseLayout as Layout,
 	Textarea,
@@ -135,8 +139,8 @@ const og = {
 				<div>
 					<div class="bg-card border border-border rounded-lg p-8">
 						<h2 class="text-2xl font-bold mb-6">{t('contact.formTitle')}</h2>
-
-						<form class="space-y-6" method="POST" action="/api/contact" data-contact-form>
+						<CsrfToken />
+						<form class="space-y-6" method="POST" action={`${CVIX_API_URL}/api/contact`} data-contact-form data-backend-url={CVIX_API_URL}>
 							<FieldSet>
 								<FieldGroup>
 									<!-- Name Field -->
@@ -197,6 +201,17 @@ const og = {
 								</FieldGroup>
 							</FieldSet>
 
+							<!-- hCaptcha Verification -->
+              {CVIX_HCAPTCHA_SITE_KEY && (
+							<div class="flex justify-center">
+								<HCaptcha
+									id="contact-captcha"
+									siteKey={CVIX_HCAPTCHA_SITE_KEY}
+									theme="auto"
+								/>
+							</div>
+              )}
+
 							<!-- Submit Button -->
 							<Button
 								type="submit"
@@ -204,6 +219,7 @@ const og = {
 								size="lg"
 								class="w-full"
 							>
+                <Icon name="tabler:send" class="w-5 h-5 mr-2" />
 								{t('contact.formSubmit')}
 							</Button>
 						</form>
@@ -239,43 +255,148 @@ const og = {
 	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
 </Layout>
 
-<script>
+<script define:vars={{
+	translations: {
+		sending: t('contact.formSending'),
+		success: t('contact.formSuccess'),
+		error: t('contact.formError'),
+		captchaRequired: t('contact.captchaRequired'),
+		submit: t('contact.formSubmit'),
+	},
+	currentLang: locale,
+}}>
 	document.addEventListener('DOMContentLoaded', () => {
-		const form = document.querySelector('[data-contact-form]') as HTMLFormElement;
+		const form = document.querySelector('[data-contact-form]');
 		const messageDiv = document.getElementById('form-message');
 
 		if (form && messageDiv) {
+			const alertDiv = messageDiv.querySelector('div');
+			const backendUrl = form.getAttribute('data-backend-url') || '';
+
+			// Lazy load CSRF token on first interaction with the form
+			const lazyLoadCsrf = () => {
+				if (backendUrl && window.csrfLoader) {
+					window.csrfLoader.ensureToken(backendUrl).catch((err) => {
+						console.warn("CSRF lazy load failed:", err);
+					});
+				}
+			};
+
+			// Initialize CSRF on first focus or input on any form field
+			const formInputs = form.querySelectorAll('input, textarea');
+			formInputs.forEach(input => {
+				input.addEventListener("focus", lazyLoadCsrf, { once: true });
+				input.addEventListener("input", lazyLoadCsrf, { once: true });
+			});
+
+			const showMessage = (type, text) => {
+				// Reset classes
+				alertDiv.className = 'p-4 rounded-md';
+
+				if (type === 'success') {
+					alertDiv.classList.add('bg-success/10', 'text-success', 'border', 'border-success/20');
+				} else if (type === 'error') {
+					alertDiv.classList.add('bg-destructive/10', 'text-destructive', 'border', 'border-destructive/20');
+				} else if (type === 'warning') {
+					alertDiv.classList.add('bg-warning/10', 'text-warning', 'border', 'border-warning/20');
+				}
+
+				alertDiv.textContent = text;
+				messageDiv.classList.remove('hidden');
+			};
+
+			const hideMessage = () => {
+				messageDiv.classList.add('hidden');
+			};
+
 			form.addEventListener('submit', async (e) => {
 				e.preventDefault();
+				hideMessage();
 
 				const formData = new FormData(form);
-				const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+				const submitButton = form.querySelector('button[type="submit"]');
+				const originalButtonText = submitButton.textContent;
+
+				// Get captcha token
+				const captchaToken = window.getCaptchaToken?.('contact-captcha');
+				if (!captchaToken) {
+					showMessage('warning', translations.captchaRequired);
+					return;
+				}
 
 				// Disable button during submission
 				submitButton.disabled = true;
-				submitButton.textContent = 'Sending...';
+				submitButton.textContent = translations.sending;
 
-				try {
-					// TODO: Replace with actual API endpoint when ready
-					// For now, we'll simulate a successful submission
-					await new Promise(resolve => setTimeout(resolve, 1000));
+				// Ensure CSRF token is loaded before submitting
+				if (backendUrl && window.csrfLoader) {
+					try {
+						await window.csrfLoader.ensureToken(backendUrl);
+					} catch (err) {
+						console.warn("CSRF token load failed:", err);
+					}
+				}
 
-					// Show success message
-					messageDiv.classList.remove('hidden');
-					messageDiv.querySelector('div')?.classList.add('bg-success/10', 'text-success', 'border', 'border-success/20');
-					messageDiv.querySelector('div')!.textContent = 'Message sent successfully! We\'ll get back to you soon.';
+				// Get CSRF token from cookie
+				const csrfToken = window.getCsrfToken?.();
 
-					// Reset form
+				// Build headers with CSRF token
+				const headers = {
+					"Content-Type": "application/json",
+					Accept: "application/vnd.api.v1+json",
+					'Accept-Language': currentLang,
+				};
+
+				// Add CSRF token header if available
+				if (csrfToken) {
+					headers["X-XSRF-TOKEN"] = csrfToken;
+				}
+
+				// Convert FormData to JSON object for n8n webhook
+				const payload = {
+					name: formData.get('name'),
+					email: formData.get('email'),
+					subject: formData.get('subject'),
+					message: formData.get('message'),
+					hcaptchaToken: captchaToken,
+				};
+
+			try {
+        console.log(`Submitting contact form to ${form.action} with payload:`, payload);
+				const response = await fetch(form.action, {
+					method: 'POST',
+					headers,
+					body: JSON.stringify(payload),
+					credentials: "include",
+				});
+
+					if (!response.ok) {
+						// Try to parse error response from backend
+						const errorData = await response.json().catch(() => ({}));
+						const errorMessage = errorData.message || translations.error;
+						throw new Error(errorMessage);
+					}
+
+					// Parse JSON response from backend
+					const result = await response.json();
+					console.log('Contact form submission success:', result);
+
+					// Show success message (use backend message or fallback to translation)
+					showMessage('success', result.message || translations.success);
+
+					// Reset form and captcha
 					form.reset();
+					window.resetCaptcha?.('contact-captcha');
 				} catch (error) {
-					// Show error message
-					messageDiv.classList.remove('hidden');
-					messageDiv.querySelector('div')?.classList.add('bg-destructive/10', 'text-destructive', 'border', 'border-destructive/20');
-					messageDiv.querySelector('div')!.textContent = 'Failed to send message. Please try again or email us directly.';
+					console.error('Contact form submission error:', error);
+					showMessage('error', translations.error);
+
+					// Reset captcha on error so user can try again
+					window.resetCaptcha?.('contact-captcha');
 				} finally {
 					// Re-enable button
 					submitButton.disabled = false;
-					submitButton.textContent = 'Send Message';
+					submitButton.textContent = originalButtonText;
 				}
 			});
 		}

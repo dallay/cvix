@@ -129,6 +129,26 @@ export default defineConfig({
 				access: "public",
 				default: CVIX_BLOG_URL,
 			}),
+			CVIX_HCAPTCHA_SITE_KEY: envField.string({
+				context: "client",
+				access: "public",
+				optional: true,
+			}),
+			CVIX_CONTACT_URL: envField.string({
+				context: "client",
+				access: "public",
+				optional: true,
+			}),
+			CVIX_CONTACT_API_KEY: envField.string({
+				context: "client",
+				access: "public",
+				optional: true,
+			}),
+			CVIX_CONTACT_FORM_TOKEN_ID: envField.string({
+				context: "client",
+				access: "public",
+				optional: true,
+			}),
 		},
 	},
 
