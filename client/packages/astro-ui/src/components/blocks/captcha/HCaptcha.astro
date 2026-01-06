@@ -59,6 +59,7 @@ if (!siteKey) {
 	// @ts-ignore - usage is dynamic
 	function showError(container: HTMLElement, message: string): void {
 		const errorDiv = document.createElement('div');
+		errorDiv.className = 'hcaptcha-component-error';
 		errorDiv.style.cssText = 'color: red; padding: 10px; border: 1px solid red;';
 		errorDiv.textContent = message;
 		container.replaceChildren(errorDiv);
@@ -182,14 +183,14 @@ if (!siteKey) {
 		const maxAttempts = 100; // 10 seconds with 100ms intervals
 
 		const checkInterval = setInterval(() => {
-			attempts++;
+		attempts++;
 
-			if (window.hcaptcha) {
-				clearInterval(checkInterval as unknown as number);
-				initAllHCaptchaWidgets();
-			} else if (attempts >= maxAttempts) {
-				clearInterval(checkInterval as unknown as number);
-				console.error('hCaptcha API failed to load within 10 seconds');
+		if (window.hcaptcha) {
+			window.clearInterval(checkInterval);
+			initAllHCaptchaWidgets();
+		} else if (attempts >= maxAttempts) {
+			window.clearInterval(checkInterval);
+			console.error('hCaptcha API failed to load within 10 seconds');
 
 				// Show error in containers
 				const containers = document.querySelectorAll<HTMLElement>('[data-hcaptcha-widget="true"]');
@@ -260,8 +261,8 @@ if (!siteKey) {
 		min-height: 144px;
 	}
 
-	/* Hide localhost warning */
-	[data-hcaptcha-widget] :global(div[style*="color: red"]) {
+	/* Hide hCaptcha's localhost warning, but not our component error messages */
+	[data-hcaptcha-widget] :global(div[style*="color: red"]:not(.hcaptcha-component-error)) {
 		display: none;
 	}
 

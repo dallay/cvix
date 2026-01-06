@@ -12,7 +12,7 @@ sealed interface SendContactApiResponse
  */
 data class SendContactResponse(
     @field:Schema(description = "Indicates if the operation was successful", example = "true")
-    val success: Boolean = true,
+    val success: Boolean,
 
     @field:Schema(
         description = "User-friendly success message",

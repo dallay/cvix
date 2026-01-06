@@ -14,8 +14,10 @@ fun interface CaptchaValidator {
      *
      * @param token The CAPTCHA token to validate
      * @param ipAddress The IP address of the client submitting the token
-     * @return true if the token is valid, false otherwise
-     * @throws CaptchaValidationException if validation fails due to technical issues
+     * @return true if the token is valid and verified by the CAPTCHA service,
+     *         false if the token is invalid, expired, or rejected by the CAPTCHA service
+     * @throws CaptchaValidationException if validation fails due to infrastructure issues
+     *         (network errors, service unavailability, configuration problems, etc.)
      */
     /**
      * Validates a CAPTCHA token for a given client IP address at the domain level.

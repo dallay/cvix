@@ -60,7 +60,6 @@ class N8nContactClient(
 
             val response = webClient.post()
                 .uri(properties.webhookUrl)
-                .header("Content-Type", "application/json")
                 .header(properties.headerApiKey, properties.apiKey)
                 .header("form-token-id", properties.formTokenId)
                 .bodyValue(n8nPayload)
