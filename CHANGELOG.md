@@ -1,3 +1,9 @@
+## [3.4.0](https://github.com/dallay/cvix/compare/v3.3.1...v3.4.0) (2026-01-04)
+
+### ✨ Features
+
+* cloud storage resume option ([#486](https://github.com/dallay/cvix/issues/486)) ([8307088](https://github.com/dallay/cvix/commit/83070883da934c2d686f0d61297c6bc1d58968c4)), closes [#488](https://github.com/dallay/cvix/issues/488)
+
 ## [3.3.1](https://github.com/dallay/cvix/compare/v3.3.0...v3.3.1) (2026-01-04)
 
 ### 🐛 Bug Fixes
