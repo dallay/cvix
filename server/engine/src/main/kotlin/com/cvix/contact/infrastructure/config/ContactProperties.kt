@@ -20,8 +20,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * ```
  *
  * @property webhookUrl The full URL to the n8n webhook endpoint.
- * @property headerApiKey The API key for n8n Header Auth credential (x-api-key header).
- * @property apiKey The API key for n8n Header Auth credential (x-api-key header).
+ * @property headerApiKey The API key sent via x-api-key header for n8n authentication.
+ * @property apiKey The API key sent via Authorization Bearer token (if required by n8n workflow).
  * @property formTokenId The form-specific token for domain validation (form-token-id header).
  * @property hcaptchaSecretKey The secret key for server-side hCaptcha validation.
  */

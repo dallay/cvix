@@ -21,8 +21,8 @@ class SendContactCommandHandler(
      * Handles the command to send a contact form submission.
      *
      * @param command The command containing the contact form data.
-     * @throws HCaptchaValidationException if hCaptcha validation fails.
-     * @throws ContactSendException if sending to n8n webhook fails.
+     * @throws CaptchaValidationException if captcha validation fails.
+     * @throws ContactNotificationException if sending notification fails.
      */
     override suspend fun handle(command: SendContactCommand) {
         logger.info(
