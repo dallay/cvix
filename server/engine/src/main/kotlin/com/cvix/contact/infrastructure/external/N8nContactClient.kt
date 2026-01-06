@@ -52,24 +52,30 @@ class N8nContactClient(
                 email = contactData.email,
                 subject = contactData.subject,
                 message = contactData.message,
-                hcaptchaToken = contactData.hcaptchaToken,
             )
 
             val response = webClient.post()
                 .uri(properties.webhookUrl)
                 .header("Content-Type", "application/json")
-                .header("x-api-key", properties.apiKey)
+                .header(properties.headerApiKey, properties.apiKey)
                 .header("form-token-id", properties.formTokenId)
                 .bodyValue(n8nPayload)
                 .retrieve()
-                .bodyToMono<N8nContactResponse>()
+                .bodyToMono<N8nWebhookResponse>()
                 .awaitSingle()
 
-            if (response.success) {
-                logger.info("Successfully sent contact notification to n8n: {}", response.message)
-            } else {
-                logger.warn("n8n returned success=false: {}", response.message)
-                throw ContactNotificationException("n8n webhook returned failure: ${response.message}")
+            when {
+                response.status == "success" ->
+                    logger.info("Contact notification sent successfully to n8n: email={}", contactData.email)
+
+                response.error != null -> {
+                    logger.error("n8n webhook returned error: {}", response.error)
+                    throw ContactNotificationException("n8n webhook error: ${response.error}")
+                }
+                else -> {
+                    logger.error("n8n webhook returned unexpected response: {}", response)
+                    throw ContactNotificationException("Unexpected n8n webhook response")
+                }
             }
         } catch (e: ContactNotificationException) {
             throw e
@@ -86,19 +92,26 @@ class N8nContactClient(
 /**
  * Internal payload structure for N8N webhook.
  * This is infrastructure-specific and not exposed to the application layer.
+ * @property name Sender's full name.
+ * @property email Sender's email address.
+ * @property subject Message subject.
+ * @property message Message content.
  */
 private data class N8nContactPayload(
     val name: String,
     val email: String,
     val subject: String,
     val message: String,
-    val hcaptchaToken: String
 )
 
 /**
- * Response from n8n webhook.
+ * Response structure from N8N webhook.
+ * Success response contains "status": "success"
+ * Error response contains "error": "error message"
+ * @property status Status of the webhook execution (present on success).
+ * @property error Error message (present on failure).
  */
-private data class N8nContactResponse(
-    val success: Boolean,
-    val message: String? = null
+private data class N8nWebhookResponse(
+    val status: String? = null,
+    val error: String? = null,
 )

@@ -19,6 +19,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * ```
  *
  * @property webhookUrl The full URL to the n8n webhook endpoint.
+ * @property headerApiKey The API key for n8n Header Auth credential (x-api-key header).
  * @property apiKey The API key for n8n Header Auth credential (x-api-key header).
  * @property formTokenId The form-specific token for domain validation (form-token-id header).
  * @property hcaptchaSecretKey The secret key for server-side hCaptcha validation.
@@ -26,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "application.contact")
 data class ContactProperties(
     val webhookUrl: String,
+    val headerApiKey: String,
     val apiKey: String,
     val formTokenId: String,
     val hcaptchaSecretKey: String

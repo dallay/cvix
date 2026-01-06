@@ -1,5 +1,5 @@
 ---
-import { CVIX_API_URL, CVIX_HCAPTCHA_SITE_KEY } from "astro:env/client";
+import { CVIX_API_URL, HCAPTCHA_SITE_KEY } from "astro:env/client";
 import {
 	Button,
 	CsrfToken,
@@ -201,12 +201,11 @@ const og = {
 								</FieldGroup>
 							</FieldSet>
 
-							<!-- hCaptcha Verification -->
-              {CVIX_HCAPTCHA_SITE_KEY && (
+              {HCAPTCHA_SITE_KEY && (
 							<div class="flex justify-center">
 								<HCaptcha
 									id="contact-captcha"
-									siteKey={CVIX_HCAPTCHA_SITE_KEY}
+									siteKey={HCAPTCHA_SITE_KEY}
 									theme="auto"
 								/>
 							</div>

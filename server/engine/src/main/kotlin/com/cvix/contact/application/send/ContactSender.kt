@@ -68,7 +68,6 @@ class ContactSender(
             email = email,
             subject = subject,
             message = message,
-            hcaptchaToken = hcaptchaToken,
         )
 
         try {

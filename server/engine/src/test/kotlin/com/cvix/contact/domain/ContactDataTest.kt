@@ -19,7 +19,6 @@ class ContactDataTest {
             email = "john.doe@example.com",
             subject = "Test Subject",
             message = "This is a test message",
-            hcaptchaToken = "10000000-aaaa-bbbb-cccc-000000000001",
         )
 
         // Assert
@@ -28,7 +27,6 @@ class ContactDataTest {
         contactData.email shouldBe "john.doe@example.com"
         contactData.subject shouldBe "Test Subject"
         contactData.message shouldBe "This is a test message"
-        contactData.hcaptchaToken shouldBe "10000000-aaaa-bbbb-cccc-000000000001"
     }
 
     @Test
@@ -39,7 +37,6 @@ class ContactDataTest {
             email = "jose@example.com",
             subject = "Test",
             message = "Message",
-            hcaptchaToken = "token123",
         )
 
         // Assert
@@ -63,7 +60,6 @@ class ContactDataTest {
                 email = email,
                 subject = "Test",
                 message = "Message",
-                hcaptchaToken = "token",
             )
             contactData.email shouldBe email
         }
@@ -80,7 +76,6 @@ class ContactDataTest {
             email = "test@example.com",
             subject = "Test",
             message = longMessage,
-            hcaptchaToken = "token",
         )
 
         // Assert
@@ -96,7 +91,6 @@ class ContactDataTest {
             email = "test@example.com",
             subject = "Regarding: Product #123 - Special Offer! (50% OFF)",
             message = "Message",
-            hcaptchaToken = "token",
         )
 
         // Assert
@@ -111,7 +105,6 @@ class ContactDataTest {
             email = "user@example.com",
             subject = "Consulta sobre 产品",
             message = "Mensaje con ñ, á, é, í, ó, ú y emojis 🚀✨",
-            hcaptchaToken = "token",
         )
 
         // Assert
@@ -128,7 +121,6 @@ class ContactDataTest {
             email = "john@example.com",
             subject = "  Test Subject  ",
             message = "  Message with spaces  ",
-            hcaptchaToken = "token",
         )
 
         // Assert - Note: We don't trim in the domain model
