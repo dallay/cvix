@@ -69,4 +69,4 @@ application:
     webhook-url: "https://test-webhook.example.com/contact"
     api-key: "test-api-key-for-integration-tests"
     form-token-id: "test-form-token-id"
-    hcaptcha-secret-key: "0x0000000000000000000000000000000000000000"
+    hcaptcha-secret-key: "10000000-ffff-ffff-ffff-000000000001"
