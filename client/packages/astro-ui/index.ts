@@ -1,5 +1,4 @@
-// Layouts
-
+export { default as Analytics } from "./src/components/blocks/analytics/Analytics.astro";
 export { default as Brand } from "./src/components/blocks/brand/Brand.astro";
 export { default as HCaptcha } from "./src/components/blocks/captcha/HCaptcha.astro";
 export { default as CsrfToken } from "./src/components/blocks/csrf-token/CsrfToken.astro";
@@ -13,8 +12,6 @@ export { default as LocaleSelectSingle } from "./src/components/i18n/LocaleSelec
 export { default as LocaleSuggest } from "./src/components/i18n/LocaleSuggest.astro";
 export { default as LocalesHomeList } from "./src/components/i18n/LocalesHomeList.astro";
 export { default as NotTranslateCaution } from "./src/components/i18n/NotTranslateCaution.astro";
-export { default as BaseLayout } from "./src/components/layouts/base-layout/BaseLayout.astro";
-export { default as DefaultLayout } from "./src/components/layouts/default-layout/DefaultLayout.astro";
 export { default as Footer } from "./src/components/sections/footers/footer/Footer.astro";
 export { default as Header } from "./src/components/sections/headers/header/Header.astro";
 export { default as BackToTop } from "./src/components/ui/back-to-top/BackToTop.astro";
@@ -40,3 +37,5 @@ export { default as LiteYouTube } from "./src/components/ui/video/LiteYouTube.as
 // Image Utils
 export * from "./src/image/image-utils";
 export * from "./src/image/images";
+export { default as BaseLayout } from "./src/layouts/base-layout/BaseLayout.astro";
+export { default as DefaultLayout } from "./src/layouts/default-layout/DefaultLayout.astro";

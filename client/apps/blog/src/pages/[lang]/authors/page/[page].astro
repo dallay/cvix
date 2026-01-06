@@ -1,12 +1,11 @@
 ---
-import DefaultLayout from "@cvix/astro-ui/components/layouts/default-layout/DefaultLayout.astro";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
-import { getOgImagePath } from "@cvix/lib";
 import AuthorProfileCard from "@/components/AuthorProfileCard.astro";
 import PageHeadline from "@/components/PageHeadline.astro";
 import Pagination from "@/components/Pagination.astro";
 import { useTranslations } from "@/i18n/i18n";
+import Layout from "@/layouts/Layout.astro";
 import { countArticlesByAuthor, getAuthors } from "@/models/author";
 
 export async function getStaticPaths() {
@@ -64,15 +63,9 @@ const { page } = Astro.props;
 const counts = await Promise.all(
 	(page?.data ?? []).map((a) => countArticlesByAuthor(a.id, currentLocale)),
 );
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
-	.href;
-const og = {
-	image: ogImage,
-	xAccount: "@yacosta738",
-};
 ---
 
-<DefaultLayout title={title} description={description} {og} >
+<Layout title={title} description={description}>
 	<PageHeadline
 		title={title}
 		subtitle={subtitle}
@@ -116,4 +109,4 @@ const og = {
 			</div>
 		)}
 	</section>
-</DefaultLayout>
+</Layout>

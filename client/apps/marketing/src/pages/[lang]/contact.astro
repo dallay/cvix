@@ -4,7 +4,6 @@ import {
 	Button,
 	CsrfToken,
 	Field,
-	FieldDescription,
 	FieldGroup,
 	FieldLabel,
 	FieldSet,
@@ -12,13 +11,12 @@ import {
 	HCaptcha,
 	Icon,
 	Input,
-	BaseLayout as Layout,
 	Textarea,
 } from "@cvix/astro-ui";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
-import { getOgImagePath } from "@cvix/lib";
 import { useTranslations } from "@/i18n/i18n";
+import Layout from "@/layouts/Layout.astro";
 import { footerNavLinks } from "@/models/menu";
 
 const locale = Astro.currentLocale as Lang;
@@ -28,16 +26,9 @@ export const getStaticPaths = () =>
 	Object.keys(LOCALES).map((lang) => ({
 		params: { lang },
 	}));
-
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
-	.href;
-const og = {
-	image: ogImage,
-	xAccount: "@yacosta738",
-};
 ---
 
-<Layout title={t('contact.title')} description={t('contact.description')} {og}>
+<Layout title={t('contact.title')} description={t('contact.description')}>
 	<section class="bg-linear-to-b from-primary/5 to-background py-16 md:py-24">
 		<div class="container mx-auto px-4">
 			<div class="max-w-3xl mx-auto text-center">
@@ -361,7 +352,6 @@ const og = {
 				};
 
 			try {
-        console.log(`Submitting contact form to ${form.action} with payload:`, payload);
 				const response = await fetch(form.action, {
 					method: 'POST',
 					headers,
@@ -376,9 +366,7 @@ const og = {
 						throw new Error(errorMessage);
 					}
 
-					// Parse JSON response from backend
 					const result = await response.json();
-					console.log('Contact form submission success:', result);
 
 					// Show success message (use backend message or fallback to translation)
 					showMessage('success', result.message || translations.success);
