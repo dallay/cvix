@@ -1,6 +1,9 @@
 package com.cvix.contact.infrastructure.config
 
+import jakarta.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.URL
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.validation.annotation.Validated
 
 /**
  * Configuration properties for the contact form feature.
@@ -26,10 +29,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * @property hcaptchaSecretKey The secret key for server-side hCaptcha validation.
  */
 @ConfigurationProperties(prefix = "application.contact")
+@Validated
 data class ContactProperties(
+    @field:NotBlank(message = "Webhook URL is required")
+    @field:URL(message = "Webhook URL must be a valid URL")
     val webhookUrl: String,
+
+    @field:NotBlank(message = "Header API key name is required")
     val headerApiKey: String,
+
+    @field:NotBlank(message = "API key is required")
     val apiKey: String,
+
+    @field:NotBlank(message = "Form token ID is required")
     val formTokenId: String,
+
+    @field:NotBlank(message = "hCaptcha secret key is required")
     val hcaptchaSecretKey: String
 )
