@@ -26,7 +26,9 @@ import reactor.netty.http.client.HttpClient
 class WebClientConfig {
 
     /**
-     * General-purpose WebClient for reactive HTTP calls.
+     * Provides a WebClient configured for general reactive HTTP calls.
+     *
+     * @return A WebClient instance configured with connection, response, read, and write timeouts. 
      */
     @Bean
     fun webClient(): WebClient {
@@ -44,13 +46,13 @@ class WebClientConfig {
     }
 
     /**
-     * Specialized WebClient for hCaptcha verification API.
+     * WebClient configured for hCaptcha verification API.
      *
-     * Optimized with shorter timeouts suitable for captcha verification:
-     * - Connection timeout: 3 seconds
-     * - Read/Response timeout: 5 seconds
-     * - Base URL pre-configured for hCaptcha API
-     * - Default Content-Type header
+     * Configures a Reactor Netty HttpClient with shorter timeouts suitable for captcha verification
+     * (3s connect, 5s response/read/write), sets the base URL to https://hcaptcha.com, and adds the
+     * default `Content-Type: application/x-www-form-urlencoded` header.
+     *
+     * @return a configured `WebClient` instance for calling the hCaptcha API.
      */
     @Bean
     fun hcaptchaWebClient(): WebClient {

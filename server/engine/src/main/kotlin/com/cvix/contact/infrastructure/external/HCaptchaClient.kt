@@ -38,15 +38,11 @@ class HCaptchaClient(
 ) : CaptchaValidator {
 
     /**
-     * Verifies an hCaptcha token with the hCaptcha API.
+     * Verifies an hCaptcha token with hCaptcha's server-side verification API.
      *
-     * Optimizations implemented:
-     * - Dedicated WebClient with tuned timeouts (3s connection, 5s response)
-     * - Base URL and Content-Type pre-configured to reduce per-request overhead
-     *
-     * @param token The hCaptcha response token from the client.
-     * @param ipAddress The user's IP address.
-     * @return true if the token is valid, false otherwise.
+     * @param token The hCaptcha response token provided by the client.
+     * @param ipAddress The requester's IP address to include in verification.
+     * @return `true` if the token is valid, `false` otherwise.
      */
     override suspend fun verify(token: String, ipAddress: String): Boolean {
         logger.info("Verifying hCaptcha token from IP: {}", ipAddress)
@@ -76,9 +72,11 @@ class HCaptchaClient(
     }
 
     /**
-     * Builds the form-urlencoded body for hCaptcha verification.
+     * Construct a form-urlencoded request body for hCaptcha siteverify containing secret, response, and remoteip.
      *
-     * Parameters are properly URL-encoded to handle special characters in tokens.
+     * @param token hCaptcha response token provided by the client.
+     * @param ipAddress IP address of the requester to include as `remoteip`.
+     * @return A URL-encoded form string like `secret=...&response=...&remoteip=...`.
      */
     private fun buildVerificationBody(token: String, ipAddress: String): String {
         return listOf(

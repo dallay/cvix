@@ -18,11 +18,11 @@ class SendContactCommandHandler(
 ) : CommandHandler<SendContactCommand> {
 
     /**
-     * Handles the command to send a contact form submission.
+     * Processes a SendContactCommand and triggers sending of the contact submission.
      *
-     * @param command The command containing the contact form data.
-     * @throws CaptchaValidationException if captcha validation fails.
-     * @throws ContactNotificationException if sending notification fails.
+     * @param command The command containing contact form data and metadata (id, name, email, subject, message, hcaptchaToken, ipAddress).
+     * @throws CaptchaValidationException if captcha validation fails during processing.
+     * @throws ContactNotificationException if sending the contact notification fails.
      */
     override suspend fun handle(command: SendContactCommand) {
         logger.info(

@@ -29,17 +29,17 @@ class ContactSender(
 ) {
 
     /**
-     * Validates hCaptcha and sends the contact form data through the notification port.
+     * Validate an hCaptcha token and dispatch the contact form data via the notification port.
      *
      * @param id Unique identifier for this submission.
      * @param name Sender's full name.
      * @param email Sender's email address.
-     * @param subject Message subject.
-     * @param message Message content.
-     * @param hcaptchaToken hCaptcha verification token.
-     * @param ipAddress Sender's IP address.
-     * @throws CaptchaValidationException if hCaptcha validation fails.
-     * @throws ContactNotificationException if sending notification fails.
+     * @param subject Subject line of the message.
+     * @param message Body content of the message.
+     * @param hcaptchaToken hCaptcha verification token obtained from the client.
+     * @param ipAddress IP address of the sender used for captcha verification.
+     * @throws CaptchaValidationException if the hCaptcha token is invalid.
+     * @throws ContactNotificationException if sending the contact notification fails.
      */
     @Suppress("LongParameterList")
     suspend fun send(

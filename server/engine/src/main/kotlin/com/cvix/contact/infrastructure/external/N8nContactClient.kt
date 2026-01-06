@@ -34,10 +34,13 @@ class N8nContactClient(
 ) : ContactNotifier {
 
     /**
-     * Sends contact notification to n8n webhook.
+     * Send contact data to the configured n8n webhook and log the delivery outcome.
      *
-     * @param contactData The contact information from the domain.
-     * @throws ContactNotificationException if the notification fails.
+     * Sends the contact's name, email, subject, and message to the n8n webhook and treats the webhook
+     * response as authoritative; logs success, and throws on error or unexpected responses.
+     *
+     * @param contactData The domain contact information to deliver (name, email, subject, message).
+     * @throws ContactNotificationException if the webhook returns an error, an unexpected response, or if an HTTP/connection failure occurs.
      */
     override suspend fun notify(contactData: ContactData) {
         logger.info(

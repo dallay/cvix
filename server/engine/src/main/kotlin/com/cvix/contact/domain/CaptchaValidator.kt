@@ -17,5 +17,13 @@ fun interface CaptchaValidator {
      * @return true if the token is valid, false otherwise
      * @throws CaptchaValidationException if validation fails due to technical issues
      */
-    suspend fun verify(token: String, ipAddress: String): Boolean
+    /**
+ * Validates a CAPTCHA token for a given client IP address at the domain level.
+ *
+ * @param token The CAPTCHA token provided by the client.
+ * @param ipAddress The client's IP address associated with the token submission.
+ * @return `true` if the token is valid, `false` otherwise.
+ * @throws CaptchaValidationException If validation cannot be completed due to a technical or network error.
+ */
+suspend fun verify(token: String, ipAddress: String): Boolean
 }

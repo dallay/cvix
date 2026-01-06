@@ -60,15 +60,16 @@ class ContactController(
 ) : ApiController(mediator) {
 
     /**
-     * Endpoint for sending contact form submissions.
+     * Endpoint that accepts contact form submissions, validates hCaptcha, dispatches the send command, and returns a localized response.
      *
-     * Accepts contact form data, validates hCaptcha server-side, and forwards to n8n webhook.
-     * Uses header-based versioning with API-Version header (currently accepts v1).
+     * Builds request metadata and determines response language from the Accept-Language header before dispatching.
      *
-     * @param request The request body containing contact form data and hCaptcha token.
-     * @param serverRequest The server request for extracting client IP.
-     * @param acceptLanguage Optional Accept-Language header for localized responses.
-     * @return ResponseEntity with success or error response.
+     * @param request The validated contact form payload including name, email, subject, message, and hCaptcha token.
+     * @param serverRequest The server HTTP request used to extract client IP and headers (User-Agent, Referer).
+     * @param acceptLanguage Optional Accept-Language header value used to select the response language (defaults to "en").
+     * @return ResponseEntity containing a SendContactApiResponse with success state and a localized message.
+     * @throws ResponseStatusException with HTTP 400 when hCaptcha validation fails.
+     * @throws ResponseStatusException with HTTP 500 when notification delivery fails.
      */
     @Operation(
         summary = "Send contact form",
@@ -171,14 +172,10 @@ class ContactController(
     }
 
     /**
-     * Extracts the client's real IP address from the request.
+     * Determines the client's IP address from the request, preferring forwarded headers and falling back to the remote address.
      *
-     * Checks X-Forwarded-For, X-Real-IP headers (for proxies/load balancers),
-     * validates the format, and falls back to remote address.
-     * Only returns header values if they pass IP format validation.
-     *
-     * @param request The server HTTP request.
-     * @return The validated client's IP address, or "unknown" if unable to determine.
+     * @param request the server HTTP request to inspect
+     * @return the client's IP address if determined and valid, or "unknown" if it cannot be determined
      */
     private fun extractClientIp(request: ServerHttpRequest): String {
         val xForwardedFor = request.headers.getFirst("X-Forwarded-For")
@@ -203,11 +200,10 @@ class ContactController(
     }
 
     /**
-     * Validates if a string is a well-formed IP address (IPv4 or IPv6).
-     * Uses InetAddress.getByName for robust validation.
+     * Checks whether the provided string is a valid IPv4 or IPv6 address.
      *
      * @param ip The IP address string to validate.
-     * @return true if the string is a valid IP address format, false otherwise.
+     * @return `true` if `ip` represents a valid IPv4 or IPv6 address, `false` otherwise.
      */
     @Suppress("SwallowedException")
     private fun isValidIp(ip: String): Boolean {
@@ -220,10 +216,10 @@ class ContactController(
     }
 
     /**
-     * Parses the Accept-Language header to determine the preferred language.
+     * Determines the response language from an Accept-Language header value.
      *
-     * @param acceptLanguage The Accept-Language header value.
-     * @return Language code ("en" or "es"), defaults to "en".
+     * @param acceptLanguage the value of the Accept-Language header, or null/blank to use the default
+     * @return `"es"` if the header's primary language is Spanish, otherwise `"en"`
      */
     private fun parseAcceptLanguage(acceptLanguage: String?): String {
         if (acceptLanguage.isNullOrBlank()) return LANG_ENGLISH

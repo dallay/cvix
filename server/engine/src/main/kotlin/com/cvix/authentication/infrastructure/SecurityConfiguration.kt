@@ -190,6 +190,15 @@ class SecurityConfiguration(
         // @formatter:on
     }
 
+    /**
+     * Configures path-based authorization rules on the provided authorize-exchange spec.
+     *
+     * Allows unauthenticated access to OPTIONS requests, public endpoints (root, health, auth, OAuth2, docs),
+     * specific POST endpoints (/api/waitlist, /api/contact), and selected management endpoints.
+     * Requires authentication for `/actuator/**` and `/api/**`, and requires the ADMIN authority for `/management/**`.
+     *
+     * @param auth The authorize-exchange specification to configure with the application's route access rules.
+     */
     private fun configureAuthorization(auth: ServerHttpSecurity.AuthorizeExchangeSpec) {
         auth
             .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
