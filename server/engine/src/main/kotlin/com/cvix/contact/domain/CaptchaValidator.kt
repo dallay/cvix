@@ -8,7 +8,7 @@ package com.cvix.contact.domain
  *
  * The infrastructure layer will provide the concrete implementation.
  */
-interface CaptchaValidator {
+fun interface CaptchaValidator {
     /**
      * Verifies a CAPTCHA token.
      *

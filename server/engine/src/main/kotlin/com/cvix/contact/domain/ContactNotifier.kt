@@ -9,7 +9,7 @@ package com.cvix.contact.domain
  *
  * The infrastructure layer will provide the concrete implementation.
  */
-interface ContactNotifier {
+fun interface ContactNotifier {
     /**
      * Sends a contact notification to the configured external system.
      *
