@@ -54,20 +54,18 @@ const {
 	...props
 } = Astro.props;
 
-const slot = await Astro.slots.render("default");
-
 const Comp = href ? "a" : "button";
 ---
 
 {
-  slot?.trim().length > 0 && (
+  Astro.slots.has("default") && (
     <Comp
       data-slot="button"
       class={cn(variants({ variant, size }), className)}
       href={href}
       {...props}
     >
-      <Fragment set:html={slot} />
+      <slot />
     </Comp>
   )
 }

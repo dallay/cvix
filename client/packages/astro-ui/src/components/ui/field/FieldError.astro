@@ -5,11 +5,9 @@ import type { HTMLAttributes } from "astro/types";
 interface Props extends HTMLAttributes<"p"> {}
 
 const { class: className, ...props } = Astro.props;
-
-const slot = await Astro.slots.render("default");
 ---
 
-{slot?.trim().length > 0 && (
+{Astro.slots.has("default") && (
   <p
     data-slot="field-error"
     role="alert"
@@ -19,6 +17,6 @@ const slot = await Astro.slots.render("default");
     )}
     {...props}
   >
-    <Fragment set:html={slot} />
+    <slot />
   </p>
 )}
