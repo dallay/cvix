@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * application:
  *   contact:
  *     webhook-url: ${CONTACT_WEBHOOK_URL}
+ *     header-api-key: ${CONTACT_HEADER_API_KEY}
  *     api-key: ${CONTACT_API_KEY}
  *     form-token-id: ${CONTACT_FORM_TOKEN_ID}
  *     hcaptcha-secret-key: ${HCAPTCHA_SECRET_KEY}
