@@ -28,7 +28,7 @@ class WebClientConfig {
     /**
      * Provides a WebClient configured for general reactive HTTP calls.
      *
-     * @return A WebClient instance configured with connection, response, read, and write timeouts. 
+     * @return A WebClient instance configured with connection, response, read, and write timeouts.
      */
     @Bean
     fun webClient(): WebClient {

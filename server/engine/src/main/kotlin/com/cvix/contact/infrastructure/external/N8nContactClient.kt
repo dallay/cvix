@@ -40,7 +40,8 @@ class N8nContactClient(
      * response as authoritative; logs success, and throws on error or unexpected responses.
      *
      * @param contactData The domain contact information to deliver (name, email, subject, message).
-     * @throws ContactNotificationException if the webhook returns an error, an unexpected response, or if an HTTP/connection failure occurs.
+     * @throws ContactNotificationException if the webhook returns an error, an unexpected response,
+     *                                       or if an HTTP/connection failure occurs.
      */
     override suspend fun notify(contactData: ContactData) {
         logger.info(

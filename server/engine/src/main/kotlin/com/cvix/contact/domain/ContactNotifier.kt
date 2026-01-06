@@ -17,10 +17,10 @@ fun interface ContactNotifier {
      * @throws ContactNotificationException if the notification fails
      */
     /**
- * Sends contact submission data to an external notification system.
- *
- * @param contactData The contact information to deliver (e.g., name, email, message).
- * @throws ContactNotificationException If the notification could not be delivered.
- */
-suspend fun notify(contactData: ContactData)
+     * Sends contact submission data to an external notification system.
+     *
+     * @param contactData The contact information to deliver (e.g., name, email, message).
+     * @throws ContactNotificationException If the notification could not be delivered.
+     */
+    suspend fun notify(contactData: ContactData)
 }

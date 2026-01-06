@@ -20,7 +20,8 @@ class SendContactCommandHandler(
     /**
      * Processes a SendContactCommand and triggers sending of the contact submission.
      *
-     * @param command The command containing contact form data and metadata (id, name, email, subject, message, hcaptchaToken, ipAddress).
+     * @param command The command containing contact form data and metadata
+     *                (id, name, email, subject, message, hcaptchaToken, ipAddress).
      * @throws CaptchaValidationException if captcha validation fails during processing.
      * @throws ContactNotificationException if sending the contact notification fails.
      */

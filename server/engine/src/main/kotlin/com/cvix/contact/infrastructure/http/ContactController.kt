@@ -60,13 +60,15 @@ class ContactController(
 ) : ApiController(mediator) {
 
     /**
-     * Endpoint that accepts contact form submissions, validates hCaptcha, dispatches the send command, and returns a localized response.
+     * Endpoint that accepts contact form submissions, validates hCaptcha, dispatches the send command,
+     * and returns a localized response.
      *
      * Builds request metadata and determines response language from the Accept-Language header before dispatching.
      *
      * @param request The validated contact form payload including name, email, subject, message, and hCaptcha token.
      * @param serverRequest The server HTTP request used to extract client IP and headers (User-Agent, Referer).
-     * @param acceptLanguage Optional Accept-Language header value used to select the response language (defaults to "en").
+     * @param acceptLanguage Optional Accept-Language header value used to select the response language
+     *                      (defaults to "en").
      * @return ResponseEntity containing a SendContactApiResponse with success state and a localized message.
      * @throws ResponseStatusException with HTTP 400 when hCaptcha validation fails.
      * @throws ResponseStatusException with HTTP 500 when notification delivery fails.
@@ -172,7 +174,8 @@ class ContactController(
     }
 
     /**
-     * Determines the client's IP address from the request, preferring forwarded headers and falling back to the remote address.
+     * Determines the client's IP address from the request, preferring forwarded headers and falling
+     * back to the remote address.
      *
      * @param request the server HTTP request to inspect
      * @return the client's IP address if determined and valid, or "unknown" if it cannot be determined
