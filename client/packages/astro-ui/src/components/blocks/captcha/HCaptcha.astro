@@ -54,7 +54,7 @@ if (!siteKey) {
 <script src="https://js.hcaptcha.com/1/api.js?render=explicit" is:inline async defer></script>
 
 <script>
-	// Helper: Show error message in a standardized, safe way
+	// Helper: Show error message safely using textContent (prevents XSS)
 	// Exported for usage in dynamic error handling below
 	// @ts-ignore - usage is dynamic
 	function showError(container: HTMLElement, message: string): void {
@@ -93,7 +93,6 @@ if (!siteKey) {
 		const containers = document.querySelectorAll<HTMLElement>('[data-hcaptcha-widget="true"]');
 
 		if (containers.length === 0) {
-			console.warn('No hCaptcha containers found');
 			return;
 		}
 
@@ -124,7 +123,6 @@ if (!siteKey) {
 
 			// Check if already rendered
 			if (window.hcaptchaWidgets?.has(captchaId)) {
-				console.log(`hCaptcha widget "${captchaId}" already rendered`);
 				return;
 			}
 
@@ -134,14 +132,18 @@ if (!siteKey) {
 					theme: theme,
 					size: size,
 					callback: (token: string) => {
-						console.log(`hCaptcha solved for ${captchaId}`);
+						if (import.meta.env.DEV) {
+							console.log(`hCaptcha solved for ${captchaId}`);
+						}
 						container.dataset.token = token;
 						container.dispatchEvent(new CustomEvent('hcaptcha-success', {
 							detail: { token, widgetId }
 						}));
 					},
 					'expired-callback': () => {
-						console.log(`hCaptcha expired for ${captchaId}`);
+						if (import.meta.env.DEV) {
+							console.log(`hCaptcha expired for ${captchaId}`);
+						}
 						delete container.dataset.token;
 						container.dispatchEvent(new CustomEvent('hcaptcha-expired'));
 					},
@@ -157,7 +159,9 @@ if (!siteKey) {
 				container.dataset.widgetId = widgetId;
 				container.dataset.ready = 'true';
 
-				console.log(`hCaptcha widget "${captchaId}" initialized with widgetId: ${widgetId}`);
+				if (import.meta.env.DEV) {
+					console.log(`hCaptcha widget "${captchaId}" initialized with widgetId: ${widgetId}`);
+				}
 			} catch (error) {
 				console.error(`Failed to render hCaptcha widget "${captchaId}":`, error);
 				showError(container, 'Failed to initialize hCaptcha. Please refresh the page.');

@@ -375,7 +375,10 @@ export const getStaticPaths = () =>
 					form.reset();
 					window.resetCaptcha?.('contact-captcha');
 				} catch (error) {
-					console.error('Contact form submission error:', error);
+					// Only log errors in development to avoid exposing sensitive data
+					if (import.meta.env.DEV) {
+						console.error('Contact form submission error:', error);
+					}
 					showMessage('error', translations.error);
 
 					// Reset captcha on error so user can try again

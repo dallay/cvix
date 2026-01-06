@@ -24,6 +24,8 @@ const { class: className, orientation = "horizontal", ...props } = Astro.props;
 
 <div
   data-slot="separator"
+  role="separator"
+  aria-orientation={orientation}
   class={cn(variants({ orientation }), className)}
   {...props}
 >
