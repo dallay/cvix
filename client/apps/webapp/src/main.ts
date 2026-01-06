@@ -14,22 +14,22 @@ import router from "./router";
 import { csrfService } from "./shared/csrf.service";
 import "./styles/globals.css";
 
-// Initialize CSRF token before mounting the app
-csrfService.initialize().then(() => {
-	const app = createApp(App);
+// Initialize CSRF token in parallel with app mounting for faster startup
+csrfService.initialize();
 
-	app.use(createPinia());
-	app.use(router);
-	app.use(i18n);
+const app = createApp(App);
 
-	// Provide settings repository
-	const settingsRepository = new LocalStorageSettingsRepository();
-	app.provide(SETTINGS_REPOSITORY_KEY, settingsRepository);
+app.use(createPinia());
+app.use(router);
+app.use(i18n);
 
-	// Configure resume storage based on user preference
-	const storagePreference = getUserStoragePreference();
-	const resumeStorage = createResumeStorage(storagePreference);
-	app.provide(RESUME_STORAGE_KEY, resumeStorage);
+// Provide settings repository
+const settingsRepository = new LocalStorageSettingsRepository();
+app.provide(SETTINGS_REPOSITORY_KEY, settingsRepository);
 
-	app.mount("#app");
-});
+// Configure resume storage based on user preference
+const storagePreference = getUserStoragePreference();
+const resumeStorage = createResumeStorage(storagePreference);
+app.provide(RESUME_STORAGE_KEY, resumeStorage);
+
+app.mount("#app");
