@@ -26,8 +26,8 @@ class SendContactCommandHandler(
      */
     override suspend fun handle(command: SendContactCommand) {
         logger.info(
-            "Handling SendContactCommand from email: {}, subject: {}",
-            command.email,
+            "Handling SendContactCommand with ID: {}, subject: {}",
+            command.id,
             command.subject,
         )
 

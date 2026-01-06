@@ -1,4 +1,21 @@
 ---
+/**
+ * Link component that renders as a styled anchor tag with the "link" variant.
+ *
+ * This component wraps the Button component and inherits all its functionality,
+ * but is specifically designed for navigation links rather than actions.
+ *
+ * @example
+ * ```astro
+ * <Link href="/about">About Us</Link>
+ * <Link href="https://example.com" target="_blank" rel="noopener">External Link</Link>
+ * ```
+ *
+ * **Important**: This component requires slot content to render. Empty links will not be displayed.
+ *
+ * @component
+ */
+
 import Button from "../button/Button.astro";
 
 const { href, target, rel, class: className, ...props } = Astro.props;

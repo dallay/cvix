@@ -1,11 +1,11 @@
 import { CVIX_API_URL, CVIX_BLOG_URL, CVIX_WEBAPP_URL } from "@cvix/lib";
 import { envField } from "astro/config";
 
-export default {
+export const envSchema = {
 	AHREFS_KEY: envField.string({
 		context: "client",
 		access: "public",
-		default: "",
+		optional: true,
 	}),
 	CVIX_API_URL: envField.string({
 		context: "client",
@@ -29,3 +29,5 @@ export default {
 		optional: true,
 	}),
 };
+
+export default envSchema;
