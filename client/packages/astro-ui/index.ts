@@ -1,6 +1,5 @@
 // Layouts
 
-export { default as Analytics } from "./src/components/blocks/analytics/Analytics.astro";
 export { default as Brand } from "./src/components/blocks/brand/Brand.astro";
 export { default as HCaptcha } from "./src/components/blocks/captcha/HCaptcha.astro";
 export { default as CsrfToken } from "./src/components/blocks/csrf-token/CsrfToken.astro";
@@ -38,7 +37,6 @@ export { default as OptimizedPicture } from "./src/components/ui/optimized-pictu
 export { default as Separator } from "./src/components/ui/separator/Separator.astro";
 export { default as Textarea } from "./src/components/ui/textarea/Textarea.astro";
 export { default as LiteYouTube } from "./src/components/ui/video/LiteYouTube.astro";
-
 // Image Utils
 export * from "./src/image/image-utils";
 export * from "./src/image/images";

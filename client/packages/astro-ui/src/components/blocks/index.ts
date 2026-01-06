@@ -1,6 +1,5 @@
 // Block Components
 
-export { default as Analytics } from "./analytics/Analytics.astro";
 export { default as Brand } from "./brand/Brand.astro";
 export { default as HCaptcha } from "./captcha/HCaptcha.astro";
 export { default as CsrfToken } from "./csrf-token/CsrfToken.astro";
