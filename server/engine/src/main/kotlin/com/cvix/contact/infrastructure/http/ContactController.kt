@@ -108,8 +108,7 @@ class ContactController(
         @RequestHeader(value = "Accept-Language", required = false) acceptLanguage: String?
     ): ResponseEntity<SendContactApiResponse> {
         logger.info(
-            "Contact form submission from: {}, subject: {}",
-            request.email,
+            "Contact form submission received, subject: {}",
             request.subject,
         )
 
@@ -140,7 +139,7 @@ class ContactController(
         try {
             dispatch(command)
 
-            logger.info("Successfully processed contact form submission from: {}", request.email)
+            logger.info("Successfully processed contact form submission with ID: {}", command.id)
 
             // Return success response with localized message
             val response = SendContactResponse(
@@ -151,8 +150,8 @@ class ContactController(
             return ResponseEntity.status(HttpStatus.CREATED).body(response)
         } catch (e: CaptchaValidationException) {
             logger.warn(
-                "hCaptcha validation failed for submission from: {}, IP: {}, reason: {}",
-                request.email,
+                "hCaptcha validation failed for submission ID: {}, IP: {}, reason: {}",
+                command.id,
                 clientIp,
                 e.message,
             )
@@ -162,7 +161,7 @@ class ContactController(
                 e,
             )
         } catch (e: ContactNotificationException) {
-            logger.error("Failed to send contact notification from: {}", request.email, e)
+            logger.error("Failed to send contact notification for submission ID: {}", command.id, e)
             throw ResponseStatusException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 getLocalizedMessage(language, "error"),
