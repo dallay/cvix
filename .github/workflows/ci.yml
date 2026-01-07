@@ -201,7 +201,7 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
-        if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
+        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
         timeout-minutes: 15
         run: |
           echo "Pre-pulling TexLive Docker image for PDF generation tests..."
@@ -220,7 +220,7 @@ jobs:
             fi
           done
       - name: Configure Docker for Tests
-        if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
+        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
         run: |
           echo "Configuring Docker environment for tests..."
           # Verify image is available
