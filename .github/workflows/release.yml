@@ -16,6 +16,7 @@ on:
 
 env:
   NODE_VERSION: "22"
+  TEXLIVE_IMAGE: ghcr.io/dallay/texlive:2025 # TexLive Docker image for PDF generation
   REGISTRY_GHCR: ghcr.io
   REGISTRY_DOCKERHUB: docker.io
 
@@ -114,7 +115,6 @@ jobs:
             echo "| Patch    | ${{ steps.semantic.outputs.new_release_patch_version }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-
   # ============================================================================
   # Docker Build & Push - Backend (Multi-Registry)
   # ============================================================================
@@ -140,9 +140,9 @@ jobs:
       - name: Pre-pull TexLive Docker image
         timeout-minutes: 15
         run: |
-          echo "Pre-pulling TexLive Docker image for PDF generation tests..."
+          echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
           for i in 1 2 3; do
-            if docker pull ghcr.io/dallay/texlive:2025; then
+            if docker pull ${{ env.TEXLIVE_IMAGE }}; then
               echo "Docker image pulled successfully"
               docker images | grep texlive
               break
@@ -159,14 +159,14 @@ jobs:
       - name: Configure Docker for Tests
         run: |
           echo "Configuring Docker environment for tests..."
-          # Verify image is available
-          docker images | grep texlive || echo "WARNING: TexLive image not found"
+          # Verify image is available (fail fast if missing)
+          if ! docker images | grep -q texlive; then
+            echo "ERROR: TexLive image not found after pre-pull step"
+            exit 1
+          fi
           # Configure Testcontainers to reuse existing images
-          mkdir -p ~/.testcontainers
-          cat > ~/.testcontainers.properties << 'EOF'
-          # Reuse existing containers and images
+          cat > ~/.testcontainers.properties <<EOF
           testcontainers.reuse.enable=true
-          # Don't use Ryuk container cleaner in CI (can cause issues)
           testcontainers.ryuk.disabled=true
           EOF
           echo "Testcontainers configuration:"
@@ -175,7 +175,7 @@ jobs:
       - name: Warm up Docker with TexLive
         run: |
           echo "Warming up Docker by running a test command..."
-          docker run --rm ghcr.io/dallay/texlive:2025 pdflatex --version
+          docker run --rm ${{ env.TEXLIVE_IMAGE }} pdflatex --version
           echo "Docker warmup successful - TexLive container can be launched"
 
       - name: Build JAR
