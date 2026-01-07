@@ -110,7 +110,7 @@ class DockerPdfGenerator(
             try {
                 logger.info("Pre-pulling Docker image in background: ${properties.image}")
                 ensureDockerImage()
-                logger.info("Docker image pre-pull completed successfully")
+                logger.info("Docker image pre-pull completed successfully: ${properties.image}")
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 logger.warn(
                     "Failed to pre-pull Docker image during startup. " +

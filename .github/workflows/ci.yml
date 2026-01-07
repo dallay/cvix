@@ -202,51 +202,88 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
-        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
           echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
-          for i in 1 2 3; do
+
+          # Retry logic: attempt up to 5 times with exponential backoff
+          for i in {1..5}; do
+            echo "Attempt $i/5: Pulling image..."
             if docker pull ${{ env.TEXLIVE_IMAGE }}; then
-              echo "Docker image pulled successfully"
+              echo "✅ Docker image pulled successfully"
               docker images | grep texlive
               break
             fi
-            if [ $i -lt 3 ]; then
-              echo "Pull attempt $i failed, retrying in 10s..."
-              sleep 10
+
+            if [ $i -lt 5 ]; then
+              wait_time=$((10 * i))
+              echo "❌ Pull attempt $i failed, retrying in ${wait_time}s..."
+              sleep $wait_time
             else
-              echo "Failed to pull image after 3 attempts"
+              echo "❌ Failed to pull image after 5 attempts"
               exit 1
             fi
           done
       - name: Configure Docker for Tests
-        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
         run: |
           echo "Configuring Docker environment for tests..."
           # Verify image is available (fail fast if missing)
           if ! docker image inspect "${{ env.TEXLIVE_IMAGE }}" >/dev/null 2>&1; then
             echo "ERROR: TexLive image ${{ env.TEXLIVE_IMAGE }} not found after pre-pull step"
+            echo "Available images:"
+            docker images
             exit 1
           fi
-          # Configure Testcontainers to reuse existing images
-          printf '%s\n' \
-            'testcontainers.reuse.enable=true' \
-            'testcontainers.ryuk.disabled=true' \
-            > ~/.testcontainers.properties
+
+          # Configure Testcontainers to reuse existing images and optimize for CI
+          mkdir -p ~/.testcontainers
+          cat > ~/.testcontainers.properties << 'EOF'
+testcontainers.reuse.enable=true
+testcontainers.ryuk.disabled=true
+testcontainers.docker.network.mode=host
+testcontainers.properties.preferLocalImages=true
+testcontainers.docker.client.strategy=unix
+testcontainers.checks.disable=true
+EOF
+
           echo "Testcontainers configuration:"
           cat ~/.testcontainers.properties
       - name: Warm up Docker with TexLive
-        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
         run: |
           echo "Warming up Docker by running a test command..."
-          docker run --rm ${{ env.TEXLIVE_IMAGE }} pdflatex --version
+          docker run --rm --network host ${{ env.TEXLIVE_IMAGE }} pdflatex --version
           echo "Docker warmup successful - TexLive container can be launched"
-      - name: Build with Gradle
-        run: ./gradlew build -x test --no-daemon
+      - name: Verify Docker Daemon
+        run: |
+          echo "Verifying Docker daemon is accessible..."
+          docker ps
+          docker info
+          docker images | grep -E "(texlive|ubuntu)" || echo "⚠️  No base images found"
+          echo ""
+          echo "Docker configuration summary:"
+          echo "✅ Docker daemon: Connected"
+          echo "✅ Images available: $(docker images --quiet | wc -l) images"
+          echo "✅ Containers running: $(docker ps --quiet | wc -l) containers"
+      - name: Build with Gradle (no tests)
+        run: ./gradlew assemble --no-daemon -x test
       - name: Run tests
-        run: ./gradlew test --no-daemon
-        timeout-minutes: 30
+        env:
+          DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
+          TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+          TESTCONTAINERS_CHECKS_DISABLE: true
+          TESTCONTAINERS_REUSE_ENABLE: true
+          TESTCONTAINERS_RYUK_DISABLED: true
+          _JAVA_OPTIONS: -Xmx2g
+        run: |
+          echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
+          echo "Test configuration:"
+          echo "  - Docker socket: ${TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE}"
+          echo "  - Ryuk disabled: ${TESTCONTAINERS_RYUK_DISABLED}"
+          echo "  - Reuse enabled: ${TESTCONTAINERS_REUSE_ENABLE}"
+          echo "  - Java max heap: 2G"
+          echo ""
+          ./gradlew test --no-daemon -i
+        timeout-minutes: 60
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         if: always()

@@ -25,29 +25,39 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
 
     @BeforeAll
     fun waitForDockerImage() {
-        // Wait for Docker image to be pulled during startup (up to 20 minutes in CI)
+        // Wait for Docker image to be pulled during startup (up to 25 minutes in CI)
         // This prevents timeout issues during test execution, especially in resource-constrained CI environments
         val startTime = System.currentTimeMillis()
-        val maxWaitMillis = TimeUnit.MINUTES.toMillis(20)
+        val maxWaitMillis = TimeUnit.MINUTES.toMillis(25)
 
         // The PostConstruct method starts the pull in a background thread
         // Wait for it to complete by checking if we can generate a minimal PDF
         var attempts = 0
         var lastException: Exception? = null
+
+        println("========================================")
+        println("Waiting for Docker TexLive image...")
+        println("========================================")
+
         while (System.currentTimeMillis() - startTime < maxWaitMillis) {
             try {
                 attempts++
                 // Try to generate a simple test PDF to verify the image is ready
                 val testLatex = """
                     \documentclass{article}
+                    \usepackage[utf-8]{inputenc}
+                    \usepackage[a4paper, margin=1in]{geometry}
+                    \pagestyle{empty}
                     \begin{document}
-                    Test
+                    \section*{Test}
+                    This is a test document.
                     \end{document}
                 """.trimIndent()
 
                 // This will trigger image pull if not done yet
                 dockerPdfGenerator.generatePdf(testLatex, "en").block()
-                println("Docker image ready after $attempts attempts (${System.currentTimeMillis() - startTime}ms)")
+                val elapsed = System.currentTimeMillis() - startTime
+                println("✅ Docker image ready after $attempts attempts (${elapsed / 1000}s)")
                 return
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 lastException = e
@@ -55,7 +65,10 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
                 if (attempts % 6 == 0) { // Log every minute
                     logDockerWaitProgress(attempts, startTime, e)
                 }
-                Thread.sleep(10_000) // Wait 10 seconds between attempts
+
+                // Shorter sleep for faster feedback in CI
+                val sleepTime = if (attempts < 3) 5_000L else 10_000L
+                Thread.sleep(sleepTime)
             }
         }
 
@@ -63,7 +76,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         logDockerTestFailureDetails(attempts, startTime, lastException)
 
         throw IllegalStateException(
-            "Docker image not ready after ${maxWaitMillis / 1000} seconds. " +
+            "Docker image not ready after ${maxWaitMillis / 1000} seconds (attempt $attempts). " +
                 "Please ensure Docker is running and has sufficient resources. " +
                 "Last error: ${lastException?.message}",
             lastException,
@@ -71,18 +84,20 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
     }
 
     private fun logDockerWaitProgress(attempts: Int, startTime: Long, exception: Exception) {
-        println(
-            "Waiting for Docker image pull to complete... " +
-                "(attempt $attempts, ${(System.currentTimeMillis() - startTime) / 1000}s elapsed)",
-        )
-        println("Last error: ${exception.javaClass.simpleName}: ${exception.message}")
+        val elapsed = (System.currentTimeMillis() - startTime) / 1000
+        println("⏳ Waiting for Docker image pull to complete...")
+        println("   Attempt: $attempts, Elapsed: ${elapsed}s")
+        println("   Last error: ${exception.javaClass.simpleName}: ${exception.message}")
         exception.cause?.let { cause ->
-            println("Caused by: ${cause.javaClass.simpleName}: ${cause.message}")
+            println("   Caused by: ${cause.javaClass.simpleName}: ${cause.message}")
         }
     }
 
     private fun logDockerTestFailureDetails(attempts: Int, startTime: Long, lastException: Exception?) {
-        println("=== Docker Integration Test Failure Details ===")
+        println("")
+        println("╔═════════════════════════════════════════════════════╗")
+        println("║  Docker Integration Test Failure Details            ║")
+        println("╚═════════════════════════════════════════════════════╝")
         println("Total attempts: $attempts")
         println("Total wait time: ${(System.currentTimeMillis() - startTime) / 1000}s")
         lastException?.let { e ->
@@ -90,9 +105,11 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
             e.cause?.let { cause ->
                 println("Caused by: ${cause.javaClass.name}: ${cause.message}")
             }
+            println("")
+            println("Stack trace:")
             e.printStackTrace()
         }
-        println("=== End of Docker Integration Test Failure Details ===")
+        println("═══════════════════════════════════════════════════════")
     }
 
     @Test
@@ -105,7 +122,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
-    @Timeout(150) // Increased to 150s to accommodate Docker image pulls in CI
+    @Timeout(180) // Increased to 180s to accommodate Docker slowness in CI
     fun `should generate resume PDF successfully`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 
@@ -130,7 +147,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         "/db/user/clean.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     )
-    @Timeout(150) // Increased to 150s to accommodate Docker image pulls in CI
+    @Timeout(180) // Increased to 180s to accommodate Docker slowness in CI
     fun `should generate resume with Spanish locale`() {
         val request = ResumeTestFixtures.createValidResumeRequestContent()
 
