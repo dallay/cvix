@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated
  *     api-key: ${CONTACT_API_KEY}
  *     form-token-id: ${CONTACT_FORM_TOKEN_ID}
  *     hcaptcha-secret-key: ${HCAPTCHA_SECRET_KEY}
+ *     webhook-timeout-seconds: 10
  * ```
  *
  * @property webhookUrl The full URL to the n8n webhook endpoint.
@@ -27,6 +28,7 @@ import org.springframework.validation.annotation.Validated
  * @property apiKey The API key sent via Authorization Bearer token (if required by n8n workflow).
  * @property formTokenId The form-specific token for domain validation (form-token-id header).
  * @property hcaptchaSecretKey The secret key for server-side hCaptcha validation.
+ * @property webhookTimeoutSeconds Timeout in seconds for webhook HTTP requests (default: 10).
  */
 @ConfigurationProperties(prefix = "application.contact")
 @Validated
@@ -45,5 +47,7 @@ data class ContactProperties(
     val formTokenId: String,
 
     @field:NotBlank(message = "hCaptcha secret key is required")
-    val hcaptchaSecretKey: String
+    val hcaptchaSecretKey: String,
+
+    val webhookTimeoutSeconds: Long = 10
 )

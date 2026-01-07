@@ -15,8 +15,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 
 private val logger = LoggerFactory.getLogger(N8nContactClient::class.java)
 
-private const val TIMEOUT = 10L
-
 /**
  * Infrastructure adapter implementing contact notification via N8N webhook.
  *
@@ -61,7 +59,7 @@ class N8nContactClient(
                 .bodyValue(n8nPayload)
                 .retrieve()
                 .bodyToMono<N8nWebhookResponse>()
-                .timeout(Duration.ofSeconds(TIMEOUT))
+                .timeout(Duration.ofSeconds(properties.webhookTimeoutSeconds))
                 .awaitSingle()
 
             when {

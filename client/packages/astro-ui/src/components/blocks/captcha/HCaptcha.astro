@@ -186,16 +186,14 @@ if (!siteKey) {
 		} else if (attempts >= maxAttempts) {
 			window.clearInterval(checkInterval);
 			console.error('hCaptcha API failed to load within 10 seconds');
-
-				// Show error in containers
-				const containers = document.querySelectorAll<HTMLElement>('[data-hcaptcha-widget="true"]');
-				containers.forEach(container => {
-				if (!container.dataset.ready) {
+      const containers = document.querySelectorAll<HTMLElement>('[data-hcaptcha-widget="true"]');
+      containers.forEach(container => {
+        if (!container.dataset.ready) {
 					showError(container, 'hCaptcha failed to load. Please check your internet connection and refresh the page.');
 				}
-				});
-			}
-		}, 100);
+      });
+    }
+    }, 100);
 	}
 
 	// Wait for DOM to be ready
