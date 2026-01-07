@@ -42,6 +42,8 @@ if (!siteKey) {
 <div
 	id={id}
 	class:list={[className]}
+  role="region"
+  aria-label="Bot verification challenge"
 	data-hcaptcha-widget="true"
 	data-sitekey={siteKey}
 	data-theme={actualTheme}
@@ -54,9 +56,6 @@ if (!siteKey) {
 <script src="https://js.hcaptcha.com/1/api.js?render=explicit" is:inline async defer></script>
 
 <script>
-	// Helper: Show error message safely using textContent (prevents XSS)
-	// Exported for usage in dynamic error handling below
-	// @ts-ignore - usage is dynamic
 	function showError(container: HTMLElement, message: string): void {
 		const errorDiv = document.createElement('div');
 		errorDiv.className = 'hcaptcha-component-error';
@@ -65,7 +64,6 @@ if (!siteKey) {
 		container.replaceChildren(errorDiv);
 	}
 
-	// Type definitions
 	declare global {
 		interface Window {
 			hcaptcha?: any;
@@ -73,10 +71,7 @@ if (!siteKey) {
 			getCaptchaToken?: (containerId: string) => string | null;
 			resetCaptcha?: (containerId: string) => void;
 		}
-		var hcaptcha: any;
-		var hcaptchaWidgets: Map<string, string>;
-		var getCaptchaToken: (containerId: string) => string | null;
-		var resetCaptcha: (containerId: string) => void;
+
 	}
 
 	// Initialize widgets map
