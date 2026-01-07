@@ -225,8 +225,8 @@ jobs:
         run: |
           echo "Configuring Docker environment for tests..."
           # Verify image is available (fail fast if missing)
-          if ! docker images | grep -q texlive; then
-            echo "ERROR: TexLive image not found after pre-pull step"
+          if ! docker image inspect "${{ env.TEXLIVE_IMAGE }}" >/dev/null 2>&1; then
+            echo "ERROR: TexLive image ${{ env.TEXLIVE_IMAGE }} not found after pre-pull step"
             exit 1
           fi
           # Configure Testcontainers to reuse existing images
