@@ -4,9 +4,11 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@cvix/ui/components/ui/dropdown-menu";
-import { useTheme } from "@/composables/useTheme";
+import { type Theme, useTheme } from "@/composables/useTheme";
 import PhMonitorLight from "~icons/ph/monitor-light";
 import PhMoonLight from "~icons/ph/moon-light";
 import PhSunLight from "~icons/ph/sun-light";
@@ -30,15 +32,20 @@ const themes = [
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem
-        v-for="themeOption in themes"
-        :key="themeOption.value"
-        @click="setTheme(themeOption.value)"
-        :class="{ 'bg-accent': theme === themeOption.value }"
+      <DropdownMenuRadioGroup
+        :model-value="theme"
+        @update:model-value="(payload) => setTheme(payload as Theme)"
       >
-        <component :is="themeOption.icon" class="mr-2 h-4 w-4" />
-        {{ themeOption.label }}
-      </DropdownMenuItem>
+        <DropdownMenuRadioItem
+          v-for="themeOption in themes"
+          :key="themeOption.value"
+          :value="themeOption.value"
+          :class="{ 'bg-accent': theme === themeOption.value }"
+        >
+          <component :is="themeOption.icon" class="mr-2 h-4 w-4" />
+          {{ themeOption.label }}
+        </DropdownMenuRadioItem>
+      </DropdownMenuRadioGroup>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
