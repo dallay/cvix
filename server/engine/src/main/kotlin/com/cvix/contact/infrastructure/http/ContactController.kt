@@ -203,16 +203,25 @@ class ContactController(
 
     /**
      * Validates if a string is a well-formed IP address (IPv4 or IPv6).
-     * Uses InetAddress.getByName for robust validation.
+     *
+     * Security: Pre-filters to prevent DNS resolution of hostnames, which could lead to
+     * DoS attacks via thread exhaustion in reactive WebFlux context.
      *
      * @param ip The IP address string to validate.
      * @return true if the string is a valid IP address format, false otherwise.
      */
     @Suppress("SwallowedException")
     private fun isValidIp(ip: String): Boolean {
+        // Pre-filter: IP addresses only contain hex digits, dots, and colons
+        // This prevents DNS resolution for hostnames (e.g., "attacker.com")
+        if (!ip.matches(Regex("^[0-9a-fA-F:.]+$"))) {
+            return false
+        }
+
         return try {
-            InetAddress.getByName(ip)
-            true
+            val addr = InetAddress.getByName(ip)
+            // Verify no reverse DNS occurred (hostAddress should match input)
+            ip == addr.hostAddress
         } catch (e: UnknownHostException) {
             false
         }
