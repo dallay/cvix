@@ -230,10 +230,10 @@ jobs:
             exit 1
           fi
           # Configure Testcontainers to reuse existing images
-          cat > ~/.testcontainers.properties <<EOF
-          testcontainers.reuse.enable=true
-          testcontainers.ryuk.disabled=true
-          EOF
+          printf '%s\n' \
+            'testcontainers.reuse.enable=true' \
+            'testcontainers.ryuk.disabled=true' \
+            > ~/.testcontainers.properties
           echo "Testcontainers configuration:"
           cat ~/.testcontainers.properties
       - name: Warm up Docker with TexLive
