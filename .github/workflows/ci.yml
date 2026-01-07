@@ -235,9 +235,17 @@ jobs:
           EOF
           echo "Testcontainers configuration:"
           cat ~/.testcontainers.properties
+      - name: Warm up Docker with TexLive
+        if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
+        run: |
+          echo "Warming up Docker by running a test command..."
+          docker run --rm ghcr.io/dallay/texlive:2025 pdflatex --version
+          echo "Docker warmup successful - TexLive container can be launched"
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
       - name: Run tests
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: ./gradlew test --no-daemon
         timeout-minutes: 30
       - name: Publish Test Results

@@ -172,7 +172,15 @@ jobs:
           echo "Testcontainers configuration:"
           cat ~/.testcontainers.properties
 
+      - name: Warm up Docker with TexLive
+        run: |
+          echo "Warming up Docker by running a test command..."
+          docker run --rm ghcr.io/dallay/texlive:2025 pdflatex --version
+          echo "Docker warmup successful - TexLive container can be launched"
+
       - name: Build JAR
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: ./gradlew :server:engine:bootJar --no-daemon
 
       - name: Build and push Docker image
