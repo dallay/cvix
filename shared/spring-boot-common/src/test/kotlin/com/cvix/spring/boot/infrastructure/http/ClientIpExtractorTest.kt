@@ -1,6 +1,5 @@
 package com.cvix.spring.boot.infrastructure.http
 
-import com.cvix.UnitTest
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -10,8 +9,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
 import org.springframework.http.server.reactive.ServerHttpRequest
 
-@UnitTest
-class ClientIpExtractorTest {
+internal class ClientIpExtractorTest {
 
     @Nested
     inner class `Extract IP from Request` {
@@ -323,7 +321,7 @@ class ClientIpExtractorTest {
         fun `should reject IPv4 with too few octets`() {
             // Arrange
             val request = createMockRequest(
-                xForwardedFor = "192.168.1",
+                xForwardedFor = "192.168.1.1",
                 xRealIp = null,
                 remoteAddress = "192.168.1.1",
             )
