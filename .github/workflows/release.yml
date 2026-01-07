@@ -137,6 +137,41 @@ jobs:
         with:
           java-version: "24"
 
+      - name: Pre-pull TexLive Docker image
+        timeout-minutes: 15
+        run: |
+          echo "Pre-pulling TexLive Docker image for PDF generation tests..."
+          for i in 1 2 3; do
+            if docker pull ghcr.io/dallay/texlive:2025; then
+              echo "Docker image pulled successfully"
+              docker images | grep texlive
+              break
+            fi
+            if [ $i -lt 3 ]; then
+              echo "Pull attempt $i failed, retrying in 10s..."
+              sleep 10
+            else
+              echo "Failed to pull image after 3 attempts"
+              exit 1
+            fi
+          done
+
+      - name: Configure Docker for Tests
+        run: |
+          echo "Configuring Docker environment for tests..."
+          # Verify image is available
+          docker images | grep texlive || echo "WARNING: TexLive image not found"
+          # Configure Testcontainers to reuse existing images
+          mkdir -p ~/.testcontainers
+          cat > ~/.testcontainers.properties << 'EOF'
+          # Reuse existing containers and images
+          testcontainers.reuse.enable=true
+          # Don't use Ryuk container cleaner in CI (can cause issues)
+          testcontainers.ryuk.disabled=true
+          EOF
+          echo "Testcontainers configuration:"
+          cat ~/.testcontainers.properties
+
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon
 
