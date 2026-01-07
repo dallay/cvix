@@ -1,3 +1,9 @@
+## [3.5.0](https://github.com/dallay/cvix/compare/v3.4.0...v3.5.0) (2026-01-07)
+
+### ✨ Features
+
+* **marketing:** ✨ improve contact form integration, i18n & rebrand to ProfileTailors ([#491](https://github.com/dallay/cvix/issues/491)) ([6556940](https://github.com/dallay/cvix/commit/6556940245cda2e55fd816af3a4cf773b00bf4f8))
+
 ## [3.4.0](https://github.com/dallay/cvix/compare/v3.3.1...v3.4.0) (2026-01-04)
 
 ### ✨ Features

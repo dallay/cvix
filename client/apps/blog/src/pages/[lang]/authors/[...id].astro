@@ -1,12 +1,11 @@
 ---
-import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
 import OptimizedPicture from "@cvix/astro-ui/components/ui/optimized-picture/OptimizedPicture.astro";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
-import { getOgImagePath } from "@cvix/lib";
 import { Icon } from "astro-icon/components";
 import ArticleCard from "@/components/ArticleCard.astro";
 import { useTranslations } from "@/i18n/i18n";
+import Layout from "@/layouts/Layout.astro";
 import { getArticles } from "@/models/article";
 import { countArticlesByAuthor, getAuthors } from "@/models/author";
 import type Author from "@/models/author/author.model";
@@ -85,15 +84,9 @@ const description = t("author.meta.description", {
 	name: author.name,
 	role: author.role || defaultRole,
 });
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
-	.href;
-const og = {
-	image: ogImage,
-	xAccount: "@yacosta738",
-};
 ---
 
-<Layout title={title} description={description} {og}>
+<Layout title={title} description={description}>
   <section
     class="max-w-4xl mx-auto rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 overflow-hidden p-10 mt-24 text-center"
   >

@@ -1,7 +1,7 @@
 ---
 import type { Lang } from "@cvix/i18n/astro";
 import { footerNavLinks } from "@cvix/lib";
-import { Footer } from "../../sections/footers/footer";
+import { Footer } from "../../components/sections/footers/footer";
 import { BaseLayout } from "../base-layout";
 
 interface Props {
@@ -22,6 +22,7 @@ const { title, description, og } = Astro.props.frontmatter || Astro.props;
   <slot name="header-cta" slot="header-cta" />
   <slot name="subheader" slot="subheader" />
   <slot />
+  <slot name="analytics" slot="analytics" />
   <slot name="footer">
     <Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
   </slot>
