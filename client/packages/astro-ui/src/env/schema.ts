@@ -1,4 +1,9 @@
-import { CVIX_API_URL, CVIX_BLOG_URL, CVIX_WEBAPP_URL } from "@cvix/lib";
+import {
+	CVIX_API_URL,
+	CVIX_BLOG_URL,
+	CVIX_MARKETING_URL,
+	CVIX_WEBAPP_URL,
+} from "@cvix/lib";
 import { envField } from "astro/config";
 
 export const envSchema = {
@@ -22,6 +27,11 @@ export const envSchema = {
 		context: "client",
 		access: "public",
 		default: CVIX_BLOG_URL,
+	}),
+	CVIX_MARKETING_URL: envField.string({
+		context: "client",
+		access: "public",
+		default: CVIX_MARKETING_URL,
 	}),
 	HCAPTCHA_SITE_KEY: envField.string({
 		context: "client",
