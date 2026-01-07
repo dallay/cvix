@@ -8,6 +8,7 @@ import com.cvix.contact.infrastructure.http.request.SendContactRequest
 import com.cvix.contact.infrastructure.http.response.SendContactApiResponse
 import com.cvix.contact.infrastructure.http.response.SendContactResponse
 import com.cvix.spring.boot.ApiController
+import com.cvix.spring.boot.infrastructure.http.ClientIpExtractor
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -15,8 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import java.net.InetAddress
-import java.net.UnknownHostException
 import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
@@ -172,60 +171,14 @@ class ContactController(
     /**
      * Extracts the client's real IP address from the request.
      *
-     * Checks X-Forwarded-For, X-Real-IP headers (for proxies/load balancers),
-     * validates the format, and falls back to remote address.
-     * Only returns header values if they pass IP format validation.
+     * Delegates to shared utility [ClientIpExtractor] for consistent IP extraction
+     * across controllers.
      *
      * @param request The server HTTP request.
      * @return The validated client's IP address, or "unknown" if unable to determine.
      */
-    private fun extractClientIp(request: ServerHttpRequest): String {
-        val xForwardedFor = request.headers.getFirst("X-Forwarded-For")
-        if (!xForwardedFor.isNullOrBlank()) {
-            // X-Forwarded-For can contain multiple IPs, take the first one
-            val ip = xForwardedFor.split(",").first().trim()
-            if (isValidIp(ip)) {
-                return ip
-            }
-        }
-
-        val xRealIp = request.headers.getFirst("X-Real-IP")
-        if (!xRealIp.isNullOrBlank()) {
-            val ip = xRealIp.trim()
-            if (isValidIp(ip)) {
-                return ip
-            }
-        }
-
-        // Fallback to remote address (already validated by Java networking layer)
-        return request.remoteAddress?.address?.hostAddress ?: "unknown"
-    }
-
-    /**
-     * Validates if a string is a well-formed IP address (IPv4 or IPv6).
-     *
-     * Security: Pre-filters to prevent DNS resolution of hostnames, which could lead to
-     * DoS attacks via thread exhaustion in reactive WebFlux context.
-     *
-     * @param ip The IP address string to validate.
-     * @return true if the string is a valid IP address format, false otherwise.
-     */
-    @Suppress("SwallowedException")
-    private fun isValidIp(ip: String): Boolean {
-        // Pre-filter: IP addresses only contain hex digits, dots, and colons
-        // This prevents DNS resolution for hostnames (e.g., "attacker.com")
-        if (!ip.matches(Regex("^[0-9a-fA-F:.]+$"))) {
-            return false
-        }
-
-        return try {
-            val addr = InetAddress.getByName(ip)
-            // Verify no reverse DNS occurred (hostAddress should match input)
-            ip == addr.hostAddress
-        } catch (e: UnknownHostException) {
-            false
-        }
-    }
+    private fun extractClientIp(request: ServerHttpRequest): String =
+        ClientIpExtractor.extract(request)
 
     /**
      * Parses the Accept-Language header to determine the preferred language.
