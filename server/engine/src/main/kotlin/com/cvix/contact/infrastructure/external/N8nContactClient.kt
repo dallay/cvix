@@ -7,6 +7,7 @@ import com.cvix.contact.infrastructure.config.ContactProperties
 import java.time.Duration
 import kotlinx.coroutines.reactive.awaitSingle
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -30,6 +31,7 @@ private val logger = LoggerFactory.getLogger(N8nContactClient::class.java)
  */
 @Component
 class N8nContactClient(
+    @Qualifier("webClient")
     private val webClient: WebClient,
     private val properties: ContactProperties
 ) : ContactNotifier {
@@ -71,7 +73,10 @@ class N8nContactClient(
                     throw ContactNotificationException("n8n webhook error: ${response.error}")
                 }
                 else -> {
-                    logger.error("n8n webhook returned unexpected response: {}", response)
+                    logger.error(
+                        "n8n webhook returned unexpected response: status={}, error={}",
+                        response.status, response.error,
+                    )
                     throw ContactNotificationException("Unexpected n8n webhook response")
                 }
             }
