@@ -54,6 +54,7 @@ client/**/.cache/
 client/**/.parcel-cache/
 client/**/coverage/
 client/**/node_modules/
+.astro
 ### Environment files ###
 .env
 .env.*

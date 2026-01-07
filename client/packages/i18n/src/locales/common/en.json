@@ -118,7 +118,7 @@
 		"allRightsReserved": "All rights reserved."
 	},
 	"footer": {
-		"description": "A production-ready SaaS starter template that bundles auth, billing, docs and marketing so teams can move faster.",
+		"description": "Professional resumes powered by LaTeX. Join the waitlist for early access to ATS-optimized resume generation.",
 		"company": "Company",
 		"resources": "Resources",
 		"legal": "Legal",
@@ -130,6 +130,14 @@
 		"rss": "RSS Feed",
 		"privacyPolicy": "Privacy Policy",
 		"termsOfUse": "Terms of Use"
+	},
+	"emailCaptureForm": {
+		"emailLabel": "Email address",
+		"emailPlaceholder": "Enter your email",
+		"buttonText": "Join Waitlist",
+		"successMessage": "Successfully joined the waitlist! Check your email.",
+		"errorMessage": "Failed to submit. Please try again.",
+		"rateLimitMessage": "Too many requests. Please try again later."
 	},
 	"actions": {
 		"getStarted": "Get Started",

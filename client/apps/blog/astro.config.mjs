@@ -4,11 +4,12 @@ import { fileURLToPath, URL } from "node:url";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import vue from "@astrojs/vue";
+import { envSchema } from "@cvix/astro-ui/env";
 import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
-import { CVIX_API_URL, CVIX_BLOG_URL, CVIX_WEBAPP_URL, PORTS } from "@cvix/lib";
+import { CVIX_BLOG_URL, PORTS } from "@cvix/lib";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig, envField } from "astro/config";
+import { defineConfig } from "astro/config";
 import icon from "astro-icon";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.mjs";
 
@@ -104,19 +105,7 @@ export default defineConfig({
 	],
 
 	env: {
-		schema: {
-			CVIX_API_URL: envField.string({
-				context: "client",
-				access: "public",
-				optional: true,
-				default: CVIX_API_URL,
-			}),
-			CVIX_WEBAPP_URL: envField.string({
-				context: "client",
-				access: "public",
-				default: CVIX_WEBAPP_URL,
-			}),
-		},
+		schema: envSchema,
 	},
 
 	vite: {

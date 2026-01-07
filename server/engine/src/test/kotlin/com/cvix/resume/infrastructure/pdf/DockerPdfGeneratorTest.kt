@@ -36,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir
  * Tests PDF generation, security validation, and Docker interaction.
  */
 @UnitTest
-class DockerPdfGeneratorTest {
+internal class DockerPdfGeneratorTest {
 
     private lateinit var dockerClient: DockerClient
     private lateinit var properties: DockerPdfGeneratorProperties

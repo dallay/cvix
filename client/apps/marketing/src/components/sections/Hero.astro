@@ -1,77 +1,91 @@
 ---
 import { CVIX_API_URL } from "astro:env/client";
+import CvixSystemImage from "@cvix/assets/images/cvix-system.png";
 import { EmailCaptureForm, OptimizedPicture } from "@cvix/astro-ui";
 import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
 import { useTranslations } from "@/i18n/i18n";
 
 const astroLocale = Astro.currentLocale;
-let langToUse: Lang;
-
-let locale = astroLocale as Lang;
-if (astroLocale && LOCALES[locale]) {
-	langToUse = locale;
-} else {
-	langToUse = DEFAULT_LOCALE;
-}
+const langToUse: Lang =
+	astroLocale && LOCALES[astroLocale as Lang]
+		? (astroLocale as Lang)
+		: DEFAULT_LOCALE;
 const t = useTranslations(langToUse);
 
-import CvixSystemImage from "@cvix/assets/images/cvix-system.png";
+// Precompute/memoize translations to avoid repeated lookups (N+1 t() calls)
+const translations = {
+	badgeText: t("hero.badge.text"),
+	title: t("hero.title"),
+	subtitle: t("hero.subtitle"),
+	earlyAccess: t("hero.earlyAccess"),
+	emailPlaceholder: t("hero.email.placeholder"),
+	emailButton: t("hero.email.button"),
+	emailSuccess: t("hero.email.success"),
+	emailError: t("hero.email.error"),
+	emailRateLimit: t("hero.email.rateLimit"),
+	emailPrivacy: t("hero.email.privacy"),
+	mockupAlt: t("hero.mockup.alt"),
+};
 ---
 
 <section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden fade-in-section">
   <div class="container mx-auto max-w-7xl px-4 text-center">
     <div
-      class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 fade-in-section delay-100"
+      class="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 fade-in-section"
     >
       <span class="flex h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-      {t("hero.badge.text")}
+      {translations.badgeText}
     </div>
 
     <h1
-      class="mx-auto mb-6 max-w-4xl text-5xl font-serif font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl leading-[1.1] fade-in-section delay-200"
+      class="mx-auto mb-6 max-w-4xl text-5xl font-serif font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl leading-[1.1] fade-in-section"
     >
-      {t("hero.title")}
+      {translations.title}
     </h1>
 
     <p
-      class="mx-auto mb-4 max-w-2xl text-lg text-muted-foreground md:text-xl fade-in-section delay-300"
+      class="mx-auto mb-4 max-w-2xl text-lg text-muted-foreground md:text-xl fade-in-section"
     >
-      {t("hero.subtitle")}
+      {translations.subtitle}
     </p>
 
     <p
-      class="mx-auto mb-10 max-w-2xl text-base text-primary font-medium fade-in-section delay-350"
+      class="mx-auto mb-10 max-w-2xl text-base text-primary font-medium fade-in-section"
     >
-      {t("hero.earlyAccess")}
+      {translations.earlyAccess}
     </p>
 
     <!-- Waitlist Form -->
     <div
       id="hero-waitlist"
-      class="flex flex-col items-center justify-center gap-4 mb-16 fade-in-section delay-400"
+      class="flex flex-col items-center justify-center gap-4 mb-16 fade-in-section"
     >
       <div class="w-full max-w-md">
         <EmailCaptureForm
           apiUrl={`${CVIX_API_URL}/api/waitlist`}
-          emailPlaceholder={t("hero.email.placeholder")}
-          buttonText={t("hero.email.button")}
-          successMessage={t("hero.email.success")}
-          errorMessage={t("hero.email.error")}
-          rateLimitMessage={t("hero.email.rateLimit")}
+          emailPlaceholder={translations.emailPlaceholder}
+          buttonText={translations.emailButton}
+          successMessage={translations.emailSuccess}
+          errorMessage={translations.emailError}
+          rateLimitMessage={translations.emailRateLimit}
           source="hero-waitlist"
           class="mx-auto max-w-md"
         />
       </div>
       <p class="text-sm text-muted-foreground">
-        {t("hero.email.privacy")}
+        {translations.emailPrivacy}
       </p>
     </div>
 
-    <div class="relative mx-auto max-w-5xl fade-in-section delay-500">
+    <div class="relative mx-auto max-w-5xl fade-in-section">
       <OptimizedPicture
         src={CvixSystemImage}
-        alt={t("hero.mockup.alt")}
+        alt={translations.mockupAlt}
         class="relative mx-auto w-full"
+        width={1200}
+        height={800}
+        loading="eager"
+        fetchpriority="high"
       />
     </div>
   </div>

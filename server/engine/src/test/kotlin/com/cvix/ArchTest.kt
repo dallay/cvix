@@ -19,6 +19,7 @@ internal class ArchTest {
         "resume",
         "waitlist",
         "subscription",
+        "contact",
     )
 
     @BeforeEach
