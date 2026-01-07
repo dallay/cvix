@@ -21,8 +21,8 @@ class SendContactCommandHandler(
      * Handles the command to send a contact form submission.
      *
      * @param command The command containing the contact form data.
-     * @throws CaptchaValidationException if captcha validation fails.
-     * @throws ContactNotificationException if sending notification fails.
+     * @throws com.cvix.contact.domain.CaptchaValidationException if captcha validation fails.
+     * @throws com.cvix.contact.domain.ContactNotificationException if sending notification fails.
      */
     override suspend fun handle(command: SendContactCommand) {
         logger.info(
@@ -31,22 +31,17 @@ class SendContactCommandHandler(
             command.subject,
         )
 
-        try {
-            contactSender.send(
-                id = command.id,
-                name = command.name,
-                email = command.email,
-                subject = command.subject,
-                message = command.message,
-                hcaptchaToken = command.hcaptchaToken,
-                ipAddress = command.ipAddress,
-            )
+        contactSender.send(
+            id = command.id,
+            name = command.name,
+            email = command.email,
+            subject = command.subject,
+            message = command.message,
+            hcaptchaToken = command.hcaptchaToken,
+            ipAddress = command.ipAddress,
+        )
 
-            logger.info("Successfully processed SendContactCommand with ID: {}", command.id)
-        } catch (e: Exception) {
-            logger.error("Failed to process SendContactCommand with ID: {}", command.id, e)
-            throw e
-        }
+        logger.info("Successfully processed SendContactCommand with ID: {}", command.id)
     }
 
     companion object {

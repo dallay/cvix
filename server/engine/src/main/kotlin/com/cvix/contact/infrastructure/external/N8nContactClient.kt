@@ -4,6 +4,7 @@ import com.cvix.contact.domain.ContactData
 import com.cvix.contact.domain.ContactNotificationException
 import com.cvix.contact.domain.ContactNotifier
 import com.cvix.contact.infrastructure.config.ContactProperties
+import java.time.Duration
 import kotlinx.coroutines.reactive.awaitSingle
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -13,6 +14,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.bodyToMono
 
 private val logger = LoggerFactory.getLogger(N8nContactClient::class.java)
+
+private const val TIMEOUT = 10L
 
 /**
  * Infrastructure adapter implementing contact notification via N8N webhook.
@@ -40,10 +43,7 @@ class N8nContactClient(
      * @throws ContactNotificationException if the notification fails.
      */
     override suspend fun notify(contactData: ContactData) {
-        logger.info(
-            "Sending contact notification to n8n: email={}, subject={}",
-            contactData.email, contactData.subject,
-        )
+        logger.info("Sending contact notification to n8n")
 
         try {
             // Map domain ContactData to N8N-specific payload
@@ -61,6 +61,7 @@ class N8nContactClient(
                 .bodyValue(n8nPayload)
                 .retrieve()
                 .bodyToMono<N8nWebhookResponse>()
+                .timeout(Duration.ofSeconds(TIMEOUT))
                 .awaitSingle()
 
             when {
