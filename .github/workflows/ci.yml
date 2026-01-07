@@ -202,12 +202,13 @@ jobs:
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
         if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           echo "Pre-pulling TexLive Docker image for PDF generation tests..."
           for i in 1 2 3; do
             if docker pull ghcr.io/dallay/texlive:2025; then
               echo "Docker image pulled successfully"
+              docker images | grep texlive
               break
             fi
             if [ $i -lt 3 ]; then
@@ -218,10 +219,27 @@ jobs:
               exit 1
             fi
           done
+      - name: Configure Docker for Tests
+        if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
+        run: |
+          echo "Configuring Docker environment for tests..."
+          # Verify image is available
+          docker images | grep texlive || echo "WARNING: TexLive image not found"
+          # Configure Testcontainers to reuse existing images
+          mkdir -p ~/.testcontainers
+          cat > ~/.testcontainers.properties << 'EOF'
+          # Reuse existing containers and images
+          testcontainers.reuse.enable=true
+          # Don't use Ryuk container cleaner in CI (can cause issues)
+          testcontainers.ryuk.disabled=true
+          EOF
+          echo "Testcontainers configuration:"
+          cat ~/.testcontainers.properties
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
       - name: Run tests
         run: ./gradlew test --no-daemon
+        timeout-minutes: 30
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         if: always()
