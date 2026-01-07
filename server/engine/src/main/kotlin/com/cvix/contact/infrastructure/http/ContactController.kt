@@ -208,7 +208,7 @@ class ContactController(
      * @return The localized message string from the message properties files.
      */
     private fun getLocalizedMessage(language: String, messageType: String): String {
-        val locale = if (language == LANG_SPANISH) java.util.Locale.forLanguageTag("es") else java.util.Locale.ENGLISH
+        val locale = if (language == LANG_SPANISH) Locale.forLanguageTag("es") else Locale.ENGLISH
         val messageKey = "contact.$messageType"
         return try {
             messageSource.getMessage(messageKey, null, locale)

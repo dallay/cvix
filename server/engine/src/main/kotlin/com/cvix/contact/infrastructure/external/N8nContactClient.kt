@@ -64,7 +64,7 @@ class N8nContactClient(
 
             when {
                 response.status == "success" ->
-                    logger.info("Contact notification sent successfully to n8n: email={}", contactData.email)
+                    logger.info("Contact notification sent successfully to n8n")
 
                 response.error != null -> {
                     logger.error("n8n webhook returned error: {}", response.error)
