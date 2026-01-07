@@ -25,10 +25,10 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
 
     @BeforeAll
     fun waitForDockerImage() {
-        // Wait for Docker image to be pulled during startup (up to 10 minutes)
-        // This prevents timeout issues during test execution
+        // Wait for Docker image to be pulled during startup (up to 20 minutes in CI)
+        // This prevents timeout issues during test execution, especially in resource-constrained CI environments
         val startTime = System.currentTimeMillis()
-        val maxWaitMillis = TimeUnit.MINUTES.toMillis(10)
+        val maxWaitMillis = TimeUnit.MINUTES.toMillis(20)
 
         // The PostConstruct method starts the pull in a background thread
         // Wait for it to complete by checking if we can generate a minimal PDF
