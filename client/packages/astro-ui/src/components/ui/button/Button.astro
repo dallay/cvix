@@ -8,8 +8,6 @@ type Props = VariantProps<typeof variants> &
 	HTMLAttributes<"a"> &
 	HTMLAttributes<"label"> & {
 		as?: "button" | "a" | "label";
-		text?: string;
-		html?: string;
 	};
 
 const variants = cva(
@@ -44,30 +42,20 @@ const variants = cva(
 	},
 );
 
-const {
-	class: className,
-	variant,
-	size,
-	href,
-	text,
-	html,
-	...props
-} = Astro.props;
-
-const slot = await Astro.slots.render("default");
+const { class: className, variant, size, href, ...props } = Astro.props;
 
 const Comp = href ? "a" : "button";
 ---
 
 {
-  slot?.trim().length > 0 && (
+  Astro.slots.has("default") && (
     <Comp
       data-slot="button"
       class={cn(variants({ variant, size }), className)}
       href={href}
       {...props}
     >
-      <Fragment set:html={slot} />
+      <slot />
     </Comp>
   )
 }

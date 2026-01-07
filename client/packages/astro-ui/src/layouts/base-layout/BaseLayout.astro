@@ -7,14 +7,11 @@ import {
 	type UIMultilingual,
 	useTranslations,
 } from "@cvix/i18n/astro";
-import ThemeProvider from "../../blocks/theme-toggle/ThemeProvider.astro";
-import LocaleHtmlHead from "../../i18n/LocaleHtmlHead.astro";
-import LocaleSuggest from "../../i18n/LocaleSuggest.astro";
-import { Header } from "../../sections/headers/header";
-import { BackToTop } from "../../ui/back-to-top";
-
-// Import global styles - this brings in Tailwind, design tokens, and base styles
-import "../../../styles/global.css";
+import ThemeProvider from "../../components/blocks/theme-toggle/ThemeProvider.astro";
+import LocaleHtmlHead from "../../components/i18n/LocaleHtmlHead.astro";
+import LocaleSuggest from "../../components/i18n/LocaleSuggest.astro";
+import { Header } from "../../components/sections/headers/header";
+import { BackToTop } from "../../components/ui/back-to-top";
 
 interface Props {
 	title: string;
@@ -52,6 +49,9 @@ const t = useTranslations(locale, mergedUI);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="canonical" href={Astro.url.href} />
+
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     {
@@ -122,7 +122,7 @@ const t = useTranslations(locale, mergedUI);
   </main>
 
   <BackToTop />
-
+  <slot name="analytics" />
   { import.meta.env.DEV && <style>:root { scroll-behavior: auto }</style> }
   <script>
     const observerOptions = {

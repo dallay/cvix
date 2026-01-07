@@ -1,0 +1,23 @@
+---
+import { cn } from "@cvix/lib";
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {}
+
+const { class: className, ...props } = Astro.props;
+---
+
+{
+  Astro.slots.has("default") && (
+    <div
+      data-slot="field-content"
+      class={cn(
+        "group/field-content flex flex-1 flex-col gap-1.5 leading-snug",
+        className
+      )}
+      {...props}
+    >
+      <slot />
+    </div>
+  )
+}

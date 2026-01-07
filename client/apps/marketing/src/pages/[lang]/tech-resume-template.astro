@@ -1,9 +1,9 @@
 ---
 import { CVIX_API_URL } from "astro:env/client";
-import { EmailCaptureForm, Footer, BaseLayout as Layout } from "@cvix/astro-ui";
+import { EmailCaptureForm, Footer } from "@cvix/astro-ui";
 import type { Lang } from "@cvix/i18n/astro";
-import { getOgImagePath } from "@cvix/lib";
 import { LOCALES, useTranslations } from "@/i18n";
+import Layout from "@/layouts/Layout.astro";
 import { footerNavLinks } from "@/models/menu";
 
 const locale = Astro.currentLocale as Lang;
@@ -29,13 +29,6 @@ const structuredData = {
 	},
 };
 
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
-	.href;
-const og = {
-	image: ogImage,
-	xAccount: "@yacosta738",
-};
-
 const roles = [
 	{ key: "swe", icon: "💻" },
 	{ key: "frontend", icon: "🎨" },
@@ -46,7 +39,7 @@ const roles = [
 ];
 ---
 
-<Layout title={t("tech.title")} description={t("tech.description")} {og}>
+<Layout title={t("tech.title")} description={t("tech.description")} >
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
 	<div class="pt-24 pb-16 bg-background">
