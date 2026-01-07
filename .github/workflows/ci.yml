@@ -245,8 +245,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
       - name: Run tests
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
         run: ./gradlew test --no-daemon
         timeout-minutes: 30
       - name: Publish Test Results
