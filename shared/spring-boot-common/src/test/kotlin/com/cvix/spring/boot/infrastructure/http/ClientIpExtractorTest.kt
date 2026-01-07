@@ -321,7 +321,7 @@ internal class ClientIpExtractorTest {
         fun `should reject IPv4 with too few octets`() {
             // Arrange
             val request = createMockRequest(
-                xForwardedFor = "192.168.1.1",
+                xForwardedFor = "192.168.1",
                 xRealIp = null,
                 remoteAddress = "192.168.1.1",
             )
@@ -546,6 +546,61 @@ internal class ClientIpExtractorTest {
             // Act & Assert
             ClientIpExtractor.isValidIp("192.168.1.1\u0000") shouldBe false
         }
+
+        @Test
+        fun `should reject IPv4 with three octets only`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("192.168.1") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with two octets only`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("192.168") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with one octet only`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("192") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with octet exceeding 255`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("300.10.0.1") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with multiple consecutive dots`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("10...1") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with leading dot`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp(".192.168.1.1") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with trailing dot`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("192.168.1.1.") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with leading zeros in octets`() {
+            // Act & Assert
+            // Leading zeros are not accepted by the strict IPv4 regex
+            ClientIpExtractor.isValidIp("192.168.001.001") shouldBe false
+        }
+
+        @Test
+        fun `should reject IPv4 with negative octet`() {
+            // Act & Assert
+            ClientIpExtractor.isValidIp("192.168.-1.1") shouldBe false
+        }
     }
 
     @Nested
@@ -637,23 +692,26 @@ internal class ClientIpExtractorTest {
         }
     }
 
-    // Helper function to create mock ServerHttpRequest
+    // Helper function to create mock ServerHttpRequest with strict mocks
     private fun createMockRequest(
         xForwardedFor: String?,
         xRealIp: String?,
         remoteAddress: String?,
     ): ServerHttpRequest {
-        val request = mockk<ServerHttpRequest>(relaxed = true)
-        val headers = mockk<HttpHeaders>(relaxed = true)
+        val request = mockk<ServerHttpRequest>(relaxed = false)
+        val headers = mockk<HttpHeaders>(relaxed = false)
 
+        // Explicitly stub only the interactions used by ClientIpExtractor.extract()
         every { headers.getFirst("X-Forwarded-For") } returns xForwardedFor
         every { headers.getFirst("X-Real-IP") } returns xRealIp
         every { request.headers } returns headers
 
         if (remoteAddress != null) {
-            val inetSocketAddress = InetSocketAddress.createUnresolved(remoteAddress, 8080)
+            val address = mockk<java.net.InetAddress>(relaxed = false)
+            val inetSocketAddress = mockk<InetSocketAddress>(relaxed = false)
+            every { inetSocketAddress.address } returns address
+            every { address.hostAddress } returns remoteAddress
             every { request.remoteAddress } returns inetSocketAddress
-            every { request.remoteAddress?.address?.hostAddress } returns remoteAddress
         } else {
             every { request.remoteAddress } returns null
         }
