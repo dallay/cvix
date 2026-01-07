@@ -238,13 +238,13 @@ jobs:
           # Configure Testcontainers to reuse existing images and optimize for CI
           mkdir -p ~/.testcontainers
           cat > ~/.testcontainers.properties << 'EOF'
-testcontainers.reuse.enable=true
-testcontainers.ryuk.disabled=true
-testcontainers.docker.network.mode=host
-testcontainers.properties.preferLocalImages=true
-testcontainers.docker.client.strategy=unix
-testcontainers.checks.disable=true
-EOF
+          testcontainers.reuse.enable=true
+          testcontainers.ryuk.disabled=true
+          testcontainers.docker.network.mode=host
+          testcontainers.properties.preferLocalImages=true
+          testcontainers.docker.client.strategy=unix
+          testcontainers.checks.disable=true
+          EOF
 
           echo "Testcontainers configuration:"
           cat ~/.testcontainers.properties
