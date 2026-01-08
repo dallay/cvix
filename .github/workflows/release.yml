@@ -138,7 +138,7 @@ jobs:
           java-version: "24"
 
       - name: Pre-pull TexLive Docker image
-        timeout-minutes: 20
+        timeout-minutes: 10
         run: |
           echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
 
@@ -180,8 +180,6 @@ jobs:
           echo "Docker warmup successful - TexLive container can be launched"
 
       - name: Build JAR
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
         run: ./gradlew :server:engine:bootJar --no-daemon
 
       - name: Build and push Docker image

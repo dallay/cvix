@@ -202,7 +202,7 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
-        timeout-minutes: 20
+        timeout-minutes: 10
         run: |
           echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
 
