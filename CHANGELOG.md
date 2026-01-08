@@ -1,3 +1,9 @@
+## [3.8.0](https://github.com/dallay/cvix/compare/v3.7.0...v3.8.0) (2026-01-08)
+
+### ✨ Features
+
+* **layout:** replace Layout component with LandingLayout and update middleware paths ([3843c9e](https://github.com/dallay/cvix/commit/3843c9e28f01f1555358247e3ac2aa0300f2424a))
+
 ## [3.7.0](https://github.com/dallay/cvix/compare/v3.6.1...v3.7.0) (2026-01-08)
 
 ### ✨ Features
