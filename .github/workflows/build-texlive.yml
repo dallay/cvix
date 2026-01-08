@@ -2,7 +2,7 @@
 # Build and Publish TexLive Docker Image
 # =============================================================================
 # Builds a multi-architecture (amd64/arm64) TexLive Docker image and publishes
-# it to GitHub Container Registry (ghcr.io).
+# it to both GitHub Container Registry (ghcr.io) and Docker Hub (docker.io).
 #
 # Triggers:
 # - Manual dispatch (workflow_dispatch)
@@ -29,8 +29,9 @@ on:
     - cron: "0 3 * * 0"
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/texlive
+  REGISTRY_GHCR: ghcr.io
+  REGISTRY_DOCKERHUB: docker.io
+  IMAGE_NAME: texlive
   TEXLIVE_VERSION: ${{ github.event.inputs.texlive_version || '2025' }}
 
 concurrency:
@@ -54,18 +55,27 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca
 
-      - name: Log in to Container Registry
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ env.REGISTRY_GHCR }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        with:
+          registry: ${{ env.REGISTRY_DOCKERHUB }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: |
+            ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
             type=raw,value=${{ env.TEXLIVE_VERSION }}
@@ -87,8 +97,48 @@ jobs:
 
       - name: Verify image
         run: |
-          echo "Verifying amd64 image..."
-          docker run --rm --platform linux/amd64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "🔍 Verifying images across both registries..."
+          echo ""
 
-          echo "Verifying arm64 image..."
-          docker run --rm --platform linux/arm64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          # Verify GHCR (GitHub Container Registry)
+          echo "📦 Testing GHCR images..."
+          echo "  ├─ amd64..."
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "  └─ arm64..."
+          docker run --rm --platform linux/arm64 ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+
+          echo ""
+
+          # Verify Docker Hub
+          echo "📦 Testing Docker Hub images..."
+          echo "  ├─ amd64..."
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "  └─ arm64..."
+          docker run --rm --platform linux/arm64 ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+
+          echo ""
+          echo "✅ All images verified successfully on both registries!"
+
+      - name: Build Summary
+        run: |
+          {
+            echo "## 🐳 TexLive Docker Images Published"
+            echo ""
+            echo "### Registries"
+            echo ""
+            echo "| Registry | Image |"
+            echo "|----------|-------|"
+            echo "| **GitHub Container Registry** | \`${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}\` |"
+            echo "| **Docker Hub** | \`${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}\` |"
+            echo ""
+            echo "### Tags"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo ""
+            echo "### Platforms"
+            echo "- \`linux/amd64\`"
+            echo "- \`linux/arm64\`"
+            echo ""
+            echo "✅ All image tags successfully pushed to both registries"
+          } >> "$GITHUB_STEP_SUMMARY"

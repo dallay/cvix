@@ -59,7 +59,7 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
         with:
-          java-version: "25"
+          java-version: "24"
           distribution: "temurin"
       - name: Build Gradle project
         run: ./gradlew build -x test --stacktrace

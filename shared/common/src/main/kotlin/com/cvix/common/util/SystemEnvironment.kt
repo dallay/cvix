@@ -1,0 +1,18 @@
+package com.cvix.common.util
+
+/**
+ * Utility object for accessing system environment variables in a safe and consistent way.
+ *
+ * Provides methods to retrieve environment variables with support for default values.
+ */
+object SystemEnvironment {
+    /**
+     * Retrieves the value of the specified environment variable.
+     *
+     * @param key The name of the environment variable to retrieve.
+     * @param default The value to return if the environment variable is not set or is blank.
+     * @return The value of the environment variable, or [default] if not present or blank.
+     */
+    fun getEnvOrDefault(key: String, default: String): String =
+        System.getenv(key).takeUnless { it.isNullOrBlank() } ?: default
+}
