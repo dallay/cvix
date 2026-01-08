@@ -37,7 +37,7 @@ docker buildx create --name multiarch --use
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -t ghcr.io/dallay/texlive:latest \
-  -t ghcr.io/dallay/texlive:2025 \
+  -t dallay/texlive:2025 \
   --push \
   ./infra/texlive
 ```
@@ -128,7 +128,7 @@ For production use, always pull from `ghcr.io/dallay/texlive` as it includes mul
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -t ghcr.io/dallay/texlive:latest \
-  -t ghcr.io/dallay/texlive:2025 \
+  -t dallay/texlive:2025 \
   --push \
   ./infra/texlive
 ```

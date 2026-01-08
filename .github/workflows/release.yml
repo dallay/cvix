@@ -16,7 +16,7 @@ on:
 
 env:
   NODE_VERSION: "22"
-  TEXLIVE_IMAGE: ghcr.io/dallay/texlive:2025 # TexLive Docker image for PDF generation
+  TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
   REGISTRY_GHCR: ghcr.io
   REGISTRY_DOCKERHUB: docker.io
 

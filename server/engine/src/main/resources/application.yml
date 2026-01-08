@@ -245,7 +245,7 @@ resume:
   pdf:
     docker:
       # Use the full texlive image which includes pdflatex
-      image: ${PDF_DOCKER_IMAGE:ghcr.io/dallay/texlive:2025}
+      image: ${PDF_DOCKER_IMAGE:dallay/texlive:2025}
       max-concurrent-containers: ${PDF_MAX_CONCURRENT_CONTAINERS:10}
       timeout-seconds: ${PDF_TIMEOUT_SECONDS:30}
       memory-limit-mb: ${PDF_MEMORY_LIMIT_MB:512}

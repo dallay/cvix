@@ -18,7 +18,7 @@ on:
 
 env:
   NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
-  TEXLIVE_IMAGE: ghcr.io/dallay/texlive:2025 # TexLive Docker image for PDF generation
+  TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
