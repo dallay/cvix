@@ -142,7 +142,7 @@ jobs:
         run: |
           echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
 
-          # Retry logic: attempt up to 5 times with exponential backoff
+          # Retry logic: attempt up to 5 times with linear backoff (10s, 20s, 30s, 40s, 50s)
           for i in {1..5}; do
             echo "Attempt $i/5: Pulling image..."
             if docker pull ${{ env.TEXLIVE_IMAGE }}; then

@@ -4,8 +4,6 @@ package com.cvix.common.util
  * Utility object for accessing system environment variables in a safe and consistent way.
  *
  * Provides methods to retrieve environment variables with support for default values.
- *
- * @created 2026-01-08
  */
 object SystemEnvironment {
     /**
