@@ -9,10 +9,19 @@ import org.testcontainers.utility.DockerImageName
 
 @TestConfiguration(proxyBeanMethods = false)
 class TestDatabaseConfiguration {
+    
+    companion object {
+        /**
+         * Retrieves environment variable or returns default value
+         */
+        private fun getEnvOrDefault(key: String, default: String): String =
+            System.getenv(key) ?: default
+    }
+    
     @Bean
     @ServiceConnection
     fun postgresContainer(): PostgreSQLContainer<*> =
-        PostgreSQLContainer(DockerImageName.parse("postgres:16.9-alpine"))
+        PostgreSQLContainer(DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}"))
             .withUsername("test")
             .withPassword("test")
 

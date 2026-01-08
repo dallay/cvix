@@ -146,7 +146,7 @@ If you suspect containers have stale data:
 ### GreenMail Container
 
 - **Name**: `greenmail-tests`
-- **Image**: `greenmail/standalone:2.0.0`
+- **Image**: `greenmail/standalone:2.1.8`
 - **Purpose**: Email testing server (SMTP, IMAP, POP3)
 - **Ports**: 3025 (SMTP), 3110 (POP3), 3143 (IMAP), 3465 (SMTPS), 3993 (IMAPS), 3995 (POP3S), 6080 (Web UI)
 

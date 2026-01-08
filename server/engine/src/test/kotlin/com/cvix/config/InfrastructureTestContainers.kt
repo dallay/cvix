@@ -73,6 +73,12 @@ abstract class InfrastructureTestContainers {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
 
         /**
+         * Retrieves environment variable or returns default value
+         */
+        private fun getEnvOrDefault(key: String, default: String): String =
+            System.getenv(key) ?: default
+
+        /**
          * Unique suffix for test container names. Can be overridden via system property
          * `tc.name.suffix` to support container reuse across test runs.
          */
@@ -90,7 +96,7 @@ abstract class InfrastructureTestContainers {
 
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
-            KeycloakContainer("keycloak/keycloak:25.0")
+            KeycloakContainer("keycloak/keycloak:${getEnvOrDefault("KEYCLOAK_VERSION", "26.2.3")}")
                 .withRealmImportFile("keycloak/demo-realm-test.json")
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
@@ -101,7 +107,7 @@ abstract class InfrastructureTestContainers {
 
         @JvmStatic
         private val greenMailContainer: GenericContainer<*> = GenericContainer<Nothing>(
-            DockerImageName.parse("greenmail/standalone:2.0.0"),
+            DockerImageName.parse("greenmail/standalone:${getEnvOrDefault("GREENMAIL_VERSION", "2.1.8")}"),
         ).apply {
             withEnv(
                 "GREENMAIL_OPTS",

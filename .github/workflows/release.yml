@@ -156,21 +156,17 @@ jobs:
             fi
           done
 
-      - name: Configure Docker for Tests
+      - name: Verify TexLive Image
         run: |
-          echo "Configuring Docker environment for tests..."
+          echo "Verifying TexLive image is available..."
           # Verify image is available (fail fast if missing)
-          if ! docker images | grep -q texlive; then
-            echo "ERROR: TexLive image not found after pre-pull step"
+          if ! docker image inspect "${{ env.TEXLIVE_IMAGE }}" >/dev/null 2>&1; then
+            echo "ERROR: TexLive image ${{ env.TEXLIVE_IMAGE }} not found after pre-pull step"
+            echo "Available images:"
+            docker images
             exit 1
           fi
-          # Configure Testcontainers to reuse existing images
-          cat > ~/.testcontainers.properties <<EOF
-          testcontainers.reuse.enable=true
-          testcontainers.ryuk.disabled=true
-          EOF
-          echo "Testcontainers configuration:"
-          cat ~/.testcontainers.properties
+          echo "✅ TexLive image verified: ${{ env.TEXLIVE_IMAGE }}"
 
       - name: Warm up Docker with TexLive
         run: |

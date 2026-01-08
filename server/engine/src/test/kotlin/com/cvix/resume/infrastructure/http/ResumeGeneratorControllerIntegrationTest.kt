@@ -45,7 +45,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
                 // Try to generate a simple test PDF to verify the image is ready
                 val testLatex = """
                     \documentclass{article}
-                    \usepackage[utf-8]{inputenc}
+                    \usepackage[utf8]{inputenc}
                     \usepackage[a4paper, margin=1in]{geometry}
                     \pagestyle{empty}
                     \begin{document}
