@@ -1,3 +1,9 @@
+## [3.7.0](https://github.com/dallay/cvix/compare/v3.6.1...v3.7.0) (2026-01-08)
+
+### ✨ Features
+
+* **layout:** add global CSS import to BaseLayout ([91c62cd](https://github.com/dallay/cvix/commit/91c62cd3e83ea6adcdf378749137597b0e62826d))
+
 ## [3.6.1](https://github.com/dallay/cvix/compare/v3.6.0...v3.6.1) (2026-01-08)
 
 ### 🐛 Bug Fixes
