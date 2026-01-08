@@ -3,6 +3,7 @@ package com.cvix.config
 import com.cvix.IntegrationTest
 import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
+import com.cvix.common.domain.SystemEnvironment.getEnvOrDefault
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
@@ -71,13 +72,6 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
-
-        /**
-         * Retrieves environment variable or returns default value
-         */
-        private fun getEnvOrDefault(key: String, default: String): String =
-            System.getenv(key) ?: default
-
         /**
          * Unique suffix for test container names. Can be overridden via system property
          * `tc.name.suffix` to support container reuse across test runs.
