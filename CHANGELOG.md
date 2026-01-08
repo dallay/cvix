@@ -1,3 +1,13 @@
+## [3.6.1](https://github.com/dallay/cvix/compare/v3.6.0...v3.6.1) (2026-01-08)
+
+### 🐛 Bug Fixes
+
+* **ci:** downgrade java version from 25 to 24 ([#497](https://github.com/dallay/cvix/issues/497)) ([362e027](https://github.com/dallay/cvix/commit/362e027d5323576303b23509b787a3056dfebe2b))
+
+### 📝 Documentation
+
+* align README with canonical verification command ([#496](https://github.com/dallay/cvix/issues/496)) ([e59cfd7](https://github.com/dallay/cvix/commit/e59cfd79e12c80fdfabb99b1ce34fd807eeb31bb))
+
 ## [3.6.0](https://github.com/dallay/cvix/compare/v3.5.0...v3.6.0) (2026-01-07)
 
 ### ✨ Features
