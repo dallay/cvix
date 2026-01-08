@@ -125,12 +125,12 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 **Run locally:**
 
 ```bash
-make prepare-env          # Setup .env and config files
-make install              # Install Node & Gradle dependencies
-make ssl-cert             # Generate dev SSL certs
-make backend-run          # Boot backend stack (Spring Boot/Postgres/Keycloak)
-make dev-web              # Start Vue frontend (hot reload)
-make test-all             # Run backend + frontend tests
+make prepare-env   # Setup .env and config files
+make install       # Install Node & Gradle dependencies
+make ssl-cert      # Generate dev SSL certs
+make backend-run   # Boot backend stack (Spring Boot/Postgres/Keycloak)
+make dev-web       # Start Vue frontend (hot reload)
+make verify-all    # ✅ Run all checks, tests, and linters
 ```
 
 > 🔎 For advanced setup and deployment, see [.ruler/](.ruler/) and [docs/](docs/).
@@ -139,10 +139,10 @@ make test-all             # Run backend + frontend tests
 
 ## ✅ Testing and Quality
 
-- 🧹 All code is linted, statically checked, and must pass both **unit** and **integration** tests
-- 🧪 `make test-all` covers everything
-- 📈 Code coverage thresholds enforced (backend: Kover, frontend: Vitest)
-- 🤖 Every PR: full CI, security scan, and coverage checks
+- 🧹 All code is linted, statically checked, and must pass both **unit** and **integration** tests.
+- 🧪 `make verify-all` is the definitive command, running all checks, tests, and linters across both frontend and backend.
+- 📈 Code coverage thresholds enforced (backend: Kover, frontend: Vitest).
+- 🤖 Every PR: full CI, security scan, and coverage checks.
 
 ---
 
