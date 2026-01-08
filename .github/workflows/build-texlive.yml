@@ -97,11 +97,27 @@ jobs:
 
       - name: Verify image
         run: |
-          echo "Verifying amd64 image..."
-          docker run --rm --platform linux/amd64 ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "🔍 Verifying images across both registries..."
+          echo ""
 
-          echo "Verifying arm64 image..."
+          # Verify GHCR (GitHub Container Registry)
+          echo "📦 Testing GHCR images..."
+          echo "  ├─ amd64..."
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "  └─ arm64..."
           docker run --rm --platform linux/arm64 ${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+
+          echo ""
+
+          # Verify Docker Hub
+          echo "📦 Testing Docker Hub images..."
+          echo "  ├─ amd64..."
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+          echo "  └─ arm64..."
+          docker run --rm --platform linux/arm64 ${{ env.REGISTRY_DOCKERHUB }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest pdflatex --version
+
+          echo ""
+          echo "✅ All images verified successfully on both registries!"
 
       - name: Build Summary
         run: |

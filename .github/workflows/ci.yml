@@ -255,19 +255,8 @@ jobs:
       - name: Run tests
         env:
           DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
-          TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
-          TESTCONTAINERS_CHECKS_DISABLE: true
-          TESTCONTAINERS_REUSE_ENABLE: true
-          TESTCONTAINERS_RYUK_DISABLED: true
-          _JAVA_OPTIONS: -Xmx2g
         run: |
           echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
-          echo "Test configuration:"
-          echo "  - Docker socket: ${TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE}"
-          echo "  - Ryuk disabled: ${TESTCONTAINERS_RYUK_DISABLED}"
-          echo "  - Reuse enabled: ${TESTCONTAINERS_REUSE_ENABLE}"
-          echo "  - Java max heap: 2G"
-          echo ""
           ./gradlew test --no-daemon -i
         timeout-minutes: 60
       - name: Publish Test Results

@@ -108,13 +108,13 @@ docker run --rm cvix/texlive:latest uname -m
 
 ## Image Registry and Naming Convention
 
-The authoritative registry for the CVIX TexLive Docker image is `ghcr.io/dallay/texlive`. Users should pull the official image from this registry to ensure they are using the latest and verified version. Local builds (`cvix/texlive`) are intended for development and testing purposes only.
+The authoritative registry for the CVIX TexLive Docker image is `dallay/texlive`. Users should pull the official image from this registry to ensure they are using the latest and verified version. Local builds (`cvix/texlive`) are intended for development and testing purposes only.
 
 ### Examples
 
 #### Pulling the Official Image
 ```bash
-docker pull ghcr.io/dallay/texlive:latest
+docker pull dallay/texlive:latest
 ```
 
 #### Local Build (Development Only)
@@ -123,7 +123,7 @@ docker build -t cvix/texlive:latest ./infra/texlive
 ```
 
 ### Multi-Architecture Builds
-For production use, always pull from `ghcr.io/dallay/texlive` as it includes multi-architecture support. The following command is used to build and push multi-arch images:
+For production use, always pull from `dallay/texlive` as it includes multi-architecture support. The following command is used to build and push multi-arch images:
 ```bash
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
@@ -155,7 +155,7 @@ Alternatively, you can run the container with the `--user` flag to map the conta
 docker run --rm \
   --user $(id -u):$(id -g) \
   -v $(pwd):/work \
-  ghcr.io/dallay/texlive:latest \
+  dallay/texlive:latest \
   pdflatex -interaction=nonstopmode -halt-on-error resume.tex
 ```
 
