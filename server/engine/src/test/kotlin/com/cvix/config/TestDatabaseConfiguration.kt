@@ -10,21 +10,21 @@ import org.testcontainers.utility.DockerImageName
 
 /**
  * Test configuration for database integration tests.
- * 
+ *
  * Purpose:
  * - Provides PostgreSQL container for integration tests
  * - Creates JDBC DataSource bean required by @Sql test annotations
  * - @ServiceConnection auto-configures R2DBC connection for reactive repositories
- * 
+ *
  * Why separate from TestcontainersConfiguration?
  * - TestcontainersConfiguration: Used by TestHatchgridApplication for local dev
  * - TestDatabaseConfiguration: Used by integration tests needing JDBC DataSource
- * 
+ *
  * Note: Tests using @Sql annotations require a JDBC DataSource, even though
  * the application uses R2DBC. This configuration provides both:
  * - R2DBC connection via @ServiceConnection (for application code)
  * - JDBC DataSource (for @Sql test utilities)
- * 
+ *
  * Supports environment variables with fallback to defaults:
  * - POSTGRESQL_VERSION (default: 17-alpine)
  */
@@ -35,14 +35,14 @@ class TestDatabaseConfiguration {
     @ServiceConnection
     fun postgresContainer(): PostgreSQLContainer<*> =
         PostgreSQLContainer(
-            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}")
+            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}"),
         )
             .withUsername("test")
             .withPassword("test")
 
     /**
      * JDBC DataSource bean required by @Sql test annotations.
-     * 
+     *
      * Even though the application uses R2DBC, tests with @Sql need a JDBC DataSource
      * to execute SQL scripts before/after test methods.
      */

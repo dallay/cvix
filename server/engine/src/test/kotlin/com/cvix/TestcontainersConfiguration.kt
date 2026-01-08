@@ -9,11 +9,11 @@ import org.testcontainers.utility.DockerImageName
 
 /**
  * Test configuration for Testcontainers.
- * 
+ *
  * Used by:
  * - TestHatchgridApplication.kt for local development with containers
  * - Integration tests via @ServiceConnection auto-configuration
- * 
+ *
  * Supports environment variables with fallback to defaults:
  * - POSTGRESQL_VERSION (default: 17-alpine)
  */
@@ -24,6 +24,6 @@ class TestcontainersConfiguration {
     @ServiceConnection
     fun postgresContainer(): PostgreSQLContainer<*> =
         PostgreSQLContainer(
-            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}")
+            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}"),
         )
 }
