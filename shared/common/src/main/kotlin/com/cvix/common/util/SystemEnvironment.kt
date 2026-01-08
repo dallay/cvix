@@ -1,4 +1,4 @@
-package com.cvix.common.domain
+package com.cvix.common.util
 
 /**
  * Utility object for accessing system environment variables in a safe and consistent way.

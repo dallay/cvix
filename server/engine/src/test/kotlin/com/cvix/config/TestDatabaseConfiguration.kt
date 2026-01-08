@@ -1,6 +1,6 @@
 package com.cvix.config
 
-import com.cvix.common.domain.SystemEnvironment.getEnvOrDefault
+import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.context.annotation.Bean

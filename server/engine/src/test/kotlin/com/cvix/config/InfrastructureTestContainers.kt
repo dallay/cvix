@@ -3,7 +3,7 @@ package com.cvix.config
 import com.cvix.IntegrationTest
 import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
-import com.cvix.common.domain.SystemEnvironment.getEnvOrDefault
+import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException

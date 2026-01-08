@@ -138,20 +138,25 @@ jobs:
           java-version: "24"
 
       - name: Pre-pull TexLive Docker image
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
           echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
-          for i in 1 2 3; do
+
+          # Retry logic: attempt up to 5 times with exponential backoff
+          for i in {1..5}; do
+            echo "Attempt $i/5: Pulling image..."
             if docker pull ${{ env.TEXLIVE_IMAGE }}; then
-              echo "Docker image pulled successfully"
+              echo "✅ Docker image pulled successfully"
               docker images | grep texlive
               break
             fi
-            if [ $i -lt 3 ]; then
-              echo "Pull attempt $i failed, retrying in 10s..."
-              sleep 10
+
+            if [ $i -lt 5 ]; then
+              wait_time=$((10 * i))
+              echo "❌ Pull attempt $i failed, retrying in ${wait_time}s..."
+              sleep $wait_time
             else
-              echo "Failed to pull image after 3 attempts"
+              echo "❌ Failed to pull image after 5 attempts"
               exit 1
             fi
           done
