@@ -19,6 +19,8 @@ COPY client/packages/tsconfig/package.json ./client/packages/tsconfig/
 COPY client/packages/utilities/package.json ./client/packages/utilities/
 COPY client/packages/ui/package.json ./client/packages/ui/
 COPY client/packages/lib/package.json ./client/packages/lib/
+COPY client/packages/assets/package.json ./client/packages/assets/
+COPY client/packages/i18n/package.json ./client/packages/i18n/
 COPY client/apps/webapp/package.json ./client/apps/webapp/
 
 # Install dependencies
