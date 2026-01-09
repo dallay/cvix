@@ -1,3 +1,9 @@
+## [3.9.1](https://github.com/dallay/cvix/compare/v3.9.0...v3.9.1) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **ci:** 🐛 allow Docker PDF tests to run in CI ([#502](https://github.com/dallay/cvix/issues/502)) ([0e5f52a](https://github.com/dallay/cvix/commit/0e5f52a991a719a00f7ee70de09a0259628b2c43))
+
 ## [3.9.0](https://github.com/dallay/cvix/compare/v3.8.0...v3.9.0) (2026-01-09)
 
 ### ✨ Features
