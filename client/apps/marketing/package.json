@@ -40,7 +40,12 @@
 		"astro": "astro",
 		"test": "vitest",
 		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:headed": "playwright test --headed",
+		"test:e2e:debug": "playwright test --debug",
+		"playwright:install": "playwright install --with-deps"
 	},
 	"dependencies": {
 		"@astrojs/mdx": "catalog:",
@@ -74,6 +79,7 @@
 	"devDependencies": {
 		"@astrojs/check": "catalog:",
 		"@cvix/config": "workspace:*",
+		"@playwright/test": "catalog:",
 		"@tailwindcss/typography": "catalog:",
 		"@vitest/coverage-v8": "catalog:",
 		"happy-dom": "catalog:",
