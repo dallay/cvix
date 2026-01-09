@@ -19,6 +19,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.context.jdbc.Sql
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Timeout(600) // Class-level timeout: 10 minutes max for entire test class (including @BeforeAll)
 internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationTest() {
 
     @Autowired
@@ -32,7 +33,10 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         val startTime = System.currentTimeMillis()
         val maxWaitMinutes = System.getenv("RESUME_PDF_DOCKER_IMAGE_WAIT_MINUTES")?.toLongOrNull() ?: 5
         val maxWaitMillis = TimeUnit.MINUTES.toMillis(maxWaitMinutes)
-        val perAttemptTimeout = Duration.ofSeconds(30)
+        // CRITICAL: Must be LONGER than DockerPdfGenerator's internal timeout (60s) plus buffer
+        // to allow the Mono to complete before .block() times out
+        // Otherwise, .block() returns but the subscription keeps running, causing hangs
+        val perAttemptTimeout = Duration.ofSeconds(90)
 
         // The PostConstruct method starts the pull in a background thread
         // Wait for it to complete by checking if we can generate a minimal PDF
