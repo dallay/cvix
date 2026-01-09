@@ -1,3 +1,9 @@
+## [3.9.0](https://github.com/dallay/cvix/compare/v3.8.0...v3.9.0) (2026-01-09)
+
+### ✨ Features
+
+* **env:** update database credentials in environment files for consistency ([#500](https://github.com/dallay/cvix/issues/500)) ([3b12b4b](https://github.com/dallay/cvix/commit/3b12b4bb12a29314e1d46c53407038430c7de7b3))
+
 ## [3.8.0](https://github.com/dallay/cvix/compare/v3.7.0...v3.8.0) (2026-01-08)
 
 ### ✨ Features
