@@ -3,6 +3,7 @@ package com.cvix.resume.infrastructure.http
 import com.cvix.ControllerIntegrationTest
 import com.cvix.resume.ResumeTestFixtures
 import com.cvix.resume.infrastructure.pdf.DockerPdfGenerator
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -29,7 +30,9 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         // The CI workflow pre-pulls the image, so this is mainly a safety net.
         // If this times out, check that RESUME_PDF_DOCKER_CONTAINER_USER matches the CI runner's UID.
         val startTime = System.currentTimeMillis()
-        val maxWaitMillis = TimeUnit.MINUTES.toMillis(5)
+        val maxWaitMinutes = System.getenv("RESUME_PDF_DOCKER_IMAGE_WAIT_MINUTES")?.toLongOrNull() ?: 5
+        val maxWaitMillis = TimeUnit.MINUTES.toMillis(maxWaitMinutes)
+        val perAttemptTimeout = Duration.ofSeconds(30)
 
         // The PostConstruct method starts the pull in a background thread
         // Wait for it to complete by checking if we can generate a minimal PDF
@@ -56,7 +59,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
                 """.trimIndent()
 
                 // This will trigger image pull if not done yet
-                dockerPdfGenerator.generatePdf(testLatex, "en").block()
+                dockerPdfGenerator.generatePdf(testLatex, "en").block(perAttemptTimeout)
                 val elapsed = System.currentTimeMillis() - startTime
                 println("✅ Docker image ready after $attempts attempts (${elapsed / 1000}s)")
                 return
