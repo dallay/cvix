@@ -2,7 +2,7 @@
 # Caddy Configuration for Vue.js SPA
 # =============================================================================
 # Environment Variables (required):
-#   - BACKEND_URL: Backend API endpoint (e.g., https://api.example.com)
+#   - CVIX_API_URL: Backend API endpoint (e.g., https://api.example.com)
 #   - CSP_SCRIPT_SRC: CSP script-src directive (e.g., 'self' 'unsafe-inline')
 #   - CSP_STYLE_SRC: CSP style-src directive (e.g., 'self' 'unsafe-inline')
 #   - CSP_CONNECT_SRC: CSP connect-src for fetch/XHR/WebSocket origins
@@ -49,7 +49,7 @@
 	# Enables same-origin requests (no CORS issues) and runtime backend config
 	# ==========================================================================
 	handle /api/* {
-		reverse_proxy {$BACKEND_URL} {
+		reverse_proxy {$CVIX_API_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
@@ -70,7 +70,7 @@
 	# OAuth2/Auth endpoints proxy
 	# ==========================================================================
 	handle /oauth2/* {
-		reverse_proxy {$BACKEND_URL} {
+		reverse_proxy {$CVIX_API_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
@@ -90,7 +90,7 @@
 	# Actuator endpoints proxy (health checks, metrics)
 	# ==========================================================================
 	handle /actuator/* {
-		reverse_proxy {$BACKEND_URL} {
+		reverse_proxy {$CVIX_API_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers

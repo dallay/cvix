@@ -66,7 +66,7 @@ services:
     image: ghcr.io/dallay/cvix-webapp:latest
     environment:
       # Frontend runtime configuration
-      VITE_BACKEND_URL: ${BACKEND_URL}
+      CVIX_API_URL: ${CVIX_API_URL}
       VITE_KEYCLOAK_URL: ${OAUTH2_SERVER_URL}
       VITE_KEYCLOAK_REALM: ${REALM}
       VITE_KEYCLOAK_CLIENT_ID: ${CLIENT_ID}
@@ -77,11 +77,12 @@ services:
       # Node environment
       NODE_ENV: production
 
-      # Nginx CSP configuration (envsubst variables for runtime templating)
+      # Caddy CSP configuration (runtime variables)
       # CRITICAL: Override these in staging/production to remove 'unsafe-inline'
-      BACKEND_URL: ${BACKEND_URL}
       CSP_SCRIPT_SRC: ${CSP_SCRIPT_SRC:-'self' 'unsafe-inline'}
       CSP_STYLE_SRC: ${CSP_STYLE_SRC:-'self' 'unsafe-inline'}
+      CSP_CONNECT_SRC: ${CSP_CONNECT_SRC:-'self'}
+      CSP_OBJECT_SRC: ${CSP_OBJECT_SRC:-'none'}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"

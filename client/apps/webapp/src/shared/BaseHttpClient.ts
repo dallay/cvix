@@ -53,7 +53,7 @@ export class BaseHttpClient {
 
 	constructor(config: HttpClientConfig = {}) {
 		const envRecord = import.meta.env as unknown as Record<string, unknown>;
-		const backend = envRecord.BACKEND_URL as string | undefined;
+		const backend = envRecord.CVIX_API_URL as string | undefined;
 		this.baseURL = (config.baseURL || backend) ?? "/api";
 
 		this.client = axios.create({
