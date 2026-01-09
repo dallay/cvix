@@ -177,18 +177,22 @@ services:
       SSL_KEYSTORE_LOCATION: ${SSL_KEYSTORE_LOCATION}
 
     secrets:
+      - source: database_password
+        target: DATABASE_PASSWORD
       - source: client_secret
-        target: client_secret
+        target: CLIENT_SECRET
       - source: admin_realm_password
-        target: admin_realm_password
+        target: ADMIN_REALM_PASSWORD
       - source: sendgrid_api_key
-        target: sendgrid_api_key
+        target: SENDGRID_API_KEY
       - source: smtp_username
-        target: smtp_username
+        target: SMTP_USERNAME
       - source: smtp_password
-        target: smtp_password
+        target: SMTP_PASSWORD
       - source: ssl_keystore_password
-        target: ssl_keystore_password
+        target: SSL_KEYSTORE_PASSWORD
+      - source: waitlist_ip_hmac_secret
+        target: WAITLIST_IP_HMAC_SECRET
 
     volumes:
       # PRODUCTION WARNING: Direct Docker socket mounting is a CRITICAL security risk
@@ -257,8 +261,11 @@ services:
 # Each secret will be mounted as a file in /run/secrets/SECRET_NAME inside the container.
 # Ensure strict file permissions and access controls for any temporary secret files.
 #
-# Your Spring Boot app MUST read from these files explicitly using the _FILE env vars.
+# Secrets are read by docker-entrypoint.sh at container startup and exported as environment variables.
+# The entrypoint script expects secrets mounted at /run/secrets/SECRET_NAME (uppercase target names).
 secrets:
+  database_password:
+    file: ./secrets/database_password.txt
   client_secret:
     file: ./secrets/client_secret.txt
   admin_realm_password:
@@ -271,3 +278,5 @@ secrets:
     file: ./secrets/smtp_password.txt
   ssl_keystore_password:
     file: ./secrets/ssl_keystore_password.txt
+  waitlist_ip_hmac_secret:
+    file: ./secrets/waitlist_ip_hmac_secret.txt

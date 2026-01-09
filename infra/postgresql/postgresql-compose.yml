@@ -5,7 +5,7 @@ include:
 
 services:
   postgresql:
-    image: postgres:${POSTGRESQL_VERSION:-17-alpine}
+    image: postgres:${POSTGRESQL_VERSION:-18.1}
     container_name: postgresql-${APP_NAME}
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}

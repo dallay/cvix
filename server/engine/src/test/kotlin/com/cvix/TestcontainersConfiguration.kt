@@ -15,7 +15,7 @@ import org.testcontainers.utility.DockerImageName
  * - Integration tests via @ServiceConnection auto-configuration
  *
  * Supports environment variables with fallback to defaults:
- * - POSTGRESQL_VERSION (default: 17-alpine)
+ * - POSTGRESQL_VERSION (default: 18.1)
  */
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
@@ -24,6 +24,6 @@ class TestcontainersConfiguration {
     @ServiceConnection
     fun postgresContainer(): PostgreSQLContainer<*> =
         PostgreSQLContainer(
-            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "17-alpine")}"),
+            DockerImageName.parse("postgres:${getEnvOrDefault("POSTGRESQL_VERSION", "18.1")}"),
         )
 }
