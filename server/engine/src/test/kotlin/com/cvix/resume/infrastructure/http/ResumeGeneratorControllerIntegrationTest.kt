@@ -79,6 +79,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         throw IllegalStateException(
             "Docker image not ready after ${maxWaitMillis / 1000} seconds (attempt $attempts). " +
                 "Please ensure Docker is running and has sufficient resources. " +
+                "In CI, verify that RESUME_PDF_DOCKER_CONTAINER_USER matches the runner's UID. " +
                 "Last error: ${lastException?.message}",
             lastException,
         )
