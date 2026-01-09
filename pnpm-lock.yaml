@@ -432,6 +432,9 @@ importers:
       '@cvix/config':
         specifier: workspace:*
         version: link:../../config
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.57.0
       '@tailwindcss/typography':
         specifier: 'catalog:'
         version: 0.5.19(tailwindcss@4.1.18)
