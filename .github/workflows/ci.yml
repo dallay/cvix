@@ -252,11 +252,30 @@ jobs:
           echo "✅ Containers running: $(docker ps --quiet | wc -l) containers"
       - name: Build with Gradle (no tests)
         run: ./gradlew assemble --no-daemon -x test
+      - name: Detect Runner UID
+        id: runner-uid
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUNNER_UID="$(id -u 2>/dev/null || true)"
+          if [ -z "$RUNNER_UID" ]; then
+            RUNNER_UID="1001"
+            echo "⚠️  Runner UID detection failed; falling back to UID: $RUNNER_UID"
+          else
+            echo "✅ Detected Runner UID: $RUNNER_UID"
+          fi
+          echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
       - name: Run tests
         env:
           DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
+          # GitHub Actions runner runs as a specific UID (detected above). The DockerPdfGenerator
+          # creates temp directories that must be readable by the container. By default, the container
+          # runs as user 999 (matching the backend Dockerfile's 'spring' user), but in CI
+          # we need to match the runner's UID so the container can access the mounted files.
+          RESUME_PDF_DOCKER_CONTAINER_USER: ${{ steps.runner-uid.outputs.uid }}
         run: |
           echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
+          echo "Container will run as UID: $RESUME_PDF_DOCKER_CONTAINER_USER"
           ./gradlew test --no-daemon -i
         timeout-minutes: 60
       - name: Publish Test Results
