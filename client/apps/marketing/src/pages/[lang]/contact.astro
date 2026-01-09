@@ -131,7 +131,7 @@ export const getStaticPaths = () =>
 					<div class="bg-card border border-border rounded-lg p-8">
 						<h2 class="text-2xl font-bold mb-6">{t('contact.formTitle')}</h2>
 						<CsrfToken />
-						<form class="space-y-6" method="POST" action={`${CVIX_API_URL}/api/contact`} data-contact-form data-backend-url={CVIX_API_URL}>
+						<form class="space-y-6" method="POST" data-contact-form>
 							<FieldSet>
 								<FieldGroup>
 									<!-- Name Field -->
@@ -254,14 +254,21 @@ export const getStaticPaths = () =>
 		submit: t('contact.formSubmit'),
 	},
 	currentLang: locale,
+	backendUrl: CVIX_API_URL,
 }}>
+	import { ContactService } from '@cvix/lib';
+
 	document.addEventListener('DOMContentLoaded', () => {
 		const form = document.querySelector('[data-contact-form]');
 		const messageDiv = document.getElementById('form-message');
 
 		if (form && messageDiv) {
 			const alertDiv = messageDiv.querySelector('div');
-			const backendUrl = form.getAttribute('data-backend-url') || '';
+
+			// Initialize ContactService with backend URL
+			const contactService = new ContactService({
+				baseURL: backendUrl,
+			});
 
 			// Lazy load CSRF token on first interaction with the form
 			const lazyLoadCsrf = () => {
@@ -327,48 +334,20 @@ export const getStaticPaths = () =>
 					}
 				}
 
-				// Get CSRF token from cookie
-				const csrfToken = window.getCsrfToken?.();
+				try {
+					// Submit using ContactService
+					const result = await contactService.submitContactForm(
+						{
+							name: formData.get('name'),
+							email: formData.get('email'),
+							subject: formData.get('subject'),
+							message: formData.get('message'),
+							hcaptchaToken: captchaToken,
+						},
+						currentLang,
+					);
 
-				// Build headers with CSRF token
-				const headers = {
-					"Content-Type": "application/json",
-					Accept: "application/vnd.api.v1+json",
-					'Accept-Language': currentLang,
-				};
-
-				// Add CSRF token header if available
-				if (csrfToken) {
-					headers["X-XSRF-TOKEN"] = csrfToken;
-				}
-
-				// Convert FormData to JSON object for n8n webhook
-				const payload = {
-					name: formData.get('name'),
-					email: formData.get('email'),
-					subject: formData.get('subject'),
-					message: formData.get('message'),
-					hcaptchaToken: captchaToken,
-				};
-
-			try {
-				const response = await fetch(form.action, {
-					method: 'POST',
-					headers,
-					body: JSON.stringify(payload),
-					credentials: "include",
-				});
-
-					if (!response.ok) {
-						// Try to parse error response from backend
-						const errorData = await response.json().catch(() => ({}));
-						const errorMessage = errorData.message || translations.error;
-						throw new Error(errorMessage);
-					}
-
-					const result = await response.json();
-
-					// Show success message (use backend message or fallback to translation)
+					// Show success message
 					showMessage('success', result.message || translations.success);
 
 					// Reset form and captcha
@@ -379,7 +358,10 @@ export const getStaticPaths = () =>
 					if (import.meta.env.DEV) {
 						console.error('Contact form submission error:', error);
 					}
-					showMessage('error', translations.error);
+
+					// Extract error message from service response
+					const errorMessage = error?.message || translations.error;
+					showMessage('error', errorMessage);
 
 					// Reset captcha on error so user can try again
 					window.resetCaptcha?.('contact-captcha');
