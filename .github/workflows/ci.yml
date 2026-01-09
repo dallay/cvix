@@ -254,17 +254,17 @@ jobs:
         run: ./gradlew assemble --no-daemon -x test
       - name: Detect Runner UID
         id: runner-uid
-         shell: bash
+        shell: bash
         run: |
-           set -euo pipefail
-           RUNNER_UID="$(id -u 2>/dev/null || true)"
-           if [ -z "$RUNNER_UID" ]; then
-             RUNNER_UID="1001"
-             echo "⚠️  Runner UID detection failed; falling back to UID: $RUNNER_UID"
-           else
-             echo "✅ Detected Runner UID: $RUNNER_UID"
-           fi
-           echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          RUNNER_UID="$(id -u 2>/dev/null || true)"
+          if [ -z "$RUNNER_UID" ]; then
+            RUNNER_UID="1001"
+            echo "⚠️  Runner UID detection failed; falling back to UID: $RUNNER_UID"
+          else
+            echo "✅ Detected Runner UID: $RUNNER_UID"
+          fi
+          echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
       - name: Run tests
         env:
           DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
