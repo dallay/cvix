@@ -273,7 +273,12 @@ export const getStaticPaths = () =>
 		// Extract configuration from data attributes
 		const backendUrl = configEl.dataset.backendUrl || '';
 		const currentLang = configEl.dataset.lang || 'en';
-		const translations = JSON.parse(configEl.dataset.translations || '{}');
+		let translations: Record<string, string> = {};
+		try {
+			translations = JSON.parse(configEl.dataset.translations || "{}");
+		} catch (err) {
+			console.warn("Invalid contact form translations payload:", err);
+		}
 
 		const alertDiv = messageDiv.querySelector('div');
 		if (!alertDiv) return;
@@ -331,14 +336,16 @@ export const getStaticPaths = () =>
 
 			// Get captcha token
 			const captchaToken = (window as any).getCaptchaToken?.('contact-captcha');
-			if (!captchaToken) {
-				showMessage('warning', translations.captchaRequired);
+			const captchaElement = document.getElementById('contact-captcha');
+			// Only require token if captcha is actually rendered
+			if (captchaElement && !captchaToken) {
+				showMessage('warning', translations.captchaRequired || 'Captcha required');
 				return;
 			}
 
 			// Disable button during submission
 			submitButton.disabled = true;
-			submitButton.textContent = translations.sending;
+			submitButton.textContent = translations.sending || 'Sending...';
 
 			// Ensure CSRF token is loaded before submitting
 			if (backendUrl && (window as any).csrfLoader) {
@@ -363,7 +370,7 @@ export const getStaticPaths = () =>
 				);
 
 				// Show success message
-				showMessage('success', result.message || translations.success);
+				showMessage('success', result.message || translations.success || 'Success!');
 
 				// Reset form and captcha
 				form.reset();
@@ -375,7 +382,7 @@ export const getStaticPaths = () =>
 				}
 
 				// Extract error message from service response
-				const errorMessage = (error as Error)?.message || translations.error;
+				const errorMessage = (error as Error)?.message || translations.error || 'An error occurred';
 				showMessage('error', errorMessage);
 
 				// Reset captcha on error so user can try again

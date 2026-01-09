@@ -7,21 +7,21 @@ import { ApiClient, type ApiClientConfig } from "./api-client";
 /**
  * Contact form request payload
  */
-export interface ContactFormRequest {
-	name: string;
-	email: string;
-	subject: string;
-	message: string;
-	hcaptchaToken: string;
-}
+export type ContactFormRequest = {
+	readonly name: string;
+	readonly email: string;
+	readonly subject: string;
+	readonly message: string;
+	readonly hcaptchaToken: string;
+};
 
 /**
  * Contact form response
  */
-export interface ContactFormResponse {
-	message: string;
-	success: boolean;
-}
+export type ContactFormResponse = {
+	readonly message: string;
+	readonly success: boolean;
+};
 
 /**
  * Service for handling contact form submissions

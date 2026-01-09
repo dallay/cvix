@@ -17,8 +17,8 @@ import { expect, test } from "@playwright/test";
 test.describe("Contact Form", () => {
 	test.beforeEach(async ({ page }) => {
 		// Navigate to English contact page
-		await page.goto("/en/contact");
-		await page.waitForLoadState("networkidle");
+		await page.goto("/en/contact", { waitUntil: "domcontentloaded" });
+		await expect(page.getByRole("button", { name: /send/i })).toBeVisible();
 	});
 
 	test("should render all form fields and submit button", async ({ page }) => {
@@ -67,10 +67,7 @@ test.describe("Contact Form", () => {
 			const nameInput = page.getByLabel(/name/i);
 			await nameInput.focus();
 
-			// Wait a bit for async CSRF fetch
-			await page.waitForTimeout(500);
-
-			// Now CSRF input should exist
+			// Now CSRF input should exist (expect will auto-retry)
 			const csrfInput = page.locator('input[name="csrf_token"]');
 			await expect(csrfInput).toHaveCount(1);
 			await expect(csrfInput).toHaveAttribute("value", /.+/); // Non-empty value
@@ -118,10 +115,9 @@ test.describe("Contact Form", () => {
 		});
 
 		await test.step("Submit form", async () => {
-			// Wait for CSRF token to load
+			// Trigger CSRF token load
 			const nameInput = page.getByLabel(/name/i);
 			await nameInput.focus();
-			await page.waitForTimeout(500);
 
 			const submitButton = page.getByRole("button", { name: /send/i });
 			await submitButton.click();
@@ -154,8 +150,8 @@ test.describe("Contact Form", () => {
 
 	test("should display form in Spanish locale", async ({ page }) => {
 		await test.step("Navigate to Spanish contact page", async () => {
-			await page.goto("/es/contact");
-			await page.waitForLoadState("networkidle");
+			await page.goto("/es/contact", { waitUntil: "domcontentloaded" });
+			await expect(page.getByRole("button", { name: /enviar/i })).toBeVisible();
 		});
 
 		await test.step("Verify Spanish labels", async () => {
@@ -177,10 +173,8 @@ test.describe("Contact Form", () => {
 			const form = page.locator("form");
 			await expect(form).toBeVisible();
 
-			// Screenshot the form area
-			await form.screenshot({
-				path: "playwright-report/contact-form-initial.png",
-			});
+			// Screenshot the form area using Playwright snapshots (parallel-safe)
+			await expect(form).toHaveScreenshot("contact-form-initial.png");
 		});
 	});
 
@@ -193,13 +187,12 @@ test.describe("Contact Form", () => {
 
 			// Trigger CSRF load
 			await page.getByLabel(/name/i).focus();
-			await page.waitForTimeout(500);
 		});
 
 		await test.step("Simulate network failure", async () => {
 			// Intercept the contact API call and return network error
-			await page.route("**/api/contact", (route) => {
-				route.abort("failed");
+			await page.route("**/api/contact", async (route) => {
+				await route.abort("failed");
 			});
 
 			const submitButton = page.getByRole("button", { name: /send/i });
