@@ -1,3 +1,9 @@
+## [3.9.3](https://github.com/dallay/cvix/compare/v3.9.2...v3.9.3) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **docker:** add missing workspace package.json files to Dockerfiles ([#504](https://github.com/dallay/cvix/issues/504)) ([ae8b064](https://github.com/dallay/cvix/commit/ae8b064fdcaf4eb26d778b8437b1aa8a8cd632cf))
+
 ## [3.9.2](https://github.com/dallay/cvix/compare/v3.9.1...v3.9.2) (2026-01-09)
 
 ### 🐛 Bug Fixes
