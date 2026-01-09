@@ -1,3 +1,14 @@
+## [3.9.2](https://github.com/dallay/cvix/compare/v3.9.1...v3.9.2) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **marketing:** 🐛 use data attributes instead of define:vars for ES module compatibility ([f78fecd](https://github.com/dallay/cvix/commit/f78fecdd18b3d59c8617e9c2539b5a6bfa76d680))
+* **tests:** 🐛 correct import order in contact form E2E tests ([6af6926](https://github.com/dallay/cvix/commit/6af6926d04a067ed6ee7d53711d383890b94552b))
+
+### ♻️ Refactors
+
+* **marketing:** ♻️ extract ContactService to shared lib ([30b1433](https://github.com/dallay/cvix/commit/30b1433c90c65b4721d229c861740f15de4a6632))
+
 ## [3.9.1](https://github.com/dallay/cvix/compare/v3.9.0...v3.9.1) (2026-01-09)
 
 ### 🐛 Bug Fixes
