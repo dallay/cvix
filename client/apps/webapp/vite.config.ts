@@ -73,8 +73,8 @@ export default defineConfig(({ mode }) => {
 	// Merge env variables: local takes precedence over root
 	const env = { ...rootEnv, ...localEnv };
 
-	// Make backend proxy target configurable via BACKEND_URL env var (fallback: http://localhost:8080)
-	const backendTarget: string = env.BACKEND_URL ?? "http://localhost:8080";
+	// Make backend proxy target configurable via CVIX_API_URL env var (fallback: http://localhost:8080)
+	const backendTarget: string = env.CVIX_API_URL ?? "http://localhost:8080";
 
 	// Disable proxy during E2E tests when using mocked APIs (manual mocking or HAR files)
 	// Playwright handles the mocking at the browser level, so Vite proxy should be bypassed

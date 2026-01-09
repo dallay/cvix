@@ -5,7 +5,7 @@ import { SSL_CERT_PATH, SSL_KEY_PATH } from "@cvix/lib/ssl";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Playwright configuration for E2E testing
+ * Playwright configuration for Marketing Site E2E testing
  * @see https://playwright.dev/docs/test-configuration
  */
 
@@ -50,8 +50,8 @@ const useHttp =
 	process.env.FORCE_HTTP === "true" ||
 	!hasSSLCerts;
 const baseURL = useHttp
-	? `http://localhost:${PORTS.WEBAPP}`
-	: `https://localhost:${PORTS.WEBAPP}`;
+	? `http://localhost:${PORTS.MARKETING}`
+	: `https://localhost:${PORTS.MARKETING}`;
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -102,7 +102,7 @@ export default defineConfig({
 	webServer: {
 		command: "pnpm run dev",
 		url: baseURL,
-		timeout: 300_000, // 5 minutes to account for dependency builds (predev hook)
+		timeout: 300_000, // 5 minutes to account for dependency builds
 		reuseExistingServer: !process.env.CI,
 		ignoreHTTPSErrors: true, // Required for self-signed certificates
 		env: {
@@ -134,15 +134,5 @@ export default defineConfig({
 				},
 			},
 		},
-
-		// Mobile viewports for responsive testing (optional - comment out if not needed)
-		// {
-		// 	name: "mobile-chrome",
-		// 	use: { ...devices["Pixel 5"] },
-		// },
-		// {
-		// 	name: "mobile-safari",
-		// 	use: { ...devices["iPhone 13"] },
-		// },
 	],
 });

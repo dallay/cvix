@@ -225,7 +225,7 @@ The backend already has comprehensive implementation:
 Frontend (`.env` or Vite config):
 
 ```text
-API_BASE_URL=$BACKEND_URL/api
+API_BASE_URL=$CVIX_API_URL/api
 ```
 
 Backend (already configured in `application.yml`):

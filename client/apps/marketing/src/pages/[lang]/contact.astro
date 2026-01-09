@@ -131,7 +131,7 @@ export const getStaticPaths = () =>
 					<div class="bg-card border border-border rounded-lg p-8">
 						<h2 class="text-2xl font-bold mb-6">{t('contact.formTitle')}</h2>
 						<CsrfToken />
-						<form class="space-y-6" method="POST" action={`${CVIX_API_URL}/api/contact`} data-contact-form data-backend-url={CVIX_API_URL}>
+						<form class="space-y-6" method="POST" data-contact-form>
 							<FieldSet>
 								<FieldGroup>
 									<!-- Name Field -->
@@ -245,150 +245,153 @@ export const getStaticPaths = () =>
 	<Footer links={footerNavLinks(Astro.currentLocale as Lang)} />
 </Layout>
 
-<script define:vars={{
-	translations: {
+<!-- Pass server data to client via data attributes -->
+<div
+	id="contact-form-config"
+	data-backend-url={CVIX_API_URL}
+	data-lang={locale}
+	data-translations={JSON.stringify({
 		sending: t('contact.formSending'),
 		success: t('contact.formSuccess'),
 		error: t('contact.formError'),
 		captchaRequired: t('contact.captchaRequired'),
 		submit: t('contact.formSubmit'),
-	},
-	currentLang: locale,
-}}>
+	})}
+	style="display: none;"
+></div>
+
+<script>
+	import { ContactService } from '@cvix/lib';
+
 	document.addEventListener('DOMContentLoaded', () => {
-		const form = document.querySelector('[data-contact-form]');
+		const form = document.querySelector('[data-contact-form]') as HTMLFormElement | null;
 		const messageDiv = document.getElementById('form-message');
+		const configEl = document.getElementById('contact-form-config');
 
-		if (form && messageDiv) {
-			const alertDiv = messageDiv.querySelector('div');
-			const backendUrl = form.getAttribute('data-backend-url') || '';
+		if (!form || !messageDiv || !configEl) return;
 
-			// Lazy load CSRF token on first interaction with the form
-			const lazyLoadCsrf = () => {
-				if (backendUrl && window.csrfLoader) {
-					window.csrfLoader.ensureToken(backendUrl).catch((err) => {
-						console.warn("CSRF lazy load failed:", err);
-					});
+		// Extract configuration from data attributes
+		const backendUrl = configEl.dataset.backendUrl || '';
+		const currentLang = configEl.dataset.lang || 'en';
+		let translations: Record<string, string> = {};
+		try {
+			translations = JSON.parse(configEl.dataset.translations || "{}");
+		} catch (err) {
+			console.warn("Invalid contact form translations payload:", err);
+		}
+
+		const alertDiv = messageDiv.querySelector('div');
+		if (!alertDiv) return;
+
+		// Initialize ContactService with backend URL
+		const contactService = new ContactService({
+			baseURL: backendUrl,
+		});
+
+		// Lazy load CSRF token on first interaction with the form
+		const lazyLoadCsrf = () => {
+			if (backendUrl && (window as any).csrfLoader) {
+				(window as any).csrfLoader.ensureToken(backendUrl).catch((err: Error) => {
+					console.warn("CSRF lazy load failed:", err);
+				});
+			}
+		};
+
+		// Initialize CSRF on first focus or input on any form field
+		const formInputs = form.querySelectorAll('input, textarea');
+		formInputs.forEach(input => {
+			input.addEventListener("focus", lazyLoadCsrf, { once: true });
+			input.addEventListener("input", lazyLoadCsrf, { once: true });
+		});
+
+		const showMessage = (type: 'success' | 'error' | 'warning', text: string) => {
+			// Reset classes
+			alertDiv.className = 'p-4 rounded-md';
+
+			if (type === 'success') {
+				alertDiv.classList.add('bg-success/10', 'text-success', 'border', 'border-success/20');
+			} else if (type === 'error') {
+				alertDiv.classList.add('bg-destructive/10', 'text-destructive', 'border', 'border-destructive/20');
+			} else if (type === 'warning') {
+				alertDiv.classList.add('bg-warning/10', 'text-warning', 'border', 'border-warning/20');
+			}
+
+			alertDiv.textContent = text;
+			messageDiv.classList.remove('hidden');
+		};
+
+		const hideMessage = () => {
+			messageDiv.classList.add('hidden');
+		};
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			hideMessage();
+
+			const formData = new FormData(form);
+			const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+			if (!submitButton) return;
+
+			const originalButtonText = submitButton.textContent;
+
+			// Get captcha token
+			const captchaToken = (window as any).getCaptchaToken?.('contact-captcha');
+			const captchaElement = document.getElementById('contact-captcha');
+			// Only require token if captcha is actually rendered
+			if (captchaElement && !captchaToken) {
+				showMessage('warning', translations.captchaRequired || 'Captcha required');
+				return;
+			}
+
+			// Disable button during submission
+			submitButton.disabled = true;
+			submitButton.textContent = translations.sending || 'Sending...';
+
+			// Ensure CSRF token is loaded before submitting
+			if (backendUrl && (window as any).csrfLoader) {
+				try {
+					await (window as any).csrfLoader.ensureToken(backendUrl);
+				} catch (err) {
+					console.warn("CSRF token load failed:", err);
 				}
-			};
-
-			// Initialize CSRF on first focus or input on any form field
-			const formInputs = form.querySelectorAll('input, textarea');
-			formInputs.forEach(input => {
-				input.addEventListener("focus", lazyLoadCsrf, { once: true });
-				input.addEventListener("input", lazyLoadCsrf, { once: true });
-			});
-
-			const showMessage = (type, text) => {
-				// Reset classes
-				alertDiv.className = 'p-4 rounded-md';
-
-				if (type === 'success') {
-					alertDiv.classList.add('bg-success/10', 'text-success', 'border', 'border-success/20');
-				} else if (type === 'error') {
-					alertDiv.classList.add('bg-destructive/10', 'text-destructive', 'border', 'border-destructive/20');
-				} else if (type === 'warning') {
-					alertDiv.classList.add('bg-warning/10', 'text-warning', 'border', 'border-warning/20');
-				}
-
-				alertDiv.textContent = text;
-				messageDiv.classList.remove('hidden');
-			};
-
-			const hideMessage = () => {
-				messageDiv.classList.add('hidden');
-			};
-
-			form.addEventListener('submit', async (e) => {
-				e.preventDefault();
-				hideMessage();
-
-				const formData = new FormData(form);
-				const submitButton = form.querySelector('button[type="submit"]');
-				const originalButtonText = submitButton.textContent;
-
-				// Get captcha token
-				const captchaToken = window.getCaptchaToken?.('contact-captcha');
-				if (!captchaToken) {
-					showMessage('warning', translations.captchaRequired);
-					return;
-				}
-
-				// Disable button during submission
-				submitButton.disabled = true;
-				submitButton.textContent = translations.sending;
-
-				// Ensure CSRF token is loaded before submitting
-				if (backendUrl && window.csrfLoader) {
-					try {
-						await window.csrfLoader.ensureToken(backendUrl);
-					} catch (err) {
-						console.warn("CSRF token load failed:", err);
-					}
-				}
-
-				// Get CSRF token from cookie
-				const csrfToken = window.getCsrfToken?.();
-
-				// Build headers with CSRF token
-				const headers = {
-					"Content-Type": "application/json",
-					Accept: "application/vnd.api.v1+json",
-					'Accept-Language': currentLang,
-				};
-
-				// Add CSRF token header if available
-				if (csrfToken) {
-					headers["X-XSRF-TOKEN"] = csrfToken;
-				}
-
-				// Convert FormData to JSON object for n8n webhook
-				const payload = {
-					name: formData.get('name'),
-					email: formData.get('email'),
-					subject: formData.get('subject'),
-					message: formData.get('message'),
-					hcaptchaToken: captchaToken,
-				};
+			}
 
 			try {
-				const response = await fetch(form.action, {
-					method: 'POST',
-					headers,
-					body: JSON.stringify(payload),
-					credentials: "include",
-				});
+				// Submit using ContactService
+				const result = await contactService.submitContactForm(
+					{
+						name: formData.get('name') as string,
+						email: formData.get('email') as string,
+						subject: formData.get('subject') as string,
+						message: formData.get('message') as string,
+						hcaptchaToken: captchaToken,
+					},
+					currentLang,
+				);
 
-					if (!response.ok) {
-						// Try to parse error response from backend
-						const errorData = await response.json().catch(() => ({}));
-						const errorMessage = errorData.message || translations.error;
-						throw new Error(errorMessage);
-					}
+				// Show success message
+				showMessage('success', result.message || translations.success || 'Success!');
 
-					const result = await response.json();
-
-					// Show success message (use backend message or fallback to translation)
-					showMessage('success', result.message || translations.success);
-
-					// Reset form and captcha
-					form.reset();
-					window.resetCaptcha?.('contact-captcha');
-				} catch (error) {
-					// Only log errors in development to avoid exposing sensitive data
-					if (import.meta.env.DEV) {
-						console.error('Contact form submission error:', error);
-					}
-					showMessage('error', translations.error);
-
-					// Reset captcha on error so user can try again
-					window.resetCaptcha?.('contact-captcha');
-				} finally {
-					// Re-enable button
-					submitButton.disabled = false;
-					submitButton.textContent = originalButtonText;
+				// Reset form and captcha
+				form.reset();
+				(window as any).resetCaptcha?.('contact-captcha');
+			} catch (error) {
+				// Only log errors in development to avoid exposing sensitive data
+				if (import.meta.env.DEV) {
+					console.error('Contact form submission error:', error);
 				}
-			});
-		}
+
+				// Extract error message from service response
+				const errorMessage = (error as Error)?.message || translations.error || 'An error occurred';
+				showMessage('error', errorMessage);
+
+				// Reset captcha on error so user can try again
+				(window as any).resetCaptcha?.('contact-captcha');
+			} finally {
+				// Re-enable button
+				submitButton.disabled = false;
+				submitButton.textContent = originalButtonText;
+			}
+		});
 	});
 </script>

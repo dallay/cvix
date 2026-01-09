@@ -68,13 +68,13 @@ COPY --from=build /app/client/apps/webapp/dist /srv
 
 # Environment variables for CSP and backend URL (set defaults for local dev)
 # Override these in production:
-#   BACKEND_URL: https://api.yourdomain.com
+#   CVIX_API_URL: https://api.yourdomain.com
 #   CSP_SCRIPT_SRC: 'self' 'sha256-HASH1' 'sha256-HASH2' (remove 'unsafe-inline')
 #   CSP_STYLE_SRC: 'self' 'sha256-HASH1' (remove 'unsafe-inline')
 #   CSP_CONNECT_SRC: 'self' https://api.yourdomain.com https://auth.yourdomain.com
 #   CSP_OBJECT_SRC: 'self' blob: (for PDF preview), or 'none' for strict security
 # Note: frame-src is hardcoded to 'self' blob: in Caddyfile for PDF iframe preview
-ENV BACKEND_URL=https://backend.localhost \
+ENV CVIX_API_URL=https://backend.localhost \
     CSP_SCRIPT_SRC="'self' 'unsafe-inline'" \
     CSP_STYLE_SRC="'self' 'unsafe-inline'" \
     CSP_CONNECT_SRC="'self' https://backend.localhost" \
