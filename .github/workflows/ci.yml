@@ -254,10 +254,17 @@ jobs:
         run: ./gradlew assemble --no-daemon -x test
       - name: Detect Runner UID
         id: runner-uid
+         shell: bash
         run: |
-          RUNNER_UID=$(id -u)
-          echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
-          echo "ℹ️  Runner UID: $RUNNER_UID"
+           set -euo pipefail
+           RUNNER_UID="$(id -u 2>/dev/null || true)"
+           if [ -z "$RUNNER_UID" ]; then
+             RUNNER_UID="1001"
+             echo "⚠️  Runner UID detection failed; falling back to UID: $RUNNER_UID"
+           else
+             echo "✅ Detected Runner UID: $RUNNER_UID"
+           fi
+           echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
       - name: Run tests
         env:
           DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
@@ -265,8 +272,7 @@ jobs:
           # creates temp directories that must be readable by the container. By default, the container
           # runs as user 999 (matching the backend Dockerfile's 'spring' user), but in CI
           # we need to match the runner's UID so the container can access the mounted files.
-          # The detected UID is used; if detection fails, fallback to 1001 (typical GitHub Actions UID).
-          RESUME_PDF_DOCKER_CONTAINER_USER: ${{ steps.runner-uid.outputs.uid || '1001' }}
+          RESUME_PDF_DOCKER_CONTAINER_USER: ${{ steps.runner-uid.outputs.uid }}
         run: |
           echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
           echo "Container will run as UID: $RESUME_PDF_DOCKER_CONTAINER_USER"
