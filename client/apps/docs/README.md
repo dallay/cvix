@@ -45,11 +45,11 @@ src/
 ### Commands
 
 ```bash
-# From repository root or docs directory
-cd docs
-pnpm install
+# From repository root
+make dev-docs
 
-# Start dev server with hot reload
+# Or from docs project directory
+cd client/apps/docs
 pnpm dev
 
 # Build for production

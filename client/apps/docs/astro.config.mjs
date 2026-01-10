@@ -15,9 +15,9 @@ const patchedStaticNotFoundPath = fileURLToPath(
 	new URL("./src/starlight-patches/static-404.astro", import.meta.url),
 );
 
-// Shared assets path
+// Shared assets path (relative to client/apps/docs/)
 const sharedAssetsPath = fileURLToPath(
-	new URL("../client/packages/assets/src", import.meta.url),
+	new URL("../../packages/assets/src", import.meta.url),
 );
 
 // https://astro.build/config

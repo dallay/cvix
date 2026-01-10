@@ -2,7 +2,6 @@ packages:
   - client/apps/*
   - client/packages/*
   - client/config
-  - docs
 
 catalog:
   '@astrojs/check': ^0.9.6

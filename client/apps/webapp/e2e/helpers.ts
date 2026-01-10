@@ -1,40 +1,33 @@
 import type { Page } from "@playwright/test";
 
 /**
- * Manual API Mocking Helpers for E2E Tests
+ * E2E Test Helpers
  *
- * These helpers use Playwright's route API to mock API responses,
- * allowing E2E tests to run WITHOUT a real backend.
- *
- * This approach is more reliable than HAR-based mocking because:
- * - No XSRF token matching issues
- * - More predictable request/response handling
- * - Easier to customize for different test scenarios
+ * Shared utilities for E2E tests:
+ * - Test data generation
+ * - API mocking helpers
+ * - Setup/teardown utilities
  */
+
+// =============================================================================
+// TEST DATA
+// =============================================================================
 
 const API_CONTENT_TYPE = "application/vnd.api.v1+json";
-
-/**
- * Fixed timestamp for deterministic test data
- */
 const FIXED_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 
 /**
  * Test user credentials for authentication tests
  */
 export const TEST_USERS = {
-	/**
-	 * Existing user for login tests
-	 */
+	/** Existing user for login tests */
 	existingUser: {
 		email: "john.doe@profiletailors.com",
 		password: "S3cr3tP@ssw0rd*123",
 		firstName: "John",
 		lastName: "Doe",
 	},
-	/**
-	 * New user for registration tests
-	 */
+	/** New user for registration tests */
 	newUser: {
 		email: "jane.doe@profiletailors.com",
 		password: "S3cr3tP@ssw0rd*123",
@@ -43,9 +36,50 @@ export const TEST_USERS = {
 	},
 } as const;
 
+// =============================================================================
+// DATA GENERATION
+// =============================================================================
+
 /**
- * Mock responses for API endpoints
+ * Generate a unique email for testing
  */
+export function generateUniqueEmail(): string {
+	return `test.${Date.now()}@example.com`;
+}
+
+/**
+ * Test user data structure
+ */
+type TestUser = {
+	email: string;
+	password: string;
+	firstName: string;
+	lastName: string;
+};
+
+/**
+ * Generate test user data with unique email
+ */
+export function generateTestUser(): TestUser {
+	return {
+		email: generateUniqueEmail(),
+		password: "S3cr3tP@ssw0rd*123",
+		firstName: "Test",
+		lastName: "User",
+	};
+}
+
+/**
+ * Generate a strong password for testing
+ */
+export function generateStrongPassword(): string {
+	return `Test${Date.now()}!@#`;
+}
+
+// =============================================================================
+// MOCK RESPONSES
+// =============================================================================
+
 const MOCK_RESPONSES = {
 	healthCheck: {
 		status: 200,
@@ -126,22 +160,15 @@ const MOCK_RESPONSES = {
 	},
 };
 
-/**
- * Sets up API mocking for login flow tests.
- *
- * Mocks the following endpoints:
- * - GET /api/health-check
- * - GET /api/account (returns 401 when not logged in, 200 after login)
- * - POST /api/auth/login
- * - GET /api/workspace
- *
- * @param page - Playwright page instance
- */
-export async function setupLoginMocks(page: Page): Promise<void> {
-	let isLoggedIn = false;
-	const csrfToken = `test-xsrf-token-${Date.now()}`;
+// =============================================================================
+// API MOCKING SETUP
+// =============================================================================
 
-	// Set XSRF cookie in browser context
+/**
+ * Set XSRF cookie in browser context
+ */
+async function setupCsrfToken(page: Page): Promise<void> {
+	const csrfToken = `test-xsrf-token-${Date.now()}`;
 	await page.context().addCookies([
 		{
 			name: "XSRF-TOKEN",
@@ -152,8 +179,15 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 			sameSite: "Lax",
 		},
 	]);
+}
 
-	// Mock health-check
+/**
+ * Sets up basic API mocks (health-check and account)
+ * Useful for tests that only need the page to load
+ */
+export async function setupBasicMocks(page: Page): Promise<void> {
+	await setupCsrfToken(page);
+
 	await page.route("**/api/health-check", async (route) => {
 		await route.fulfill({
 			status: MOCK_RESPONSES.healthCheck.status,
@@ -162,7 +196,35 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 		});
 	});
 
-	// Mock account endpoint - returns 401 if not logged in, 200 if logged in
+	await page.route("**/api/account", async (route) => {
+		const response = MOCK_RESPONSES.accountUnauthenticated;
+		await route.fulfill({
+			status: response.status,
+			contentType: API_CONTENT_TYPE,
+			body: JSON.stringify(response.body),
+		});
+	});
+}
+
+/**
+ * Sets up API mocking for login flow tests
+ *
+ * Note: This mock maintains stateful behavior via the `isLoggedIn` flag.
+ * After a successful POST to /api/auth/login, subsequent calls to /api/account
+ * will return authenticated user data instead of 401 Unauthorized.
+ */
+export async function setupLoginMocks(page: Page): Promise<void> {
+	let isLoggedIn = false; // Stateful: tracks authentication status across mocked API calls
+	await setupCsrfToken(page);
+
+	await page.route("**/api/health-check", async (route) => {
+		await route.fulfill({
+			status: MOCK_RESPONSES.healthCheck.status,
+			contentType: API_CONTENT_TYPE,
+			body: MOCK_RESPONSES.healthCheck.body,
+		});
+	});
+
 	await page.route("**/api/account", async (route) => {
 		if (isLoggedIn) {
 			const response = MOCK_RESPONSES.accountAuthenticated(
@@ -183,7 +245,6 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 		}
 	});
 
-	// Mock login endpoint
 	await page.route("**/api/auth/login", async (route) => {
 		if (route.request().method() === "POST") {
 			isLoggedIn = true;
@@ -198,7 +259,6 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 		}
 	});
 
-	// Mock workspace endpoint
 	await page.route("**/api/workspace**", async (route) => {
 		await route.fulfill({
 			status: MOCK_RESPONSES.workspaces.status,
@@ -207,11 +267,8 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 		});
 	});
 
-	// Mock token refresh endpoint - returns 401 when not logged in (no valid refresh token)
-	// This prevents the app from hanging when it tries to refresh after a 401 on /account
 	await page.route("**/api/auth/token/refresh", async (route) => {
 		if (isLoggedIn) {
-			// If logged in, refresh should succeed with new tokens
 			await route.fulfill({
 				status: 200,
 				contentType: API_CONTENT_TYPE,
@@ -222,7 +279,6 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 				}),
 			});
 		} else {
-			// If not logged in, refresh should fail with 401
 			await route.fulfill({
 				status: 401,
 				contentType: API_CONTENT_TYPE,
@@ -239,31 +295,11 @@ export async function setupLoginMocks(page: Page): Promise<void> {
 }
 
 /**
- * Sets up API mocking for registration flow tests.
- *
- * Mocks the following endpoints:
- * - GET /api/health-check
- * - GET /api/account (returns 401)
- * - POST /api/auth/register
- *
- * @param page - Playwright page instance
+ * Sets up API mocking for registration flow tests
  */
 export async function setupRegisterMocks(page: Page): Promise<void> {
-	const csrfToken = `test-xsrf-token-${Date.now()}`;
+	await setupCsrfToken(page);
 
-	// Set XSRF cookie in browser context
-	await page.context().addCookies([
-		{
-			name: "XSRF-TOKEN",
-			value: csrfToken,
-			domain: "localhost",
-			path: "/",
-			secure: true,
-			sameSite: "Lax",
-		},
-	]);
-
-	// Mock health-check
 	await page.route("**/api/health-check", async (route) => {
 		await route.fulfill({
 			status: MOCK_RESPONSES.healthCheck.status,
@@ -272,7 +308,6 @@ export async function setupRegisterMocks(page: Page): Promise<void> {
 		});
 	});
 
-	// Mock account endpoint - always returns 401 for registration flow
 	await page.route("**/api/account", async (route) => {
 		const response = MOCK_RESPONSES.accountUnauthenticated;
 		await route.fulfill({
@@ -282,7 +317,6 @@ export async function setupRegisterMocks(page: Page): Promise<void> {
 		});
 	});
 
-	// Mock register endpoint
 	await page.route("**/api/auth/register", async (route) => {
 		if (route.request().method() === "POST") {
 			const response = MOCK_RESPONSES.registerSuccess(TEST_USERS.newUser);
@@ -295,24 +329,27 @@ export async function setupRegisterMocks(page: Page): Promise<void> {
 			await route.continue();
 		}
 	});
+
+	// Registration also needs workspace mock for redirect after success
+	await page.route("**/api/workspace**", async (route) => {
+		await route.fulfill({
+			status: MOCK_RESPONSES.workspaces.status,
+			contentType: API_CONTENT_TYPE,
+			body: JSON.stringify(MOCK_RESPONSES.workspaces.body),
+		});
+	});
 }
 
+// =============================================================================
+// ERROR MOCKING
+// =============================================================================
+
 /**
- * Sets up custom API route handlers for error scenario testing.
- *
- * Use this when you need to simulate specific error conditions.
- *
- * IMPORTANT: These functions use `page.unroute()` to remove any existing
- * handlers for the same URL pattern before registering the error handler.
- * This ensures the error handler takes precedence even if success handlers
- * were registered earlier (e.g., in beforeEach hooks).
+ * Mock API error responses for testing error handling
  */
 export const mockApiErrors = {
-	/**
-	 * Mock invalid credentials response
-	 */
+	/** Mock invalid credentials response (401) */
 	async invalidCredentials(page: Page): Promise<void> {
-		// Remove any existing handlers for this route to ensure our error handler takes precedence
 		await page.unroute("**/api/auth/login");
 		await page.route("**/api/auth/login", async (route) => {
 			await route.fulfill({
@@ -329,11 +366,8 @@ export const mockApiErrors = {
 		});
 	},
 
-	/**
-	 * Mock rate limit exceeded response
-	 */
+	/** Mock rate limit exceeded response (429) */
 	async rateLimitExceeded(page: Page): Promise<void> {
-		// Remove any existing handlers for this route to ensure our error handler takes precedence
 		await page.unroute("**/api/auth/login");
 		await page.route("**/api/auth/login", async (route) => {
 			await route.fulfill({
@@ -356,21 +390,14 @@ export const mockApiErrors = {
 		});
 	},
 
-	/**
-	 * Mock network error (connection refused)
-	 * Note: Only aborts auth endpoints, not health-check (so page can load)
-	 */
+	/** Mock network error (connection failed) */
 	async networkError(page: Page): Promise<void> {
-		// Remove any existing handlers for auth routes
 		await page.unroute("**/api/auth/**");
 		await page.route("**/api/auth/**", (route) => route.abort("failed"));
 	},
 
-	/**
-	 * Mock email already exists response (for registration)
-	 */
+	/** Mock email already exists response (409) */
 	async emailAlreadyExists(page: Page): Promise<void> {
-		// Remove any existing handlers for this route to ensure our error handler takes precedence
 		await page.unroute("**/api/auth/register");
 		await page.route("**/api/auth/register", async (route) => {
 			await route.fulfill({
@@ -380,8 +407,7 @@ export const mockApiErrors = {
 					type: "https://profiletailors.com/problems/email-already-exists",
 					title: "Conflict",
 					status: 409,
-					detail:
-						"An account with this email address already exists. Please use a different email or try logging in.",
+					detail: "An account with this email address already exists.",
 					instance: "/api/auth/register",
 				}),
 			});
@@ -389,50 +415,12 @@ export const mockApiErrors = {
 	},
 };
 
-/**
- * Sets up basic API mocks (health-check and account) without login state.
- * Useful for tests that only need the page to load without full auth flow.
- */
-export async function setupBasicMocks(page: Page): Promise<void> {
-	const csrfToken = `test-xsrf-token-${Date.now()}`;
-
-	// Set XSRF cookie in browser context
-	await page.context().addCookies([
-		{
-			name: "XSRF-TOKEN",
-			value: csrfToken,
-			domain: "localhost",
-			path: "/",
-			secure: true,
-			sameSite: "Lax",
-		},
-	]);
-
-	// Mock health-check
-	await page.route("**/api/health-check", async (route) => {
-		await route.fulfill({
-			status: MOCK_RESPONSES.healthCheck.status,
-			contentType: API_CONTENT_TYPE,
-			body: MOCK_RESPONSES.healthCheck.body,
-		});
-	});
-
-	// Mock account endpoint - returns 401
-	await page.route("**/api/account", async (route) => {
-		const response = MOCK_RESPONSES.accountUnauthenticated;
-		await route.fulfill({
-			status: response.status,
-			contentType: API_CONTENT_TYPE,
-			body: JSON.stringify(response.body),
-		});
-	});
-}
+// =============================================================================
+// UI HELPERS
+// =============================================================================
 
 /**
- * Helper to perform login via UI
- *
- * @param page - Playwright page instance
- * @param credentials - User credentials (defaults to TEST_USERS.existingUser)
+ * Helper to perform login via UI (legacy - prefer LoginPage.login())
  */
 export async function loginViaUI(
 	page: Page,
@@ -448,10 +436,7 @@ export async function loginViaUI(
 }
 
 /**
- * Helper to perform registration via UI
- *
- * @param page - Playwright page instance
- * @param userData - User data for registration (defaults to TEST_USERS.newUser)
+ * Helper to perform registration via UI (legacy - prefer RegisterPage.register())
  */
 export async function registerViaUI(
 	page: Page,
@@ -466,12 +451,102 @@ export async function registerViaUI(
 	await page.getByLabel(/last name/i).fill(userData.lastName);
 	await page.getByLabel(/^password$/i).fill(userData.password);
 	await page.getByLabel(/confirm password/i).fill(userData.password);
-
-	// Accept terms and conditions checkbox (required for registration)
-	const termsCheckbox = page.getByRole("checkbox", {
-		name: /terms|accept|agree/i,
-	});
-	await termsCheckbox.check();
-
+	await page.getByRole("checkbox", { name: /terms|accept|agree/i }).check();
 	await page.getByRole("button", { name: /create account/i }).click();
+}
+
+// =============================================================================
+// RESUME TEST DATA
+// =============================================================================
+
+/**
+ * Sample resume data for testing
+ */
+export const SAMPLE_RESUME = {
+	basics: {
+		name: "John Doe",
+		label: "Senior Software Engineer",
+		email: "john.doe@example.com",
+		phone: "+1-555-0100",
+		url: "https://johndoe.dev",
+		summary:
+			"Experienced software engineer with 10+ years building scalable web applications.",
+		location: {
+			address: "123 Tech Street",
+			city: "San Francisco",
+			region: "CA",
+			postalCode: "94105",
+			countryCode: "US",
+		},
+	},
+} as const;
+
+/**
+ * Generate test resume data
+ */
+export function generateTestResume(overrides = {}): typeof SAMPLE_RESUME {
+	return {
+		...SAMPLE_RESUME,
+		...overrides,
+	};
+}
+
+// =============================================================================
+// RESUME MOCKS
+// =============================================================================
+
+/**
+ * Setup basic mocks for resume page (storage persistence)
+ */
+export async function setupResumeMocks(page: Page): Promise<void> {
+	// Initialize localStorage with an empty resume ONLY if no data exists
+	// This prevents overwriting saved data on page reloads
+	await page.addInitScript(() => {
+		const RESUME_KEY = "cvix:resume";
+
+		// Only initialize if localStorage is empty
+		if (!localStorage.getItem(RESUME_KEY)) {
+			const emptyResume = {
+				basics: {
+					name: "",
+					label: "",
+					image: "",
+					email: "",
+					phone: "",
+					url: "",
+					summary: "",
+					location: {
+						address: "",
+						postalCode: "",
+						city: "",
+						countryCode: "",
+						region: "",
+					},
+					profiles: [],
+				},
+				work: [],
+				volunteer: [],
+				education: [],
+				awards: [],
+				certificates: [],
+				publications: [],
+				skills: [],
+				languages: [],
+				interests: [],
+				references: [],
+				projects: [],
+			};
+
+			localStorage.setItem(RESUME_KEY, JSON.stringify(emptyResume));
+		}
+	});
+}
+
+/**
+ * Setup authentication + resume page access
+ */
+export async function setupAuthenticatedResumeMocks(page: Page): Promise<void> {
+	await setupBasicMocks(page);
+	await setupLoginMocks(page);
+	await setupResumeMocks(page);
 }

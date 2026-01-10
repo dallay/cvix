@@ -40,7 +40,7 @@ MARKDOWNLINT_CMD := npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config 
 
 # Provides help information for the available commands.
 help:
-	@cat docs/MAKE_HELP.md
+	@cat MAKE_HELP.md
 
 # ------------------------------------------------------------------------------------
 # DEPENDENCY MANAGEMENT
