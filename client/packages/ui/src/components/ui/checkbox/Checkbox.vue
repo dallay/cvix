@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { cn } from "@cvix/lib";
 import { reactiveOmit } from "@vueuse/core";
-import { Check } from "lucide-vue-next";
+import { Check, Minus } from "lucide-vue-next";
 import type { CheckboxRootEmits, CheckboxRootProps } from "reka-ui";
 import { CheckboxIndicator, CheckboxRoot, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 
 const props = defineProps<
-	CheckboxRootProps & { class?: HTMLAttributes["class"] }
+	CheckboxRootProps & {
+		class?: HTMLAttributes["class"];
+		checked?: boolean | "indeterminate";
+	}
 >();
 const emits = defineEmits<CheckboxRootEmits>();
 
-const delegatedProps = reactiveOmit(props, "class");
+const delegatedProps = reactiveOmit(props, "class", "checked");
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
@@ -20,8 +23,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
   <CheckboxRoot
     data-slot="checkbox"
     v-bind="forwarded"
+    :checked="props.checked"
+    :model-value="props.checked"
     :class="
-      cn('peer border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
+      cn('peer border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground data-[state=indeterminate]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
          props.class)"
   >
     <CheckboxIndicator

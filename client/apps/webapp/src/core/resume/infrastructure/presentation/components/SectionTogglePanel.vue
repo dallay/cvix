@@ -214,6 +214,34 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 
 	(sectionRows[nextIndex] as HTMLElement).focus();
 };
+
+/**
+ * Computes the checkbox state for a section (Checked, Unchecked, or Indeterminate).
+ */
+const getSectionState = (
+	section: SectionMetadata,
+): boolean | "indeterminate" => {
+	// Personal Details is special
+	if (section.type === "personalDetails") {
+		return props.visibility.personalDetails.enabled;
+	}
+
+	// If section has no data, it's strictly unchecked (or disabled)
+	if (section.itemCount === 0) {
+		return false;
+	}
+
+	// Calculate state based on items
+	if (section.visibleItemCount === 0) {
+		return false;
+	}
+
+	if (section.visibleItemCount === section.itemCount) {
+		return true;
+	}
+
+	return "indeterminate";
+};
 </script>
 
 <template>
@@ -223,7 +251,7 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 			<template v-if="section.type === 'personalDetails'">
 				<SectionAccordionItem
 					:label="t(section.labelKey)"
-					:enabled="visibility.personalDetails.enabled"
+					:checked-state="getSectionState(section)"
 					:has-data="section.hasData"
 					:expanded="visibility.personalDetails.expanded"
 					:visible-count="section.visibleItemCount"
@@ -244,7 +272,7 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 			<template v-else>
 				<SectionAccordionItem
 					:label="t(section.labelKey)"
-					:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
+					:checked-state="getSectionState(section)"
 					:has-data="section.hasData"
 					:expanded="getArraySectionVisibility(section.type)?.expanded"
 					:visible-count="section.visibleItemCount"

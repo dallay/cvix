@@ -16,15 +16,20 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@cvix/ui/components/ui/tooltip";
-import { ChevronRight } from "lucide-vue-next";
+import { Check, ChevronRight, Minus } from "lucide-vue-next";
 import { computed } from "vue";
 
 interface Props {
 	/** Section label text */
 	label: string;
 
-	/** Whether the section is enabled (checkbox checked) */
-	enabled: boolean;
+	/**
+	 * Checkbox state:
+	 * - true: Checked (all items selected)
+	 * - false: Unchecked (no items selected)
+	 * - 'indeterminate': Partially checked (some items selected)
+	 */
+	checkedState: boolean | "indeterminate";
 
 	/** Whether the section has data to display */
 	hasData: boolean;
@@ -110,7 +115,17 @@ const ariaLabel = computed(() => {
 	if (showItemCount.value) {
 		label += ` (${props.visibleCount} of ${props.totalCount} items selected)`;
 	}
-	return `${label}, ${props.enabled ? "enabled" : "disabled"}`;
+	const stateLabel =
+		props.checkedState === "indeterminate"
+			? "mixed"
+			: props.checkedState
+				? "checked"
+				: "unchecked";
+	return `${label}, ${stateLabel}`;
+});
+
+const isCheckedOrIndeterminate = computed(() => {
+	return props.checkedState === true || props.checkedState === "indeterminate";
 });
 </script>
 
@@ -128,10 +143,13 @@ const ariaLabel = computed(() => {
             tabindex="-1"
           >
             <Checkbox
-              :checked="enabled"
+              :checked="checkedState"
               :disabled="true"
               class="shrink-0"
-            />
+            >
+              <Minus v-if="checkedState === 'indeterminate'" class="size-3.5" />
+              <Check v-else class="size-3.5" />
+            </Checkbox>
             <span class="flex-1 text-sm font-medium text-muted-foreground truncate">
               {{ label }}
             </span>
@@ -161,17 +179,20 @@ const ariaLabel = computed(() => {
     >
       <!-- Checkbox -->
       <Checkbox
-        :checked="enabled"
+        :checked="checkedState"
         class="shrink-0"
         @update:checked="handleCheckboxChange"
         @click.stop
-      />
+      >
+        <Minus v-if="checkedState === 'indeterminate'" class="size-3.5" />
+        <Check v-else class="size-3.5" />
+      </Checkbox>
 
       <!-- Label -->
       <span
         :class="[
           'flex-1 text-sm font-medium truncate',
-          enabled ? 'text-foreground' : 'text-muted-foreground'
+          isCheckedOrIndeterminate ? 'text-foreground' : 'text-muted-foreground'
         ]"
       >
         {{ label }}
@@ -182,7 +203,7 @@ const ariaLabel = computed(() => {
         v-if="showItemCount"
         :class="[
           'text-xs font-medium px-2 py-0.5 rounded',
-          enabled
+          isCheckedOrIndeterminate
             ? 'text-primary-foreground bg-primary/80'
             : 'text-muted-foreground bg-muted'
         ]"
@@ -196,7 +217,7 @@ const ariaLabel = computed(() => {
         :class="[
           'h-4 w-4 shrink-0 transition-transform duration-200',
           expanded ? 'rotate-90' : '',
-          enabled ? 'text-foreground' : 'text-muted-foreground'
+          isCheckedOrIndeterminate ? 'text-foreground' : 'text-muted-foreground'
         ]"
       />
     </div>

@@ -133,12 +133,25 @@ export const useSectionVisibilityStore = defineStore(
 			}
 
 			const sectionVis = visibility.value[section] as ArraySectionVisibility;
-			if (sectionVis.enabled) {
-				// Disabling - set enabled to false
+
+			// Determine current state based o items
+			const allSelected =
+				sectionVis.items.length > 0 && sectionVis.items.every(Boolean);
+			const isEnabled = sectionVis.enabled;
+
+			// Logic:
+			// If Enabled AND All Selected -> Uncheck (Clear All)
+			// If Enabled AND Not All Selected (Indeterminate) -> Check (Select All)
+			// If Disabled -> Check (Select All)
+
+			if (isEnabled && allSelected) {
+				// Full -> Empty
 				sectionVis.enabled = false;
 				sectionVis.expanded = false;
+				// Clear child items state for consistency
+				sectionVis.items = sectionVis.items.map(() => false);
 			} else {
-				// Enabling - set enabled to true and enable all items
+				// Indeterminate/Empty -> Full
 				sectionVis.enabled = true;
 				sectionVis.items = sectionVis.items.map(() => true);
 			}
@@ -171,10 +184,14 @@ export const useSectionVisibilityStore = defineStore(
 			if (index >= 0 && index < sectionVis.items.length) {
 				sectionVis.items[index] = !sectionVis.items[index];
 
-				// Auto-disable section if all items are disabled (FR-017)
+				// Update parent enabled state based on children
+				// "Parent state must be derived from its children"
+				// If any item is visible -> section must be enabled
+				// If no items are visible -> section must be disabled
 				const hasVisibleItems = sectionVis.items.some(Boolean);
-				if (!hasVisibleItems && sectionVis.enabled) {
-					sectionVis.enabled = false;
+				sectionVis.enabled = hasVisibleItems;
+
+				if (!hasVisibleItems) {
 					sectionVis.expanded = false;
 				}
 			}
