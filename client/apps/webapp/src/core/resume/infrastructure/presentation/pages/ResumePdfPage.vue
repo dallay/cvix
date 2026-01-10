@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Button } from "@cvix/ui/components/ui/button";
+import { ScrollArea } from "@cvix/ui/components/ui/scroll-area";
 import { useDebounceFn } from "@vueuse/core";
-import { ArrowLeft, Download, Loader2 } from "lucide-vue-next";
+import { ArrowLeft, Download, Loader2, ZoomIn, ZoomOut } from "lucide-vue-next";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -16,6 +18,26 @@ import { useSectionVisibilityStore } from "../../store/section-visibility.store"
 import PdfTemplateSelector from "../components/PdfTemplateSelector.vue";
 import SectionTogglePanel from "../components/SectionTogglePanel.vue";
 import { usePdf } from "../composables/usePdf";
+
+// PDF preview zoom state
+const previewScale = ref(1.0);
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 1.5;
+const SCALE_STEP = 0.1;
+
+const zoomIn = () => {
+	if (previewScale.value < MAX_SCALE) {
+		previewScale.value = Math.min(MAX_SCALE, previewScale.value + SCALE_STEP);
+	}
+};
+
+const zoomOut = () => {
+	if (previewScale.value > MIN_SCALE) {
+		previewScale.value = Math.max(MIN_SCALE, previewScale.value - SCALE_STEP);
+	}
+};
+
+const zoomPercentage = computed(() => Math.round(previewScale.value * 100));
 
 const router = useRouter();
 const resumeStore = useResumeStore();
@@ -178,56 +200,58 @@ const goBack = async () => {
 
 <template>
   <DashboardLayout>
-    <div class="flex h-[calc(100vh-4rem)] flex-col">
-      <!-- Toolbar -->
-      <div class="border-b bg-background px-6 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div class="flex h-[calc(100vh-4rem)] overflow-hidden bg-background text-foreground">
+      <!-- Left Sidebar - All Controls -->
+      <aside class="w-[420px] flex flex-col border-r border-border bg-card shadow-lg z-10">
+        <!-- Sidebar Header -->
+        <div class="p-6 border-b border-border">
           <button
-              class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              @click="goBack"
+            class="flex items-center gap-2 text-muted-foreground hover:text-foreground cursor-pointer mb-4 transition-colors w-fit text-sm font-medium"
+            @click="goBack"
           >
-            <ArrowLeft class="h-4 w-4"/>
-            {{ t('resume.pdfPage.backToEditor', 'Back to Editor') }}
+            <ArrowLeft class="h-4 w-4" />
+            <span>{{ t('resume.pdfPage.backToEditor', 'Back to Editor') }}</span>
           </button>
-          <div class="h-4 w-px bg-border"></div>
-          <h1 class="text-lg font-semibold">{{ t('resume.pdfPage.title', 'Generate PDF') }}</h1>
+          <h1 class="text-2xl font-bold text-foreground tracking-tight">
+            {{ t('resume.pdfPage.title', 'Generate PDF') }}
+          </h1>
         </div>
-        <button
-            :disabled="isGenerating || !selectedTemplate.templateId"
-            class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="onDownload"
-        >
-          <Loader2 v-if="isGenerating" class="h-4 w-4 animate-spin"/>
-          <Download v-else class="h-4 w-4"/>
-          {{ t('resume.pdfPage.download', 'Download PDF') }}
-        </button>
-      </div>
-      <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar: Template Selection & Appearance Settings -->
-        <div class="w-[360px] border-r bg-card overflow-y-auto">
-          <div class="p-6">
+
+        <!-- Scrollable Content Area -->
+        <ScrollArea class="flex-1">
+          <div class="p-6 space-y-8">
+            <!-- Loading State -->
             <div v-if="isLoadingTemplates" class="flex justify-center py-8">
-              <Loader2 class="h-6 w-6 animate-spin text-muted-foreground"/>
+              <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-            <div v-else-if="pdfError"
-                 class="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+
+            <!-- Error State -->
+            <div
+              v-else-if="pdfError"
+              class="rounded-md bg-destructive/10 p-4 text-sm text-destructive"
+            >
               {{ pdfError }}
             </div>
+
+            <!-- Template Selector & Options -->
             <PdfTemplateSelector
-                v-else
-                v-model="selectedTemplate"
-                :templates="templates"
+              v-else
+              v-model="selectedTemplate"
+              :templates="templates"
             />
-          </div>
-        </div>
-        <!-- Main Area: Section Toggles and Preview -->
-        <div class="flex-1 bg-muted/30 p-8 flex flex-col overflow-hidden">
-          <!-- Section Toggle Panel -->
-          <div v-if="resumeStore.resume && visibilityStore.visibility" class="mb-6 pb-6 border-b">
-            <h2 class="text-sm font-semibold text-foreground mb-4">
-              {{ t('resume.pdfPage.visibleSections', 'Visible Sections') }}
-            </h2>
-            <SectionTogglePanel
+
+            <!-- Section Visibility Controls -->
+            <div v-if="resumeStore.resume && visibilityStore.visibility && !isLoadingTemplates" class="space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-medium text-muted-foreground">
+                  {{ t('resume.pdfPage.contentSelection', 'Content Selection') }}
+                </h3>
+                <span class="text-xs text-primary font-medium">
+                  {{ t('resume.pdfPage.customizeRole', 'Customize for this role') }}
+                </span>
+              </div>
+
+              <SectionTogglePanel
                 :resume="resumeStore.resume"
                 :visibility="visibilityStore.visibility"
                 :metadata="visibilityStore.sectionMetadata"
@@ -235,37 +259,121 @@ const goBack = async () => {
                 @expand-section="handleExpandSection"
                 @toggle-item="handleToggleItem"
                 @toggle-field="handleToggleField"
-            />
+              />
+            </div>
           </div>
+        </ScrollArea>
 
-          <!-- PDF Preview -->
-          <div class="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-            <div v-if="isGenerating && !pdfUrl"
-                 class="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
-              <div class="flex flex-col items-center gap-2">
-                <Loader2 class="h-8 w-8 animate-spin text-primary"/>
-                <p class="text-sm text-muted-foreground">
-                  {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}</p>
-              </div>
+        <!-- Sidebar Footer - Download Action -->
+        <div class="p-6 border-t border-border bg-card">
+          <Button
+            :disabled="isGenerating || !selectedTemplate.templateId"
+            class="w-full"
+            size="lg"
+            @click="onDownload"
+          >
+            <Loader2 v-if="isGenerating" class="h-4 w-4 animate-spin mr-2" />
+            <Download v-else class="h-4 w-4 mr-2" />
+            {{ t('resume.pdfPage.download', 'Download PDF') }}
+          </Button>
+        </div>
+      </aside>
+
+      <!-- Main Area - PDF Preview -->
+      <main class="flex-1 bg-muted/30 relative overflow-hidden flex flex-col">
+        <!-- Preview Toolbar -->
+        <div class="h-14 border-b border-border flex items-center justify-between px-6 bg-background/50 backdrop-blur-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground">
+              {{ t('resume.pdfPage.previewMode', 'Preview Mode') }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex items-center bg-muted rounded-md border border-border p-1">
+              <button
+                :disabled="previewScale <= MIN_SCALE"
+                class="px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-background rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                @click="zoomOut"
+              >
+                <ZoomOut class="h-3.5 w-3.5" />
+              </button>
+              <span class="px-3 text-xs text-foreground min-w-[48px] text-center">
+                {{ zoomPercentage }}%
+              </span>
+              <button
+                :disabled="previewScale >= MAX_SCALE"
+                class="px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-background rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                @click="zoomIn"
+              >
+                <ZoomIn class="h-3.5 w-3.5" />
+              </button>
             </div>
-            <div v-if="!selectedTemplate.templateId" class="text-center text-muted-foreground">
-              <p>{{ t('resume.pdfPage.selectTemplate', 'Select a template to generate preview') }}</p>
-            </div>
-            <object
-                v-else-if="pdfPreviewUrl"
-                :data="pdfPreviewUrl"
-                class="w-full h-full rounded-lg shadow-lg border bg-white max-w-[210mm]"
-                type="application/pdf"
-            >
-              <div class="flex h-full items-center justify-center text-muted-foreground">
-                <p>{{
-                    t('resume.pdfPage.unablePreview', 'Unable to display PDF preview. Please download to view.')
-                  }}</p>
-              </div>
-            </object>
           </div>
         </div>
-      </div>
+
+        <!-- Preview Canvas -->
+        <div class="flex-1 overflow-auto p-8 flex justify-center">
+          <div class="relative">
+            <!-- Generating Overlay -->
+            <div
+              v-if="isGenerating && !pdfUrl"
+              class="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10 rounded-lg"
+            >
+              <div class="flex flex-col items-center gap-3">
+                <Loader2 class="h-8 w-8 animate-spin text-primary" />
+                <p class="text-sm text-muted-foreground">
+                  {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}
+                </p>
+              </div>
+            </div>
+
+            <!-- No Template Selected State -->
+            <div
+              v-if="!selectedTemplate.templateId"
+              class="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[600px] min-w-[400px]"
+            >
+              <div class="rounded-lg border-2 border-dashed border-border p-12">
+                <p class="text-sm">
+                  {{ t('resume.pdfPage.selectTemplate', 'Select a template to generate preview') }}
+                </p>
+              </div>
+            </div>
+
+            <!-- PDF Preview -->
+            <div
+              v-else-if="pdfPreviewUrl"
+              class="origin-top transition-transform duration-300 ease-in-out"
+              :style="{ transform: `scale(${previewScale})` }"
+            >
+              <object
+                :data="pdfPreviewUrl"
+                class="rounded-lg shadow-2xl border border-border bg-white"
+                style="width: 210mm; height: 297mm;"
+                type="application/pdf"
+              >
+                <div class="flex h-full items-center justify-center text-muted-foreground p-8">
+                  <p class="text-sm text-center">
+                    {{ t('resume.pdfPage.unablePreview', 'Unable to display PDF preview. Please download to view.') }}
+                  </p>
+                </div>
+              </object>
+            </div>
+
+            <!-- Waiting for PDF -->
+            <div
+              v-else
+              class="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[600px] min-w-[400px]"
+            >
+              <div class="rounded-lg border-2 border-dashed border-border p-12">
+                <Loader2 class="h-6 w-6 animate-spin text-muted-foreground mx-auto mb-3" />
+                <p class="text-sm">
+                  {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   </DashboardLayout>
 </template>

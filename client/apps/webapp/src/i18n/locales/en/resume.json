@@ -399,6 +399,9 @@
 			"selectTemplateAria": "Select a PDF template",
 			"coreOptions": "Core Options",
 			"selectLocale": "Select language",
+			"selected": "Selected",
+			"loading": "Loading templates…",
+			"noTemplates": "No templates available",
 			"param": {
 				"color": "Color",
 				"font": "Font",
@@ -420,7 +423,10 @@
 			"selectTemplate": "Select a template to generate preview",
 			"unablePreview": "Unable to display PDF preview. Please download to view.",
 			"visibleSections": "Visible Sections",
-			"noDataAvailable": "No data available"
+			"noDataAvailable": "No data available",
+			"contentSelection": "Content Selection",
+			"customizeRole": "Customize for this role",
+			"previewMode": "Preview Mode"
 		},
 		"basics": {
 			"image": "Profile Photo",

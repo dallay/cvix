@@ -1,12 +1,22 @@
 <script lang="ts" setup>
+/**
+ * PdfTemplateSelector Component
+ *
+ * Template selection carousel with visual preview mockup and core options.
+ * Design matches the Magic Patterns reference with:
+ * - Template card with preview skeleton showing resume layout
+ * - Letter icon badge (purple)
+ * - Dot indicators for carousel position
+ * - Core Options with icons (Globe, Type, Palette)
+ */
 import {
 	Carousel,
+	type CarouselApi,
 	CarouselContent,
 	CarouselItem,
 	CarouselNext,
 	CarouselPrevious,
 } from "@cvix/ui/components/ui/carousel";
-import { Label } from "@cvix/ui/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -15,6 +25,7 @@ import {
 	SelectValue,
 } from "@cvix/ui/components/ui/select";
 import { isEqual } from "@cvix/utilities";
+import { Globe, Palette, Type } from "lucide-vue-next";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import {
@@ -48,6 +59,20 @@ const { t } = useI18n();
 
 const selectedTemplateId = ref(props.modelValue.templateId);
 const params = ref<Record<string, ParamValue>>({ ...props.modelValue.params });
+
+// Carousel state for dot indicators
+const carouselApi = ref<CarouselApi>();
+const currentSlide = ref(0);
+const totalSlides = computed(() => props.templates.length);
+
+// Watch carousel scroll to update current slide
+watch(carouselApi, (api) => {
+	if (!api) return;
+
+	api.on("select", () => {
+		currentSlide.value = api.selectedScrollSnap();
+	});
+});
 
 // Sync external templateId changes
 watch(
@@ -160,6 +185,13 @@ const updateParam = (key: string, value: unknown) => {
 	}
 	params.value[key] = safeValue;
 };
+
+// Navigate carousel to specific slide
+function goToSlide(index: number) {
+	if (carouselApi.value) {
+		carouselApi.value.scrollTo(index);
+	}
+}
 </script>
 
 <template>
@@ -188,7 +220,7 @@ const updateParam = (key: string, value: unknown) => {
       </div>
 
       <!-- Template Carousel -->
-      <div v-else class="mx-8">
+      <div v-else class="relative">
         <Carousel
           :opts="{
             align: 'start',
@@ -196,147 +228,229 @@ const updateParam = (key: string, value: unknown) => {
           }"
           class="w-full"
           data-testid="template-carousel"
+          @init-api="(api) => carouselApi = api"
         >
-          <CarouselContent class="-ml-4">
+          <CarouselContent class="-ml-2">
             <CarouselItem
               v-for="template in templates"
               :key="template.id"
-              class="pl-4 basis-full"
+              class="pl-2 basis-full"
             >
               <button
                 type="button"
                 :class="[
-                  'w-full h-full rounded-lg border-2 p-4 text-left transition-all duration-200 flex items-start gap-3',
-                  'hover:shadow-md hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'w-full rounded-xl border-2 p-4 text-left transition-all duration-200',
+                  'hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                   selectedTemplateId === template.id
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border bg-card hover:bg-accent/50'
+                    ? 'border-primary bg-secondary/50 shadow-sm'
+                    : 'border-border bg-card hover:border-primary/50 hover:bg-secondary/30'
                 ]"
                 :aria-label="t('resume.pdfSelector.selectTemplateAria', { name: template.name })"
                 :aria-pressed="selectedTemplateId === template.id"
                 @click="onTemplateCardClick(template.id)"
               >
-                <!-- Template Icon/Indicator -->
-                <span
-                  :class="[
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold',
-                    selectedTemplateId === template.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  ]"
-                >
-                  {{ template.name.charAt(0).toUpperCase() }}
-                </span>
+                <div class="flex gap-4">
+                  <!-- Template Preview Mockup (Skeleton) -->
+                  <div
+                    :class="[
+                      'w-24 h-32 shrink-0 rounded-lg border p-2 flex flex-col gap-1.5',
+                      selectedTemplateId === template.id
+                        ? 'bg-background border-primary/30'
+                        : 'bg-muted/50 border-border'
+                    ]"
+                  >
+                    <!-- Header skeleton -->
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-4 h-4 rounded-full bg-primary/30" />
+                      <div class="flex-1 space-y-1">
+                        <div class="h-1.5 bg-primary/40 rounded w-3/4" />
+                        <div class="h-1 bg-muted-foreground/30 rounded w-1/2" />
+                      </div>
+                    </div>
+                    <!-- Section divider -->
+                    <div class="h-px bg-border my-1" />
+                    <!-- Content lines -->
+                    <div class="space-y-1 flex-1">
+                      <div class="h-1 bg-muted-foreground/20 rounded w-full" />
+                      <div class="h-1 bg-muted-foreground/20 rounded w-4/5" />
+                      <div class="h-1 bg-muted-foreground/20 rounded w-3/4" />
+                      <div class="h-px bg-border my-1.5" />
+                      <div class="h-1 bg-muted-foreground/20 rounded w-full" />
+                      <div class="h-1 bg-muted-foreground/20 rounded w-2/3" />
+                    </div>
+                  </div>
 
-                <!-- Template Info -->
-                <span class="flex-1 min-w-0">
-                  <span :class="[
-                    'text-sm font-semibold mb-1 block',
-                    selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
-                  ]">
-                    {{ template.name }}
-                  </span>
-                  <span v-if="template.description" class="text-xs text-muted-foreground line-clamp-2 block">
-                    {{ template.description }}
-                  </span>
-                </span>
+                  <!-- Template Info -->
+                  <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
+                    <div>
+                      <!-- Letter Badge + Name -->
+                      <div class="flex items-center gap-2 mb-1">
+                        <span
+                          :class="[
+                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold',
+                            selectedTemplateId === template.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground'
+                          ]"
+                        >
+                          {{ template.name.charAt(0).toUpperCase() }}
+                        </span>
+                        <span
+                          :class="[
+                            'text-sm font-semibold truncate',
+                            selectedTemplateId === template.id ? 'text-primary' : 'text-foreground'
+                          ]"
+                        >
+                          {{ template.name }}
+                        </span>
+                      </div>
 
-                <!-- Active Indicator -->
-                <span
-                  v-if="selectedTemplateId === template.id"
-                  class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary"
-                  data-testid="template-selected-indicator"
-                >
-                  <svg class="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
+                      <!-- Description -->
+                      <p
+                        v-if="template.description"
+                        class="text-xs text-muted-foreground line-clamp-2 leading-relaxed"
+                      >
+                        {{ template.description }}
+                      </p>
+                    </div>
+
+                    <!-- Selected Indicator -->
+                    <div
+                      v-if="selectedTemplateId === template.id"
+                      class="flex items-center gap-1.5 mt-2"
+                      data-testid="template-selected-indicator"
+                    >
+                      <span class="flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+                        <svg class="h-2.5 w-2.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                      <span class="text-xs text-primary font-medium">
+                        {{ t('resume.pdfSelector.selected', 'Selected') }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </button>
             </CarouselItem>
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+
+          <!-- Navigation Arrows -->
+          <CarouselPrevious class="left-0 -translate-x-1/2" />
+          <CarouselNext class="right-0 translate-x-1/2" />
         </Carousel>
+
+        <!-- Dot Indicators -->
+        <div v-if="totalSlides > 1" class="flex justify-center gap-1.5 mt-3">
+          <button
+            v-for="(_, index) in templates"
+            :key="index"
+            type="button"
+            :class="[
+              'w-2 h-2 rounded-full transition-all duration-200',
+              currentSlide === index
+                ? 'bg-primary w-4'
+                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            ]"
+            :aria-label="`Go to template ${index + 1}`"
+            @click="goToSlide(index)"
+          />
+        </div>
       </div>
     </div>
 
-    <div v-if="selectedTemplate" class="space-y-4 border-t pt-4">
-      <h3 class="text-sm font-semibold">
-        {{ t('resume.pdfSelector.coreOptions', 'Appearance & Language') }}</h3>
+    <!-- Core Options Section -->
+    <div v-if="selectedTemplate" class="space-y-3 border-t border-border pt-4">
+      <h3 class="text-sm font-semibold text-foreground">
+        {{ t('resume.pdfSelector.coreOptions', 'Core Options') }}
+      </h3>
 
-      <!-- Locale -->
-      <div v-if="selectedTemplate.supportedLocales?.length" class="space-y-2">
-        <Label for="locale">{{ t('resume.pdfSelector.param.locale', 'Language') }}</Label>
-        <Select
+      <div class="space-y-2">
+        <!-- Locale -->
+        <div
+          v-if="selectedTemplate.supportedLocales?.length"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-colors"
+          data-testid="locale-option-row"
+        >
+          <Globe class="h-4 w-4 text-muted-foreground shrink-0" />
+          <Select
             :model-value="getParamString('locale')"
             @update:model-value="(val) => updateParam('locale', val)"
-            aria-label="Resume language selector"
-        >
-          <SelectTrigger id="locale">
-            <SelectValue :placeholder="t('resume.pdfSelector.selectLocale', 'Select language')"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
+          >
+            <SelectTrigger
+              class="flex-1 border-0 bg-transparent shadow-none h-auto p-0 focus:ring-0"
+              aria-label="Resume language selector"
+            >
+              <SelectValue :placeholder="t('resume.pdfSelector.selectLocale', 'Select language')" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
                 v-for="opt in selectedTemplate.supportedLocales"
                 :key="opt"
                 :value="opt"
-            >
-              {{ opt }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+              >
+                {{ opt }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <!-- Font Family -->
-      <div class="space-y-2">
-        <Label for="fontFamily">{{
-            t('resume.pdfSelector.param.fontFamily', 'Font Family')
-          }}</Label>
-        <Select
+        <!-- Font Family -->
+        <div
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-colors"
+          data-testid="font-option-row"
+        >
+          <Type class="h-4 w-4 text-muted-foreground shrink-0" />
+          <Select
             :model-value="getParamString('fontFamily')"
             @update:model-value="(val) => updateParam('fontFamily', val)"
-            aria-label="Resume font selector"
-        >
-          <SelectTrigger id="fontFamily">
-            <SelectValue :placeholder="t('resume.pdfSelector.selectFont', 'Select font')"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
+          >
+            <SelectTrigger
+              class="flex-1 border-0 bg-transparent shadow-none h-auto p-0 focus:ring-0"
+              aria-label="Resume font selector"
+            >
+              <SelectValue :placeholder="t('resume.pdfSelector.selectFont', 'Select font')" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
                 v-for="opt in SUPPORTED_FONTS"
                 :key="opt"
                 :value="opt"
-            >
-              {{ opt }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+              >
+                {{ opt }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <!-- Color Palette -->
-      <div class="space-y-2">
-        <Label for="colorPalette">{{
-            t('resume.pdfSelector.param.colorPalette', 'Color Scheme')
-          }}</Label>
-        <Select
+        <!-- Color Palette -->
+        <div
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/50 hover:bg-secondary/80 transition-colors"
+          data-testid="color-option-row"
+        >
+          <Palette class="h-4 w-4 text-muted-foreground shrink-0" />
+          <Select
             :model-value="getParamString('colorPalette')"
             @update:model-value="(val) => updateParam('colorPalette', val)"
-            aria-label="Resume color selector"
-        >
-          <SelectTrigger id="colorPalette">
-            <SelectValue :placeholder="t('resume.pdfSelector.selectColor', 'Select color')"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
+          >
+            <SelectTrigger
+              class="flex-1 border-0 bg-transparent shadow-none h-auto p-0 focus:ring-0"
+              aria-label="Resume color selector"
+            >
+              <SelectValue :placeholder="t('resume.pdfSelector.selectColor', 'Select color')" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
                 v-for="opt in SUPPORTED_COLORS"
                 :key="opt"
                 :value="opt"
-            >
-              {{ opt }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+              >
+                {{ opt }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
     </div>
   </div>
 </template>
