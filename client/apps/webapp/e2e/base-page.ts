@@ -14,7 +14,7 @@ export class BasePage {
 	protected readonly notification: Locator;
 
 	constructor(protected readonly page: Page) {
-		this.notification = page.locator('[role="status"]');
+		this.notification = page.getByRole("status");
 	}
 
 	/**
@@ -77,10 +77,13 @@ export class BasePage {
 
 	/**
 	 * Take a screenshot for debugging
+	 * @param name - Screenshot name (will be sanitized to prevent path traversal)
 	 */
 	async takeScreenshot(name: string): Promise<void> {
+		// Sanitize filename: remove path separators and special chars
+		const sanitizedName = name.replace(/[^a-zA-Z0-9_-]/g, "_");
 		await this.page.screenshot({
-			path: `playwright-report/screenshots/${name}.png`,
+			path: `playwright-report/screenshots/${sanitizedName}.png`,
 			fullPage: true,
 		});
 	}

@@ -48,9 +48,19 @@ export function generateUniqueEmail(): string {
 }
 
 /**
+ * Test user data structure
+ */
+type TestUser = {
+	email: string;
+	password: string;
+	firstName: string;
+	lastName: string;
+};
+
+/**
  * Generate test user data with unique email
  */
-export function generateTestUser() {
+export function generateTestUser(): TestUser {
 	return {
 		email: generateUniqueEmail(),
 		password: "S3cr3tP@ssw0rd*123",
@@ -198,9 +208,13 @@ export async function setupBasicMocks(page: Page): Promise<void> {
 
 /**
  * Sets up API mocking for login flow tests
+ *
+ * Note: This mock maintains stateful behavior via the `isLoggedIn` flag.
+ * After a successful POST to /api/auth/login, subsequent calls to /api/account
+ * will return authenticated user data instead of 401 Unauthorized.
  */
 export async function setupLoginMocks(page: Page): Promise<void> {
-	let isLoggedIn = false;
+	let isLoggedIn = false; // Stateful: tracks authentication status across mocked API calls
 	await setupCsrfToken(page);
 
 	await page.route("**/api/health-check", async (route) => {
