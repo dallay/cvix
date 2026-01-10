@@ -11,6 +11,19 @@ nested = true
 [gitignore]
 enabled = true
 
+# --- Agent-Specific Configurations ---
+[agents.copilot]
+enabled = true
+
+[agents.claude]
+enabled = true
+
+[agents.gemini-cli]
+enabled = true
+
+[agents.opencode]
+enabled = true
+
 [mcp]
 enabled = true
 merge_strategy = "merge"
