@@ -16,6 +16,7 @@ import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useResumeStore } from "../../store/resume.store";
 import { useSectionVisibilityStore } from "../../store/section-visibility.store";
 import PdfTemplateSelector from "../components/PdfTemplateSelector.vue";
+import ResumePreviewSkeleton from "../components/ResumePreviewSkeleton.vue";
 import SectionTogglePanel from "../components/SectionTogglePanel.vue";
 import { usePdf } from "../composables/usePdf";
 
@@ -218,7 +219,7 @@ const goBack = async () => {
         </div>
 
         <!-- Scrollable Content Area -->
-        <ScrollArea class="flex-1">
+        <div class="flex-1 overflow-y-auto min-h-0">
           <div class="p-6 space-y-8">
             <!-- Loading State -->
             <div v-if="isLoadingTemplates" class="flex justify-center py-8">
@@ -262,7 +263,7 @@ const goBack = async () => {
               />
             </div>
           </div>
-        </ScrollArea>
+        </div>
 
         <!-- Sidebar Footer - Download Action -->
         <div class="p-6 border-t border-border bg-card">
@@ -316,25 +317,13 @@ const goBack = async () => {
           <div class="relative">
             <!-- Generating Overlay -->
             <div
-              v-if="isGenerating && !pdfUrl"
+              v-if="isGenerating && !pdfPreviewUrl"
               class="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10 rounded-lg"
             >
               <div class="flex flex-col items-center gap-3">
                 <Loader2 class="h-8 w-8 animate-spin text-primary" />
                 <p class="text-sm text-muted-foreground">
                   {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}
-                </p>
-              </div>
-            </div>
-
-            <!-- No Template Selected State -->
-            <div
-              v-if="!selectedTemplate.templateId"
-              class="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[600px] min-w-[400px]"
-            >
-              <div class="rounded-lg border-2 border-dashed border-border p-12">
-                <p class="text-sm">
-                  {{ t('resume.pdfPage.selectTemplate', 'Select a template to generate preview') }}
                 </p>
               </div>
             </div>
@@ -359,16 +348,24 @@ const goBack = async () => {
               </object>
             </div>
 
-            <!-- Waiting for PDF -->
+            <!-- Skeleton Preview (waiting for PDF generation) -->
             <div
               v-else
-              class="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[600px] min-w-[400px]"
+              class="origin-top transition-transform duration-300 ease-in-out relative"
+              :style="{ transform: `scale(${previewScale})` }"
             >
-              <div class="rounded-lg border-2 border-dashed border-border p-12">
-                <Loader2 class="h-6 w-6 animate-spin text-muted-foreground mx-auto mb-3" />
-                <p class="text-sm">
-                  {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}
-                </p>
+              <ResumePreviewSkeleton />
+              <!-- Generating overlay on skeleton -->
+              <div
+                v-if="isGenerating"
+                class="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[2px] rounded-lg"
+              >
+                <div class="flex flex-col items-center gap-3">
+                  <Loader2 class="h-8 w-8 animate-spin text-primary" />
+                  <p class="text-sm text-muted-foreground">
+                    {{ t('resume.pdfPage.generatingPreview', 'Generating preview...') }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

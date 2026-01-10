@@ -106,6 +106,7 @@ export const useSectionVisibilityStore = defineStore(
 				// Try to load saved preferences
 				const saved = sectionVisibilityStorage.load(id);
 				if (saved) {
+					syncVisibilityWithResume(saved, newResume);
 					visibility.value = saved;
 				} else {
 					// Create defaults if no saved preferences
@@ -214,6 +215,59 @@ export const useSectionVisibilityStore = defineStore(
 				const currentState = Object.values(fields.profiles).some(Boolean);
 				Object.keys(fields.profiles).forEach((key) => {
 					fields.profiles[key] = !currentState;
+				});
+			} else if (field.startsWith("profiles:")) {
+				// Individual profile toggle
+				const network = field.split(":")[1];
+				if (network) {
+					if (typeof fields.profiles[network] === "boolean") {
+						fields.profiles[network] = !fields.profiles[network];
+					} else {
+						// Initialize if missing
+						fields.profiles[network] = false;
+					}
+				}
+			}
+		}
+
+		/**
+		 * Synchronizes visibility state with the current resume.
+		 * Ensures arrays match in length and new items are initialized.
+		 */
+		function syncVisibilityWithResume(
+			vis: SectionVisibility,
+			currentResume: Resume,
+		) {
+			// Sync Array Sections
+			for (const section of SECTION_TYPES) {
+				if (section === "personalDetails") continue;
+
+				const sectionVis = vis[section] as ArraySectionVisibility;
+				const resumeItems = currentResume[section as keyof Resume] as unknown[];
+				const currentCount = sectionVis.items.length;
+				const targetCount = Array.isArray(resumeItems) ? resumeItems.length : 0;
+
+				if (currentCount < targetCount) {
+					// Add new items (enabled by default)
+					const newItems = Array.from(
+						{ length: targetCount - currentCount },
+						() => true,
+					);
+					sectionVis.items.push(...newItems);
+				} else if (currentCount > targetCount) {
+					// Trim removed items
+					sectionVis.items.splice(targetCount);
+				}
+			}
+
+			// Sync Profiles
+			if (currentResume.basics?.profiles) {
+				currentResume.basics.profiles.forEach((profile) => {
+					if (
+						vis.personalDetails.fields.profiles[profile.network] === undefined
+					) {
+						vis.personalDetails.fields.profiles[profile.network] = true;
+					}
 				});
 			}
 		}

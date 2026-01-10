@@ -74,26 +74,6 @@ watch(carouselApi, (api) => {
 	});
 });
 
-// Sync external templateId changes
-watch(
-	() => props.modelValue.templateId,
-	(newId) => {
-		if (newId !== selectedTemplateId.value) {
-			selectedTemplateId.value = newId;
-		}
-	},
-);
-
-// Sync external params changes
-watch(
-	() => props.modelValue.params,
-	(newParams) => {
-		if (!isEqual(newParams, params.value)) {
-			params.value = { ...newParams };
-		}
-	},
-);
-
 const selectedTemplate = computed(() =>
 	props.templates.find((t) => t.id === selectedTemplateId.value),
 );
@@ -128,8 +108,57 @@ function buildTemplateParams(
 		newParams.locale = template.supportedLocales[0] || "en";
 	}
 
+	// Set default font if not present
+	if (!newParams.fontFamily && SUPPORTED_FONTS.length > 0) {
+		newParams.fontFamily = SUPPORTED_FONTS[0]!;
+	}
+
+	// Set default color if not present
+	if (!newParams.colorPalette && SUPPORTED_COLORS.length > 0) {
+		newParams.colorPalette = SUPPORTED_COLORS[0]!;
+	}
+
 	return newParams;
 }
+
+// Sync external templateId changes
+watch(
+	() => props.modelValue.templateId,
+	(newId) => {
+		if (newId !== selectedTemplateId.value) {
+			selectedTemplateId.value = newId;
+		}
+	},
+);
+
+// Sync external params changes
+watch(
+	() => props.modelValue.params,
+	(newParams) => {
+		if (!isEqual(newParams, params.value)) {
+			params.value = { ...newParams };
+		}
+	},
+);
+
+// Initialize params with defaults when template is selected but params are empty
+// This handles the case when parent sets templateId but not params (e.g., on mount)
+watch(
+	[selectedTemplateId, () => props.templates],
+	([templateId, templates]) => {
+		if (!templateId || templates.length === 0) return;
+
+		// Only initialize if params are empty (no user selections yet)
+		const hasParams = Object.keys(params.value).length > 0;
+		if (hasParams) return;
+
+		const template = templates.find((t) => t.id === templateId);
+		if (template) {
+			params.value = buildTemplateParams(template);
+		}
+	},
+	{ immediate: true },
+);
 
 // Handle template card click
 function onTemplateCardClick(templateId: string) {
@@ -239,16 +268,27 @@ function goToSlide(index: number) {
               <button
                 type="button"
                 :class="[
-                  'w-full rounded-xl border-2 p-4 text-left transition-all duration-200',
+                  'w-full rounded-xl border-2 p-4 text-left transition-all duration-200 relative',
                   'hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                   selectedTemplateId === template.id
-                    ? 'border-primary bg-secondary/50 shadow-sm'
-                    : 'border-border bg-card hover:border-primary/50 hover:bg-secondary/30'
+                    ? 'border-primary ring-1 ring-primary bg-primary/5 shadow-md'
+                    : 'border-border bg-card hover:border-primary/50 hover:bg-accent/50'
                 ]"
                 :aria-label="t('resume.pdfSelector.selectTemplateAria', { name: template.name })"
                 :aria-pressed="selectedTemplateId === template.id"
                 @click="onTemplateCardClick(template.id)"
               >
+                <!-- Corner Checkmark (selected state) -->
+                <div
+                  v-if="selectedTemplateId === template.id"
+                  class="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary shadow-md z-10"
+                  data-testid="template-corner-checkmark"
+                >
+                  <svg class="h-3.5 w-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+
                 <div class="flex gap-4">
                   <!-- Template Preview Mockup (Skeleton) -->
                   <div

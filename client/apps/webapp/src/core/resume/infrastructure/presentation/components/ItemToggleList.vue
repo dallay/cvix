@@ -51,7 +51,7 @@ const handleToggle = (index: number) => {
     >
       <Checkbox
         :id="`item-${index}`"
-        :checked="item.enabled"
+        :checked="!!item.enabled"
         class="mt-0.5 shrink-0"
         @update:checked="handleToggle(index)"
       />
