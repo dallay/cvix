@@ -204,10 +204,7 @@ export class ResumeEditorPage extends BasePage {
 	 * @param filePath - Absolute path to JSON file
 	 * @param confirmReplace - If true, confirms replacement of existing data
 	 */
-	async uploadJson(
-		filePath: string,
-		confirmReplace: boolean = false,
-	): Promise<void> {
+	async uploadJson(filePath: string, confirmReplace = false): Promise<void> {
 		// Set file to input (triggers change event)
 		await this.fileInput.setInputFiles(filePath);
 
