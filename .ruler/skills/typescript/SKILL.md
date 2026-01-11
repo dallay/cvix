@@ -84,6 +84,54 @@ NonNullable<T | null>         // Remove null/undefined
 ReturnType<typeof fn>         // Function return type
 Parameters<typeof fn>         // Function params tuple
 ```
+### Examples
+```typescript
+// Pick: select only specific fields (e.g. for form payloads, previews)
+type UserPreview = Pick<User, "id" | "name">;
+// { id: string; name: string }
+
+// Omit: remove fields (e.g. hide sensitive data for public types)
+type PublicUser = Omit<User, "password">;
+// { id: string; name: string; ... }
+
+// Partial: make all fields optional (e.g. update forms, patch payloads)
+type UserUpdate = Partial<User>;
+// { id?: string; name?: string; ... }
+
+// Required: make all fields required (e.g. validation, strict objects)
+type StrictUser = Required<User>;
+// { id: string; name: string; ... }
+
+// Readonly: prevent mutation (e.g. config, constants)
+type ImmutableUser = Readonly<User>;
+// { readonly id: string; ... }
+
+// Record: dictionary/map with known value type (e.g. id → user lookup)
+type UserMap = Record<string, User>;
+// { [id: string]: User }
+
+// Extract: filter union to allowed members (e.g. only certain values)
+type Allowed = Extract<"a" | "b" | "c", "a" | "b">;
+// "a" | "b"
+
+// Exclude: remove members from union (e.g. blacklist values)
+type NotA = Exclude<"a" | "b" | "c", "a">;
+// "b" | "c"
+
+// NonNullable: remove null/undefined (e.g. for strict values)
+type Name = NonNullable<string | null | undefined>;
+// string
+
+// ReturnType: get function return type (e.g. for API responses)
+function getUser(): Promise<User> { /* ... */ }
+type UserPromise = ReturnType<typeof getUser>;
+// Promise<User>
+
+// Parameters: get function parameter tuple (e.g. for wrappers)
+function setUser(id: string, user: User) {}
+type SetUserParams = Parameters<typeof setUser>;
+// [id: string, user: User]
+```
 
 ## Type Guards
 
