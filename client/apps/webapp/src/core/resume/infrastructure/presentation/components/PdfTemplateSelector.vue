@@ -124,16 +124,16 @@ function buildTemplateParams(
 		newParams.locale = template.supportedLocales[0] || "en";
 	}
 
-	// Set default font if not present (avoid non-null assertions)
-	if (!newParams.fontFamily && SUPPORTED_FONTS.length > 0) {
-		const [firstFont] = SUPPORTED_FONTS;
-		newParams.fontFamily = firstFont;
+	// Set default font if not present
+	// SUPPORTED_FONTS is a non-empty constant array, so [0] is guaranteed to exist
+	if (!newParams.fontFamily) {
+		newParams.fontFamily = SUPPORTED_FONTS[0];
 	}
 
-	// Set default color if not present (avoid non-null assertions)
-	if (!newParams.colorPalette && SUPPORTED_COLORS.length > 0) {
-		const [firstColor] = SUPPORTED_COLORS;
-		newParams.colorPalette = firstColor;
+	// Set default color if not present
+	// SUPPORTED_COLORS is a non-empty constant array, so [0] is guaranteed to exist
+	if (!newParams.colorPalette) {
+		newParams.colorPalette = SUPPORTED_COLORS[0];
 	}
 
 	return newParams;
