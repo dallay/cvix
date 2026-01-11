@@ -381,8 +381,10 @@ export async function POST({ request }) {
   const result = await validateLogin(data);
 
   if (!result.success) {
+    // Use flattenError for better form handling
+    // Returns: { formErrors: string[], fieldErrors: Record<string, string[]> }
     return new Response(
-      JSON.stringify({ errors: z.treeifyError(result.error) }),
+      JSON.stringify({ errors: z.flattenError(result.error) }),
       { status: 400 }
     );
   }
@@ -416,7 +418,14 @@ const handleSubmit = async () => {
 
     if (!response.ok) {
       const { errors: serverErrors } = await response.json();
-      serverErrors?.fieldErrors && Object.assign(errors.value, serverErrors.fieldErrors);
+      if (serverErrors?.fieldErrors) {
+        Object.entries(serverErrors.fieldErrors).forEach(([field, messages]) => {
+          const firstMessage = Array.isArray(messages) ? messages[0] : messages;
+          if (firstMessage) {
+            errors.value[field] = firstMessage;
+          }
+        });
+      }
       return;
     }
 

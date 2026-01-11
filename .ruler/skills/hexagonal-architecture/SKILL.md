@@ -240,11 +240,10 @@ class WorkspaceCreator(
     private val repository: WorkspaceRepository,
     private val finderRepository: WorkspaceFinderRepository,
     private val eventPublisher: DomainEventPublisher,
+    private val auditLogger: WorkspaceAuditPort, // infrastructure adapter implements this
 ) {
-    private val logger = KotlinLogging.logger {}
-
     suspend fun create(name: WorkspaceName, ownerId: UserId): WorkspaceId {
-        logger.info { "Creating workspace: $name for owner: $ownerId" }
+        auditLogger.creating(name, ownerId)
 
         // Business rule: unique name
         if (finderRepository.existsByName(name)) {
@@ -267,7 +266,7 @@ class WorkspaceCreator(
             ),
         )
 
-        logger.info { "Workspace created: ${workspace.id}" }
+        auditLogger.created(workspace.id)
         return workspace.id
     }
 }
@@ -564,11 +563,11 @@ class DomainExceptionHandler {
 
 Each layer has specific testing requirements (see also: [Decision Tree](#decision-tree-where-does-this-code-belong) and [Architecture Tests](#architecture-tests-archunit)):
 
-| Layer              | Test Type         | Strategy                                              |
-| ------------------ | ----------------- | ----------------------------------------------------- |
-| **Domain**         | Unit tests        | Pure logic, no mocks needed, fast execution           |
-| **Application**    | Integration tests | Mock Repository/Port interfaces, verify orchestration |
-| **Infrastructure** | E2E tests         | Real DB (Testcontainers), real HTTP calls, full stack |
+| Layer              | Test Type                     | Strategy                                                                                     |
+| ------------------ | ----------------------------- | -------------------------------------------------------------------------------------------- |
+| **Domain**         | Unit tests                    | Pure logic, no mocks needed, fast execution                                                  |
+| **Application**    | Integration / Component tests | Mock Repository/Port interfaces, verify orchestration (component/unit-level, not full-stack) |
+| **Infrastructure** | E2E tests                     | Real DB (Testcontainers), real HTTP calls, full stack                                        |
 
 ```kotlin
 // Domain - pure unit test (no mocking)
@@ -655,6 +654,6 @@ Run tests to verify rules apply to your feature:
 ## Resources
 
 - [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)
-- [spring-boot skill](.ruler/skills/spring-boot/SKILL.md) - Framework patterns for Infrastructure
+- [spring-boot skill](../spring-boot/SKILL.md) - Framework patterns for Infrastructure
   layer
-- [kotlin skill](.ruler/skills/kotlin/SKILL.md) - Kotlin conventions for all layers
+- [kotlin skill](../kotlin/SKILL.md) - Kotlin conventions for all layers

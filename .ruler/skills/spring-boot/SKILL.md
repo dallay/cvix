@@ -16,7 +16,7 @@ Conventions for Spring Boot backend development with WebFlux, R2DBC, and Kotlin.
 > **Architecture Note**: This skill covers the **Infrastructure Layer** of our Hexagonal
 > Architecture.
 > For domain models, use cases, and overall feature organization, see
-> the [hexagonal-architecture skill](.ruler/skills/hexagonal-architecture/SKILL.md).
+> the [hexagonal-architecture skill](../hexagonal-architecture/SKILL.md).
 
 ## Layer Context
 
@@ -76,23 +76,9 @@ class UserController(
     suspend fun getUser(@PathVariable id: UUID): ResponseEntity<UserResponse> {
         logger.info("Fetching user with id: {}", id)
 
-        return findUserHandler.handle(FindUserQuery(id))
-            .map { user ->
-                logger.info("Successfully retrieved user: {}", id)
-                ResponseEntity.ok(user.toResponse())
-            }
-            .getOrElse { error ->
-                when (error) {
-                    is NotFoundException -> {
-                        logger.warn("User not found: {}", id)
-                        ResponseEntity.notFound().build()
-                    }
-                    else -> {
-                        logger.error("Error retrieving user: {}", id, error)
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            }
+        val user = findUserHandler.handle(FindUserQuery(id)).getOrElse { throw it }
+
+        return ResponseEntity.ok(user.toResponse())
     }
 
     @Operation(
@@ -126,30 +112,28 @@ class UserController(
         @Valid @RequestBody request: CreateUserRequest,
         serverRequest: ServerHttpRequest,
     ): ResponseEntity<UserIdResponse> {
-        logger.info("Creating user with email: {}", request.email)
+        // Collect only when PII collection is enabled; prefer short retention + secure storage
+        // and redact before emitting to logs/responses.
+        val metadata = mapOf(
+            "userAgent" to (serverRequest.headers.getFirst("User-Agent") ?: "unknown"),
+            "ipAddress" to ClientIpExtractor.extract(serverRequest),
+        )
 
         val command = CreateUserCommand(
             email = request.email,
             name = request.name,
-            metadata = mapOf(
-                "userAgent" to (serverRequest.headers.getFirst("User-Agent") ?: "unknown"),
-                "ipAddress" to ClientIpExtractor.extract(serverRequest),
-            ),
+            metadata = metadata,
         )
 
-        // Handler returns Result<UserId> - handle success/failure explicitly
-        val result = createUserHandler.handle(command)
-
-        return result.fold(
+        // Handler returns Result<UserId>; rely on @ControllerAdvice for consistent ProblemDetail
+        return createUserHandler.handle(command).fold(
             onSuccess = { userId ->
-                logger.info("Successfully created user: {}", userId)
                 ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(UserIdResponse(userId.value))
             },
             onFailure = { error ->
-                logger.error("Failed to create user: {}", error.message)
-                throw error // Let @ControllerAdvice handle the exception
+                throw error // Centralized exception mapper will redact as configured
             },
         )
     }
@@ -180,6 +164,8 @@ fun User.toResponse() = UserResponse(
     isActive = isActive,
 )
 ```
+
+> PII note: `ipAddress` and `userAgent` are sensitive. Collect only when configuration enables it, store securely with retention limits, and redact via a helper or config flag before logging or returning any value.
 
 ### 2. Application Services - Wired via Configuration
 
@@ -396,17 +382,22 @@ class Application
 **Transaction Demarcation:**
 
 - Apply `@Transactional` at service-layer write boundaries and repository orchestration
-- For reactive stacks (R2DBC), use `TransactionalOperator` instead of imperative `@Transactional`:
+- For reactive stacks (R2DBC) with **Spring 3.5.8+**, both `@Transactional` on suspend functions and `TransactionalOperator` are valid:
 
 ```kotlin
-// Imperative (blocking) - use @Transactional
-@Service
-class UserService(private val repository: UserRepository) {
-    @Transactional
-    fun transferFunds(from: UserId, to: UserId, amount: Money) { ... }
+// ✅ CORRECT: Declarative @Transactional on suspend functions (Spring 3.5.8+)
+@Repository
+class WorkspaceRepository(
+    private val r2dbcRepository: WorkspaceR2dbcRepository,
+) {
+    @Transactional("connectionFactoryTransactionManager")
+    override suspend fun create(workspace: Workspace) {
+        r2dbcRepository.save(workspace.toEntity())
+        // All operations within this method are transactional
+    }
 }
 
-// Reactive (R2DBC) - use TransactionalOperator
+// ✅ CORRECT: Programmatic TransactionalOperator for complex flows
 @Service
 class UserService(
     private val repository: UserRepository,
@@ -416,11 +407,16 @@ class UserService(
         txOperator.executeAndAwait {
             val sender = repository.findById(from)
             val receiver = repository.findById(to)
-            // ... perform transfer
+            // ... multi-stage operation with explicit boundary
         }
     }
 }
 ```
+
+**When to use each:**
+
+- **`@Transactional`**: Simple, single-method transaction boundaries (preferred for repositories)
+- **`TransactionalOperator`**: Complex multi-stage flows, programmatic control, or when you need explicit transaction management logic
 
 **Caching with Spring Cache:**
 
@@ -473,7 +469,8 @@ class UserStoreR2DbcRepository(
 @Configuration
 class UserConfiguration {
     @Bean
-    fun userCreator(repository: UserRepository) = UserCreator(repository)
+    fun userCreator(repository: UserRepository): UserCreator = repository
+    // UserCreator is a functional interface - repository implements it
 }
 
 // ❌ WRONG: Field injection
@@ -658,9 +655,9 @@ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 
 ## Resources
 
-- [hexagonal-architecture skill](.ruler/skills/hexagonal-architecture/SKILL.md) - Domain,
+- [hexagonal-architecture skill](../hexagonal-architecture/SKILL.md) - Domain,
   Application layers & feature organization
-- [kotlin skill](.ruler/skills/kotlin/SKILL.md) - Kotlin conventions for all layers
+- [kotlin skill](../kotlin/SKILL.md) - Kotlin conventions for all layers
 - [Spring WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html)
 - [Spring Data R2DBC](https://spring.io/projects/spring-data-r2dbc)
 - [Kotlin Coroutines with Spring](https://docs.spring.io/spring-framework/reference/languages/kotlin/coroutines.html)

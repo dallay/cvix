@@ -75,17 +75,17 @@ value class Email(val value: String) {
 **Use sealed classes for restricted hierarchies**:
 
 ```kotlin
-sealed interface Result<out T> {
-    data class Success<T>(val data: T) : Result<T>
-    data class Failure(val error: DomainError) : Result<Nothing>
-    data object Loading : Result<Nothing>
+sealed interface UiState<out T> {
+    data class Success<T>(val data: T) : UiState<T>
+    data class Failure(val error: DomainError) : UiState<Nothing>
+    data object Loading : UiState<Nothing>
 }
 
 // Usage with when (exhaustive)
-fun handleResult(result: Result<User>) = when (result) {
-    is Result.Success -> displayUser(result.data)
-    is Result.Failure -> showError(result.error)
-    Result.Loading -> showSpinner()
+fun handleState(state: UiState<User>) = when (state) {
+    is UiState.Success -> displayUser(state.data)
+    is UiState.Failure -> showError(state.error)
+    UiState.Loading -> showSpinner()
 }
 
 // Domain errors
@@ -297,7 +297,7 @@ class UserService {
 
         try {
             // logic
-        } catch (e: Exception) {
+        } catch (e: ProcessingException) {
             logger.error(e) { "Failed to process user: ${user.id}" }
             throw e
         }

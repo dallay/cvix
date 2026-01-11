@@ -59,9 +59,8 @@ import Counter from '../components/Counter.vue';
 
 **Default choice**: `client:visible` unless there's a reason otherwise.
 
-> **⚠️ `client:only` trade-offs**: Components using `client:only` skip server-side rendering entirely,
-> which increases the client JS payload and can harm SEO since no HTML is rendered initially.
-> Use only for:
+> [!WARNING] `client:only` trade-offs
+> Components using `client:only` skip server-side rendering entirely, which increases the client JS payload and can harm SEO since no HTML is rendered initially. Use only for:
 > - Third-party widgets that cannot render on the server
 > - Complex client-only UI (e.g., canvas, WebGL, maps)
 > - Non-SEO-critical parts of the page (modals, admin dashboards)
