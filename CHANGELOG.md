@@ -1,3 +1,9 @@
+## [3.10.0](https://github.com/dallay/cvix/compare/v3.9.3...v3.10.0) (2026-01-11)
+
+### ✨ Features
+
+* add comprehensive documentation for Tailwind CSS, TypeScript, Zod, Kotlin, Spring Boot, and Vue 3 ([#508](https://github.com/dallay/cvix/issues/508)) ([067495e](https://github.com/dallay/cvix/commit/067495e90edda1bef1528320efe3442c11d16124))
+
 ## [3.9.3](https://github.com/dallay/cvix/compare/v3.9.2...v3.9.3) (2026-01-09)
 
 ### 🐛 Bug Fixes
