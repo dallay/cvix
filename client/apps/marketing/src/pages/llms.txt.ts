@@ -1,43 +1,75 @@
-import type { APIRoute } from 'astro';
+import { CVIX_MARKETING_URL } from "astro:env/client";
+import { LOCALES, SUPPORTED_LOCALES } from "@cvix/i18n";
+import type { Lang } from "@cvix/i18n/astro";
+import type { APIRoute } from "astro";
 
-const SITE_URL = new URL(import.meta.env.SITE);
+interface MdxPageModule {
+	frontmatter: {
+		title?: string;
+		description?: string;
+	};
+}
 
-function generatePageList(pages: [string, any][], lang: 'en' | 'es', siteUrl: URL): string[] {
-  return pages
-    .filter(([path]) => path.startsWith(`./${lang}/`))
-    .map(([path, page]) => ({
-      frontmatter: page.frontmatter,
-      slug: path.split('/').pop()?.replace('.mdx', '') ?? ''
-    }))
-    .filter(({ frontmatter }) => frontmatter.title && frontmatter.description)
-    .map(({ frontmatter, slug }) => {
-      const pageUrl = new URL(`${lang}/${slug}`, siteUrl).toString();
-      return `- [${frontmatter.title}](${pageUrl}) – ${frontmatter.description}`;
-    });
+function hasTitleAndDescription(
+	frontmatter: MdxPageModule["frontmatter"],
+): frontmatter is Required<MdxPageModule["frontmatter"]> {
+	return (
+		typeof frontmatter.title === "string" &&
+		typeof frontmatter.description === "string"
+	);
+}
+
+function generatePageList(
+	pages: [string, MdxPageModule][],
+	lang: Lang,
+	siteUrl: URL,
+): string[] {
+	return pages
+		.filter(([path]) => path.startsWith(`./${lang}/`))
+		.map(([path, page]) => ({
+			frontmatter: page.frontmatter,
+			slug: path.split("/").pop()?.replace(".mdx", "") ?? "",
+		}))
+		.filter(({ frontmatter }) => hasTitleAndDescription(frontmatter))
+		.map(({ frontmatter, slug }) => {
+			const pageUrl = new URL(`${lang}/${slug}`, siteUrl).toString();
+			return `- [${frontmatter.title}](${pageUrl}) – ${frontmatter.description}`;
+		});
 }
 
 export const GET: APIRoute = async () => {
-  const pages = Object.entries(await import.meta.glob('./(en|es)/*.mdx', { eager: true }));
+	// Validate CVIX_MARKETING_URL env at request time with clear error message
+	const siteEnv = CVIX_MARKETING_URL;
+	if (!siteEnv) {
+		throw new Error(
+			"CVIX_MARKETING_URL environment variable is required for llms.txt generation. Please set CVIX_MARKETING_URL in your .env file.",
+		);
+	}
+	const siteUrl = new URL(siteEnv);
 
-  const lines = [
-    '# ProFileTailors',
-    '> ProFileTailors is a resume generator that helps you create a professional resume in minutes.',
-    ''
-  ];
+	const pagesRecord = await import.meta.glob("./(en|es)/*.mdx", {
+		eager: true,
+	});
+	const pages = Object.entries(pagesRecord) as [string, MdxPageModule][];
 
-  const englishPages = generatePageList(pages, 'en', SITE_URL);
-  if (englishPages.length > 0) {
-    lines.push('## English Pages', ...englishPages, '');
-  }
+	const lines = [
+		"# ProFileTailors",
+		"> ProFileTailors is a resume generator that helps you create a professional resume in minutes.",
+		"",
+	];
 
-  const spanishPages = generatePageList(pages, 'es', SITE_URL);
-  if (spanishPages.length > 0) {
-    lines.push('## Spanish Pages', ...spanishPages, '');
-  }
+	// Generate sections for each supported locale using locale config
+	for (const lang of SUPPORTED_LOCALES) {
+		const localePages = generatePageList(pages, lang, siteUrl);
+		if (localePages.length > 0) {
+			const localeLabel = LOCALES[lang].label;
+			lines.push(`## ${localeLabel} Pages`, ...localePages, "");
+		}
+	}
 
-  const body = lines.join('\n');
+	const body = lines.join("\n");
 
-  return new Response(body, {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-  });
+	return new Response(body, {
+		headers: { "Content-Type": "text/plain; charset=utf-8" },
+	});
 };
