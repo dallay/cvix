@@ -143,7 +143,7 @@ const isCheckedOrIndeterminate = computed(() => {
             tabindex="-1"
           >
             <Checkbox
-              :checked="checkedState"
+              :model-value="checkedState"
               :disabled="true"
               class="shrink-0"
             >
@@ -179,9 +179,9 @@ const isCheckedOrIndeterminate = computed(() => {
     >
       <!-- Checkbox -->
       <Checkbox
-        :checked="checkedState"
+        :model-value="checkedState"
         class="shrink-0"
-        @update:checked="handleCheckboxChange"
+        @update:model-value="handleCheckboxChange"
         @click.stop
       >
         <Minus v-if="checkedState === 'indeterminate'" class="size-3.5" />
