@@ -153,13 +153,10 @@ export class ContentSelectionPage extends BasePage {
 		itemIndex: number,
 	): Promise<void> {
 		const checkbox = this.getItemCheckbox(sectionLabel, itemIndex);
-		const initialState = await checkbox.getAttribute("data-state");
 		await checkbox.click();
-		// Wait for state to flip (deterministic, not timeout-based)
-		await expect(checkbox).not.toHaveAttribute(
-			"data-state",
-			initialState ?? "",
-		);
+		// NOTE: We don't verify state change here because:
+		// 1. When unchecking the last item, the section auto-collapses and the checkbox disappears
+		// 2. The test should verify the expected state explicitly after all interactions
 	}
 
 	/**
@@ -170,13 +167,10 @@ export class ContentSelectionPage extends BasePage {
 		itemLabel: string | RegExp,
 	): Promise<void> {
 		const checkbox = this.getItemCheckboxByLabel(sectionLabel, itemLabel);
-		const initialState = await checkbox.getAttribute("data-state");
 		await checkbox.click();
-		// Wait for state to flip (deterministic, not timeout-based)
-		await expect(checkbox).not.toHaveAttribute(
-			"data-state",
-			initialState ?? "",
-		);
+		// NOTE: We don't verify state change here because:
+		// 1. When unchecking the last item, the section auto-collapses and the checkbox disappears
+		// 2. The test should verify the expected state explicitly after all interactions
 	}
 
 	/**
