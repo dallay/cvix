@@ -5,9 +5,11 @@ description: >
   Trigger: When using Zod for validation - breaking changes from v3.
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 ---
+
 # Zod 4 Best Practices
 
-This document outlines best practices for using Zod 4 in Astro and Vue projects, focusing on schema definitions, parsing, transformations, error handling, and form integration.
+This document outlines best practices for using Zod 4 in Astro and Vue projects, focusing on schema
+definitions, parsing, transformations, error handling, and form integration.
 
 ## Migration Guide from Zod 3 to Zod 4
 

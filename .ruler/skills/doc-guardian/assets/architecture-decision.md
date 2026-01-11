@@ -38,12 +38,6 @@ deciders: {List of people}
 - **Cost**: {Why it matters}
 - **Security**: {Why it matters}
 
-> **Note:** Customize these drivers to match your specific decision context. Include only relevant drivers and optionally assign importance weights (e.g., "Critical", "High", "Medium"). Common variants:
-> - **Infrastructure decisions**: Add Reliability, Scalability, Availability, Operational Complexity
-> - **Data decisions**: Add Data Integrity, Compliance, Privacy, Backup/Recovery
-> - **UI/Frontend decisions**: Add Accessibility, User Experience, Performance, Browser Compatibility
-> - **Integration decisions**: Add Interoperability, Vendor Lock-in, API Stability
-
 ## Considered Options
 
 ### Option 1: {Name}
@@ -52,10 +46,12 @@ deciders: {List of people}
 {What is this option?}
 
 **Pros:**
+
 - ✅ Pro 1
 - ✅ Pro 2
 
 **Cons:**
+
 - ❌ Con 1
 - ❌ Con 2
 
@@ -91,14 +87,17 @@ deciders: {List of people}
 ### Expected Consequences
 
 **Positive:**
+
 - Consequence 1
 - Consequence 2
 
 **Negative:**
+
 - Trade-off 1: {How we'll mitigate}
 - Trade-off 2: {How we'll mitigate}
 
 **Neutral:**
+
 - Change 1: {What needs to happen}
 
 ## Implementation Plan
@@ -127,10 +126,10 @@ deciders: {List of people}
 ### Success Metrics
 
 | Metric                 | Current | Target  | Measured By   |
-| ---------------------- | ------- | ------- | ------------- |
+|------------------------|---------|---------|---------------|
 | Performance            | {value} | {value} | {tool/method} |
-| Adoption               | {value} | {value} | {tool/method} |
-| Developer Satisfaction | {value} | {value} | {tool/method} |
+| Adoption               | 0%      | 100%    | {tool/method} |
+| Developer Satisfaction | {value} | {value} | Survey        |
 
 ### Review Date
 
@@ -139,18 +138,18 @@ deciders: {List of people}
 ## Links
 
 - **Related ADRs:**
-  - [ADR-001: Previous Decision](./adr-001.md)
-  - [ADR-003: Related Decision](./adr-003.md)
+    - [ADR-001: Previous Decision](./adr-001.md)
+    - [ADR-003: Related Decision](./adr-003.md)
 
 - **References:**
-  - [Documentation](link)
-  - [RFC/Proposal](link)
-  - [Discussion Thread](link)
-  - [Proof of Concept](link)
+    - [Documentation](link)
+    - [RFC/Proposal](link)
+    - [Discussion Thread](link)
+    - [Proof of Concept](link)
 
 - **Implementation:**
-  - [PR #123: Implementation](link)
-  - [Issue #456: Tracking](link)
+    - [PR #123: Implementation](link)
+    - [Issue #456: Tracking](link)
 
 ## Notes
 
@@ -160,9 +159,7 @@ deciders: {List of people}
 
 ## ADR Template Usage
 
-1. **Copy this template** to `{PROJECT_ADR_DIRECTORY}/adr-{NUMBER}-{title}.md`
-   - For this project: Store ADRs in `docs/adr/` or `specs/{feature-name}/adr/`
-   - Check your project structure for the designated ADR storage location
+1. **Copy this template** to `/docs/adr/adr-{NUMBER}-{title}.md`
 2. **Replace placeholders** with actual content
 3. **Number sequentially** (001, 002, 003...)
 4. **Update status** as decision evolves

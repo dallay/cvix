@@ -5,8 +5,11 @@ description: >
   Trigger: When writing TypeScript code - types, interfaces, generics.
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 ---
+
 # TypeScript Best Practices
-This document outlines best practices for using TypeScript in Astro and Vue projects, focusing on types, interfaces, generics, and utility types.
+
+This document outlines best practices for using TypeScript in Astro and Vue projects, focusing on
+types, interfaces, generics, and utility types.
 
 ## Const Types Pattern (REQUIRED)
 
@@ -84,7 +87,9 @@ NonNullable<T | null>         // Remove null/undefined
 ReturnType<typeof fn>         // Function return type
 Parameters<typeof fn>         // Function params tuple
 ```
+
 ### Examples
+
 ```typescript
 // Pick: select only specific fields (e.g. for form payloads, previews)
 type UserPreview = Pick<User, "id" | "name">;

@@ -23,20 +23,20 @@ last_updated: {YYYY-MM-DD}
 ### Headers
 
 | Header          | Required | Description        |
-| --------------- | -------- | ------------------ |
+|-----------------|----------|--------------------|
 | `Authorization` | Yes      | Bearer token       |
 | `Content-Type`  | Yes      | `application/json` |
 
 ### Path Parameters
 
 | Parameter | Type     | Description |
-| --------- | -------- | ----------- |
+|-----------|----------|-------------|
 | `id`      | `string` | Resource ID |
 
 ### Query Parameters
 
 | Parameter | Type     | Required | Description                  |
-| --------- | -------- | -------- | ---------------------------- |
+|-----------|----------|----------|------------------------------|
 | `page`    | `number` | No       | Page number (default: 1)     |
 | `limit`   | `number` | No       | Items per page (default: 20) |
 
@@ -44,9 +44,9 @@ last_updated: {YYYY-MM-DD}
 
 ```typescript
 interface RequestBody {
-  field1: string;
-  field2: number;
-  field3?: boolean; // Optional
+ field1: string;
+ field2: number;
+ field3?: boolean; // Optional
 }
 ```
 
@@ -66,10 +66,10 @@ interface RequestBody {
 
 ```typescript
 interface SuccessResponse {
-  data: ResourceType;
-  meta: {
-    timestamp: string;
-  };
+ data: ResourceType;
+ meta: {
+  timestamp: string;
+ };
 }
 ```
 
@@ -139,8 +139,8 @@ interface SuccessResponse {
 import { apiClient } from "@cvix/api";
 
 const response = await apiClient.post("/api/v1/resource", {
-  field1: "value",
-  field2: 42,
+ field1: "value",
+ field2: 42,
 });
 
 console.log(response.data);
@@ -162,8 +162,8 @@ curl -X POST https://api.cvix.dev/api/v1/resource \
 
 ```kotlin
 val response = client.post("/api/v1/resource") {
-  contentType(ContentType.Application.Json)
-  setBody(RequestBody(field1 = "value", field2 = 42))
+    contentType(ContentType.Application.Json)
+    setBody(RequestBody(field1 = "value", field2 = 42))
 }
 
 println(response.body<SuccessResponse>())
@@ -178,10 +178,10 @@ println(response.body<SuccessResponse>())
 @RestController
 @RequestMapping("/api/v1/resource")
 class ResourceController(private val service: ResourceService) {
-  @PostMapping
-  fun create(@RequestBody body: RequestBody): ResponseEntity<SuccessResponse> {
-    // Implementation
-  }
+    @PostMapping
+    fun create(@RequestBody body: RequestBody): ResponseEntity<SuccessResponse> {
+        // Implementation
+    }
 }
 ```
 

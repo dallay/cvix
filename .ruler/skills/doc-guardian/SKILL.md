@@ -11,26 +11,8 @@ metadata:
 
 # Doc Guardian - Documentation Maintenance Skill
 
-Keeps documentation synchronized with code, prevents gaps, and enforces quality standards. **Documentation that lies is worse than no documentation.**
-
-## Prerequisites
-
-**Required Tools:**
-- `fd` - Fast file finder (install: `brew install fd`)
-- `rg` (ripgrep) - Fast text search (install: `brew install ripgrep`)
-- `pnpm` - Package manager for frontend projects
-- Standard POSIX tools: `sed`, `awk`, `grep`
-
-**Environment Assumptions:**
-- All commands must be run from the **project root directory**
-- Relative paths in documentation are resolved from the project root
-- Templates in `assets/` directory must exist before use
-- `lefthook.yml` must be configured for pre-commit hooks (see Pro Tips)
-
-**Project Structure:**
-- Documentation lives in `client/apps/docs/src/content/docs/`
-- Templates are in `.ruler/skills/doc-guardian/assets/`
-- Code packages are in `client/packages/` and `server/engine/`
+Keeps documentation synchronized with code, prevents gaps, and enforces quality standards. *
+*Documentation that lies is worse than no documentation.**
 
 ## When to Use
 
@@ -59,13 +41,13 @@ client/apps/docs/src/content/docs/
 
 ### 2. Verification Checklist (Run Before Committing)
 
-| Check            | Command                                                    | Fix                          |
-| ---------------- | ---------------------------------------------------------- | ---------------------------- |
-| Dead links       | See script below                                           | Update broken internal links |
-| TODO markers     | `rg 'TODO\|FIXME\|XXX' client/apps/docs/src/content/docs/` | Complete or remove markers   |
-| Code examples    | `rg '```(typescript\|kotlin)' -A 10 client/apps/docs/`     | Verify syntax, update APIs   |
-| Outdated dates   | `rg 'Last updated: 20[0-9]{2}' client/apps/docs/`          | Update to current year       |
-| Missing sections | Compare `AGENTS.md` with `/docs/`                          | Add missing topics           |
+| Check            | Command                                                                     | Fix                          |
+|------------------|-----------------------------------------------------------------------------|------------------------------|
+| Dead links       | `rg '\[.*\]\((?!http).*\)' client/apps/docs/src/content/docs/ \| rg '\.md'` | Update broken internal links |
+| TODO markers     | `rg 'TODO\|FIXME\|XXX' client/apps/docs/src/content/docs/`                  | Complete or remove markers   |
+| Code examples    | `rg '```(typescript\|kotlin)' -A 10 client/apps/docs/`                      | Verify syntax, update APIs   |
+| Outdated dates   | `rg 'Last updated: 202[0-4]' client/apps/docs/`                             | Update to current year       |
+| Missing sections | Compare `AGENTS.md` with `/docs/`                                           | Add missing topics           |
 
 ### 3. Documentation Drift Detection
 
@@ -73,24 +55,14 @@ client/apps/docs/src/content/docs/
 
 ```bash
 # Find public APIs without docs
-if ! rg 'export (class|function|const)' client/packages/ --no-filename > /tmp/exports_raw.txt 2>&1; then
-  echo "Error: Failed to find exports" >&2
-  exit 1
-fi
-
-# Transform using sed (POSIX-compatible)
-if ! sed -e 's/export \(class\|function\|const\|interface\|type\) //' \
-     -e 's/(.*//' \
-     -e 's/{.*//' \
-     -e '/^\/\//d' \
-     -e '/^\/\*/d' < /tmp/exports_raw.txt > /tmp/exports.txt; then
-  echo "Error: Failed to transform exports" >&2
-  exit 1
-fi
+rg 'export (class|function|const)' client/packages/ \
+  --no-filename \
+  | sd 'export (class|function|const) ' '' \
+  | sd '\(.*' '' \
+  > /tmp/exports.txt
 
 # Check if documented
-while read -r api; do
-  [ -z "$api" ] && continue
+while read api; do
   rg -q "$api" client/apps/docs/ || echo "Missing: $api"
 done < /tmp/exports.txt
 ```
@@ -108,7 +80,7 @@ done < /tmp/exports.txt
 ### 5. Documentation Templates (See `assets/`)
 
 | Template                   | Use When                           |
-| -------------------------- | ---------------------------------- |
+|----------------------------|------------------------------------|
 | `feature-doc.md`           | New feature added                  |
 | `api-doc.md`               | New public API/endpoint            |
 | `migration-guide.md`       | Breaking changes                   |
@@ -116,39 +88,11 @@ done < /tmp/exports.txt
 
 ## Commands
 
-**Note:** Run all commands from the project root directory.
-
 ```bash
-# Verify all docs links are valid (non-http links only)
-# This checks internal markdown links and resolves relative paths correctly
-fd -e md -e mdx . client/apps/docs/ -x sh -c '
-  SOURCE_FILE="$1"
-  SOURCE_DIR=$(dirname "$SOURCE_FILE")
-  rg "\[.*\]\(((?!http)[^)]+)\)" "$SOURCE_FILE" -o --no-filename | while IFS= read -r match; do
-    # Extract link and strip fragment
-    link=$(echo "$match" | sed "s/.*](//; s/).*//")
-    linkfile=$(echo "$link" | sed "s/#.*//")
-
-    # Skip http(s) links explicitly
-    case "$linkfile" in
-      http://*|https://*) continue ;;
-    esac
-
-    # Resolve relative path from source file directory
-    if [ "${linkfile#/}" = "$linkfile" ]; then
-      # Relative path - resolve from source directory
-      linkfile="$SOURCE_DIR/$linkfile"
-    fi
-
-    # Normalize path
-    linkfile=$(cd "$(dirname "$linkfile")" 2>/dev/null && echo "$PWD/$(basename "$linkfile")" || echo "$linkfile")
-
-    # Test existence
-    if [ ! -f "$linkfile" ]; then
-      echo "Broken in $SOURCE_FILE: $link -> $linkfile"
-    fi
-  done
-' sh {} \;
+# Verify all docs links are valid
+fd -e md -e mdx . client/apps/docs/ -x rg '\[.*\]\(((?!http).+)\)' {} \; \
+  | rg -o '\((.+)\)' -r '$1' \
+  | while read link; do [ -f "$link" ] || echo "Broken: $link"; done
 
 # Find undocumented exports
 rg 'export (class|function|const|interface|type)' client/packages/ \
@@ -158,7 +102,7 @@ rg 'export (class|function|const|interface|type)' client/packages/ \
 rg -f /tmp/exports.txt client/apps/docs/ || echo "Found undocumented exports"
 
 # Check for stale dates
-rg 'updated.*20[0-9]{2}' client/apps/docs/ --no-filename
+rg 'updated.*202[0-4]' client/apps/docs/ --no-filename
 
 # Find TODO/FIXME in docs
 rg 'TODO|FIXME|XXX' client/apps/docs/
@@ -166,33 +110,11 @@ rg 'TODO|FIXME|XXX' client/apps/docs/
 # Lint markdown
 pnpm --filter @cvix/docs markdownlint '**/*.md'
 
-# Verify code examples compile (best-effort - requires manual type definitions)
-# IMPORTANT: This is scaffolding-only and will NOT compile without manual edits
-# Add <!-- compilable-example --> marker in docs for snippets that should compile
-set +e  # Non-fatal: compilation errors are expected
-
-echo '// SCAFFOLDING-ONLY — MAY REQUIRE MANUAL EDITS' > /tmp/code-samples.ts
-echo '// This file aggregates TypeScript snippets from docs for syntax checking.' >> /tmp/code-samples.ts
-echo '// Snippets may be incomplete, lack imports, or require context.' >> /tmp/code-samples.ts
-echo '// Do NOT assume this file will compile without modifications.' >> /tmp/code-samples.ts
-echo '' >> /tmp/code-samples.ts
-
-# Optional: Add common imports only if detected in extracted snippets
-# Uncomment and customize based on your actual usage:
-# echo 'import type { ReactNode } from "react";' >> /tmp/code-samples.ts
-# echo 'import type { Component } from "vue";' >> /tmp/code-samples.ts
-echo '' >> /tmp/code-samples.ts
-
-# Extract code blocks, skip imports already present
-rg '```typescript' -A 20 client/apps/docs/ | \
-  sed '/^```/d' | \
-  awk 'BEGIN {block=0} /^import/ {next} {print}' >> /tmp/code-samples.ts
-
-echo '' >> /tmp/code-samples.ts
-echo '// To check syntax: pnpm tsc --noEmit --skipLibCheck /tmp/code-samples.ts' >> /tmp/code-samples.ts
-echo '// Errors are expected - use this for basic syntax validation only' >> /tmp/code-samples.ts
-
-set -e  # Re-enable error checking
+# Verify code examples compile
+rg -A 10 '```typescript' client/apps/docs/ \
+  | rg -v '```' \
+  | tee /tmp/code-samples.ts
+# Then check with: pnpm tsc --noEmit /tmp/code-samples.ts
 ```
 
 ## Workflow: Feature → Documentation
@@ -246,7 +168,7 @@ See [Testing Guide](client/apps/docs/src/content/docs/testing/overview.md) for d
 ## Documentation Maintenance Schedule
 
 | Frequency        | Task                                      |
-| ---------------- | ----------------------------------------- |
+|------------------|-------------------------------------------|
 | **Every commit** | Update docs for changed features          |
 | **Weekly**       | Run dead link check                       |
 | **Monthly**      | Review TODOs, update screenshots          |
@@ -255,17 +177,15 @@ See [Testing Guide](client/apps/docs/src/content/docs/testing/overview.md) for d
 
 ## Resources
 
-- **Templates**: See [assets/](assets/) for doc templates (verify these files exist before use)
-- **AGENTS.md**: See [../../AGENTS.md](../../AGENTS.md) (project root reference guide)
+- **Templates**: See [assets/](assets/) for doc templates
+- **AGENTS.md**: See [../../cvix/AGENTS.md](../../cvix/AGENTS.md)
 - **Docs app**: See [client/apps/docs/](client/apps/docs/)
-- **Starlight docs**: <https://starlight.astro.build/guides/authoring-content/> (check for latest docs)
+- **Starlight docs**: <https://starlight.astro.build/guides/authoring-content/>
 
 ## Pro Tips
 
-1. **Verify Prerequisites**: See Prerequisites section above - ensure all tools are installed
-2. **Use Symlinks**: Avoid duplicating docs (see `client/apps/docs/SYMLINK_SETUP.md`)
-3. **Automate**: Add doc checks to `lefthook.yml` pre-commit (verify lefthook.yml exists and is configured)
-4. **Template Files**: Verify all templates in `assets/` directory exist before referencing them
-5. **Version Examples**: Use specific version in imports (`@cvix/utilities@1.2.3`)
-6. **Test in Isolation**: Run doc code examples in fresh shell from project root
-7. **Screenshot Tool**: Use `playwright screenshot` for consistent captures
+1. **Use Symlinks**: Avoid duplicating docs (see `client/apps/docs/SYMLINK_SETUP.md`)
+2. **Automate**: Add doc checks to `lefthook.yml` pre-commit
+3. **Version Examples**: Use specific version in imports (`@cvix/utilities@1.2.3`)
+4. **Test in Isolation**: Run doc code examples in fresh shell
+5. **Screenshot Tool**: Use `playwright screenshot` for consistent captures

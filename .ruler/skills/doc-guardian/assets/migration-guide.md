@@ -6,33 +6,6 @@ last_updated: {YYYY-MM-DD}
 
 # Migration Guide: {Version X} → {Version Y}
 
-## How to Use This Template
-
-**Required Placeholders:**
-- `{Version X}` / `{Version Y}` - Replace with actual version numbers (e.g., 2.0 → 3.0)
-- `{YYYY-MM-DD}` - Replace with actual dates throughout the document
-- `{Change Name}` - Replace with descriptive names for each breaking change
-- All code examples in `{brackets}` - Replace with actual code
-
-**Required Sections:**
-- ✅ **Breaking Changes** - Mandatory for any migration guide
-- ✅ **Migration Checklist** - Mandatory step-by-step verification
-- ✅ **Step-by-Step Migration** - Mandatory detailed instructions
-
-**Optional Sections (include as needed):**
-- **Deprecations** - Include if features are being phased out
-- **New Features** - Include to highlight additions
-- **Known Issues** - Include if there are unresolved problems
-- **Rollback Plan** - Include for major migrations (highly recommended)
-- **Timeline** - Include for planned end-of-life schedules
-
-**Code Example Scope:**
-- Use minimal, reproducible snippets focused on the specific change
-- Show both "Before" and "After" for each breaking change
-- Include import statements if they change
-- Add inline comments to highlight key differences
-- Avoid full modules unless the change affects overall structure
-
 {Overview of major changes}
 
 ## Breaking Changes
@@ -43,6 +16,7 @@ last_updated: {YYYY-MM-DD}
 {Description of the change}
 
 **Before (v{X}):**
+
 ```typescript
 // Old code
 import { oldFunction } from "@cvix/package";
@@ -51,6 +25,7 @@ oldFunction({ param: "value" });
 ```
 
 **After (v{Y}):**
+
 ```typescript
 // New code
 import { newFunction } from "@cvix/package";
@@ -59,11 +34,13 @@ newFunction({ newParam: "value" });
 ```
 
 **Migration steps:**
+
 1. Update import: `oldFunction` → `newFunction`
 2. Rename parameter: `param` → `newParam`
 3. Update types if necessary
 
 **Automated migration:**
+
 ```bash
 # Use codemod if available
 pnpm dlx jscodeshift -t ./codemods/migrate-function.js src/**/*.ts
@@ -80,7 +57,7 @@ pnpm dlx jscodeshift -t ./codemods/migrate-function.js src/**/*.ts
 ## Deprecations
 
 | Feature        | Deprecated In | Removed In | Alternative        |
-| -------------- | ------------- | ---------- | ------------------ |
+|----------------|---------------|------------|--------------------|
 | `oldAPI()`     | v{X}.0        | v{Y}.0     | Use `newAPI()`     |
 | `legacyConfig` | v{X}.5        | v{Y+1}.0   | Use `modernConfig` |
 
@@ -92,7 +69,7 @@ pnpm dlx jscodeshift -t ./codemods/migrate-function.js src/**/*.ts
 ## Dependency Updates
 
 | Package | Old Version | New Version | Notes                       |
-| ------- | ----------- | ----------- | --------------------------- |
+|---------|-------------|-------------|-----------------------------|
 | `vue`   | 3.4         | 3.5         | See [Vue 3.5 release](link) |
 | `vite`  | 5.0         | 6.0         | Update `vite.config.ts`     |
 
@@ -131,6 +108,7 @@ pnpm list @cvix/package
 ### Step 3: Configuration Updates
 
 **Before:**
+
 ```typescript
 // old.config.ts
 export default {
@@ -139,6 +117,7 @@ export default {
 ```
 
 **After:**
+
 ```typescript
 // new.config.ts
 export default {
@@ -168,10 +147,12 @@ pnpm lint
 ### Issue 1: {Description}
 
 **Symptoms:**
+
 - Error message: `{error}`
 - When it happens: {scenario}
 
 **Workaround:**
+
 ```typescript
 // Temporary fix
 ```
@@ -202,7 +183,7 @@ git checkout {branch}
 ## Timeline
 
 | Date         | Action                     |
-| ------------ | -------------------------- |
+|--------------|----------------------------|
 | {YYYY-MM-DD} | v{Y} released              |
 | {YYYY-MM-DD} | Deprecation warnings added |
 | {YYYY-MM-DD} | v{X} maintenance ends      |

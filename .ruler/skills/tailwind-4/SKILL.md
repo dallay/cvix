@@ -5,8 +5,11 @@ description: >
   Trigger: When styling with Tailwind - :class/class usage, theme variables, no var() in class.
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 ---
+
 # Tailwind CSS 4 Best Practices
-This document outlines best practices for using Tailwind CSS 4 in Astro and Vue projects, focusing on when to use class/:class, optional helpers, style constants, and dynamic styles.
+
+This document outlines best practices for using Tailwind CSS 4 in Astro and Vue projects, focusing
+on when to use class/:class, optional helpers, style constants, and dynamic styles.
 
 ## Styling Decision Tree
 
@@ -46,7 +49,6 @@ Library can't use class?  → style props with var() constants
 <div class="bg-slate-800" />
 ```
 
-
 ## Conditional Classes in Vue/Astro
 
 Prefer framework-native patterns:
@@ -69,7 +71,8 @@ const variant = 'primary';
 <div class={`rounded-lg border ${variant === 'primary' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`} />
 ```
 
-Optional helper (only when programmatically composing class strings or merging potential Tailwind conflicts):
+Optional helper (only when programmatically composing class strings or merging potential Tailwind
+conflicts):
 
 ```typescript
 import { clsx } from "clsx";
@@ -82,7 +85,8 @@ export function cn(...inputs: ClassValue[]) {
 
 ## Using cn() in Vue/Astro
 
-Use `cn()` when you need to merge potentially conflicting Tailwind classes or compose classes programmatically. Prefer native `:class`/string interpolation for simple conditions.
+Use `cn()` when you need to merge potentially conflicting Tailwind classes or compose classes
+programmatically. Prefer native `:class`/string interpolation for simple conditions.
 
 ```vue
 <script setup lang="ts">

@@ -5,6 +5,7 @@ description: >
     Trigger: When writing E2E tests - Page Objects, selectors, MCP workflow.
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 ---
+
 # Playwright E2E Testing Patterns
 
 ## MCP Workflow (MANDATORY If Available)
@@ -338,6 +339,7 @@ npx playwright test tests/login/       # Run specific folder
 
 ## Profile Tailors-Specific Patterns
 
-For Profile Tailors UI E2E testing with authentication setup, environment variables, and test IDs, see:
+For Profile Tailors UI E2E testing with authentication setup, environment variables, and test IDs,
+see:
 
 - **Documentation**: [references/profile-tailors-e2e.md](references/profile-tailors-e2e.md)
