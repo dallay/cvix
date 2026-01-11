@@ -27,15 +27,21 @@ Conventions for building content-focused, high-performance websites with Astro.
 
 **ALWAYS minimize client-side JavaScript**. Astro ships zero JS by default.
 
+#### Compare these patterns: Static vs Interactive
+
+**Static component** – No JavaScript shipped to the client:
+
 ```astro
 ---
-// ✅ Static component - NO JS shipped
 import Header from '../components/Header.astro';
 ---
 <Header title="Welcome" />
+```
 
+**Interactive island** – JavaScript loaded only for this component (uses `client:visible`):
+
+```astro
 ---
-// ✅ Interactive island - JS only for this component
 import Counter from '../components/Counter.vue';
 ---
 <Counter client:visible />
@@ -44,16 +50,29 @@ import Counter from '../components/Counter.vue';
 ### 2. Hydration Directives
 
 | Directive                           | When to Use                               |
-|-------------------------------------|-------------------------------------------|
+| ----------------------------------- | ----------------------------------------- |
 | `client:load`                       | Critical interactivity needed immediately |
 | `client:idle`                       | Non-critical, can wait for browser idle   |
 | `client:visible`                    | Below the fold, hydrate on scroll         |
 | `client:media="(max-width: 768px)"` | Mobile-only interactivity                 |
-| `client:only="vue"`                 | No SSR, client-only rendering             |
+| `client:only="vue"`                 | No SSR, client-only rendering (see note)  |
 
 **Default choice**: `client:visible` unless there's a reason otherwise.
 
+> **⚠️ `client:only` trade-offs**: Components using `client:only` skip server-side rendering entirely,
+> which increases the client JS payload and can harm SEO since no HTML is rendered initially.
+> Use only for:
+> - Third-party widgets that cannot render on the server
+> - Complex client-only UI (e.g., canvas, WebGL, maps)
+> - Non-SEO-critical parts of the page (modals, admin dashboards)
+>
+> For SEO-critical content, prefer `client:visible` or `client:idle` to ensure initial HTML is crawlable.
+
 ### 3. Component Structure
+
+**Props typing options**: Astro supports both runtime access via `Astro.props` and compile-time typing.
+
+#### Option 1: Type alias with `Astro.props` (runtime access)
 
 ```astro
 ---
@@ -64,10 +83,45 @@ type Props = {
   isActive?: boolean;
 };
 
-// 2. Props destructuring with defaults
+// 2. Props destructuring with defaults (runtime access)
 const { title, description, isActive = false } = Astro.props;
 
 // 3. Imports and logic
+import { getCollection } from 'astro:content';
+const posts = await getCollection('blog');
+---
+```
+
+#### Option 2: Interface with typed component parameters (compile-time)
+
+```astro
+---
+// Using interface for explicit typing
+interface Props {
+  title: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+// Type-checked at compile time
+const { title, description, isActive = false }: Props = Astro.props;
+---
+```
+
+> **Note**: Both approaches are valid. `type Props` and `interface Props` work identically for
+> component prop typing. The interface pattern is preferred when extending or merging types.
+
+```astro
+---
+// Full example with imports and logic
+type Props = {
+  title: string;
+  description?: string;
+  isActive?: boolean;
+};
+
+const { title, description, isActive = false } = Astro.props;
+
 import { getCollection } from 'astro:content';
 const posts = await getCollection('blog');
 ---
@@ -183,6 +237,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 ## Commands
 
+> **Astro CLI Usage**: The Astro CLI is not installed globally in this workspace. Use `pnpm exec astro`
+> (or `pnpm --filter <pkg> exec astro`) to run Astro-specific commands within the monorepo.
+
 ```bash
 # Development
 pnpm --filter @cvix/marketing dev
@@ -194,6 +251,11 @@ pnpm --filter @cvix/blog build
 
 # Preview production build
 pnpm --filter @cvix/marketing preview
+
+# Running Astro CLI commands directly
+pnpm --filter @cvix/marketing exec astro check      # Type-check .astro files
+pnpm --filter @cvix/blog exec astro add vue         # Add integrations
+pnpm exec astro --help                               # View available commands
 ```
 
 ## Integration with Vue

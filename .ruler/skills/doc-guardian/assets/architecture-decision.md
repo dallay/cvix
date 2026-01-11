@@ -126,7 +126,7 @@ deciders: {List of people}
 ### Success Metrics
 
 | Metric                 | Current | Target  | Measured By   |
-|------------------------|---------|---------|---------------|
+| ---------------------- | ------- | ------- | ------------- |
 | Performance            | {value} | {value} | {tool/method} |
 | Adoption               | 0%      | 100%    | {tool/method} |
 | Developer Satisfaction | {value} | {value} | Survey        |
@@ -159,7 +159,8 @@ deciders: {List of people}
 
 ## ADR Template Usage
 
-1. **Copy this template** to `/docs/adr/adr-{NUMBER}-{title}.md`
+1. **Copy this template** to `{PROJECT_ADR_DIRECTORY}/adr-{NUMBER}-{title}.md`
+   > **Note**: Replace `{PROJECT_ADR_DIRECTORY}` with your project's ADR location (e.g., `/docs/adr/`, `docs/architecture/decisions/`).
 2. **Replace placeholders** with actual content
 3. **Number sequentially** (001, 002, 003...)
 4. **Update status** as decision evolves

@@ -95,12 +95,12 @@ fun createUser(name: String, active: Boolean)
 
 ### Naming Conventions
 
-| Element            | TypeScript        | Kotlin            |
-|--------------------|-------------------|-------------------|
-| Classes/Components | `PascalCase`      | `PascalCase`      |
-| Functions          | `camelCase`       | `camelCase`       |
-| Constants          | `SCREAMING_SNAKE` | `SCREAMING_SNAKE` |
-| Test files         | `*.spec.ts`       | `*Test.kt`        |
+| Element            | TypeScript             | Kotlin                 |
+| ------------------ | ---------------------- | ---------------------- |
+| Classes/Components | `PascalCase`           | `PascalCase`           |
+| Functions          | `camelCase`            | `camelCase`            |
+| Constants          | `SCREAMING_SNAKE_CASE` | `SCREAMING_SNAKE_CASE` |
+| Test files         | `*.spec.ts`            | `*Test.kt`             |
 
 ## Testing Patterns
 
@@ -173,7 +173,7 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 `.ruler/skills/`.
 
 | Skill                                                                   | Description                                               | Trigger                                     |
-|-------------------------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------|
+| ----------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------- |
 | [astro](.ruler/skills/astro/SKILL.md)                                   | Astro framework, island architecture, content collections | `.astro` files, content collections         |
 | [vue](.ruler/skills/vue/SKILL.md)                                       | Vue 3 Composition API, Pinia, Vee-Validate + Zod          | `.vue` files, composables, stores           |
 | [kotlin](.ruler/skills/kotlin/SKILL.md)                                 | Kotlin conventions, coroutines, null safety               | `.kt` files, Kotlin patterns                |

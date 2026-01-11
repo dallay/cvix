@@ -21,7 +21,7 @@ Conventions for Spring Boot backend development with WebFlux, R2DBC, and Kotlin.
 ## Layer Context
 
 | Layer                           | What Goes Here                                 | Spring Annotations? |
-|---------------------------------|------------------------------------------------|---------------------|
+| ------------------------------- | ---------------------------------------------- | ------------------- |
 | **Domain**                      | Entities, Value Objects, Repository interfaces | ❌ NO                |
 | **Application**                 | Commands, Queries, Handlers, Use Case services | ❌ NO                |
 | **Infrastructure** (this skill) | Controllers, R2DBC repos, Configs, Adapters    | ✅ YES               |
@@ -137,12 +137,21 @@ class UserController(
             ),
         )
 
-        val userId = createUserHandler.handle(command)
+        // Handler returns Result<UserId> - handle success/failure explicitly
+        val result = createUserHandler.handle(command)
 
-        logger.info("Successfully created user: {}", userId)
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(UserIdResponse(userId.value))
+        return result.fold(
+            onSuccess = { userId ->
+                logger.info("Successfully created user: {}", userId)
+                ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(UserIdResponse(userId.value))
+            },
+            onFailure = { error ->
+                logger.error("Failed to create user: {}", error.message)
+                throw error // Let @ControllerAdvice handle the exception
+            },
+        )
     }
 
     companion object {
@@ -189,10 +198,10 @@ class UserCreator(
     suspend fun create(user: User, metadata: Map<String, String>): Result<User> = runCatching {
         logger.info { "Creating user: ${user.email} from IP: ${metadata["ipAddress"]}" }
 
-        // Validation
-        require(user.email.isValid()) { "Invalid email format" }
+        // Note: Email format validation is handled by the Email value object constructor.
+        // Service layer focuses on business rules like uniqueness.
 
-        // Check uniqueness
+        // Check uniqueness (business rule)
         userRepository.findByEmail(user.email)?.let {
             logger.warn { "Duplicate email attempt: ${user.email}" }
             throw ConflictException("Email already exists")
@@ -382,6 +391,72 @@ data class DatabaseProperties(
 class Application
 ```
 
+### Transaction and Caching Guidance
+
+**Transaction Demarcation:**
+
+- Apply `@Transactional` at service-layer write boundaries and repository orchestration
+- For reactive stacks (R2DBC), use `TransactionalOperator` instead of imperative `@Transactional`:
+
+```kotlin
+// Imperative (blocking) - use @Transactional
+@Service
+class UserService(private val repository: UserRepository) {
+    @Transactional
+    fun transferFunds(from: UserId, to: UserId, amount: Money) { ... }
+}
+
+// Reactive (R2DBC) - use TransactionalOperator
+@Service
+class UserService(
+    private val repository: UserRepository,
+    private val txOperator: TransactionalOperator,
+) {
+    suspend fun transferFunds(from: UserId, to: UserId, amount: Money) {
+        txOperator.executeAndAwait {
+            val sender = repository.findById(from)
+            val receiver = repository.findById(to)
+            // ... perform transfer
+        }
+    }
+}
+```
+
+**Caching with Spring Cache:**
+
+```kotlin
+@Service
+class UserService(private val repository: UserRepository) {
+    @Cacheable("users", key = "#id.value")
+    suspend fun findById(id: UserId): User? = repository.findById(id)
+
+    @CacheEvict("users", key = "#user.id.value")
+    suspend fun update(user: User): User = repository.save(user)
+
+    @CachePut("users", key = "#result.id.value")
+    suspend fun create(user: User): User = repository.save(user)
+}
+```
+
+- Define TTL and eviction policies in cache configuration
+- Use `@CacheEvict(allEntries = true)` for bulk invalidation
+
+**R2DBC Connection Pooling:**
+
+```yaml
+# application.yml
+spring:
+  r2dbc:
+    pool:
+      initial-size: 5
+      max-size: 20           # Align with expected service concurrency
+      max-idle-time: 30m
+      validation-query: SELECT 1
+```
+
+> **Tip**: Set `max-size` based on your service's concurrent request capacity.
+> For CPU-bound services, pool size ≈ CPU cores; for I/O-bound, size can be higher.
+
 ### 6. Dependency Injection - Constructor Only
 
 ```kotlin
@@ -412,7 +487,7 @@ class UserStoreR2DbcRepository {
 ## HTTP Status Codes
 
 | Code                        | When to Use                             |
-|-----------------------------|-----------------------------------------|
+| --------------------------- | --------------------------------------- |
 | `200 OK`                    | Successful GET, PUT                     |
 | `201 Created`               | Successful POST that creates resource   |
 | `204 No Content`            | Successful DELETE                       |
@@ -443,6 +518,69 @@ fun getUser(id: UUID): Mono<User> {
 }
 ```
 
+### Mixing Reactive and Coroutine Paradigms
+
+Spring 6.1+ seamlessly bridges `Mono`/`Flux` and Kotlin coroutines. Choose one model per API boundary:
+
+**Guidelines:**
+
+| Scenario                       | Recommendation                                   |
+| ------------------------------ | ------------------------------------------------ |
+| Service/handler APIs           | Prefer `suspend fun` for coroutine-first design  |
+| Library code / reactive chains | Use `Mono<T>`/`Flux<T>` for composability        |
+| WebClient calls                | Convert at boundary, don't suspend inside chains |
+
+**Safe Conversions:**
+
+```kotlin
+// Consuming Mono/Flux in coroutines
+suspend fun getUser(id: UUID): User? {
+    return userRepository.findById(id).awaitSingleOrNull()  // Mono -> suspend
+}
+
+suspend fun getAllUsers(): List<User> {
+    return userRepository.findAll().collectList().awaitSingle()  // Flux -> List
+}
+
+// Exposing suspend as Mono/Flux
+fun getUserMono(id: UUID): Mono<User> = mono {
+    getUserSuspend(id)  // suspend fun -> Mono
+}
+
+fun getUsersFlux(): Flux<User> = flux {
+    getAllUsersSuspend().forEach { emit(it) }  // suspend fun -> Flux
+}
+```
+
+**⚠️ Avoid suspending inside reactive chains:**
+
+```kotlin
+// ❌ WRONG: Don't mix suspend calls inside reactive operators
+fun findUserWithOrg(userId: UUID): Mono<UserWithOrg> {
+    return userRepository.findById(userId)
+        .flatMap { user ->
+            // Don't call suspend functions here!
+            runBlocking { orgService.findById(user.orgId) }  // WRONG!
+        }
+}
+
+// ✅ CORRECT: Keep reactive or convert at boundary
+fun findUserWithOrg(userId: UUID): Mono<UserWithOrg> {
+    return userRepository.findById(userId)
+        .flatMap { user ->
+            orgRepository.findById(user.orgId)  // Stay reactive
+                .map { org -> UserWithOrg(user, org) }
+        }
+}
+
+// ✅ CORRECT: Or use suspend throughout
+suspend fun findUserWithOrg(userId: UUID): UserWithOrg? {
+    val user = userRepository.findById(userId).awaitSingleOrNull() ?: return null
+    val org = orgRepository.findById(user.orgId).awaitSingleOrNull()
+    return UserWithOrg(user, org)
+}
+```
+
 ## Security Configuration
 
 ```kotlin
@@ -469,7 +607,7 @@ class SecurityConfig {
 ## Application Profiles
 
 | Profile   | Purpose                                               |
-|-----------|-------------------------------------------------------|
+| --------- | ----------------------------------------------------- |
 | `dev`     | Local development, verbose logging, H2/Testcontainers |
 | `test`    | Automated tests, mocked external services             |
 | `staging` | Production-like, real services                        |
@@ -497,7 +635,7 @@ logging:
 ❌ **`block()` in WebFlux** - Use coroutines or reactive operators
 ❌ **Generic exception catching** - Handle specific exceptions
 ❌ **Secrets in code** - Use environment variables
-❌ **Repository interfaces extending Spring interfaces** - Domain ports are pure interfaces
+❌ **Domain repository port interfaces extending Spring interfaces** - Domain ports like `UserRepository` must remain pure Kotlin interfaces; only the infrastructure adapter (e.g., `UserR2DbcRepository`) may extend `ReactiveCrudRepository` or other Spring interfaces
 
 ## Commands
 

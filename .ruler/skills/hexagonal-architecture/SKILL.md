@@ -25,7 +25,7 @@ Boot.
 ## Critical Concepts
 
 | Concept            | Description                                                 |
-|--------------------|-------------------------------------------------------------|
+| ------------------ | ----------------------------------------------------------- |
 | **Domain**         | Pure business logic, NO framework or library dependencies   |
 | **Application**    | Use cases orchestrating domain operations                   |
 | **Infrastructure** | Framework integration (Spring, R2DBC, HTTP)                 |
@@ -52,7 +52,7 @@ domain ← application ← infrastructure
 ```
 
 | Layer              | Can Depend On        | NEVER Depends On                    |
-|--------------------|----------------------|-------------------------------------|
+| ------------------ | -------------------- | ----------------------------------- |
 | **Domain**         | Nothing (pure)       | Application, Infrastructure, Spring |
 | **Application**    | Domain only          | Infrastructure, Spring              |
 | **Infrastructure** | Domain + Application | -                                   |
@@ -66,7 +66,7 @@ domain ← application ← infrastructure
 ### What Belongs Here
 
 | Element                   | Purpose                             | Example                         |
-|---------------------------|-------------------------------------|---------------------------------|
+| ------------------------- | ----------------------------------- | ------------------------------- |
 | **Entities**              | Core business objects with identity | `Workspace.kt`                  |
 | **Value Objects**         | Immutable domain concepts           | `WorkspaceId.kt`, `Email.kt`    |
 | **Repository Interfaces** | Contracts for persistence (PORTS)   | `WorkspaceRepository.kt`        |
@@ -518,6 +518,100 @@ Is it business logic with NO framework dependencies?
 ❌ **Application depending on Infrastructure** - Only Infrastructure depends down
 ❌ **Fat handlers** - Handlers should be thin, delegate to services
 ❌ **Anemic domain models** - Put behavior IN the entities
+
+## Error Handling Across Layers
+
+Error propagation follows the hexagonal boundaries:
+
+| Layer              | Error Type               | Responsibility                                            |
+| ------------------ | ------------------------ | --------------------------------------------------------- |
+| **Domain**         | Domain exceptions        | Pure business errors (e.g., `InsufficientFundsException`) |
+| **Application**    | Application-level errors | Translate infrastructure errors, orchestrate domain       |
+| **Infrastructure** | HTTP-friendly responses  | Map exceptions to status codes and `ProblemDetail`        |
+
+**Rules:**
+
+1. **Domain errors bubble as domain exceptions** – Keep domain exceptions pure Kotlin, no framework dependencies
+2. **Infrastructure exceptions are mapped at the application boundary** – Catch and translate in application services or handlers before reaching controllers
+3. **Controllers never catch domain exceptions directly** – Use `@ControllerAdvice` to map domain/application errors to HTTP responses
+
+```kotlin
+// Domain layer - pure business exception
+class UserAlreadyExistsException(val email: Email) : DomainException("User with email ${email.value} already exists")
+
+// Application layer - catches and translates
+class CreateUserHandler(private val userRepository: UserRepository) {
+    suspend fun handle(command: CreateUserCommand): Result<UserId> = runCatching {
+        // Domain exception bubbles up
+        userRepository.findByEmail(command.email)?.let {
+            throw UserAlreadyExistsException(command.email)
+        }
+        // ...
+    }
+}
+
+// Infrastructure layer - maps to HTTP
+@RestControllerAdvice
+class DomainExceptionHandler {
+    @ExceptionHandler(UserAlreadyExistsException::class)
+    fun handleConflict(ex: UserAlreadyExistsException) =
+        ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message))
+}
+```
+
+## Testing Strategy by Layer
+
+Each layer has specific testing requirements (see also: [Decision Tree](#decision-tree-where-does-this-code-belong) and [Architecture Tests](#architecture-tests-archunit)):
+
+| Layer              | Test Type         | Strategy                                              |
+| ------------------ | ----------------- | ----------------------------------------------------- |
+| **Domain**         | Unit tests        | Pure logic, no mocks needed, fast execution           |
+| **Application**    | Integration tests | Mock Repository/Port interfaces, verify orchestration |
+| **Infrastructure** | E2E tests         | Real DB (Testcontainers), real HTTP calls, full stack |
+
+```kotlin
+// Domain - pure unit test (no mocking)
+@UnitTest
+class EmailTest {
+    @Test
+    fun `should reject invalid email format`() {
+        shouldThrow<IllegalArgumentException> {
+            Email("invalid")
+        }
+    }
+}
+
+// Application - integration with mocked ports
+@UnitTest
+class CreateUserHandlerTest {
+    private val userRepository = mockk<UserRepository>()
+    private val handler = CreateUserHandler(userRepository)
+
+    @Test
+    fun `should create user when email is unique`() = runTest {
+        coEvery { userRepository.findByEmail(any()) } returns null
+        coEvery { userRepository.save(any()) } returns testUser
+
+        val result = handler.handle(CreateUserCommand(email, name))
+
+        result.isSuccess shouldBe true
+    }
+}
+
+// Infrastructure - E2E with Testcontainers
+@IntegrationTest
+class UserControllerIntegrationTest {
+    @Test
+    fun `POST users should create user and return 201`() {
+        webTestClient.post().uri("/api/users")
+            .bodyValue(CreateUserRequest(email, name))
+            .exchange()
+            .expectStatus().isCreated
+            .expectBody<UserIdResponse>()
+    }
+}
+```
 
 ## Commands
 

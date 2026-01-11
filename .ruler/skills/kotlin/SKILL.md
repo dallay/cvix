@@ -96,6 +96,81 @@ sealed interface DomainError {
 }
 ```
 
+### Testing with Kotest
+
+This project uses **Kotest** for expressive, idiomatic Kotlin tests.
+
+**Spec Styles**: Prefer `FunSpec` for simple tests, `DescribeSpec` for BDD-style grouping:
+
+```kotlin
+// FunSpec - simple flat structure
+class UserServiceTest : FunSpec({
+    val repository = mockk<UserRepository>()
+    val service = UserService(repository)
+
+    test("should create user with valid data") {
+        coEvery { repository.save(any()) } returns testUser
+
+        val result = service.create(validUserData)
+
+        result.shouldNotBeNull()
+        result.email shouldBe validUserData.email
+    }
+
+    test("should throw when email already exists") {
+        coEvery { repository.findByEmail(any()) } returns existingUser
+
+        shouldThrow<ConflictException> {
+            service.create(validUserData)
+        }.message shouldContain "already exists"
+    }
+})
+
+// DescribeSpec - BDD-style grouping
+class EmailValueObjectTest : DescribeSpec({
+    describe("Email") {
+        context("when created with valid format") {
+            it("should create successfully") {
+                val email = Email("user@example.com")
+                email.value shouldBe "user@example.com"
+            }
+        }
+
+        context("when created with invalid format") {
+            it("should throw IllegalArgumentException") {
+                shouldThrow<IllegalArgumentException> {
+                    Email("invalid-email")
+                }
+            }
+        }
+    }
+})
+```
+
+**Common Matchers**:
+
+```kotlin
+// Equality and nullability
+result shouldBe expected
+result shouldNotBe null
+result.shouldNotBeNull()
+result.shouldBeNull()
+
+// Collections
+list shouldHaveSize 3
+list shouldContain element
+list.shouldContainAll(a, b, c)
+list.shouldBeEmpty()
+
+// Exceptions
+shouldThrow<NotFoundException> { service.findById(unknownId) }
+shouldNotThrow { service.findById(validId) }
+
+// String matchers
+name shouldStartWith "John"
+error.message shouldContain "not found"
+```
+
 ### 4. Error Handling with Result
 
 **Prefer `Result<T>` over exceptions for business logic**:
@@ -178,7 +253,7 @@ fun <T> List<T>?.orEmpty(): List<T> = this ?: emptyList()
 ## Naming Conventions
 
 | Element             | Convention                | Example                                 |
-|---------------------|---------------------------|-----------------------------------------|
+| ------------------- | ------------------------- | --------------------------------------- |
 | Classes/Interfaces  | `PascalCase`              | `UserService`, `WorkspaceRepository`    |
 | Functions/Variables | `camelCase`               | `findById`, `userName`                  |
 | Constants           | `UPPER_SNAKE_CASE`        | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`    |

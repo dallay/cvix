@@ -91,6 +91,8 @@ const increment = () => {
 ```typescript
 // stores/user.ts
 import { defineStore } from 'pinia';
+import { api, isAxiosError } from '@/api';
+import { toast } from 'vue-sonner';
 
 type User = {
   id: string;
@@ -130,7 +132,14 @@ export const useUserStore = defineStore('user', {
         const response = await api.getUser(id);
         this.currentUser = response.data;
       } catch (e) {
-        this.error = 'Failed to fetch user';
+        // Type-safe error handling
+        const error = e instanceof Error ? e : new Error('Unknown error');
+        const message = isAxiosError(e) && e.response?.data?.message
+          ? e.response.data.message
+          : error.message || 'Failed to fetch user';
+
+        this.error = message;
+        toast.error('Error', { description: message });
       } finally {
         this.isLoading = false;
       }
@@ -185,7 +194,9 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage
+  FormMessage,
+  Input,
+  Button,
 } from '@cvix/ui';
 
 const schema = z.object({
@@ -230,7 +241,7 @@ const onSubmit = handleSubmit((values) => {
 ### 5. Component Communication
 
 | Scenario        | Approach                  |
-|-----------------|---------------------------|
+| --------------- | ------------------------- |
 | Parent → Child  | Props                     |
 | Child → Parent  | `emit()`                  |
 | Sibling/Distant | Pinia store               |

@@ -37,7 +37,16 @@ echo ""
 echo "3️⃣  Checking for outdated 'last_updated' dates..."
 CURRENT_YEAR=$(date +%Y)
 STALE_THRESHOLD=$((CURRENT_YEAR - 2))
-STALE_DATES=$(rg "last_updated.*20(1[0-9]|2[0-$STALE_THRESHOLD])" "$DOCS_DIR" -n 2>/dev/null || true)
+
+# Extract years from last_updated fields and compare numerically
+STALE_DATES=$(rg -n 'last_updated.*20[0-9]{2}' "$DOCS_DIR" 2>/dev/null | while IFS= read -r line; do
+  # Extract the year from the line
+  year=$(echo "$line" | grep -oE '20[0-9]{2}' | head -1)
+  if [[ -n "$year" ]] && [[ $year -le $STALE_THRESHOLD ]]; then
+    echo "$line"
+  fi
+done || true)
+
 if [[ -z "$STALE_DATES" ]]; then
   echo "   ✅ No stale dates found"
 else
@@ -72,7 +81,7 @@ echo ""
 # Check 6: Missing frontmatter
 echo "6️⃣  Checking for files without frontmatter..."
 MISSING_FRONTMATTER=$(fd -e md -e mdx . "$DOCS_DIR" -x sh -c '
-  if ! head -n 3 "{}" | grep -q "^---$"; then
+  if ! head -n 1 "{}" | grep -q "^---$"; then
     echo "{}"
   fi
 ' 2>/dev/null || true)
@@ -89,19 +98,19 @@ echo ""
 # Check 7: Documentation structure
 echo "7️⃣  Checking documentation structure..."
 REQUIRED_DIRS=("overview" "developer-guide" "backend" "frontend")
-MISSING_DIRS=""
+missing_dirs=()
 
 for dir in "${REQUIRED_DIRS[@]}"; do
   if [[ ! -d "$DOCS_DIR/$dir" ]]; then
-    MISSING_DIRS="$MISSING_DIRS\n  - $dir/"
+    missing_dirs+=("  - $dir/")
   fi
 done
 
-if [[ -z "$MISSING_DIRS" ]]; then
+if [[ ${#missing_dirs[@]} -eq 0 ]]; then
   echo "   ✅ All required directories exist"
 else
   echo "   ⚠️  Missing recommended directories:"
-  echo -e "$MISSING_DIRS"
+  printf '%s\n' "${missing_dirs[@]}"
 fi
 echo ""
 

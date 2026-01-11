@@ -11,8 +11,8 @@ metadata:
 
 # Doc Guardian - Documentation Maintenance Skill
 
-Keeps documentation synchronized with code, prevents gaps, and enforces quality standards. *
-*Documentation that lies is worse than no documentation.**
+Keeps documentation synchronized with code, prevents gaps, and enforces quality standards.
+**Documentation that lies is worse than no documentation.**
 
 ## When to Use
 
@@ -42,7 +42,7 @@ client/apps/docs/src/content/docs/
 ### 2. Verification Checklist (Run Before Committing)
 
 | Check            | Command                                                                     | Fix                          |
-|------------------|-----------------------------------------------------------------------------|------------------------------|
+| ---------------- | --------------------------------------------------------------------------- | ---------------------------- |
 | Dead links       | `rg '\[.*\]\((?!http).*\)' client/apps/docs/src/content/docs/ \| rg '\.md'` | Update broken internal links |
 | TODO markers     | `rg 'TODO\|FIXME\|XXX' client/apps/docs/src/content/docs/`                  | Complete or remove markers   |
 | Code examples    | `rg '```(typescript\|kotlin)' -A 10 client/apps/docs/`                      | Verify syntax, update APIs   |
@@ -80,7 +80,7 @@ done < /tmp/exports.txt
 ### 5. Documentation Templates (See `assets/`)
 
 | Template                   | Use When                           |
-|----------------------------|------------------------------------|
+| -------------------------- | ---------------------------------- |
 | `feature-doc.md`           | New feature added                  |
 | `api-doc.md`               | New public API/endpoint            |
 | `migration-guide.md`       | Breaking changes                   |
@@ -168,7 +168,7 @@ See [Testing Guide](client/apps/docs/src/content/docs/testing/overview.md) for d
 ## Documentation Maintenance Schedule
 
 | Frequency        | Task                                      |
-|------------------|-------------------------------------------|
+| ---------------- | ----------------------------------------- |
 | **Every commit** | Update docs for changed features          |
 | **Weekly**       | Run dead link check                       |
 | **Monthly**      | Review TODOs, update screenshots          |
