@@ -79,7 +79,7 @@ if ! rg 'export (class|function|const)' client/packages/ --no-filename > /tmp/ex
 fi
 
 # Transform using sed (POSIX-compatible)
-if ! sed -e 's/export (class|function|const|interface|type) //' \
+if ! sed -e 's/export \(class\|function\|const\|interface\|type\) //' \
      -e 's/(.*//' \
      -e 's/{.*//' \
      -e '/^\/\//d' \
@@ -166,22 +166,33 @@ rg 'TODO|FIXME|XXX' client/apps/docs/
 # Lint markdown
 pnpm --filter @cvix/docs markdownlint '**/*.md'
 
-# Verify code examples compile (requires type definitions)
-# Note: This extracts TypeScript blocks but may need imports/types added manually
-# For production use, wrap each snippet in a proper module with imports
-echo '// Auto-generated from docs - may require manual type definitions' > /tmp/code-samples.ts
-echo 'import type { ReactNode } from "react";' >> /tmp/code-samples.ts
-echo 'import type { Component } from "vue";' >> /tmp/code-samples.ts
-echo '// Add other common imports as needed' >> /tmp/code-samples.ts
+# Verify code examples compile (best-effort - requires manual type definitions)
+# IMPORTANT: This is scaffolding-only and will NOT compile without manual edits
+# Add <!-- compilable-example --> marker in docs for snippets that should compile
+set +e  # Non-fatal: compilation errors are expected
+
+echo '// SCAFFOLDING-ONLY — MAY REQUIRE MANUAL EDITS' > /tmp/code-samples.ts
+echo '// This file aggregates TypeScript snippets from docs for syntax checking.' >> /tmp/code-samples.ts
+echo '// Snippets may be incomplete, lack imports, or require context.' >> /tmp/code-samples.ts
+echo '// Do NOT assume this file will compile without modifications.' >> /tmp/code-samples.ts
 echo '' >> /tmp/code-samples.ts
 
-# Extract code blocks, skip imports already present, wrap in scope
+# Optional: Add common imports only if detected in extracted snippets
+# Uncomment and customize based on your actual usage:
+# echo 'import type { ReactNode } from "react";' >> /tmp/code-samples.ts
+# echo 'import type { Component } from "vue";' >> /tmp/code-samples.ts
+echo '' >> /tmp/code-samples.ts
+
+# Extract code blocks, skip imports already present
 rg '```typescript' -A 20 client/apps/docs/ | \
   sed '/^```/d' | \
   awk 'BEGIN {block=0} /^import/ {next} {print}' >> /tmp/code-samples.ts
 
-echo '// Run: pnpm tsc --noEmit --skipLibCheck /tmp/code-samples.ts' >> /tmp/code-samples.ts
-echo '// Note: May need to install @types packages: pnpm add -D @types/node' >> /tmp/code-samples.ts
+echo '' >> /tmp/code-samples.ts
+echo '// To check syntax: pnpm tsc --noEmit --skipLibCheck /tmp/code-samples.ts' >> /tmp/code-samples.ts
+echo '// Errors are expected - use this for basic syntax validation only' >> /tmp/code-samples.ts
+
+set -e  # Re-enable error checking
 ```
 
 ## Workflow: Feature → Documentation

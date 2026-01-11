@@ -129,8 +129,8 @@ deciders: {List of people}
 | Metric                 | Current | Target  | Measured By   |
 | ---------------------- | ------- | ------- | ------------- |
 | Performance            | {value} | {value} | {tool/method} |
-| Adoption               | 0%      | 100%    | {tool/method} |
-| Developer Satisfaction | {value} | {value} | Survey        |
+| Adoption               | {value} | {value} | {tool/method} |
+| Developer Satisfaction | {value} | {value} | {tool/method} |
 
 ### Review Date
 
