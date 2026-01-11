@@ -40,8 +40,9 @@ const i18n = createI18n({
 					templateLabel: "Template",
 					loading: "Loading templates…",
 					noTemplates: "No templates available",
-					coreOptions: "Appearance & Language",
+					coreOptions: "Core Options",
 					selectTemplateAria: "Select {name} template",
+					selected: "Selected",
 					param: {
 						locale: "Language",
 						fontFamily: "Font Family",
@@ -318,21 +319,36 @@ describe("PdfTemplateSelector", () => {
 
 			// Verify the section title
 			const sectionTitle = within(container as HTMLElement).getByText(
-				"Appearance & Language",
+				"Core Options",
 			);
 			expect(sectionTitle).toBeInTheDocument();
 
-			// Verify dropdown labels using container scoping
-			const labels = container.querySelectorAll("label");
-			const labelTexts = Array.from(labels).map((label) =>
-				label.textContent?.trim(),
+			// Use semantic role-based queries instead of DOM queries
+			const localeSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume language selector/i,
+				},
 			);
-			expect(labelTexts).toContain("Language");
-			expect(labelTexts).toContain("Font Family");
-			expect(labelTexts).toContain("Color Scheme");
+			const fontSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume font selector/i,
+				},
+			);
+			const colorSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume color selector/i,
+				},
+			);
+
+			expect(localeSelect).toBeInTheDocument();
+			expect(fontSelect).toBeInTheDocument();
+			expect(colorSelect).toBeInTheDocument();
 		});
 
-		it("should render language dropdown label", async () => {
+		it("should render language dropdown with aria-label", async () => {
 			const modelValue = {
 				templateId: "classic",
 				params: { locale: "en" },
@@ -350,11 +366,14 @@ describe("PdfTemplateSelector", () => {
 				},
 			});
 
-			// Language dropdown should exist
-			const localeLabel = within(container as HTMLElement).getByText(
-				"Language",
+			// Language dropdown should have proper aria-label
+			const localeSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume language selector/i,
+				},
 			);
-			expect(localeLabel).toBeInTheDocument();
+			expect(localeSelect).toBeInTheDocument();
 		});
 	});
 

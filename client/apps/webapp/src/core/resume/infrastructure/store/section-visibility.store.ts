@@ -17,6 +17,12 @@ import {
 } from "@/core/resume/domain/SectionVisibility";
 import { sectionVisibilityStorage } from "@/core/resume/infrastructure/storage/SectionVisibilityStorage";
 
+/**
+ * Default resume ID for single-resume mode.
+ * This ensures localStorage persistence works across page reloads.
+ */
+const DEFAULT_RESUME_ID = "default";
+
 // Lazy-initialized filter service to improve testability (can be mocked by tests)
 let resumeSectionFilterService: ResumeSectionFilterService | null = null;
 function getFilterService(): ResumeSectionFilterService {
@@ -27,6 +33,11 @@ function getFilterService(): ResumeSectionFilterService {
 /**
  * Section visibility store for managing which sections/items appear in PDF exports.
  * Handles state management, persistence, and reactive updates.
+ *
+ * ARCHITECTURE NOTE: Expanded state is deliberately SEPARATE from visibility state.
+ * - `visibility` tracks what's visible in the PDF (triggers PDF regeneration)
+ * - `expandedSections` tracks UI accordion state (does NOT trigger PDF regeneration)
+ * This separation prevents PDF re-renders when users expand/collapse sections.
  */
 export const useSectionVisibilityStore = defineStore(
 	"section-visibility",
@@ -37,6 +48,51 @@ export const useSectionVisibilityStore = defineStore(
 		const resumeId = ref<string>("");
 		const isLoading = ref(false);
 		const error = ref<Error | null>(null);
+
+		/**
+		 * UI-only state: tracks which sections are expanded in the accordion.
+		 * Separated from visibility to avoid PDF re-renders when expanding sections.
+		 * Key: section type, Value: expanded state
+		 */
+		const expandedSections = ref<Record<SectionType, boolean>>({
+			personalDetails: false,
+			work: false,
+			volunteer: false,
+			education: false,
+			awards: false,
+			certificates: false,
+			publications: false,
+			skills: false,
+			languages: false,
+			interests: false,
+			references: false,
+			projects: false,
+		});
+
+		/**
+		 * Syncs expanded state from loaded visibility (legacy support).
+		 * Migrates expanded state from visibility object to separate ref.
+		 */
+		function syncExpandedStateFromVisibility(vis: SectionVisibility) {
+			const newExpanded = { ...expandedSections.value };
+			for (const sectionType of SECTION_TYPES) {
+				if (sectionType === "personalDetails") {
+					newExpanded.personalDetails = vis.personalDetails.expanded;
+				} else {
+					const sectionVis = vis[sectionType] as ArraySectionVisibility;
+					newExpanded[sectionType] = sectionVis.expanded;
+				}
+			}
+			expandedSections.value = newExpanded;
+		}
+
+		/**
+		 * Gets the expanded state for a section.
+		 */
+		function isSectionExpanded(section: SectionType): boolean {
+			return expandedSections.value[section] ?? false;
+		}
+
 		/**
 		 * Gets metadata for all sections (for rendering pills).
 		 */
@@ -92,6 +148,7 @@ export const useSectionVisibilityStore = defineStore(
 
 		/**
 		 * Initializes the store with a resume and loads saved preferences if available.
+		 * Uses a stable default ID for single-resume mode to ensure localStorage persistence works.
 		 */
 		function initialize(newResume: Resume, newResumeId?: string) {
 			isLoading.value = true;
@@ -99,14 +156,17 @@ export const useSectionVisibilityStore = defineStore(
 
 			try {
 				resume.value = newResume;
-				// Use provided resumeId or generate a temporary one
-				const id = newResumeId || crypto.randomUUID();
+				// Use provided resumeId or fallback to stable default for single-resume mode
+				const id = newResumeId || DEFAULT_RESUME_ID;
 				resumeId.value = id;
 
 				// Try to load saved preferences
 				const saved = sectionVisibilityStorage.load(id);
 				if (saved) {
+					syncVisibilityWithResume(saved, newResume);
 					visibility.value = saved;
+					// Restore expanded state from saved visibility (legacy support)
+					syncExpandedStateFromVisibility(saved);
 				} else {
 					// Create defaults if no saved preferences
 					visibility.value = createDefaultVisibility(id, newResume);
@@ -132,32 +192,50 @@ export const useSectionVisibilityStore = defineStore(
 			}
 
 			const sectionVis = visibility.value[section] as ArraySectionVisibility;
-			if (sectionVis.enabled) {
-				// Disabling - set enabled to false
+
+			// Determine current state based on items
+			const allSelected =
+				sectionVis.items.length > 0 && sectionVis.items.every(Boolean);
+			const isEnabled = sectionVis.enabled;
+
+			// Logic:
+			// If Enabled AND All Selected -> Uncheck (Clear All)
+			// If Enabled AND Not All Selected (Indeterminate) -> Check (Select All)
+			// If Disabled -> Check (Select All)
+
+			if (isEnabled && allSelected) {
+				// Full -> Empty
 				sectionVis.enabled = false;
-				sectionVis.expanded = false;
+				// Collapse section when disabling (UI state)
+				expandedSections.value = {
+					...expandedSections.value,
+					[section]: false,
+				};
+				// Clear child items state for consistency
+				sectionVis.items = sectionVis.items.map(() => false);
 			} else {
-				// Enabling - set enabled to true and enable all items
+				// Indeterminate/Empty -> Full
 				sectionVis.enabled = true;
 				sectionVis.items = sectionVis.items.map(() => true);
 			}
 		}
 
 		/**
-		 * Toggles the expanded state of a section.
+		 * Toggles the expanded state of a section (UI-only, does NOT trigger PDF regeneration).
 		 */
 		function toggleSectionExpanded(section: SectionType) {
-			if (!visibility.value) return;
-
-			if (section === "personalDetails") {
-				visibility.value.personalDetails.expanded =
-					!visibility.value.personalDetails.expanded;
-			} else {
+			// For array sections, only allow expansion if enabled
+			if (section !== "personalDetails" && visibility.value) {
 				const sectionVis = visibility.value[section] as ArraySectionVisibility;
-				if (sectionVis.enabled) {
-					sectionVis.expanded = !sectionVis.expanded;
+				if (!sectionVis.enabled) {
+					return;
 				}
 			}
+
+			expandedSections.value = {
+				...expandedSections.value,
+				[section]: !expandedSections.value[section],
+			};
 		}
 
 		/**
@@ -170,11 +248,19 @@ export const useSectionVisibilityStore = defineStore(
 			if (index >= 0 && index < sectionVis.items.length) {
 				sectionVis.items[index] = !sectionVis.items[index];
 
-				// Auto-disable section if all items are disabled (FR-017)
+				// Update parent enabled state based on children
+				// "Parent state must be derived from its children"
+				// If any item is visible -> section must be enabled
+				// If no items are visible -> section must be disabled
 				const hasVisibleItems = sectionVis.items.some(Boolean);
-				if (!hasVisibleItems && sectionVis.enabled) {
-					sectionVis.enabled = false;
-					sectionVis.expanded = false;
+				sectionVis.enabled = hasVisibleItems;
+
+				if (!hasVisibleItems) {
+					// Collapse section when all items are disabled (UI state)
+					expandedSections.value = {
+						...expandedSections.value,
+						[section]: false,
+					};
 				}
 			}
 		}
@@ -215,6 +301,59 @@ export const useSectionVisibilityStore = defineStore(
 				Object.keys(fields.profiles).forEach((key) => {
 					fields.profiles[key] = !currentState;
 				});
+			} else if (field.startsWith("profiles:")) {
+				// Individual profile toggle
+				const network = field.split(":")[1];
+				if (network) {
+					if (typeof fields.profiles[network] === "boolean") {
+						fields.profiles[network] = !fields.profiles[network];
+					} else {
+						// Initialize if missing
+						fields.profiles[network] = false;
+					}
+				}
+			}
+		}
+
+		/**
+		 * Synchronizes visibility state with the current resume.
+		 * Ensures arrays match in length and new items are initialized.
+		 */
+		function syncVisibilityWithResume(
+			vis: SectionVisibility,
+			currentResume: Resume,
+		) {
+			// Sync Array Sections
+			for (const section of SECTION_TYPES) {
+				if (section === "personalDetails") continue;
+
+				const sectionVis = vis[section] as ArraySectionVisibility;
+				const resumeItems = currentResume[section as keyof Resume] as unknown[];
+				const currentCount = sectionVis.items.length;
+				const targetCount = Array.isArray(resumeItems) ? resumeItems.length : 0;
+
+				if (currentCount < targetCount) {
+					// Add new items (enabled by default)
+					const newItems = Array.from(
+						{ length: targetCount - currentCount },
+						() => true,
+					);
+					sectionVis.items.push(...newItems);
+				} else if (currentCount > targetCount) {
+					// Trim removed items
+					sectionVis.items.splice(targetCount);
+				}
+			}
+
+			// Sync Profiles
+			if (currentResume.basics?.profiles) {
+				currentResume.basics.profiles.forEach((profile) => {
+					if (
+						vis.personalDetails.fields.profiles[profile.network] === undefined
+					) {
+						vis.personalDetails.fields.profiles[profile.network] = true;
+					}
+				});
 			}
 		}
 
@@ -251,6 +390,7 @@ export const useSectionVisibilityStore = defineStore(
 			resume,
 			isLoading,
 			error,
+			expandedSections,
 
 			// Computed
 			sectionMetadata,
@@ -260,6 +400,7 @@ export const useSectionVisibilityStore = defineStore(
 			initialize,
 			toggleSection,
 			toggleSectionExpanded,
+			isSectionExpanded,
 			toggleItem,
 			togglePersonalDetailsField,
 			reset,

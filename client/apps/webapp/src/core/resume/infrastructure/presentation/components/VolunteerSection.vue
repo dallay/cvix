@@ -202,8 +202,8 @@ const hasVolunteers = computed(() => volunteers.value.length > 0);
 						<div class="flex items-center gap-2">
 							<Checkbox
 								:id="`volunteer-current-${volunteerIndex}`"
-								:checked="isCurrent(volunteer)"
-								@update:checked="toggleCurrent(volunteerIndex)"
+								:model-value="isCurrent(volunteer)"
+								@update:model-value="toggleCurrent(volunteerIndex)"
 							/>
 							<FieldLabel
 								:for="`volunteer-current-${volunteerIndex}`"

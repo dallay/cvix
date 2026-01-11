@@ -84,9 +84,12 @@ export class RegisterPage extends BasePage {
 
 	/**
 	 * Accept terms and conditions
+	 * Note: Using .click() instead of .check() because our Checkbox component
+	 * renders a <button role="checkbox"> (proper ARIA pattern), not a native
+	 * <input type="checkbox">, and Playwright's .check() only works with native inputs.
 	 */
 	async acceptTerms(): Promise<void> {
-		await this.termsCheckbox.check();
+		await this.termsCheckbox.click();
 	}
 
 	/**
