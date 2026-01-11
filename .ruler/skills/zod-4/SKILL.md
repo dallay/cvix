@@ -9,22 +9,39 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Task
 
 This document outlines best practices for using Zod 4 in Astro and Vue projects, focusing on schema definitions, parsing, transformations, error handling, and form integration.
 
-## Breaking Changes from Zod 3
+## Migration Guide from Zod 3 to Zod 4
 
 ```typescript
-// ❌ Zod 3 (OLD)
+// ⚠️ Deprecated (still works in v4, will be removed in v5)
 z.string().email()
 z.string().uuid()
 z.string().url()
 z.string().nonempty()
-z.object({ name: z.string() }).required_error("Required")
+z.string().min(5, { message: "Too short" })
 
-// ✅ Zod 4 (NEW)
+// ✅ Recommended (better performance, tree-shaking)
 z.email()
 z.uuid()
 z.url()
 z.string().min(1)
-z.object({ name: z.string() }, { error: "Required" })
+z.string().min(5, { error: "Too short" })
+
+// Note: Old patterns still work in v4 for backward compatibility
+```
+
+## Error Message Parameters
+
+```typescript
+// Both work in Zod 4, but 'error' is preferred
+z.string().min(5, { message: "Too short" })  // ⚠️ Deprecated
+z.string().min(5, { error: "Too short" })    // ✅ Preferred
+
+// Error can be a function for dynamic messages
+z.string({
+  error: (issue) => issue.input === undefined
+    ? "Field is required"
+    : "Invalid string"
+})
 ```
 
 ## Basic Schemas
@@ -79,7 +96,7 @@ if (result.success) {
 ```typescript
 // Arrays
 const tagsSchema = z.array(z.string()).min(1).max(10);
-const numbersSchema = z.array(z.number()).nonempty();
+const numbersSchema = z.array(z.number()).min(1);
 
 // Records (objects with dynamic keys)
 const scoresSchema = z.record(z.string(), z.number());
@@ -363,7 +380,7 @@ export async function POST({ request }) {
 
   if (!result.success) {
     return new Response(
-      JSON.stringify({ errors: result.error.flatten() }),
+      JSON.stringify({ errors: z.treeifyError(result.error) }),
       { status: 400 }
     );
   }
