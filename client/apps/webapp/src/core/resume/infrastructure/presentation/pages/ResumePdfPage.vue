@@ -256,6 +256,7 @@ const goBack = async () => {
                 :resume="resumeStore.resume"
                 :visibility="visibilityStore.visibility"
                 :metadata="visibilityStore.sectionMetadata"
+                :expanded-sections="visibilityStore.expandedSections"
                 @toggle-section="handleToggleSection"
                 @expand-section="handleExpandSection"
                 @toggle-item="handleToggleItem"

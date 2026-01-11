@@ -38,6 +38,9 @@ interface Props {
 
 	/** Section metadata for rendering (in SECTION_TYPES order) */
 	metadata: SectionMetadata[];
+
+	/** Expanded state for each section (UI-only, separate from visibility to prevent PDF re-renders) */
+	expandedSections: Record<SectionType, boolean>;
 }
 
 const props = defineProps<Props>();
@@ -253,7 +256,7 @@ const getSectionState = (
 					:label="t(section.labelKey)"
 					:checked-state="getSectionState(section)"
 					:has-data="section.hasData"
-					:expanded="visibility.personalDetails.expanded"
+					:expanded="expandedSections.personalDetails"
 					:visible-count="section.visibleItemCount"
 					:total-count="section.itemCount"
 					:disabled-tooltip="!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined"
@@ -274,7 +277,7 @@ const getSectionState = (
 					:label="t(section.labelKey)"
 					:checked-state="getSectionState(section)"
 					:has-data="section.hasData"
-					:expanded="getArraySectionVisibility(section.type)?.expanded"
+					:expanded="expandedSections[section.type]"
 					:visible-count="section.visibleItemCount"
 					:total-count="section.itemCount"
 					:disabled-tooltip="!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined"

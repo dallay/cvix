@@ -9,22 +9,45 @@ import type { HTMLAttributes } from "vue";
 const props = defineProps<
 	CheckboxRootProps & {
 		class?: HTMLAttributes["class"];
+		/**
+		 * Controlled checked state.
+		 * This is an alias for `modelValue` to match common checkbox API expectations.
+		 * Internally, we forward this to CheckboxRoot's `modelValue` prop.
+		 */
 		checked?: boolean | "indeterminate";
 	}
 >();
-const emits = defineEmits<CheckboxRootEmits>();
 
+const emits = defineEmits<
+	CheckboxRootEmits & {
+		/**
+		 * Emitted when the checked state changes.
+		 * This mirrors `update:modelValue` for API consistency.
+		 */
+		"update:checked": [value: boolean | "indeterminate"];
+	}
+>();
+
+// Exclude 'class' and 'checked' from delegated props
+// 'class' is handled manually for styling
+// 'checked' is our custom prop that we'll map to modelValue
 const delegatedProps = reactiveOmit(props, "class", "checked");
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
+
+// Map our checked prop to modelValue and emit both events for compatibility
+const handleUpdate = (value: boolean | "indeterminate") => {
+	emits("update:checked", value);
+	emits("update:modelValue", value);
+};
 </script>
 
 <template>
   <CheckboxRoot
     data-slot="checkbox"
     v-bind="forwarded"
-    :checked="props.checked"
-    :model-value="props.checked"
+    :model-value="checked"
+    @update:model-value="handleUpdate"
     :class="
       cn('peer border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground data-[state=indeterminate]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
          props.class)"

@@ -73,7 +73,7 @@ const counterText = computed(() => {
 	return `${props.visibleCount}/${props.totalCount}`;
 });
 
-const handleCheckboxChange = () => {
+const handleCheckboxChange = (value: boolean | "indeterminate") => {
 	if (!isDisabledDueToNoData.value) {
 		emit("toggle");
 	}
