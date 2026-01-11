@@ -1,3 +1,9 @@
+## [3.11.0](https://github.com/dallay/cvix/compare/v3.10.0...v3.11.0) (2026-01-11)
+
+### ✨ Features
+
+* **006:** checkbox state sync ([#509](https://github.com/dallay/cvix/issues/509)) ([62fab36](https://github.com/dallay/cvix/commit/62fab367d30d02e45ca807146cc1ef616a91cb42))
+
 ## [3.10.0](https://github.com/dallay/cvix/compare/v3.9.3...v3.10.0) (2026-01-11)
 
 ### ✨ Features
