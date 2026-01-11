@@ -13,7 +13,7 @@ echo ""
 
 # Check 1: Dead internal links (simplified)
 echo "1️⃣  Checking for markdown links..."
-LINK_COUNT=$(rg '\[.*\]\(.+\)' "$DOCS_DIR" -c | awk -F: '{sum += $2} END {print sum}')
+LINK_COUNT=$(rg '\[.*\]\(.+\)' "$DOCS_DIR" -c 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
 if [[ -n "$LINK_COUNT" ]] && [[ $LINK_COUNT -gt 0 ]]; then
   echo "   ✅ Found $LINK_COUNT links (manual verification recommended)"
 else
@@ -37,20 +37,30 @@ echo ""
 echo "3️⃣  Checking for outdated 'last_updated' dates..."
 CURRENT_YEAR=$(date +%Y)
 STALE_THRESHOLD=$((CURRENT_YEAR - 2))
-STALE_DATES=$(rg "last_updated.*20(1[0-9]|2[0-$STALE_THRESHOLD])" "$DOCS_DIR" -n 2>/dev/null || true)
+
+# Extract dates and filter stale ones
+STALE_DATES=""
+while IFS=: read -r file line content; do
+  # Extract year from the date in format YYYY-MM-DD or YYYY
+  year=$(echo "$content" | grep -oE '20[0-9]{2}' | head -1)
+  if [[ -n "$year" ]] && [[ "$year" -le "$STALE_THRESHOLD" ]]; then
+    STALE_DATES="${STALE_DATES}${file}:${line}:${content}\n"
+  fi
+done < <(rg "last_updated.*20[0-9]{2}" "$DOCS_DIR" -n 2>/dev/null || true)
+
 if [[ -z "$STALE_DATES" ]]; then
   echo "   ✅ No stale dates found"
 else
   echo "   ⚠️  Found stale dates (2+ years old):"
-  echo "$STALE_DATES" | head -10
+  echo -e "$STALE_DATES" | head -10
   echo "   (Not blocking, but consider reviewing)"
 fi
 echo ""
 
 # Check 4: Code examples syntax
 echo "4️⃣  Checking for code blocks..."
-TS_BLOCKS=$(rg '```typescript' "$DOCS_DIR" -c 2>/dev/null | awk -F: '{sum += $2} END {print sum}')
-KOTLIN_BLOCKS=$(rg '```kotlin' "$DOCS_DIR" -c 2>/dev/null | awk -F: '{sum += $2} END {print sum}')
+TS_BLOCKS=$(rg '```typescript' "$DOCS_DIR" -c 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
+KOTLIN_BLOCKS=$(rg '```kotlin' "$DOCS_DIR" -c 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
 
 echo "   Found $TS_BLOCKS TypeScript blocks"
 echo "   Found $KOTLIN_BLOCKS Kotlin blocks"
@@ -72,7 +82,8 @@ echo ""
 # Check 6: Missing frontmatter
 echo "6️⃣  Checking for files without frontmatter..."
 MISSING_FRONTMATTER=$(fd -e md -e mdx . "$DOCS_DIR" -x sh -c '
-  if ! head -n 3 "{}" | grep -q "^---$"; then
+  first_line=$(head -n 1 "{}")
+  if [[ "$first_line" != "---" ]]; then
     echo "{}"
   fi
 ' 2>/dev/null || true)
@@ -80,28 +91,28 @@ MISSING_FRONTMATTER=$(fd -e md -e mdx . "$DOCS_DIR" -x sh -c '
 if [[ -z "$MISSING_FRONTMATTER" ]]; then
   echo "   ✅ All files have frontmatter"
 else
-  echo "   ⚠️  Files without frontmatter:"
+  echo "   ⚠️  Files without frontmatter (must start with --- on line 1):"
   echo "$MISSING_FRONTMATTER" | head -5
-  echo "   (Should have --- at start)"
+  echo "   (Frontmatter must be on line 1, no leading blank lines)"
 fi
 echo ""
 
 # Check 7: Documentation structure
 echo "7️⃣  Checking documentation structure..."
 REQUIRED_DIRS=("overview" "developer-guide" "backend" "frontend")
-MISSING_DIRS=""
+MISSING_DIRS_ARRAY=()
 
 for dir in "${REQUIRED_DIRS[@]}"; do
   if [[ ! -d "$DOCS_DIR/$dir" ]]; then
-    MISSING_DIRS="$MISSING_DIRS\n  - $dir/"
+    MISSING_DIRS_ARRAY+=("  - $dir/")
   fi
 done
 
-if [[ -z "$MISSING_DIRS" ]]; then
+if [[ ${#MISSING_DIRS_ARRAY[@]} -eq 0 ]]; then
   echo "   ✅ All required directories exist"
 else
   echo "   ⚠️  Missing recommended directories:"
-  echo -e "$MISSING_DIRS"
+  printf '%s\n' "${MISSING_DIRS_ARRAY[@]}"
 fi
 echo ""
 

@@ -38,6 +38,12 @@ deciders: {List of people}
 - **Cost**: {Why it matters}
 - **Security**: {Why it matters}
 
+> **Note:** Customize these drivers to match your specific decision context. Include only relevant drivers and optionally assign importance weights (e.g., "Critical", "High", "Medium"). Common variants:
+> - **Infrastructure decisions**: Add Reliability, Scalability, Availability, Operational Complexity
+> - **Data decisions**: Add Data Integrity, Compliance, Privacy, Backup/Recovery
+> - **UI/Frontend decisions**: Add Accessibility, User Experience, Performance, Browser Compatibility
+> - **Integration decisions**: Add Interoperability, Vendor Lock-in, API Stability
+
 ## Considered Options
 
 ### Option 1: {Name}
@@ -120,11 +126,11 @@ deciders: {List of people}
 
 ### Success Metrics
 
-| Metric | Current | Target | Measured By |
-|--------|---------|--------|-------------|
-| Performance | {value} | {value} | {tool/method} |
-| Adoption | 0% | 100% | {tool/method} |
-| Developer Satisfaction | {value} | {value} | Survey |
+| Metric                 | Current | Target  | Measured By   |
+| ---------------------- | ------- | ------- | ------------- |
+| Performance            | {value} | {value} | {tool/method} |
+| Adoption               | 0%      | 100%    | {tool/method} |
+| Developer Satisfaction | {value} | {value} | Survey        |
 
 ### Review Date
 
@@ -154,7 +160,9 @@ deciders: {List of people}
 
 ## ADR Template Usage
 
-1. **Copy this template** to `/docs/adr/adr-{NUMBER}-{title}.md`
+1. **Copy this template** to `{PROJECT_ADR_DIRECTORY}/adr-{NUMBER}-{title}.md`
+   - For this project: Store ADRs in `docs/adr/` or `specs/{feature-name}/adr/`
+   - Check your project structure for the designated ADR storage location
 2. **Replace placeholders** with actual content
 3. **Number sequentially** (001, 002, 003...)
 4. **Update status** as decision evolves
