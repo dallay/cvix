@@ -77,9 +77,13 @@ export class ContentSelectionPage extends BasePage {
 	 */
 	async toggleSectionCheckbox(sectionLabel: string | RegExp): Promise<void> {
 		const checkbox = this.getSectionCheckbox(sectionLabel);
+		const initialState = await checkbox.getAttribute("data-state");
 		await checkbox.click();
-		// Wait for state to update
-		await this.page.waitForTimeout(100);
+		// Wait for state to flip (deterministic, not timeout-based)
+		await expect(checkbox).not.toHaveAttribute(
+			"data-state",
+			initialState ?? "",
+		);
 	}
 
 	/**
@@ -89,8 +93,8 @@ export class ContentSelectionPage extends BasePage {
 		const section = this.getSectionByLabel(sectionLabel);
 		// Click on the section row (not the checkbox) to expand
 		await section.click();
-		// Wait for expansion animation
-		await this.page.waitForTimeout(200);
+		// Wait for expansion to complete (web-first assertion)
+		await expect(section).toHaveAttribute("aria-expanded", "true");
 	}
 
 	/**
@@ -131,10 +135,12 @@ export class ContentSelectionPage extends BasePage {
 		itemLabel: string | RegExp,
 	): Locator {
 		const section = this.getSectionByLabel(sectionLabel);
-		// Find the item row that contains the label, then get its checkbox
+		// Find the item row by label, then get its checkbox
+		// Use a more semantic approach instead of brittle CSS selectors
 		return section
 			.locator("..")
-			.locator(".space-y-1 > div")
+			.locator('[id^="item-"]')
+			.locator("..")
 			.filter({ hasText: itemLabel })
 			.locator('[data-slot="checkbox"]');
 	}
@@ -147,8 +153,13 @@ export class ContentSelectionPage extends BasePage {
 		itemIndex: number,
 	): Promise<void> {
 		const checkbox = this.getItemCheckbox(sectionLabel, itemIndex);
+		const initialState = await checkbox.getAttribute("data-state");
 		await checkbox.click();
-		await this.page.waitForTimeout(100);
+		// Wait for state to flip (deterministic, not timeout-based)
+		await expect(checkbox).not.toHaveAttribute(
+			"data-state",
+			initialState ?? "",
+		);
 	}
 
 	/**
@@ -159,8 +170,13 @@ export class ContentSelectionPage extends BasePage {
 		itemLabel: string | RegExp,
 	): Promise<void> {
 		const checkbox = this.getItemCheckboxByLabel(sectionLabel, itemLabel);
+		const initialState = await checkbox.getAttribute("data-state");
 		await checkbox.click();
-		await this.page.waitForTimeout(100);
+		// Wait for state to flip (deterministic, not timeout-based)
+		await expect(checkbox).not.toHaveAttribute(
+			"data-state",
+			initialState ?? "",
+		);
 	}
 
 	/**
@@ -217,10 +233,11 @@ export class ContentSelectionPage extends BasePage {
 	 */
 	async getCheckedItemCount(sectionLabel: string | RegExp): Promise<number> {
 		const section = this.getSectionByLabel(sectionLabel);
+		// Only count item checkboxes (exclude section checkbox)
 		const checkedItems = section
 			.locator("..")
-			.locator('[data-slot="checkbox"][data-state="checked"]');
-		return (await checkedItems.count()) - 1; // Subtract 1 for the section checkbox itself
+			.locator('[id^="item-"][data-state="checked"]');
+		return await checkedItems.count();
 	}
 
 	/**

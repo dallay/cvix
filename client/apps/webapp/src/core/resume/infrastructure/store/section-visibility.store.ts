@@ -193,7 +193,7 @@ export const useSectionVisibilityStore = defineStore(
 
 			const sectionVis = visibility.value[section] as ArraySectionVisibility;
 
-			// Determine current state based o items
+			// Determine current state based on items
 			const allSelected =
 				sectionVis.items.length > 0 && sectionVis.items.every(Boolean);
 			const isEnabled = sectionVis.enabled;

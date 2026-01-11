@@ -323,15 +323,24 @@ describe("PdfTemplateSelector", () => {
 			);
 			expect(sectionTitle).toBeInTheDocument();
 
-			// Verify dropdown aria-labels exist (icon-based design uses aria-labels)
-			const localeSelect = container.querySelector(
-				"[aria-label='Resume language selector']",
+			// Use semantic role-based queries instead of DOM queries
+			const localeSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume language selector/i,
+				},
 			);
-			const fontSelect = container.querySelector(
-				"[aria-label='Resume font selector']",
+			const fontSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume font selector/i,
+				},
 			);
-			const colorSelect = container.querySelector(
-				"[aria-label='Resume color selector']",
+			const colorSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume color selector/i,
+				},
 			);
 
 			expect(localeSelect).toBeInTheDocument();
@@ -358,8 +367,11 @@ describe("PdfTemplateSelector", () => {
 			});
 
 			// Language dropdown should have proper aria-label
-			const localeSelect = container.querySelector(
-				"[aria-label='Resume language selector']",
+			const localeSelect = within(container as HTMLElement).getByRole(
+				"combobox",
+				{
+					name: /resume language selector/i,
+				},
 			);
 			expect(localeSelect).toBeInTheDocument();
 		});

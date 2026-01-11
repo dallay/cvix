@@ -5,6 +5,7 @@ import { Check, Minus } from "lucide-vue-next";
 import type { CheckboxRootEmits, CheckboxRootProps } from "reka-ui";
 import { CheckboxIndicator, CheckboxRoot, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
+import { computed } from "vue";
 
 const props = defineProps<
 	CheckboxRootProps & {
@@ -40,6 +41,9 @@ const handleUpdate = (value: boolean | "indeterminate") => {
 	emits("update:checked", value);
 	emits("update:modelValue", value);
 };
+
+// Determine which icon to show based on checked state
+const isIndeterminate = computed(() => props.checked === "indeterminate");
 </script>
 
 <template>
@@ -57,7 +61,9 @@ const handleUpdate = (value: boolean | "indeterminate") => {
       class="flex items-center justify-center text-current transition-none"
     >
       <slot>
-        <Check class="size-3.5" />
+        <!-- Show minus icon for indeterminate, check for checked -->
+        <Minus v-if="isIndeterminate" class="size-3.5" />
+        <Check v-else class="size-3.5" />
       </slot>
     </CheckboxIndicator>
   </CheckboxRoot>

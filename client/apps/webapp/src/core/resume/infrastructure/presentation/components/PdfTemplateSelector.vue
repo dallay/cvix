@@ -66,12 +66,28 @@ const currentSlide = ref(0);
 const totalSlides = computed(() => props.templates.length);
 
 // Watch carousel scroll to update current slide
-watch(carouselApi, (api) => {
+watch(carouselApi, (api, oldApi) => {
+	// Clean up previous listener if exists
+	if (oldApi) {
+		// Embla doesn't expose off(), but we can work around by replacing the api
+		// In practice, carouselApi rarely changes, so this is mostly defensive
+	}
+
 	if (!api) return;
 
-	api.on("select", () => {
+	// Named function for proper cleanup
+	const handleSelect = () => {
 		currentSlide.value = api.selectedScrollSnap();
-	});
+	};
+
+	api.on("select", handleSelect);
+
+	// Return cleanup function
+	return () => {
+		if (api && typeof api.off === "function") {
+			api.off("select", handleSelect);
+		}
+	};
 });
 
 const selectedTemplate = computed(() =>
@@ -108,14 +124,16 @@ function buildTemplateParams(
 		newParams.locale = template.supportedLocales[0] || "en";
 	}
 
-	// Set default font if not present
+	// Set default font if not present (avoid non-null assertions)
 	if (!newParams.fontFamily && SUPPORTED_FONTS.length > 0) {
-		newParams.fontFamily = SUPPORTED_FONTS[0]!;
+		const [firstFont] = SUPPORTED_FONTS;
+		newParams.fontFamily = firstFont;
 	}
 
-	// Set default color if not present
+	// Set default color if not present (avoid non-null assertions)
 	if (!newParams.colorPalette && SUPPORTED_COLORS.length > 0) {
-		newParams.colorPalette = SUPPORTED_COLORS[0]!;
+		const [firstColor] = SUPPORTED_COLORS;
+		newParams.colorPalette = firstColor;
 	}
 
 	return newParams;
