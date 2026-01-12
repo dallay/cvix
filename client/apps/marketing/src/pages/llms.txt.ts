@@ -30,6 +30,7 @@ function generatePageList(
 			frontmatter: page.frontmatter,
 			slug: path.split("/").pop()?.replace(".mdx", "") ?? "",
 		}))
+		.filter(({ slug }) => slug.length > 0)
 		.filter(({ frontmatter }) => hasTitleAndDescription(frontmatter))
 		.map(({ frontmatter, slug }) => {
 			const pageUrl = new URL(`${lang}/${slug}`, siteUrl).toString();
@@ -50,7 +51,12 @@ export const GET: APIRoute = async () => {
 	const pagesRecord = await import.meta.glob("./(en|es)/*.mdx", {
 		eager: true,
 	});
-	const pages = Object.entries(pagesRecord) as [string, MdxPageModule][];
+	const pages = Object.entries(pagesRecord).filter(
+		(entry): entry is [string, MdxPageModule] =>
+			typeof entry[1] === "object" &&
+			entry[1] !== null &&
+			"frontmatter" in entry[1],
+	);
 
 	const lines = [
 		"# ProFileTailors",
