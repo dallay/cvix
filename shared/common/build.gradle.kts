@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(platform(libs.jackson.bom))
     implementation(libs.jackson.module.kotlin)
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)

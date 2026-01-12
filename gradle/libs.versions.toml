@@ -69,7 +69,8 @@ spring-security-core = { module = "org.springframework.security:spring-security-
 spring-security-oauth2-client = { module = "org.springframework.security:spring-security-oauth2-client", version.ref = "springSecurity" }
 spring-security-oauth2-jose = { module = "org.springframework.security:spring-security-oauth2-jose", version.ref = "springSecurity" }
 # Kotlin Libraries
-# Jackson 3 uses tools.jackson packages - versions managed by Spring Boot
+# Jackson 3 uses tools.jackson packages - versions managed by Spring Boot or Jackson BOM
+jackson-bom = { module = "tools.jackson:jackson-bom", version = "3.0.3" }
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
 reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.3.0" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }

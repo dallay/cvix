@@ -40,10 +40,17 @@ class SortParser<T : Any>(
     }
 
     private fun exportedPropertyName(property: KProperty<*>): String {
-        return objectMapper.propertyNamingStrategy?.nameForField(
-            objectMapper.serializationConfig,
-            AnnotatedField(null, property.javaField, null),
-            property.name,
-        ) ?: property.name
+        val config = objectMapper.serializationConfig()
+        val namingStrategy = config.propertyNamingStrategy
+        return if (namingStrategy != null && property.javaField != null) {
+            val annotatedField = AnnotatedField(null, property.javaField, null)
+            namingStrategy.nameForField(
+                config,
+                annotatedField,
+                property.name
+            )
+        } else {
+            property.name
+        }
     }
 }
