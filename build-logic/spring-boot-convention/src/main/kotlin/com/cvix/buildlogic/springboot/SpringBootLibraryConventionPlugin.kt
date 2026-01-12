@@ -28,8 +28,6 @@ class SpringBootLibraryConventionPlugin : ConventionPlugin {
 
             add(IMPLEMENTATION, catalogBundle("kotlin-jvm"))
 
-            add(IMPLEMENTATION, catalogBundle("jackson"))
-
             add("testImplementation", catalogBundle("spring-boot-test"))
         }
     }

@@ -31,7 +31,6 @@ class SpringBootConventionPlugin : ConventionPlugin {
             add(IMPLEMENTATION, catalogBundle("spring-boot"))
 
             add(IMPLEMENTATION, catalogBundle("kotlin-jvm"))
-            add(IMPLEMENTATION, catalogBundle("jackson"))
 
             add("developmentOnly", catalogBundle("spring-boot-dev"))
 
