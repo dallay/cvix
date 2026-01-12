@@ -1,7 +1,7 @@
 package com.cvix.spring.boot.presentation.filter
 
 import com.cvix.common.domain.presentation.filter.RHSFilterParser
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import kotlin.reflect.KClass
 import org.springframework.stereotype.Component
 

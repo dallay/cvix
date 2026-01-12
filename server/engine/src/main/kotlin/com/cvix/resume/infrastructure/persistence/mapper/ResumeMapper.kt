@@ -4,12 +4,12 @@ import com.cvix.resume.domain.Resume
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeDocumentId
 import com.cvix.resume.infrastructure.persistence.entity.ResumeEntity
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.core.JsonProcessingException
+import tools.jackson.databind.JsonMappingException
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.datatype.jsr310.JavaTimeModule
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import io.r2dbc.postgresql.codec.Json
 
 /**
@@ -28,13 +28,13 @@ object ResumeMapper {
         findAndRegisterModules()
         // Don't fail on unknown properties when deserializing
         configure(
-            com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+            tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
             false,
         )
         // CRITICAL: Write dates as ISO-8601 strings, NOT as arrays
         // Without this, LocalDate serializes as [2018, 9, 5] instead of "2018-09-05"
         configure(
-            com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+            tools.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
             false,
         )
         // Include non-null values only

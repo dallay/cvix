@@ -41,20 +41,20 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // SECURITY DEPENDENCIES
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.security:spring-security-oauth2-jose")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.liquibase:liquibase-core")
     implementation("org.springframework:spring-jdbc")
     implementation("org.springframework.modulith:spring-modulith-starter-core")
 
@@ -77,6 +77,7 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     runtimeOnly("org.postgresql:postgresql:42.7.8")

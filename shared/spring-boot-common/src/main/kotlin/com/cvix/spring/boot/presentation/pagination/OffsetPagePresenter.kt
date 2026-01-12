@@ -2,7 +2,7 @@ package com.cvix.spring.boot.presentation.pagination
 
 import com.cvix.common.domain.presentation.pagination.OffsetPageResponse
 import com.cvix.spring.boot.presentation.Presenter
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType

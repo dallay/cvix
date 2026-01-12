@@ -4,7 +4,7 @@ import com.cvix.common.domain.criteria.Criteria
 import com.cvix.common.domain.presentation.FilterInvalidException
 import com.cvix.common.domain.presentation.filter.RHSFilterParser
 import com.cvix.spring.boot.entity.Person
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.test.Test

@@ -1,6 +1,6 @@
 package com.cvix.spring.boot.presentation.sort
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import kotlin.reflect.KClass
 import org.springframework.stereotype.Component
 

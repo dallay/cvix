@@ -7,10 +7,10 @@ import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tools.jackson.core.JsonProcessingException
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
+import tools.jackson.module.kotlin.registerKotlinModule
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
 

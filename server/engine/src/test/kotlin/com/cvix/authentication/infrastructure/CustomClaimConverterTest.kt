@@ -2,9 +2,9 @@ package com.cvix.authentication.infrastructure
 
 import com.cvix.UnitTest
 import com.cvix.authentication.domain.Role
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
 import java.net.SocketTimeoutException
 import java.util.Map.entry
 import org.assertj.core.api.Assertions.assertThat

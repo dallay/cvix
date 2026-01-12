@@ -3,8 +3,8 @@ package com.cvix.spring.boot.presentation.sort
 import com.cvix.common.domain.presentation.SortInvalidException
 import com.cvix.common.domain.presentation.sort.Sort
 import com.cvix.spring.boot.repository.columnName
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.introspect.AnnotatedField
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.introspect.AnnotatedField
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties

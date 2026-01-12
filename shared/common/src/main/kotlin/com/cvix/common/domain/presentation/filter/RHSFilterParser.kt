@@ -2,7 +2,7 @@ package com.cvix.common.domain.presentation.filter
 
 import com.cvix.common.domain.criteria.Criteria
 import com.cvix.common.domain.presentation.FilterInvalidException
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties

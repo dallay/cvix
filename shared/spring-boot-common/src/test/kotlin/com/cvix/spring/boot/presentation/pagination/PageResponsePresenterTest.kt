@@ -2,10 +2,10 @@ package com.cvix.spring.boot.presentation.pagination
 
 import com.cvix.common.domain.presentation.pagination.OffsetPageResponse
 import com.cvix.spring.boot.entity.Person
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.KotlinFeature
+import tools.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.reactor.awaitSingle

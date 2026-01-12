@@ -1,7 +1,7 @@
 package com.cvix.spring.boot.presentation.sort
 
 import com.cvix.spring.boot.entity.Person
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
