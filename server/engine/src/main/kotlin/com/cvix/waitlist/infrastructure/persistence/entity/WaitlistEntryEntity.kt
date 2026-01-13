@@ -1,5 +1,6 @@
 package com.cvix.waitlist.infrastructure.persistence.entity
 
+import com.cvix.common.domain.AuditableEntityFields
 import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
 import java.io.Serializable
@@ -19,8 +20,8 @@ import org.springframework.data.relational.core.mapping.Table
  *
  * This entity represents a row in the `waitlist` table.
  *
- * Note: Does not extend AuditableEntity to avoid Spring Data R2DBC 4.0
- * duplicate column mapping issue with inherited properties.
+ * Note: Implements AuditableEntityFields instead of extending AuditableEntity
+ * to avoid Spring Data R2DBC 4.0 duplicate column mapping issue with inherited properties.
  */
 @Table("waitlist")
 data class WaitlistEntryEntity(
@@ -54,24 +55,28 @@ data class WaitlistEntryEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    val createdBy: String = "system",
+    override val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")
-    val createdAt: Instant,
+    override val createdAt: Instant,
 
     @LastModifiedBy
     @Column("updated_by")
     @get:Size(max = 50)
-    var updatedBy: String? = null,
+    override var updatedBy: String? = null,
 
     @LastModifiedDate
     @Column("updated_at")
-    var updatedAt: Instant? = null,
-) : Serializable, Persistable<UUID> {
+    override var updatedAt: Instant? = null,
+) : Serializable, Persistable<UUID>, AuditableEntityFields {
 
     override fun getId(): UUID = id
 
+    /**
+     * Determines if the entity is new.
+     * Uses isNewEntity() for waitlist entries which considers an entry new if it hasn't been updated.
+     */
     override fun isNew(): Boolean = updatedAt == null
 
     companion object {
