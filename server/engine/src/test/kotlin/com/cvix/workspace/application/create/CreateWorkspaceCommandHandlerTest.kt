@@ -2,6 +2,7 @@ package com.cvix.workspace.application.create
 
 import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
+import com.cvix.workspace.domain.WorkspaceFinderRepository
 import com.cvix.workspace.domain.WorkspaceRepository
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test
 internal class CreateWorkspaceCommandHandlerTest {
     private lateinit var eventPublisher: EventPublisher<WorkspaceCreatedEvent>
     private lateinit var workspaceRepository: WorkspaceRepository
+    private lateinit var workspaceFinderRepository: WorkspaceFinderRepository
     private lateinit var workspaceCreator: WorkspaceCreator
     private lateinit var createWorkspaceCommandHandler: CreateWorkspaceCommandHandler
     private lateinit var meterRegistry: SimpleMeterRegistry
@@ -26,12 +28,18 @@ internal class CreateWorkspaceCommandHandlerTest {
     fun setUp() {
         eventPublisher = mockk()
         workspaceRepository = mockk()
+        workspaceFinderRepository = mockk()
         meterRegistry = SimpleMeterRegistry()
         workspaceCreator = WorkspaceCreator(workspaceRepository, eventPublisher)
-        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(workspaceCreator, meterRegistry)
+        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(
+            workspaceCreator,
+            workspaceFinderRepository,
+            meterRegistry,
+        )
 
         coEvery { workspaceRepository.create(any()) } returns Unit
         coEvery { eventPublisher.publish(any<WorkspaceCreatedEvent>()) } returns Unit
+        coEvery { workspaceFinderRepository.findByOwnerId(any()) } returns emptyList()
     }
 
     @Test
