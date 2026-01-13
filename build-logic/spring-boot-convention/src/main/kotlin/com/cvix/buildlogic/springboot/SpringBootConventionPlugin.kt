@@ -19,8 +19,6 @@ class SpringBootConventionPlugin : ConventionPlugin {
         apply(plugin = catalogPlugin("kotlin-jvm").get().pluginId)
         apply(plugin = catalogPlugin("kotlin-spring").get().pluginId)
         apply(plugin = catalogPlugin("spring-boot").get().pluginId)
-        // NOTE: spring-dependency-management plugin removed - incompatible with Spring Boot 4.x
-        // Spring Boot 4 uses native Gradle BOM support via platform() dependencies
 
         with(extensions) {
             commonExtensions()

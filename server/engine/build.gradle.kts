@@ -124,9 +124,6 @@ dependencies {
     testImplementation("org.apache.pdfbox:pdfbox:2.0.35")
 }
 
-// Spring Boot 4 uses native Gradle BOM support via platform() dependencies
-// BOMs are imported in the dependencies block using platform() function
-
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
