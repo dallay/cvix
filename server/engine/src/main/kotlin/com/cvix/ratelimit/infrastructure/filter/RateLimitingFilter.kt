@@ -4,7 +4,7 @@ import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
-import tools.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer

@@ -37,6 +37,10 @@ dependencies {
     // L O C A L   D E P E N D E N C I E S
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
+    
+    // Spring Boot uses Jackson 2 for WebFlux codecs in Spring Boot 4.0.1
+    // We need to add Jackson Kotlin module explicitly for Jackson 2
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -51,7 +55,6 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation(libs.jackson.module.kotlin)
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -89,16 +92,17 @@ dependencies {
     // T E S T   D E P E N D E N C I E S
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.boot:spring-boot-webtestclient") // Required for Spring Boot 4 test annotations
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("io.rest-assured:spring-web-test-client")
+    testImplementation(libs.rest.assured.spring.web.test.client)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:r2dbc")
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.r2dbc)
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest)
@@ -111,6 +115,7 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        mavenBom(libs.jackson.bom.get().toString())
         // El BOM de Spring Security ahora se importa por convención
     }
 }

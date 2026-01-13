@@ -1,10 +1,10 @@
 package com.cvix.config
 
-import tools.jackson.databind.DeserializationFeature
-import tools.jackson.databind.ObjectMapper
-import tools.jackson.databind.SerializationFeature
-import tools.jackson.datatype.jsr310.JavaTimeModule
-import tools.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -39,24 +39,27 @@ class JacksonConfig : WebFluxConfigurer {
      */
     @Bean
     @Primary
-    fun objectMapper(): ObjectMapper = jacksonObjectMapper().apply {
+    fun objectMapper(): ObjectMapper {
+        // jacksonObjectMapper() already registers KotlinModule automatically in Jackson 3
+        val mapper = jacksonObjectMapper()
+        
         // Register Java 8 date/time module
-        registerModule(JavaTimeModule())
-        // Discover and register other modules (like Kotlin module)
-        findAndRegisterModules()
-
+        mapper.registerModule(JavaTimeModule())
+        
         // CRITICAL: Serialize dates as ISO-8601 strings, NOT as arrays
         // Without this, LocalDate serializes as [2018, 9, 5] instead of "2018-09-05"
-        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
         // Don't fail on unknown properties during deserialization
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
         // CRITICAL: Register Spring's ProblemDetail mixin for proper error response serialization.
         // This mixin uses @JsonAnyGetter/@JsonAnySetter to serialize custom properties
         // (errorCategory, timestamp, traceId, etc.) as top-level JSON fields.
         // Without this, ProblemDetail.setProperty() values would not appear in the response.
-        addMixIn(ProblemDetail::class.java, ProblemDetailJacksonMixin::class.java)
+        mapper.addMixIn(ProblemDetail::class.java, ProblemDetailJacksonMixin::class.java)
+        
+        return mapper
     }
 
     /**

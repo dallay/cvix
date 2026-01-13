@@ -1,9 +1,9 @@
 package com.cvix
 
-import tools.jackson.core.type.TypeReference
-import tools.jackson.databind.DeserializationFeature
-import tools.jackson.datatype.jsr310.JavaTimeModule
-import tools.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.io.InputStream
 

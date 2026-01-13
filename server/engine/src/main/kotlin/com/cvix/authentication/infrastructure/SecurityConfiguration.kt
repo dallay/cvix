@@ -152,7 +152,7 @@ class SecurityConfiguration(
             .redirectToHttps {
                     httpsRedirect ->
                 httpsRedirect.httpsRedirectWhen {
-                    it.request.headers.containsKey("X-Forwarded-Proto")
+                    it.request.headers.getFirst(X_FORWARDED_PROTO) != null
                 }
             }
             .headers { headers ->

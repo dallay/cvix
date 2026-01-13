@@ -6,7 +6,7 @@ import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
-import tools.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain

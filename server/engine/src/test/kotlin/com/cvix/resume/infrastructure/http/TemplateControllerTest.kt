@@ -6,7 +6,7 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
-import tools.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot

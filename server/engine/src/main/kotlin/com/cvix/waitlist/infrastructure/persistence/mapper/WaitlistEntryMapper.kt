@@ -7,10 +7,9 @@ import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
-import tools.jackson.core.JsonProcessingException
-import tools.jackson.databind.ObjectMapper
-import tools.jackson.module.kotlin.readValue
-import tools.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.core.JacksonException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
 
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory
  */
 object WaitlistEntryMapper {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
-    private val objectMapper = ObjectMapper().registerKotlinModule()
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
     /**
      * Converts a domain WaitlistEntry to a WaitlistEntryEntity.
@@ -30,7 +29,7 @@ object WaitlistEntryMapper {
         val metadataJson = this.metadata?.let {
             try {
                 Json.of(objectMapper.writeValueAsString(it))
-            } catch (e: JsonProcessingException) {
+            } catch (e: JacksonException) {
                 logger.error("Failed to serialize metadata for waitlist entry {}", this.id, e)
                 null
             }
@@ -58,8 +57,9 @@ object WaitlistEntryMapper {
     fun WaitlistEntryEntity.toDomain(): WaitlistEntry {
         val metadata: Map<String, Any>? = this.metadata?.let { json ->
             try {
-                objectMapper.readValue<Map<String, Any>>(json.asString())
-            } catch (e: JsonProcessingException) {
+                @Suppress("UNCHECKED_CAST")
+                objectMapper.readValue(json.asString(), Map::class.java) as Map<String, Any>
+            } catch (e: JacksonException) {
                 logger.error("Failed to parse metadata JSON for entry ${this.id}", e)
                 null
             }
