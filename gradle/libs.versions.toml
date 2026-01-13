@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.2.21"
-springBoot = "3.5.8"
+springBoot = "4.0.1"
 springdoc = "2.8.14"
 junit = "6.0.1"
 klint-plugin = "14.0.1"
