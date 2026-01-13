@@ -75,9 +75,10 @@ data class WaitlistEntryEntity(
 
     /**
      * Determines if the entity is new.
-     * Uses isNewEntity() for waitlist entries which considers an entry new if it hasn't been updated.
+     * Delegates to the interface's default implementation which checks if the entity
+     * has not been updated (updatedAt == null) or was just created (createdAt == updatedAt).
      */
-    override fun isNew(): Boolean = updatedAt == null
+    override fun isNew(): Boolean = isNewEntity()
 
     companion object {
         private const val serialVersionUID: Long = 1L
