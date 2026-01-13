@@ -30,12 +30,13 @@ internal class CreateWorkspaceCommandHandlerTest {
         workspaceRepository = mockk()
         workspaceFinderRepository = mockk()
         meterRegistry = SimpleMeterRegistry()
-        workspaceCreator = WorkspaceCreator(workspaceRepository, eventPublisher)
-        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(
-            workspaceCreator,
+        workspaceCreator = WorkspaceCreator(
+            workspaceRepository,
             workspaceFinderRepository,
             meterRegistry,
+            eventPublisher,
         )
+        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(workspaceCreator)
 
         coEvery { workspaceRepository.create(any()) } returns Unit
         coEvery { eventPublisher.publish(any<WorkspaceCreatedEvent>()) } returns Unit

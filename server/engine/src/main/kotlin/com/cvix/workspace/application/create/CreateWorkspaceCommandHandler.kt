@@ -2,12 +2,8 @@ package com.cvix.workspace.application.create
 
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.command.CommandHandler
-import com.cvix.users.domain.UserId
 import com.cvix.workspace.domain.Workspace
 import com.cvix.workspace.domain.WorkspaceException
-import com.cvix.workspace.domain.WorkspaceFinderRepository
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
 import org.slf4j.LoggerFactory
 
 /**
@@ -15,27 +11,16 @@ import org.slf4j.LoggerFactory
  * It implements the [CommandHandler] interface with [CreateWorkspaceCommand] as the command type.
  *
  * @property workspaceCreator The [WorkspaceCreator] used to create workspace.
- * @property workspaceFinderRepository The [WorkspaceFinderRepository] used to check for existing workspaces.
- * @property meterRegistry The [MeterRegistry] for metrics tracking.
  */
 @Service
 class CreateWorkspaceCommandHandler(
     private val workspaceCreator: WorkspaceCreator,
-    private val workspaceFinderRepository: WorkspaceFinderRepository,
-    private val meterRegistry: MeterRegistry,
 ) : CommandHandler<CreateWorkspaceCommand> {
-    private val dupDefaultWsIgnoredCounter by lazy {
-        Counter
-            .builder(METRIC_WS_DEFAULT_DUP_IGN)
-            .description("Count of ignored duplicate default workspace creations")
-            .register(meterRegistry)
-    }
 
     /**
      * Handles the creation of a workspace.
-     * It logs the creation process, creates a new workspace using the [WorkspaceCreator],
-     * and then creates the workspace. For default workspaces, it handles duplicate insertions
-     * gracefully to prevent race conditions by checking for existing workspaces first.
+     * It validates the command, creates the workspace domain entity, and delegates
+     * to the WorkspaceCreator service which handles idempotency and persistence.
      *
      * @param command The [CreateWorkspaceCommand] containing the information needed to create a workspace.
      */
@@ -44,32 +29,22 @@ class CreateWorkspaceCommandHandler(
 
         log.debug("Creating workspace with name: ${command.name}, isDefault: ${command.isDefault}")
 
-        // For default workspaces, check if one already exists to prevent race conditions
-        if (command.isDefault) {
-            val existingWorkspaces = workspaceFinderRepository.findByOwnerId(UserId(command.ownerId))
-            if (existingWorkspaces.isNotEmpty()) {
-                dupDefaultWsIgnoredCounter.increment()
-                log.info(
-                    "Default workspace already exists for user ${command.ownerId} " +
-                        "(found ${existingWorkspaces.size} workspace(s)), skipping creation",
-                )
-                return
-            }
-        }
-
         try {
-            val workspaceId = command.id
-            val ownerId = command.ownerId
-
             val workspace = Workspace.create(
-                id = workspaceId,
+                id = command.id,
                 name = command.name,
                 description = command.description,
-                ownerId = ownerId,
+                ownerId = command.ownerId,
                 isDefault = command.isDefault,
             )
-            workspaceCreator.create(workspace)
-            log.info("Successfully created workspace with id: ${command.id}")
+
+            val created = workspaceCreator.create(workspace)
+
+            if (created) {
+                log.info("Successfully created workspace with id: ${command.id}")
+            } else {
+                log.info("Workspace creation skipped for id: ${command.id} (duplicate default workspace)")
+            }
         } catch (exception: IllegalArgumentException) {
             log.error("Invalid UUID format in create workspace command: ${exception.message}")
             throw IllegalArgumentException("Invalid workspace or owner ID format", exception)
@@ -77,7 +52,6 @@ class CreateWorkspaceCommandHandler(
             // Fallback: For default workspaces, if we still hit a duplicate error (extreme race condition),
             // treat it as success since another concurrent request already created the workspace
             if (command.isDefault && isDuplicateDefaultWorkspaceError(exception)) {
-                dupDefaultWsIgnoredCounter.increment()
                 log.info(
                     "Race condition detected: default workspace already created for user ${command.ownerId} " +
                         "after initial check, treating as success",
@@ -128,6 +102,5 @@ class CreateWorkspaceCommandHandler(
 
     companion object {
         private val log = LoggerFactory.getLogger(CreateWorkspaceCommandHandler::class.java)
-        const val METRIC_WS_DEFAULT_DUP_IGN = "workspace.default.duplicate.ignored"
     }
 }
