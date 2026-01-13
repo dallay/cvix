@@ -6,12 +6,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.jdbc.Sql
+import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.jsonMapper
 import tools.jackson.module.kotlin.kotlinModule
 import tools.jackson.module.kotlin.readValue
 
 internal class ListResumeControllerUniqueOrderIntegrationTest : ControllerIntegrationTest() {
-    private val mapper = jsonMapper { addModule(kotlinModule()) }
+    private val mapper: JsonMapper = jsonMapper { addModule(kotlinModule()) }
 
     @Test
     @Sql(
