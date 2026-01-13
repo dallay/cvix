@@ -52,11 +52,9 @@ abstract class ControllerTest {
     /**
      * Builds a WebTestClient for controller testing with CSRF and mock JWT authentication.
      * Uses Spring Security 7's mockJwt() for simpler, more reliable testing.
+     * Static security context is already set up in @BeforeEach setUp().
      */
     protected fun buildWebTestClient(controller: ApiController): WebTestClient {
-        val jwtAuthenticationToken: JwtAuthenticationToken = jwtAuthenticationToken()
-        mockSecurity(jwtAuthenticationToken)
-
         return WebTestClient.bindToController(controller)
             .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
             .controllerAdvice(GlobalExceptionHandler(messageSource))
