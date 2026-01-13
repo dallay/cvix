@@ -33,6 +33,3 @@ pre-push:
       run: ./gradlew detektAll
     check_secrets:
       run: ./scripts/check-secrets.sh
-    shellcheck:
-      glob: "scripts/*.sh"
-      run: docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable scripts/*.sh

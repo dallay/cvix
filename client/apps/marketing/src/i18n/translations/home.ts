@@ -4,7 +4,7 @@ export const home: UIMultilingual = {
 	en: {
 		// SEO-optimized title and description (keyword-first)
 		"home.title":
-			"ATS-Optimized LaTeX Resume Builder | Professional Resume in 60s — ProfileTailors",
+			"ATS-Optimized LaTeX Resume Builder | Professional Resume in 60s — Civix",
 		"home.description":
 			"Create ATS-optimized, LaTeX-quality resumes in under 60 seconds. Built by engineers for tech professionals. No design skills needed. Join the waitlist.",
 		// Hero section
@@ -25,12 +25,12 @@ export const home: UIMultilingual = {
 		"hero.email.rateLimit": "Too many requests. Please try again later.",
 		"hero.email.privacy": "No spam, ever. Unsubscribe anytime.",
 		"hero.mockup.alt":
-			"ProfileTailors ATS resume builder interface showing LaTeX resume generation",
+			"Civix ATS resume builder interface showing LaTeX resume generation",
 	},
 	es: {
 		// SEO-optimized title and description (keyword-first)
 		"home.title":
-			"Generador de CVs LaTeX Optimizado para ATS | CV Profesional en 60s — ProfileTailors",
+			"Generador de CVs LaTeX Optimizado para ATS | CV Profesional en 60s — Civix",
 		"home.description":
 			"Crea CVs optimizados para ATS con calidad LaTeX en menos de 60 segundos. Hecho por ingenieros para profesionales tech. Sin habilidades de diseño. Únete a la lista de espera.",
 		// Sección Hero
@@ -52,6 +52,6 @@ export const home: UIMultilingual = {
 			"Demasiadas solicitudes. Intenta de nuevo más tarde.",
 		"hero.email.privacy": "Sin spam, nunca. Cancela cuando quieras.",
 		"hero.mockup.alt":
-			"Interfaz del generador de CVs ATS ProfileTailors mostrando generación de CV LaTeX",
+			"Interfaz del generador de CVs ATS Civix mostrando generación de CV LaTeX",
 	},
 };

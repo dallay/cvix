@@ -152,8 +152,7 @@ class SecurityConfiguration(
             .redirectToHttps {
                     httpsRedirect ->
                 httpsRedirect.httpsRedirectWhen {
-                    val forwardedProto = it.request.headers.getFirst(X_FORWARDED_PROTO)?.lowercase()
-                    forwardedProto != null && forwardedProto != "https"
+                    it.request.headers.containsKey("X-Forwarded-Proto")
                 }
             }
             .headers { headers ->
@@ -206,7 +205,6 @@ class SecurityConfiguration(
                 "/v3/api-docs/**", "/v3/api-docs.yaml",
             ).permitAll()
             .pathMatchers(HttpMethod.POST, "/api/waitlist").permitAll()
-            .pathMatchers(HttpMethod.POST, "/api/contact").permitAll()
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()

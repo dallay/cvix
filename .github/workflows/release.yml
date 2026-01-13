@@ -16,7 +16,6 @@ on:
 
 env:
   NODE_VERSION: "22"
-  TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
   REGISTRY_GHCR: ghcr.io
   REGISTRY_DOCKERHUB: docker.io
 
@@ -115,6 +114,7 @@ jobs:
             echo "| Patch    | ${{ steps.semantic.outputs.new_release_patch_version }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
+
   # ============================================================================
   # Docker Build & Push - Backend (Multi-Registry)
   # ============================================================================
@@ -135,49 +135,7 @@ jobs:
       - name: Setup Java and Gradle
         uses: ./.github/actions/setup/java
         with:
-          java-version: "24"
-
-      - name: Pre-pull TexLive Docker image
-        timeout-minutes: 10
-        run: |
-          echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
-
-          # Retry logic: attempt up to 5 times with linear backoff (10s, 20s, 30s, 40s, 50s)
-          for i in {1..5}; do
-            echo "Attempt $i/5: Pulling image..."
-            if docker pull ${{ env.TEXLIVE_IMAGE }}; then
-              echo "✅ Docker image pulled successfully"
-              docker images | grep texlive
-              break
-            fi
-
-            if [ $i -lt 5 ]; then
-              wait_time=$((10 * i))
-              echo "❌ Pull attempt $i failed, retrying in ${wait_time}s..."
-              sleep $wait_time
-            else
-              echo "❌ Failed to pull image after 5 attempts"
-              exit 1
-            fi
-          done
-
-      - name: Verify TexLive Image
-        run: |
-          echo "Verifying TexLive image is available..."
-          # Verify image is available (fail fast if missing)
-          if ! docker image inspect "${{ env.TEXLIVE_IMAGE }}" >/dev/null 2>&1; then
-            echo "ERROR: TexLive image ${{ env.TEXLIVE_IMAGE }} not found after pre-pull step"
-            echo "Available images:"
-            docker images
-            exit 1
-          fi
-          echo "✅ TexLive image verified: ${{ env.TEXLIVE_IMAGE }}"
-
-      - name: Warm up Docker with TexLive
-        run: |
-          echo "Warming up Docker by running a test command..."
-          docker run --rm ${{ env.TEXLIVE_IMAGE }} pdflatex --version
-          echo "Docker warmup successful - TexLive container can be launched"
+          java-version: "25"
 
       - name: Build JAR
         run: ./gradlew :server:engine:bootJar --no-daemon

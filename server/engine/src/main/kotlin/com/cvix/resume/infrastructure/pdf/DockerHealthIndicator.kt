@@ -2,8 +2,8 @@ package com.cvix.resume.infrastructure.pdf
 
 import com.github.dockerjava.api.DockerClient
 import org.slf4j.LoggerFactory
-import org.springframework.boot.health.contributor.Health
-import org.springframework.boot.health.contributor.HealthIndicator
+import org.springframework.boot.actuate.health.Health
+import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.stereotype.Component
 
 private const val UNKNOWN = "unknown"

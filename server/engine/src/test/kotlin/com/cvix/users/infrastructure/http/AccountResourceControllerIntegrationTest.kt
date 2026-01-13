@@ -4,30 +4,19 @@ import com.cvix.authentication.domain.AuthoritiesConstants
 import com.cvix.config.InfrastructureTestContainers
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.ApplicationContext
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/account"
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureWebTestClient
 class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() {
 
     @Autowired
-    private lateinit var applicationContext: ApplicationContext
-
-    private val webTestClient: WebTestClient by lazy {
-        WebTestClient.bindToApplicationContext(applicationContext)
-            .apply(springSecurity())
-            .configureClient()
-            .build()
-    }
+    private lateinit var webTestClient: WebTestClient
 
     @Test
     fun `should get account information successfully`() {

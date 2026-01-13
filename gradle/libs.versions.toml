@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.2.21"
-springBoot = "4.0.1"
-springdoc = "3.0.1"
+springBoot = "3.5.8"
+springdoc = "2.8.14"
 junit = "6.0.1"
 klint-plugin = "14.0.1"
 detekt = "1.23.8"
@@ -15,11 +15,11 @@ keycloak-admin-client = "26.0.0"
 kotest = "5.9.1"
 testcontainers = "1.21.3"
 testcontainers-keycloak = "3.4.0"
-rest-assured = "5.5.0"
 jsonwebtoken = "0.13.0"
 cucumber = "7.32.0"
 apacheCommon = "1.14.0"
-springSecurity = "7.0.2"  # Spring Security 7.x for Spring Boot 4.x
+jackson = "2.18.0"
+springSecurity = "6.5.7"
 bucket4j = "8.10.1"
 caffeine = "3.1.8"
 stringtemplate = "4.3.4"
@@ -54,15 +54,13 @@ spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-s
 springdoc-openapi-starter-webflux-ui = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
 springdoc-openapi-starter-webflux-api = { module = "org.springdoc:springdoc-openapi-starter-webflux-api", version.ref = "springdoc" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
-spring-boot-starter-aspectj = { module = "org.springframework.boot:spring-boot-starter-aspectj", version.ref = "springBoot" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop", version.ref = "springBoot" }
 # Spring Boot Dev
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose", version.ref = "springBoot" }
-spring-boot-properties-migrator = { module = "org.springframework.boot:spring-boot-properties-migrator", version.ref = "springBoot" }
 # Spring Boot Database
 spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc", version.ref = "springBoot" }
-spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springBoot" }
-spring-boot-starter-security-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server", version.ref = "springBoot" }
+spring-boot-starter-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server", version.ref = "springBoot" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "springBoot" }
 # SSO & Keycloak
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak-admin-client" }
@@ -70,14 +68,10 @@ spring-security-core = { module = "org.springframework.security:spring-security-
 spring-security-oauth2-client = { module = "org.springframework.security:spring-security-oauth2-client", version.ref = "springSecurity" }
 spring-security-oauth2-jose = { module = "org.springframework.security:spring-security-oauth2-jose", version.ref = "springSecurity" }
 # Kotlin Libraries
-# Jackson 3 uses tools.jackson packages - versions managed by Spring Boot or Jackson BOM
-# IMPORTANT: jackson-annotations still uses com.fasterxml.jackson.core in Jackson 3
-jackson-bom = { module = "tools.jackson:jackson-bom", version = "3.0.3" }
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
-jackson-core = { module = "tools.jackson.core:jackson-core" }
-jackson-databind = { module = "tools.jackson.core:jackson-databind" }
-jackson-datatype-jsr310 = { module = "tools.jackson.datatype:jackson-datatype-jsr310" }
-jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.3.0" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -110,10 +104,7 @@ kotest-testcontainers = { module = "io.kotest.extensions:kotest-extensions-testc
 # Testcontainers
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-testcontainers-r2dbc = { module = "org.testcontainers:r2dbc", version.ref = "testcontainers" }
 testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
-rest-assured-spring-web-test-client = { module = "io.rest-assured:spring-web-test-client", version.ref = "rest-assured" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
@@ -132,17 +123,14 @@ spring-boot = [
     "springdoc-openapi-starter-webflux-ui",
     "springdoc-openapi-starter-webflux-api",
     "spring-boot-starter-actuator",
-    "spring-boot-starter-aspectj",
+    "spring-boot-starter-aop",
 ]
-spring-boot-dev = ["spring-boot-devtools", "spring-boot-docker-compose", "spring-boot-properties-migrator"]
+spring-boot-dev = ["spring-boot-devtools", "spring-boot-docker-compose"]
 spring-boot-test = ["spring-boot-starter-test", "spring-security-test", "reactor-test", "cucumber-java"]
 spring-boot-database = [
     "spring-boot-starter-data-r2dbc",
-    "spring-boot-starter-liquibase",
-]
-spring-boot-security = [
+    "spring-boot-starter-oauth2-resource-server",
     "spring-boot-starter-security",
-    "spring-boot-starter-security-oauth2-resource-server",
 ]
 spring-boot-sso = [
     "keycloak-admin-client",
@@ -150,6 +138,7 @@ spring-boot-sso = [
     "spring-security-oauth2-client",
     "spring-security-oauth2-jose",
 ]
+jackson = ["jackson-annotations", "jackson-core", "jackson-databind", "jackson-module-kotlin"]
 kotlin-jvm = ["kotlin-reflect", "kotlinx-coroutines-reactor", "kotlinx-coroutines-slf4j", "reactor-kotlin-extensions", "reflections"]
 keycloak = [ "keycloak-admin-client"]
 kotest = ["kotest-assertions-core-jvm", "kotest-assertions-json", "kotest-runner-junit5", "kotest-testcontainers"]

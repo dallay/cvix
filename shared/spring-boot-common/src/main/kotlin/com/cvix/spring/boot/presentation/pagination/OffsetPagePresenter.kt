@@ -2,6 +2,7 @@ package com.cvix.spring.boot.presentation.pagination
 
 import com.cvix.common.domain.presentation.pagination.OffsetPageResponse
 import com.cvix.spring.boot.presentation.Presenter
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.HandlerResult
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import tools.jackson.databind.ObjectMapper
 
 @Suppress("UNCHECKED_CAST")
 @Component

@@ -3,7 +3,8 @@ package com.cvix.waitlist.infrastructure.persistence
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistRepository
-import com.cvix.waitlist.infrastructure.persistence.mapper.WaitlistEntryMapper
+import com.cvix.waitlist.infrastructure.persistence.mapper.WaitlistEntryMapper.toDomain
+import com.cvix.waitlist.infrastructure.persistence.mapper.WaitlistEntryMapper.toEntity
 import com.cvix.waitlist.infrastructure.persistence.repository.WaitlistR2dbcRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -14,12 +15,10 @@ import org.springframework.stereotype.Repository
  * This adapter implements the domain repository interface using Spring Data R2DBC.
  *
  * @property waitlistR2dbcRepository The Spring Data R2DBC repository.
- * @property waitlistEntryMapper The mapper for domain/entity conversions.
  */
 @Repository
 class WaitlistStoreR2dbcRepository(
     private val waitlistR2dbcRepository: WaitlistR2dbcRepository,
-    private val waitlistEntryMapper: WaitlistEntryMapper,
 ) : WaitlistRepository {
 
     /**
@@ -31,10 +30,10 @@ class WaitlistStoreR2dbcRepository(
     override suspend fun save(entry: WaitlistEntry): WaitlistEntry {
         logger.debug("Saving waitlist entry with ID: {}", entry.id.id)
         return try {
-            val entity = with(waitlistEntryMapper) { entry.toEntity() }
+            val entity = entry.toEntity()
             val savedEntity = waitlistR2dbcRepository.save(entity)
             logger.info("Successfully saved waitlist entry with ID: {}", entry.id.id)
-            with(waitlistEntryMapper) { savedEntity.toDomain() }
+            savedEntity.toDomain()
         } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
             logger.error("Failed to save waitlist entry with ID: {}", entry.id.id, error)
             throw error
@@ -51,7 +50,7 @@ class WaitlistStoreR2dbcRepository(
         logger.debug("Finding waitlist entry by email")
         val emailValue = email.value
         val entity = waitlistR2dbcRepository.findByEmail(emailValue)
-        return entity?.let { with(waitlistEntryMapper) { it.toDomain() } }
+        return entity?.toDomain()
     }
 
     /**

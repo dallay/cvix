@@ -118,7 +118,7 @@
 		"allRightsReserved": "Todos los derechos reservados."
 	},
 	"footer": {
-		"description": "CVs profesionales potenciados por LaTeX. Únete a la lista de espera para acceso anticipado a generación de CVs optimizados para ATS.",
+		"description": "Una plantilla inicial para SaaS lista para producción que agrupa autenticación, facturación, documentación y marketing para que los equipos avancen más rápido.",
 		"company": "Compañía",
 		"resources": "Recursos",
 		"legal": "Legal",
@@ -130,14 +130,6 @@
 		"rss": "Canal RSS",
 		"privacyPolicy": "Política de Privacidad",
 		"termsOfUse": "Términos de Uso"
-	},
-	"emailCaptureForm": {
-		"emailLabel": "Dirección de correo electrónico",
-		"emailPlaceholder": "Ingresa tu correo",
-		"buttonText": "Únete a la Lista",
-		"successMessage": "¡Te has unido a la lista de espera! Revisa tu correo.",
-		"errorMessage": "Error al enviar. Por favor intenta de nuevo.",
-		"rateLimitMessage": "Demasiadas solicitudes. Por favor intenta más tarde."
 	},
 	"actions": {
 		"getStarted": "Comenzar",

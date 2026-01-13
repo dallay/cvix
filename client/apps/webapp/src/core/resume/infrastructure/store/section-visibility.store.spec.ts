@@ -114,16 +114,16 @@ describe("useSectionVisibilityStore", () => {
 			expect(store.error).toBeNull();
 		});
 
-		it("should use stable default ID when resumeId is not provided (for localStorage persistence)", () => {
+		it("should generate a UUID if resumeId is not provided", () => {
 			const store = useSectionVisibilityStore();
 			const resume = createTestResume();
 
 			store.initialize(resume);
 
 			expect(store.visibility).not.toBeNull();
-			// Uses stable "default" ID instead of random UUID to ensure
-			// localStorage persistence works across page reloads
-			expect(store.visibility?.resumeId).toBe("default");
+			expect(store.visibility?.resumeId).toMatch(
+				/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+			);
 		});
 
 		it("should load saved preferences if available", () => {
@@ -197,8 +197,7 @@ describe("useSectionVisibilityStore", () => {
 			store.toggleSection("work");
 
 			expect(store.visibility?.work.enabled).toBe(false);
-			// Expanded state is now in expandedSections (UI-only)
-			expect(store.expandedSections.work).toBe(false);
+			expect(store.visibility?.work.expanded).toBe(false);
 		});
 
 		it("should toggle a section from disabled to enabled and enable all items", () => {
@@ -232,34 +231,32 @@ describe("useSectionVisibilityStore", () => {
 	});
 
 	describe("toggleSectionExpanded", () => {
-		it("should toggle expanded state for Personal Details (UI-only state)", () => {
+		it("should toggle expanded state for Personal Details", () => {
 			const store = useSectionVisibilityStore();
 			const resume = createTestResume();
 			store.initialize(resume, "test-resume-id");
 
-			// Expanded state is now in separate expandedSections ref (not visibility)
-			expect(store.expandedSections.personalDetails).toBe(false);
+			expect(store.visibility?.personalDetails.expanded).toBe(false);
 
 			store.toggleSectionExpanded("personalDetails");
 
-			expect(store.expandedSections.personalDetails).toBe(true);
+			expect(store.visibility?.personalDetails.expanded).toBe(true);
 
 			store.toggleSectionExpanded("personalDetails");
 
-			expect(store.expandedSections.personalDetails).toBe(false);
+			expect(store.visibility?.personalDetails.expanded).toBe(false);
 		});
 
-		it("should toggle expanded state for array sections when enabled (UI-only state)", () => {
+		it("should toggle expanded state for array sections when enabled", () => {
 			const store = useSectionVisibilityStore();
 			const resume = createTestResume();
 			store.initialize(resume, "test-resume-id");
 
-			// Expanded state is now in separate expandedSections ref (not visibility)
-			expect(store.expandedSections.work).toBe(false);
+			expect(store.visibility?.work.expanded).toBe(false);
 
 			store.toggleSectionExpanded("work");
 
-			expect(store.expandedSections.work).toBe(true);
+			expect(store.visibility?.work.expanded).toBe(true);
 		});
 
 		it("should not expand disabled sections", () => {
@@ -274,8 +271,8 @@ describe("useSectionVisibilityStore", () => {
 			// Try to expand
 			store.toggleSectionExpanded("work");
 
-			// Should remain collapsed (expandedSections is the UI state)
-			expect(store.expandedSections.work).toBe(false);
+			// Should remain collapsed
+			expect(store.visibility?.work.expanded).toBe(false);
 		});
 	});
 
@@ -309,8 +306,7 @@ describe("useSectionVisibilityStore", () => {
 
 			// Section should auto-disable
 			expect(store.visibility?.work.enabled).toBe(false);
-			// Expanded state is now in expandedSections (UI-only)
-			expect(store.expandedSections.work).toBe(false);
+			expect(store.visibility?.work.expanded).toBe(false);
 		});
 
 		it("should not modify item if index is out of bounds", () => {

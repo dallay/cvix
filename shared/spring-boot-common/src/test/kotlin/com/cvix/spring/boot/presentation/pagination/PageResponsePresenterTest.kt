@@ -2,6 +2,10 @@ package com.cvix.spring.boot.presentation.pagination
 
 import com.cvix.common.domain.presentation.pagination.OffsetPageResponse
 import com.cvix.spring.boot.entity.Person
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.reactor.awaitSingle
@@ -12,17 +16,20 @@ import org.springframework.mock.http.server.reactive.MockServerHttpResponse
 import org.springframework.web.reactive.HandlerResult
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import tools.jackson.core.type.TypeReference
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 
 @Suppress("ReactiveStreamsUnusedPublisher")
 internal class PageResponsePresenterTest {
-    private val jsonMapper: JsonMapper = jsonMapper {
-        addModule(kotlinModule())
-    }
-    private val offsetPagePresenter = OffsetPagePresenter(jsonMapper)
+    private val objectMapper = ObjectMapper().registerModule(
+        KotlinModule.Builder()
+            .withReflectionCacheSize(512)
+            .configure(KotlinFeature.NullToEmptyCollection, false)
+            .configure(KotlinFeature.NullToEmptyMap, false)
+            .configure(KotlinFeature.NullIsSameAsDefault, false)
+            .configure(KotlinFeature.SingletonSupport, false)
+            .configure(KotlinFeature.StrictNullChecks, false)
+            .build(),
+    )
+    private val offsetPagePresenter = OffsetPagePresenter(objectMapper)
 
     @Test
     fun present() = runTest {
@@ -49,7 +56,7 @@ internal class PageResponsePresenterTest {
         assertEquals(listOf(page.perPage.toString()), headers["Per-Page"])
 
         val body = serverResponse.bodyAsString.awaitSingle()
-            .let { jsonMapper.readValue(it, object : TypeReference<List<Person>>() {}) }
+            .let { objectMapper.readValue(it, object : TypeReference<List<Person>>() {}) }
         assertEquals(1, body.size)
         assertEquals(person, body[0])
     }

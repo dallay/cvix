@@ -8,9 +8,9 @@ import com.cvix.workspace.domain.Workspace
 import io.mockk.coEvery
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.security.core.authority.AuthorityUtils
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockAuthentication
 import org.springframework.test.web.reactive.server.WebTestClient
 
 internal class GetAllWorkspaceControllerTest : ControllerTest() {
@@ -29,17 +29,10 @@ internal class GetAllWorkspaceControllerTest : ControllerTest() {
 
     @Test
     fun `should get all workspaces`() {
+        val token = jwtAuthenticationToken()
         webTestClient
             .mutateWith(csrf())
-            .mutateWith(
-                mockJwt()
-                    .jwt { jwt ->
-                        jwt.subject(userId.toString())
-                            .claim("preferred_username", "test-user")
-                            .claim("roles", listOf("ROLE_USER"))
-                    }
-                    .authorities(AuthorityUtils.createAuthorityList("ROLE_USER")),
-            )
+            .mutateWith(mockAuthentication<SecurityMockServerConfigurers.JwtMutator>(token))
             .get()
             .uri("/api/workspace")
             .exchange()

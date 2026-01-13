@@ -48,11 +48,21 @@ import LogoLight from "@cvix/assets/logos/light-isotype.svg";
     fill="currentColor"
     class="relative flex-[0_0_auto] text-white hidden dark:block"
   />
-  <div class="inline-flex flex-col items-center justify-center relative flex-[0_0_auto]">
+  <div class="inline-flex flex-col items-end justify-center relative flex-[0_0_auto] -gap-1">
     <div
       class="relative w-fit text-xl font-semibold text-gray-800 dark:text-white whitespace-nowrap"
     >
       {siteTitle}
+    </div>
+    <div
+      class="relative w-fit font-normal text-xs leading-[140%] text-gray-600 dark:text-gray-400 whitespace-nowrap"
+    >
+      {
+        t({
+          en: "for Astrum",
+          es: "por Astrum",
+        })
+      }
     </div>
   </div>
 </a>

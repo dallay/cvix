@@ -18,7 +18,6 @@ on:
 
 env:
   NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
-  TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -202,82 +201,27 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup/java
       - name: Pre-pull TexLive Docker image
+        if: needs.changes.outputs.pdf == 'true' || github.event_name == 'push'
         timeout-minutes: 10
         run: |
-          echo "Pre-pulling TexLive Docker image (${{ env.TEXLIVE_IMAGE }}) for PDF generation tests..."
-
-          # Retry logic: attempt up to 5 times with exponential backoff
-          for i in {1..5}; do
-            echo "Attempt $i/5: Pulling image..."
-            if docker pull ${{ env.TEXLIVE_IMAGE }}; then
-              echo "✅ Docker image pulled successfully"
-              docker images | grep texlive
+          echo "Pre-pulling TexLive Docker image for PDF generation tests..."
+          for i in 1 2 3; do
+            if docker pull ghcr.io/dallay/texlive:2025; then
+              echo "Docker image pulled successfully"
               break
             fi
-
-            if [ $i -lt 5 ]; then
-              wait_time=$((10 * i))
-              echo "❌ Pull attempt $i failed, retrying in ${wait_time}s..."
-              sleep $wait_time
+            if [ $i -lt 3 ]; then
+              echo "Pull attempt $i failed, retrying in 10s..."
+              sleep 10
             else
-              echo "❌ Failed to pull image after 5 attempts"
+              echo "Failed to pull image after 3 attempts"
               exit 1
             fi
           done
-      - name: Configure Docker for Tests
-        run: |
-          echo "Configuring Docker environment for tests..."
-          # Verify image is available (fail fast if missing)
-          if ! docker image inspect "${{ env.TEXLIVE_IMAGE }}" >/dev/null 2>&1; then
-            echo "ERROR: TexLive image ${{ env.TEXLIVE_IMAGE }} not found after pre-pull step"
-            echo "Available images:"
-            docker images
-            exit 1
-          fi
-      - name: Warm up Docker with TexLive
-        run: |
-          echo "Warming up Docker by running a test command..."
-          docker run --rm --network host "${{ env.TEXLIVE_IMAGE }}" pdflatex --version
-          echo "Docker warmup successful - TexLive container can be launched"
-      - name: Verify Docker Daemon
-        run: |
-          echo "Verifying Docker daemon is accessible..."
-          docker ps
-          docker info
-          docker images | grep -E "(texlive|ubuntu)" || echo "⚠️  No base images found"
-          echo ""
-          echo "Docker configuration summary:"
-          echo "✅ Docker daemon: Connected"
-          echo "✅ Images available: $(docker images --quiet | wc -l) images"
-          echo "✅ Containers running: $(docker ps --quiet | wc -l) containers"
-      - name: Build with Gradle (no tests)
-        run: ./gradlew assemble --no-daemon -x test
-      - name: Detect Runner UID
-        id: runner-uid
-        shell: bash
-        run: |
-          set -euo pipefail
-          RUNNER_UID="$(id -u 2>/dev/null || true)"
-          if [ -z "$RUNNER_UID" ]; then
-            RUNNER_UID="1001"
-            echo "⚠️  Runner UID detection failed; falling back to UID: $RUNNER_UID"
-          else
-            echo "✅ Detected Runner UID: $RUNNER_UID"
-          fi
-          echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
+      - name: Build with Gradle
+        run: ./gradlew build -x test --no-daemon
       - name: Run tests
-        env:
-          DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
-          # GitHub Actions runner runs as a specific UID (detected above). The DockerPdfGenerator
-          # creates temp directories that must be readable by the container. By default, the container
-          # runs as user 999 (matching the backend Dockerfile's 'spring' user), but in CI
-          # we need to match the runner's UID so the container can access the mounted files.
-          RESUME_PDF_DOCKER_CONTAINER_USER: ${{ steps.runner-uid.outputs.uid }}
-        run: |
-          echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
-          echo "Container will run as UID: $RESUME_PDF_DOCKER_CONTAINER_USER"
-          ./gradlew test --no-daemon -i
-        timeout-minutes: 60
+        run: ./gradlew test --no-daemon
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         if: always()
@@ -399,8 +343,8 @@ jobs:
         uses: ./.github/actions/test-playwright
         with:
           browser: ${{ matrix.browser }}
-          upload-results: "true"
-          working-directory: "client/apps/webapp"
+          upload-results: 'true'
+          working-directory: 'client/apps/webapp'
 
   # ============================================================================
   # Codecov Status Comment - Posts sticky comment on coverage upload issues

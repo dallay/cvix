@@ -2,7 +2,7 @@
 # Caddy Configuration for Vue.js SPA
 # =============================================================================
 # Environment Variables (required):
-#   - CVIX_API_URL: Backend API endpoint (e.g., https://api.example.com)
+#   - BACKEND_URL: Backend API endpoint (e.g., https://api.example.com)
 #   - CSP_SCRIPT_SRC: CSP script-src directive (e.g., 'self' 'unsafe-inline')
 #   - CSP_STYLE_SRC: CSP style-src directive (e.g., 'self' 'unsafe-inline')
 #   - CSP_CONNECT_SRC: CSP connect-src for fetch/XHR/WebSocket origins
@@ -32,7 +32,6 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Content-Security-Policy "default-src 'self'; script-src {$CSP_SCRIPT_SRC}; style-src {$CSP_STYLE_SRC}; img-src 'self' data: https:; font-src 'self' data:; connect-src {$CSP_CONNECT_SRC}; frame-src 'self' blob:; frame-ancestors 'self'; object-src {$CSP_OBJECT_SRC}; base-uri 'self'; form-action 'self'"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
-		Cross-Origin-Opener-Policy "same-origin"
 		
 		# HSTS: Set here for direct HTTPS, but should be overridden at TLS terminator (Traefik/Ingress)
 		# in production to ensure consistent HSTS policy across all services
@@ -49,7 +48,7 @@
 	# Enables same-origin requests (no CORS issues) and runtime backend config
 	# ==========================================================================
 	handle /api/* {
-		reverse_proxy {$CVIX_API_URL} {
+		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
@@ -70,7 +69,7 @@
 	# OAuth2/Auth endpoints proxy
 	# ==========================================================================
 	handle /oauth2/* {
-		reverse_proxy {$CVIX_API_URL} {
+		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers
@@ -90,7 +89,7 @@
 	# Actuator endpoints proxy (health checks, metrics)
 	# ==========================================================================
 	handle /actuator/* {
-		reverse_proxy {$CVIX_API_URL} {
+		reverse_proxy {$BACKEND_URL} {
 			header_up Host {upstream_hostport}
 			header_up X-Real-IP {remote_host}
 			# Preserve existing X-Forwarded-For chain from upstream proxies/load balancers

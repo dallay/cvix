@@ -2,7 +2,7 @@
 /**
  * SectionTogglePanel Component
  *
- * Renders resume section toggles in a vertical accordion-style list.
+ * Renders resume section toggle pills in a fixed, non-reorderable list.
  * Section order is determined by SECTION_TYPES and matches the backend template.
  *
  * ⚠️ SECTION ORDER PRESERVATION (FR-009, US4):
@@ -15,6 +15,10 @@
  * See: client/apps/webapp/src/core/resume/domain/SectionVisibility.ts (SECTION_TYPES)
  * See: specs/005-pdf-section-selector/plan.md (FR-009)
  */
+import {
+	Collapsible,
+	CollapsibleContent,
+} from "@cvix/ui/components/ui/collapsible";
 import { useI18n } from "vue-i18n";
 
 import type { Resume } from "@/core/resume/domain/Resume";
@@ -27,7 +31,7 @@ import type {
 } from "@/core/resume/domain/SectionVisibility";
 
 import ItemToggleList from "./ItemToggleList.vue";
-import SectionAccordionItem from "./SectionAccordionItem.vue";
+import SectionTogglePill from "./SectionTogglePill.vue";
 
 interface Props {
 	/** The resume to derive section metadata from */
@@ -38,9 +42,6 @@ interface Props {
 
 	/** Section metadata for rendering (in SECTION_TYPES order) */
 	metadata: SectionMetadata[];
-
-	/** Expanded state for each section (UI-only, separate from visibility to prevent PDF re-renders) */
-	expandedSections: Record<SectionType, boolean>;
 }
 
 const props = defineProps<Props>();
@@ -55,6 +56,9 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 /**
+ * Prepares items for the ItemToggleList component.
+ */
+/**
  * Helper to safely access ArraySectionVisibility for a given section type.
  */
 const getArraySectionVisibility = (
@@ -66,9 +70,6 @@ const getArraySectionVisibility = (
 	] as ArraySectionVisibility;
 };
 
-/**
- * Prepares items for the ItemToggleList component.
- */
 const getItemsForSection = (section: SectionType) => {
 	if (section === "personalDetails") {
 		const fields = props.visibility.personalDetails.fields;
@@ -177,17 +178,17 @@ const handleTogglePersonalDetailsField = (index: number) => {
 };
 
 /**
- * Handles keyboard navigation for the section panel.
- * Supports arrow key navigation between sections.
+ * Handles keyboard navigation for the section pills panel.
+ * Supports arrow key navigation between pills.
  */
 const onPanelKeydown = (event: KeyboardEvent) => {
 	const target = event.target as HTMLElement;
-	const sectionRows = target
-		.closest("[role='list']")
-		?.querySelectorAll("[role='button']:not([aria-disabled='true'])");
-	if (!sectionRows || sectionRows.length === 0) return;
+	const pillButtons = target
+		.closest("ul")
+		?.querySelectorAll("button:not([disabled])");
+	if (!pillButtons || pillButtons.length === 0) return;
 
-	const currentIndex = Array.from(sectionRows).indexOf(
+	const currentIndex = Array.from(pillButtons).indexOf(
 		document.activeElement as Element,
 	);
 	if (currentIndex === -1) return;
@@ -195,12 +196,14 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 	let nextIndex: number;
 
 	switch (event.key) {
+		case "ArrowRight":
 		case "ArrowDown":
-			nextIndex = (currentIndex + 1) % sectionRows.length;
+			nextIndex = (currentIndex + 1) % pillButtons.length;
 			event.preventDefault();
 			break;
+		case "ArrowLeft":
 		case "ArrowUp":
-			nextIndex = (currentIndex - 1 + sectionRows.length) % sectionRows.length;
+			nextIndex = (currentIndex - 1 + pillButtons.length) % pillButtons.length;
 			event.preventDefault();
 			break;
 		case "Home":
@@ -208,89 +211,78 @@ const onPanelKeydown = (event: KeyboardEvent) => {
 			event.preventDefault();
 			break;
 		case "End":
-			nextIndex = sectionRows.length - 1;
+			nextIndex = pillButtons.length - 1;
 			event.preventDefault();
 			break;
 		default:
 			return;
 	}
 
-	(sectionRows[nextIndex] as HTMLElement).focus();
-};
-
-/**
- * Computes the checkbox state for a section (Checked, Unchecked, or Indeterminate).
- */
-const getSectionState = (
-	section: SectionMetadata,
-): boolean | "indeterminate" => {
-	// Personal Details is special
-	if (section.type === "personalDetails") {
-		return props.visibility.personalDetails.enabled;
-	}
-
-	// If section has no data, it's strictly unchecked (or disabled)
-	if (section.itemCount === 0) {
-		return false;
-	}
-
-	// Calculate state based on items
-	if (section.visibleItemCount === 0) {
-		return false;
-	}
-
-	if (section.visibleItemCount === section.itemCount) {
-		return true;
-	}
-
-	return "indeterminate";
+	(pillButtons[nextIndex] as HTMLElement).focus();
 };
 </script>
 
 <template>
-	<div class="space-y-2" role="list" aria-label="Resume sections" @keydown="onPanelKeydown">
-		<template v-for="section in metadata" :key="section.type">
-			<!-- Personal Details Section -->
-			<template v-if="section.type === 'personalDetails'">
-				<SectionAccordionItem
-					:label="t(section.labelKey)"
-					:checked-state="getSectionState(section)"
-					:has-data="section.hasData"
-					:expanded="expandedSections.personalDetails"
-					:visible-count="section.visibleItemCount"
-					:total-count="section.itemCount"
-					:disabled-tooltip="!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined"
-					@toggle="handleToggleSection('personalDetails')"
-					@expand="handleExpandSection('personalDetails')"
-				>
-					<ItemToggleList
-						v-if="section.hasData"
-						:items="getItemsForSection(section.type)"
-						@toggle-item="handleTogglePersonalDetailsField"
-					/>
-				</SectionAccordionItem>
-			</template>
+	<div class="space-y-4">
+		<!-- Section Pills - Horizontal layout -->
+		<ul
+			class="flex flex-wrap gap-2 list-none p-0 m-0"
+			aria-label="Resume sections"
+			@keydown="onPanelKeydown"
+		>
+			<template v-for="(section, idx) in metadata" :key="section.type">
+				<!-- Personal Details - always shows as enabled, can expand to show fields -->
+				<template v-if="section.type === 'personalDetails'">
+					<Collapsible as="li" :open="visibility.personalDetails.expanded">
+						<SectionTogglePill
+							:label="t(section.labelKey)"
+							:enabled="visibility.personalDetails.enabled"
+							:has-data="section.hasData"
+							:expanded="visibility.personalDetails.expanded"
+							:aria-posinset="1"
+							:aria-setsize="metadata.length"
+							@toggle="handleToggleSection('personalDetails')"
+							@expand="handleExpandSection('personalDetails')"
+						/>
+						<CollapsibleContent v-if="section.hasData" class="mt-3 w-full">
+							<ItemToggleList
+								:items="getItemsForSection(section.type)"
+								@toggle-item="handleTogglePersonalDetailsField"
+							/>
+						</CollapsibleContent>
+					</Collapsible>
+				</template>
 
-			<!-- Array Sections (Work, Education, etc.) -->
-			<template v-else>
-				<SectionAccordionItem
-					:label="t(section.labelKey)"
-					:checked-state="getSectionState(section)"
-					:has-data="section.hasData"
-					:expanded="expandedSections[section.type]"
-					:visible-count="section.visibleItemCount"
-					:total-count="section.itemCount"
-					:disabled-tooltip="!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined"
-					@toggle="handleToggleSection(section.type)"
-					@expand="handleExpandSection(section.type)"
-				>
-					<ItemToggleList
-						v-if="section.hasData"
-						:items="getItemsForSection(section.type)"
-						@toggle-item="(index) => handleToggleItem(section.type as ArraySectionType, index)"
-					/>
-				</SectionAccordionItem>
+				<!-- Array Sections -->
+				<template v-else>
+					<Collapsible
+						as="li"
+						:open="getArraySectionVisibility(section.type)?.expanded"
+					>
+						<SectionTogglePill
+							:label="t(section.labelKey)"
+							:enabled="getArraySectionVisibility(section.type)?.enabled ?? false"
+							:has-data="section.hasData"
+							:expanded="getArraySectionVisibility(section.type)?.expanded"
+							:visible-count="section.visibleItemCount"
+							:total-count="section.itemCount"
+							:aria-posinset="idx + 1"
+							:aria-setsize="metadata.length"
+							:disabled-tooltip="
+								!section.hasData ? t('resume.pdfPage.noDataAvailable') : undefined
+							"
+							@toggle="handleToggleSection(section.type)"
+							@expand="handleExpandSection(section.type)"
+						/>
+						<CollapsibleContent v-if="section.hasData" class="mt-3 w-full">
+							<ItemToggleList
+								:items="getItemsForSection(section.type)"
+								@toggle-item="(index) => handleToggleItem(section.type as ArraySectionType, index)"
+							/>
+						</CollapsibleContent>
+					</Collapsible>
+				</template>
 			</template>
-		</template>
+		</ul>
 	</div>
 </template>

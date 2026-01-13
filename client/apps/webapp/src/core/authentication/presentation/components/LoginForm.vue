@@ -122,8 +122,8 @@ const handleOAuthLogin = (provider: string) => {
           <FormItem class="flex flex-row items-center space-x-2 space-y-0">
             <FormControl>
               <Checkbox
-                :model-value="value"
-                @update:model-value="handleChange"
+                :checked="value"
+                @update:checked="handleChange"
                 :disabled="isSubmitting"
               />
             </FormControl>

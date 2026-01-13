@@ -5,23 +5,23 @@ include:
 
 services:
   postgresql:
-    image: postgres:${POSTGRESQL_VERSION:-18.1}
+    image: postgres:${POSTGRESQL_VERSION:-16.9-alpine}
     container_name: postgresql-${APP_NAME}
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: ${POSTGRESQL_DB}
     shm_size: 128mb
     ports:
       - '5432:5432'
     volumes:
-      - ./data:/var/lib/postgresql
+      - ./data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5

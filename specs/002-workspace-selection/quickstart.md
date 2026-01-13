@@ -213,7 +213,7 @@ Configure the backend API endpoint:
 
 ```bash
 # .env.local
-CVIX_API_URL=https://localhost:8443
+BACKEND_URL=https://localhost:8443
 ```
 
 ### Local Storage

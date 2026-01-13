@@ -1,11 +1,12 @@
 ---
+import Layout from "@cvix/astro-ui/components/layouts/default-layout/DefaultLayout.astro";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
+import { getOgImagePath } from "@cvix/lib";
 import AuthorProfileCard from "@/components/AuthorProfileCard.astro";
 import PageHeadline from "@/components/PageHeadline.astro";
 import Pagination from "@/components/Pagination.astro";
 import { useTranslations } from "@/i18n/i18n";
-import Layout from "@/layouts/Layout.astro";
 import { countArticlesByAuthor, getAuthors } from "@/models/author";
 
 const { lang } = Astro.params;
@@ -38,9 +39,16 @@ export const getStaticPaths = () =>
 	Object.keys(LOCALES).map((lang) => ({
 		params: { lang },
 	}));
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
 ---
 
-<Layout title={title} description={description}>
+<Layout title={title} description={description} {og} >
 	<PageHeadline
 		title={title}
 		subtitle={subtitle}

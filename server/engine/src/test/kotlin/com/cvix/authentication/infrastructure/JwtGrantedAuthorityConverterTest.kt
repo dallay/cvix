@@ -3,22 +3,21 @@ package com.cvix.authentication.infrastructure
 import com.cvix.UnitTest
 import com.cvix.authentication.domain.Role
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jose.jws.JwsAlgorithms
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
 private const val SUBJECT = "cvix"
 
 @UnitTest
+@ExtendWith(SpringExtension::class)
 internal class JwtGrantedAuthorityConverterTest {
-    private lateinit var jwtGrantedAuthorityConverter: JwtGrantedAuthorityConverter
-
-    @BeforeEach
-    fun setUp() {
-        jwtGrantedAuthorityConverter = JwtGrantedAuthorityConverter()
-    }
+    @InjectMocks
+    lateinit var jwtGrantedAuthorityConverter: JwtGrantedAuthorityConverter
 
     @Test
     fun shouldConvert() {

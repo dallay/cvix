@@ -6,6 +6,7 @@ import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
@@ -27,9 +28,6 @@ import org.springframework.mock.web.server.MockServerWebExchange
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 
 /**
  * Unit tests for RateLimitingFilter.
@@ -49,17 +47,17 @@ internal class RateLimitingFilterTest {
     private lateinit var filter: RateLimitingFilter
     private lateinit var rateLimitingService: RateLimitingService
     private lateinit var configurationFactory: BucketConfigurationFactory
-    private lateinit var jsonMapper: JsonMapper
+    private lateinit var objectMapper: ObjectMapper
     private lateinit var chain: WebFilterChain
 
     @BeforeEach
     fun setUp() {
         rateLimitingService = mockk()
         configurationFactory = mockk()
-        jsonMapper = jsonMapper { addModule(kotlinModule()) }
+        objectMapper = ObjectMapper()
         chain = mockk()
 
-        filter = RateLimitingFilter(rateLimitingService, jsonMapper, configurationFactory)
+        filter = RateLimitingFilter(rateLimitingService, objectMapper, configurationFactory)
 
         // Default mocks
         every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.AUTH) } returns true

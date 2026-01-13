@@ -7,11 +7,8 @@ spring:
   jackson:
     # CRITICAL: Serialize dates as ISO-8601 strings, NOT as arrays
     # Without this, LocalDate serializes as [2018, 9, 5] instead of "2018-09-05"
-    # NOTE: In Jackson 3 (Spring Boot 4), WRITE_DATES_AS_TIMESTAMPS moved from
-    # SerializationFeature to DateTimeFeature, so we use datatype.datetime instead
-    datatype:
-      datetime:
-        write-dates-as-timestamps: false
+    serialization:
+      write-dates-as-timestamps: false
     # Also configure date format explicitly for consistency
     date-format: yyyy-MM-dd
   messages:
@@ -180,12 +177,6 @@ application:
         capacity: 10
         refill-tokens: 10
         refill-duration: 1m
-  contact:
-    webhook-url: ${CONTACT_WEBHOOK_URL}
-    header-api-key: YAP-AUTH-TOKEN
-    api-key: ${CONTACT_API_KEY}
-    form-token-id: ${CONTACT_FORM_TOKEN_ID}
-    hcaptcha-secret-key: ${HCAPTCHA_SECRET_KEY}
 management:
   endpoints:
     web:
@@ -248,7 +239,7 @@ resume:
   pdf:
     docker:
       # Use the full texlive image which includes pdflatex
-      image: ${PDF_DOCKER_IMAGE:dallay/texlive:2025}
+      image: ${PDF_DOCKER_IMAGE:ghcr.io/dallay/texlive:2025}
       max-concurrent-containers: ${PDF_MAX_CONCURRENT_CONTAINERS:10}
       timeout-seconds: ${PDF_TIMEOUT_SECONDS:30}
       memory-limit-mb: ${PDF_MEMORY_LIMIT_MB:512}

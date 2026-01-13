@@ -3,7 +3,6 @@ package com.cvix.config
 import com.cvix.IntegrationTest
 import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
-import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
@@ -72,6 +71,7 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
+
         /**
          * Unique suffix for test container names. Can be overridden via system property
          * `tc.name.suffix` to support container reuse across test runs.
@@ -90,7 +90,7 @@ abstract class InfrastructureTestContainers {
 
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
-            KeycloakContainer("keycloak/keycloak:${getEnvOrDefault("KEYCLOAK_VERSION", "26.2.3")}")
+            KeycloakContainer("keycloak/keycloak:25.0")
                 .withRealmImportFile("keycloak/demo-realm-test.json")
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
@@ -101,7 +101,7 @@ abstract class InfrastructureTestContainers {
 
         @JvmStatic
         private val greenMailContainer: GenericContainer<*> = GenericContainer<Nothing>(
-            DockerImageName.parse("greenmail/standalone:${getEnvOrDefault("GREENMAIL_VERSION", "2.1.8")}"),
+            DockerImageName.parse("greenmail/standalone:2.0.0"),
         ).apply {
             withEnv(
                 "GREENMAIL_OPTS",

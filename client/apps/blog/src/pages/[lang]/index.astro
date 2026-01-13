@@ -1,13 +1,13 @@
 ---
 import { CVIX_WEBAPP_URL } from "astro:env/client";
-import { Button } from "@cvix/astro-ui";
+import { Button, BaseLayout as Layout } from "@cvix/astro-ui";
 import { LOCALES } from "@cvix/i18n";
+import { getOgImagePath } from "@cvix/lib";
 import BlogSearch from "@/components/BlogSearch.vue";
 import FeaturedPost from "@/components/FeaturedPost.astro";
 import GridContainer from "@/components/GridContainer.astro";
 import Pagination from "@/components/Pagination.astro";
 import { type Lang, useTranslations } from "@/i18n/i18n.ts";
-import Layout from "@/layouts/Layout.astro";
 import { getArticles } from "@/models/article";
 
 const { lang } = Astro.params;
@@ -36,9 +36,16 @@ export const getStaticPaths = () =>
 	Object.keys(LOCALES).map((lang) => ({
 		params: { lang },
 	}));
+
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
 ---
 
-<Layout title={title} description={subtitle}>
+<Layout title={title} description={subtitle} {og}>
   <Button slot="header-cta" href={`${CVIX_WEBAPP_URL}/login`} class="hidden md:inline-flex">
     {
       t({

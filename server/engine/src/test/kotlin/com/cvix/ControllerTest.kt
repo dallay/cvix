@@ -18,8 +18,9 @@ import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.JwtMutator
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockAuthentication
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
@@ -49,27 +50,21 @@ abstract class ControllerTest {
         every { messageSource.getMessage(any<String>(), any(), any<String>(), any<Locale>()) } answers { thirdArg() }
     }
 
-    /**
-     * Builds a WebTestClient for controller testing with CSRF and mock JWT authentication.
-     * Uses Spring Security 7's mockJwt() for simpler, more reliable testing.
-     * Static security context is already set up in @BeforeEach setUp().
-     */
     protected fun buildWebTestClient(controller: ApiController): WebTestClient {
+        val jwtAuthenticationToken: JwtAuthenticationToken = jwtAuthenticationToken()
+        mockSecurity(jwtAuthenticationToken)
+
         return WebTestClient.bindToController(controller)
             .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
             .controllerAdvice(GlobalExceptionHandler(messageSource))
-            .configureClient()
+            .apply {
+                csrf()
+            }.apply {
+                mockAuthentication<JwtMutator>(jwtAuthenticationToken)
+            }
             .build()
             .mutateWith(csrf())
-            .mutateWith(
-                mockJwt()
-                    .jwt { jwt ->
-                        jwt.subject(userId.toString())
-                            .claim("preferred_username", "test-user")
-                            .claim("roles", listOf("ROLE_USER"))
-                    }
-                    .authorities(AuthorityUtils.createAuthorityList("ROLE_USER")),
-            )
+            .mutateWith(mockAuthentication(jwtAuthenticationToken))
     }
 
     private fun mockSecurity(jwtToken: JwtAuthenticationToken = jwtAuthenticationToken()) {

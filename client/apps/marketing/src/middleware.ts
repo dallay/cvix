@@ -28,7 +28,7 @@ const STATIC_EXTENSIONS = new Set([
 /**
  * Path prefixes to skip i18n processing
  */
-const SKIP_PATH_PREFIXES = ["/_astro/", "/_image", "/admin", "/cdn-cgi/"];
+const SKIP_PATH_PREFIXES = ["/_astro/", "/admin", "/cdn-cgi/"];
 
 /**
  * Middleware to redirect non-localized paths to the default locale

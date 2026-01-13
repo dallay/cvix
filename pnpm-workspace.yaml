@@ -2,6 +2,7 @@ packages:
   - client/apps/*
   - client/packages/*
   - client/config
+  - docs
 
 catalog:
   '@astrojs/check': ^0.9.6
@@ -15,7 +16,7 @@ catalog:
   '@iconify-json/heroicons': ^1.2.1
   '@iconify-json/openmoji': ^1.2.19
   '@iconify-json/ph': ^1.2.2
-  '@iconify-json/tabler': ^1.2.26
+  '@iconify-json/tabler': ^1.2.25
   '@iconify/utils': ^2.1.33
   '@internationalized/date': ^3.10.1
   '@playwright/test': ^1.57.0
@@ -41,7 +42,7 @@ catalog:
   lucide-vue-next: ^0.562.0
   mdast-util-to-string: ^4.0.0
   npm-run-all2: ^8.0.4
-  oxlint: ^1.37.0
+  oxlint: ^1.35.0
   postcss: ^8.5.6
   reading-time: ^1.5.0
   reka-ui: ^2.7.0
@@ -62,7 +63,7 @@ catalog:
   vue: ^3.5.26
   vue-sonner: ^2.0.9
   vue-tsc: ^3.2.1
-  zod: ^3.23.8
+  zod: ^4.2.1
 
 catalogs:
   peers:

@@ -12,7 +12,7 @@ SUBJECT="Test email from script"
 BODY="This is a test email sent from the test-email.sh script"
 
 # Send email using SMTP directly
-if curl --url smtp://localhost:3025 \
+curl --url smtp://localhost:3025 \
      --mail-from $FROM \
      --mail-rcpt $TO \
      --upload-file - << EOF
@@ -24,7 +24,9 @@ Content-Type: text/plain; charset=utf-8
 
 $BODY
 EOF
-then
+
+# Check the result
+if [ $? -eq 0 ]; then
   echo "✅ Email sent successfully"
   echo "You can view the email in the GreenMail web interface: http://localhost:8080"
 else

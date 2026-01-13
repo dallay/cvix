@@ -1,4 +1,5 @@
 ---
+import Layout from "@cvix/astro-ui/components/layouts/base-layout/BaseLayout.astro";
 import { LOCALES } from "@cvix/i18n";
 import {
 	type Lang,
@@ -6,7 +7,7 @@ import {
 	SUPPORTED_LOCALES,
 	useTranslations,
 } from "@cvix/i18n/astro";
-import Layout from "@/layouts/Layout.astro";
+import { getOgImagePath } from "@cvix/lib";
 
 const t = useTranslations(Astro.currentLocale as Lang);
 
@@ -19,10 +20,17 @@ const description = t({
 	en: "The page you are looking for could not be found.",
 	es: "La página que estás buscando no se pudo encontrar.",
 });
+const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
+	.href;
+const og = {
+	image: ogImage,
+	xAccount: "@yacosta738",
+};
+
 export const getStaticPaths = () => localeParams;
 ---
 
-<Layout title={title} description={description} >
+<Layout {title} {description} {og} >
   <section class="text-center p-8 rounded-2xl min-w-screen flex justify-center items-center flex-col mt-24">
     <h1 class="text-caution text-2xl">
       <b class="block text-9xl font-black -tracking-wider opacity-60">404</b>

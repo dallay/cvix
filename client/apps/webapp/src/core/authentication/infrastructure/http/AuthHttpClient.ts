@@ -55,13 +55,13 @@ interface UserResponse {
 export class AuthHttpClient extends BaseHttpClient {
 	/**
 	 * Construct the AuthHttpClient.
-	 * Reads only CVIX_API_URL from environment variables.
+	 * Reads only BACKEND_URL from environment variables.
 	 */
 	constructor(baseURL?: string) {
 		const envRecord = import.meta.env as unknown as Record<string, unknown>;
-		const backend = envRecord.CVIX_API_URL as string | undefined;
+		const backend = envRecord.BACKEND_URL as string | undefined;
 
-		// Prioritize explicit baseURL, fallback to CVIX_API_URL, then default
+		// Prioritize explicit baseURL, fallback to BACKEND_URL, then default
 		const candidate = baseURL ?? backend ?? "/api";
 
 		// Ensure /api path is appended if needed

@@ -23,15 +23,13 @@
 	"packageManager": "pnpm@10.27.0",
 	"exports": {
 		".": "./index.ts",
-		"./env": "./env.ts",
 		"./styles/global.css": "./src/styles/global.css",
 		"./components/*": "./src/components/*",
 		"./*": "./src/*"
 	},
 	"files": [
 		"src",
-		"index.ts",
-		"env.ts"
+		"index.ts"
 	],
 	"publishConfig": {
 		"access": "public",

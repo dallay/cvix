@@ -2,6 +2,9 @@ package com.cvix.authentication.infrastructure
 
 import com.cvix.UnitTest
 import com.cvix.authentication.domain.Role
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import java.net.SocketTimeoutException
 import java.util.Map.entry
 import org.assertj.core.api.Assertions.assertThat
@@ -19,10 +22,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import tools.jackson.databind.node.ArrayNode
-import tools.jackson.databind.node.ObjectNode
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 
 private const val CLAIM_URL = "https://profiletailors.com"
 
@@ -219,7 +218,7 @@ internal class CustomClaimConverterTest {
         }
 
         companion object {
-            private val json = jsonMapper { addModule(kotlinModule()) }
+            private val json = ObjectMapper()
         }
     }
 

@@ -8,18 +8,22 @@ import java.time.Instant
 import java.util.Collections
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
+import org.springframework.stereotype.Component
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 
-class AuthenticationSteps(
-    private var webTestClient: WebTestClient
-) {
+@Component
+class AuthenticationSteps {
 
     private val users: Map<String, User> = UsersBuilder()
         .add("admin", Role.ADMIN)
         .add("user", Role.USER)
         .build()
+
+    @Autowired
+    private lateinit var webTestClient: WebTestClient
 
     @Given("I am logged in as {string}")
     fun authenticateUser(username: String) {

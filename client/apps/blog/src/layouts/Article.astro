@@ -1,6 +1,6 @@
 ---
-import { AHREFS_KEY, CVIX_WEBAPP_URL } from "astro:env/client";
-import { Analytics, Button, DefaultLayout as Layout } from "@cvix/astro-ui";
+import { CVIX_WEBAPP_URL } from "astro:env/client";
+import { Button, DefaultLayout as Layout } from "@cvix/astro-ui";
 import { getOgImagePath } from "@cvix/lib";
 import HeaderProgressBar from "@/components/HeaderProgressBar.astro";
 import { type Lang, useTranslations } from "@/i18n/i18n.ts";
@@ -50,5 +50,4 @@ const og = {
   <article class="py-28">
     <slot />
   </article>
-  <Analytics key={AHREFS_KEY} slot="analytics"/>
 </Layout>

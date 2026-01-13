@@ -43,7 +43,7 @@ application:
         - account
         - api://default
     cors:
-      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:7766, https://localhost:7766, http://localhost:9876, https://localhost:9876}
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:9876, https://localhost:9876}
       allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
       allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers, X-Requested-With, X-Xsrf-Token, X-New-Header}
       exposed-headers: ${CORS_EXPOSED_HEADERS:Access-Control-Allow-Origin,Access-Control-Allow-Credentials}

@@ -19,6 +19,7 @@ class SpringBootConventionPlugin : ConventionPlugin {
         apply(plugin = catalogPlugin("kotlin-jvm").get().pluginId)
         apply(plugin = catalogPlugin("kotlin-spring").get().pluginId)
         apply(plugin = catalogPlugin("spring-boot").get().pluginId)
+        apply(plugin = catalogPlugin("spring-dependency-management").get().pluginId)
 
         with(extensions) {
             commonExtensions()
@@ -30,6 +31,7 @@ class SpringBootConventionPlugin : ConventionPlugin {
             add(IMPLEMENTATION, catalogBundle("spring-boot"))
 
             add(IMPLEMENTATION, catalogBundle("kotlin-jvm"))
+            add(IMPLEMENTATION, catalogBundle("jackson"))
 
             add("developmentOnly", catalogBundle("spring-boot-dev"))
 

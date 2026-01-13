@@ -1,0 +1,249 @@
+# SOP: Adding Database Migrations
+
+> Step-by-step procedure for creating and applying Liquibase database migrations.
+
+## Prerequisites
+
+- Ensure you have access to the development database
+- Understand the schema change you need to make
+- Review existing migrations for naming conventions
+
+---
+
+## Procedure
+
+### 1. Determine Migration Type
+
+| Type               | Naming Pattern                   | Example                                  |
+|--------------------|----------------------------------|------------------------------------------|
+| New feature schema | `NNN-feature-name.yaml`          | `005-user-preferences.yaml`              |
+| Triggers           | `NNNa-feature-triggers.yaml`     | `005a-user-preferences-triggers.yaml`    |
+| RLS policies       | `NNNb-feature-rls.yaml`          | `005b-user-preferences-rls.yaml`         |
+| Constraints        | `NNNc-feature-constraints.yaml`  | `005c-user-preferences-constraints.yaml` |
+| Dev/Test data      | `999NNNNN-data-description.yaml` | `99900002-data-dev-preferences.yaml`     |
+
+### 2. Create Migration File
+
+Location: `server/engine/src/main/resources/db/changelog/migrations/`
+
+```yaml
+databaseChangeLog:
+  - changeSet:
+      id: "005-user-preferences-create-table"
+      author: "your-name"
+      changes:
+        - createTable:
+            tableName: user_preferences
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_preferences_user
+                    references: users(id)
+              - column:
+                  name: theme
+                  type: varchar(50)
+                  defaultValue: 'light'
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+```
+
+### 3. Add RLS Policy (If Workspace-Scoped)
+
+Create a separate file: `005b-user-preferences-rls.yaml`
+
+```yaml
+databaseChangeLog:
+  - changeSet:
+      id: "005b-user-preferences-enable-rls"
+      author: "your-name"
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE user_preferences ENABLE ROW LEVEL SECURITY;
+              ALTER TABLE user_preferences FORCE ROW LEVEL SECURITY;
+
+              CREATE POLICY workspace_isolation ON user_preferences
+                USING (workspace_id = current_setting('cvix.current_workspace', true)::uuid)
+                WITH CHECK (workspace_id = current_setting('cvix.current_workspace', true)::uuid);
+      rollback:
+        - sql:
+            sql: |
+              DROP POLICY IF EXISTS workspace_isolation ON user_preferences;
+              ALTER TABLE user_preferences NO FORCE ROW LEVEL SECURITY;
+              ALTER TABLE user_preferences DISABLE ROW LEVEL SECURITY;
+```
+
+### 4. Add Index for RLS Performance
+
+```yaml
+  - changeSet:
+      id: "005-user-preferences-index-workspace-id"
+      author: "your-name"
+      changes:
+        - createIndex:
+            tableName: user_preferences
+            indexName: idx_user_preferences_workspace_id
+            columns:
+              - column:
+                  name: workspace_id
+```
+
+### 5. Update Master Changelog
+
+Edit `server/engine/src/main/resources/db/changelog/master.yaml`:
+
+```yaml
+databaseChangeLog:
+  # ... existing includes ...
+  - include:
+      file: migrations/005-user-preferences.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migrations/005b-user-preferences-rls.yaml
+      relativeToChangelogFile: true
+```
+
+### 6. Test Migration
+
+```bash
+# Run migrations locally
+./gradlew :server:engine:bootRun
+
+# Or run Liquibase directly
+./gradlew :server:engine:liquibaseUpdate
+
+# Verify in database
+psql -h localhost -U postgres -d cvix -c "\d user_preferences"
+```
+
+### 7. Create Rollback (If Complex)
+
+For complex changes, include rollback instructions:
+
+```yaml
+  - changeSet:
+      id: "005-user-preferences-create-table"
+      author: "your-name"
+      changes:
+        - createTable:
+            # ... table definition ...
+      rollback:
+        - dropTable:
+            tableName: user_preferences
+```
+
+---
+
+## Checklist
+
+- [ ] Migration file follows naming convention
+- [ ] Changeset has unique `id` and `author`
+- [ ] UUID used for primary keys
+- [ ] Appropriate indexes created
+- [ ] RLS policy added (if workspace-scoped)
+- [ ] Index on RLS policy columns
+- [ ] Added to `master.yaml` in correct order
+- [ ] Tested on clean database
+- [ ] Tested on database with existing data
+- [ ] Rollback defined (if applicable)
+- [ ] Documented in `changelog/README.md` (if significant)
+
+---
+
+## Common Pitfalls
+
+| Issue                     | Solution                                           |
+|---------------------------|----------------------------------------------------|
+| Migration already applied | Never modify applied migrations; create a new one  |
+| Missing RLS               | Always add RLS for workspace-scoped tables         |
+| Poor index coverage       | Index columns used in WHERE clauses and JOINs      |
+| Large data migrations     | Split into smaller changesets with proper batching |
+
+---
+
+## Dual Driver Strategy (R2DBC + JDBC)
+
+This project uses **reactive R2DBC** for database operations but Liquibase requires **traditional JDBC**. We solve this with the "Dual Driver Strategy":
+
+### How It Works
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                     Application Startup                          │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Spring Boot initializes Liquibase with JDBC connection       │
+│     └─► LIQUIBASE_URL=jdbc:postgresql://host:5432/db            │
+│  2. Liquibase runs all pending migrations (blocking)             │
+│  3. JDBC connection pool closes after migrations complete        │
+│  4. Application starts with R2DBC for reactive operations        │
+│     └─► DATABASE_URL=r2dbc:postgresql://host:5432/db            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+
+Two separate database URLs are required:
+
+| Variable         | Protocol | Purpose                              |
+|------------------|----------|--------------------------------------|
+| `DATABASE_URL`   | `r2dbc:` | Reactive database operations         |
+| `LIQUIBASE_URL`  | `jdbc:`  | Schema migrations (Liquibase only)   |
+
+Both URLs point to the same database, just with different drivers.
+
+### Environment Variables
+
+```bash
+# R2DBC for reactive operations
+DATABASE_URL=r2dbc:postgresql://postgresql:5432/cvix
+
+# JDBC for Liquibase migrations
+LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/cvix
+
+# Shared credentials
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=changeme
+```
+
+### Why Two Drivers?
+
+| Aspect           | R2DBC                          | JDBC                              |
+|------------------|--------------------------------|-----------------------------------|
+| **Paradigm**     | Non-blocking, reactive         | Blocking, synchronous             |
+| **Use case**     | Application runtime operations | Schema migrations, DDL statements |
+| **Liquibase**    | ❌ Not supported               | ✅ Required                       |
+| **Spring Data**  | `R2dbcRepository`              | `JpaRepository`                   |
+
+### Dependencies
+
+The following dependencies enable the dual driver strategy (already configured in `build.gradle.kts`):
+
+```kotlin
+// Reactive stack
+implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+implementation("org.postgresql:r2dbc-postgresql")
+
+// Liquibase with JDBC
+implementation("org.liquibase:liquibase-core")
+implementation("org.springframework:spring-jdbc")
+runtimeOnly("org.postgresql:postgresql")  // JDBC driver
+```
+
+### Bean Initialization Order
+
+Spring Boot 3.x automatically ensures Liquibase completes before R2DBC repositories initialize. Manual `@DependsOn("liquibase")` annotations are **not required** unless you're manually creating `ConnectionFactory` beans outside of Spring Boot autoconfiguration.

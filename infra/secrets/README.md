@@ -15,14 +15,12 @@ echo -n "my-secret-value" > client_secret.txt
 
 The following secret files must be present for the backend service to function correctly:
 
-- `database_password.txt` - PostgreSQL database password (required for R2DBC and Liquibase)
 - `client_secret.txt` - OAuth2 client secret for authentication
 - `admin_realm_password.txt` - Keycloak admin realm password
 - `sendgrid_api_key.txt` - SendGrid API key for email notifications
 - `smtp_username.txt` - SMTP username for email service
 - `smtp_password.txt` - SMTP password for email service
 - `ssl_keystore_password.txt` - SSL keystore password (if using TLS)
-- `waitlist_ip_hmac_secret.txt` - HMAC secret for waitlist IP validation
 
 ## Verification
 
@@ -57,14 +55,12 @@ For local development, you can use placeholder values:
 
 ```bash
 # Quick setup for local dev
-echo -n "dev-database-password" > database_password.txt
 echo -n "dev-client-secret" > client_secret.txt
 echo -n "dev-admin-password" > admin_realm_password.txt
 echo -n "SENDGRID_API_KEY_PLACEHOLDER" > sendgrid_api_key.txt
 echo -n "developer" > smtp_username.txt
 echo -n "secret" > smtp_password.txt
 echo -n "changeit" > ssl_keystore_password.txt
-echo -n "dev-waitlist-hmac-secret" > waitlist_ip_hmac_secret.txt
 
 # Set restrictive permissions
 chmod 600 *.txt

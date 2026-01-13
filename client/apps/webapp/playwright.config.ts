@@ -19,9 +19,11 @@ const useHarMocking =
 // Choose a safe backend target for local Playwright runs to avoid Vite proxying to
 // an unavailable HTTPS dev backend (e.g., https://localhost:8443). Priority:
 // 1. PLAYWRIGHT_BACKEND_URL (explicit override for tests)
-// 2. CVIX_API_URL (with HTTP fallback for stability)
+// 2. BACKEND_URL (if provided)
+// 3. CVIX_API_URL with HTTP (fallback for tests - replaces https with http for stability)
 const defaultBackendForTests =
 	process.env.PLAYWRIGHT_BACKEND_URL ??
+	process.env.BACKEND_URL ??
 	(() => {
 		try {
 			const url = new URL(CVIX_API_URL);
@@ -106,7 +108,7 @@ export default defineConfig({
 		reuseExistingServer: !process.env.CI,
 		ignoreHTTPSErrors: true, // Required for self-signed certificates
 		env: {
-			CVIX_API_URL: defaultBackendForTests,
+			BACKEND_URL: defaultBackendForTests,
 			FORCE_HTTP: useHttp ? "true" : "false",
 			PLAYWRIGHT_TEST: "true",
 		},

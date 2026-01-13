@@ -187,8 +187,8 @@ const hasProjects = computed(() => projects.value.length > 0);
 						<div class="flex items-center gap-2">
 							<Checkbox
 								:id="`project-current-${projectIndex}`"
-								:model-value="isCurrent(project)"
-								@update:model-value="toggleCurrent(projectIndex)"
+								:checked="isCurrent(project)"
+								@update:checked="toggleCurrent(projectIndex)"
 							/>
 							<FieldLabel
 								:for="`project-current-${projectIndex}`"
