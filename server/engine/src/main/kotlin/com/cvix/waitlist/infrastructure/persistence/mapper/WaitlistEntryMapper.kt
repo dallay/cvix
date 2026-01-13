@@ -10,6 +10,7 @@ import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
 import tools.jackson.core.JacksonException
+import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.jsonMapper
 import tools.jackson.module.kotlin.kotlinModule
@@ -25,6 +26,9 @@ object WaitlistEntryMapper {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
     private val jsonMapper: JsonMapper = jsonMapper {
         addModule(kotlinModule())
+        // Align with application-wide config - don't fail on unknown properties
+        // in metadata JSON stored in the database
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
     }
 
     /**
@@ -67,7 +71,7 @@ object WaitlistEntryMapper {
                 @Suppress("UNCHECKED_CAST")
                 jsonMapper.readValue(json.asString(), Map::class.java) as Map<String, Any>
             } catch (e: JacksonException) {
-                logger.error("Failed to parse metadata JSON for entry ${this.id}", e)
+                logger.error("Failed to parse metadata JSON for entry {}", this.id, e)
                 null
             }
         }
