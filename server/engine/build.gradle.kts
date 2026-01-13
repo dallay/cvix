@@ -31,7 +31,7 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2025.1.0"
-extra["springModulithVersion"] = "2.0.1"  // Spring Modulith 2.x for Spring Boot 4.x
+extra["springModulithVersion"] = "2.0.1" // Spring Modulith 2.x for Spring Boot 4.x
 
 dependencies {
     // B O M s   (Spring Boot 4 native Gradle BOM support)
@@ -53,7 +53,7 @@ dependencies {
     // L O C A L   D E P E N D E N C I E S
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
-    
+
     // Spring Boot 4 uses Jackson 3 (tools.jackson) by default
     // Jackson Kotlin module is now tools.jackson.module:jackson-module-kotlin
     implementation("tools.jackson.module:jackson-module-kotlin")
@@ -109,8 +109,8 @@ dependencies {
     // T E S T   D E P E N D E N C I E S
     // Spring Boot 4 modular test starters - each technology has its own test starter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")  // Replaces separate webflux test deps
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test") // Replaces spring-security-test
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation(libs.rest.assured.spring.web.test.client)

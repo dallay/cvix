@@ -4,14 +4,14 @@ import com.cvix.common.domain.criteria.Criteria
 import com.cvix.common.domain.presentation.FilterInvalidException
 import com.cvix.common.domain.presentation.filter.RHSFilterParser
 import com.cvix.spring.boot.entity.Person
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.test.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 class RHSFilterParserTest {
     private data class TestCase(

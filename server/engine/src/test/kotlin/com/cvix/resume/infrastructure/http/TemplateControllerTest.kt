@@ -6,9 +6,6 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
@@ -16,6 +13,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.reactive.server.WebTestClient
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 internal class TemplateControllerTest : ControllerTest() {
     private val controller = TemplateController(mediator)

@@ -4,7 +4,6 @@ import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
-import tools.jackson.databind.json.JsonMapper
 import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
@@ -15,6 +14,7 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * WebFlux filter for rate limiting endpoints based on configured strategies.

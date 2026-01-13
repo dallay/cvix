@@ -104,7 +104,7 @@ abstract class ControllerIntegrationTest : InfrastructureTestContainers() {
         password: String = testPassword,
     ): JwtAuthenticationToken {
         val token = getAccessToken(username, password)?.token
-            ?: throw IllegalStateException("Failed to obtain access token from Keycloak")
+            ?: error("Failed to obtain access token from Keycloak")
 
         val jwtDecoder: NimbusJwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri) as NimbusJwtDecoder
         val jwt = jwtDecoder.decode(token)

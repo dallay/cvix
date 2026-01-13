@@ -2,10 +2,6 @@ package com.cvix.spring.boot.presentation.pagination
 
 import com.cvix.common.domain.presentation.pagination.OffsetPageResponse
 import com.cvix.spring.boot.entity.Person
-import tools.jackson.core.type.TypeReference
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.reactor.awaitSingle
@@ -16,6 +12,10 @@ import org.springframework.mock.http.server.reactive.MockServerHttpResponse
 import org.springframework.web.reactive.HandlerResult
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 @Suppress("ReactiveStreamsUnusedPublisher")
 internal class PageResponsePresenterTest {

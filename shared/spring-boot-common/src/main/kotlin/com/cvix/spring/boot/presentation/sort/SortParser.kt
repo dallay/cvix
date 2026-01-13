@@ -3,12 +3,12 @@ package com.cvix.spring.boot.presentation.sort
 import com.cvix.common.domain.presentation.SortInvalidException
 import com.cvix.common.domain.presentation.sort.Sort
 import com.cvix.spring.boot.repository.columnName
-import tools.jackson.databind.ObjectMapper
-import tools.jackson.databind.introspect.AnnotatedField
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.introspect.AnnotatedField
 
 class SortParser<T : Any>(
     private val clazz: KClass<T>,
@@ -47,7 +47,7 @@ class SortParser<T : Any>(
             namingStrategy.nameForField(
                 config,
                 annotatedField,
-                property.name
+                property.name,
             )
         } else {
             property.name

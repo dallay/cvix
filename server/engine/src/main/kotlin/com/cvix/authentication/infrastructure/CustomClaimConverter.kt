@@ -3,12 +3,12 @@ package com.cvix.authentication.infrastructure
 import com.cvix.authentication.infrastructure.ClaimExtractor.CLAIM_APPENDERS
 import com.cvix.authentication.infrastructure.ClaimExtractor.SUB
 import com.cvix.common.domain.Memoizers
-import tools.jackson.databind.node.ObjectNode
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import tools.jackson.databind.node.ObjectNode
 
 /**
  * CustomClaimConverter is a class that implements the [Converter] interface to convert a map of claims
