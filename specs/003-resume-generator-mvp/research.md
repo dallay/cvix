@@ -250,7 +250,7 @@ class DockerPdfGeneratorAdapter(
 
     suspend fun generatePdf(latexContent: String): ByteArray {
         // 1. Create temporary container with resource limits
-        val containerId = dockerClient.createContainerCmd("ghcr.io/dallay/texlive:2025")
+        val containerId = dockerClient.createContainerCmd("dallay/texlive:2025")
             .withName("pdf-gen-${UUID.randomUUID()}")
             .withHostConfig(
                 HostConfig.newHostConfig()

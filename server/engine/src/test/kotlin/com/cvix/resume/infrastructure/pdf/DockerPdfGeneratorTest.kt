@@ -36,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir
  * Tests PDF generation, security validation, and Docker interaction.
  */
 @UnitTest
-class DockerPdfGeneratorTest {
+internal class DockerPdfGeneratorTest {
 
     private lateinit var dockerClient: DockerClient
     private lateinit var properties: DockerPdfGeneratorProperties
@@ -52,7 +52,7 @@ class DockerPdfGeneratorTest {
     fun setUp() {
         dockerClient = mockk(relaxed = true)
         properties = DockerPdfGeneratorProperties(
-            image = "ghcr.io/dallay/texlive:2025", // Updated to match the specific version
+            image = "dallay/texlive:2025", // Updated to match the specific version
             maxConcurrentContainers = 10,
             timeoutSeconds = 30,
             memoryLimitMb = 512,
@@ -233,7 +233,7 @@ class DockerPdfGeneratorTest {
     @Test
     fun `should throw timeout exception when container execution exceeds limit`() {
         properties = DockerPdfGeneratorProperties(
-            image = "ghcr.io/dallay/texlive:2025",
+            image = "dallay/texlive:2025",
             maxConcurrentContainers = 1,
             timeoutSeconds = 1,
             memoryLimitMb = 512,

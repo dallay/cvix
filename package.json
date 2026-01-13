@@ -1,6 +1,6 @@
 {
 	"name": "cvix",
-	"version": "3.4.0",
+	"version": "3.11.2",
 	"description": "cvix monorepo",
 	"private": true,
 	"type": "module",
@@ -79,9 +79,9 @@
 	},
 	"devDependencies": {
 		"@astrojs/vue": "catalog:",
-		"@biomejs/biome": "^2.3.10",
-		"@commitlint/cli": "^20.2.0",
-		"@commitlint/config-conventional": "^20.2.0",
+		"@biomejs/biome": "^2.3.11",
+		"@commitlint/cli": "^20.3.0",
+		"@commitlint/config-conventional": "^20.3.0",
 		"@eslint/json": "^0.14.0",
 		"@playwright/test": "catalog:",
 		"@semantic-release/changelog": "^6.0.3",

@@ -63,12 +63,14 @@ infra/
 
 All required environment variables are documented in `.env.example`. Key variables:
 
-- `BACKEND_URL`: Backend API URL
+- `CVIX_API_URL`: Backend API URL
 - `DATABASE_URL`: PostgreSQL connection string
 - `KEYCLOAK_URL`: Keycloak authentication server URL
 - `CORS_ALLOWED_ORIGINS`: Frontend origins for CORS
 - `CSP_SCRIPT_SRC`: Content Security Policy script-src directive
 - `CSP_STYLE_SRC`: Content Security Policy style-src directive
+- `CSP_CONNECT_SRC`: Content Security Policy connect-src directive
+- `CSP_OBJECT_SRC`: Content Security Policy object-src directive
 
 **⚠️ Security Notes:**
 

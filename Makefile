@@ -40,7 +40,7 @@ MARKDOWNLINT_CMD := npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config 
 
 # Provides help information for the available commands.
 help:
-	@cat docs/MAKE_HELP.md
+	@cat MAKE_HELP.md
 
 # ------------------------------------------------------------------------------------
 # DEPENDENCY MANAGEMENT
@@ -299,7 +299,7 @@ endef
 # Helper function for parallel verification steps
 # Usage: $(call verify_step, step_num, description, command, log_name)
 define verify_step
-	@echo "⏳ [$(1)/8] $(2)..." && \
+	@echo "⏳ [$(1)/10] $(2)..." && \
 	mkdir -p $(LOG_DIR) && \
 	$(3) > $(LOG_DIR)/$(4).log 2>&1 && \
 	echo "✅ $(2): PASSED" || \
@@ -307,20 +307,26 @@ define verify_step
 endef
 
 # Individual verification targets (for parallel execution)
-.PHONY: _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml
+.PHONY: _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml
 .PHONY: _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
 
+_verify-frontend-build:
+	$(call verify_step,1,Building frontend applications,$(PNPM) build,pnpm-build)
+
+_verify-backend-build:
+	$(call verify_step,2,Building backend,./gradlew --no-daemon assemble < /dev/null,backend-build)
+
 _verify-frontend-check:
-	$(call verify_step,1,Running frontend checks (Biome),$(PNPM) check,frontend-check)
+	$(call verify_step,3,Running frontend checks (Biome),$(PNPM) check,frontend-check)
 
 _verify-backend-check:
-	$(call verify_step,2,Running backend checks (Detekt),./gradlew --no-daemon detektAll < /dev/null,backend-check)
+	$(call verify_step,4,Running backend checks (Detekt),./gradlew --no-daemon detektAll < /dev/null,backend-check)
 
 _verify-markdown:
-	$(call verify_step,3,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
+	$(call verify_step,5,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
 
 _verify-yaml:
-	@echo "⏳ [4/8] Running YAML lint..." && \
+	@echo "⏳ [6/10] Running YAML lint..." && \
 	mkdir -p $(LOG_DIR) && \
 	if command -v yamllint >/dev/null 2>&1; then \
 		yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && \
@@ -331,16 +337,16 @@ _verify-yaml:
 	fi
 
 _verify-secrets:
-	$(call verify_step,5,Checking secrets synchronization,./scripts/check-secrets.sh,secrets-check)
+	$(call verify_step,7,Checking secrets synchronization,./scripts/check-secrets.sh,secrets-check)
 
 _verify-frontend-tests:
-	$(call verify_step,6,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
+	$(call verify_step,8,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
 
 _verify-backend-tests:
-	$(call verify_step,7,Running backend tests,$(TIMEOUT_600) ./gradlew --no-daemon test < /dev/null,backend-tests)
+	$(call verify_step,9,Running backend tests,$(TIMEOUT_600) ./gradlew --no-daemon test < /dev/null,backend-tests)
 
 _verify-e2e-tests:
-	$(call verify_step,8,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
+	$(call verify_step,10,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
 
 # Verifies the entire project with all checks, lints, and tests
 # Runs checks in parallel groups for optimal performance
@@ -349,21 +355,26 @@ verify-all:
 	@echo "╔═════════════════════════════════════════════════════════════════════╗"
 	@echo "║                  🔍 CVIX FULL PROJECT VERIFICATION                  ║"
 	@echo "║                                                                     ║"
-	@echo "║  This will run all checks, lints, and tests in parallel groups     ║"
+	@echo "║  This will run all checks, lints, and tests in parallel groups      ║"
 	@echo "╚═════════════════════════════════════════════════════════════════════╝"
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 1: Static Analysis & Linting (Parallel)"
+	@echo "Phase 1: Building (Frontend & Backend)"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@$(MAKE) -j2 _verify-frontend-build _verify-backend-build || exit 1
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "Phase 2: Static Analysis & Linting (Parallel)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@$(MAKE) -j4 _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml || exit 1
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 2: Security & Configuration Checks"
+	@echo "Phase 3: Security & Configuration Checks"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@$(MAKE) _verify-secrets || exit 1
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 3: Testing (Parallel)"
+	@echo "Phase 4: Testing (Parallel)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@$(MAKE) -j3 _verify-frontend-tests _verify-backend-tests _verify-e2e-tests || exit 1
 	@echo ""
@@ -371,6 +382,8 @@ verify-all:
 	@echo "║                                                                     ║"
 	@echo "║              ✨ ALL VERIFICATIONS PASSED SUCCESSFULLY! ✨          ║"
 	@echo "║                                                                     ║"
+	@echo "║  ✅ Frontend build                                                  ║"
+	@echo "║  ✅ Backend build                                                   ║"
 	@echo "║  ✅ Frontend checks (Biome)                                         ║"
 	@echo "║  ✅ Backend checks (Detekt)                                         ║"
 	@echo "║  ✅ Markdown lint                                                   ║"
@@ -386,4 +399,4 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
+.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets

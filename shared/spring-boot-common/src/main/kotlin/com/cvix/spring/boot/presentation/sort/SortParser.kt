@@ -3,12 +3,12 @@ package com.cvix.spring.boot.presentation.sort
 import com.cvix.common.domain.presentation.SortInvalidException
 import com.cvix.common.domain.presentation.sort.Sort
 import com.cvix.spring.boot.repository.columnName
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.introspect.AnnotatedField
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.introspect.AnnotatedField
 
 class SortParser<T : Any>(
     private val clazz: KClass<T>,
@@ -40,10 +40,17 @@ class SortParser<T : Any>(
     }
 
     private fun exportedPropertyName(property: KProperty<*>): String {
-        return objectMapper.propertyNamingStrategy?.nameForField(
-            objectMapper.serializationConfig,
-            AnnotatedField(null, property.javaField, null),
-            property.name,
-        ) ?: property.name
+        val config = objectMapper.serializationConfig()
+        val namingStrategy = config.propertyNamingStrategy
+        return if (namingStrategy != null && property.javaField != null) {
+            val annotatedField = AnnotatedField(null, property.javaField, null)
+            namingStrategy.nameForField(
+                config,
+                annotatedField,
+                property.name,
+            )
+        } else {
+            property.name
+        }
     }
 }

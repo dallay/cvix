@@ -1,0 +1,19 @@
+{
+	"name": "@cvix/docs",
+	"type": "module",
+	"version": "0.1.0",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/starlight": "catalog:",
+		"@cvix/assets": "workspace:*",
+		"astro": "catalog:",
+		"sharp": "catalog:",
+		"zod": "^3.23.8"
+	}
+}

@@ -1,3 +1,94 @@
+## [3.11.2](https://github.com/dallay/cvix/compare/v3.11.1...v3.11.2) (2026-01-13)
+
+### 🐛 Bug Fixes
+
+* **marketing:** repair broken internal and email links ([#516](https://github.com/dallay/cvix/issues/516)) ([fffc716](https://github.com/dallay/cvix/commit/fffc716e521f157a7a114702b356801a74ce2529))
+
+## [3.11.1](https://github.com/dallay/cvix/compare/v3.11.0...v3.11.1) (2026-01-13)
+
+### 🐛 Bug Fixes
+
+* **marketing:** repair broken internal and email links ([#517](https://github.com/dallay/cvix/issues/517)) ([e935229](https://github.com/dallay/cvix/commit/e9352290d80ba6604640f40262f1d46ade8f8601))
+
+### 📝 Documentation
+
+* add llm txt ([#510](https://github.com/dallay/cvix/issues/510)) ([277ffe6](https://github.com/dallay/cvix/commit/277ffe6af5656d2460ee46a28445693cff9abc96))
+
+## [3.11.0](https://github.com/dallay/cvix/compare/v3.10.0...v3.11.0) (2026-01-11)
+
+### ✨ Features
+
+* **006:** checkbox state sync ([#509](https://github.com/dallay/cvix/issues/509)) ([62fab36](https://github.com/dallay/cvix/commit/62fab367d30d02e45ca807146cc1ef616a91cb42))
+
+## [3.10.0](https://github.com/dallay/cvix/compare/v3.9.3...v3.10.0) (2026-01-11)
+
+### ✨ Features
+
+* add comprehensive documentation for Tailwind CSS, TypeScript, Zod, Kotlin, Spring Boot, and Vue 3 ([#508](https://github.com/dallay/cvix/issues/508)) ([067495e](https://github.com/dallay/cvix/commit/067495e90edda1bef1528320efe3442c11d16124))
+
+## [3.9.3](https://github.com/dallay/cvix/compare/v3.9.2...v3.9.3) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **docker:** add missing workspace package.json files to Dockerfiles ([#504](https://github.com/dallay/cvix/issues/504)) ([ae8b064](https://github.com/dallay/cvix/commit/ae8b064fdcaf4eb26d778b8437b1aa8a8cd632cf))
+
+## [3.9.2](https://github.com/dallay/cvix/compare/v3.9.1...v3.9.2) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **marketing:** 🐛 use data attributes instead of define:vars for ES module compatibility ([f78fecd](https://github.com/dallay/cvix/commit/f78fecdd18b3d59c8617e9c2539b5a6bfa76d680))
+* **tests:** 🐛 correct import order in contact form E2E tests ([6af6926](https://github.com/dallay/cvix/commit/6af6926d04a067ed6ee7d53711d383890b94552b))
+
+### ♻️ Refactors
+
+* **marketing:** ♻️ extract ContactService to shared lib ([30b1433](https://github.com/dallay/cvix/commit/30b1433c90c65b4721d229c861740f15de4a6632))
+
+## [3.9.1](https://github.com/dallay/cvix/compare/v3.9.0...v3.9.1) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* **ci:** 🐛 allow Docker PDF tests to run in CI ([#502](https://github.com/dallay/cvix/issues/502)) ([0e5f52a](https://github.com/dallay/cvix/commit/0e5f52a991a719a00f7ee70de09a0259628b2c43))
+
+## [3.9.0](https://github.com/dallay/cvix/compare/v3.8.0...v3.9.0) (2026-01-09)
+
+### ✨ Features
+
+* **env:** update database credentials in environment files for consistency ([#500](https://github.com/dallay/cvix/issues/500)) ([3b12b4b](https://github.com/dallay/cvix/commit/3b12b4bb12a29314e1d46c53407038430c7de7b3))
+
+## [3.8.0](https://github.com/dallay/cvix/compare/v3.7.0...v3.8.0) (2026-01-08)
+
+### ✨ Features
+
+* **layout:** replace Layout component with LandingLayout and update middleware paths ([3843c9e](https://github.com/dallay/cvix/commit/3843c9e28f01f1555358247e3ac2aa0300f2424a))
+
+## [3.7.0](https://github.com/dallay/cvix/compare/v3.6.1...v3.7.0) (2026-01-08)
+
+### ✨ Features
+
+* **layout:** add global CSS import to BaseLayout ([91c62cd](https://github.com/dallay/cvix/commit/91c62cd3e83ea6adcdf378749137597b0e62826d))
+
+## [3.6.1](https://github.com/dallay/cvix/compare/v3.6.0...v3.6.1) (2026-01-08)
+
+### 🐛 Bug Fixes
+
+* **ci:** downgrade java version from 25 to 24 ([#497](https://github.com/dallay/cvix/issues/497)) ([362e027](https://github.com/dallay/cvix/commit/362e027d5323576303b23509b787a3056dfebe2b))
+
+### 📝 Documentation
+
+* align README with canonical verification command ([#496](https://github.com/dallay/cvix/issues/496)) ([e59cfd7](https://github.com/dallay/cvix/commit/e59cfd79e12c80fdfabb99b1ce34fd807eeb31bb))
+
+## [3.6.0](https://github.com/dallay/cvix/compare/v3.5.0...v3.6.0) (2026-01-07)
+
+### ✨ Features
+
+* **env:** ✨ add CVIX_MARKETING_URL to environment schema ([#494](https://github.com/dallay/cvix/issues/494)) ([e01be66](https://github.com/dallay/cvix/commit/e01be663f2eeff4f7b51e177364bb33a8e6c8f54))
+
+## [3.5.0](https://github.com/dallay/cvix/compare/v3.4.0...v3.5.0) (2026-01-07)
+
+### ✨ Features
+
+* **marketing:** ✨ improve contact form integration, i18n & rebrand to ProfileTailors ([#491](https://github.com/dallay/cvix/issues/491)) ([6556940](https://github.com/dallay/cvix/commit/6556940245cda2e55fd816af3a4cf773b00bf4f8))
+
 ## [3.4.0](https://github.com/dallay/cvix/compare/v3.3.1...v3.4.0) (2026-01-04)
 
 ### ✨ Features

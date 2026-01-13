@@ -1,12 +1,11 @@
 ---
-import Layout from "@cvix/astro-ui/components/layouts/default-layout/DefaultLayout.astro";
 import { LOCALES } from "@cvix/i18n";
 import { type Lang } from "@cvix/i18n/astro";
-import { getOgImagePath } from "@cvix/lib";
 import GridContainer from "@/components/GridContainer.astro";
 import PageHeadline from "@/components/PageHeadline.astro";
 import Pagination from "@/components/Pagination.astro";
 import { useTranslations } from "@/i18n/i18n";
+import Layout from "@/layouts/Layout.astro";
 import { getArticles } from "@/models/article";
 
 export async function getStaticPaths() {
@@ -62,19 +61,13 @@ const t = useTranslations(currentLocale);
 
 const title = t("blog.header.title");
 const subtitle = t("blog.header.subtitle");
-const ogImage = new URL(getOgImagePath(Astro.url.pathname), Astro.url.origin)
-	.href;
-const og = {
-	image: ogImage,
-	xAccount: "@yacosta738",
-};
 
 const basePath = `/${currentLocale}/blog/page`;
 const indexUrl = `/${currentLocale}/blog`;
 const { page } = Astro.props;
 ---
 
-<Layout title={title} description={subtitle} {og} >
+<Layout title={title} description={subtitle}>
 	<div class="container mx-auto px-4 pt-24">
 		<PageHeadline title={title} subtitle={subtitle} placeholder={t('blog.search.placeholder')} clearLabel={t('blog.search.clear')}>
     <p class="text-xl text-gray-900 dark:text-white">

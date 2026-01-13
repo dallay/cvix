@@ -19,9 +19,7 @@ internal class UserLogoutControllerIntegrationTest : ControllerIntegrationTest()
     private var accessToken: AccessToken? = null
 
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
-        startInfrastructure()
+    fun setUp() {
         val returnResult = webTestClient
             .mutateWith(csrf())
             .post()

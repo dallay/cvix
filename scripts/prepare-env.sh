@@ -199,7 +199,44 @@ for dir in "${LINK_DIRS[@]}"; do
 done
 
 # ------------------------------
-# 4) Nice-to-have checks
+# 4) Verify docs symlink
+# ------------------------------
+section "Verifying docs symlink"
+
+DOCS_SYMLINK="$ROOT_DIR/docs"
+DOCS_TARGET="client/apps/docs/src/content/docs"
+
+if [[ -L "$DOCS_SYMLINK" ]]; then
+  # Symlink exists, verify it points to the right place
+  current_target=$(readlink "$DOCS_SYMLINK")
+  if [[ "$current_target" == "$DOCS_TARGET" ]]; then
+    log "${PASS} docs symlink correct: docs -> $DOCS_TARGET"
+  else
+    log "${WARN} docs symlink points to wrong target: $current_target (expected $DOCS_TARGET)"
+    log "      Recreating symlink..."
+    rm "$DOCS_SYMLINK"
+    ln -s "$DOCS_TARGET" "$DOCS_SYMLINK"
+    log "${PASS} docs symlink fixed"
+  fi
+elif [[ -e "$DOCS_SYMLINK" ]]; then
+  # Path exists but is not a symlink (shouldn't happen, but handle it)
+  log "${FAIL} docs exists but is not a symlink (manual intervention needed)"
+  log "      Expected: docs -> $DOCS_TARGET"
+  exit 1
+else
+  # Symlink doesn't exist, create it
+  log "${WARN} docs symlink missing, creating it..."
+  ln -s "$DOCS_TARGET" "$DOCS_SYMLINK"
+  if [[ -L "$DOCS_SYMLINK" ]]; then
+    log "${PASS} created docs symlink: docs -> $DOCS_TARGET"
+  else
+    log "${FAIL} could not create docs symlink (check permissions)"
+    exit 1
+  fi
+fi
+
+# ------------------------------
+# 5) Nice-to-have checks
 # ------------------------------
 section "Additional checks"
 

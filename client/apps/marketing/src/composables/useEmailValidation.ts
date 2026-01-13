@@ -17,13 +17,15 @@ export function useEmailValidation(options: EmailValidationOptions = {}) {
 
 	// Create validation schema based on options
 	const validationSchema = computed(() => {
-		let schema = z.email({
-			message: customMessage ?? t("form.email.invalid"),
-		});
+		let schema = z.string();
 
 		if (required) {
 			schema = schema.min(1, { message: t("form.email.required") });
 		}
+
+		schema = schema.email({
+			message: customMessage ?? t("form.email.invalid"),
+		});
 
 		return schema;
 	});

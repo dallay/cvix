@@ -7,19 +7,27 @@ import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * Mapper between WaitlistEntry domain model and WaitlistEntryEntity.
+ *
+ * Uses the centralized JsonMapper bean configured in JacksonConfig to ensure
+ * consistent serialization/deserialization behavior across the application.
+ *
+ * Jackson 3 Changes:
+ * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
+ * - Package changed from com.fasterxml.jackson to tools.jackson
  */
-object WaitlistEntryMapper {
+@Component
+class WaitlistEntryMapper(
+    private val jsonMapper: JsonMapper,
+) {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
-    private val objectMapper = ObjectMapper().registerKotlinModule()
 
     /**
      * Converts a domain WaitlistEntry to a WaitlistEntryEntity.
@@ -29,8 +37,8 @@ object WaitlistEntryMapper {
     fun WaitlistEntry.toEntity(): WaitlistEntryEntity {
         val metadataJson = this.metadata?.let {
             try {
-                Json.of(objectMapper.writeValueAsString(it))
-            } catch (e: JsonProcessingException) {
+                Json.of(jsonMapper.writeValueAsString(it))
+            } catch (e: JacksonException) {
                 logger.error("Failed to serialize metadata for waitlist entry {}", this.id, e)
                 null
             }
@@ -58,9 +66,10 @@ object WaitlistEntryMapper {
     fun WaitlistEntryEntity.toDomain(): WaitlistEntry {
         val metadata: Map<String, Any>? = this.metadata?.let { json ->
             try {
-                objectMapper.readValue<Map<String, Any>>(json.asString())
-            } catch (e: JsonProcessingException) {
-                logger.error("Failed to parse metadata JSON for entry ${this.id}", e)
+                @Suppress("UNCHECKED_CAST")
+                jsonMapper.readValue(json.asString(), Map::class.java) as Map<String, Any>
+            } catch (e: JacksonException) {
+                logger.error("Failed to parse metadata JSON for entry {}", this.id, e)
                 null
             }
         }

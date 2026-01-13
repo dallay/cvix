@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:25.0.1_8-jdk-jammy AS builder
+FROM eclipse-temurin:24-jdk-noble AS builder
 
 WORKDIR /workspace
 
@@ -37,7 +37,7 @@ RUN ./gradlew :server:engine:bootJar \
     -Dorg.gradle.jvmargs="-XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:MaxRAMPercentage=75.0"
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:25.0.1_8-jre-jammy
+FROM eclipse-temurin:24-jre-noble
 
 # Create a non-root user with explicit UID/GID for predictable file permissions
 # UID 999 is used to match the containerUser in DockerPdfGeneratorProperties

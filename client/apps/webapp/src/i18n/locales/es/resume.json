@@ -399,6 +399,9 @@
 			"selectTemplateAria": "Selecciona una plantilla PDF",
 			"coreOptions": "Opciones principales",
 			"selectLocale": "Selecciona el idioma",
+			"selected": "Seleccionado",
+			"loading": "Cargando plantillas…",
+			"noTemplates": "No hay plantillas disponibles",
 			"param": {
 				"color": "Color",
 				"font": "Fuente",
@@ -420,7 +423,10 @@
 			"selectTemplate": "Selecciona una plantilla para generar la vista previa",
 			"unablePreview": "No se puede mostrar la vista previa del PDF. Por favor, descárgalo para verlo.",
 			"visibleSections": "Secciones Visibles",
-			"noDataAvailable": "No hay datos disponibles"
+			"noDataAvailable": "No hay datos disponibles",
+			"contentSelection": "Selección de Contenido",
+			"customizeRole": "Personaliza para este puesto",
+			"previewMode": "Modo Vista Previa"
 		},
 		"basics": {
 			"image": "Foto de Perfil",
