@@ -1,3 +1,19 @@
+## [3.11.2](https://github.com/dallay/cvix/compare/v3.11.1...v3.11.2) (2026-01-13)
+
+### 🐛 Bug Fixes
+
+* **marketing:** repair broken internal and email links ([#516](https://github.com/dallay/cvix/issues/516)) ([fffc716](https://github.com/dallay/cvix/commit/fffc716e521f157a7a114702b356801a74ce2529))
+
+## [3.11.1](https://github.com/dallay/cvix/compare/v3.11.0...v3.11.1) (2026-01-13)
+
+### 🐛 Bug Fixes
+
+* **marketing:** repair broken internal and email links ([#517](https://github.com/dallay/cvix/issues/517)) ([e935229](https://github.com/dallay/cvix/commit/e9352290d80ba6604640f40262f1d46ade8f8601))
+
+### 📝 Documentation
+
+* add llm txt ([#510](https://github.com/dallay/cvix/issues/510)) ([277ffe6](https://github.com/dallay/cvix/commit/277ffe6af5656d2460ee46a28445693cff9abc96))
+
 ## [3.11.0](https://github.com/dallay/cvix/compare/v3.10.0...v3.11.0) (2026-01-11)
 
 ### ✨ Features

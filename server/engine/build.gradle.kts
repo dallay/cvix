@@ -31,27 +31,42 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2025.1.0"
-extra["springModulithVersion"] = "1.4.5"
+extra["springModulithVersion"] = "2.0.1" // Spring Modulith 2.x for Spring Boot 4.x
 
 dependencies {
+    // B O M s   (Spring Boot 4 native Gradle BOM support)
+    // Apply Spring Boot BOM to all relevant configurations
+    val springBootBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    val modulithBom = platform("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
+    val cloudBom = platform("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    val jacksonBom = platform(libs.jackson.bom)
+
+    implementation(springBootBom)
+    implementation(modulithBom)
+    implementation(cloudBom)
+    implementation(jacksonBom)
+
+    annotationProcessor(springBootBom)
+    testImplementation(springBootBom)
+    testImplementation(modulithBom)
+
     // L O C A L   D E P E N D E N C I E S
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
 
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // SECURITY DEPENDENCIES
-    implementation("org.springframework.security:spring-security-oauth2-client")
-    implementation("org.springframework.security:spring-security-oauth2-jose")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation(libs.jackson.module.kotlin)
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -87,32 +102,26 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // T E S T   D E P E N D E N C I E S
+    // Spring Boot 4 modular test starters - each technology has its own test starter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("io.rest-assured:spring-web-test-client")
+    testImplementation(libs.rest.assured.spring.web.test.client)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:r2dbc")
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.r2dbc)
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest)
     testImplementation("com.tngtech.archunit:archunit:1.4.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.apache.pdfbox:pdfbox:2.0.35")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-        // El BOM de Spring Security ahora se importa por convención
-    }
 }
 
 kotlin {

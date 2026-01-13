@@ -14,9 +14,7 @@ internal class AccountResourceCookieAuthIntegrationTest : ControllerIntegrationT
     private var accessToken: AccessToken? = null
 
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
-        startInfrastructure()
+    fun setUp() {
         accessToken = getAccessToken(email, password)
             ?: error("Failed to obtain access token for test user $email. Check Keycloak/Testcontainers setup.")
     }

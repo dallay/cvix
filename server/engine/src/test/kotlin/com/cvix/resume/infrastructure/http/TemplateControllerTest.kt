@@ -6,7 +6,6 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
-import tools.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
@@ -14,6 +13,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.reactive.server.WebTestClient
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 internal class TemplateControllerTest : ControllerTest() {
     private val controller = TemplateController(mediator)
@@ -92,8 +93,8 @@ internal class TemplateControllerTest : ControllerTest() {
             .expectBody()
             .returnResult()
         val responseBody = result.responseBody?.toString(Charsets.UTF_8)
-        val objectMapper = ObjectMapper()
-        val json = responseBody?.let { objectMapper.readTree(it) }
+        val jsonMapper = jsonMapper { addModule(kotlinModule()) }
+        val json = responseBody?.let { jsonMapper.readTree(it) }
         // Verify that the generic error message is returned (not the actual exception message)
         // This is a security feature to prevent information leakage
         val errorFields = listOf("message", "detail", "error", "title")

@@ -18,9 +18,7 @@ internal class SessionControllerIntegrationTest : ControllerIntegrationTest() {
     private var accessToken: AccessToken? = null
 
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
-        startInfrastructure()
+    fun setUp() {
         accessToken = getAccessToken()
     }
 

@@ -2,11 +2,11 @@ package com.cvix.common.domain.presentation.filter
 
 import com.cvix.common.domain.criteria.Criteria
 import com.cvix.common.domain.presentation.FilterInvalidException
-import tools.jackson.databind.ObjectMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.ObjectMapper
 
 @Suppress("UNCHECKED_CAST")
 class RHSFilterParser<T : Any>(

@@ -11,8 +11,10 @@ dependencies {
     implementation(libs.commons.text)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.security.oauth2.resource.server)
+    // Jackson viene automáticamente con spring-boot starters
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation(libs.jackson.module.kotlin)
     testImplementation(libs.faker)
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest)
