@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.JwtDecoders
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
@@ -112,6 +111,6 @@ abstract class ControllerIntegrationTest : InfrastructureTestContainers() {
         val authorities = (jwt.getClaimAsStringList("roles") ?: emptyList<String>())
             .map { SimpleGrantedAuthority(it) }
 
-        return JwtAuthenticationToken(jwt, authorities as? Collection<GrantedAuthority>?)
+        return JwtAuthenticationToken(jwt, authorities)
     }
 }
