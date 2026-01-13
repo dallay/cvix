@@ -9,27 +9,25 @@ import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import tools.jackson.core.JacksonException
-import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
-import tools.jackson.module.kotlin.kotlinModule
 
 /**
  * Mapper between WaitlistEntry domain model and WaitlistEntryEntity.
+ *
+ * Uses the centralized JsonMapper bean configured in JacksonConfig to ensure
+ * consistent serialization/deserialization behavior across the application.
  *
  * Jackson 3 Changes:
  * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
  * - Package changed from com.fasterxml.jackson to tools.jackson
  */
-object WaitlistEntryMapper {
+@Component
+class WaitlistEntryMapper(
+    private val jsonMapper: JsonMapper,
+) {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
-    private val jsonMapper: JsonMapper = jsonMapper {
-        addModule(kotlinModule())
-        // Align with application-wide config - don't fail on unknown properties
-        // in metadata JSON stored in the database
-        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-    }
 
     /**
      * Converts a domain WaitlistEntry to a WaitlistEntryEntity.
