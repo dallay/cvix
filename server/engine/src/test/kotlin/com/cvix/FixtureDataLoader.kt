@@ -18,11 +18,16 @@ import tools.jackson.module.kotlin.kotlinModule
  * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
  * - Java 8 date/time support built-in (no separate JavaTimeModule needed)
  * - Package changed from com.fasterxml.jackson to tools.jackson
+ *
+ * Note: This mapper is only used for DESERIALIZATION (reading JSON).
+ * Serialization-only settings like DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS
+ * are not needed here since we never write JSON with this mapper.
  */
 object FixtureDataLoader {
     @PublishedApi
     internal val mapper: JsonMapper = jsonMapper {
         addModule(kotlinModule())
+        // Don't fail on unknown properties during deserialization (allows fixture flexibility)
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
     }
 
