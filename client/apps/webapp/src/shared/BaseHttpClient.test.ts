@@ -1,7 +1,6 @@
 import type { InternalAxiosRequestConfig } from "axios";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { CsrfService } from "./csrf.service";
 
 // Mock axios before importing BaseHttpClient
 vi.mock("axios", () => {
@@ -32,23 +31,26 @@ vi.mock("./WorkspaceContext", () => ({
 	getCurrentWorkspaceId: vi.fn(),
 }));
 
+// Mock CsrfService
+vi.mock("./csrf.service", () => ({
+	csrfService: {
+		isInitialized: vi.fn(),
+		initialize: vi.fn(),
+	},
+}));
+
 import axios from "axios";
 import { BaseHttpClient } from "./BaseHttpClient";
+import { csrfService } from "./csrf.service";
 import { getCurrentWorkspaceId } from "./WorkspaceContext";
 
 describe("BaseHttpClient", () => {
 	let capturedRequestInterceptor: (
 		config: InternalAxiosRequestConfig,
 	) => Promise<InternalAxiosRequestConfig>;
-	let mockCsrfService: CsrfService;
 
 	beforeEach(() => {
 		vi.resetAllMocks();
-
-		mockCsrfService = {
-			isInitialized: vi.fn().mockReturnValue(true),
-			initialize: vi.fn().mockResolvedValue(undefined),
-		} as unknown as CsrfService;
 
 		// Capture the request interceptor when it's registered
 		const mockAxios = (axios.create as Mock)();
@@ -72,9 +74,10 @@ describe("BaseHttpClient", () => {
 		it("should add X-Workspace-Id header when workspace is set", async () => {
 			const workspaceId = "550e8400-e29b-41d4-a716-446655440000";
 			(getCurrentWorkspaceId as Mock).mockReturnValue(workspaceId);
+			(csrfService.isInitialized as Mock).mockReturnValue(true);
 
 			// Create client to trigger interceptor registration
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			// Simulate a request config
 			const config = {
@@ -88,8 +91,9 @@ describe("BaseHttpClient", () => {
 
 		it("should not add X-Workspace-Id header when workspace is null", async () => {
 			(getCurrentWorkspaceId as Mock).mockReturnValue(null);
+			(csrfService.isInitialized as Mock).mockReturnValue(true);
 
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			const config = {
 				headers: {},
@@ -104,8 +108,9 @@ describe("BaseHttpClient", () => {
 			const existingWorkspaceId = "existing-workspace-id";
 			const newWorkspaceId = "550e8400-e29b-41d4-a716-446655440000";
 			(getCurrentWorkspaceId as Mock).mockReturnValue(newWorkspaceId);
+			(csrfService.isInitialized as Mock).mockReturnValue(true);
 
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			const config = {
 				headers: {
@@ -121,8 +126,9 @@ describe("BaseHttpClient", () => {
 		it("should handle missing headers object in config gracefully", async () => {
 			const workspaceId = "550e8400-e29b-41d4-a716-446655440000";
 			(getCurrentWorkspaceId as Mock).mockReturnValue(workspaceId);
+			(csrfService.isInitialized as Mock).mockReturnValue(true);
 
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			// Simulate a request config with NO headers property
 			const config = {} as unknown as InternalAxiosRequestConfig;
@@ -136,9 +142,10 @@ describe("BaseHttpClient", () => {
 
 	describe("CSRF initialization", () => {
 		it("should await CSRF initialization if not already initialized", async () => {
-			(mockCsrfService.isInitialized as Mock).mockReturnValue(false);
+			(csrfService.isInitialized as Mock).mockReturnValue(false);
+			(csrfService.initialize as Mock).mockResolvedValue(undefined);
 
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			const config = {
 				headers: {},
@@ -146,14 +153,14 @@ describe("BaseHttpClient", () => {
 
 			await capturedRequestInterceptor(config);
 
-			expect(mockCsrfService.isInitialized).toHaveBeenCalledOnce();
-			expect(mockCsrfService.initialize).toHaveBeenCalledOnce();
+			expect(csrfService.isInitialized).toHaveBeenCalledOnce();
+			expect(csrfService.initialize).toHaveBeenCalledOnce();
 		});
 	});
 
 	describe("constructor", () => {
 		it("should create client with default config", () => {
-			new BaseHttpClient(mockCsrfService);
+			new BaseHttpClient();
 
 			expect(axios.create).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -165,9 +172,7 @@ describe("BaseHttpClient", () => {
 		});
 
 		it("should use custom baseURL when provided", () => {
-			new BaseHttpClient(mockCsrfService, {
-				baseURL: "https://api.example.com",
-			});
+			new BaseHttpClient({ baseURL: "https://api.example.com" });
 
 			expect(axios.create).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -177,7 +182,7 @@ describe("BaseHttpClient", () => {
 		});
 
 		it("should setup request and response interceptors", () => {
-			const client = new BaseHttpClient(mockCsrfService);
+			const client = new BaseHttpClient();
 			const mockAxios = client.getAxiosInstance();
 
 			expect(mockAxios.interceptors.request.use).toHaveBeenCalled();

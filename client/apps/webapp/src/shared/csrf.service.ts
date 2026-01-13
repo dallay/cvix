@@ -1,22 +1,25 @@
-import { BaseHttpClient } from "./BaseHttpClient";
+import axios, { type AxiosInstance } from "axios";
 
 /**
- * Global CSRF service for application-wide CSRF token initialization
- * This should be called once when the application starts
+ * Global CSRF service for application-wide CSRF token initialization.
+ * This should be called once when the application starts.
  */
-export class CsrfService {
-	private client: BaseHttpClient;
+class CsrfService {
+	private client: AxiosInstance;
 	private isInitializedState = false;
 	private initializationPromise: Promise<void> | null = null;
 
 	constructor() {
-		this.client = new BaseHttpClient(this);
+		const envRecord = import.meta.env as unknown as Record<string, unknown>;
+		const backend = envRecord.BACKEND_URL as string | undefined;
+		const baseURL = backend ?? "/api";
+		// Use a private, minimal axios instance to avoid circular dependencies.
+		this.client = axios.create({ baseURL, withCredentials: true });
 	}
 
 	/**
-	 * Initializes the CSRF token. This method is idempotent; it ensures the
+	 * Initializes the CSRF token. This method is idempotent, ensuring the
 	 * initialization logic runs only once and returns the same promise to all callers.
-	 * This prevents multiple token requests during application startup.
 	 * @returns {Promise<void>} A promise that resolves when initialization is complete.
 	 */
 	initialize(): Promise<void> {
@@ -25,14 +28,17 @@ export class CsrfService {
 		}
 
 		this.initializationPromise = this.client
-			.initializeCsrf()
+			.get<void>("/health-check")
 			.then(() => {
 				this.isInitializedState = true;
+				console.debug("CSRF token initialized successfully");
 			})
 			.catch((error) => {
-				// On failure, reset the promise to allow the initialization to be retried.
 				this.initializationPromise = null;
-				// Re-throw the error to allow callers (like the HTTP client interceptor) to handle it.
+				console.warn(
+					"Failed to initialize CSRF token, will retry on first request:",
+					error,
+				);
 				throw error;
 			});
 
@@ -40,7 +46,7 @@ export class CsrfService {
 	}
 
 	/**
-	 * Check if CSRF has been initialized
+	 * Checks if CSRF has been initialized.
 	 */
 	isInitialized(): boolean {
 		return this.isInitializedState;

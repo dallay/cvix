@@ -4,7 +4,7 @@ import axios, {
 	type AxiosRequestConfig,
 	type InternalAxiosRequestConfig,
 } from "axios";
-import type { CsrfService } from "./csrf.service";
+import { csrfService } from "./csrf.service";
 import { getCurrentWorkspaceId } from "./WorkspaceContext";
 
 /**
@@ -51,16 +51,11 @@ export interface ApiErrorResponse {
 export class BaseHttpClient {
 	protected readonly client: AxiosInstance;
 	protected readonly baseURL: string;
-	private csrfService: CsrfService;
 
-	constructor(
-		csrfService: CsrfService,
-		config: HttpClientConfig = {},
-	) {
+	constructor(config: HttpClientConfig = {}) {
 		const envRecord = import.meta.env as unknown as Record<string, unknown>;
 		const backend = envRecord.BACKEND_URL as string | undefined;
 		this.baseURL = (config.baseURL || backend) ?? "/api";
-		this.csrfService = csrfService;
 
 		this.client = axios.create({
 			baseURL: this.baseURL,
@@ -135,41 +130,38 @@ export class BaseHttpClient {
 	}
 
 	/**
-	 * Hook called before each request. This interceptor now ensures that the CSRF
-	 * token is initialized before any request is sent, preventing race conditions
-	 * during application startup.
+	 * Hook called before each request
+	 * Subclasses can override to add custom headers, logging, etc.
 	 */
 	protected async onRequest(
 		config: InternalAxiosRequestConfig,
 	): Promise<InternalAxiosRequestConfig> {
-		// Wait for CSRF initialization to complete before proceeding with the request.
-		// This acts as a gate for all outgoing requests, ensuring they are only
-		// sent after the CSRF token is available.
-		if (!this.csrfService.isInitialized()) {
-			await this.csrfService.initialize();
+		if (!csrfService.isInitialized()) {
+			await csrfService.initialize();
 		}
 
-		// Manually add CSRF token from cookie to header.
-		// This is needed when using the Vite proxy, as Axios's automatic CSRF handling
-		// may not work reliably across different ports.
+		// Manually add CSRF token from cookie to header
+		// This is needed when using Vite proxy as Axios automatic CSRF handling
+		// doesn't work reliably across different ports
 		const csrfToken = this.getCsrfTokenFromCookie();
 		if (csrfToken && !config.headers["X-XSRF-TOKEN"]) {
 			config.headers["X-XSRF-TOKEN"] = csrfToken;
 		}
 
-		// Add workspace ID header for multi-tenant RLS support.
-		// The backend uses this header to set a PostgreSQL session variable,
-		// which is crucial for enforcing Row-Level Security policies.
+		// Add workspace ID header for multi-tenant RLS support
+		// The backend uses this to set the PostgreSQL session variable
+		// for Row-Level Security policies
 		const workspaceId = getCurrentWorkspaceId();
-		config.headers = config.headers || {}; // Ensure headers object exists.
+
+		// Ensure headers object exists (defensive programming)
+		config.headers = config.headers || {};
 
 		if (workspaceId && !config.headers["X-Workspace-Id"]) {
 			config.headers["X-Workspace-Id"] = workspaceId;
 		} else if (!workspaceId) {
 			console.debug(
-				"[BaseHttpClient] No workspace ID found. Skipping X-Workspace-Id header. " +
-					"This is expected for public endpoints but will cause failures for " +
-					"workspace-scoped resources.",
+				"[BaseHttpClient] No workspace ID found in context. Skipping X-Workspace-Id header. " +
+					"This is expected for public endpoints but will fail for workspace-scoped resources.",
 			);
 		}
 
