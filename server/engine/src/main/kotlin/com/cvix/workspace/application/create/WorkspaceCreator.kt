@@ -5,10 +5,9 @@ import com.cvix.common.domain.bus.event.EventBroadcaster
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.workspace.domain.Workspace
 import com.cvix.workspace.domain.WorkspaceFinderRepository
+import com.cvix.workspace.domain.WorkspaceMetrics
 import com.cvix.workspace.domain.WorkspaceRepository
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
 import org.slf4j.LoggerFactory
 
 /**
@@ -18,24 +17,17 @@ import org.slf4j.LoggerFactory
  *
  * @property workspaceRepository The repository used to persist workspaces.
  * @property workspaceFinderRepository The repository used to query existing workspaces.
+ * @property workspaceMetrics The metrics abstraction for tracking workspace operations.
  * @property eventPublisher The EventPublisher used to publish WorkspaceCreatedEvents.
- * @property meterRegistry The MeterRegistry for metrics tracking.
  */
 @Service
 class WorkspaceCreator(
     private val workspaceRepository: WorkspaceRepository,
     private val workspaceFinderRepository: WorkspaceFinderRepository,
-    private val meterRegistry: MeterRegistry,
+    private val workspaceMetrics: WorkspaceMetrics,
     eventPublisher: EventPublisher<WorkspaceCreatedEvent>,
 ) {
     private val eventBroadcaster = EventBroadcaster<WorkspaceCreatedEvent>()
-
-    private val dupDefaultWsIgnoredCounter by lazy {
-        Counter
-            .builder(METRIC_WS_DEFAULT_DUP_IGN)
-            .description("Count of ignored duplicate default workspace creations")
-            .register(meterRegistry)
-    }
 
     init {
         this.eventBroadcaster.use(eventPublisher)
@@ -59,10 +51,11 @@ class WorkspaceCreator(
         if (workspace.isDefault) {
             val existingWorkspaces = workspaceFinderRepository.findByOwnerId(workspace.ownerId)
             if (existingWorkspaces.isNotEmpty()) {
-                dupDefaultWsIgnoredCounter.increment()
+                workspaceMetrics.incrementDuplicateDefaultIgnored()
                 log.info(
-                    "Default workspace already exists for user ${workspace.ownerId.id} " +
-                        "(found ${existingWorkspaces.size} workspace(s)), skipping creation",
+                    "Default workspace already exists for user {} (found {} workspace(s)), skipping creation",
+                    workspace.ownerId.id,
+                    existingWorkspaces.size,
                 )
                 return false
             }
@@ -78,6 +71,5 @@ class WorkspaceCreator(
 
     companion object {
         private val log = LoggerFactory.getLogger(WorkspaceCreator::class.java)
-        const val METRIC_WS_DEFAULT_DUP_IGN = "workspace.default.duplicate.ignored"
     }
 }

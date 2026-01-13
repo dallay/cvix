@@ -27,7 +27,7 @@ class CreateWorkspaceCommandHandler(
     override suspend fun handle(command: CreateWorkspaceCommand) {
         require(command.name.isNotBlank()) { "Workspace name cannot be blank" }
 
-        log.debug("Creating workspace with name: ${command.name}, isDefault: ${command.isDefault}")
+        log.debug("Creating workspace with name: {}, isDefault: {}", command.name, command.isDefault)
 
         try {
             val workspace = Workspace.create(
@@ -41,24 +41,25 @@ class CreateWorkspaceCommandHandler(
             val created = workspaceCreator.create(workspace)
 
             if (created) {
-                log.info("Successfully created workspace with id: ${command.id}")
+                log.info("Successfully created workspace with id: {}", command.id)
             } else {
-                log.info("Workspace creation skipped for id: ${command.id} (duplicate default workspace)")
+                log.info("Workspace creation skipped for id: {} (duplicate default workspace)", command.id)
             }
         } catch (exception: IllegalArgumentException) {
-            log.error("Invalid UUID format in create workspace command: ${exception.message}")
+            log.error("Invalid UUID format in create workspace command: {}", exception.message)
             throw IllegalArgumentException("Invalid workspace or owner ID format", exception)
         } catch (exception: Exception) {
             // Fallback: For default workspaces, if we still hit a duplicate error (extreme race condition),
             // treat it as success since another concurrent request already created the workspace
             if (command.isDefault && isDuplicateDefaultWorkspaceError(exception)) {
                 log.info(
-                    "Race condition detected: default workspace already created for user ${command.ownerId} " +
+                    "Race condition detected: default workspace already created for user {} " +
                         "after initial check, treating as success",
+                    command.ownerId,
                 )
                 return
             }
-            log.error("Failed to create workspace with name: ${command.name}", exception)
+            log.error("Failed to create workspace with name: {}", command.name, exception)
             throw WorkspaceException("Error creating workspace", exception)
         }
     }
