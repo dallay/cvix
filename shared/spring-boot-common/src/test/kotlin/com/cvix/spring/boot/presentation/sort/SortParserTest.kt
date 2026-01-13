@@ -3,10 +3,10 @@ package com.cvix.spring.boot.presentation.sort
 import com.cvix.common.domain.presentation.SortInvalidException
 import com.cvix.common.domain.presentation.sort.Order
 import com.cvix.spring.boot.entity.Person
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import tools.jackson.databind.ObjectMapper
 
 class SortParserTest {
     private val objectMapper = ObjectMapper()

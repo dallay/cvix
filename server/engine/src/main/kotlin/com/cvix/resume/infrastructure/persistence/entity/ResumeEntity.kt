@@ -1,8 +1,9 @@
 package com.cvix.resume.infrastructure.persistence.entity
 
-import com.cvix.common.domain.AuditableEntity
+import com.cvix.common.domain.AuditableEntityFields
 import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
+import java.io.Serializable
 import java.time.Instant
 import java.util.UUID
 import org.springframework.data.annotation.CreatedBy
@@ -18,6 +19,9 @@ import org.springframework.data.relational.core.mapping.Table
  * Database entity for Resume persistence.
  * Maps to the 'resumes' table in PostgreSQL.
  * Stores resume data as JSONB text.
+ *
+ * Note: Implements AuditableEntityFields instead of extending AuditableEntity
+ * to avoid Spring Data R2DBC 4.0 duplicate column mapping issue with inherited properties.
  */
 @Table("resumes")
 data class ResumeEntity(
@@ -53,8 +57,8 @@ data class ResumeEntity(
 
     @LastModifiedDate
     @Column("updated_at")
-    override var updatedAt: Instant? = null
-) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
+    override var updatedAt: Instant? = null,
+) : Serializable, Persistable<UUID>, AuditableEntityFields {
     /**
      * This method returns the unique identifier of the resume.
      *
@@ -64,8 +68,13 @@ data class ResumeEntity(
 
     /**
      * This method checks if the resume is new by comparing the creation and update timestamps.
+     * Delegates to the interface's default implementation.
      *
      * @return A boolean indicating whether the resume is new.
      */
-    override fun isNew(): Boolean = updatedAt == null || createdAt == updatedAt
+    override fun isNew(): Boolean = isNewEntity()
+
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
 }

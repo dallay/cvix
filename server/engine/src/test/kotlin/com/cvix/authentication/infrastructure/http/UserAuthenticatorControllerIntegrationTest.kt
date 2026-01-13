@@ -2,12 +2,14 @@ package com.cvix.authentication.infrastructure.http
 
 import com.cvix.config.InfrastructureTestContainers
 import io.kotest.assertions.print.print
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/auth/login"
@@ -19,7 +21,8 @@ private const val DETAIL = "Invalid account. User probably hasn't verified email
 private const val ERROR_CATEGORY = "AUTHENTICATION"
 
 @Suppress("MultilineRawStringIndentation")
-@AutoConfigureWebTestClient
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestContainers() {
     // this user is created by default in Keycloak container (see demo-realm-test.json)
     private val email = "john.doe@profiletailors.com"
@@ -27,11 +30,13 @@ internal class UserAuthenticatorControllerIntegrationTest : InfrastructureTestCo
     private val password = "S3cr3tP@ssw0rd*123"
 
     @Autowired
-    private lateinit var webTestClient: WebTestClient
+    private lateinit var applicationContext: ApplicationContext
 
-    @BeforeEach
-    fun setUp() {
-        startInfrastructure()
+    private val webTestClient: WebTestClient by lazy {
+        WebTestClient.bindToApplicationContext(applicationContext)
+            .apply(springSecurity())
+            .configureClient()
+            .build()
     }
 
     @Test

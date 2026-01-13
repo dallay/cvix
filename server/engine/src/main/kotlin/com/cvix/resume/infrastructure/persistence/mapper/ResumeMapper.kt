@@ -4,13 +4,14 @@ import com.cvix.resume.domain.Resume
 import com.cvix.resume.domain.ResumeDocument
 import com.cvix.resume.domain.ResumeDocumentId
 import com.cvix.resume.infrastructure.persistence.entity.ResumeEntity
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.r2dbc.postgresql.codec.Json
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 /**
  * Mapper between domain and infrastructure models.
@@ -19,26 +20,29 @@ import io.r2dbc.postgresql.codec.Json
  * - Resume: Pure value object (JSON Resume schema data)
  * - ResumeDocument: Domain aggregate root (with identity and metadata)
  * - ResumeEntity: Infrastructure persistence entity (Spring Data, JSONB)
+ *
+ * Jackson 3 Changes:
+ * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
+ * - Java 8 date/time support built-in (no separate JavaTimeModule needed)
+ * - Package changed from com.fasterxml.jackson to tools.jackson
+ *   (except annotations which stay in com.fasterxml.jackson.annotation)
  */
 object ResumeMapper {
 
-    private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
-        registerModule(JavaTimeModule())
-        // Configure for proper JSON serialization
-        findAndRegisterModules()
+    private val jsonMapper: JsonMapper = jsonMapper {
+        // Add Kotlin module for proper Kotlin class support
+        addModule(kotlinModule())
+
         // Don't fail on unknown properties when deserializing
-        configure(
-            com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-            false,
-        )
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
         // CRITICAL: Write dates as ISO-8601 strings, NOT as arrays
         // Without this, LocalDate serializes as [2018, 9, 5] instead of "2018-09-05"
-        configure(
-            com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-            false,
-        )
+        // Note: Jackson 3 defaults WRITE_DATES_AS_TIMESTAMPS to false, but explicit is clearer
+        disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+
         // Include non-null values only
-        setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+        changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
     }
 
     /**
@@ -46,7 +50,7 @@ object ResumeMapper {
      * Deserializes the JSONB data field into Resume and wraps it with metadata.
      */
     fun ResumeEntity.toDomain(): ResumeDocument {
-        val resumeContent: Resume = objectMapper.readValue(data.asString())
+        val resumeContent: Resume = jsonMapper.readValue(data.asString(), Resume::class.java)
         return ResumeDocument(
             id = ResumeDocumentId(id),
             userId = userId,
@@ -83,15 +87,13 @@ object ResumeMapper {
      */
     fun Resume.toJson(): Json {
         return try {
-            val jsonString = objectMapper.writeValueAsString(this)
+            val jsonString = jsonMapper.writeValueAsString(this)
             Json.of(jsonString)
-        } catch (e: JsonMappingException) {
+        } catch (e: JacksonException) {
             throw IllegalStateException(
-                "Invalid Resume structure for JSON serialization: ${e.message}",
+                "Failed to serialize Resume to JSON: ${e.message}",
                 e,
             )
-        } catch (e: JsonProcessingException) {
-            throw IllegalStateException("Failed to serialize Resume to JSON: ${e.message}", e)
         } catch (e: IllegalArgumentException) {
             throw IllegalStateException("Failed to create JSONB from Resume: ${e.message}", e)
         }

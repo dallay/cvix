@@ -152,7 +152,8 @@ class SecurityConfiguration(
             .redirectToHttps {
                     httpsRedirect ->
                 httpsRedirect.httpsRedirectWhen {
-                    it.request.headers.containsKey("X-Forwarded-Proto")
+                    val forwardedProto = it.request.headers.getFirst(X_FORWARDED_PROTO)?.lowercase()
+                    forwardedProto != null && forwardedProto != "https"
                 }
             }
             .headers { headers ->

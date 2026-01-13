@@ -1,23 +1,35 @@
 package com.cvix
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 import java.io.InputStream
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 /**
  * Test-only JSON/text loader utilities.
  * - Supports loading from classpath resources, files, or raw strings
  * - Works with any target type using reified generics (including collections)
  * - Configured for Kotlin + Java time types and ignores unknown properties by default
+ *
+ * Jackson 3 Changes:
+ * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
+ * - Java 8 date/time support built-in (no separate JavaTimeModule needed)
+ * - Package changed from com.fasterxml.jackson to tools.jackson
+ *
+ * Note: This mapper is only used for DESERIALIZATION (reading JSON).
+ * Serialization-only settings like DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS
+ * are not needed here since we never write JSON with this mapper.
  */
 object FixtureDataLoader {
     @PublishedApi
-    internal val mapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    internal val mapper: JsonMapper = jsonMapper {
+        addModule(kotlinModule())
+        // Don't fail on unknown properties during deserialization (allows fixture flexibility)
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    }
 
     /**
      * Load and deserialize JSON from a classpath resource.
