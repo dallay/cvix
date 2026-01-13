@@ -1,6 +1,5 @@
 package com.cvix.authentication.infrastructure.http
 
-import com.cvix.IntegrationTest
 import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.config.InfrastructureTestContainers
@@ -8,19 +7,29 @@ import io.kotest.assertions.print.print
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/auth/refresh-token"
 
 @Suppress("MultilineRawStringIndentation")
-@AutoConfigureWebTestClient
-@IntegrationTest
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContainers() {
     @Autowired
-    private lateinit var webTestClient: WebTestClient
+    private lateinit var applicationContext: ApplicationContext
+
+    private val webTestClient: WebTestClient by lazy {
+        WebTestClient.bindToApplicationContext(applicationContext)
+            .apply(springSecurity())
+            .configureClient()
+            .build()
+    }
 
     private val email = "john.doe@profiletailors.com"
     private val password = "S3cr3tP@ssw0rd*123"
@@ -28,7 +37,6 @@ internal class RefreshTokenControllerIntegrationTest : InfrastructureTestContain
 
     @BeforeEach
     fun setUp() {
-        startInfrastructure()
         accessToken = webTestClient
             .mutateWith(csrf())
             .post()

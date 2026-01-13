@@ -2,15 +2,16 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerIntegrationTest
 import com.cvix.resume.application.ResumeDocumentResponses
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.jdbc.Sql
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
+import tools.jackson.module.kotlin.readValue
 
 internal class ListResumeControllerUniqueOrderIntegrationTest : ControllerIntegrationTest() {
-    private val mapper = jacksonObjectMapper()
+    private val mapper = jsonMapper { addModule(kotlinModule()) }
 
     @Test
     @Sql(

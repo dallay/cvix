@@ -6,7 +6,9 @@ import com.cvix.resume.application.TemplateMetadataResponse
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.application.template.ListTemplatesQuery
 import com.cvix.resume.domain.TemplateMetadata
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
@@ -92,8 +94,8 @@ internal class TemplateControllerTest : ControllerTest() {
             .expectBody()
             .returnResult()
         val responseBody = result.responseBody?.toString(Charsets.UTF_8)
-        val objectMapper = ObjectMapper()
-        val json = responseBody?.let { objectMapper.readTree(it) }
+        val jsonMapper = jsonMapper { addModule(kotlinModule()) }
+        val json = responseBody?.let { jsonMapper.readTree(it) }
         // Verify that the generic error message is returned (not the actual exception message)
         // This is a security feature to prevent information leakage
         val errorFields = listOf("message", "detail", "error", "title")

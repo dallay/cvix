@@ -31,25 +31,42 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2025.1.0"
-extra["springModulithVersion"] = "1.4.5"
+extra["springModulithVersion"] = "2.0.1"  // Spring Modulith 2.x for Spring Boot 4.x
 
 dependencies {
+    // B O M s   (Spring Boot 4 native Gradle BOM support)
+    // Apply Spring Boot BOM to all relevant configurations
+    val springBootBom = platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    val modulithBom = platform("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
+    val cloudBom = platform("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    val jacksonBom = platform(libs.jackson.bom)
+
+    implementation(springBootBom)
+    implementation(modulithBom)
+    implementation(cloudBom)
+    implementation(jacksonBom)
+
+    annotationProcessor(springBootBom)
+    testImplementation(springBootBom)
+    testImplementation(modulithBom)
+
     // L O C A L   D E P E N D E N C I E S
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
     
-    // Spring Boot uses Jackson 2 for WebFlux codecs in Spring Boot 4.0.1
-    // We need to add Jackson Kotlin module explicitly for Jackson 2
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // Spring Boot 4 uses Jackson 3 (tools.jackson) by default
+    // Jackson Kotlin module is now tools.jackson.module:jackson-module-kotlin
+    implementation("tools.jackson.module:jackson-module-kotlin")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    // SECURITY DEPENDENCIES
-    implementation("org.springframework.security:spring-security-oauth2-client")
-    implementation("org.springframework.security:spring-security-oauth2-jose")
+    // SECURITY DEPENDENCIES (Spring Boot 4 renamed OAuth starters)
+    // spring-boot-starter-oauth2-client -> spring-boot-starter-security-oauth2-client
+    // spring-boot-starter-oauth2-resource-server -> spring-boot-starter-security-oauth2-resource-server
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
@@ -90,16 +107,17 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // T E S T   D E P E N D E N C I E S
+    // Spring Boot 4 modular test starters - each technology has its own test starter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")  // Replaces separate webflux test deps
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test") // Replaces spring-security-test
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.springframework.boot:spring-boot-webtestclient") // Required for Spring Boot 4 test annotations
     testImplementation("io.projectreactor:reactor-test")
     testImplementation(libs.rest.assured.spring.web.test.client)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
-    testImplementation("org.springframework.security:spring-security-test")
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.r2dbc)
@@ -111,14 +129,8 @@ dependencies {
     testImplementation("org.apache.pdfbox:pdfbox:2.0.35")
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.modulith:spring-modulith-bom:${property("springModulithVersion")}")
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-        mavenBom(libs.jackson.bom.get().toString())
-        // El BOM de Spring Security ahora se importa por convención
-    }
-}
+// Spring Boot 4 uses native Gradle BOM support via platform() dependencies
+// BOMs are imported in the dependencies block using platform() function
 
 kotlin {
     compilerOptions {

@@ -7,18 +7,25 @@ import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource
 import com.cvix.waitlist.infrastructure.persistence.entity.WaitlistEntryEntity
-import com.fasterxml.jackson.core.JacksonException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.r2dbc.postgresql.codec.Json
 import org.slf4j.LoggerFactory
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 /**
  * Mapper between WaitlistEntry domain model and WaitlistEntryEntity.
+ *
+ * Jackson 3 Changes:
+ * - ObjectMapper replaced by JsonMapper (immutable builder pattern)
+ * - Package changed from com.fasterxml.jackson to tools.jackson
  */
 object WaitlistEntryMapper {
     private val logger = LoggerFactory.getLogger(WaitlistEntryMapper::class.java)
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+    private val jsonMapper: JsonMapper = jsonMapper {
+        addModule(kotlinModule())
+    }
 
     /**
      * Converts a domain WaitlistEntry to a WaitlistEntryEntity.
@@ -28,7 +35,7 @@ object WaitlistEntryMapper {
     fun WaitlistEntry.toEntity(): WaitlistEntryEntity {
         val metadataJson = this.metadata?.let {
             try {
-                Json.of(objectMapper.writeValueAsString(it))
+                Json.of(jsonMapper.writeValueAsString(it))
             } catch (e: JacksonException) {
                 logger.error("Failed to serialize metadata for waitlist entry {}", this.id, e)
                 null
@@ -58,7 +65,7 @@ object WaitlistEntryMapper {
         val metadata: Map<String, Any>? = this.metadata?.let { json ->
             try {
                 @Suppress("UNCHECKED_CAST")
-                objectMapper.readValue(json.asString(), Map::class.java) as Map<String, Any>
+                jsonMapper.readValue(json.asString(), Map::class.java) as Map<String, Any>
             } catch (e: JacksonException) {
                 logger.error("Failed to parse metadata JSON for entry ${this.id}", e)
                 null

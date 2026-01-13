@@ -4,7 +4,8 @@ import com.cvix.common.domain.criteria.Criteria
 import com.cvix.common.domain.presentation.FilterInvalidException
 import com.cvix.common.domain.presentation.filter.RHSFilterParser
 import com.cvix.spring.boot.entity.Person
-import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.test.Test
@@ -19,8 +20,8 @@ class RHSFilterParserTest {
         val exception: KClass<out Exception>? = null
     )
 
-    private val objectMapper = jacksonObjectMapper()
-    private val rhsFilterParser = RHSFilterParser(Person::class, objectMapper)
+    private val jsonMapper = jsonMapper { addModule(kotlinModule()) }
+    private val rhsFilterParser = RHSFilterParser(Person::class, jsonMapper)
 
     @Test
     fun `base parse with AND operation`() {

@@ -1,8 +1,8 @@
 package com.cvix.waitlist.infrastructure.persistence.entity
 
-import com.cvix.common.domain.AuditableEntity
 import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
+import java.io.Serializable
 import java.time.Instant
 import java.util.*
 import org.springframework.data.annotation.CreatedBy
@@ -18,6 +18,9 @@ import org.springframework.data.relational.core.mapping.Table
  * R2DBC entity for waitlist entries.
  *
  * This entity represents a row in the `waitlist` table.
+ *
+ * Note: Does not extend AuditableEntity to avoid Spring Data R2DBC 4.0
+ * duplicate column mapping issue with inherited properties.
  */
 @Table("waitlist")
 data class WaitlistEntryEntity(
@@ -51,23 +54,27 @@ data class WaitlistEntryEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = "system",
+    val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")
-    override val createdAt: Instant,
+    val createdAt: Instant,
 
     @LastModifiedBy
     @Column("updated_by")
     @get:Size(max = 50)
-    override var updatedBy: String? = null,
+    var updatedBy: String? = null,
 
     @LastModifiedDate
     @Column("updated_at")
-    override var updatedAt: Instant? = null
-) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
+    var updatedAt: Instant? = null,
+) : Serializable, Persistable<UUID> {
 
     override fun getId(): UUID = id
 
     override fun isNew(): Boolean = updatedAt == null
+
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
 }

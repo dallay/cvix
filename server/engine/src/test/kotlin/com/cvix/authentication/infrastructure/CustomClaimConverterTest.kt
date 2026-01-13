@@ -2,9 +2,11 @@ package com.cvix.authentication.infrastructure
 
 import com.cvix.UnitTest
 import com.cvix.authentication.domain.Role
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import java.net.SocketTimeoutException
 import java.util.Map.entry
 import org.assertj.core.api.Assertions.assertThat
@@ -218,7 +220,7 @@ internal class CustomClaimConverterTest {
         }
 
         companion object {
-            private val json = ObjectMapper()
+            private val json = jsonMapper { addModule(kotlinModule()) }
         }
     }
 

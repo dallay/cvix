@@ -3,7 +3,7 @@ package com.cvix.authentication.infrastructure
 import com.cvix.authentication.infrastructure.ClaimExtractor.CLAIM_APPENDERS
 import com.cvix.authentication.infrastructure.ClaimExtractor.SUB
 import com.cvix.common.domain.Memoizers
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.node.ObjectNode
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter

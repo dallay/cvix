@@ -4,7 +4,7 @@ import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
@@ -28,14 +28,14 @@ import reactor.core.publisher.Mono
  * - BUSINESS: Pricing plan-based limits for API usage quotas (not enforced in filter)
  *
  * @property rateLimitingService The application service for rate limiting.
- * @property objectMapper Jackson object mapper for JSON responses.
+ * @property jsonMapper Jackson JSON mapper for JSON responses.
  * @property configurationFactory Factory for determining rate limit configuration.
  * @since 2.0.0
  */
 @Component
 class RateLimitingFilter(
     private val rateLimitingService: RateLimitingService,
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
     private val configurationFactory: BucketConfigurationFactory
 ) : WebFilter {
 
@@ -205,7 +205,7 @@ class RateLimitingFilter(
             ),
         )
 
-        val bytes = objectMapper.writeValueAsBytes(errorResponse)
+        val bytes = jsonMapper.writeValueAsBytes(errorResponse)
         val buffer: DataBuffer = response.bufferFactory().wrap(bytes)
         return response.writeWith(Mono.just(buffer))
     }

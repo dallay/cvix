@@ -1,8 +1,8 @@
 package com.cvix.workspace.infrastructure.persistence.entity
 
-import com.cvix.common.domain.AuditableEntity
 import com.cvix.workspace.domain.Workspace.Companion.NAME_MAX_LENGTH
 import jakarta.validation.constraints.Size
+import java.io.Serializable
 import java.time.Instant
 import java.util.UUID
 import org.springframework.data.annotation.CreatedBy
@@ -16,6 +16,9 @@ import org.springframework.data.relational.core.mapping.Table
 
 /**
  * R2DBC entity for workspaces.
+ *
+ * Note: Does not extend AuditableEntity to avoid Spring Data R2DBC 4.0
+ * duplicate column mapping issue with inherited properties.
  */
 @Table("workspaces")
 data class WorkspaceEntity(
@@ -40,21 +43,21 @@ data class WorkspaceEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = "system",
+    val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")
-    override val createdAt: Instant,
+    val createdAt: Instant,
 
     @LastModifiedBy
     @Column("updated_by")
     @get:Size(max = 50)
-    override var updatedBy: String? = null,
+    var updatedBy: String? = null,
 
     @LastModifiedDate
     @Column("updated_at")
-    override var updatedAt: Instant? = null
-) : AuditableEntity(createdAt, createdBy, updatedAt, updatedBy), Persistable<UUID> {
+    var updatedAt: Instant? = null,
+) : Serializable, Persistable<UUID> {
     /**
      * This method returns the unique identifier of the workspace.
      *
@@ -68,4 +71,8 @@ data class WorkspaceEntity(
      * @return A boolean indicating whether the workspace is new.
      */
     override fun isNew(): Boolean = updatedAt == null || createdAt == updatedAt
+
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
 }
