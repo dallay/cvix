@@ -139,8 +139,10 @@ spring-boot-test = ["spring-boot-starter-test", "spring-security-test", "reactor
 spring-boot-database = [
     "spring-boot-starter-data-r2dbc",
     "spring-boot-starter-liquibase",
-    "spring-boot-starter-security-oauth2-resource-server",
+]
+spring-boot-security = [
     "spring-boot-starter-security",
+    "spring-boot-starter-security-oauth2-resource-server",
 ]
 spring-boot-sso = [
     "keycloak-admin-client",

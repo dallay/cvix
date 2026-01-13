@@ -54,18 +54,13 @@ dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
 
-    // Spring Boot 4 uses Jackson 3 (tools.jackson) by default
-    // Jackson Kotlin module is now tools.jackson.module:jackson-module-kotlin
     implementation("tools.jackson.module:jackson-module-kotlin")
-
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    // SECURITY DEPENDENCIES (Spring Boot 4 renamed OAuth starters)
-    // spring-boot-starter-oauth2-client -> spring-boot-starter-security-oauth2-client
-    // spring-boot-starter-oauth2-resource-server -> spring-boot-starter-security-oauth2-resource-server
+    // SECURITY DEPENDENCIES
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-security")
