@@ -1,12 +1,12 @@
 ---
 name: astro
 description: >
-  Astro framework patterns and best practices for content-focused sites.
-  Trigger: When working with .astro files, content collections, or Astro routing.
+    Astro framework patterns and best practices for content-focused sites.
+    Trigger: When working with .astro files, content collections, or Astro routing.
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash
 metadata:
-  author: cvix
-  version: "1.0"
+    author: cvix
+    version: "1.0"
 ---
 
 # Astro Framework Skill
@@ -50,7 +50,7 @@ import Counter from '../components/Counter.vue';
 ### 2. Hydration Directives
 
 | Directive                           | When to Use                               |
-| ----------------------------------- | ----------------------------------------- |
+|-------------------------------------|-------------------------------------------|
 | `client:load`                       | Critical interactivity needed immediately |
 | `client:idle`                       | Non-critical, can wait for browser idle   |
 | `client:visible`                    | Below the fold, hydrate on scroll         |
@@ -60,16 +60,19 @@ import Counter from '../components/Counter.vue';
 **Default choice**: `client:visible` unless there's a reason otherwise.
 
 > [!WARNING] `client:only` trade-offs
-> Components using `client:only` skip server-side rendering entirely, which increases the client JS payload and can harm SEO since no HTML is rendered initially. Use only for:
+> Components using `client:only` skip server-side rendering entirely, which increases the client JS
+> payload and can harm SEO since no HTML is rendered initially. Use only for:
 > - Third-party widgets that cannot render on the server
 > - Complex client-only UI (e.g., canvas, WebGL, maps)
 > - Non-SEO-critical parts of the page (modals, admin dashboards)
 >
-> For SEO-critical content, prefer `client:visible` or `client:idle` to ensure initial HTML is crawlable.
+> For SEO-critical content, prefer `client:visible` or `client:idle` to ensure initial HTML is
+> crawlable.
 
 ### 3. Component Structure
 
-**Props typing options**: Astro supports both runtime access via `Astro.props` and compile-time typing.
+**Props typing options**: Astro supports both runtime access via `Astro.props` and compile-time
+typing.
 
 #### Option 1: Type alias with `Astro.props` (runtime access)
 
@@ -146,21 +149,21 @@ const posts = await getCollection('blog');
 
 ```typescript
 // src/content/config.ts
-import { defineCollection, z } from 'astro:content';
+import {defineCollection, z} from 'astro:content';
 
 const blog = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    publishDate: z.coerce.date(),
-    author: z.string(),
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-  }),
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        publishDate: z.coerce.date(),
+        author: z.string(),
+        tags: z.array(z.string()).default([]),
+        draft: z.boolean().default(false),
+    }),
 });
 
-export const collections = { blog };
+export const collections = {blog};
 ```
 
 ### 5. Image Optimization
@@ -191,12 +194,12 @@ import heroImage from '../assets/hero.jpg';
 ```markdown
 client/apps/{marketing,blog}/
 ├── src/
-│   ├── pages/          # File-based routing
-│   ├── components/     # .astro and Vue components
-│   ├── layouts/        # BaseLayout.astro, etc.
-│   ├── content/        # Collections (blog posts, docs)
-│   └── styles/         # Global CSS
-├── public/             # Static assets
+│ ├── pages/ # File-based routing
+│ ├── components/ # .astro and Vue components
+│ ├── layouts/ # BaseLayout.astro, etc.
+│ ├── content/ # Collections (blog posts, docs)
+│ └── styles/ # Global CSS
+├── public/ # Static assets
 └── astro.config.mjs
 ```
 
@@ -236,7 +239,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 ## Commands
 
-> **Astro CLI Usage**: The Astro CLI is not installed globally in this workspace. Use `pnpm exec astro`
+> **Astro CLI Usage**: The Astro CLI is not installed globally in this workspace. Use
+`pnpm exec astro`
 > (or `pnpm --filter <pkg> exec astro`) to run Astro-specific commands within the monorepo.
 
 ```bash

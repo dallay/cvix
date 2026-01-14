@@ -66,11 +66,13 @@ make check            # TypeScript + lint
 
 ```typescript
 // Good
-import type { User } from "@/types";
+import type {User} from "@/types";
+
 const getName = (user: User): string => user.name;
 
 // Bad - missing 'type', using 'any'
-import { User } from "@/types";
+import {User} from "@/types";
+
 const getName = (user: any) => user.name;
 ```
 
@@ -96,7 +98,7 @@ fun createUser(name: String, active: Boolean)
 ### Naming Conventions
 
 | Element            | TypeScript             | Kotlin                 |
-| ------------------ | ---------------------- | ---------------------- |
+|--------------------|------------------------|------------------------|
 | Classes/Components | `PascalCase`           | `PascalCase`           |
 | Functions          | `camelCase`            | `camelCase`            |
 | Constants          | `SCREAMING_SNAKE_CASE` | `SCREAMING_SNAKE_CASE` |
@@ -110,7 +112,9 @@ fun createUser(name: String, active: Boolean)
 @UnitTest
 class UserServiceTest {
     @Test
-    fun `should create user with valid data`() { ... }
+    fun `should create user with valid data`() {
+        ...
+    }
 }
 
 @IntegrationTest
@@ -146,12 +150,12 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 ```markdown
 cvix/
 ├── client/
-│   ├── apps/{webapp,marketing,blog}/
-│   └── packages/{ui,utilities,i18n}/
-├── server/engine/               # Spring Boot
+│ ├── apps/{webapp,marketing,blog}/
+│ └── packages/{ui,utilities,i18n}/
+├── server/engine/ # Spring Boot
 ├── shared/{common,spring-boot-common}/
-├── infra/                       # Docker
-└── specs/                       # Feature specs
+├── infra/ # Docker
+└── specs/ # Feature specs
 ```
 
 ## Pre-commit Hooks (Lefthook)
@@ -172,18 +176,19 @@ cvix/
 Skills provide detailed patterns and conventions for specific technologies. Located in
 `.ruler/skills/`.
 
-| Skill                                                                   | Description                                               | Trigger                                     |
-| ----------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------- |
-| [astro](.ruler/skills/astro/SKILL.md)                                   | Astro framework, island architecture, content collections | `.astro` files, content collections         |
-| [vue](.ruler/skills/vue/SKILL.md)                                       | Vue 3 Composition API, Pinia, Vee-Validate + Zod          | `.vue` files, composables, stores           |
-| [kotlin](.ruler/skills/kotlin/SKILL.md)                                 | Kotlin conventions, coroutines, null safety               | `.kt` files, Kotlin patterns                |
-| [spring-boot](.ruler/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security                      | Controllers, services, repositories         |
-| [hexagonal-architecture](.ruler/skills/hexagonal-architecture/SKILL.md) | Hexagonal Architecture, Ports & Adapters, CQRS            | Feature structure, domain models, use cases |
-| [doc-guardian](.ruler/skills/doc-guardian/SKILL.md)                     | Documentation maintenance, verification                   | Docs updates, API documentation             |
-| [playwright](.ruler/skills/playwright/SKILL.md)                         | E2E testing with Playwright, Page Objects                 | E2E tests, browser automation               |
-| [tailwind-4](.ruler/skills/tailwind-4/SKILL.md)                         | Tailwind CSS 4 patterns and best practices                | Styling, CSS classes                        |
-| [typescript](.ruler/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions               |
-| [zod-4](.ruler/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions         |
+| Skill                                                                   | Description                                               | Trigger                                        |
+|-------------------------------------------------------------------------|-----------------------------------------------------------|------------------------------------------------|
+| [astro](.ruler/skills/astro/SKILL.md)                                   | Astro framework, island architecture, content collections | `.astro` files, content collections            |
+| [gradle](.ruler/skills/gradle/SKILL.md)                                 | Gradle best practices, custom tasks, cacheability         | `build.gradle.kts`, custom plugins, build perf |
+| [vue](.ruler/skills/vue/SKILL.md)                                       | Vue 3 Composition API, Pinia, Vee-Validate + Zod          | `.vue` files, composables, stores              |
+| [kotlin](.ruler/skills/kotlin/SKILL.md)                                 | Kotlin conventions, coroutines, null safety               | `.kt` files, Kotlin patterns                   |
+| [spring-boot](.ruler/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security                      | Controllers, services, repositories            |
+| [hexagonal-architecture](.ruler/skills/hexagonal-architecture/SKILL.md) | Hexagonal Architecture, Ports & Adapters, CQRS            | Feature structure, domain models, use cases    |
+| [doc-guardian](.ruler/skills/doc-guardian/SKILL.md)                     | Documentation maintenance, verification                   | Docs updates, API documentation                |
+| [playwright](.ruler/skills/playwright/SKILL.md)                         | E2E testing with Playwright, Page Objects                 | E2E tests, browser automation                  |
+| [tailwind-4](.ruler/skills/tailwind-4/SKILL.md)                         | Tailwind CSS 4 patterns and best practices                | Styling, CSS classes                           |
+| [typescript](.ruler/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions                  |
+| [zod-4](.ruler/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions            |
 
 ### Using Skills
 

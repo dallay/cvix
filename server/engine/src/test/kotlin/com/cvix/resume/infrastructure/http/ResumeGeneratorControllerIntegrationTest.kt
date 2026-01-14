@@ -5,7 +5,7 @@ import com.cvix.resume.ResumeTestFixtures
 import com.cvix.resume.infrastructure.pdf.DockerPdfGenerator
 import java.time.Duration
 import java.util.concurrent.TimeUnit
-import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.Loader
 import org.apache.pdfbox.text.PDFTextStripper
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -172,7 +172,7 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
             .expectBody().consumeWith { response ->
                 val pdfBytes = response.responseBody
                 requireNotNull(pdfBytes) { "PDF response body is null" }
-                PDDocument.load(pdfBytes.inputStream()).use { doc ->
+                Loader.loadPDF(pdfBytes).use { doc ->
                     val text = PDFTextStripper().getText(doc)
                     // Assert at least one known Spanish label is present
                     assert(text.contains("Resumen") || text.contains("Experiencia")) {

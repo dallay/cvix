@@ -241,7 +241,7 @@ const onSubmit = handleSubmit((values) => {
 ### 5. Component Communication
 
 | Scenario        | Approach                  |
-| --------------- | ------------------------- |
+|-----------------|---------------------------|
 | Parent → Child  | Props                     |
 | Child → Parent  | `emit()`                  |
 | Sibling/Distant | Pinia store               |
