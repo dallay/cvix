@@ -5,12 +5,13 @@ plugins {
 dependencies {
     implementation(platform(libs.jackson.bom))
     implementation(libs.jackson.module.kotlin)
+
     testImplementation(kotlin("test"))
-    testImplementation(libs.junit)
-    testImplementation(libs.faker)
-    testImplementation(libs.mockk)
     testImplementation(libs.assertj)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation(libs.faker)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 }
 
 testing {

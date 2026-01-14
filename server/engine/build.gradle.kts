@@ -31,7 +31,7 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 extra["springCloudVersion"] = "2025.1.0"
-extra["springModulithVersion"] = "2.0.1" // Spring Modulith 2.x for Spring Boot 4.x
+extra["springModulithVersion"] = "2.0.1"
 
 dependencies {
     // B O M s   (Spring Boot 4 native Gradle BOM support)
@@ -41,86 +41,106 @@ dependencies {
     val cloudBom = platform("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     val jacksonBom = platform(libs.jackson.bom)
 
+    // I M P L E M E N T A T I O N
     implementation(springBootBom)
     implementation(modulithBom)
     implementation(cloudBom)
     implementation(jacksonBom)
 
-    annotationProcessor(springBootBom)
-    testImplementation(springBootBom)
-    testImplementation(modulithBom)
-
-    // L O C A L   D E P E N D E N C I E S
+    // Local dependencies
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
 
-    implementation("tools.jackson.module:jackson-module-kotlin")
+    // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    // SECURITY DEPENDENCIES
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Spring framework
+    implementation("org.springframework:spring-jdbc")
+    implementation("org.springframework:spring-r2dbc")
+    implementation("org.springframework.data:spring-data-r2dbc")
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
+
+    // R2DBC
+    implementation("org.postgresql:r2dbc-postgresql")
+
+    // Jackson
+    implementation("tools.jackson.module:jackson-module-kotlin")
+
+    // Kotlin
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework:spring-jdbc")
-    implementation("org.springframework.modulith:spring-modulith-starter-core")
-
-    implementation("org.springframework:spring-r2dbc")
-    implementation("org.springframework.data:spring-data-r2dbc")
-    implementation("org.postgresql:r2dbc-postgresql")
-
-    implementation(libs.caffeine)
     implementation(libs.bundles.kotlin.jvm)
-    implementation(libs.commons.text)
+
+    // External libraries
     implementation(libs.bucket4j.core)
-    implementation(libs.stringtemplate4)
+    implementation(libs.caffeine)
+    implementation(libs.commons.text)
     implementation(libs.docker.java.core)
     implementation(libs.docker.java.transport.httpclient5)
-
-    implementation(libs.spring.dotenv)
-    implementation(libs.sendgrid)
-    implementation(libs.bundles.keycloak)
     implementation(libs.jsoup)
+    implementation(libs.sendgrid)
+    implementation(libs.spring.dotenv)
+    implementation(libs.stringtemplate4)
+    implementation(libs.bundles.keycloak)
 
+    // D E V E L O P M E N T   O N L Y
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-    runtimeOnly("org.postgresql:postgresql:42.7.8")
+    // R U N T I M E   O N L Y
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    runtimeOnly(libs.postgresql)
     runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
     runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
+    // A N N O T A T I O N   P R O C E S S O R
+    annotationProcessor(springBootBom)
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    // T E S T   D E P E N D E N C I E S
-    // Spring Boot 4 modular test starters - each technology has its own test starter
+    // T E S T   I M P L E M E N T A T I O N
+    testImplementation(springBootBom)
+    testImplementation(modulithBom)
+
+    // Spring Boot test starters (modular - each technology has its own)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation(libs.rest.assured.spring.web.test.client)
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+
+    // Spring testing
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
+
+    // Reactor testing
+    testImplementation("io.projectreactor:reactor-test")
+
+    // Kotlin testing
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+
+    // Testing libraries
+    testImplementation(libs.archunit)
+    testImplementation(libs.bundles.kotest)
+    testImplementation(libs.faker)
+    testImplementation(libs.mockk)
+    testImplementation(libs.pdfbox)
+    testImplementation(libs.rest.assured.spring.web.test.client)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.r2dbc)
-    testImplementation(libs.faker)
-    testImplementation(libs.mockk)
-    testImplementation(libs.bundles.kotest)
-    testImplementation("com.tngtech.archunit:archunit:1.4.1")
+
+    // T E S T   R U N T I M E   O N L Y
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.apache.pdfbox:pdfbox:2.0.35")
 }
 
 kotlin {

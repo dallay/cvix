@@ -24,6 +24,9 @@ bucket4j = "8.10.1"
 caffeine = "3.1.8"
 stringtemplate = "4.3.4"
 docker-java = "3.7.0"
+postgresql = "42.7.8"
+archunit = "1.4.1"
+pdfbox = "2.0.35"
 
 [libraries]
 # Gradle Plugins
@@ -82,6 +85,7 @@ reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
 ## MDC for coroutines
 kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j", version = "1.10.2" }
 # External Libraries
@@ -92,6 +96,7 @@ caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "c
 stringtemplate4 = { module = "org.antlr:ST4", version.ref = "stringtemplate" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
 docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 
 
 # Testing
@@ -117,6 +122,9 @@ rest-assured-spring-web-test-client = { module = "io.rest-assured:spring-web-tes
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
+# Testing libraries
+archunit = { module = "com.tngtech.archunit:archunit", version.ref = "archunit" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

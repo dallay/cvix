@@ -21,7 +21,7 @@ Conventions for Spring Boot backend development with WebFlux, R2DBC, and Kotlin.
 ## Layer Context
 
 | Layer                           | What Goes Here                                 | Spring Annotations? |
-| ------------------------------- | ---------------------------------------------- | ------------------- |
+|---------------------------------|------------------------------------------------|---------------------|
 | **Domain**                      | Entities, Value Objects, Repository interfaces | ❌ NO                |
 | **Application**                 | Commands, Queries, Handlers, Use Case services | ❌ NO                |
 | **Infrastructure** (this skill) | Controllers, R2DBC repos, Configs, Adapters    | ✅ YES               |
@@ -165,7 +165,9 @@ fun User.toResponse() = UserResponse(
 )
 ```
 
-> PII note: `ipAddress` and `userAgent` are sensitive. Collect only when configuration enables it, store securely with retention limits, and redact via a helper or config flag before logging or returning any value.
+> PII note: `ipAddress` and `userAgent` are sensitive. Collect only when configuration enables it,
+> store securely with retention limits, and redact via a helper or config flag before logging or
+> returning any value.
 
 ### 2. Application Services - Wired via Configuration
 
@@ -382,7 +384,8 @@ class Application
 **Transaction Demarcation:**
 
 - Apply `@Transactional` at service-layer write boundaries and repository orchestration
-- For reactive stacks (R2DBC) with **Spring 3.5.8+**, both `@Transactional` on suspend functions and `TransactionalOperator` are valid:
+- For reactive stacks (R2DBC) with **Spring 3.5.8+**, both `@Transactional` on suspend functions and
+  `TransactionalOperator` are valid:
 
 ```kotlin
 // ✅ CORRECT: Declarative @Transactional on suspend functions (Spring 3.5.8+)
@@ -416,7 +419,8 @@ class UserService(
 **When to use each:**
 
 - **`@Transactional`**: Simple, single-method transaction boundaries (preferred for repositories)
-- **`TransactionalOperator`**: Complex multi-stage flows, programmatic control, or when you need explicit transaction management logic
+- **`TransactionalOperator`**: Complex multi-stage flows, programmatic control, or when you need
+  explicit transaction management logic
 
 **Caching with Spring Cache:**
 
@@ -484,7 +488,7 @@ class UserStoreR2DbcRepository {
 ## HTTP Status Codes
 
 | Code                        | When to Use                             |
-| --------------------------- | --------------------------------------- |
+|-----------------------------|-----------------------------------------|
 | `200 OK`                    | Successful GET, PUT                     |
 | `201 Created`               | Successful POST that creates resource   |
 | `204 No Content`            | Successful DELETE                       |
@@ -517,12 +521,13 @@ fun getUser(id: UUID): Mono<User> {
 
 ### Mixing Reactive and Coroutine Paradigms
 
-Spring 6.1+ seamlessly bridges `Mono`/`Flux` and Kotlin coroutines. Choose one model per API boundary:
+Spring 6.1+ seamlessly bridges `Mono`/`Flux` and Kotlin coroutines. Choose one model per API
+boundary:
 
 **Guidelines:**
 
 | Scenario                       | Recommendation                                   |
-| ------------------------------ | ------------------------------------------------ |
+|--------------------------------|--------------------------------------------------|
 | Service/handler APIs           | Prefer `suspend fun` for coroutine-first design  |
 | Library code / reactive chains | Use `Mono<T>`/`Flux<T>` for composability        |
 | WebClient calls                | Convert at boundary, don't suspend inside chains |
@@ -604,7 +609,7 @@ class SecurityConfig {
 ## Application Profiles
 
 | Profile   | Purpose                                               |
-| --------- | ----------------------------------------------------- |
+|-----------|-------------------------------------------------------|
 | `dev`     | Local development, verbose logging, H2/Testcontainers |
 | `test`    | Automated tests, mocked external services             |
 | `staging` | Production-like, real services                        |
@@ -632,7 +637,9 @@ logging:
 ❌ **`block()` in WebFlux** - Use coroutines or reactive operators
 ❌ **Generic exception catching** - Handle specific exceptions
 ❌ **Secrets in code** - Use environment variables
-❌ **Domain repository port interfaces extending Spring interfaces** - Domain ports like `UserRepository` must remain pure Kotlin interfaces; only the infrastructure adapter (e.g., `UserR2DbcRepository`) may extend `ReactiveCrudRepository` or other Spring interfaces
+❌ **Domain repository port interfaces extending Spring interfaces** - Domain ports like
+`UserRepository` must remain pure Kotlin interfaces; only the infrastructure adapter (e.g.,
+`UserR2DbcRepository`) may extend `ReactiveCrudRepository` or other Spring interfaces
 
 ## Commands
 

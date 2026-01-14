@@ -253,7 +253,7 @@ fun <T> List<T>?.orEmpty(): List<T> = this ?: emptyList()
 ## Naming Conventions
 
 | Element             | Convention                | Example                                 |
-| ------------------- | ------------------------- | --------------------------------------- |
+|---------------------|---------------------------|-----------------------------------------|
 | Classes/Interfaces  | `PascalCase`              | `UserService`, `WorkspaceRepository`    |
 | Functions/Variables | `camelCase`               | `findById`, `userName`                  |
 | Constants           | `UPPER_SNAKE_CASE`        | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`    |

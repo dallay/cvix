@@ -25,7 +25,7 @@ Boot.
 ## Critical Concepts
 
 | Concept            | Description                                                 |
-| ------------------ | ----------------------------------------------------------- |
+|--------------------|-------------------------------------------------------------|
 | **Domain**         | Pure business logic, NO framework or library dependencies   |
 | **Application**    | Use cases orchestrating domain operations                   |
 | **Infrastructure** | Framework integration (Spring, R2DBC, HTTP)                 |
@@ -52,7 +52,7 @@ domain ← application ← infrastructure
 ```
 
 | Layer              | Can Depend On        | NEVER Depends On                    |
-| ------------------ | -------------------- | ----------------------------------- |
+|--------------------|----------------------|-------------------------------------|
 | **Domain**         | Nothing (pure)       | Application, Infrastructure, Spring |
 | **Application**    | Domain only          | Infrastructure, Spring              |
 | **Infrastructure** | Domain + Application | -                                   |
@@ -66,7 +66,7 @@ domain ← application ← infrastructure
 ### What Belongs Here
 
 | Element                   | Purpose                             | Example                         |
-| ------------------------- | ----------------------------------- | ------------------------------- |
+|---------------------------|-------------------------------------|---------------------------------|
 | **Entities**              | Core business objects with identity | `Workspace.kt`                  |
 | **Value Objects**         | Immutable domain concepts           | `WorkspaceId.kt`, `Email.kt`    |
 | **Repository Interfaces** | Contracts for persistence (PORTS)   | `WorkspaceRepository.kt`        |
@@ -523,16 +523,19 @@ Is it business logic with NO framework dependencies?
 Error propagation follows the hexagonal boundaries:
 
 | Layer              | Error Type               | Responsibility                                            |
-| ------------------ | ------------------------ | --------------------------------------------------------- |
+|--------------------|--------------------------|-----------------------------------------------------------|
 | **Domain**         | Domain exceptions        | Pure business errors (e.g., `InsufficientFundsException`) |
 | **Application**    | Application-level errors | Translate infrastructure errors, orchestrate domain       |
 | **Infrastructure** | HTTP-friendly responses  | Map exceptions to status codes and `ProblemDetail`        |
 
 **Rules:**
 
-1. **Domain errors bubble as domain exceptions** – Keep domain exceptions pure Kotlin, no framework dependencies
-2. **Infrastructure exceptions are mapped at the application boundary** – Catch and translate in application services or handlers before reaching controllers
-3. **Controllers never catch domain exceptions directly** – Use `@ControllerAdvice` to map domain/application errors to HTTP responses
+1. **Domain errors bubble as domain exceptions** – Keep domain exceptions pure Kotlin, no framework
+   dependencies
+2. **Infrastructure exceptions are mapped at the application boundary** – Catch and translate in
+   application services or handlers before reaching controllers
+3. **Controllers never catch domain exceptions directly** – Use `@ControllerAdvice` to map
+   domain/application errors to HTTP responses
 
 ```kotlin
 // Domain layer - pure business exception
@@ -561,10 +564,12 @@ class DomainExceptionHandler {
 
 ## Testing Strategy by Layer
 
-Each layer has specific testing requirements (see also: [Decision Tree](#decision-tree-where-does-this-code-belong) and [Architecture Tests](#architecture-tests-archunit)):
+Each layer has specific testing requirements (see
+also: [Decision Tree](#decision-tree-where-does-this-code-belong)
+and [Architecture Tests](#architecture-tests-archunit)):
 
 | Layer              | Test Type                     | Strategy                                                                                     |
-| ------------------ | ----------------------------- | -------------------------------------------------------------------------------------------- |
+|--------------------|-------------------------------|----------------------------------------------------------------------------------------------|
 | **Domain**         | Unit tests                    | Pure logic, no mocks needed, fast execution                                                  |
 | **Application**    | Integration / Component tests | Mock Repository/Port interfaces, verify orchestration (component/unit-level, not full-stack) |
 | **Infrastructure** | E2E tests                     | Real DB (Testcontainers), real HTTP calls, full stack                                        |
@@ -626,10 +631,12 @@ rg "import org.springframework" server/engine/src/main/kotlin/com/cvix/*/domain/
 
 ## Architecture Tests (ArchUnit)
 
-To keep boundaries enforced automatically, every new feature/bounded context must be added to the ArchUnit test so rules run for it.
+To keep boundaries enforced automatically, every new feature/bounded context must be added to the
+ArchUnit test so rules run for it.
 
 - File: server/engine/src/test/kotlin/com/cvix/ArchTest.kt
-- Update the `boundedContexts` list to include the new feature folder name (matches `com.cvix.{feature}`):
+- Update the `boundedContexts` list to include the new feature folder name (matches
+  `com.cvix.{feature}`):
 
 ```kotlin
 private val boundedContexts = listOf(
