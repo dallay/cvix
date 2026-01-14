@@ -7,6 +7,7 @@ import {
 	DropdownMenuTrigger,
 } from "@cvix/ui/components/ui/dropdown-menu";
 import { useTheme } from "@/composables/useTheme";
+import PhCheckLight from "~icons/ph/check-light";
 import PhMonitorLight from "~icons/ph/monitor-light";
 import PhMoonLight from "~icons/ph/moon-light";
 import PhSunLight from "~icons/ph/sun-light";
@@ -34,10 +35,13 @@ const themes = [
         v-for="themeOption in themes"
         :key="themeOption.value"
         @click="setTheme(themeOption.value)"
-        :class="{ 'bg-accent': theme === themeOption.value }"
       >
         <component :is="themeOption.icon" class="mr-2 h-4 w-4" />
-        {{ themeOption.label }}
+        <span class="flex-grow">{{ themeOption.label }}</span>
+        <PhCheckLight
+          v-if="theme === themeOption.value"
+          class="ml-2 h-4 w-4"
+        />
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
