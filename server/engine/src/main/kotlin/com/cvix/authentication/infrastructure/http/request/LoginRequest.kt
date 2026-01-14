@@ -41,7 +41,7 @@ data class LoginRequest(
             "All characters including spaces, Unicode, and punctuation are allowed. " +
             "Note: Server-side protections (password breach checks, brute-force throttling, " +
             "account lockout, and MFA) are enforced during authentication.",
-        example = "MySecurePassword123",
+        example = "my secure password",
         required = true,
         format = "password",
         minLength = 8,
