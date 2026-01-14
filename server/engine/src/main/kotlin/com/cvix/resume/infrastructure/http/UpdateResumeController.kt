@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import java.net.URI
 import java.util.UUID
@@ -28,6 +29,10 @@ import org.springframework.web.bind.annotation.RestController
  * REST controller for updating resumes.
  * @created 20/11/25
  */
+@Tag(
+    name = "Resume",
+    description = "Resume/CV document management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class UpdateResumeController(

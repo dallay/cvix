@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -26,6 +27,10 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @property mediator The mediator used for handling requests.
  */
+@Tag(
+    name = "Workspace",
+    description = "Workspace management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class UpdateWorkspaceController(

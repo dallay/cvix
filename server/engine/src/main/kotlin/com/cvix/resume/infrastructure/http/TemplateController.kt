@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.slf4j.LoggerFactory
@@ -21,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * REST controller for template management endpoints.
  */
+@Tag(
+    name = "Resume",
+    description = "Resume/CV document management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api/templates"], produces = ["application/vnd.api.v1+json"])
 @Validated

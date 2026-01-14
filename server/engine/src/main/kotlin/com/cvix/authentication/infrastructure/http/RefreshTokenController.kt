@@ -9,6 +9,7 @@ import com.cvix.authentication.infrastructure.cookie.getCookie
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpCookie
@@ -22,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * Controller class to handle refreshing access tokens.
  */
+@Tag(
+    name = "Authentication",
+    description = "User authentication and session management endpoints",
+)
 @RestController
 @RequestMapping("/api", produces = ["application/vnd.api.v1+json"])
 class RefreshTokenController(private val refreshTokenQueryHandler: RefreshTokenQueryHandler) {
