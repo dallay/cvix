@@ -1,6 +1,6 @@
 {
 	"name": "cvix",
-	"version": "3.11.2",
+	"version": "3.12.0",
 	"description": "cvix monorepo",
 	"private": true,
 	"type": "module",

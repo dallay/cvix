@@ -1,3 +1,9 @@
+## [3.12.0](https://github.com/dallay/cvix/compare/v3.11.2...v3.12.0) (2026-01-14)
+
+### ✨ Features
+
+* Migrate to Spring Boot 4.0.1 with Jackson 3 and Jakarta EE 11 ([#514](https://github.com/dallay/cvix/issues/514)) ([7a13c0a](https://github.com/dallay/cvix/commit/7a13c0a3fbce77a7f52b3ca1ff0d0e2bf5dc7ccc)), closes [#518](https://github.com/dallay/cvix/issues/518) [#517](https://github.com/dallay/cvix/issues/517) [#516](https://github.com/dallay/cvix/issues/516)
+
 ## [3.11.2](https://github.com/dallay/cvix/compare/v3.11.1...v3.11.2) (2026-01-13)
 
 ### 🐛 Bug Fixes
