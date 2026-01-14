@@ -37,7 +37,7 @@ class SpringBootConventionPlugin : ConventionPlugin {
 
             add(TEST_IMPLEMENTATION, catalogBundle("spring-boot-test"))
 
-            add(TEST_IMPLEMENTATION, catalogBundle("tetscontainers"))
+            add(TEST_IMPLEMENTATION, catalogBundle("testcontainers"))
 
             add(TEST_IMPLEMENTATION, catalogBundle("jjwt"))
 

@@ -26,7 +26,8 @@ stringtemplate = "4.3.4"
 docker-java = "3.7.0"
 postgresql = "42.7.8"
 archunit = "1.4.1"
-pdfbox = "2.0.35"
+pdfbox = "3.0.6"
+kotlinx-coroutines = "1.10.2"
 
 [libraries]
 # Gradle Plugins
@@ -84,10 +85,10 @@ jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" 
 reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions", version = "1.3.0" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version = "1.10.2" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 ## MDC for coroutines
-kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j", version = "1.10.2" }
+kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j", version.ref = "kotlinx-coroutines" }
 # External Libraries
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "apacheCommon" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.21.2" }
@@ -161,5 +162,5 @@ spring-boot-sso = [
 kotlin-jvm = ["kotlin-reflect", "kotlinx-coroutines-reactor", "kotlinx-coroutines-slf4j", "reactor-kotlin-extensions", "reflections"]
 keycloak = [ "keycloak-admin-client"]
 kotest = ["kotest-assertions-core-jvm", "kotest-assertions-json", "kotest-runner-junit5", "kotest-testcontainers"]
-tetscontainers = ["testcontainers", "testcontainers-junit-jupiter", "testcontainers-keycloak"]
+testcontainers = ["testcontainers", "testcontainers-junit-jupiter", "testcontainers-keycloak"]
 jjwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]

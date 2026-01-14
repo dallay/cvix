@@ -31,7 +31,7 @@ fixes, and new features.
 
 ```kotlin
 // gradle/wrapper/gradle-wrapper.properties
-distributionUrl = https\://services.gradle.org/distributions/gradle-8.14-bin.zip
+distributionUrl = https\://services.gradle.org/distributions/gradle-9.2.1-bin.zip
 
 // settings.gradle.kts - use shadow jobs to test upcoming versions
 plugins {
@@ -183,21 +183,24 @@ implementation(libs.jackson.core)
 
 **Centralize version management in `gradle/libs.versions.toml`**:
 
+> **Note**: The example below is illustrative. Actual versions and key names may differ from
+> `gradle/libs.versions.toml` in this project (e.g., `springBoot` vs `spring-boot`).
+
 ```toml
 # gradle/libs.versions.toml
 [versions]
-kotlin = "2.2.0"
-spring-boot = "3.5.8"
+kotlin = "2.2.21"
+springBoot = "4.0.1"
 kotest = "5.9.1"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "springBoot" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 ```
 
 ```kotlin
@@ -571,7 +574,7 @@ GradleRunner.create()
 
 ```bash
 # Run with latest Gradle wrapper
-./gradlew wrapper --gradle-version=8.14
+./gradlew wrapper --gradle-version=9.2.1
 
 # Check for deprecated API usage
 ./gradlew build --warning-mode=fail
