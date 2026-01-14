@@ -2,7 +2,7 @@
  * Contact form service for submitting contact requests to the backend
  */
 
-import { ApiClient, type ApiClientConfig } from "./api-client";
+import { ApiClient } from "./api-client";
 
 /**
  * Contact form request payload
@@ -27,10 +27,6 @@ export type ContactFormResponse = {
  * Service for handling contact form submissions
  */
 export class ContactService extends ApiClient {
-	constructor(config?: ApiClientConfig) {
-		super(config);
-	}
-
 	/**
 	 * Submit contact form to the backend
 	 *
