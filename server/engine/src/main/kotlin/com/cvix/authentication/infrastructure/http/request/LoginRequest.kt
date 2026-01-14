@@ -14,8 +14,8 @@ import jakarta.validation.constraints.Size
  * This request contains the user credentials and an optional flag to extend session duration.
  * The rememberMe flag affects the refresh token TTL (Time To Live).
  *
- * @property email User's email address used as login identifier.
- * @property password User's password (must meet security requirements: min 8 chars).
+ * `@property` email User's email address used as login identifier.
+ * `@property` password User's password (must meet security requirements defined by Credential.MIN_LENGTH).
  * @property rememberMe Whether to extend the session duration (affects refresh token TTL).
  * @created 31/7/23
  */
