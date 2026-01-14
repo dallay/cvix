@@ -3,6 +3,7 @@ package com.cvix.authentication.infrastructure.http.request
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 /**
@@ -31,6 +32,11 @@ data class LoginRequest(
 
     @field:NotBlank(message = "Password cannot be blank")
     @field:Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    @field:Pattern(
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#])[A-Za-z\\d@\$!%*?&#]{8,}\$",
+        message = "Password must contain at least one uppercase letter, one lowercase letter, " +
+            "one digit, and one special character (@\$!%*?&#)",
+    )
     @field:Schema(
         description = "User's password (must meet security requirements: minimum 8 characters, " +
             "at least one uppercase, one lowercase, one digit, and one special character)",
@@ -45,7 +51,6 @@ data class LoginRequest(
     @field:Schema(
         description = "Whether to extend the session duration. " +
             "If true, the refresh token TTL will be extended (e.g., 30 days instead of 7 days)",
-        example = "false",
         required = false,
         defaultValue = "false",
     )

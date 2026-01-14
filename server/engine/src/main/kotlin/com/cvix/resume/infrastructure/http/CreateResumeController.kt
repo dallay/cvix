@@ -21,6 +21,7 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController
  * @property mediator The mediator for dispatching commands.
  * @created 20/11/25
  */
+@Validated
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 @Tag(

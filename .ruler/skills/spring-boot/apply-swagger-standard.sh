@@ -27,8 +27,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
-# Process each controller
-for controller in $CONTROLLERS; do
+# Process each controller - use safe iteration to handle filenames with spaces
+while IFS= read -r controller; do
+    [[ -z "$controller" ]] && continue
+    
     basename=$(basename "$controller")
     
     # Skip already compliant controllers
@@ -43,23 +45,47 @@ for controller in $CONTROLLERS; do
     
     # Add ProblemDetail import if missing
     if ! rg -q "import org.springframework.http.ProblemDetail" "$controller"; then
-        sd 'import org.springframework.web.bind.annotation.RestController' \
-           'import org.springframework.http.ProblemDetail\nimport org.springframework.web.bind.annotation.RestController' \
-           "$controller"
+        if rg -q "import org.springframework.web.bind.annotation.RestController" "$controller"; then
+            sd 'import org.springframework.web.bind.annotation.RestController' \
+               'import org.springframework.http.ProblemDetail\nimport org.springframework.web.bind.annotation.RestController' \
+               "$controller"
+        else
+            echo "   ⚠️  WARNING: Cannot add ProblemDetail import - anchor 'RestController' not found in $basename"
+        fi
     fi
     
     # Add Content and Schema imports if missing
     if ! rg -q "import io.swagger.v3.oas.annotations.media.Content" "$controller"; then
-        sd 'import io.swagger.v3.oas.annotations.Operation' \
-           'import io.swagger.v3.oas.annotations.Operation\nimport io.swagger.v3.oas.annotations.media.Content\nimport io.swagger.v3.oas.annotations.media.Schema' \
-           "$controller"
+        if rg -q "import io.swagger.v3.oas.annotations.Operation" "$controller"; then
+            sd 'import io.swagger.v3.oas.annotations.Operation' \
+               'import io.swagger.v3.oas.annotations.Operation\nimport io.swagger.v3.oas.annotations.media.Content\nimport io.swagger.v3.oas.annotations.media.Schema' \
+               "$controller"
+        else
+            # Try fallback: insert after package declaration
+            if rg -q "^package " "$controller"; then
+                echo "   ⚠️  WARNING: Operation import not found - attempting to add Content/Schema imports after package"
+                # Find the package line and insert imports after any existing imports or after package
+                # This requires more complex logic, so we warn the user instead
+                echo "   ⚠️  MANUAL ACTION REQUIRED: Add these imports to $basename:"
+                echo "      import io.swagger.v3.oas.annotations.media.Content"
+                echo "      import io.swagger.v3.oas.annotations.media.Schema"
+            else
+                echo "   ⚠️  WARNING: Cannot add Content/Schema imports - no suitable anchor found in $basename"
+            fi
+        fi
     fi
     
     # Add @Tag import if missing
     if ! rg -q "import io.swagger.v3.oas.annotations.tags.Tag" "$controller"; then
-        sd 'import io.swagger.v3.oas.annotations.responses.ApiResponses' \
-           'import io.swagger.v3.oas.annotations.responses.ApiResponses\nimport io.swagger.v3.oas.annotations.tags.Tag' \
-           "$controller"
+        if rg -q "import io.swagger.v3.oas.annotations.responses.ApiResponses" "$controller"; then
+            sd 'import io.swagger.v3.oas.annotations.responses.ApiResponses' \
+               'import io.swagger.v3.oas.annotations.responses.ApiResponses\nimport io.swagger.v3.oas.annotations.tags.Tag' \
+               "$controller"
+        else
+            echo "   ⚠️  WARNING: Cannot add Tag import - anchor 'ApiResponses' not found in $basename"
+            echo "   ⚠️  MANUAL ACTION REQUIRED: Add this import to $basename:"
+            echo "      import io.swagger.v3.oas.annotations.tags.Tag"
+        fi
     fi
     
     echo "   - Imports added/verified"
@@ -67,7 +93,7 @@ for controller in $CONTROLLERS; do
     # Note: Actual @Tag and Content+Schema additions require more complex logic
     # that would be better done with a proper Kotlin AST parser or manual review
     echo "   ⚠️  Manual review needed for: @Tag annotation and Content schemas"
-done
+done < <(printf '%s\n' "$CONTROLLERS")
 
 echo ""
 echo "✅ Import updates complete!"

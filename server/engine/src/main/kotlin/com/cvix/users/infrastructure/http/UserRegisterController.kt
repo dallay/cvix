@@ -6,10 +6,9 @@ import com.cvix.common.domain.bus.command.CommandHandlerExecutionError
 import com.cvix.common.domain.error.BusinessRuleValidationException
 import com.cvix.common.domain.vo.credential.CredentialException
 import com.cvix.spring.boot.ApiController
-import com.cvix.users.application.response.UserResponse
-import com.cvix.users.domain.ApiDataResponse
 import com.cvix.users.infrastructure.http.request.RegisterUserRequest
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -87,8 +86,14 @@ class UserRegisterController(
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "User account created successfully - Location header contains user resource URI",
-                content = [Content(schema = Schema(implementation = UserResponse::class))],
+                description = "User account created successfully - Empty response body with Location header " +
+                    "containing user resource URI",
+                headers = [
+                    Header(
+                        name = "Location",
+                        description = "URI of the created user resource (e.g., /users/{userId})",
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -116,7 +121,7 @@ class UserRegisterController(
     @PostMapping("/auth/register", consumes = ["application/json"])
     suspend fun registerUser(
         @Validated @RequestBody registerUserRequest: RegisterUserRequest,
-    ): ResponseEntity<ApiDataResponse<UserResponse>> {
+    ): ResponseEntity<Void> {
         log.debug(
             "Registering new user with email: {}",
             StringEscapeUtils.escapeJava(registerUserRequest.email),

@@ -1,13 +1,13 @@
 # Swagger Documentation Standard
 
-Este documento define el estándar obligatorio para documentar todos los controllers REST en el proyecto CVIX.
+This document defines the mandatory standard for documenting all REST controllers in the CVIX project.
 
-## Estándar basado en
+## Standard based on
 
-- `ContactController` - Mejor ejemplo de documentación completa
-- `WaitlistController` - Segundo mejor ejemplo
+- `ContactController` - Best example of complete documentation
+- `WaitlistController` - Second best example
 
-## Estructura Obligatoria
+## Mandatory Structure
 
 ### 1. Controller Class
 
@@ -126,7 +126,7 @@ suspend fun [operationName](
 
 ### 3. Request DTOs
 
-**TODOS** los request DTOs DEBEN tener:
+**ALL** request DTOs MUST have:
 
 ```kotlin
 /**
@@ -204,28 +204,28 @@ data class [Operation]Response(
 )
 ```
 
-## Códigos HTTP Estándar
+## Standard HTTP Codes
 
-| Code | Usage                                    | Cuando usarlo                                                      |
+| Code | Usage                                    | When to use                                                        |
 |------|------------------------------------------|--------------------------------------------------------------------|
-| 200  | OK                                       | GET/PATCH/DELETE exitosos                                          |
-| 201  | Created                                  | POST/PUT exitosos que crean recursos                               |
-| 400  | Bad Request                              | Validación fallida, datos inválidos                                |
-| 401  | Unauthorized                             | Token faltante o inválido                                          |
-| 403  | Forbidden                                | Token válido pero sin permisos                                     |
-| 404  | Not Found                                | Recurso no existe                                                  |
-| 409  | Conflict                                 | Email duplicado, estado inválido, constraint violation             |
-| 429  | Too Many Requests                        | Rate limit excedido                                                |
-| 500  | Internal Server Error                    | Error inesperado del servidor                                      |
+| 200  | OK                                       | Successful GET/PATCH/DELETE                                        |
+| 201  | Created                                  | Successful POST/PUT that creates resources                         |
+| 400  | Bad Request                              | Validation failed, invalid data                                    |
+| 401  | Unauthorized                             | Missing or invalid token                                           |
+| 403  | Forbidden                                | Valid token but insufficient permissions                           |
+| 404  | Not Found                                | Resource does not exist                                            |
+| 409  | Conflict                                 | Duplicate email, invalid state, constraint violation               |
+| 429  | Too Many Requests                        | Rate limit exceeded                                                |
+| 500  | Internal Server Error                    | Unexpected server error                                            |
 
-## Content Types Estándar
+## Standard Content Types
 
 - **Produces**: `application/vnd.api.v1+json` (versioned API)
 - **Consumes**: `application/json`
 
 ## Security Annotations
 
-Para endpoints que requieren autenticación:
+For endpoints that require authentication:
 
 ```kotlin
 @Operation(
@@ -237,55 +237,55 @@ Para endpoints que requieren autenticación:
 ## Validation Annotations
 
 ### String Fields
-- `@NotBlank` - No null, empty, o solo whitespace
-- `@Size(min, max)` - Longitud del string
-- `@Email` - Formato email válido
-- `@Pattern(regexp)` - Regex personalizada
+- `@NotBlank` - Not null, empty, or only whitespace
+- `@Size(min, max)` - String length
+- `@Email` - Valid email format
+- `@Pattern(regexp)` - Custom regex
 
 ### Numeric Fields
-- `@NotNull` - No null
-- `@Min(value)` - Valor mínimo
-- `@Max(value)` - Valor máximo
+- `@NotNull` - Not null
+- `@Min(value)` - Minimum value
+- `@Max(value)` - Maximum value
 - `@Positive` / `@PositiveOrZero`
 
 ### Collections
-- `@NotEmpty` - No null y no vacío
-- `@Size(min, max)` - Tamaño de la colección
+- `@NotEmpty` - Not null and not empty
+- `@Size(min, max)` - Collection size
 
 ## Best Practices
 
-1. **KDoc primero, Swagger después**: Documentar en KDoc, luego en anotaciones Swagger
-2. **Ejemplos realistas**: Usar ejemplos que representen datos reales
-3. **Descripciones completas**: Explicar el "por qué", no solo el "qué"
-4. **Todos los códigos HTTP**: Documentar TODAS las respuestas posibles
-5. **Localización**: Usar `MessageSource` para mensajes localizados
-6. **Logging**: Log en INFO para operaciones exitosas, WARN para errores de negocio, ERROR para fallos técnicos
-7. **Content Schema**: SIEMPRE especificar `Content(schema = Schema(implementation = ...))`
-8. **ProblemDetail**: Usar Spring's `ProblemDetail` para respuestas de error
-9. **Headers**: Documentar headers especiales (ej: `Retry-After` para 429)
+1. **KDoc first, Swagger second**: Document in KDoc, then in Swagger annotations
+2. **Realistic examples**: Use examples that represent real data
+3. **Complete descriptions**: Explain the "why", not just the "what"
+4. **All HTTP codes**: Document ALL possible responses
+5. **Localization**: Use `MessageSource` for localized messages
+6. **Logging**: Log at INFO for successful operations, WARN for business errors, ERROR for technical failures
+7. **Content Schema**: ALWAYS specify `Content(schema = Schema(implementation = ...))`
+8. **ProblemDetail**: Use Spring's `ProblemDetail` for error responses
+9. **Headers**: Document special headers (e.g., `Retry-After` for 429)
 
-## Ejemplo Completo: ContactController
+## Complete Example: ContactController
 
-Ver `/server/engine/src/main/kotlin/com/cvix/contact/infrastructure/http/ContactController.kt`
+See `/server/engine/src/main/kotlin/com/cvix/contact/infrastructure/http/ContactController.kt`
 
-Este controller es el estándar de oro para documentación Swagger en el proyecto.
+This controller is the gold standard for Swagger documentation in the project.
 
-## Verificación
+## Verification
 
-Antes de commit:
+Before committing:
 
 ```bash
 make verify-all  # Debe pasar sin errores
 ```
 
-Para ver la documentación generada:
+To view the generated documentation:
 
-1. Correr `./gradlew bootRun`
-2. Abrir `http://localhost:8080/swagger-ui.html`
+1. Run `./gradlew bootRun`
+2. Open `http://localhost:8080/swagger-ui.html`
 
-## Anti-Patterns a Evitar
+## Anti-Patterns to Avoid
 
-❌ **MAL**:
+❌ **BAD**:
 ```kotlin
 @Operation(summary = "Login endpoint")
 @ApiResponses(
@@ -294,7 +294,7 @@ Para ver la documentación generada:
 )
 ```
 
-✅ **BIEN**:
+✅ **GOOD**:
 ```kotlin
 @Operation(
     summary = "Authenticate user",
@@ -335,4 +335,4 @@ Para ver la documentación generada:
 
 ---
 
-**Este estándar es OBLIGATORIO** para todos los controllers nuevos y debe aplicarse progresivamente a los existentes.
+**This standard is MANDATORY** for all new controllers and must be progressively applied to existing ones.
