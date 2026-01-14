@@ -265,7 +265,7 @@ jobs:
             echo "✅ Detected Runner UID: $RUNNER_UID"
           fi
           echo "uid=$RUNNER_UID" >> "$GITHUB_OUTPUT"
-      - name: Run tests
+      - name: Run tests and verify coverage
         env:
           DOCKER_IMAGE: ${{ env.TEXLIVE_IMAGE }}
           # GitHub Actions runner runs as a specific UID (detected above). The DockerPdfGenerator
@@ -276,7 +276,8 @@ jobs:
         run: |
           echo "Starting backend tests with Docker image: ${{ env.TEXLIVE_IMAGE }}"
           echo "Container will run as UID: $RESUME_PDF_DOCKER_CONTAINER_USER"
-          ./gradlew test --no-daemon -i
+          echo "Running tests and enforcing coverage thresholds..."
+          ./gradlew test koverVerify --no-daemon -i
         timeout-minutes: 60
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
@@ -301,19 +302,6 @@ jobs:
             server/engine/build/libs/*.jar
             server/engine/build/reports/
           retention-days: 7
-
-  coverage-verification:
-    name: Enforce Coverage Thresholds
-    runs-on: ubuntu-latest
-    needs: [backend-pipeline]
-    if: needs.backend-pipeline.result == 'success'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - name: Setup Java
-        uses: ./.github/actions/setup/java
-      - name: Enforce coverage threshold
-        run: ./gradlew koverVerify --no-daemon
 
   # ============================================================================
   # Frontend Pipeline - Conditional execution based on changes
@@ -567,7 +555,6 @@ jobs:
       - frontend-pipeline
       - e2e-tests
       - security-scans
-      - coverage-verification
       - validate-dockerfiles
     steps:
       - name: Check job results
@@ -597,11 +584,6 @@ jobs:
 
           if [ "${{ needs.security-scans.result }}" != "success" ]; then
             echo "❌ Security scans failed: ${{ needs.security-scans.result }}"
-            exit 1
-          fi
-
-          if [ "${{ needs.coverage-verification.result }}" != "success" ] && [ "${{ needs.coverage-verification.result }}" != "skipped" ]; then
-            echo "❌ Coverage verification failed: ${{ needs.coverage-verification.result }}"
             exit 1
           fi
 
@@ -687,6 +669,5 @@ jobs:
             echo "| Frontend Pipeline | ${{ needs.frontend-pipeline.result }} |"
             echo "| E2E Tests | ${{ needs.e2e-tests.result }} |"
             echo "| Security Scans | ${{ needs.security-scans.result }} |"
-            echo "| Coverage Verification | ${{ needs.coverage-verification.result }} |"
             echo "| Validate Dockerfiles | ${{ needs.validate-dockerfiles.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
