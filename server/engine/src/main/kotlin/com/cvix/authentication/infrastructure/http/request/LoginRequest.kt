@@ -33,15 +33,20 @@ data class LoginRequest(
     val email: String,
 
     @field:NotBlank(message = "Password cannot be blank")
-    @field:Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    @field:Size(
+        min = Credential.MIN_LENGTH,
+        max = CredentialValue.MAX_CREDENTIAL_LENGTH,
+        message = "Password must be between ${Credential.MIN_LENGTH} " +
+            "and ${CredentialValue.MAX_CREDENTIAL_LENGTH} characters",
+    )
     @field:Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#])[A-Za-z\\d@\$!%*?&#]{8,}\$",
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}\$",
         message = "Password must contain at least one uppercase letter, one lowercase letter, " +
-            "one digit, and one special character (@\$!%*?&#)",
+            "one digit, and one special character",
     )
     @field:Schema(
         description = "User's password (must meet security requirements: " +
-            "minimum ${Credential.MIN_LENGTH} and ${CredentialValue.MAX_CREDENTIAL_LENGTH} characters, " +
+            "minimum ${Credential.MIN_LENGTH} and maximum ${CredentialValue.MAX_CREDENTIAL_LENGTH} characters, " +
             "at least one uppercase, one lowercase, one digit, and one special character)",
         example = "MySecureP@ssw0rd",
         required = true,

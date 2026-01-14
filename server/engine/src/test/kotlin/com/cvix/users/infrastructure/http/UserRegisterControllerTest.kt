@@ -74,6 +74,10 @@ class UserRegisterControllerTest {
                 object : BusinessRuleValidationException("Invalid business rule") {},
                 "Business rule validation error",
             ),
+        )
+
+        @JvmStatic
+        fun conflictScenarios(): Stream<Arguments> = Stream.of(
             Arguments.of(
                 DataIntegrityViolationException("Duplicate key"),
                 "Data integrity violation",
@@ -185,6 +189,27 @@ class UserRegisterControllerTest {
                 .bodyValue(request)
                 .exchange()
                 .expectStatus().isBadRequest
+                .expectBody().isEmpty
+
+            coVerify(exactly = 1) { mediator.send(any<RegisterUserCommand>()) }
+        }
+
+        @ParameterizedTest(name = "Should handle {1} and return 409")
+        @MethodSource("com.cvix.users.infrastructure.http.UserRegisterControllerTest#conflictScenarios")
+        fun `should handle conflict exceptions and return 409`(
+            exception: Exception,
+            @Suppress("UNUSED_PARAMETER") testCase: String,
+        ): Unit = runTest {
+            // Given
+            val request = RegisterUserRequest(email, password, firstname, lastname)
+            coEvery { mediator.send(any<RegisterUserCommand>()) } throws exception
+
+            // When & Then
+            webTestClient.post().uri(ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isEqualTo(409)
                 .expectBody().isEmpty
 
             coVerify(exactly = 1) { mediator.send(any<RegisterUserCommand>()) }
