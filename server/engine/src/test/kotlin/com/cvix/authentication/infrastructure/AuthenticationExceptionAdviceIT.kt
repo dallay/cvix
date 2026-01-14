@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @IntegrationTest
 @AutoConfigureWebTestClient
+@TestPropertySource(properties = ["server.ssl.enabled=false"])
 class AuthenticationExceptionAdviceIT {
 
     @Autowired

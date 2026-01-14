@@ -92,7 +92,6 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     runtimeOnly("org.postgresql:postgresql:42.7.8")

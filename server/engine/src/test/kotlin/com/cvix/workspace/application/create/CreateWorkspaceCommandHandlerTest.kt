@@ -2,9 +2,10 @@ package com.cvix.workspace.application.create
 
 import com.cvix.UnitTest
 import com.cvix.common.domain.bus.event.EventPublisher
+import com.cvix.workspace.domain.WorkspaceFinderRepository
+import com.cvix.workspace.domain.WorkspaceMetrics
 import com.cvix.workspace.domain.WorkspaceRepository
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,20 +19,28 @@ import org.junit.jupiter.api.Test
 internal class CreateWorkspaceCommandHandlerTest {
     private lateinit var eventPublisher: EventPublisher<WorkspaceCreatedEvent>
     private lateinit var workspaceRepository: WorkspaceRepository
+    private lateinit var workspaceFinderRepository: WorkspaceFinderRepository
+    private lateinit var workspaceMetrics: WorkspaceMetrics
     private lateinit var workspaceCreator: WorkspaceCreator
     private lateinit var createWorkspaceCommandHandler: CreateWorkspaceCommandHandler
-    private lateinit var meterRegistry: SimpleMeterRegistry
 
     @BeforeEach
     fun setUp() {
         eventPublisher = mockk()
         workspaceRepository = mockk()
-        meterRegistry = SimpleMeterRegistry()
-        workspaceCreator = WorkspaceCreator(workspaceRepository, eventPublisher)
-        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(workspaceCreator, meterRegistry)
+        workspaceFinderRepository = mockk()
+        workspaceMetrics = mockk(relaxed = true)
+        workspaceCreator = WorkspaceCreator(
+            workspaceRepository,
+            workspaceFinderRepository,
+            workspaceMetrics,
+            eventPublisher,
+        )
+        createWorkspaceCommandHandler = CreateWorkspaceCommandHandler(workspaceCreator)
 
         coEvery { workspaceRepository.create(any()) } returns Unit
         coEvery { eventPublisher.publish(any<WorkspaceCreatedEvent>()) } returns Unit
+        coEvery { workspaceFinderRepository.findByOwnerId(any()) } returns emptyList()
     }
 
     @Test
