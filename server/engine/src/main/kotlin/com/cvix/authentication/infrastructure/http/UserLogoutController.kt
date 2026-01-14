@@ -9,6 +9,7 @@ import com.cvix.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpCookie
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -24,6 +25,10 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @created 15/8/24
  */
+@Tag(
+    name = "Authentication",
+    description = "User authentication and session management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class UserLogoutController(

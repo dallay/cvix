@@ -7,6 +7,7 @@ import com.cvix.workspace.application.find.member.AllWorkspaceByMemberQuery
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @property mediator The mediator used to handle queries.
  */
+@Tag(
+    name = "Workspace",
+    description = "Workspace management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class GetAllWorkspaceController(

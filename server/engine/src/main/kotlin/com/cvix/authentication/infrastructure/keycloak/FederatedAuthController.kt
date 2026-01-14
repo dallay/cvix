@@ -1,6 +1,7 @@
 package com.cvix.authentication.infrastructure.keycloak
 
 import com.cvix.authentication.application.FederatedAuthService
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.net.URI
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,6 +32,10 @@ private const val GOOGLE = "google"
  * @property federatedAuthService Service for managing federated identities
  * @since 1.0.0
  */
+@Tag(
+    name = "Authentication",
+    description = "OAuth2/Federated authentication endpoints",
+)
 @RestController
 @RequestMapping("/api/auth/federated")
 class FederatedAuthController(

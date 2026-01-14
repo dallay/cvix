@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.net.URI
 import java.util.UUID
 import org.slf4j.LoggerFactory
@@ -27,6 +28,10 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @property mediator The [Mediator] used to dispatch commands.
  */
+@Tag(
+    name = "Workspace",
+    description = "Workspace management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api"], produces = ["application/vnd.api.v1+json"])
 class CreateWorkspaceController(

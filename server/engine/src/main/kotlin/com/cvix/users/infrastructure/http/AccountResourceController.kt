@@ -5,6 +5,7 @@ import com.cvix.users.infrastructure.service.AccountResourceService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.security.Principal
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AbstractAuthenticationToken
@@ -16,6 +17,10 @@ import reactor.core.publisher.Mono
 /**
  * The [AccountResourceController] class is responsible for handling HTTP requests related to account information.
  * It is a Spring RestController with the base path*/
+@Tag(
+    name = "User Account",
+    description = "User account management and profile endpoints",
+)
 @RestController
 @RequestMapping("/api", produces = ["application/vnd.api.v1+json"])
 class AccountResourceController(private val accountResourceService: AccountResourceService) {

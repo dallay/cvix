@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,10 @@ import org.springframework.web.server.ServerWebExchange
 /**
  * REST controller for resume generation endpoints.
  */
+@Tag(
+    name = "Resume",
+    description = "Resume/CV document management endpoints",
+)
 @RestController
 @RequestMapping(value = ["/api/resume"], produces = ["application/vnd.api.v1+json"])
 @Validated
