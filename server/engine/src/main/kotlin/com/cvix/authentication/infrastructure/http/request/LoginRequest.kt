@@ -1,5 +1,7 @@
 package com.cvix.authentication.infrastructure.http.request
 
+import com.cvix.common.domain.vo.credential.Credential
+import com.cvix.common.domain.vo.credential.CredentialValue
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -38,13 +40,14 @@ data class LoginRequest(
             "one digit, and one special character (@\$!%*?&#)",
     )
     @field:Schema(
-        description = "User's password (must meet security requirements: minimum 8 characters, " +
+        description = "User's password (must meet security requirements: " +
+            "minimum ${Credential.MIN_LENGTH} and ${CredentialValue.MAX_CREDENTIAL_LENGTH} characters, " +
             "at least one uppercase, one lowercase, one digit, and one special character)",
         example = "MySecureP@ssw0rd",
         required = true,
         format = "password",
-        minLength = 8,
-        maxLength = 100,
+        minLength = Credential.MIN_LENGTH,
+        maxLength = CredentialValue.MAX_CREDENTIAL_LENGTH,
     )
     val password: String,
 
