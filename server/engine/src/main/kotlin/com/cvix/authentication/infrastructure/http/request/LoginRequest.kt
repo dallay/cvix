@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size
  * The rememberMe flag affects the refresh token TTL (Time To Live).
  *
  * @property email User's email address used as login identifier.
- * @property password User's password (must meet security requirements: min 8 chars).
+ * @property password User's password (8-100 characters, all character types allowed).
  * @property rememberMe Whether to extend the session duration (affects refresh token TTL).
  * @created 31/7/23
  */
@@ -33,14 +33,15 @@ data class LoginRequest(
     @field:NotBlank(message = "Password cannot be blank")
     @field:Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     @field:Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#])[A-Za-z\\d@\$!%*?&#]{8,}\$",
-        message = "Password must contain at least one uppercase letter, one lowercase letter, " +
-            "one digit, and one special character (@\$!%*?&#)",
+        regexp = "^.{8,100}\$",
+        message = "Password must be between 8 and 100 characters",
     )
     @field:Schema(
-        description = "User's password (must meet security requirements: minimum 8 characters, " +
-            "at least one uppercase, one lowercase, one digit, and one special character)",
-        example = "MySecureP@ssw0rd",
+        description = "User's password. Must be between 8 and 100 characters. " +
+            "All characters including spaces, Unicode, and punctuation are allowed. " +
+            "Note: Server-side protections (password breach checks, brute-force throttling, " +
+            "account lockout, and MFA) are enforced during authentication.",
+        example = "MySecurePassword123",
         required = true,
         format = "password",
         minLength = 8,

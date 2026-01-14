@@ -15,25 +15,9 @@ object CredentialGenerator {
     fun generate(password: String = generateValidPassword()): Credential =
         Credential(CredentialId(UUID.randomUUID()), CredentialValue(password))
 
-    fun generateValidPassword(maxAttempts: Int = 10): String {
-        var password: String
-        var attempts = 0
-
-        do {
-            password = faker.credentials().password(8, 80, true, true, true)
-            if (isPasswordValid(password)) {
-                return password
-            }
-            attempts++
-        } while (attempts < maxAttempts)
-
-        return "DefaultPass123!"
-    }
-    private fun isPasswordValid(password: String): Boolean {
-        val hasLowercase = password.any { it.isLowerCase() }
-        val hasUppercase = password.any { it.isUpperCase() }
-        val hasDigit = password.any { it.isDigit() }
-        val hasSpecial = password.any { !it.isLetterOrDigit() }
-        return hasLowercase && hasUppercase && hasDigit && hasSpecial
+    fun generateValidPassword(): String {
+        // Generate a password with length between 8 and 100 characters
+        // Per OWASP guidance, we only enforce length, not composition rules
+        return faker.credentials().password(8, 80, true, true, true)
     }
 }
