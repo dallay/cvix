@@ -117,7 +117,8 @@ create_symlink() {
         if [[ "$DRY_RUN" == true ]]; then
             log_verbose "  [dry-run] Would backup and replace: $dest"
         else
-            local backup="$dest.bak.$(date +%Y%m%d%H%M%S)"
+            local backup
+            backup="$dest.bak.$(date +%Y%m%d%H%M%S)"
             mv "$dest" "$backup"
             log "${WARN} Backed up existing: $dest -> $backup"
         fi
