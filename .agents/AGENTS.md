@@ -184,30 +184,7 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 | [kotlin](.agents/skills/kotlin/SKILL.md)                                 | Kotlin conventions, coroutines, null safety               | `.kt` files, Kotlin patterns                   |
 | [spring-boot](.agents/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security                      | Controllers, services, repositories            |
 | [hexagonal-architecture](.agents/skills/hexagonal-architecture/SKILL.md) | Hexagonal Architecture, Ports & Adapters, CQRS            | Feature structure, domain models, use cases    |
-| [doc-guardian](.agents/skills/doc-guardian/SKILL.md)                     | Documentation maintenance, verification                   | Docs updates, API documentation                |
 | [playwright](.agents/skills/playwright/SKILL.md)                         | E2E testing with Playwright, Page Objects                 | E2E tests, browser automation                  |
 | [tailwind-4](.agents/skills/tailwind-4/SKILL.md)                         | Tailwind CSS 4 patterns and best practices                | Styling, CSS classes                           |
 | [typescript](.agents/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions                  |
 | [zod-4](.agents/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions            |
-
-### Using Skills
-
-Skills are automatically loaded when working with relevant files. For explicit loading:
-
-```bash
-# Verify documentation
-.agents/skills/doc-guardian/assets/verify-docs.sh
-
-# Use a template
-cp .agents/skills/doc-guardian/assets/feature-doc.md \
-   client/apps/docs/src/content/docs/features/my-feature.md
-```
-
-### Documentation Templates
-
-Located in `.agents/skills/doc-guardian/assets/`:
-
-- `feature-doc.md` - New feature documentation
-- `api-doc.md` - REST API endpoint documentation
-- `migration-guide.md` - Breaking changes and migration steps
-- `architecture-decision.md` - Architecture Decision Record (ADR)

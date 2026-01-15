@@ -98,18 +98,6 @@
 			}
 		},
 
-		"cursor": {
-			"enabled": false,
-			"description": "Cursor - AI-first code editor",
-			"targets": {
-				"rules": {
-					"source": "AGENTS.md",
-					"destination": ".cursor/rules",
-					"type": "symlink"
-				}
-			}
-		},
-
 		"root-agents-md": {
 			"enabled": true,
 			"description": "Root AGENTS.md for tools that look for it in repo root",
