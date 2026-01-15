@@ -86,7 +86,7 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 ├── shared/   # Kotlin shared libs
 ├── infra/    # Infra as code: Docker Compose, secrets, monitoring
 ├── docs/     # Astro-powered docs site
-├── .ruler/   # Canonical architecture, style & workflow guides
+├── .agents/  # AI agent configs, skills & workflow guides
 ```
 
 ---
@@ -133,7 +133,7 @@ make dev-web       # Start Vue frontend (hot reload)
 make verify-all    # ✅ Run all checks, tests, and linters
 ```
 
-> 🔎 For advanced setup and deployment, see [.ruler/](.ruler/) and [docs/](docs/).
+> 🔎 For advanced setup and deployment, see [.agents/](.agents/) and [docs/](docs/).
 
 ---
 
@@ -149,9 +149,9 @@ make verify-all    # ✅ Run all checks, tests, and linters
 ## 🤝 Contribution
 
 Open to focused, quality-driven contributions:
-1. 🔍 Review your changes and follow [project conventions](.ruler/)
+1. 🔍 Review your changes and follow [project conventions](.agents/)
 2. ✅ Pass all tests and lints (`make test-all`)
-3. 📝 Use clear, conventional commits (`.ruler/general.md`)
+3. 📝 Use clear, conventional commits (see [AGENTS.md](.agents/AGENTS.md))
 4. 👀 See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODEOWNERS](.github/CODEOWNERS)
 
 ---
@@ -164,7 +164,7 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 
 ## 📚 Reference & Documentation
 
-- 📖 [Canonical architecture & style rules](.ruler/)
+- 📖 [Canonical architecture & style rules](.agents/)
 - 📝 [Docs site](docs/)
 - 🛡️ [Security policy](SECURITY.md)
 - 🐳 [Docker deployment guide](infra/README.md)
@@ -173,7 +173,7 @@ ProFileTailors is licensed under the MIT License. See [LICENSE](LICENSE).
 
 ## ❓ Questions?
 
-Open an issue, or start with `.ruler/general.md` and `.ruler/reference/architecture.md` for a guided tour of the internals.
+Open an issue, or start with the [AGENTS.md](.agents/AGENTS.md) guide for a tour of project conventions.
 
 
 ---

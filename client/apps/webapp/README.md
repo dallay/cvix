@@ -69,7 +69,7 @@ Each feature follows **Hexagonal Architecture**:
 - **`application/`**: Use cases and orchestration
 - **`infrastructure/`**: Framework integration (API, stores, validation)
 
-See `.ruler/reference/architecture.md` for detailed architecture documentation.
+See `.agents/skills/hexagonal-architecture/SKILL.md` for detailed architecture documentation.
 
 ---
 
@@ -431,7 +431,7 @@ Use semantic tokens from the global design system:
 </div>
 ```
 
-See `.ruler/frontend/design-system.md` for complete token reference.
+See `.agents/skills/tailwind-4/SKILL.md` for complete token reference.
 
 ### Dark Mode
 
@@ -468,9 +468,9 @@ await authStore.logout();
 
 ## Conventions
 
-- Follow `.ruler/frontend/vue.md` for Vue-specific guidelines
-- Follow `.ruler/frontend/typescript.md` for TypeScript standards
-- Follow `.ruler/frontend/design-system.md` for styling
+- Follow `.agents/skills/vue/SKILL.md` for Vue-specific guidelines
+- Follow `.agents/skills/typescript/SKILL.md` for TypeScript standards
+- Follow `.agents/skills/tailwind-4/SKILL.md` for styling
 - Use Composition API (not Options API)
 - Keep components small and focused
 - Use TypeScript strict mode

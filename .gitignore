@@ -85,6 +85,10 @@ tmp/
 *.tmp
 *.bak
 
+### AI Agent journals (temporary logs) ###
+.agents/journal/*.md
+!.agents/journal/.gitkeep
+
 # macOS system files
 .DS_Store
 .AppleDouble
@@ -107,31 +111,6 @@ $RECYCLE.BIN/
 # TypeScript cache
 **/*.tsbuildinfo
 
-
-# START Ruler Generated Files
-/.agents/skills
-/.claude/skills
-/.codex/skills
-/.cursor/skills
-/.gemini/settings.json
-/.gemini/settings.json.bak
-/.gemini/skills
-/.mcp.json
-/.mcp.json.bak
-/.opencode/skill
-/.pi/skills
-/.roo/skills
-/.skillz
-/.vibe/skills
-/.vscode/mcp.json
-/.vscode/mcp.json.bak
-/AGENTS.md
-/AGENTS.md.bak
-/CLAUDE.md
-/CLAUDE.md.bak
-/opencode.json
-/opencode.json.bak
-# END Ruler Generated Files
 checksums.txt
 gitleaks_*.tar.gz
 gitleaks_*.tar.gz.sha256
@@ -151,3 +130,29 @@ temporal-docs/
 
 # Playwright reports
 playwright-report/
+
+
+
+
+
+
+
+
+
+
+# START AI Agent Symlinks
+.claude/commands/
+.claude/skills/
+.cursor/rules
+.gemini/commands/
+.gemini/skills/
+.github/agents/
+.github/copilot-instructions.md
+.github/prompts/
+.mcp.json
+.opencode/command/
+.opencode/skill/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+# END AI Agent Symlinks

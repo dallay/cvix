@@ -38,7 +38,7 @@ backend modifications
 
 ### I. Code Quality First ✅
 
-- **Compliance**: Will follow Kotlin/TypeScript conventions per `.ruler/` docs
+- **Compliance**: Will follow Kotlin/TypeScript conventions per `.agents/` docs
 - **Static Analysis**: Detekt (Kotlin), Biome (TypeScript) will be applied
 - **Immutability**: Section preferences will use immutable data structures
 - **Documentation**: All new public APIs will have JSDoc/KDoc

@@ -329,8 +329,8 @@ Output: `dist/` (static files ready for deployment)
 
 ## Conventions
 
-- Follow `.ruler/frontend/astro.md` for Astro-specific guidelines
-- Follow `.ruler/frontend/html-css.md` for HTML and CSS standards
+- Follow `.agents/skills/astro/SKILL.md` for Astro-specific guidelines
+- Follow `.agents/skills/tailwind-4/SKILL.md` for styling standards
 - Use semantic HTML for accessibility and SEO
 - Keep components small and focused
 

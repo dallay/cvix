@@ -236,7 +236,23 @@ else
 fi
 
 # ------------------------------
-# 5) Nice-to-have checks
+# 5) Sync AI agent configurations
+# ------------------------------
+section "Syncing AI agent configurations"
+
+SYNC_SCRIPT="$ROOT_DIR/scripts/sync-agents.sh"
+if [[ -x "$SYNC_SCRIPT" ]]; then
+  if "$SYNC_SCRIPT"; then
+    log "${PASS} AI agent configurations synced"
+  else
+    log "${WARN} AI agent sync had issues (non-fatal)"
+  fi
+else
+  log "${WARN} sync-agents.sh not found or not executable"
+fi
+
+# ------------------------------
+# 6) Nice-to-have checks
 # ------------------------------
 section "Additional checks"
 

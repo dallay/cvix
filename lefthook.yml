@@ -7,9 +7,6 @@ pre-commit:
       run: pnpm run lint
     git-update:
       run: git update-index --again
-    ruler-apply:
-      glob: ".ruler/**/*"
-      run: pnpm run ruler:apply
     markdownlint:
       glob: "**/*.{md,mdx}"
       run: npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json

@@ -35,9 +35,9 @@
 	"scripts": {
 		"update-deps": "pnpm update -i -r --latest",
 		"preinstall": "npx only-allow pnpm",
-		"prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run ruler:apply; fi",
-		"ruler:apply": "npx @intellectronica/ruler apply",
-		"ruler:check": "npx @intellectronica/ruler check",
+		"prepare": "if [ -d .git ]; then pnpm exec lefthook install && ./scripts/sync-agents.sh; fi",
+		"agents:sync": "./scripts/sync-agents.sh",
+		"agents:sync:clean": "./scripts/sync-agents.sh --clean",
 		"dev": "pnpm --recursive --parallel run dev",
 		"dev:landing": "pnpm --filter @cvix/marketing dev",
 		"dev:blog": "pnpm --filter @cvix/blog dev",
@@ -73,7 +73,7 @@
 		"start": "run-p backend:run dev",
 		"test:all": "pnpm --recursive run test && pnpm run backend:test && pnpm run test:e2e",
 		"test:all:unit": "pnpm --recursive run test && pnpm run backend:test",
-		"precommit": "pnpm run ruler:apply",
+		"precommit": "./scripts/sync-agents.sh",
 		"release": "semantic-release",
 		"release:dry-run": "semantic-release --dry-run"
 	},

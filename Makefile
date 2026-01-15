@@ -70,13 +70,13 @@ prepare-env:
 prepare:
 	@$(PNPM) prepare
 
-# Checks the project's architecture rules.
-ruler-check:
-	@$(PNPM) ruler:check
+# Checks the project's agent configuration synchronization.
+agents-check:
+	@./scripts/sync-agents.sh --dry-run
 
-# Applies the project's architecture rules.
-ruler-apply:
-	@$(PNPM) ruler:apply
+# Applies the project's agent configurations (creates symlinks).
+agents-sync:
+	@./scripts/sync-agents.sh
 
 # Runs all applications in development mode.
 dev:
@@ -399,4 +399,4 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare ruler-check ruler-apply dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
+.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets

@@ -174,4 +174,4 @@ this.button = page.locator(".btn-primary");  // NO
 4. **Document in .md file** - follow template
 5. **Add appropriate tags** - priority, feature, test ID
 
-See `.ruler/skills/playwright/SKILL.md` for complete guidelines.
+See `.agents/skills/playwright/SKILL.md` for complete guidelines.
