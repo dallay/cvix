@@ -130,18 +130,25 @@ temporal-docs/
 
 # Playwright reports
 playwright-report/
-
 # START AI Agent Symlinks
+.claude/commands
 .claude/commands/
+.claude/skills
 .claude/skills/
 .cursor/rules
+.gemini/commands
 .gemini/commands/
+.gemini/skills
 .gemini/skills/
+.github/agents
 .github/agents/
 .github/copilot-instructions.md
+.github/prompts
 .github/prompts/
 .mcp.json
+.opencode/command
 .opencode/command/
+.opencode/skill
 .opencode/skill/
 AGENTS.md
 CLAUDE.md
