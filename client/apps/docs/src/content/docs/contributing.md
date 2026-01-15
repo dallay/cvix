@@ -31,25 +31,20 @@ propose changes, and contribute code or documentation.
 2. Keep changes focused and small — a single logical change per PR.
 3. Run tests and linters locally before opening a PR.
 
-### Running tests & checks (examples)
+### Running Tests & Checks
 
-- JVM/Gradle (backend):
-
-```bash
-./gradlew :server:engine:test
-```
-
-- JS/TS (frontend/docs):
+This project uses a centralized `Makefile` to simplify common tasks. Before submitting a pull request, please run the full verification suite to ensure all checks, tests, and linters pass for both the frontend and backend.
 
 ```bash
-pnpm --filter client... test
+# Run all checks, tests, and linters
+make verify-all
 ```
 
-- Run detekt (Kotlin lint):
+For more specific tasks, you can use targeted `make` commands:
 
-```bash
-./gradlew detektAll -x test
-```
+- **Backend tests**: `make backend-test`
+- **Frontend tests**: `make test`
+- **Linting**: `make lint`
 
 ## Documentation contributions
 
@@ -95,5 +90,4 @@ Please follow the project's Code of Conduct in `CODE_OF_CONDUCT.md` when interac
 
 ---
 
-Thank you — your contributions make ProFileTailors better for everyone. If you want, I can add a PR
-template or a small CONTRIBUTING checklist file at the repo root.
+Thank you — your contributions make ProFileTailors better for everyone.
