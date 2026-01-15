@@ -73,7 +73,7 @@
 		"start": "run-p backend:run dev",
 		"test:all": "pnpm --recursive run test && pnpm run backend:test && pnpm run test:e2e",
 		"test:all:unit": "pnpm --recursive run test && pnpm run backend:test",
-		"precommit": "./scripts/sync-agents.sh",
+		"precommit": "./scripts/sync-agents.sh --dry-run",
 		"release": "semantic-release",
 		"release:dry-run": "semantic-release --dry-run"
 	},

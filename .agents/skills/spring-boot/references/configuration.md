@@ -122,30 +122,54 @@ class ProdConfiguration {
 
 ## Security Configuration
 
-WebFlux security with OAuth2:
+WebFlux security with OAuth2 and CSRF protection for SPAs:
 
 ```kotlin
 @Configuration
 @EnableWebFluxSecurity
-class SecurityConfig {
+@EnableReactiveMethodSecurity
+class SecurityConfiguration(
+    val securityProperties: ApplicationSecurityProperties,
+) {
 
     @Bean
-    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+    fun filterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
-            .csrf { it.disable() }
+            .csrf { csrf ->
+                // CSRF enabled with cookie-based tokens for SPA compatibility
+                csrf.csrfTokenRepository(
+                    CookieServerCsrfTokenRepository.withHttpOnlyFalse().apply {
+                        // Match Axios default header name
+                        setHeaderName("X-XSRF-TOKEN")
+                    }
+                )
+                .csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
+            }
+            .cors { cors ->
+                cors.configurationSource(corsConfigurationSource())
+            }
             .authorizeExchange { exchanges ->
                 exchanges
-                    .pathMatchers("/api/public/**").permitAll()
-                    .pathMatchers("/api/admin/**").hasRole("ADMIN")
+                    .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .pathMatchers("/api/public/**", "/api/health-check").permitAll()
+                    .pathMatchers("/api/admin/**").hasAuthority(Role.ADMIN.key())
                     .pathMatchers("/api/**").authenticated()
-                    .pathMatchers("/actuator/health").permitAll()
-                    .anyExchange().permitAll()
+                    .pathMatchers("/actuator/health", "/actuator/info").permitAll()
+                    .pathMatchers("/actuator/**").authenticated()
             }
-            .oauth2ResourceServer { it.jwt {} }
+            .oauth2Login(withDefaults())
+            .oauth2ResourceServer { oauth2 ->
+                oauth2.jwt { jwt ->
+                    jwt.jwtAuthenticationConverter(authenticationConverter())
+                }
+            }
             .build()
     }
 }
 ```
+
+> **Note:** CSRF is enabled by default. Only disable for purely stateless APIs that use
+> JWT in Authorization headers (not cookies) and have no web UI endpoints.
 
 ## R2DBC Configuration
 
