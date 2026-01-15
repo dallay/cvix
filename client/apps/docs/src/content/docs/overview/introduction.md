@@ -1,15 +1,7 @@
 ---
 title: "Overview"
-description: "Sample documentation page for the ProFileTailors."
+description: "An overview of the ProFileTailors platform."
 ---
-
-## Overview — ProFileTailors
-
-This is a sample documentation page for the ProFileTailors (ProFileTailors).
-
-Contents:
-
-- Quick next steps
 
 ## What is ProFileTailors?
 
@@ -31,7 +23,7 @@ The goal of ProFileTailors is to provide a high-quality, open-source resume gene
 The repository is organized as a monorepo with the following high-level structure:
 
 ```text
-├── client/   # Frontend: Vue SPA, Astro marketing, UI lib
+├── client/   # Frontend: Vue SPA, Astro marketing, Docs site, UI lib
 ├── server/   # Backend: Spring Boot, Kotlin, PostgreSQL
 ├── shared/   # Kotlin shared libs
 ├── infra/    # Infra as code: Docker Compose, secrets, monitoring

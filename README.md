@@ -1,6 +1,6 @@
 # 🧑‍💻 ProFileTailors
 
-![ProFileTailors Logo](client/packages/assets/src/images/cvix-system.png)
+![ProFileTailors Logo](/client/packages/assets/src/images/cvix-system.png)
 
 > **Modern Resume Generator Platform**
 > Build, manage, and export professional résumés from a robust, accessible, cloud-ready system.
@@ -39,7 +39,7 @@
 
 ## ✨ What is ProFileTailors?
 
-ProFileTailors is a **production-grade platform** for creating, customizing, and exporting professional résumés. No “SaaS starter” fluff—this is a working, modern webapp focused on real résumé management with best-in-class architecture, accessibility, and clean code standards.
+ProFileTailors is a **production-grade platform** for creating, customizing, and exporting professional résumés. It is a working, modern web application focused on real résumé management with best-in-class architecture, accessibility, and clean code standards.
 
 ---
 
