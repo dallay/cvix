@@ -266,12 +266,17 @@ update_gitignore() {
     
     # Remove existing managed section if present
     if grep -q "$start_marker" "$gitignore" 2>/dev/null; then
-        # Use sed to remove the section
-        sed -i.bak "/$start_marker/,/$end_marker/d" "$gitignore"
-        rm -f "$gitignore.bak"
+        # Create temp file without the managed section
+        awk "/$start_marker/,/$end_marker/{next} 1" "$gitignore" > "$gitignore.tmp"
+        mv "$gitignore.tmp" "$gitignore"
     fi
     
-    # Append new managed section
+    # Remove any trailing blank lines at the end of the file
+    # This ensures we don't accumulate blank lines over time
+    sed -i.bak -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$gitignore"
+    rm -f "$gitignore.bak"
+    
+    # Append new managed section (with blank line separator)
     {
         echo ""
         echo "$start_marker"

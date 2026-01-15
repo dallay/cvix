@@ -131,17 +131,6 @@ temporal-docs/
 # Playwright reports
 playwright-report/
 
-
-
-
-
-
-
-
-
-
-
-
 # START AI Agent Symlinks
 .claude/commands/
 .claude/skills/
