@@ -1,0 +1,140 @@
+# AgentSync Configuration for CVIX
+# This file defines how AI agent configurations are synchronized via symbolic links.
+#
+# Source: .agents/agentsync.toml
+# Generated from: .agents/agents.config.json (migrated to TOML)
+
+# Source directory (relative to this config file)
+source_dir = "."
+
+# =============================================================================
+# Gitignore Management
+# =============================================================================
+[gitignore]
+enabled = true
+marker = "AI Agent Symlinks"
+entries = [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    ".mcp.json",
+    ".github/copilot-instructions.md",
+    ".github/agents/",
+    ".github/prompts/",
+    ".opencode/skill/",
+    ".opencode/command/",
+    ".claude/commands/",
+    ".claude/skills/",
+    ".gemini/commands/",
+    ".gemini/skills/",
+    ".cursor/rules",
+]
+
+# =============================================================================
+# Agent Configurations
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# OpenCode AI - Terminal-based AI coding assistant
+# -----------------------------------------------------------------------------
+[agents.opencode]
+enabled = true
+description = "OpenCode AI - Terminal-based AI coding assistant"
+
+[agents.opencode.targets.skills]
+source = "skills"
+destination = ".opencode/skill"
+type = "symlink-contents"
+
+[agents.opencode.targets.commands]
+source = "command"
+destination = ".opencode/command"
+type = "symlink-contents"
+pattern = "*.md"
+
+# -----------------------------------------------------------------------------
+# GitHub Copilot - VS Code and GitHub integrated AI
+# -----------------------------------------------------------------------------
+[agents.copilot]
+enabled = true
+description = "GitHub Copilot - VS Code and GitHub integrated AI"
+
+[agents.copilot.targets.instructions]
+source = "AGENTS.md"
+destination = ".github/copilot-instructions.md"
+type = "symlink"
+
+[agents.copilot.targets.agents]
+source = "command"
+destination = ".github/agents"
+type = "symlink-contents"
+pattern = "*.agent.md"
+
+[agents.copilot.targets.prompts]
+source = "prompts"
+destination = ".github/prompts"
+type = "symlink-contents"
+pattern = "*.prompt.md"
+
+# -----------------------------------------------------------------------------
+# Claude Code - Anthropic's AI coding assistant
+# -----------------------------------------------------------------------------
+[agents.claude]
+enabled = true
+description = "Claude Code - Anthropic's AI coding assistant"
+
+[agents.claude.targets.instructions]
+source = "AGENTS.md"
+destination = "CLAUDE.md"
+type = "symlink"
+
+[agents.claude.targets.mcp]
+source = ".mcp.json"
+destination = ".mcp.json"
+type = "symlink"
+
+[agents.claude.targets.agents]
+source = "command"
+destination = ".claude/commands"
+type = "symlink-contents"
+pattern = "*.agent.md"
+
+[agents.claude.targets.skills]
+source = "skills"
+destination = ".claude/skills"
+type = "symlink-contents"
+
+# -----------------------------------------------------------------------------
+# Gemini CLI - Google's AI coding assistant
+# -----------------------------------------------------------------------------
+[agents.gemini]
+enabled = true
+description = "Gemini CLI - Google's AI coding assistant"
+
+[agents.gemini.targets.instructions]
+source = "AGENTS.md"
+destination = "GEMINI.md"
+type = "symlink"
+
+[agents.gemini.targets.agents]
+source = "command"
+destination = ".gemini/commands"
+type = "symlink-contents"
+pattern = "*.agent.md"
+
+[agents.gemini.targets.skills]
+source = "skills"
+destination = ".gemini/skills"
+type = "symlink-contents"
+
+# -----------------------------------------------------------------------------
+# Root AGENTS.md - For tools that look for it in repo root
+# -----------------------------------------------------------------------------
+[agents.root]
+enabled = true
+description = "Root AGENTS.md for tools that look for it in repo root"
+
+[agents.root.targets.agents]
+source = "AGENTS.md"
+destination = "AGENTS.md"
+type = "symlink"
