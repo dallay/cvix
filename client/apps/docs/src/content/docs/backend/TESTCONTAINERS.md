@@ -154,4 +154,4 @@ If you suspect containers have stale data:
 
 - [Testcontainers Documentation](https://testcontainers.com/)
 - [Testcontainers Reuse Feature](https://java.testcontainers.org/features/reuse/)
-- [Project Testing Guidelines](.ruler/03_TESTING/03_BACKEND_TESTING_CONVENTIONS.md)
+- Project testing conventions: see `.agents/AGENTS.md`

@@ -180,7 +180,7 @@ All tokens are exposed as Tailwind utilities:
 
 ## 📚 References
 
-- Design system documentation: `.ruler/frontend/design-system.md`
+- Design system: `.agents/skills/tailwind-4/SKILL.md`
 - Tailwind CSS v4 documentation: <https://tailwindcss.com>
 - OKLCH color space: <https://oklch.com>
 

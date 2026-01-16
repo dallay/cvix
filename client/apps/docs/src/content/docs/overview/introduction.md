@@ -27,7 +27,8 @@ The repository is organized as a monorepo with the following high-level structur
 ├── server/   # Backend: Spring Boot, Kotlin, PostgreSQL
 ├── shared/   # Kotlin shared libs
 ├── infra/    # Infra as code: Docker Compose, secrets, monitoring
-├── .ruler/   # Canonical architecture, style & workflow guides
+├── docs/     # Astro-powered docs site (this folder)
+├── .agents/  # AI agent configs, skills & workflow guides
 ```
 
 Proceed to the "Quick Start" section to run the project locally.

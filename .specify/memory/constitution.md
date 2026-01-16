@@ -160,7 +160,7 @@ All features MUST meet performance thresholds appropriate to their context.
 ### Runtime Guidance
 
 For detailed implementation guidance, refer to:
-- `.ruler/` directory for language-specific conventions
+- `.agents/skills/` directory for language-specific conventions and patterns
 - `docs/` for architecture and API documentation
 - `CONTRIBUTING.md` for contribution workflow
 

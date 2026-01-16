@@ -335,14 +335,14 @@ This is a monorepo with:
 - [X] T101 [P] Add API documentation annotations in ResumeController and TemplateController using
   SpringDoc OpenAPI (Deferred: Backend documentation task)
 - [X] T102 [P] Create user documentation in `specs/004-resume-data-entry/USER_GUIDE.md` covering all features (Deferred: Documentation task)
-- [X] T103 Run Detekt analysis on backend code and fix all violations per `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md` (Deferred: Backend quality check)
-- [X] T104 Run Biome check on frontend code and fix all violations per `.ruler/02_FRONTEND/01_TYPESCRIPT_CONVENTIONS.md`
+- [X] T103 Run Detekt analysis on backend code and fix all violations per `.agents/skills/kotlin/SKILL.md` (Deferred: Backend quality check)
+- [X] T104 Run Biome check on frontend code and fix all violations per `.agents/skills/typescript/SKILL.md`
 - [X] T105 Verify code coverage meets gates: backend 80%+ (domain 100%), frontend 75%+ using Kover
   and Vitest coverage (Deferred: Requires test implementation)
 - [X] T106 Add security headers to ResumeController responses per
-  `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Deferred: Backend security enhancement)
+  `.agents/AGENTS.md` (Deferred: Backend security enhancement)
 - [X] T106 Add security headers to ResumeController responses per
-  `.ruler/04_DEVOPS/02_SECURITY_PRACTICES.md` (Implemented: `ResumeResponseHeaders.kt`; controllers
+  `.agents/AGENTS.md` (Implemented: `ResumeResponseHeaders.kt`; controllers
   updated: `CreateResumeController.kt`, `GetResumeController.kt`, `UpdateResumeController.kt`,
   `ListResumeController.kt`, `DeleteResumeController.kt`)
 - [X] T107 Implement rate limiting for PDF generation endpoint to prevent abuse. Check existing

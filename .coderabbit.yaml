@@ -46,7 +46,7 @@ reviews:
         - Any import from `jakarta.*`
         - Any annotation from frameworks (`@Component`, `@Entity`, `@Table`, etc.)
 
-        SEE: `.ruler/reference/architecture.md` for details
+        SEE: `.agents/skills/hexagonal-architecture/SKILL.md` for details
 
     # Backend - APPLICATION LAYER (CQRS USE CASES)
     - path: 'server/engine/src/main/kotlin/**/application/**'
@@ -69,7 +69,7 @@ reviews:
         - Missing Command/Query pattern
         - Controllers called directly from application layer
 
-        SEE: `.ruler/sop/adding-api-endpoint.md` and `.ruler/reference/architecture.md`
+        SEE: `.agents/skills/hexagonal-architecture/SKILL.md` and `AGENTS.md`
 
     # Backend - INFRASTRUCTURE LAYER
     - path: 'server/engine/src/main/kotlin/**/infrastructure/**'
@@ -81,7 +81,7 @@ reviews:
         - Controllers call handlers, NEVER services directly
         - Controllers are THIN: validate input, call handler, return response
         - NEVER expose database entities through API - always use DTOs
-        - HTTP endpoints follow REST conventions (see `.ruler/backend/api.md`)
+        - HTTP endpoints follow REST conventions (see `AGENTS.md` and `.agents/skills/spring-boot/SKILL.md`)
         - R2DBC repositories implement domain interfaces
 
         FLAG VIOLATIONS:
@@ -91,12 +91,12 @@ reviews:
         - Missing DTO mapping
         - Non-RESTful endpoint design
 
-        SEE: `.ruler/backend/api.md` and `.ruler/backend/spring-boot.md`
+        SEE: `.agents/skills/spring-boot/SKILL.md` and `.agents/skills/hexagonal-architecture/SKILL.md`
 
     # Backend - Kotlin General
     - path: 'server/**/*.kt'
       instructions: |
-        Kotlin Code Review - Enforce conventions from `.ruler/backend/kotlin.md`
+        Kotlin Code Review - Enforce conventions from `.agents/skills/kotlin/SKILL.md`
 
         CRITICAL VIOLATIONS:
         - Using `!!` operator (use `?.`, `?:`, `requireNotNull()`, or sealed classes)
@@ -115,7 +115,7 @@ reviews:
     # Backend - Tests
     - path: 'server/engine/src/test/**'
       instructions: |
-        Backend Test Review - Enforce `.ruler/testing.md` conventions
+        Backend Test Review - Enforce `AGENTS.md` testing conventions
 
         REQUIREMENTS:
         - Test names use backticks: `should do X when Y`
@@ -134,7 +134,7 @@ reviews:
     # Frontend - Vue Components (all apps)
     - path: 'client/apps/**/src/**/*.vue'
       instructions: |
-        Vue Component Review - Enforce `.ruler/frontend/vue.md` conventions
+        Vue Component Review - Enforce `.agents/skills/vue/SKILL.md` conventions
 
         REQUIREMENTS:
         - Use Composition API with `<script setup lang="ts">`
@@ -146,7 +146,7 @@ reviews:
         VERIFY:
         - Accessibility: semantic HTML, ARIA attributes, keyboard navigation
         - Form validation: Vee-Validate + Zod with manual blur validation
-        - No hardcoded colors (use design tokens from `.ruler/frontend/design-system.md`)
+        - No hardcoded colors (use design tokens from Tailwind CSS 4)
         - Proper use of composables for reusable logic
 
         FLAG VIOLATIONS:
@@ -158,7 +158,7 @@ reviews:
     # Frontend - TypeScript (all apps and packages)
     - path: 'client/**/*.ts'
       instructions: |
-        TypeScript Review - Enforce `.ruler/frontend/typescript.md` conventions
+        TypeScript Review - Enforce `.agents/skills/typescript/SKILL.md` conventions
 
         CRITICAL VIOLATIONS:
         - Using `any` type (use `unknown` and narrow, or proper types)
@@ -175,7 +175,7 @@ reviews:
     # Frontend - Unit/Integration Tests
     - path: 'client/apps/**/src/**/__tests__/**'
       instructions: |
-        Frontend Unit/Integration Test Review - Enforce `.ruler/testing.md` conventions
+        Frontend Unit/Integration Test Review - Enforce `AGENTS.md` testing conventions
 
         REQUIREMENTS:
         - Vitest for unit tests
@@ -199,7 +199,7 @@ reviews:
         CRITICAL: These are SHARED components used across all apps.
 
         REQUIREMENTS:
-        - Must use design tokens from `.ruler/frontend/design-system.md`
+        - Must use design tokens from `.agents/skills/tailwind-4/SKILL.md`
         - NO hardcoded colors - use semantic tokens (bg-background, text-foreground, etc.)
         - Props should be flexible and well-typed
         - Maintain Shadcn-Vue API compatibility
@@ -213,12 +213,12 @@ reviews:
         - App-specific logic (should be generic and reusable)
         - Poor TypeScript types on props
 
-        SEE: `.ruler/frontend/design-system.md` for token usage
+        SEE: `.agents/skills/tailwind-4/SKILL.md` for token usage
 
     # Frontend - Astro Components (marketing site)
     - path: 'client/apps/marketing/**/*.astro'
       instructions: |
-        Astro Component Review - Enforce `.ruler/frontend/astro.md` conventions
+        Astro Component Review - Enforce `.agents/skills/astro/SKILL.md` conventions
 
         REQUIREMENTS:
         - Server-first approach: minimize client-side JavaScript
@@ -241,7 +241,7 @@ reviews:
     # Frontend - E2E Tests (per-app)
     - path: 'client/apps/**/e2e/**'
       instructions: |
-        Playwright E2E Test Review - Enforce `.ruler/testing.md` conventions
+        Playwright E2E Test Review - Enforce `AGENTS.md` and `.agents/skills/playwright/SKILL.md` conventions
 
         REQUIREMENTS:
         - Use user-facing locators: `getByRole`, `getByLabel`, `getByText`
@@ -261,7 +261,7 @@ reviews:
     # Database Migrations
     - path: 'server/engine/src/main/resources/db/changelog/**'
       instructions: |
-        Liquibase Migration Review - Enforce `.ruler/backend/database.md` and `.ruler/sop/adding-migrations.md`
+        Liquibase Migration Review - Enforce database conventions from `AGENTS.md`
 
         REQUIREMENTS:
         - Follow naming: `NNN-feature.yaml`, `NNNa-triggers.yaml`, `NNNb-rls.yaml`
@@ -296,7 +296,7 @@ reviews:
       instructions: 'Apply when PR includes database migrations, schema changes, or repository implementations'
 
     - label: 'documentation'
-      instructions: 'Apply when PR updates .ruler/ docs, README files, or API documentation'
+      instructions: 'Apply when PR updates .agents/skills/ docs, README files, AGENTS.md, or API documentation'
 
     - label: 'testing'
       instructions: 'Apply when PR adds or modifies tests (unit, integration, or E2E)'
@@ -377,8 +377,7 @@ knowledge_base:
   code_guidelines:
     enabled: true
     filePatterns:
-      - '.ruler/**/*.md'
-      - '.github/copilot-instructions.md'
+      - '.agents/skills/**/*.md'
       - 'AGENTS.md'
 
   learnings:
@@ -413,7 +412,7 @@ code_generation:
           - @return for return value
           - @throws for exceptions
           - @sample for complex functions
-          - Follow conventions from `.ruler/backend/kotlin.md`
+          - Follow conventions from `.agents/skills/kotlin/SKILL.md`
 
       - path: 'client/**/*.ts'
         instructions: |
@@ -423,13 +422,13 @@ code_generation:
           - @returns with type
           - @example for complex functions
           - @throws if applicable
-          - Follow conventions from `.ruler/frontend/typescript.md`
+          - Follow conventions from `.agents/skills/typescript/SKILL.md`
 
   unit_tests:
     path_instructions:
       - path: 'server/**/*.kt'
         instructions: |
-          Generate Kotlin tests following `.ruler/testing.md`:
+          Generate Kotlin tests following `AGENTS.md`:
           - Use backtick naming: `should do X when Y`
           - JUnit 5 + Kotest assertions + MockK for mocks
           - Arrange-Act-Assert structure
@@ -438,7 +437,7 @@ code_generation:
 
       - path: 'client/**/*.ts'
         instructions: |
-          Generate TypeScript tests following `.ruler/testing.md`:
+          Generate TypeScript tests following `AGENTS.md`:
           - Vitest for unit tests
           - @testing-library/vue for component tests
           - Test behavior, not implementation

@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"type": "module",
 	"license": "MIT",
-	"homepage": "https://cvix.tech",
+	"homepage": "https://profiletailors.com",
 	"author": "cvix Team",
 	"keywords": [
 		"cvix",
@@ -15,7 +15,7 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.27.0"
 	},
-	"packageManager": "pnpm@10.27.0",
+	"packageManager": "pnpm@10.28.0",
 	"files": [
 		"tsconfig.base.json",
 		"tsconfig.node.json",
