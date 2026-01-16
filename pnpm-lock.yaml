@@ -262,22 +262,22 @@ importers:
       '@astrojs/vue':
         specifier: 'catalog:'
         version: 5.1.3(@types/node@25.0.3)(astro@5.16.6(@types/node@25.0.3)(idb-keyval@6.2.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(tsx@4.21.0)(vue@3.5.26(typescript@5.9.3))(yaml@2.8.2)
-      '@dallay/assets':
+      '@cvix/assets':
         specifier: workspace:*
         version: link:../../packages/assets
-      '@dallay/astro-ui':
+      '@cvix/astro-ui':
         specifier: workspace:*
         version: link:../../packages/astro-ui
-      '@dallay/i18n':
+      '@cvix/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@dallay/lib':
+      '@cvix/lib':
         specifier: workspace:*
         version: link:../../packages/lib
-      '@dallay/ui':
+      '@cvix/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@dallay/utilities':
+      '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
       '@iconify-json/openmoji':
@@ -320,7 +320,7 @@ importers:
       '@astrojs/check':
         specifier: 'catalog:'
         version: 0.9.6(prettier@3.7.4)(typescript@5.9.3)
-      '@dallay/config':
+      '@cvix/config':
         specifier: workspace:*
         version: link:../../config
       '@tailwindcss/typography':
@@ -347,7 +347,7 @@ importers:
       '@astrojs/starlight':
         specifier: 'catalog:'
         version: 0.37.1(astro@5.16.6(@types/node@25.0.3)(idb-keyval@6.2.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
-      '@dallay/assets':
+      '@cvix/assets':
         specifier: workspace:*
         version: link:../../packages/assets
       astro:
@@ -374,22 +374,22 @@ importers:
       '@astrojs/vue':
         specifier: 'catalog:'
         version: 5.1.3(@types/node@25.0.3)(astro@5.16.6(@types/node@25.0.3)(idb-keyval@6.2.2)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.5)(tsx@4.21.0)(vue@3.5.26(typescript@5.9.3))(yaml@2.8.2)
-      '@dallay/assets':
+      '@cvix/assets':
         specifier: workspace:*
         version: link:../../packages/assets
-      '@dallay/astro-ui':
+      '@cvix/astro-ui':
         specifier: workspace:*
         version: link:../../packages/astro-ui
-      '@dallay/i18n':
+      '@cvix/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@dallay/lib':
+      '@cvix/lib':
         specifier: workspace:*
         version: link:../../packages/lib
-      '@dallay/ui':
+      '@cvix/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@dallay/utilities':
+      '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
       '@iconify-json/openmoji':
@@ -447,7 +447,7 @@ importers:
       '@astrojs/check':
         specifier: 'catalog:'
         version: 0.9.6(prettier@3.7.4)(typescript@5.9.3)
-      '@dallay/config':
+      '@cvix/config':
         specifier: workspace:*
         version: link:../../config
       '@playwright/test':
@@ -474,19 +474,19 @@ importers:
 
   client/apps/webapp:
     dependencies:
-      '@dallay/assets':
+      '@cvix/assets':
         specifier: workspace:*
         version: link:../../packages/assets
-      '@dallay/i18n':
+      '@cvix/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@dallay/lib':
+      '@cvix/lib':
         specifier: workspace:*
         version: link:../../packages/lib
-      '@dallay/ui':
+      '@cvix/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@dallay/utilities':
+      '@cvix/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
       '@tailwindcss/vite':
@@ -649,7 +649,7 @@ importers:
       '@codecov/vite-plugin':
         specifier: 1.9.1
         version: 1.9.1(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../packages/tsconfig
       '@tailwindcss/typography':
@@ -679,19 +679,19 @@ importers:
 
   client/packages/assets:
     devDependencies:
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
 
   client/packages/astro-ui:
     dependencies:
-      '@dallay/assets':
+      '@cvix/assets':
         specifier: workspace:*
         version: link:../assets
-      '@dallay/i18n':
+      '@cvix/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@dallay/lib':
+      '@cvix/lib':
         specifier: workspace:*
         version: link:../lib
       '@iconify-json/openmoji':
@@ -728,7 +728,7 @@ importers:
 
   client/packages/i18n:
     devDependencies:
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@vitest/coverage-v8':
@@ -743,7 +743,7 @@ importers:
 
   client/packages/lib:
     dependencies:
-      '@dallay/i18n':
+      '@cvix/i18n':
         specifier: workspace:*
         version: link:../i18n
       clsx:
@@ -756,7 +756,7 @@ importers:
         specifier: 'catalog:'
         version: 3.4.0
     devDependencies:
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -773,7 +773,7 @@ importers:
 
   client/packages/ui:
     dependencies:
-      '@dallay/lib':
+      '@cvix/lib':
         specifier: workspace:*
         version: link:../lib
       '@internationalized/date':
@@ -822,7 +822,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -853,10 +853,10 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
     devDependencies:
-      '@dallay/config':
+      '@cvix/config':
         specifier: workspace:*
         version: link:../../config
-      '@dallay/tsconfig':
+      '@cvix/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@internationalized/date':
