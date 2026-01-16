@@ -249,7 +249,7 @@ Branch: `feature/001-user-auth-system`
 
 ## Notes
 
-- The authentication system follows the project's established conventions (see `.ruler/` directory)
+- The authentication system follows the project's established conventions (see `.agents/` directory)
 - All code adheres to Kotlin and TypeScript style guides
 - Security follows OWASP Top 10 best practices
 - Architecture enables easy testing and maintainability

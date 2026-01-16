@@ -269,5 +269,5 @@ Commands for subscription management:
 For questions or issues, refer to:
 - Domain documentation in source files
 - Test files for usage examples
-- Architecture guidelines in `.ruler/01_BACKEND/03_API_DESIGN.md`
+- Architecture guidelines in `.agents/skills/spring-boot/SKILL.md`
 

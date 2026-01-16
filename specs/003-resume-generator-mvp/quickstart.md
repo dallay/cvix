@@ -494,9 +494,9 @@ docker stats --no-stream
 - **Research**: `specs/003-resume-generator-mvp/research.md`
 - **API Contract**: `specs/003-resume-generator-mvp/contracts/resume-api.yaml`
 - **Constitution**: `.specify/memory/constitution.md`
-- **Kotlin Conventions**: `.ruler/01_BACKEND/01_KOTLIN_CONVENTIONS.md`
-- **Spring Boot Conventions**: `.ruler/01_BACKEND/02_SPRING_BOOT_CONVENTIONS.md`
-- **Vue Conventions**: `.ruler/02_FRONTEND/02_VUE_CONVENTIONS.md`
+- **Kotlin Conventions**: `.agents/skills/kotlin/SKILL.md`
+- **Spring Boot Conventions**: `.agents/skills/spring-boot/SKILL.md`
+- **Vue Conventions**: `.agents/skills/vue/SKILL.md`
 
 ## Support
 
