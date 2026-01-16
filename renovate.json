@@ -8,22 +8,32 @@
 		":semanticCommitTypeAll(chore)",
 		"schedule:monthly"
 	],
-	"reviewers": ["yacosta738"],
+	"reviewers": [
+		"yacosta738"
+	],
 	"timezone": "America/Havana",
 	"schedule": [
 		"after 10pm every weekday",
 		"before 5am every weekday",
 		"every weekend"
 	],
-	"automergeSchedule": ["before 4am on the first day of the month"],
+	"automergeSchedule": [
+		"before 4am on the first day of the month"
+	],
 	"prConcurrentLimit": 5,
 	"prCreation": "not-pending",
 	"platformAutomerge": true,
 	"ignoreDeps": [],
-	"postUpdateOptions": ["gomodTidy", "npmDedupe", "pnpmDedupe"],
+	"postUpdateOptions": [
+		"gomodTidy",
+		"npmDedupe",
+		"pnpmDedupe"
+	],
 	"lockFileMaintenance": {
 		"enabled": true,
-		"schedule": ["before 5am on the first day of the month"]
+		"schedule": [
+			"before 5am on the first day of the month"
+		]
 	},
 	"rangeStrategy": "bump",
 	"separateMinorPatch": false,
@@ -31,107 +41,161 @@
 	"packageRules": [
 		{
 			"description": "Automerge non-breaking updates for stable versions",
-			"matchUpdateTypes": ["minor", "patch"],
+			"matchUpdateTypes": [
+				"minor",
+				"patch"
+			],
 			"matchCurrentVersion": "!/^0/",
 			"automerge": true,
 			"automergeType": "pr",
-			"requiredStatusChecks": [],
 			"platformAutomerge": true
 		},
 		{
 			"description": "Kotlin ecosystem",
-			"extends": ["monorepo:kotlin"],
+			"extends": [
+				"monorepo:kotlin"
+			],
 			"groupName": "Kotlin monorepo",
-			"matchUpdateTypes": ["digest", "patch", "minor", "major"],
-			"schedule": ["before 5am on the first day of the month"]
+			"matchUpdateTypes": [
+				"digest",
+				"patch",
+				"minor",
+				"major"
+			],
+			"schedule": [
+				"before 5am on the first day of the month"
+			]
 		},
 		{
 			"description": "Spring Boot ecosystem",
 			"groupName": "Spring Boot",
-			"matchPackagePrefixes": ["org.springframework.boot:"],
-			"matchUpdateTypes": ["minor", "patch"],
+			"matchUpdateTypes": [
+				"minor",
+				"patch"
+			],
 			"semanticCommitType": "fix",
-			"automerge": false
+			"automerge": false,
+			"matchPackageNames": [
+				"org.springframework.boot:{/,}**"
+			]
 		},
 		{
 			"description": "Spring Framework",
 			"groupName": "Spring Framework",
-			"matchPackagePrefixes": ["org.springframework:"],
-			"matchUpdateTypes": ["minor", "patch"],
-			"semanticCommitType": "fix"
+			"matchUpdateTypes": [
+				"minor",
+				"patch"
+			],
+			"semanticCommitType": "fix",
+			"matchPackageNames": [
+				"org.springframework:{/,}**"
+			]
 		},
 		{
 			"description": "Vue.js ecosystem",
 			"groupName": "Vue ecosystem",
-			"matchPackageNames": ["vue", "pinia", "vee-validate"],
-			"matchPackagePrefixes": ["@vue/", "@vueuse/", "@astrojs/vue"],
-			"matchPackagePatterns": [
-				"^vue-.*",
-				".*-vue$",
-				"^@tanstack/vue-.*",
-				"^vaul-vue$",
-				"^lucide-vue-next$",
-				"^embla-carousel-vue$"
+			"matchPackageNames": [
+				"vue",
+				"pinia",
+				"vee-validate",
+				"@vue/{/,}**",
+				"@vueuse/{/,}**",
+				"@astrojs/vue{/,}**",
+				"/^vue-.*/",
+				"/.*-vue$/",
+				"/^@tanstack/vue-.*/",
+				"/^vaul-vue$/",
+				"/^lucide-vue-next$/",
+				"/^embla-carousel-vue$/"
 			],
 			"semanticCommitType": "chore"
 		},
 		{
 			"description": "Astro ecosystem",
 			"groupName": "Astro ecosystem",
-			"matchPackagePatterns": ["^astro$", "^@astrojs/"],
-			"semanticCommitType": "chore"
+			"semanticCommitType": "chore",
+			"matchPackageNames": [
+				"/^astro$/",
+				"/^@astrojs//"
+			]
 		},
 		{
 			"description": "Vite and Vitest",
 			"groupName": "Vite tooling",
-			"matchPackagePatterns": ["^vite$", "^vitest$", "^@vitejs/"],
-			"semanticCommitType": "chore"
+			"semanticCommitType": "chore",
+			"matchPackageNames": [
+				"/^vite$/",
+				"/^vitest$/",
+				"/^@vitejs//"
+			]
 		},
 		{
 			"description": "Tailwind CSS",
 			"groupName": "Tailwind CSS",
-			"matchPackagePatterns": ["^tailwindcss$", "^@tailwindcss/"],
-			"semanticCommitType": "chore"
+			"semanticCommitType": "chore",
+			"matchPackageNames": [
+				"/^tailwindcss$/",
+				"/^@tailwindcss//"
+			]
 		},
 		{
 			"description": "TypeScript and type definitions",
 			"groupName": "TypeScript",
-			"matchPackagePatterns": ["^typescript$", "^@types/"],
-			"semanticCommitType": "chore"
+			"semanticCommitType": "chore",
+			"matchPackageNames": [
+				"/^typescript$/",
+				"/^@types//"
+			]
 		},
 		{
 			"description": "Gradle wrapper",
-			"matchPackageNames": ["gradle"],
+			"matchPackageNames": [
+				"gradle"
+			],
 			"enabled": false,
 			"groupName": "Gradle wrapper (manual update)"
 		},
 		{
 			"description": "GitHub Actions",
-			"matchManagers": ["github-actions"],
+			"matchManagers": [
+				"github-actions"
+			],
 			"groupName": "GitHub Actions",
-			"schedule": ["before 5am on the first day of the month"],
+			"schedule": [
+				"before 5am on the first day of the month"
+			],
 			"automerge": true,
 			"semanticCommitType": "ci"
 		},
 		{
 			"description": "Docker images",
-			"matchDatasources": ["docker"],
+			"matchDatasources": [
+				"docker"
+			],
 			"groupName": "Docker images",
-			"schedule": ["before 5am on the first day of the month"],
+			"schedule": [
+				"before 5am on the first day of the month"
+			],
 			"automerge": false,
 			"semanticCommitType": "chore"
 		},
 		{
 			"description": "Delay major updates by 3 days for stability",
-			"matchUpdateTypes": ["major"],
-			"stabilityDays": 3,
+			"matchUpdateTypes": [
+				"major"
+			],
+			"minimumReleaseAge": "3 days",
 			"automerge": false
 		}
 	],
 	"vulnerabilityAlerts": {
 		"enabled": true,
-		"labels": ["security"],
-		"assignees": ["yacosta738"],
+		"labels": [
+			"security"
+		],
+		"assignees": [
+			"yacosta738"
+		],
 		"automerge": false
 	}
 }
