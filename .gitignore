@@ -138,6 +138,7 @@ playwright-report/
 .cursor/rules
 .gemini/commands
 .gemini/commands/
+.gemini/settings.json
 .gemini/skills
 .gemini/skills/
 .github/agents
@@ -153,4 +154,5 @@ playwright-report/
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+opencode.json
 # END AI Agent Symlinks

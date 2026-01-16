@@ -17,7 +17,7 @@ on:
         required: true
 
 env:
-  NODE_VERSION: "22" # Node.js LTS version, update here for all frontend jobs
+  NODE_VERSION: "24" # Node.js LTS version, update here for all frontend jobs
   TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
 
 concurrency:

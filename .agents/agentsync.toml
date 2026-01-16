@@ -27,7 +27,9 @@ entries = [
     ".claude/skills/",
     ".gemini/commands/",
     ".gemini/skills/",
+    ".gemini/settings.json",
     ".cursor/rules",
+    "opencode.json"
 ]
 
 # =============================================================================
@@ -138,3 +140,22 @@ description = "Root AGENTS.md for tools that look for it in repo root"
 source = "AGENTS.md"
 destination = "AGENTS.md"
 type = "symlink"
+
+
+# -----------------------------------------------------------------------------
+# Model Context Protocol (MCP) Configuration
+# -----------------------------------------------------------------------------
+[mcp]
+enabled = true
+# Strategy for existing files: "merge" (default) or "overwrite"
+# "merge" preserves existing servers but overwrites conflicts with TOML config
+merge_strategy = "merge"
+
+# Define servers once
+[mcp_servers.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "."]
+
+[mcp_servers.git]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-git", "--repository", "."]
