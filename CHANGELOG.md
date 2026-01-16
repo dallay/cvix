@@ -1,3 +1,14 @@
+## [3.12.1](https://github.com/dallay/cvix/compare/v3.12.0...v3.12.1) (2026-01-16)
+
+### ♻️ Refactors
+
+* replace ruler for a custom script to sync agents ([#531](https://github.com/dallay/cvix/issues/531)) ([75ea2e3](https://github.com/dallay/cvix/commit/75ea2e3d37b31192ad95684cf224d6665e4c2d80))
+
+### 📝 Documentation
+
+* 📚 Scribe - Align Documentation with Project Conventions ([#527](https://github.com/dallay/cvix/issues/527)) ([d1a1f41](https://github.com/dallay/cvix/commit/d1a1f41664797a06e16911fe07af6b490eb14271))
+* **swagger:** add @Tag annotations and standardize Swagger documentation ([#525](https://github.com/dallay/cvix/issues/525)) ([8fdd851](https://github.com/dallay/cvix/commit/8fdd85169305fa52ad5c5c421c2d19a752df4608))
+
 ## [3.12.0](https://github.com/dallay/cvix/compare/v3.11.2...v3.12.0) (2026-01-14)
 
 ### ✨ Features
