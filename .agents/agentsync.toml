@@ -155,7 +155,3 @@ merge_strategy = "merge"
 [mcp_servers.filesystem]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-filesystem", "."]
-
-[mcp_servers.git]
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-git", "--repository", "."]

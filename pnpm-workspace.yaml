@@ -71,6 +71,8 @@ catalogs:
     vite: ^5.0.0 || ^6.0.0
 
 minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - '@dallay/*'
 
 onlyBuiltDependencies:
   - '@biomejs/biome'

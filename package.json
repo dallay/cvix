@@ -5,7 +5,7 @@
 	"private": true,
 	"type": "module",
 	"license": "MIT",
-	"homepage": "https://cvix.tech",
+	"homepage": "https://profietailors.com",
 	"author": "cvix Team",
 	"keywords": [
 		"cvix",
@@ -15,7 +15,7 @@
 		"node": ">=24.12.0",
 		"pnpm": ">=10.27.0"
 	},
-	"packageManager": "pnpm@10.27.0",
+	"packageManager": "pnpm@10.28.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dallay/cvix.git",
@@ -36,8 +36,8 @@
 		"update-deps": "pnpm update -i -r --latest",
 		"preinstall": "npx only-allow pnpm",
 		"prepare": "if [ -d .git ]; then pnpm exec lefthook install && pnpm run agents:sync; fi",
-		"agents:sync": "npx -y @dallay/agentsync apply",
-		"agents:sync:clean": "npx -y @dallay/agentsync apply --clean",
+		"agents:sync": "pnpm exec agentsync apply",
+		"agents:sync:clean": "pnpm exec agentsync apply --clean",
 		"dev": "pnpm --recursive --parallel run dev",
 		"dev:landing": "pnpm --filter @dallay/marketing dev",
 		"dev:blog": "pnpm --filter @dallay/blog dev",
@@ -73,11 +73,12 @@
 		"start": "run-p backend:run dev",
 		"test:all": "pnpm --recursive run test && pnpm run backend:test && pnpm run test:e2e",
 		"test:all:unit": "pnpm --recursive run test && pnpm run backend:test",
-		"precommit": "npx -y @dallay/agentsync apply --dry-run",
+		"precommit": "pnpm exec agentsync apply --dry-run",
 		"release": "semantic-release",
 		"release:dry-run": "semantic-release --dry-run"
 	},
 	"devDependencies": {
+		"@dallay/agentsync": "1.7.0",
 		"@astrojs/vue": "catalog:",
 		"@biomejs/biome": "^2.3.11",
 		"@commitlint/cli": "^20.3.1",
