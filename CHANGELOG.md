@@ -1,3 +1,9 @@
+## [3.12.2](https://github.com/dallay/cvix/compare/v3.12.1...v3.12.2) (2026-01-16)
+
+### 🚀 Performance Improvements
+
+* ⚡ Bolt - Improve startup performance by parallelizing CSRF token fetch ([#532](https://github.com/dallay/cvix/issues/532)) ([8ebad6e](https://github.com/dallay/cvix/commit/8ebad6eef36a055281a3694c949df6c162e52449))
+
 ## [3.12.1](https://github.com/dallay/cvix/compare/v3.12.0...v3.12.1) (2026-01-16)
 
 ### ♻️ Refactors
