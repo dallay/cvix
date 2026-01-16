@@ -19,8 +19,7 @@ import "./styles/globals.css";
 // The UI can mount and display its initial state while the token is fetched.
 // API calls that require the CSRF token will be automatically queued by the http client.
 void csrfService.initialize().catch((error: unknown) => {
-  // TODO: hook into app-level error reporting and surface a user-visible failure if needed
-  console.error("Failed to initialize CSRF token", error);
+	console.error("Failed to initialize CSRF token", error);
 });
 
 const app = createApp(App);
