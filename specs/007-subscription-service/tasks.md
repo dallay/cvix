@@ -13,7 +13,7 @@
     - Rule: Public access for `POST /subscriptions`. **Note: Dependency on T004a (Rate Limiting) for deployment.**
     - Rule: Auth required for `POST /subscriptions/{id}/confirm`.
     - Rule: `ROLE_ADMIN` required for `DELETE /subscriptions/{id}` and `GET /subscriptions/export`.
-    - Rule: Implement `isStatelessClient(req)` (True if Bearer token present OR both API headers `X-Requested-With` AND `X-Api-Client` are present).
+    - Rule: Implement `isStatelessClient(req)` (True only if Bearer token is present).
     - Rule: Enforce CSRF only for stateful clients; bypass for stateless clients based on the revised `isStatelessClient` logic.
 - [ ] T004a [US1] Configure application-level Rate Limiting filter (FR-011) in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/filter/RateLimitFilter.kt`
 - [ ] T004b Configure Distributed Tracing (OpenTelemetry) for `SubscriptionService` and `OutboxPublisher` in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/config/ObservabilityConfig.kt`
@@ -55,14 +55,14 @@
 
 ## Phase 5: Notifications (User Story 3 - P3)
 
-*Goal: Transactional Outbox for reliable downstream events. Guarantees: At-least-once delivery, creation-order retrieval using `ORDER BY subscription_id, created_at ASC`, idempotent consumers.*
+*Goal: Transactional Outbox for reliable downstream events. Guarantees: At-least-once delivery, per-subscription creation-order retrieval using `ORDER BY subscription_id, created_at ASC`, idempotent consumers.*
 
 - [ ] T024 [US3] Create Liquibase changelog for `subscription_outbox_events` (including `event_id` and indexing for commit-order retrieval) in `shared/subscription/src/main/resources/db/changelog/migrations/007-subscription/002-create-outbox-table.yaml`
 - [ ] T025 [US3] Create `OutboxEvent` entity in `shared/subscription/src/main/kotlin/com/cvix/subscription/domain/model/OutboxEvent.kt`
 - [ ] T026 [US3] Create `OutboxRepository` interface and R2DBC adapter in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/persistence/OutboxRepository.kt`
 - [ ] T027 [US3] Update `SubscriptionService` to persist `OutboxEvent` transactionally with `Subscription`
-- [ ] T028a [US3] Provision DLQ infrastructure (table/topic creation, routing, monitoring).
-- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff, configurable retry parameters (maxAttempts, backoffMultiplier, maxDelay) from `application.yml`, and DLQ routing logic when retries exhaust. Ensure monitoring hooks are added for the new DLQ resource.
+- [ ] T028a [US3] Provision DLQ infrastructure using DynamoDB table with columns (id, payload, error_reason, timestamp, retry_count) and TTL for retention. Create the IaC script at `infra/dlq-provision.sql` and run it using `psql -f infra/dlq-provision.sql`. Define IAM roles for access control, set a 30-day retention policy, and configure monitoring with alerts for retry_count thresholds.
+- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff, configurable retry parameters (maxAttempts, backoffMultiplier, maxDelay), batchSize, and pollingInterval from `application.yml`. Ensure sensible defaults are provided and monitoring hooks remain intact.
 - [ ] T029 [US3] Write integration test for event generation and publishing in `shared/subscription/src/test/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxIntegrationTest.kt`
 
 ## Phase 6: Confirmation Workflow (FR-007)
@@ -106,8 +106,7 @@
 
 - Phase 2 (Foundational) blocks ALL other phases.
 - Phase 3 (US1) blocks Phase 4, 5, 6, 7.
-- **Security Constraint**: Phase 1 (T004) exposes a public endpoint and MUST NOT be deployed to production without Phase 1 (T004a - Rate Limiting). T004 depends on T004a.
+- **Security Constraint**: Phase 1 (T004) exposes a public endpoint and MUST NOT be deployed to production without Phase 1 (T004a - Rate Limiting).
 
 **Dependencies**:
-- T004a must precede T004.
-- T017 (POST /subscriptions) in Phase 3 does not unblock T004 deployment until T004a is completed.
+- Deployment order: T004a → T004 → T017.

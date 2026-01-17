@@ -151,7 +151,7 @@ receives a notification containing the capture payload.
 
   Behavioral outcome: Notifications MUST be delivered with at-least-once guarantees. The system MUST ensure that every successfully persisted capture eventually results in a notification event, even in the face of temporary downstream or internal failures.
 
-  Notification contract: The service MUST include a stable, unique identifier (e.g., `captureId` or `eventId`) in every notification envelope. Consumers SHOULD deduplicate notifications using this identifier. This ensures idempotent processing and provides implementation guidance, such as persistent deduplication or database uniqueness constraints.
+  Notification contract: The service MUST include a stable, unique identifier (e.g., `captureId` or `eventId`) in every notification envelope. Consumers MUST deduplicate notifications using this identifier to ensure idempotent processing. Example consumer strategies include persistent deduplication or database uniqueness constraints.
 
   Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
   stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
@@ -252,7 +252,7 @@ receives a notification containing the capture payload.
 - **NFR-006 (Scalability)**: The service MUST handle a steady-state throughput of 100 captures/sec
   and bursts of 1000 captures/sec for short windows; support horizontal scaling with stateless frontends.
 - **NFR-007 (Data Durability)**: Persistent store must provide replication and durability
-  guarantees (>= 99.99% durability / four nines) and backups aligned with the RPO in NFR-009. Backups must use continuous WAL archiving with point-in-time recovery and 30-day retention to ensure compliance with the ≤1 hour RPO.
+  guarantees (>= 99.99% durability / four nines) and alignment with the RPO in NFR-009. RPO must be ≤1 hour, with 30-day retention.
 - **NFR-008 (Security Posture)**: Must pass org security reviews, use encryption-in-transit/at-rest,
   RBAC, and periodic audits/pen-tests.
 - **NFR-009 (Disaster Recovery)**: RTO <= 1 hour, RPO <= 1 hour for core data; documented
@@ -282,9 +282,9 @@ receives a notification containing the capture payload.
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
   Persistence) and can take up to 10 seconds before the entry is queryable via indexed queries.
 
-- **SC-001b**: 90% of valid capture submissions complete in under 2 seconds during sustained bursts of 1000 captures/sec for up to 1 minute.
+- **SC-001b**: 90% of valid capture submissions complete in under 2 seconds during sustained bursts of 1000 captures/sec for up to 1 minute. Sustained captures above 1000/sec for longer than 1 minute will trigger rate limiting as defined in FR-011 and should result in 429 Too Many Requests responses (or an agreed alternative handling like queued/backpressure).
 
-This scenario ensures the system can handle high burst loads while maintaining acceptable performance. Reference this criterion in NFR-006 and the Consistency & Persistence testing notes to make burst load tests explicit and automatable.
+This scenario ensures the system can handle high burst loads while maintaining acceptable performance.
 
 - **SC-002**: Duplicate submissions are reduced so that duplicate persistent entries are <1% for
   repeated user submissions (measured during integration testing).
@@ -311,13 +311,13 @@ This section contains technical recommendations and implementation constraints i
 
 ### Reliability & Notifications
 - **Transactional Outbox**: Implement the Transactional Outbox pattern to atomically persist capture records and enqueue notification events.
-- **Asynchronicity**: Notifications SHOULD be asynchronous by default. Synchronous webhooks require explicit opt-in and compensating controls.
+- **Asynchronicity**: Notifications MUST be asynchronous by default. Synchronous webhooks are disallowed to ensure compliance with SC-001's 500ms SLA. Delivery is decoupled from capture acknowledgment using the Transactional Outbox pattern and retry/DLQ mechanisms.
 - **Deduplication for Consumers**: Consumers are RECOMMENDED to use a persistent cache (e.g., Redis with TTL) or DB constraints keyed by `eventId` or `captureId` to ensure idempotent processing of at-least-once delivery events.
 
 ### Security & Privacy
-- **Transport Security**: It is RECOMMENDED to enforce TLS 1.2+ (prefer 1.3) for all communications.
+- **Transport Security**: All communications MUST enforce TLS 1.2+ (prefer 1.3). TLS 1.0 and 1.1 are explicitly disallowed. Implementation guidance: Use TLS 1.3 wherever possible to enhance security.
 - **Data at Rest**: Use authenticated encryption (e.g., AES-256-GCM) for sensitive fields.
-- **Durability**: Backups SHOULD utilize continuous write-ahead log (WAL) archiving or high-frequency snapshots to meet RPO/RTO targets.
+- **Durability**: Backups SHOULD utilize continuous write-ahead log (WAL) archiving or equivalent streaming replication mechanism to achieve RPO ≤1 hour with point-in-time recovery capability. Retain backup artifacts for 30 days minimum.
 
 ## Assumptions
 
