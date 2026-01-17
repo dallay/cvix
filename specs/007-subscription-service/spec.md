@@ -132,7 +132,7 @@ receives a notification containing the capture payload.
   same context must not create duplicate logical entries.
 
   Behavioral outcome: The system MUST ensure that for any given deduplication key (default: email + source), only one active subscription record exists. Subsequent submissions for an existing record MUST NOT result in duplicate entries or state corruption.
-  
+
   Response semantics: The request that creates the record MUST return `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing resource representation unchanged by default.
 
   Default behavior: unless configured otherwise by the integrator (see FR-009), the service defaults
@@ -150,7 +150,9 @@ receives a notification containing the capture payload.
   downstream workflows.
 
   Behavioral outcome: Notifications MUST be delivered with at-least-once guarantees. The system MUST ensure that every successfully persisted capture eventually results in a notification event, even in the face of temporary downstream or internal failures.
-  
+
+  Notification contract: The service MUST include a stable, unique identifier (e.g., `captureId` or `eventId`) in every notification envelope. Consumers SHOULD deduplicate notifications using this identifier. This ensures idempotent processing and provides implementation guidance, such as persistent deduplication or database uniqueness constraints.
+
   Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
   stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
   envelope. Example consumer strategies include persistent deduplication or database uniqueness constraints.
@@ -250,7 +252,7 @@ receives a notification containing the capture payload.
 - **NFR-006 (Scalability)**: The service MUST handle a steady-state throughput of 100 captures/sec
   and bursts of 1000 captures/sec for short windows; support horizontal scaling with stateless frontends.
 - **NFR-007 (Data Durability)**: Persistent store must provide replication and durability
-  guarantees (>= 99.99% durability / four nines) and backups with high-frequency snapshots and 30-day retention.
+  guarantees (>= 99.99% durability / four nines) and backups aligned with the RPO in NFR-009. Backups must use continuous WAL archiving with point-in-time recovery and 30-day retention to ensure compliance with the ≤1 hour RPO.
 - **NFR-008 (Security Posture)**: Must pass org security reviews, use encryption-in-transit/at-rest,
   RBAC, and periodic audits/pen-tests.
 - **NFR-009 (Disaster Recovery)**: RTO <= 1 hour, RPO <= 1 hour for core data; documented
@@ -280,6 +282,10 @@ receives a notification containing the capture payload.
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
   Persistence) and can take up to 10 seconds before the entry is queryable via indexed queries.
 
+- **SC-001b**: 90% of valid capture submissions complete in under 2 seconds during sustained bursts of 1000 captures/sec for up to 1 minute.
+
+This scenario ensures the system can handle high burst loads while maintaining acceptable performance. Reference this criterion in NFR-006 and the Consistency & Persistence testing notes to make burst load tests explicit and automatable.
+
 - **SC-002**: Duplicate submissions are reduced so that duplicate persistent entries are <1% for
   repeated user submissions (measured during integration testing).
 
@@ -299,19 +305,19 @@ receives a notification containing the capture payload.
 This section contains technical recommendations and implementation constraints intended for engineering teams. These details are NOT part of the behavioral specification.
 
 ### Data Persistence & Idempotency
-- **Deduplication**: Enforce uniqueness at the durable store level using a database constraint (e.g., `UNIQUE(email_normalized, source[, context_id])`). 
+- **Deduplication**: Enforce uniqueness at the durable store level using a database constraint (e.g., `UNIQUE(email_normalized, source[, context_id])`).
 - **Atomic Operations**: Use atomic upserts (`INSERT ... ON CONFLICT` or `MERGE`) inside a transaction to ensure consistency under contention.
 - **Durable Write**: The 500ms target (SC-001) refers to the primary transactional store's commit.
 
 ### Reliability & Notifications
 - **Transactional Outbox**: Implement the Transactional Outbox pattern to atomically persist capture records and enqueue notification events.
-- **Asynchronicity**: Notifications MUST be asynchronous by default. Synchronous webhooks require explicit opt-in and compensating controls.
-- **Deduplication for Consumers**: Consumers should use a persistent cache (e.g., Redis with TTL) or DB constraints keyed by `eventId` or `captureId` to ensure idempotent processing of at-least-once delivery events.
+- **Asynchronicity**: Notifications SHOULD be asynchronous by default. Synchronous webhooks require explicit opt-in and compensating controls.
+- **Deduplication for Consumers**: Consumers are RECOMMENDED to use a persistent cache (e.g., Redis with TTL) or DB constraints keyed by `eventId` or `captureId` to ensure idempotent processing of at-least-once delivery events.
 
 ### Security & Privacy
-- **Transport Security**: Enforce TLS 1.2+ (prefer 1.3) for all communications.
+- **Transport Security**: It is RECOMMENDED to enforce TLS 1.2+ (prefer 1.3) for all communications.
 - **Data at Rest**: Use authenticated encryption (e.g., AES-256-GCM) for sensitive fields.
-- **Durability**: Backups should utilize continuous write-ahead log (WAL) archiving or high-frequency snapshots to meet RPO/RTO targets.
+- **Durability**: Backups SHOULD utilize continuous write-ahead log (WAL) archiving or high-frequency snapshots to meet RPO/RTO targets.
 
 ## Assumptions
 

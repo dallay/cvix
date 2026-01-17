@@ -13,8 +13,8 @@
     - Rule: Public access for `POST /subscriptions`. **Note: Dependency on T004a (Rate Limiting) for deployment.**
     - Rule: Auth required for `POST /subscriptions/{id}/confirm`.
     - Rule: `ROLE_ADMIN` required for `DELETE /subscriptions/{id}` and `GET /subscriptions/export`.
-    - Rule: Implement `isStatelessClient(req)` (True if Bearer token present, API headers `X-Requested-With`/`X-Api-Client` present, OR session cookie absent).
-    - Rule: Enforce CSRF only for stateful clients; bypass for stateless clients.
+    - Rule: Implement `isStatelessClient(req)` (True if Bearer token present OR both API headers `X-Requested-With` AND `X-Api-Client` are present).
+    - Rule: Enforce CSRF only for stateful clients; bypass for stateless clients based on the revised `isStatelessClient` logic.
 - [ ] T004a [US1] Configure application-level Rate Limiting filter (FR-011) in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/filter/RateLimitFilter.kt`
 - [ ] T004b Configure Distributed Tracing (OpenTelemetry) for `SubscriptionService` and `OutboxPublisher` in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/config/ObservabilityConfig.kt`
 - [ ] T004c Implement Correlation ID generation and propagation across HTTP requests, R2DBC operations, and Outbox events
@@ -55,13 +55,14 @@
 
 ## Phase 5: Notifications (User Story 3 - P3)
 
-*Goal: Transactional Outbox for reliable downstream events. Guarantees: At-least-once delivery, ordering per subscription_id (commit order), idempotent consumers.*
+*Goal: Transactional Outbox for reliable downstream events. Guarantees: At-least-once delivery, creation-order retrieval using `ORDER BY subscription_id, created_at ASC`, idempotent consumers.*
 
 - [ ] T024 [US3] Create Liquibase changelog for `subscription_outbox_events` (including `event_id` and indexing for commit-order retrieval) in `shared/subscription/src/main/resources/db/changelog/migrations/007-subscription/002-create-outbox-table.yaml`
 - [ ] T025 [US3] Create `OutboxEvent` entity in `shared/subscription/src/main/kotlin/com/cvix/subscription/domain/model/OutboxEvent.kt`
 - [ ] T026 [US3] Create `OutboxRepository` interface and R2DBC adapter in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/persistence/OutboxRepository.kt`
 - [ ] T027 [US3] Update `SubscriptionService` to persist `OutboxEvent` transactionally with `Subscription`
-- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff (max 5 attempts), DLQ, and commit-order publishing per subscription in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxPublisher.kt`
+- [ ] T028a [US3] Provision DLQ infrastructure (table/topic creation, routing, monitoring).
+- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff, configurable retry parameters (maxAttempts, backoffMultiplier, maxDelay) from `application.yml`, and DLQ routing logic when retries exhaust. Ensure monitoring hooks are added for the new DLQ resource.
 - [ ] T029 [US3] Write integration test for event generation and publishing in `shared/subscription/src/test/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxIntegrationTest.kt`
 
 ## Phase 6: Confirmation Workflow (FR-007)
@@ -105,14 +106,8 @@
 
 - Phase 2 (Foundational) blocks ALL other phases.
 - Phase 3 (US1) blocks Phase 4, 5, 6, 7.
-- **Security Constraint**: Phase 1 (T004) exposes a public endpoint and MUST NOT be deployed to production without Phase 1 (T004a - Rate Limiting).
-- Phases 4, 5, 6, 7 can be executed in parallel after Phase 3.
-- Phase 9 depends on Phase 3 and can run parallel to 4-8.
+- **Security Constraint**: Phase 1 (T004) exposes a public endpoint and MUST NOT be deployed to production without Phase 1 (T004a - Rate Limiting). T004 depends on T004a.
 
-## Implementation Strategy
-
-1.  **MVP**: Complete Phases 1, 2, and 3. This provides the core capture capability with Rate Limiting.
-2.  **Reliability**: Complete Phase 5 (Outbox) to ensure downstream systems can integrate.
-3.  **Feature Parity**: Complete Phase 4 and 6.
-4.  **Compliance**: Complete Phase 7 before public launch.
-5.  **Migration**: Execute Phase 9 to switch over legacy systems.
+**Dependencies**:
+- T004a must precede T004.
+- T017 (POST /subscriptions) in Phase 3 does not unblock T004 deployment until T004a is completed.
