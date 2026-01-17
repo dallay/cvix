@@ -55,12 +55,12 @@ class MyService(private val subscriptionService: SubscriptionService) {
                 )
             )
         } catch (e: DuplicateSubscriptionException) {
-            log.info("Already subscribed: $email")
+            log.info("Already subscribed: ${email.take(3)}***")
         } catch (e: RateLimitException) {
-            log.warn("Rate limit hit for $email")
+            log.warn("Rate limit hit for subscription request")
             throw e
         } catch (e: ValidationException) {
-            log.warn("Validation failed for $email: ${e.message}")
+            log.warn("Validation failed: ${e.message}")
             throw e
         } catch (e: Exception) {
             log.error("Failed to capture subscription", e)
