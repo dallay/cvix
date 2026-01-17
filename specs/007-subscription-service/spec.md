@@ -316,8 +316,8 @@ receives a notification containing the capture payload.
 
 ### Measurable Outcomes
 
-- **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 3
-  seconds under normal load. This success indicates durable persistence to the primary transactional
+- **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 500ms
+  under normal load. This success indicates durable persistence to the primary transactional
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
   Persistence) and can take up to 10 seconds before the entry is queryable via indexed queries.
 
@@ -348,7 +348,7 @@ receives a notification containing the capture payload.
 
 ### Consistency & Persistence
 
-- The `under 3 seconds` acknowledgement target in SC-001 refers to successful durable persistence of
+- The `under 500ms` acknowledgement target in SC-001 refers to successful durable persistence of
   the capture into the primary transactional store (i.e., the write is considered durable). However,
   the system may perform additional asynchronous indexing and enrichment steps (search/index
   pipelines) which can take up to 10 seconds before the capture is queryable via full-text or
