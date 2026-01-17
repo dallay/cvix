@@ -1,8 +1,5 @@
 # AgentSync Configuration for CVIX
 # This file defines how AI agent configurations are synchronized via symbolic links.
-#
-# Source: .agents/agentsync.toml
-# Generated from: .agents/agents.config.json (migrated to TOML)
 
 # Source directory (relative to this config file)
 source_dir = "."
@@ -13,23 +10,13 @@ source_dir = "."
 [gitignore]
 enabled = true
 marker = "AI Agent Symlinks"
+# Note: destination paths for agent targets are automatically added.
+# We only list files that AgentSync generates but are not direct targets.
 entries = [
-    "AGENTS.md",
-    "CLAUDE.md",
-    "GEMINI.md",
-    ".mcp.json",
-    ".github/copilot-instructions.md",
-    ".github/agents/",
-    ".github/prompts/",
-    ".opencode/skill/",
-    ".opencode/command/",
-    ".claude/commands/",
-    ".claude/skills/",
-    ".gemini/commands/",
-    ".gemini/skills/",
     ".gemini/settings.json",
-    ".cursor/rules",
-    "opencode.json"
+    "opencode.json",
+    ".vscode/mcp.json",
+    ".mcp.json"
 ]
 
 # =============================================================================
@@ -41,7 +28,7 @@ entries = [
 # -----------------------------------------------------------------------------
 [agents.opencode]
 enabled = true
-description = "OpenCode AI - Terminal-based AI coding assistant"
+description = "OpenCode AI"
 
 [agents.opencode.targets.skills]
 source = "skills"
@@ -59,7 +46,7 @@ pattern = "*.md"
 # -----------------------------------------------------------------------------
 [agents.copilot]
 enabled = true
-description = "GitHub Copilot - VS Code and GitHub integrated AI"
+description = "GitHub Copilot"
 
 [agents.copilot.targets.instructions]
 source = "AGENTS.md"
@@ -83,16 +70,11 @@ pattern = "*.prompt.md"
 # -----------------------------------------------------------------------------
 [agents.claude]
 enabled = true
-description = "Claude Code - Anthropic's AI coding assistant"
+description = "Claude Code"
 
 [agents.claude.targets.instructions]
 source = "AGENTS.md"
 destination = "CLAUDE.md"
-type = "symlink"
-
-[agents.claude.targets.mcp]
-source = ".mcp.json"
-destination = ".mcp.json"
 type = "symlink"
 
 [agents.claude.targets.agents]
@@ -111,7 +93,7 @@ type = "symlink-contents"
 # -----------------------------------------------------------------------------
 [agents.gemini]
 enabled = true
-description = "Gemini CLI - Google's AI coding assistant"
+description = "Gemini CLI"
 
 [agents.gemini.targets.instructions]
 source = "AGENTS.md"
@@ -130,11 +112,23 @@ destination = ".gemini/skills"
 type = "symlink-contents"
 
 # -----------------------------------------------------------------------------
+# Cursor AI - VS Code based AI
+# -----------------------------------------------------------------------------
+[agents.cursor]
+enabled = true
+description = "Cursor AI"
+
+[agents.cursor.targets.rules]
+source = "AGENTS.md"
+destination = ".cursor/rules"
+type = "symlink"
+
+# -----------------------------------------------------------------------------
 # Root AGENTS.md - For tools that look for it in repo root
 # -----------------------------------------------------------------------------
 [agents.root]
 enabled = true
-description = "Root AGENTS.md for tools that look for it in repo root"
+description = "Root AGENTS.md"
 
 [agents.root.targets.agents]
 source = "AGENTS.md"
