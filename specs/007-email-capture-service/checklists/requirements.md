@@ -2,7 +2,7 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-17
-**Feature**: ../007-email-capture-service/spec.md
+**Feature**: ../spec.md
 
 ## Content Quality
 
@@ -27,7 +27,29 @@
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
-- [x] No implementation details leak into specification
+- [x] No implementation details in technical acceptance criteria (e.g., CI/infra specifics)
+
+## Security & Privacy
+
+- [x] Data encrypted in transit (TLS 1.2+ / TLS 1.3) and at rest (e.g., AES-256)
+- [x] Consent mechanisms described (single/double opt-in, opt-out flows) and testable
+- [x] User rights are specified (access, deletion/export/portability) with endpoints and behaviors
+- [x] PII handling rules and input validation are defined and verifiable
+- [x] Privacy policy/terms integration points are identified
+
+## Compliance & Legal
+
+- [x] GDPR checkpoints included: right-to-be-forgotten, data export, lawful basis for processing
+- [x] CCPA considerations included: data access & deletion flows, sale opt-out stance
+- [x] CAN-SPAM expectations documented for downstream email sending responsibilities
+- [x] Audit logging and retention requirements documented for compliance audits
+
+## Non-Functional Requirements
+
+- [x] Observability: metrics, logging, and alerting requirements are defined and testable
+- [x] Rate limiting and abuse prevention expectations are documented with expected HTTP codes
+- [x] Performance targets and SLAs are stated and measurable
+- [x] Retention/archival and secure deletion workflows are described and testable
 
 ## Notes
 
