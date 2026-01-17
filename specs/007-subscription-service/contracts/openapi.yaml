@@ -216,7 +216,7 @@ components:
           format: email
         status:
           type: string
-          enum: [ PENDING, CONFIRMED, EXPIRED ]
+          enum: [PENDING, CONFIRMED, EXPIRED]
         created_at:
           type: string
           format: date-time
