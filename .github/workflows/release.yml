@@ -41,7 +41,7 @@ jobs:
     name: Semantic Release
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event_name == 'push' || github.event.inputs.dry_run == 'true'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     outputs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic.outputs.new_release_version }}
