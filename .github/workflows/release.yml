@@ -40,13 +40,6 @@ jobs:
   semantic-release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    # Retry entire job if it fails due to transient errors
-    strategy:
-      max-parallel: 1
-      fail-fast: true
-      matrix:
-        attempt: [1, 2, 3]
-    continue-on-error: ${{ matrix.attempt != 1 }}
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.inputs.dry_run == 'true'
     outputs:
@@ -81,17 +74,21 @@ jobs:
           echo "📋 Checking recent commits for release triggers..."
           git log --oneline -10
 
-      - name: Run Semantic Release
+      - name: Run Semantic Release (with retries)
         id: semantic
-        uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90
+        uses: nick-fields/retry@v3
         with:
-          dry_run: ${{ inputs.dry_run }}
-          branches: |
-            [
-              'main',
-              {'name': 'beta', 'prerelease': true},
-              {'name': 'alpha', 'prerelease': true}
-            ]
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            set -euo pipefail
+            DRY=""
+            if [ "${{ inputs.dry_run }}" = "true" ]; then
+              DRY="--dry-run"
+            fi
+            # Use the semantic-release CLI to match previous behavior
+            npx -y semantic-release $DRY --branches '["main",{"name":"beta","prerelease":true},{"name":"alpha","prerelease":true}]'
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           GIT_AUTHOR_NAME: cvix-release-bot[bot]
@@ -102,7 +99,7 @@ jobs:
           # Increase GraphQL timeout and retries for reliability
           OCTOKIT_TIMEOUT: 60000
           OCTOKIT_REQUEST_RETRIES: 5
-        # Retry on transient failures (timeouts, rate limits, etc)
+        # Fail the job if all retries exhausted
         continue-on-error: false
 
       - name: Release Summary
