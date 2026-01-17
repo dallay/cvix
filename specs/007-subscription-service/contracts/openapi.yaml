@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: Subscription Service API
+  version: 1.0.0
+  description: API for subscriptions, waitlists, and newsletters.
+servers:
+  - url: https://api.cvix.com/v1
+    description: Production server
+  - url: https://api.staging.cvix.com/v1
+    description: Staging server
+  - url: https://api.sandbox.cvix.com/v1
+    description: Sandbox server
+security:
+  - apiKey: []
+paths:
+  /subscriptions:
+    post:
+      summary: Create subscription
+      operationId: createSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '200':
+          description: Idempotent success (already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before retrying
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /subscriptions/{id}/confirm:
+    post:
+      summary: Confirm subscription (Double Opt-in)
+      operationId: confirmSubscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      security:
+        - {} # Allow anonymous access for token-based confirmation (email links)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  minLength: 16
+                  maxLength: 512
+                  pattern: '^[a-zA-Z0-9\-\._~+/]+=*$'
+                  description: Cryptographically secure confirmation token
+
+      responses:
+        '200':
+          description: Confirmed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '410':
+          description: Token expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /subscriptions/{id}:
+    delete:
+      summary: Delete subscription (Privacy)
+      operationId: deleteSubscription
+      security:
+        - apiKey: []
+        - {} # Allow anonymous access with token
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: unsubscribe_token
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 512
+          description: Cryptographic unsubscribe token (email link flows). For programmatic clients prefer header `X-Unsubscribe-Token`.
+        - name: X-Unsubscribe-Token
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 512
+          description: Alternative location for the unsubscribe token for programmatic clients (preferred to avoid token leakage in URLs).
+      # Deprecated: request body-based token was removed to avoid clients/proxies dropping DELETE bodies
+      responses:
+        '204':
+          description: Deleted (or marked for deletion)
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: UPPER_SNAKE_CASE
+        message:
+          type: string
+        details:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            additionalProperties: true
+            description: Optional context-specific error details (e.g., field, issue)
+
+    SubscriptionRequest:
+      type: object
+      required:
+        - email
+        - source
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        source:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 128
+        metadata:
+          type: object
+          additionalProperties: true
+          maxProperties: 20
+          description: Flexible key-value pairs (max 20 keys)
+        tags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 32
+
+    SubscriptionResponse:
+      type: object
+      required:
+        - id
+        - status
+        - created_at
+        - email
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, EXPIRED]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
