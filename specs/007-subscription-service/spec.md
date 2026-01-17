@@ -131,14 +131,9 @@ receives a notification containing the capture payload.
 - **FR-004**: The system MUST enforce idempotency: repeated submissions of the same email within the
   same context must not create duplicate logical entries.
 
-  Implementation guidance: The service SHOULD enforce uniqueness at the durable store level using a
-  database constraint (for example, a UNIQUE(email_normalized, source[, context_id]) index). Write
-  operations must be performed as an atomic upsert (INSERT ... ON CONFLICT / MERGE / equivalent)
-  inside a transaction to let the database enforce uniqueness rather than relying on in-memory
-  checks. For heavy contention, implement retry-on-conflict with exponential backoff or use explicit
-  row-level locking. Response semantics: the request that creates the record MUST return
-  `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing
-  resource representation unchanged by default.
+  Behavioral outcome: The system MUST ensure that for any given deduplication key (default: email + source), only one active subscription record exists. Subsequent submissions for an existing record MUST NOT result in duplicate entries or state corruption.
+  
+  Response semantics: The request that creates the record MUST return `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing resource representation unchanged by default.
 
   Default behavior: unless configured otherwise by the integrator (see FR-009), the service defaults
   to deduplication by the pair `(email_normalized, source)`. This means the same normalized email
@@ -154,33 +149,15 @@ receives a notification containing the capture payload.
   can subscribe to new-capture events (e.g., callbacks, event hooks, or message publish) to trigger
   downstream workflows.
 
-  Implementation note (FR-006): Notifications **MUST** be asynchronous by default and the service
-  **MUST** implement a Transactional Outbox pattern to atomically persist captures and enqueue
-  notification events. Failure to use a transactional outbox can lead to capture/notification inconsistency (lost or phantom events). Delivery guarantees should be documented: at-least-once delivery with
-  idempotent consumer expectations is recommended; exactly-once may be provided only if underlying
-  infrastructure supports it. Ordering is not guaranteed globally unless explicitly requested. The
-  default retry and dead-letter behavior described in retry configuration applies to notification
-  delivery. Synchronous webhooks are allowed ONLY if opted-in and must document consistency tradeoffs plus compensating controls (e.g., distributed transactions or confirmation protocols).
-
+  Behavioral outcome: Notifications MUST be delivered with at-least-once guarantees. The system MUST ensure that every successfully persisted capture eventually results in a notification event, even in the face of temporary downstream or internal failures.
+  
   Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
   stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
-  envelope. Example consumer strategies include:
-    - Persistent deduplication cache (e.g., Redis with TTL) keyed by `eventId` or `captureId`.
-    - Database uniqueness constraints on processed `eventId` or `captureId` when writing downstream
-      records.
-    - Versioned/state-machine-based processing where each event carries a version or sequence to
-      allow idempotent transitions.
-
-  Implementations SHOULD include an `eventId` in every notification envelope and document its
-  generation scheme. These deduplication approaches satisfy the at-least-once delivery model
-  expected when using a Transactional Outbox; consumers MUST be tested for idempotent processing in
-  integration tests.
+  envelope. Example consumer strategies include persistent deduplication or database uniqueness constraints.
 
   Notification encoding and safety: notification payloads MUST escape metadata values according to
-  the notification format (for example, JSON string escaping, XML entity encoding, HTML entity
-  encoding where applicable) and MUST NOT forward raw unescaped input. FR-013 (input validation and
-  sanitization) applies to notification payloads; implementers MUST include encoding validation in
-  tests and documentation.
+  the notification format and MUST NOT forward raw unescaped input. FR-013 (input validation and
+  sanitization) applies to notification payloads.
 - **FR-007**: The system MUST expose explicit hooks and APIs to enable confirmation workflows (
   double opt-in) for integrators that require them. At minimum the service MUST:
     - Offer an issuance API for confirmation tokens and a way to associate a confirmation token with
@@ -252,13 +229,12 @@ receives a notification containing the capture payload.
 - **NFR-002**: The system must include observability signals (create/failure counters, timings,
   retry and DLQ metrics) to allow monitoring of capture volume and failure rates and to power
   alerts.
-- **NFR-003**: Security & Privacy (concrete):
-    - (a) Encryption: TLS 1.2+ / TLS 1.3 for transport and AES-256 (or equivalent) for data at rest.
-      Keys must be managed via KMS/secret manager.
+- **NFR-003**: Security & Privacy (behavioral):
+    - (a) Encryption: Secure transport protocols and authenticated encryption for data at rest.
     - (b) PII minimization: fields classified as PII must be optional unless required; configurable
       redaction/obfuscation rules must be available for persisted and exported payloads.
     - (c) Retention enforcement: configurable retention TTLs, automated deletion/archival jobs, and
-      policy-driven purge workflows. **Constraint**: Configured `retention-days` MUST NOT exceed `compliance.maxRetentionDays`. Sourced from central compliance service. Startup validation required. If limit is reduced, service MUST schedule purging of existing records.
+      policy-driven purge workflows. **Constraint**: Configured `retention-days` MUST NOT exceed `compliance.maxRetentionDays`.
     - (d) Access control: RBAC defaults to least-privilege and offers integration points for
       SSO/IDP.
     - (e) Audit logging: immutable logs recording `who/what/when/why` for compliance and incident
@@ -269,29 +245,12 @@ receives a notification containing the capture payload.
 
   Configuration validation and invariants: the configuration loader MUST perform schema-level
   validation and enforce critical invariants before accepting a deployment or runtime reload. The
-  loader MUST check and reject invalid configurations with clear error codes and messages. Examples
-  of enforced invariants and required behavior:
-    - `custom dedupe keys` MUST NOT exclude PII fields from data-deletion scope; config validation
-      must fail if a dedupe key would prevent compliant deletion semantics.
-    - `retention TTL` configurations MUST NOT exceed the maximum legal retention period defined by
-      the organization; attempts to set longer retention MUST be rejected by the loader.
-    - `metadata size` configuration MUST enforce an upper bound for PII-containing records (example
-      default: 1 MB); setting limits that allow larger PII storage MUST fail validation unless an
-      explicit compliance waiver is present.
-
-  Failure behavior: invalid configurations MUST be rejected and the service must refuse to start or
-  reload the configuration. Error responses from the loader SHOULD be machine-parseable (example:
-  `{"code":"CONFIG_INVALID","field":"metadata.maxSize","message":"exceeds-legal-limit"}`)
-  and CI pipelines MUST include acceptance tests validating these checks (for example: set
-  `metadata.maxSize` to >1MB for PII records → expect configuration validation error). These
-  checks guarantee NFR-004 remains compatible with NFR-003 in all deployments.
-
+  loader MUST check and reject invalid configurations with clear error codes and messages.
 - **NFR-005 (Availability)**: Target 99.9% uptime SLA for the capture API (measurable monthly).
-- **NFR-006 (Scalability)**: The service should handle a steady-state throughput of X captures/sec
-  and bursts of Y captures/sec for short windows (team to fill X/Y based on expected traffic);
-  support horizontal scaling with stateless frontends.
+- **NFR-006 (Scalability)**: The service MUST handle a steady-state throughput of 100 captures/sec
+  and bursts of 1000 captures/sec for short windows; support horizontal scaling with stateless frontends.
 - **NFR-007 (Data Durability)**: Persistent store must provide replication and durability
-  guarantees (>= 99.99% durability / four nines) and backups with **hourly snapshots** or continuous WAL archiving and 30-day retention.
+  guarantees (>= 99.99% durability / four nines) and backups with high-frequency snapshots and 30-day retention.
 - **NFR-008 (Security Posture)**: Must pass org security reviews, use encryption-in-transit/at-rest,
   RBAC, and periodic audits/pen-tests.
 - **NFR-009 (Disaster Recovery)**: RTO <= 1 hour, RPO <= 1 hour for core data; documented
@@ -317,7 +276,7 @@ receives a notification containing the capture payload.
 ### Measurable Outcomes
 
 - **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 500ms
-  under normal load. This success indicates durable persistence to the primary transactional
+  under steady-state load (100 captures/sec). This success indicates durable persistence to the primary transactional
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
   Persistence) and can take up to 10 seconds before the entry is queryable via indexed queries.
 
@@ -334,6 +293,25 @@ receives a notification containing the capture payload.
   filtering correctness validated by integration tests).
 - **SC-006**: The feature is usable as a reusable module by at least two different internal apps
   without code duplication (verified by code reuse review).
+
+## Appendix: Technical Guidance & Implementation Notes
+
+This section contains technical recommendations and implementation constraints intended for engineering teams. These details are NOT part of the behavioral specification.
+
+### Data Persistence & Idempotency
+- **Deduplication**: Enforce uniqueness at the durable store level using a database constraint (e.g., `UNIQUE(email_normalized, source[, context_id])`). 
+- **Atomic Operations**: Use atomic upserts (`INSERT ... ON CONFLICT` or `MERGE`) inside a transaction to ensure consistency under contention.
+- **Durable Write**: The 500ms target (SC-001) refers to the primary transactional store's commit.
+
+### Reliability & Notifications
+- **Transactional Outbox**: Implement the Transactional Outbox pattern to atomically persist capture records and enqueue notification events.
+- **Asynchronicity**: Notifications MUST be asynchronous by default. Synchronous webhooks require explicit opt-in and compensating controls.
+- **Deduplication for Consumers**: Consumers should use a persistent cache (e.g., Redis with TTL) or DB constraints keyed by `eventId` or `captureId` to ensure idempotent processing of at-least-once delivery events.
+
+### Security & Privacy
+- **Transport Security**: Enforce TLS 1.2+ (prefer 1.3) for all communications.
+- **Data at Rest**: Use authenticated encryption (e.g., AES-256-GCM) for sensitive fields.
+- **Durability**: Backups should utilize continuous write-ahead log (WAL) archiving or high-frequency snapshots to meet RPO/RTO targets.
 
 ## Assumptions
 

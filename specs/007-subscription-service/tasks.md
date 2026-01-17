@@ -10,10 +10,15 @@
 - [ ] T002 Create package structure `com.cvix.subscription` in `shared/subscription/src/main/kotlin`
 - [ ] T003 Create `SubscriptionApplication` or configuration class if needed in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/config/SubscriptionConfig.kt`
 - [ ] T004 Configure Authentication/Authorization (OAuth2/JWT) and security filters in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/config/SecurityConfig.kt`
-    - Rule: Public access for `POST /subscriptions`
-    - Rule: Auth required for `POST /subscriptions/{id}/confirm`
-    - Rule: `ROLE_ADMIN` required for `DELETE /subscriptions/{id}` and `GET /subscriptions/export`
-    - Rule: Enable CSRF for browser clients, disable for API clients
+    - Rule: Public access for `POST /subscriptions`. **Note: Dependency on T004a (Rate Limiting) for deployment.**
+    - Rule: Auth required for `POST /subscriptions/{id}/confirm`.
+    - Rule: `ROLE_ADMIN` required for `DELETE /subscriptions/{id}` and `GET /subscriptions/export`.
+    - Rule: Implement `isStatelessClient(req)` (True if Bearer token present, API headers `X-Requested-With`/`X-Api-Client` present, OR session cookie absent).
+    - Rule: Enforce CSRF only for stateful clients; bypass for stateless clients.
+- [ ] T004a [US1] Configure application-level Rate Limiting filter (FR-011) in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/filter/RateLimitFilter.kt`
+- [ ] T004b Configure Distributed Tracing (OpenTelemetry) for `SubscriptionService` and `OutboxPublisher` in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/config/ObservabilityConfig.kt`
+- [ ] T004c Implement Correlation ID generation and propagation across HTTP requests, R2DBC operations, and Outbox events
+- [ ] T004d Standardize JSON structured logging with log-levels and PII redaction rules per NFR-003
 
 ## Phase 2: Foundational (Blocking)
 
@@ -34,7 +39,6 @@
 - [ ] T012 [US1] Implement `SubscriptionService` with `create` method in `shared/subscription/src/main/kotlin/com/cvix/subscription/application/service/SubscriptionService.kt`
 - [ ] T013 [US1] Add email normalization and validation logic (Apache Commons) to `SubscriptionService`
 - [ ] T014 [US1] Implement deduplication (idempotency) logic in `SubscriptionService` (Standardize on 200 OK for duplicates)
-- [ ] T015 [US1] Configure application-level Rate Limiting filter (FR-011) in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/filter/RateLimitFilter.kt`
 - [ ] T016 [US1] Create `SubscriptionController` in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/SubscriptionController.kt`
 - [ ] T017 [US1] Implement `POST /subscriptions` endpoint in `SubscriptionController`
 - [ ] T018 [US1] Write integration test for successful capture and rate limiting in `shared/subscription/src/test/kotlin/com/cvix/subscription/application/CreateSubscriptionTest.kt`
@@ -51,13 +55,13 @@
 
 ## Phase 5: Notifications (User Story 3 - P3)
 
-*Goal: Transactional Outbox for reliable downstream events.*
+*Goal: Transactional Outbox for reliable downstream events. Guarantees: At-least-once delivery, ordering per subscription_id (commit order), idempotent consumers.*
 
-- [ ] T024 [US3] Create Liquibase changelog for `subscription_outbox_events` and cleanup index in `shared/subscription/src/main/resources/db/changelog/migrations/007-subscription/002-create-outbox-table.yaml`
+- [ ] T024 [US3] Create Liquibase changelog for `subscription_outbox_events` (including `event_id` and indexing for commit-order retrieval) in `shared/subscription/src/main/resources/db/changelog/migrations/007-subscription/002-create-outbox-table.yaml`
 - [ ] T025 [US3] Create `OutboxEvent` entity in `shared/subscription/src/main/kotlin/com/cvix/subscription/domain/model/OutboxEvent.kt`
 - [ ] T026 [US3] Create `OutboxRepository` interface and R2DBC adapter in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/persistence/OutboxRepository.kt`
 - [ ] T027 [US3] Update `SubscriptionService` to persist `OutboxEvent` transactionally with `Subscription`
-- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff and DLQ in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxPublisher.kt`
+- [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff (max 5 attempts), DLQ, and commit-order publishing per subscription in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxPublisher.kt`
 - [ ] T029 [US3] Write integration test for event generation and publishing in `shared/subscription/src/test/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxIntegrationTest.kt`
 
 ## Phase 6: Confirmation Workflow (FR-007)
@@ -101,6 +105,7 @@
 
 - Phase 2 (Foundational) blocks ALL other phases.
 - Phase 3 (US1) blocks Phase 4, 5, 6, 7.
+- **Security Constraint**: Phase 1 (T004) exposes a public endpoint and MUST NOT be deployed to production without Phase 1 (T004a - Rate Limiting).
 - Phases 4, 5, 6, 7 can be executed in parallel after Phase 3.
 - Phase 9 depends on Phase 3 and can run parallel to 4-8.
 

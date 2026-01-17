@@ -31,6 +31,11 @@
 
 ## Notes
 
-- SC-001 updated to 500ms to align with Constitution.
-- FR-015 (Bulk Import) is a SHOULD requirement; implementation tasks deferred to future phase or separate iteration if not critical for MVP.
-- FR-011 and FR-017 (Rate Limiting, Bulk Deletion) are mandatory and clearly defined in Spec, but Tasks need to be added in the next step.
+- SC-001 updated to 500ms to align with Constitution; "normal load" quantified as 100 captures/sec.
+- NFR-006 throughput and burst placeholders replaced with 100 and 1000 captures/sec respectively.
+- Technical implementation details (Transactional Outbox, SQL syntax, etc.) relocated to "Appendix: Technical Guidance" to maintain a behavioral specification.
+- Observability (Tracing, Correlation ID, Structured Logging) tasks added to Phase 1.
+- Outbox delivery and ordering guarantees (at-least-once, subscription-id ordering) codified in Phase 5.
+- Deployment constraint added: Phase 1 (SecurityConfig) MUST NOT deploy without Phase 1 (RateLimitFilter).
+- CSRF bypass logic for stateless clients codified in T004.
+- FR-015 (Bulk Import) is a SHOULD requirement; implementation tasks deferred.
