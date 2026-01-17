@@ -10,7 +10,7 @@ Represents a captured contact/email.
 | `email`                   | `String`              | Yes      | Validated Email         | Normalized (NFC, trimmed)            |
 | `source`                  | `String`              | Yes      | Capture Source          | Normalized (lowercase), Max 64 chars |
 | `source_raw`              | `String`              | Yes      | Original Source         | Max 255 chars                        |
-| `status`                  | `SubscriptionStatus`  | Yes      | `PENDING`, `CONFIRMED`  | Default: `PENDING`                   |
+| `status`                  | `SubscriptionStatus`  | Yes      | `PENDING`, `CONFIRMED`, `EXPIRED`  | Default: `PENDING`                   |
 | `metadata`                | `JSONB`               | No       | Arbitrary KV pairs      | Max 10KB total                       |
 | `tags`                    | `Array<String>`       | No       | Classification tags     | Max 20 tags                          |
 | `ip_hash`                 | `String`              | No       | SHA-256 of IP           | Hex string (64 chars)                |
@@ -28,7 +28,7 @@ CREATE TYPE subscription_status AS ENUM ('PENDING', 'CONFIRMED', 'EXPIRED');
 CREATE TABLE subscriptions
 (
     id                      UUID PRIMARY KEY,
-    email                   VARCHAR(320)             NOT NULL,
+    email                   VARCHAR(254)             NOT NULL,
     source                  VARCHAR(64)              NOT NULL,
     source_raw              VARCHAR(255)             NOT NULL,
     status                  subscription_status      NOT NULL DEFAULT 'PENDING',
@@ -111,8 +111,11 @@ CREATE INDEX idx_outbox_cleanup ON subscription_outbox_events (processed_at) WHE
   WHERE id IN (
       SELECT id FROM subscription_outbox_events
       WHERE processed_at < NOW() - INTERVAL '30 days'
-      LIMIT 10000
+      LIMIT 1000
   );
   ```
 
-**Rationale for RESTRICT**: `ON DELETE RESTRICT` is used on `fk_outbox_aggregate` to ensure we don't delete a subscription while unprocessed outbox events exist. This prevents ghost events and maintains data integrity during high load.
+  Pause between iterations (e.g., 100–500ms) to reduce lock contention and allow concurrent writes. For high-volume systems prefer time-based partitioning and DROP PARTITION for retention or use tools like `pg_repack` to avoid table bloat. Tune batch size and pause based on observed contention/throughput.
+
+  **Rationale for RESTRICT**: `ON DELETE RESTRICT` is used on `fk_outbox_aggregate` to ensure we don't delete a subscription while unprocessed outbox events exist. This prevents ghost events and maintains data integrity during high load.
+

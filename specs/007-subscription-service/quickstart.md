@@ -86,17 +86,19 @@ class WelcomeEmailSender(
     )
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onSubscriptionCreated(event: SubscriptionCreatedEvent) {
-        try {
-            // Idempotency: Provider uses subscriptionId to avoid duplicate sends
-            emailProvider.sendWelcome(
-                email = event.email,
-                idempotencyKey = event.subscriptionId
-            )
-        } catch (e: Exception) {
-            log.error("Failed to send welcome email for ${event.subscriptionId}. Moving to DLQ.", e)
-            deadLetterQueue.publish(event, error = e.message)
-            throw e // Rethrow to trigger @Retryable if applicable
-        }
+        // Idempotency: Provider uses subscriptionId to avoid duplicate sends
+        emailProvider.sendWelcome(
+            email = event.email,
+            idempotencyKey = event.subscriptionId
+        )
+
+    }
+
+    @Recover
+    fun recover(e: Exception, event: SubscriptionCreatedEvent) {
+        log.error("Failed to send welcome email for ${event.subscriptionId}. Moving to DLQ.", e)
+        deadLetterQueue.publish(event, error = e.message)
+    }
     }
 }
 ```

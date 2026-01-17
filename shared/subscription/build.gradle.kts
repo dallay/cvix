@@ -7,9 +7,9 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
     testImplementation(libs.assertj)
     testImplementation(libs.faker)
-    // Removed duplicate junit dependency as it's handled by useJUnitJupiter
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 }
@@ -19,7 +19,7 @@ testing {
         // Configure the built-in test suite
         named("test", JvmTestSuite::class) {
             // Use JUnit Jupiter test framework
-            useJUnitJupiter(libs.versions.junit)
+            useJUnitJupiter()
         }
     }
 }

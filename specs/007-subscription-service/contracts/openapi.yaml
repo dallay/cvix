@@ -65,6 +65,8 @@ paths:
           schema:
             type: string
             format: uuid
+      security:
+        - {} # Allow anonymous access for token-based confirmation (email links)
       requestBody:
         required: true
         content:
@@ -80,6 +82,7 @@ paths:
                   maxLength: 512
                   pattern: '^[a-zA-Z0-9\-\._~+/]+=*$'
                   description: Cryptographically secure confirmation token
+
       responses:
         '200':
           description: Confirmed successfully
@@ -114,17 +117,23 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                unsubscribe_token:
-                  type: string
-                  minLength: 16
-                  maxLength: 512
+        - name: unsubscribe_token
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 512
+          description: Cryptographic unsubscribe token (email link flows). For programmatic clients prefer header `X-Unsubscribe-Token`.
+        - name: X-Unsubscribe-Token
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 512
+          description: Alternative location for the unsubscribe token for programmatic clients (preferred to avoid token leakage in URLs).
+      # Deprecated: request body-based token was removed to avoid clients/proxies dropping DELETE bodies
       responses:
         '204':
           description: Deleted (or marked for deletion)
@@ -165,12 +174,14 @@ components:
           example: UPPER_SNAKE_CASE
         message:
           type: string
-        details:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-            description: Optional context-specific error details (e.g., field, issue)
+    details:
+      type: array
+      maxItems: 50
+      items:
+        type: object
+        additionalProperties: true
+        description: Optional context-specific error details (e.g., field, issue)
+
 
     SubscriptionRequest:
       type: object
@@ -195,7 +206,7 @@ components:
           description: Flexible key-value pairs (max 20 keys)
         tags:
           type: array
-          maxItems: 10
+          maxItems: 20
           items:
             type: string
             maxLength: 32
