@@ -44,7 +44,7 @@ Verify response indicates success and the entry is persisted and retrievable.
    rejects the submission with a clear validation error.
 3. **Given** a repeat submission for the same email and context (e.g., source, metadata, tags—see
    FR-009 for configurable rules), **When** the user submits again, **Then** the system deduplicates
-   and returns an idempotent success (no duplicate persisted).
+   and returns an idempotent success (no duplicate persisted) with `200 OK`.
 
 ---
 
@@ -65,10 +65,11 @@ entry includes that metadata and that entries can be filtered by metadata value.
 1. **Given** a valid email and metadata {source: "landing-page", campaign: "spring"}, **When**
    submitted, **Then** the capture entry persists with the metadata attached.
 2. **Given** malformed metadata (e.g., field exceeds documented size), **When** submitted, **Then**
-   the system returns a clear validation error describing limits. Metadata validation constraints (
-   example): total metadata map max 10 KB, individual metadata field max 1 KB, maximum 100 metadata
-   fields per capture. If product team elects different limits, tests must reflect those configured
-   values.
+   the system returns a clear validation error describing limits.
+   **Limits**:
+   - **Non-PII (Default)**: Total 10 KB, max 100 fields.
+   - **PII-Enabled**: Total 1 MB (strict access controls apply).
+   - If limits are exceeded, reject with `400 Bad Request`.
 
 ---
 
@@ -138,11 +139,7 @@ receives a notification containing the capture payload.
   checks. For heavy contention, implement retry-on-conflict with exponential backoff or use explicit
   row-level locking. Response semantics: the request that creates the record MUST return
   `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing
-  resource representation. A global deploy-time configuration may be provided to change duplicate
-  response semantics to `409 Conflict`, but the deployed configuration MUST be consistent across the
-  environment and tests MUST validate the selected duplicate response behavior. A design review MUST
-  decide exact key composition and retry policy; tests should validate both create and idempotent
-  duplicate semantics.
+  resource representation. Configurable `409 Conflict` is NOT supported to simplify client logic.
 
   Default behavior: unless configured otherwise by the integrator (see FR-009), the service defaults
   to deduplication by the pair `(email_normalized, source)`. This means the same normalized email
@@ -158,8 +155,8 @@ receives a notification containing the capture payload.
   can subscribe to new-capture events (e.g., callbacks, event hooks, or message publish) to trigger
   downstream workflows.
 
-  Implementation note (FR-006): Notifications SHOULD be asynchronous by default and the service
-  SHOULD implement a Transactional Outbox pattern to atomically persist captures and enqueue
+  Implementation note (FR-006): Notifications **MUST** be asynchronous by default and the service
+  **MUST** implement a Transactional Outbox pattern to atomically persist captures and enqueue
   notification events. Delivery guarantees should be documented: at-least-once delivery with
   idempotent consumer expectations is recommended; exactly-once may be provided only if underlying
   infrastructure supports it. Ordering is not guaranteed globally unless explicitly requested. The
@@ -198,6 +195,11 @@ receives a notification containing the capture payload.
       The service itself does NOT automatically send confirmation emails by default; it provides the
       plumbing for integrators to do so. This makes responsibilities explicit and testable.
 
+  **Unconfirmed Lifecycle**:
+  - `PENDING`: Initial state.
+  - `CONFIRMED`: After valid token confirmation.
+  - `EXPIRED`: If not confirmed within TTL. Expired subscriptions are archived/deleted based on retention policy.
+
   Token expiration: Confirmation tokens MUST expire after a configurable TTL. Default TTL is
   `48 hours` unless the integrator overrides it in deployment configuration. The `POST
     /subscriptions/{id}/confirm` endpoint MUST validate token age and reject expired tokens with a
@@ -207,11 +209,19 @@ receives a notification containing the capture payload.
   tokens as appropriate.
 - **FR-008**: The system MUST return clear, machine-parseable error information for validation
   failures, duplicate attempts, and system errors.
+  **Error Schema**:
+  ```json
+  {
+    "code": "ERROR_CODE",
+    "message": "Human readable description",
+    "details": [{"field": "email", "issue": "Invalid format"}]
+  }
+  ```
 - **FR-009**: The system MUST support configurable deduplication rules (e.g., dedupe by email, by
   email+source) set by the integrator.
 
-  Default: dedupe by normalized email + source (`email_normalized, source`) unless an integrator
-  configures an alternative key composition.
+  **Default**: Dedupe by normalized email + source (`email_normalized, source`). Metadata is NOT part of the key.
+  **Merge Semantics**: If a duplicate is detected, the existing record is returned (`200 OK`). Metadata is merged (new keys added, existing keys updated).
 - **FR-010**: The system MUST expose a way for integrators to query entries filtered by metadata and
   source to support segmentation.
 - **FR-011**: The system MUST enforce configurable rate limiting and throttling policies (per IP,
@@ -226,7 +236,7 @@ receives a notification containing the capture payload.
   query APIs. Acceptance: unauthorized requests return `401/403` and authorized roles can perform
   documented operations.
 - **FR-013**: The system MUST validate and sanitize all inputs (metadata, tags, names). Acceptance:
-  inputs violating schema or containing injection payloads are rejected with `400` and not
+  inputs violating schema or containing injection payloads (SQL, NoSQL, XSS, Command, LDAP, XML/XXE, Path Traversal) are rejected with `400` and not
   persisted; safe-encoding is applied when forwarding to downstream systems.
 - **FR-014**: The system MUST produce immutable audit logs for create/read/update/delete and
   administrative operations containing who/what/when/why metadata and integration-friendly format.
@@ -235,10 +245,10 @@ receives a notification containing the capture payload.
   `POST /subscriptions/bulk/import`) with acceptance criteria: supported formats (CSV/JSONL),
   chunking/pagination, idempotency/duplicate detection, authentication, and per-batch reporting of
   successes/failures. Rate/size limits and size-per-request constraints must be documented.
-- **FR-016**: Bulk export: The system SHOULD provide a bulk export API (e.g.,
+- **FR-016**: Bulk export: The system **MUST** provide a bulk export API (e.g.,
   `GET /subscriptions/export?filter=...`) that returns a machine-readable payload (CSV/JSONL) and
   supports pagination, authentication, and audit logging.
-- **FR-017**: Bulk deletion for compliance: The system SHOULD provide a bulk deletion API (e.g.,
+- **FR-017**: Bulk deletion for compliance: The system **MUST** provide a bulk deletion API (e.g.,
   `POST /subscriptions/bulk/delete`) with safeguards (confirmation, authorization, dry-run mode, audit
   logging), and document soft-delete vs hard-delete semantics.
 
@@ -255,7 +265,7 @@ receives a notification containing the capture payload.
     - (b) PII minimization: fields classified as PII must be optional unless required; configurable
       redaction/obfuscation rules must be available for persisted and exported payloads.
     - (c) Retention enforcement: configurable retention TTLs, automated deletion/archival jobs, and
-      policy-driven purge workflows.
+      policy-driven purge workflows. **Constraint**: Configured `retention-days` MUST NOT exceed `compliance.maxRetentionDays` (validated on startup).
     - (d) Access control: RBAC defaults to least-privilege and offers integration points for
       SSO/IDP.
     - (e) Audit logging: immutable logs recording `who/what/when/why` for compliance and incident
@@ -288,7 +298,7 @@ receives a notification containing the capture payload.
   and bursts of Y captures/sec for short windows (team to fill X/Y based on expected traffic);
   support horizontal scaling with stateless frontends.
 - **NFR-007 (Data Durability)**: Persistent store must provide replication and durability
-  guarantees (e.g., >= 4 9s durability or equivalent replication strategy) and backups with daily
+  guarantees (>= 99.99% durability / four nines) and backups with daily
   snapshots and 30-day retention.
 - **NFR-008 (Security Posture)**: Must pass org security reviews, use encryption-in-transit/at-rest,
   RBAC, and periodic audits/pen-tests.
@@ -302,6 +312,7 @@ receives a notification containing the capture payload.
   pending/confirmed), optional `confirmation_token` and `confirmation_timestamp`,
   `confirmation_expires_at` (optional), `do_not_contact` flag, and retention metadata
   (expiry/soft-delete state).
+  **Audit Fields**: `createdBy`, `modifiedBy`, `modifiedAt`, `deletedBy`, `deletedAt`, `isDeleted`, `deletionReason`.
 - **Source**: Logical origin of capture (landing page, marketing campaign, API consumer).
 - **CaptureNotification**: Payload sent to downstream handlers when a new capture is created.
 
@@ -322,6 +333,7 @@ receives a notification containing the capture payload.
   integrators should query the primary store or wait for an indexing-complete event.
 - **SC-004**: Integrators can register at least one downstream handler and receive notifications for
   new captures in 95% of cases (excluding transient failures).
+  **Note**: "Transient failures" include network timeouts, 503s, and connection resets. 4xx errors are permanent. SLA is measured after all retries.
 - **SC-005**: Metadata attached to captures can be used to filter entries in test queries (basic
   filtering correctness validated by integration tests).
 - **SC-006**: The feature is usable as a reusable module by at least two different internal apps
@@ -396,6 +408,9 @@ semantics and retention consequences.
   idempotent success and no duplicate entry.
 - Notification: Register test handler → submit capture → handler receives payload containing
   expected fields.
+- **Unconfirmed Lifecycle**: Submit capture → Status PENDING → Wait TTL → Confirm fails (TOKEN_EXPIRED).
+- **Configuration Validation**: Start app with retention > max legal limit → Startup Fails.
+- **Do Not Contact**: Set do_not_contact → Resubmit → Expect Rejection/Flagging.
 
 ### Security & Privacy Acceptance Tests
 

@@ -9,7 +9,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.assertj)
     testImplementation(libs.faker)
-    testImplementation(libs.junit)
+    // Removed duplicate junit dependency as it's handled by useJUnitJupiter
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 }
@@ -17,8 +17,7 @@ dependencies {
 testing {
     suites {
         // Configure the built-in test suite
-        @Suppress("UnusedPrivateProperty")
-        val test by getting(JvmTestSuite::class) {
+        named("test", JvmTestSuite::class) {
             // Use JUnit Jupiter test framework
             useJUnitJupiter(libs.versions.junit)
         }

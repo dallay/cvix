@@ -3,6 +3,11 @@ info:
   title: Subscription Service API
   version: 1.0.0
   description: API for subscriptions, waitlists, and newsletters.
+servers:
+  - url: https://api.cvix.com/v1
+    description: Production server
+security:
+  - apiKey: []
 paths:
   /subscriptions:
     post:
@@ -29,8 +34,21 @@ paths:
                 $ref: '#/components/schemas/SubscriptionResponse'
         '400':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '429':
           description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before retrying
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /subscriptions/{id}/confirm:
     post:
@@ -43,18 +61,36 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: token
-          in: query
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
       responses:
         '200':
           description: Confirmed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
         '410':
           description: Token expired or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /subscriptions/{id}:
     delete:
@@ -67,12 +103,56 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: unsubscribe_token
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional unsubscribe token if not authenticated
       responses:
         '204':
           description: Deleted (or marked for deletion)
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+
     SubscriptionRequest:
       type: object
       required:
@@ -82,25 +162,38 @@ components:
         email:
           type: string
           format: email
+          maxLength: 254
         source:
           type: string
           maxLength: 64
         name:
           type: string
+          maxLength: 128
         metadata:
           type: object
-          additionalProperties: true
+          # additionalProperties removed to restrict open-ended objects, use specific properties if needed or strict validation
+          maxProperties: 20
         tags:
           type: array
+          maxItems: 10
           items:
             type: string
+            maxLength: 32
 
     SubscriptionResponse:
       type: object
+      required:
+        - id
+        - status
+        - created_at
+        - email
       properties:
         id:
           type: string
           format: uuid
+        email:
+          type: string
+          format: email
         status:
           type: string
           enum: [ PENDING, CONFIRMED ]

@@ -6,57 +6,62 @@
 
 ## Content Quality
 
-- [x] No implementation details (languages, frameworks, APIs)
-- [x] Focused on user value and business needs
-- [x] Written for non-technical stakeholders
-- [x] All mandatory sections completed
+- [ ] No implementation details (languages, frameworks, APIs)
+- [ ] Focused on user value and business needs
+- [ ] Written for non-technical stakeholders
+- [ ] All mandatory sections completed
 
 ## Requirement Completeness
 
-- [x] No [NEEDS CLARIFICATION] markers remain
-- [x] Requirements are testable and unambiguous
-- [x] Success criteria are measurable
-- [x] Success criteria are technology-agnostic (no implementation details)
-- [x] All acceptance scenarios are defined
-- [x] Edge cases are identified
-- [x] Scope is clearly bounded
-- [x] Dependencies and assumptions identified
+- [ ] No [NEEDS CLARIFICATION] markers remain
+- [ ] Requirements are testable and unambiguous
+- [ ] Success criteria are measurable
+- [ ] Success criteria are technology-agnostic (no implementation details)
+- [ ] All acceptance scenarios are defined
+- [ ] Edge cases are identified
+- [ ] Scope is clearly bounded
+- [ ] Dependencies and assumptions identified
 
 ## Feature Readiness
 
-- [x] All functional requirements have clear acceptance criteria
-- [x] User scenarios cover primary flows
-- [x] Feature meets measurable outcomes defined in Success Criteria
-- [x] No implementation details in technical acceptance criteria (e.g., CI/infra specifics)
+- [ ] All functional requirements have clear acceptance criteria
+- [ ] User scenarios cover primary flows
+- [ ] Feature meets measurable outcomes defined in Success Criteria
+- [ ] No implementation details in technical acceptance criteria (e.g., CI/infra specifics)
 
 ## Security & Privacy
 
-- [x] Industry-standard transport encryption (e.g., up-to-date TLS) ensuring confidentiality and
-  integrity, and strong symmetric encryption at rest meeting current security standards. Acceptance
-  criteria: encryption strength and key management practices are verifiable (KMS/secret manager
-  usage, rotation policy documented) and compliance certifications for production environments are
-  referenced where applicable.
-- [x] Consent mechanisms described (single/double opt-in, opt-out flows) and testable
-- [x] User rights are specified (access, deletion/export/portability) with endpoints and behaviors
-- [x] PII handling rules and input validation are defined and verifiable
-- [x] Privacy policy/terms integration points are identified
+- [ ] Industry-standard transport and at-rest encryption ensuring confidentiality and integrity. Acceptance criteria: verifiable encryption strength and key management practices, and third-party security compliance verification where applicable.
+- [ ] Consent mechanisms described (single/double opt-in, opt-out flows) and testable
+- [ ] User rights are specified (access, deletion/export/portability) with endpoints and behaviors
+- [ ] PII handling rules and input validation are defined and verifiable
+- [ ] Privacy policy/terms integration points are identified
 
 ## Compliance & Legal
 
-- [x] GDPR checkpoints included: right-to-be-forgotten, data export, lawful basis for processing
-- [x] CCPA considerations included: data access & deletion flows, sale opt-out stance
-- [x] CAN-SPAM expectations documented for downstream email sending responsibilities
-- [x] Audit logging and retention requirements documented for compliance audits
+- [ ] GDPR checkpoints included: right-to-be-forgotten, data export, lawful basis for processing
+- [ ] CCPA considerations included: data access & deletion flows, sale opt-out stance
+- [ ] CAN-SPAM expectations documented for downstream email sending responsibilities
+- [ ] Audit logging and retention requirements documented for compliance audits
 
 ## Non-Functional Requirements
 
-- [x] Observability: metrics, logging, and alerting requirements are defined and testable
-- [x] Rate limiting and abuse prevention expectations are documented with expected error responses
+- [ ] Observability: metrics, logging, and alerting requirements are defined and testable
+- [ ] Rate limiting and abuse prevention expectations are documented with expected error responses
   and rejection behaviors (including client-facing retry guidance), without assuming a specific
   transport protocol.
-- [x] Performance targets and SLAs are stated and measurable
-- [x] Retention/archival and secure deletion workflows are described and testable
+- [ ] Performance targets and SLAs are stated and measurable
+- [ ] Retention/archival and secure deletion workflows are described and testable
 
 ## Notes
 
-All checklist items pass. Spec is ready for planning.
+**Verification Metadata**:
+- **Verified by**: [Name/Role]
+- **Verification date**: [YYYY-MM-DD]
+- **Sign-off**: [Name/Role/Date]
+- **Evidence**:
+  - [Link to Security Review]
+  - [Link to Compliance Review]
+
+**Summary**:
+Awaiting final verification and sign-off.

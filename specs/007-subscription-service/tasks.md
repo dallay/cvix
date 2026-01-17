@@ -9,6 +9,7 @@
 - [ ] T001 Verify `shared/engagement` module build configuration in `shared/engagement/build.gradle.kts`
 - [ ] T002 Create package structure `com.cvix.subscription` in `shared/engagement/src/main/kotlin`
 - [ ] T003 Create `SubscriptionApplication` or configuration class if needed in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/config/SubscriptionConfig.kt`
+- [ ] T003a Configure Authentication/Authorization (OAuth2/JWT) and security filters in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/config/SecurityConfig.kt`
 
 ## Phase 2: Foundational (Blocking)
 
@@ -57,20 +58,20 @@
 
 *Goal: Double opt-in support.*
 
-- [ ] T027 [US1] Add `issueConfirmationToken` method to `SubscriptionService`
-- [ ] T028 [US1] Implement `confirm` method in `SubscriptionService` (validate token, update status)
-- [ ] T029 [US1] Add `POST /subscriptions/{id}/confirm` endpoint to `SubscriptionController`
-- [ ] T030 [US1] Write integration test for confirmation flow in `shared/engagement/src/test/kotlin/com/cvix/subscription/application/SubscriptionConfirmationTest.kt`
+- [ ] T027 [FR-007] Add `issueConfirmationToken` method to `SubscriptionService` using secure CSPRNG and hashing
+- [ ] T028 [FR-007] Implement `confirm` method in `SubscriptionService` (validate token hash, expiry, update status)
+- [ ] T029 [FR-007] Add `POST /subscriptions/{id}/confirm` endpoint to `SubscriptionController`
+- [ ] T030 [FR-007] Write integration test for confirmation flow in `shared/engagement/src/test/kotlin/com/cvix/subscription/application/SubscriptionConfirmationTest.kt`
 
 ## Phase 7: Privacy & Compliance (NFR-003)
 
 *Goal: GDPR/CCPA compliance APIs.*
 
-- [ ] T031 [US1] Implement `delete` method in `SubscriptionService` (soft/hard delete logic)
-- [ ] T032 [US1] Add `DELETE /subscriptions/{id}` endpoint to `SubscriptionController`
-- [ ] T033 [US1] Implement `export` method in `SubscriptionService` (return JSON/CSV data)
-- [ ] T034 [US1] Add `GET /subscriptions/export` endpoint to `SubscriptionController`
-- [ ] T035 [US1] Write integration tests for deletion and export in `shared/engagement/src/test/kotlin/com/cvix/subscription/application/PrivacyComplianceTest.kt`
+- [ ] T031 [NFR-003] Implement `delete` method in `SubscriptionService` (Strategy: Soft delete with anonymization)
+- [ ] T032 [NFR-003] Add `DELETE /subscriptions/{id}` endpoint to `SubscriptionController` (Admin/Owner only)
+- [ ] T033 [NFR-003] Implement `export` method in `SubscriptionService` (return JSON/CSV data, redact PII unless auth'd)
+- [ ] T034 [NFR-003] Add `GET /subscriptions/export` endpoint to `SubscriptionController` (Pagination, AuthZ required)
+- [ ] T035 [NFR-003] Write integration tests for deletion and export in `shared/engagement/src/test/kotlin/com/cvix/subscription/application/PrivacyComplianceTest.kt`
 
 ## Phase 8: Polish
 

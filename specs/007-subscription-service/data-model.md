@@ -37,14 +37,32 @@ CREATE TABLE subscriptions
     confirmation_expires_at TIMESTAMP WITH TIME ZONE,
     do_not_contact          BOOLEAN                  NOT NULL DEFAULT FALSE,
     created_at              TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at              TIMESTAMP WITH TIME ZONE,
+    updated_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
     -- Uniqueness: Email + Source (FR-004, FR-009 default)
-    CONSTRAINT uq_email_source UNIQUE (email, source)
+    CONSTRAINT uq_email_source UNIQUE (email, source),
+    -- Constraints
+    CONSTRAINT chk_metadata_size CHECK (octet_length(metadata::text) <= 10240),
+    CONSTRAINT chk_tags_size CHECK (cardinality(tags) <= 20),
+    CONSTRAINT chk_status_enum CHECK (status IN ('PENDING', 'CONFIRMED'))
 );
 
 CREATE INDEX idx_subscription_email ON subscriptions (email);
 CREATE INDEX idx_subscription_token ON subscriptions (confirmation_token) WHERE confirmation_token IS NOT NULL;
+
+-- Trigger to update updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER trg_subscriptions_updated_at
+    BEFORE UPDATE ON subscriptions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 ```
 
 ## Entity: `OutboxEvent` (Reliability)
@@ -68,8 +86,21 @@ CREATE TABLE subscription_outbox_events
     type         VARCHAR(64)              NOT NULL,
     payload      JSONB                    NOT NULL,
     created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    processed_at TIMESTAMP WITH TIME ZONE
+    processed_at TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT fk_outbox_aggregate FOREIGN KEY (aggregate_id) REFERENCES subscriptions(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_outbox_processed ON subscription_outbox_events (created_at) WHERE processed_at IS NULL;
 ```
+
+### Retention & Cleanup
+
+**Strategy**:
+- **Retention Period**: Processed events (`processed_at IS NOT NULL`) are retained for **30 days**.
+- **Cleanup Mechanism**: Automated nightly job (Cron) or `pg_partman` partitioning.
+- **Job Logic**:
+  ```sql
+  DELETE FROM subscription_outbox_events
+  WHERE processed_at < NOW() - INTERVAL '30 days';
+  ```

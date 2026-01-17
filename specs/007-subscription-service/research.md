@@ -20,9 +20,15 @@ genericity required by the new specification.
 ### 1. Domain Model Generalization
 
 - **Rename**: `WaitlistEntry` -> `Subscription`.
-- **Source**: Change `sourceNormalized` from Enum to `String`. Allow `source` (raw) and
-  `source_normalized` (processed).
-- **Metadata**: Retain `Map<String, Any>`, but enforce strict size limits (FR-005).
+- **Source Strategy**: Hybrid Approach.
+    - `sourceNormalized`: Enum for known/system sources.
+    - `sourceRaw`: String for custom/arbitrary sources.
+    - Logic: Parser checks allowlist; if match -> set Enum, else set OTHER and populate `sourceRaw`.
+- **Metadata**: Retain `Map<String, Any>` with strict limits:
+    - Max keys: 20
+    - Max value size: 1 KB (String/JSON)
+    - Max total size: 10 KB
+    - Allowed types: String, Number, Boolean
 
 ### 2. Consistency & Idempotency (FR-004)
 
@@ -59,6 +65,20 @@ genericity required by the new specification.
 - Given "reusable package/library" input, we will treat this as a **New Module** (`shared/engagement`)
   and deprecate `waitlist` package in `server/engine`.
 - `WaitlistController` will be replaced by `SubscriptionController`.
+
+## Errors, Validation & Observability
+
+- **Validation**:
+    - Email: Regex + DNS check (optional).
+    - Rate Limits: 5 req/IP/hr, 3 req/email/hr.
+    - Metadata: Enforce limits (size, count) via validator.
+- **Errors**:
+    - `400`: Validation failed (Code: `VALIDATION_ERROR`).
+    - `429`: Rate limit (Code: `RATE_LIMIT_EXCEEDED`).
+    - `409`: Conflict (Code: `DUPLICATE_SUBSCRIPTION` - only if configured).
+- **Observability**:
+    - Metrics: `subscription.created`, `subscription.duplicate`, `outbox.published`, `outbox.lag`.
+    - Logs: Audit logs for all PII access (export/delete).
 
 ## Open Questions (Resolved)
 

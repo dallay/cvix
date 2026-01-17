@@ -1,7 +1,6 @@
 # Implementation Plan: Subscription Service
 
-**Branch**: `007-subscription-service` | **Date**: 2026-01-17 | **Spec
-**: [specs/007-subscription-service/spec.md](spec.md)
+**Branch**: `007-subscription-service` | **Date**: 2026-01-17 | **Spec**: [specs/007-subscription-service/spec.md](spec.md)
 **Input**: Feature specification from `/specs/007-subscription-service/spec.md`
 
 ## Summary
@@ -16,10 +15,16 @@ notifications, following Hexagonal Architecture.
 **Language/Version**: Kotlin 2.2
 **Primary Dependencies**: Spring Boot 3.5 (WebFlux), R2DBC, PostgreSQL
 **Storage**: PostgreSQL (Reactive)
-**Testing**: JUnit 5, Kotest, Testcontainers, MockK
+**Testing**:
+- **JUnit 5**: Test runner and lifecycle manager.
+- **Kotest**: Assertions and property-based testing.
+- **Testcontainers**: Integration testing with real dependencies (PostgreSQL).
+- **MockK**: Mocking for unit tests.
 **Target Platform**: JVM / Linux Container
 **Project Type**: Backend Service (Spring Boot Module)
 **Performance Goals**: <200ms p95 response time, 1000 captures/sec burst
+- **Baseline**: Current waitlist p95 is ~350ms with 100 req/sec burst.
+- **Strategy**: Validated via k6 load tests in staging environment (steady state and spike tests). Metrics collected via Micrometer/Prometheus.
 **Constraints**: Non-blocking I/O (WebFlux), Hexagonal Architecture, Strict Validation
 **Scale/Scope**: Reusable module for multiple apps
 
@@ -56,13 +61,23 @@ specs/007-subscription-service/
 
 ### Source Code (repository root)
 
+**Module Rationale**: `shared/engagement` was chosen over `shared/subscription` to group related engagement features (future: comments, reactions) and avoid narrow "subscription-only" scoping.
+
+**Migration Strategy**:
+1. Implement new `SubscriptionService` in `shared/engagement`.
+2. Introduce a temporary adapter in `server/engine` that delegates `WaitlistService` calls to `SubscriptionService`.
+3. Migrate database data from `waitlist` tables to `subscriptions`.
+4. Deprecate and remove `com.cvix.waitlist` package after grace period.
+
 ```text
 shared/engagement/src/main/kotlin/com/cvix/subscription/
 ├── application/         # Use Cases / Application Services
-├── domain/              # Domain Entities, Interfaces (Ports)
+│   └── port/            # Port Interfaces (Incoming/Outgoing)
+├── domain/              # Domain Entities, Interfaces
+│   └── port/            # Domain Ports (Repository interfaces)
 └── infrastructure/      # Adapters (Web, Persistence, Messaging)
-    ├── web/             # Controllers
-    ├── persistence/     # R2DBC Repositories
+    ├── web/             # Controllers (Implements Incoming Ports)
+    ├── persistence/     # R2DBC Repositories (Implements Outgoing Ports)
     └── config/          # Spring Configuration
 ```
 
