@@ -19,6 +19,10 @@ registrations."
   source. This means the same normalized email may have multiple entries if submitted from different
   sources; integrators can override this behavior per FR-009.
 
+- Q: What should the confirmation token TTL be? → A: Default 48 hours; configurable by the
+  integrator. Tokens older than the configured TTL are invalid and must be rejected by the
+  confirmation API.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Submit email capture (Priority: P1)
@@ -115,8 +119,13 @@ receives a notification containing the capture payload.
   error message. Email validation MUST include a deterministic normalization step performed prior to
   validation and deduplication: trim surrounding whitespace, apply Unicode Normalization Form C (
   NFC), and perform case-folding where appropriate (domain must be case-folded; local-part case
-  handling follows RFC-specific rules but should be normalized consistently according to configured
-  policy). Normalization MUST be applied before uniqueness/deduplication checks.
+  handling follows RFC-specific rules. Deterministic policy: by default the system MUST preserve
+  the submitted local-part exactly and NOT case-fold local-parts (Option A). The system MUST only
+  case-fold the domain part. Option B (provider-specific local-part case-folding) is allowed only as
+  an opt-in behavior and requires explicit integrator acknowledgement of risks; if enabled it must
+  be documented in deployment configuration. Normalization (trim + NFC + domain case-folding and
+  any configured local-part policy) MUST be applied before uniqueness/deduplication checks. Note:
+  RFC 5321 treats local-parts as case-sensitive.
 - **FR-003**: The system MUST persist capture entries in a durable store and allow retrieval by
   identifier or by email for auditing and downstream processing.
 - **FR-004**: The system MUST enforce idempotency: repeated submissions of the same email within the
@@ -128,17 +137,22 @@ receives a notification containing the capture payload.
   inside a transaction to let the database enforce uniqueness rather than relying on in-memory
   checks. For heavy contention, implement retry-on-conflict with exponential backoff or use explicit
   row-level locking. Response semantics: the request that creates the record MUST return
-  `201 Created`; subsequent idempotent duplicates SHOULD return `200 OK` with the existing resource
-  representation (alternatively `409 Conflict` if the integration requires explicit duplicate
-  signaling). A design review MUST decide exact key composition and retry policy; tests should
-  validate both create and idempotent duplicate semantics.
+  `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing
+  resource representation. A global deploy-time configuration may be provided to change duplicate
+  response semantics to `409 Conflict`, but the deployed configuration MUST be consistent across the
+  environment and tests MUST validate the selected duplicate response behavior. A design review MUST
+  decide exact key composition and retry policy; tests should validate both create and idempotent
+  duplicate semantics.
 
   Default behavior: unless configured otherwise by the integrator (see FR-009), the service defaults
   to deduplication by the pair `(email_normalized, source)`. This means the same normalized email
   may exist multiple times when submitted from different sources; integrations that require global
   uniqueness should explicitly configure a different dedupe key.
-- **FR-005**: The system MUST allow attaching arbitrary metadata (key/value) to captures within
-  documented size limits and schema constraints.
+- **FR-005**: The system MUST allow attaching arbitrary metadata (key/value) to captures. Implementers
+  MUST enforce documented metadata size limits and schema constraints (see "User Story 2: metadata
+  validation constraints"). Example defaults: total metadata map max 10 KB, individual metadata
+  field max 1 KB, maximum 100 metadata fields per capture. These limits are product-configurable;
+  tests MUST reflect configured values when different from the defaults.
 - **FR-006**: The system MUST provide a pluggable notification mechanism so consuming applications
   can subscribe to new-capture events (e.g., callbacks, event hooks, or message publish) to trigger
   downstream workflows.
@@ -151,6 +165,26 @@ receives a notification containing the capture payload.
   default retry and dead-letter behavior described in retry configuration applies to notification
   delivery. Synchronous webhooks are allowed as an alternative but must be opt-in and include
   caveats about latency and coupling.
+
+  Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
+  stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
+  envelope. Example consumer strategies include:
+  - Persistent deduplication cache (e.g., Redis with TTL) keyed by `eventId` or `captureId`.
+  - Database uniqueness constraints on processed `eventId` or `captureId` when writing downstream
+    records.
+  - Versioned/state-machine-based processing where each event carries a version or sequence to
+    allow idempotent transitions.
+
+  Implementations SHOULD include an `eventId` in every notification envelope and document its
+  generation scheme. These deduplication approaches satisfy the at-least-once delivery model
+  expected when using a Transactional Outbox; consumers MUST be tested for idempotent processing in
+  integration tests.
+
+  Notification encoding and safety: notification payloads MUST escape metadata values according to
+  the notification format (for example, JSON string escaping, XML entity encoding, HTML entity
+  encoding where applicable) and MUST NOT forward raw unescaped input. FR-013 (input validation and
+  sanitization) applies to notification payloads; implementers MUST include encoding validation in
+  tests and documentation.
 - **FR-007**: The system MUST expose explicit hooks and APIs to enable confirmation workflows (
   double opt-in) for integrators that require them. At minimum the service MUST:
     - Offer an issuance API for confirmation tokens and a way to associate a confirmation token with
@@ -162,6 +196,14 @@ receives a notification containing the capture payload.
       implement email delivery and follow-up flows.
       The service itself does NOT automatically send confirmation emails by default; it provides the
       plumbing for integrators to do so. This makes responsibilities explicit and testable.
+
+    Token expiration: Confirmation tokens MUST expire after a configurable TTL. Default TTL is
+    `48 hours` unless the integrator overrides it in deployment configuration. The `POST
+    /captures/{id}/confirm` endpoint MUST validate token age and reject expired tokens with a
+    clear machine-parseable error (example: `{"code":"TOKEN_EXPIRED","message":"..."}`).
+    Implementations SHOULD store `confirmation_expires_at` on the `EmailCaptureEntry` for audit
+    and validation purposes and provide a background job or DB constraint to clean/expire old
+    tokens as appropriate.
 - **FR-008**: The system MUST return clear, machine-parseable error information for validation
   failures, duplicate attempts, and system errors.
 - **FR-009**: The system MUST support configurable deduplication rules (e.g., dedupe by email, by
@@ -172,8 +214,12 @@ receives a notification containing the capture payload.
 - **FR-010**: The system MUST expose a way for integrators to query entries filtered by metadata and
   source to support segmentation.
 - **FR-011**: The system MUST enforce configurable rate limiting and throttling policies (per IP,
-  API key, or account). Acceptance: limits configurable, tests return `429 Too Many Requests` when
-  exceeded and include `Retry-After` header.
+  API key, or account). Acceptance: limits configurable and tests validate limit enforcement.
+  Normative client behavior: when limits are exceeded, the service will reject excess submissions and
+  return `429 Too Many Requests` with a `Retry-After` header indicating when the client MAY retry.
+  Rejected submissions are not enqueued by the service for delayed processing; clients MUST retry if
+  they wish to resubmit. Implementers must document server-side limits (burst window, sustained
+  rate), any per-tenant overrides, and monitoring/alerting for rate-limit saturation.
 - **FR-012**: The system MUST require authentication and role-based authorization for write and
   query APIs. Acceptance: unauthorized requests return `401/403` and authorized roles can perform
   documented operations.
@@ -216,6 +262,25 @@ receives a notification containing the capture payload.
   workflow, metadata limits). NFR-004 must remain compatible with NFR-003 (
   dedupe/confirmation/metadata handling must honor retention and PII rules).
 
+  Configuration validation and invariants: the configuration loader MUST perform schema-level
+  validation and enforce critical invariants before accepting a deployment or runtime reload. The
+  loader MUST check and reject invalid configurations with clear error codes and messages. Examples
+  of enforced invariants and required behavior:
+  - `custom dedupe keys` MUST NOT exclude PII fields from data-deletion scope; config validation
+    must fail if a dedupe key would prevent compliant deletion semantics.
+  - `retention TTL` configurations MUST NOT exceed the maximum legal retention period defined by
+    the organization; attempts to set longer retention MUST be rejected by the loader.
+  - `metadata size` configuration MUST enforce an upper bound for PII-containing records (example
+    default: 1 MB); setting limits that allow larger PII storage MUST fail validation unless an
+    explicit compliance waiver is present.
+
+  Failure behavior: invalid configurations MUST be rejected and the service must refuse to start or
+  reload the configuration. Error responses from the loader SHOULD be machine-parseable (example:
+  `{"code":"CONFIG_INVALID","field":"metadata.maxSize","message":"exceeds-legal-limit"}`)
+  and CI pipelines MUST include acceptance tests validating these checks (for example: set
+  `metadata.maxSize` to >1MB for PII records → expect configuration validation error). These
+  checks guarantee NFR-004 remains compatible with NFR-003 in all deployments.
+
 - **NFR-005 (Availability)**: Target 99.9% uptime SLA for the capture API (measurable monthly).
 - **NFR-006 (Scalability)**: The service should handle a steady-state throughput of X captures/sec
   and bursts of Y captures/sec for short windows (team to fill X/Y based on expected traffic);
@@ -232,26 +297,22 @@ receives a notification containing the capture payload.
 
 - **EmailCaptureEntry**: Represents a captured contact. Key attributes: id, email (normalized),
   name (optional), source, tags (list), metadata (key/value map), createdAt, status (e.g.,
-  pending/confirmed), optional `confirmation_token` and `confirmation_timestamp`, `do_not_contact`
-  flag, and retention metadata (expiry/soft-delete state).
+  pending/confirmed), optional `confirmation_token` and `confirmation_timestamp`,
+  `confirmation_expires_at` (optional), `do_not_contact` flag, and retention metadata
+  (expiry/soft-delete state).
 - **Source**: Logical origin of capture (landing page, marketing campaign, API consumer).
 - **CaptureNotification**: Payload sent to downstream handlers when a new capture is created.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
-
-- **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 3
-  seconds under normal load.
-- **SC-002**: Duplicate submissions are reduced so that duplicate persistent entries are <1% for
-  repeated user submissions (measured during integration testing).
-- **SC-003**: 100% of valid submissions are retrievable via query APIs for audit within 10 seconds
-  of creation.
-
 - **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 3
   seconds under normal load. This success indicates durable persistence to the primary transactional
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
   Persistence) and can take up to 10 seconds before the entry is queryable via indexed queries.
+
+- **SC-002**: Duplicate submissions are reduced so that duplicate persistent entries are <1% for
+  repeated user submissions (measured during integration testing).
 
 - **SC-003**: 100% of valid submissions are retrievable via query APIs for audit within 10 seconds
   of creation (factoring asynchronous indexing). If immediate read-after-write is required,
@@ -293,9 +354,13 @@ stronger guarantees.
 The service MUST provide explicit endpoints to support privacy and legal requests. Example endpoints
 and behaviors:
 
-- `DELETE /captures/{id}`: delete a capture by id. Requires authentication/authorization. Should
-  support soft-delete vs hard-delete semantics (configurable). Success: `204 No Content`. Action
-  MUST be audit logged.
+- `DELETE /captures/{id}`: delete a capture by id. Requires authentication/authorization. Must
+  support soft-delete vs hard-delete semantics (configurable). Success: `204 No Content`.
+  Deletion MUST immediately invalidate any pending confirmation tokens associated with the
+  `EmailCaptureEntry` (soft- or hard-delete). Any subsequent attempts to confirm using those tokens
+  MUST return `404 Not Found` or `410 Gone` and no confirmation action should be performed. Token
+  invalidation is a required part of the deletion workflow and MUST be recorded in the audit log
+  alongside the deletion event (for example, an audit entry `capture.deleted` plus `token.invalidated`).
 - `DELETE /captures?email={email}`: delete all captures for an email. Requires elevated
   authorization and confirmation/dry-run support. Returns `202 Accepted` for async bulk deletes with
   job id; job completion/audit logged.
@@ -340,8 +405,10 @@ semantics and retention consequences.
 - Data export: Perform `GET /captures/export?email=` → expect `200 OK` with machine-readable payload
   containing all associated data and audit entry for export.
 - Malicious input: Submit a payload containing XSS or SQL-injection-like payloads in metadata →
-  expect `400 Bad Request` (or sanitized storage) and no stored unsafe content; downstream
-  notifications must receive safe-encoded payloads.
+  expect `400 Bad Request` (or sanitized storage) and no stored unsafe content. Downstream
+  notifications MUST carry safely-encoded metadata values (for example, JSON-escaped strings for
+  JSON envelopes, XML entity-encoded values for XML envelopes). Tests MUST assert that notification
+  handlers receive escaped metadata rather than raw unescaped input.
 
 ## Implementation Notes (for planning only)
 

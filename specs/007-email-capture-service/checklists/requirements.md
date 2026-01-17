@@ -30,8 +30,7 @@
 - [x] No implementation details in technical acceptance criteria (e.g., CI/infra specifics)
 
 ## Security & Privacy
-
-- [x] Data encrypted in transit (TLS 1.2+ / TLS 1.3) and at rest (e.g., AES-256)
+- [x] Industry-standard transport encryption (e.g., up-to-date TLS) ensuring confidentiality and integrity, and strong symmetric encryption at rest meeting current security standards. Acceptance criteria: encryption strength and key management practices are verifiable (KMS/secret manager usage, rotation policy documented) and compliance certifications for production environments are referenced where applicable.
 - [x] Consent mechanisms described (single/double opt-in, opt-out flows) and testable
 - [x] User rights are specified (access, deletion/export/portability) with endpoints and behaviors
 - [x] PII handling rules and input validation are defined and verifiable
@@ -47,7 +46,9 @@
 ## Non-Functional Requirements
 
 - [x] Observability: metrics, logging, and alerting requirements are defined and testable
-- [x] Rate limiting and abuse prevention expectations are documented with expected HTTP codes
+- [x] Rate limiting and abuse prevention expectations are documented with expected error responses
+ and rejection behaviors (including client-facing retry guidance), without assuming a specific
+ transport protocol.
 - [x] Performance targets and SLAs are stated and measurable
 - [x] Retention/archival and secure deletion workflows are described and testable
 
