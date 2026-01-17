@@ -5,7 +5,8 @@
 Add the module to your `build.gradle.kts`:
 
 ```kotlin
-implementation(project(":shared:engagement"))
+implementation(project(":shared:subscription"))
+implementation("commons-validator:commons-validator:1.8.0")
 ```
 
 ## Configuration
@@ -37,10 +38,12 @@ subscription:
 ```kotlin
 @Service
 class MyService(private val subscriptionService: SubscriptionService) {
+    private val emailValidator = EmailValidator.getInstance()
+
     suspend fun signup(email: String) {
-        // Validate input before calling service
-        if (!email.contains("@")) {
-            throw IllegalArgumentException("Invalid email format")
+        // Proper email validation using Apache Commons
+        if (!emailValidator.isValid(email)) {
+            throw IllegalArgumentException("Invalid email format: $email")
         }
 
         try {
@@ -52,8 +55,13 @@ class MyService(private val subscriptionService: SubscriptionService) {
                 )
             )
         } catch (e: DuplicateSubscriptionException) {
-            // Handle duplicate - service is idempotent but throws if conflict mode is on
             log.info("Already subscribed: $email")
+        } catch (e: RateLimitException) {
+            log.warn("Rate limit hit for $email")
+            throw e
+        } catch (e: ValidationException) {
+            log.warn("Validation failed for $email: ${e.message}")
+            throw e
         } catch (e: Exception) {
             log.error("Failed to capture subscription", e)
             throw DomainException("Subscription failed", e)
@@ -71,17 +79,23 @@ class WelcomeEmailSender(
 ) {
     // Run after commit to ensure data is persisted. Async to avoid blocking.
     @Async
+    @Retryable(
+        value = [EmailException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delay = 2000, multiplier = 2.0)
+    )
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onSubscriptionCreated(event: SubscriptionCreatedEvent) {
         try {
-            // Idempotency: Provider should handle duplicate requests based on subscriptionId
+            // Idempotency: Provider uses subscriptionId to avoid duplicate sends
             emailProvider.sendWelcome(
                 email = event.email,
                 idempotencyKey = event.subscriptionId
             )
         } catch (e: Exception) {
-            log.error("Failed to send welcome email for ${event.subscriptionId}", e)
-            // Implement DLQ or retry logic here
+            log.error("Failed to send welcome email for ${event.subscriptionId}. Moving to DLQ.", e)
+            deadLetterQueue.publish(event, error = e.message)
+            throw e // Rethrow to trigger @Retryable if applicable
         }
     }
 }

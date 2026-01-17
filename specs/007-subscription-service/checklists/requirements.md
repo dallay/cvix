@@ -1,8 +1,15 @@
-# Specification Quality Checklist: Email Capture Service
+# Specification Quality Checklist: Subscription Service
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-17
 **Feature**: ../spec.md
+
+## Verification Rationale
+This checklist was reset to ensure all substantive changes (e.g., transition to `Subscription` entity, rename to `shared/subscription` module, and alignment with new architectural standards) are thoroughly reviewed.
+
+**Version**: 2.0 (PR Review Cycle 2)
+**Date**: 2026-01-17
+**Requested by**: PR Review Process
 
 ## Content Quality
 
@@ -54,14 +61,6 @@
 - [ ] Retention/archival and secure deletion workflows are described and testable
 
 ## Notes
-
-**Verification Metadata**:
-- **Verified by**: [Name/Role]
-- **Verification date**: [YYYY-MM-DD]
-- **Sign-off**: [Name/Role/Date]
-- **Evidence**:
-  - [Link to Security Review]
-  - [Link to Compliance Review]
 
 **Summary**:
 Awaiting final verification and sign-off.

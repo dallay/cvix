@@ -6,6 +6,10 @@ info:
 servers:
   - url: https://api.cvix.com/v1
     description: Production server
+  - url: https://api.staging.cvix.com/v1
+    description: Staging server
+  - url: https://api.sandbox.cvix.com/v1
+    description: Sandbox server
 security:
   - apiKey: []
 paths:
@@ -72,6 +76,10 @@ paths:
               properties:
                 token:
                   type: string
+                  minLength: 16
+                  maxLength: 512
+                  pattern: '^[a-zA-Z0-9\-\._~+/]+=*$'
+                  description: Cryptographically secure confirmation token
       responses:
         '200':
           description: Confirmed successfully
@@ -96,6 +104,9 @@ paths:
     delete:
       summary: Delete subscription (Privacy)
       operationId: deleteSubscription
+      security:
+        - apiKey: []
+        - {} # Allow anonymous access with token
       parameters:
         - name: id
           in: path
@@ -103,12 +114,17 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: unsubscribe_token
-          in: query
-          required: false
-          schema:
-            type: string
-          description: Optional unsubscribe token if not authenticated
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                unsubscribe_token:
+                  type: string
+                  minLength: 16
+                  maxLength: 512
       responses:
         '204':
           description: Deleted (or marked for deletion)
@@ -146,12 +162,15 @@ components:
       properties:
         code:
           type: string
+          example: UPPER_SNAKE_CASE
         message:
           type: string
         details:
           type: array
           items:
             type: object
+            additionalProperties: true
+            description: Optional context-specific error details (e.g., field, issue)
 
     SubscriptionRequest:
       type: object
@@ -171,8 +190,9 @@ components:
           maxLength: 128
         metadata:
           type: object
-          # additionalProperties removed to restrict open-ended objects, use specific properties if needed or strict validation
+          additionalProperties: true
           maxProperties: 20
+          description: Flexible key-value pairs (max 20 keys)
         tags:
           type: array
           maxItems: 10
@@ -196,7 +216,10 @@ components:
           format: email
         status:
           type: string
-          enum: [ PENDING, CONFIRMED ]
+          enum: [ PENDING, CONFIRMED, EXPIRED ]
         created_at:
+          type: string
+          format: date-time
+        updated_at:
           type: string
           format: date-time

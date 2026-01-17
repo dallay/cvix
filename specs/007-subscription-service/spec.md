@@ -43,8 +43,7 @@ Verify response indicates success and the entry is persisted and retrievable.
 2. **Given** an invalid email format, **When** the user submits the form, **Then** the system
    rejects the submission with a clear validation error.
 3. **Given** a repeat submission for the same email and context (e.g., source, metadata, tags—see
-   FR-009 for configurable rules), **When** the user submits again, **Then** the system deduplicates
-   and returns an idempotent success (no duplicate persisted) with `200 OK`.
+   FR-009 for configurable rules), **When** the user submits again, **Then** the system returns `200 OK` with the existing record unchanged (safe default).
 
 ---
 
@@ -66,9 +65,9 @@ entry includes that metadata and that entries can be filtered by metadata value.
    submitted, **Then** the capture entry persists with the metadata attached.
 2. **Given** malformed metadata (e.g., field exceeds documented size), **When** submitted, **Then**
    the system returns a clear validation error describing limits.
-   **Limits**:
-   - **Non-PII (Default)**: Total 10 KB, max 100 fields.
-   - **PII-Enabled**: Total 1 MB (strict access controls apply).
+   **Policy**:
+   - **Default (Non-PII)**: Total 10 KB, max 100 fields.
+   - **PII-Enabled**: Total 1 MB (requires explicit boolean flag `pii_enabled: true` and elevated AuthZ).
    - If limits are exceeded, reject with `400 Bad Request`.
 
 ---
@@ -139,7 +138,7 @@ receives a notification containing the capture payload.
   checks. For heavy contention, implement retry-on-conflict with exponential backoff or use explicit
   row-level locking. Response semantics: the request that creates the record MUST return
   `201 Created`; subsequent idempotent duplicate submissions MUST return `200 OK` with the existing
-  resource representation. Configurable `409 Conflict` is NOT supported to simplify client logic.
+  resource representation unchanged by default.
 
   Default behavior: unless configured otherwise by the integrator (see FR-009), the service defaults
   to deduplication by the pair `(email_normalized, source)`. This means the same normalized email
@@ -151,18 +150,17 @@ receives a notification containing the capture payload.
   validation constraints"). Example defaults: total metadata map max 10 KB, individual metadata
   field max 1 KB, maximum 100 metadata fields per capture. These limits are product-configurable;
   tests MUST reflect configured values when different from the defaults.
-- **FR-006**: The system MUST provide a pluggable notification mechanism so consuming applications
+- **FR-006**: The system **MUST** provide a pluggable notification mechanism so consuming applications
   can subscribe to new-capture events (e.g., callbacks, event hooks, or message publish) to trigger
   downstream workflows.
 
   Implementation note (FR-006): Notifications **MUST** be asynchronous by default and the service
   **MUST** implement a Transactional Outbox pattern to atomically persist captures and enqueue
-  notification events. Delivery guarantees should be documented: at-least-once delivery with
+  notification events. Failure to use a transactional outbox can lead to capture/notification inconsistency (lost or phantom events). Delivery guarantees should be documented: at-least-once delivery with
   idempotent consumer expectations is recommended; exactly-once may be provided only if underlying
   infrastructure supports it. Ordering is not guaranteed globally unless explicitly requested. The
   default retry and dead-letter behavior described in retry configuration applies to notification
-  delivery. Synchronous webhooks are allowed as an alternative but must be opt-in and include
-  caveats about latency and coupling.
+  delivery. Synchronous webhooks are allowed ONLY if opted-in and must document consistency tradeoffs plus compensating controls (e.g., distributed transactions or confirmation protocols).
 
   Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
   stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
@@ -188,7 +186,7 @@ receives a notification containing the capture payload.
     - Offer an issuance API for confirmation tokens and a way to associate a confirmation token with
       a `Subscription` (for example, `issueConfirmationToken(subscriptionId)`).
     - Expose a confirmation API endpoint for integrators to confirm tokens (for example,
-      `POST /subscriptions/{id}/confirm?token=...`) and to retrieve confirmation state (for example,
+      `POST /subscriptions/{id}/confirm`) and to retrieve confirmation state (for example,
       `GET /subscriptions/{id}` includes `status`, `confirmation_token`, `confirmation_timestamp`).
     - Emit events/hooks for `confirmation_token.issued` and `subscription.confirmed` so integrators can
       implement email delivery and follow-up flows.
@@ -196,9 +194,10 @@ receives a notification containing the capture payload.
       plumbing for integrators to do so. This makes responsibilities explicit and testable.
 
   **Unconfirmed Lifecycle**:
-  - `PENDING`: Initial state.
+  - `PENDING`: Initial state on submission.
   - `CONFIRMED`: After valid token confirmation.
-  - `EXPIRED`: If not confirmed within TTL. Expired subscriptions are archived/deleted based on retention policy.
+  - `EXPIRED`: If not confirmed within TTL (default 48h). EXPIRED records are retained for a 90-day compliance window before hard-delete. Re-submitting email+source for an EXPIRED record creates a NEW record.
+  - Retention: Expired unconfirmed records are hard-deleted after 90 days, overriding the 24-month default.
 
   Token expiration: Confirmation tokens MUST expire after a configurable TTL. Default TTL is
   `48 hours` unless the integrator overrides it in deployment configuration. The `POST
@@ -210,18 +209,14 @@ receives a notification containing the capture payload.
 - **FR-008**: The system MUST return clear, machine-parseable error information for validation
   failures, duplicate attempts, and system errors.
   **Error Schema**:
-  ```json
-  {
-    "code": "ERROR_CODE",
-    "message": "Human readable description",
-    "details": [{"field": "email", "issue": "Invalid format"}]
-  }
-  ```
+  - `code`: (Required) String in `UPPER_SNAKE_CASE` (e.g., `INVALID_EMAIL_FORMAT`, `METADATA_SIZE_EXCEEDED`).
+  - `message`: (Required) Human readable description.
+  - `details`: (Optional) Array of objects. May be omitted or empty for non-field errors.
 - **FR-009**: The system MUST support configurable deduplication rules (e.g., dedupe by email, by
   email+source) set by the integrator.
 
-  **Default**: Dedupe by normalized email + source (`email_normalized, source`). Metadata is NOT part of the key.
-  **Merge Semantics**: If a duplicate is detected, the existing record is returned (`200 OK`). Metadata is merged (new keys added, existing keys updated).
+  **Default**: dedupe by normalized email + source (`email_normalized, source`).
+  **Uniqueness & Merge Semantics**: On duplicate detected, the system returns `200 OK` with the existing record UNCHANGED (Option B). Audit fields remain immutable. Integrators can configure alternate modes (e.g., merge metadata) via deployment hooks.
 - **FR-010**: The system MUST expose a way for integrators to query entries filtered by metadata and
   source to support segmentation.
 - **FR-011**: The system MUST enforce configurable rate limiting and throttling policies (per IP,
@@ -236,8 +231,7 @@ receives a notification containing the capture payload.
   query APIs. Acceptance: unauthorized requests return `401/403` and authorized roles can perform
   documented operations.
 - **FR-013**: The system MUST validate and sanitize all inputs (metadata, tags, names). Acceptance:
-  inputs violating schema or containing injection payloads (SQL, NoSQL, XSS, Command, LDAP, XML/XXE, Path Traversal) are rejected with `400` and not
-  persisted; safe-encoding is applied when forwarding to downstream systems.
+  inputs matching malicious patterns (SQL, NoSQL, XSS, Command, LDAP, XML/XXE, Path Traversal, CSV injection) MUST be rejected with `400` and not persisted. System MUST apply context-appropriate output encoding (JSON escaping, CSV quoting) when forwarding data.
 - **FR-014**: The system MUST produce immutable audit logs for create/read/update/delete and
   administrative operations containing who/what/when/why metadata and integration-friendly format.
 
@@ -249,8 +243,7 @@ receives a notification containing the capture payload.
   `GET /subscriptions/export?filter=...`) that returns a machine-readable payload (CSV/JSONL) and
   supports pagination, authentication, and audit logging.
 - **FR-017**: Bulk deletion for compliance: The system **MUST** provide a bulk deletion API (e.g.,
-  `POST /subscriptions/bulk/delete`) with safeguards (confirmation, authorization, dry-run mode, audit
-  logging), and document soft-delete vs hard-delete semantics.
+  `POST /subscriptions/bulk/delete`) with safeguards: multi-layered approval (MFA or approval workflow), configurable delay window (default 24h) with cancellation capability, and mandatory backup verification. Audit logging must record the bulk operation and individual IDs deleted.
 
 ### Non-functional Requirements (high level)
 
@@ -265,7 +258,7 @@ receives a notification containing the capture payload.
     - (b) PII minimization: fields classified as PII must be optional unless required; configurable
       redaction/obfuscation rules must be available for persisted and exported payloads.
     - (c) Retention enforcement: configurable retention TTLs, automated deletion/archival jobs, and
-      policy-driven purge workflows. **Constraint**: Configured `retention-days` MUST NOT exceed `compliance.maxRetentionDays` (validated on startup).
+      policy-driven purge workflows. **Constraint**: Configured `retention-days` MUST NOT exceed `compliance.maxRetentionDays`. Sourced from central compliance service. Startup validation required. If limit is reduced, service MUST schedule purging of existing records.
     - (d) Access control: RBAC defaults to least-privilege and offers integration points for
       SSO/IDP.
     - (e) Audit logging: immutable logs recording `who/what/when/why` for compliance and incident
@@ -298,8 +291,7 @@ receives a notification containing the capture payload.
   and bursts of Y captures/sec for short windows (team to fill X/Y based on expected traffic);
   support horizontal scaling with stateless frontends.
 - **NFR-007 (Data Durability)**: Persistent store must provide replication and durability
-  guarantees (>= 99.99% durability / four nines) and backups with daily
-  snapshots and 30-day retention.
+  guarantees (>= 99.99% durability / four nines) and backups with **hourly snapshots** or continuous WAL archiving and 30-day retention.
 - **NFR-008 (Security Posture)**: Must pass org security reviews, use encryption-in-transit/at-rest,
   RBAC, and periodic audits/pen-tests.
 - **NFR-009 (Disaster Recovery)**: RTO <= 1 hour, RPO <= 1 hour for core data; documented
@@ -312,7 +304,11 @@ receives a notification containing the capture payload.
   pending/confirmed), optional `confirmation_token` and `confirmation_timestamp`,
   `confirmation_expires_at` (optional), `do_not_contact` flag, and retention metadata
   (expiry/soft-delete state).
-  **Audit Fields**: `createdBy`, `modifiedBy`, `modifiedAt`, `deletedBy`, `deletedAt`, `isDeleted`, `deletionReason`.
+  **Audit Fields & Policy**:
+  - Audit fields: `createdAt`, `createdBy`, `modifiedBy`, `modifiedAt`, `deletedBy`, `deletedAt`, `isDeleted`, `deletionReason`.
+  - **Soft-delete**: Default for operational deletes. Record is kept for audit/reversible until hard-delete.
+  - **Hard-delete**: Required for privacy erasure or expired unconfirmed records.
+  - **Transition**: Soft-deleted records transition to hard-delete after 30 days.
 - **Source**: Logical origin of capture (landing page, marketing campaign, API consumer).
 - **CaptureNotification**: Payload sent to downstream handlers when a new capture is created.
 
@@ -332,8 +328,8 @@ receives a notification containing the capture payload.
   of creation (factoring asynchronous indexing). If immediate read-after-write is required,
   integrators should query the primary store or wait for an indexing-complete event.
 - **SC-004**: Integrators can register at least one downstream handler and receive notifications for
-  new captures in 95% of cases (excluding transient failures).
-  **Note**: "Transient failures" include network timeouts, 503s, and connection resets. 4xx errors are permanent. SLA is measured after all retries.
+  new captures in 95% of cases.
+  **Note**: 95% SLA is measured after all configured retry attempts have completed. Transient failures (network timeouts, 503s) are retried; permanent failures (4xx) are not.
 - **SC-005**: Metadata attached to captures can be used to filter entries in test queries (basic
   filtering correctness validated by integration tests).
 - **SC-006**: The feature is usable as a reusable module by at least two different internal apps
@@ -370,13 +366,9 @@ The service MUST provide explicit endpoints to support privacy and legal request
 and behaviors:
 
 - `DELETE /subscriptions/{id}`: delete a capture by id. Requires authentication/authorization. Must
-  support soft-delete vs hard-delete semantics (configurable). Success: `204 No Content`.
-  Deletion MUST immediately invalidate any pending confirmation tokens associated with the
-  `Subscription` (soft- or hard-delete). Any subsequent attempts to confirm using those tokens
-  MUST return `404 Not Found` or `410 Gone` and no confirmation action should be performed. Token
-  invalidation is a required part of the deletion workflow and MUST be recorded in the audit log
-  alongside the deletion event (for example, an audit entry `subscription.deleted` plus
-  `token.invalidated`).
+  support soft-delete vs hard-delete semantics (configurable).
+  - **Soft-delete**: Default for operational deletes. Record marked as `isDeleted=true` with `deletedAt`. Retained for 30 days then hard-deleted.
+  - **Hard-delete**: Required for privacy erasure requests. Immediate physical removal or anonymization.
 - `DELETE /subscriptions?email={email}`: delete all captures for an email. Requires elevated
   authorization and confirmation/dry-run support. Returns `202 Accepted` for async bulk deletes with
   job id; job completion/audit logged.
@@ -384,8 +376,8 @@ and behaviors:
   downloadable machine-readable payload (JSONL/CSV) with all associated metadata, events, and audit
   trails. Success: `200 OK` with `Content-Disposition` attachment; export actions MUST be audited.
 - `POST /subscriptions/{id}/do-not-contact` or `PATCH /subscriptions/{id}` with `{ do_not_contact: true }`:
-  set `do_not_contact` flag for a capture. Requires authorization and audit logging. Setting this
-  flag should surface to downstream handlers/events.
+  set `do_not_contact` flag for a capture. Requires authorization and audit logging.
+  - **Default behavior**: Resubmission for a record with `do_not_contact=true` returns `403 Forbidden` and is NOT persisted.
 
 Each endpoint must require appropriate authentication/authorization, return consistent error codes (
 `401/403/404`), and be auditable. Bulk operations should document soft-delete vs hard-delete
@@ -405,12 +397,16 @@ semantics and retention consequences.
   metadata.
 - Validation: Submit malformed email → expect 400 with validation error and no persisted entry.
 - Idempotency: Submit same email twice in quick succession → expect second submission to return
-  idempotent success and no duplicate entry.
+  `200 OK` with existing entry (safe default).
 - Notification: Register test handler → submit capture → handler receives payload containing
   expected fields.
-- **Unconfirmed Lifecycle**: Submit capture → Status PENDING → Wait TTL → Confirm fails (TOKEN_EXPIRED).
-- **Configuration Validation**: Start app with retention > max legal limit → Startup Fails.
-- **Do Not Contact**: Set do_not_contact → Resubmit → Expect Rejection/Flagging.
+- **Metadata Merge**: Submit capture → Submit same with new metadata → Confirm existing record remains unchanged (Safe Default) or merges (Configured).
+- **Token Expiry**: Submit capture → Issuance → Advance Time > TTL → Confirm → Expect `TOKEN_EXPIRED`.
+- **Positive Lifecycle**: Submit capture → Status PENDING → Confirm within TTL → Status CONFIRMED.
+- **Config Validation**: Startup with metadata.maxSize > legal PII limit → Expect failure.
+- **Data Deletion**: Perform `DELETE /subscriptions/{id}` → expect `204 No Content`, token invalidation, and audit entry.
+- **Transactional Outbox**: Submit capture → Confirm outbox record exists → Confirm delivery after commit.
+- **Configuration Reload**: Reduce `maxRetentionDays` → Confirm schedule purge triggered.
 
 ### Security & Privacy Acceptance Tests
 
@@ -419,15 +415,11 @@ semantics and retention consequences.
   updated.
 - Authentication failure: Call protected endpoints without credentials or with invalid credentials →
   expect `401`/`403` and no persisted entry.
-- Data deletion: Perform `DELETE /subscriptions/{id}` → expect `204 No Content`, entry marked/removed per
-  retention policy, and audit log contains deletion event.
 - Data export: Perform `GET /subscriptions/export?email=` → expect `200 OK` with machine-readable payload
   containing all associated data and audit entry for export.
 - Malicious input: Submit a payload containing XSS or SQL-injection-like payloads in metadata →
   expect `400 Bad Request` (or sanitized storage) and no stored unsafe content. Downstream
-  notifications MUST carry safely-encoded metadata values (for example, JSON-escaped strings for
-  JSON envelopes, XML entity-encoded values for XML envelopes). Tests MUST assert that notification
-  handlers receive escaped metadata rather than raw unescaped input.
+  notifications MUST carry safely-encoded metadata values.
 
 ## Implementation Notes (for planning only)
 
@@ -452,3 +444,5 @@ logic).
 ---
 
 SUCCESS (spec drafted, clarifications pending)
+
+

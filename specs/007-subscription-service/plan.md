@@ -20,6 +20,12 @@ notifications, following Hexagonal Architecture.
 - **Kotest**: Assertions and property-based testing.
 - **Testcontainers**: Integration testing with real dependencies (PostgreSQL).
 - **MockK**: Mocking for unit tests.
+
+### Migration Path Testing
+- **Unit Tests**: Target the temporary adapter to assert correct delegation behavior.
+- **Integration Tests**: Using Testcontainers to validate data migration scripts from old schema to new schema, verifying row-level integrity.
+- **Compatibility Tests**: Exercise both old and new API/adapter interactions during the transition window to ensure no regressions.
+
 **Target Platform**: JVM / Linux Container
 **Project Type**: Backend Service (Spring Boot Module)
 **Performance Goals**: <200ms p95 response time, 1000 captures/sec burst
@@ -61,16 +67,20 @@ specs/007-subscription-service/
 
 ### Source Code (repository root)
 
-**Module Rationale**: `shared/engagement` was chosen over `shared/subscription` to group related engagement features (future: comments, reactions) and avoid narrow "subscription-only" scoping.
+**Module Rationale**: `shared/subscription` is preferred to maintain a narrow, focused scope during initial implementation. Refactoring to a broader `engagement` module will be considered only when additional engagement features (e.g., comments) are added.
 
-**Migration Strategy**:
-1. Implement new `SubscriptionService` in `shared/engagement`.
-2. Introduce a temporary adapter in `server/engine` that delegates `WaitlistService` calls to `SubscriptionService`.
-3. Migrate database data from `waitlist` tables to `subscriptions`.
-4. Deprecate and remove `com.cvix.waitlist` package after grace period.
+**Migration Strategy & Runbook**:
+1. **Temporary Adapter**: Implement `WaitlistService` adapter in `server/engine` delegating to `SubscriptionService`.
+   - **Lifecycle**: TTL 90 days. Owner: Architecture Team. Removal checklist: all clients migrated, zero traffic on old endpoints.
+2. **Dual-Write Phase**: Optional if downtime allowed; otherwise, enable dual-write to both schemas using feature flags.
+3. **Data Migration**: Cutover procedure for `waitlist` -> `subscriptions`.
+   - **Validation**: Checksum matching, row count verification, sample manual verification.
+   - **Rollback**: Automated script to revert feature flags and keep old schema as primary.
+4. **Phased Rollout**: Zero-downtime deployment using canary gates and error rate monitoring.
+5. **Deprecation**: concrete timeline for `com.cvix.waitlist` removal with versioning and stakeholder notification.
 
 ```text
-shared/engagement/src/main/kotlin/com/cvix/subscription/
+shared/subscription/src/main/kotlin/com/cvix/subscription/
 ├── application/         # Use Cases / Application Services
 │   └── port/            # Port Interfaces (Incoming/Outgoing)
 ├── domain/              # Domain Entities, Interfaces
@@ -81,7 +91,7 @@ shared/engagement/src/main/kotlin/com/cvix/subscription/
     └── config/          # Spring Configuration
 ```
 
-**Structure Decision**: Create new module `shared/engagement` and refactor `com.cvix.waitlist` -> `com.cvix.subscription` there.
+**Structure Decision**: Create new module `shared/subscription` and refactor `com.cvix.waitlist` there.
 
 ## Complexity Tracking
 

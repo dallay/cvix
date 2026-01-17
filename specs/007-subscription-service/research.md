@@ -21,14 +21,15 @@ genericity required by the new specification.
 
 - **Rename**: `WaitlistEntry` -> `Subscription`.
 - **Source Strategy**: Hybrid Approach.
-    - `sourceNormalized`: Enum for known/system sources.
-    - `sourceRaw`: String for custom/arbitrary sources.
-    - Logic: Parser checks allowlist; if match -> set Enum, else set OTHER and populate `sourceRaw`.
-- **Metadata**: Retain `Map<String, Any>` with strict limits:
-    - Max keys: 20
-    - Max value size: 1 KB (String/JSON)
-    - Max total size: 10 KB
-    - Allowed types: String, Number, Boolean
+    - `sourceNormalized`: Enum for known/system sources (e.g., `LANDING_PAGE`, `API`, `MARKETING`). Used for optimized querying and reporting.
+    - `sourceRaw`: String for custom/arbitrary source identifiers.
+    - **Logic**: Parser checks an internal allowlist; if match found, `sourceNormalized` is set to the Enum value and `sourceRaw` is kept as-is. If no match, `sourceNormalized` is set to `OTHER` and the full string is stored in `sourceRaw`.
+- **Metadata**: Retain `Map<String, Object>` with strict validation:
+    - **Max keys**: 20
+    - **Max value size**: 1 KB (serialized UTF-8 size).
+    - **Max total size**: 10 KB (sum of serialized values).
+    - **Nesting**: Allowed up to depth 3, max 10 keys per nested object.
+    - **Allowed types**: String, Number, Boolean, Nested Object (with constraints).
 
 ### 2. Consistency & Idempotency (FR-004)
 
@@ -42,16 +43,12 @@ genericity required by the new specification.
 - **Problem**: Dual write risk.
 - **Solution**: Adopt **Transactional Outbox**.
     - Create `outbox_events` table.
-    - In `SubscriptionService` (renamed from `WaitlistJoiner`), save `Subscription` AND `OutboxEvent` in the
-      same `@Transactional` block.
+    - In `SubscriptionService`, save `Subscription` AND `OutboxEvent` in the same `@Transactional` block.
     - Use a separate scheduler (or CDC) to poll `outbox_events` and publish to `EventBus`.
-    - *MVP Alternative*: If Outbox infrastructure is too heavy, use
-      `@TransactionalEventListener(phase = AFTER_COMMIT)` for "Best Effort", but Spec "SHOULD"
-      suggests robust pattern. Given "Senior Architect" persona, we will design the Outbox Table.
 
 ### 4. Module Structure
 
-- **Module**: `shared/engagement` (New module)
+- **Module**: `shared/subscription` (New module)
 - **Package**: `com.cvix.subscription`
 - **Structure**:
     - `application`: `SubscriptionService`, `CreateSubscriptionCommand`.
@@ -60,38 +57,32 @@ genericity required by the new specification.
 
 ### 5. Migration Strategy
 
-- Since the Spec implies "refactor", we will implement the new structure side-by-side or in-place
-  if "waitlist" is the *only* consumer.
-- Given "reusable package/library" input, we will treat this as a **New Module** (`shared/engagement`)
-  and deprecate `waitlist` package in `server/engine`.
-- `WaitlistController` will be replaced by `SubscriptionController`.
+- Implement `shared/subscription` in parallel.
+- Create temporary adapter in `server/engine` to bridge `com.cvix.waitlist` to the new module.
+- Phase out `waitlist` package after successful data migration.
+
+## Security Considerations
+
+- **IP Hashing**: Uses `HMAC-SHA256` with a rotating secret (pepper) stored in KMS. Hashed IPs are retained for 30 days for abuse detection, then purged or re-hashed with a new key.
+- **Rate Limiting**: Implementation uses Redis-backed sliding-window algorithm.
+    - **Limits**: 5 attempts/IP/hr, 3 attempts/email/hr.
+    - **Protection**: Rejects requests with `429` before reaching persistence layer.
+- **Token Generation**: Cryptographically secure tokens (CSPRNG) with minimum 32 bytes entropy. Base64URL encoded.
+    - **Lifecycle**: Single-use (consumed on success), 48h TTL, salted-hash stored in DB.
+- **Injection Prevention**:
+    - JSON depth limits (max 3).
+    - Strict schema validation for metadata keys (regex: `^[a-z0-9_]{1,32}$`).
+    - Entity expansion protection enabled in JSON parser.
 
 ## Errors, Validation & Observability
 
 - **Validation**:
-    - Email: Regex + DNS check (optional).
-    - Rate Limits: 5 req/IP/hr, 3 req/email/hr.
-    - Metadata: Enforce limits (size, count) via validator.
+    - Email: Apache Commons Validator. DNS MX record check enabled in PROD (`dnsTimeoutMs = 2000`). Fallback to regex-only if DNS times out.
+    - Source: Strict validation for `sourceNormalized` (allowlist), relaxed for `sourceRaw`.
 - **Errors**:
-    - `400`: Validation failed (Code: `VALIDATION_ERROR`).
-    - `429`: Rate limit (Code: `RATE_LIMIT_EXCEEDED`).
-    - `409`: Conflict (Code: `DUPLICATE_SUBSCRIPTION` - only if configured).
+    - Standard `ErrorResponse` returned for all non-2xx codes.
+    - Retry logic for Outbox: Exponential backoff (start 1s, max 60s, 10 retries). Permanent failures move to DLQ table.
 - **Observability**:
-    - Metrics: `subscription.created`, `subscription.duplicate`, `outbox.published`, `outbox.lag`.
-    - Logs: Audit logs for all PII access (export/delete).
-
-## Open Questions (Resolved)
-
-- **Outbox**: No shared Outbox found. **Decision**: Define a local `outbox` table for this module or
-  use `ApplicationEventPublisher` with transactional awareness as a simpler step 1, but plan for
-  Outbox table if strict consistency required. *Decision*: Start with `ApplicationEventPublisher` (
-  Spring) which binds to transaction commit for local events, then broadcast. This solves "publish
-  only if committed", but doesn't solve "publish failed after commit". For NFR-007 (Data
-  Durability) + SC-004 (Reliability), we'll specify the **Schema** for Outbox but might use a
-  simpler implementation (Job polling table) for now.
-
-## Plan Updates
-
-- **Phase 1**: Define `Subscription` with `source` as String.
-- **Phase 1**: Define API Contract (OpenAPI) for generic subscription.
+    - Micrometer metrics: `subscription.count`, `subscription.latency`, `outbox.lag_seconds`.
+    - Audit: All PII access (GET/DELETE) logged with requester ID and purpose.
 
