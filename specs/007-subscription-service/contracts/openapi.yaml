@@ -174,14 +174,13 @@ components:
           example: UPPER_SNAKE_CASE
         message:
           type: string
-    details:
-      type: array
-      maxItems: 50
-      items:
-        type: object
-        additionalProperties: true
-        description: Optional context-specific error details (e.g., field, issue)
-
+        details:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            additionalProperties: true
+            description: Optional context-specific error details (e.g., field, issue)
 
     SubscriptionRequest:
       type: object
