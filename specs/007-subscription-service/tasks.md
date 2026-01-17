@@ -37,9 +37,12 @@
 
 - [ ] T011 [US1] Define `CreateSubscriptionCommand` in `shared/subscription/src/main/kotlin/com/cvix/subscription/application/port/in/CreateSubscriptionCommand.kt` and create the `CreateSubscriptionCommandHandler`
 - [ ] T012 [US1] Implement `SubscriptionService` with `create` method in `shared/subscription/src/main/kotlin/com/cvix/subscription/application/service/SubscriptionService.kt`
+- [ ] T012b [Principle II] Write Unit Tests for `SubscriptionService` using MockK to cover all business logic in `shared/subscription/src/test/kotlin/com/cvix/subscription/application/service/SubscriptionServiceTest.kt`
 - [ ] T013 [US1] Add email normalization and validation logic (Apache Commons) to `SubscriptionService`
+- [ ] T013a [FR-013] Implement `InputSanitizer` utility to prevent XSS/SQLi in `shared/subscription/src/main/kotlin/com/cvix/subscription/application/util/InputSanitizer.kt`
 - [ ] T014 [US1] Implement deduplication (idempotency) logic in `SubscriptionService` (Standardize on 200 OK for duplicates)
 - [ ] T016 [US1] Create `SubscriptionController` in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/SubscriptionController.kt`
+- [ ] T016a [FR-008] Implement Global Exception Handler with machine-parseable error schema in `shared/subscription/src/main/kotlin/com/cvix/subscription/infrastructure/web/GlobalExceptionHandler.kt`
 - [ ] T017 [US1] Implement `POST /subscriptions` endpoint in `SubscriptionController`
 - [ ] T018 [US1] Write integration test for successful capture and rate limiting in `shared/subscription/src/test/kotlin/com/cvix/subscription/application/CreateSubscriptionTest.kt`
 - [ ] T019 [US1] Write integration test for duplicate handling in `shared/subscription/src/test/kotlin/com/cvix/subscription/application/CreateSubscriptionIdempotencyTest.kt`
@@ -63,6 +66,7 @@
 - [ ] T027 [US3] Update `SubscriptionService` to persist `OutboxEvent` transactionally with `Subscription`
 - [ ] T028a [US3] Provision DLQ infrastructure using DynamoDB table with columns (id, payload, error_reason, timestamp, retry_count) and TTL for retention. Create the IaC script at `infra/dlq-provision.sql` and run it using `psql -f infra/dlq-provision.sql`. Define IAM roles for access control, set a 30-day retention policy, and configure monitoring with alerts for retry_count thresholds.
 - [ ] T028 [US3] Implement `OutboxPublisher` (scheduled job) with exponential backoff, configurable retry parameters (maxAttempts, backoffMultiplier, maxDelay), batchSize, and pollingInterval from `application.yml`. Ensure sensible defaults are provided and monitoring hooks remain intact.
+- [ ] T028b [Principle II] Write Unit Tests for `OutboxPublisher` using MockK in `shared/subscription/src/test/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxPublisherTest.kt`
 - [ ] T029 [US3] Write integration test for event generation and publishing in `shared/subscription/src/test/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxIntegrationTest.kt`
 
 ## Phase 6: Confirmation Workflow (FR-007)
@@ -84,6 +88,8 @@
 - [ ] T037 [NFR-003] Add `DELETE /subscriptions/{id}` endpoint to `SubscriptionController`
 - [ ] T038 [NFR-003] Add `DELETE /subscriptions` (by email) endpoint to `SubscriptionController`
 - [ ] T039 [NFR-003] Add `POST /subscriptions/bulk/delete` endpoint to `SubscriptionController` (FR-017)
+- [ ] T039a [FR-015] Implement Bulk Import logic (CSV/JSONL) and validation in `SubscriptionService`
+- [ ] T039b [FR-015] Add `POST /subscriptions/bulk/import` endpoint to `SubscriptionController`
 - [ ] T040 [NFR-003] Implement `export` method in `SubscriptionService` (JSON/CSV, redact PII by default)
 - [ ] T041 [NFR-003] Add `GET /subscriptions/export` endpoint to `SubscriptionController`
 - [ ] T042 [NFR-003] Write integration tests for deletion (single/bulk) and export in `shared/subscription/src/test/kotlin/com/cvix/subscription/application/PrivacyComplianceTest.kt`
@@ -92,6 +98,7 @@
 
 - [ ] T043 Add metrics (Micrometer) to `SubscriptionService` and `OutboxPublisher`
 - [ ] T044 Update module `README.md` with usage examples
+- [ ] T044a [NFR-009] Document Disaster Recovery (DR) and Backup/Restore runbooks in `specs/007-subscription-service/runbook-dr.md`
 - [ ] T045 Review and verify OpenAPI contract matches implementation
 
 ## Phase 9: Migration Support (Plan.md)

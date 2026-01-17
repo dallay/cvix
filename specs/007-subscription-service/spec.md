@@ -206,9 +206,7 @@ receives a notification containing the capture payload.
   Rejected submissions are not enqueued by the service for delayed processing; clients MUST retry if
   they wish to resubmit. Implementers must document server-side limits (burst window, sustained
   rate), any per-tenant overrides, and monitoring/alerting for rate-limit saturation.
-- **FR-012**: The system MUST require authentication and role-based authorization for write and
-  query APIs. Acceptance: unauthorized requests return `401/403` and authorized roles can perform
-  documented operations.
+- **FR-012**: The system MUST require authentication and role-based authorization for all administrative, query, and maintenance APIs. **Exception**: The public capture endpoint (US1) MAY be configured for unauthenticated access when combined with rate-limiting (FR-011) and input validation (FR-013). Acceptance: authorized roles can perform documented operations; unauthorized requests to protected endpoints return `401/403`.
 - **FR-013**: The system MUST validate and sanitize all inputs (metadata, tags, names). Acceptance:
   inputs matching malicious patterns (SQL, NoSQL, XSS, Command, LDAP, XML/XXE, Path Traversal, CSV injection) MUST be rejected with `400` and not persisted. System MUST apply context-appropriate output encoding (JSON escaping, CSV quoting) when forwarding data.
 - **FR-014**: The system MUST produce immutable audit logs for create/read/update/delete and
