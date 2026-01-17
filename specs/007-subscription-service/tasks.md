@@ -14,9 +14,9 @@
 
 *Goal: Establish database schema and core domain entities.*
 
-- [ ] T004 Create Flyway migration for `subscriptions` table in `shared/engagement/src/main/resources/db/migration/V1__create_subscriptions_table.sql`
+- [ ] T004 Create Liquibase changelog for `subscriptions` table in `shared/engagement/src/main/resources/db/changelog/migrations/007-subscription/001-create-subscriptions-table.yaml`
 - [ ] T005 Create `Subscription` domain entity in `shared/engagement/src/main/kotlin/com/cvix/subscription/domain/model/Subscription.kt`
-- [ ] T006 Create `SubscriptionRepository` port interface in `shared/engagement/src/main/kotlin/com/cvix/subscription/domain/port/SubscriptionRepository.kt`
+- [ ] T006 Create `SubscriptionRepository` port interface in `shared/engagement/src/main/kotlin/com/cvix/subscription/domain/SubscriptionRepository.kt`
 - [ ] T007 Implement R2DBC repository adapter `SubscriptionR2dbcRepository` in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/persistence/SubscriptionR2dbcRepository.kt`
 - [ ] T008 Create integration test base class `SubscriptionIntegrationTest` in `shared/engagement/src/test/kotlin/com/cvix/subscription/SubscriptionIntegrationTest.kt`
 
@@ -24,8 +24,8 @@
 
 *Goal: Core functionality to capture emails with deduplication.*
 
-- [ ] T009 [US1] Define `CreateSubscriptionCommand` in `shared/engagement/src/main/kotlin/com/cvix/subscription/application/port/in/CreateSubscriptionCommand.kt`
-- [ ] T010 [US1] Implement `SubscriptionService` with `create` method in `shared/engagement/src/main/kotlin/com/cvix/subscription/application/service/SubscriptionService.kt`
+- [ ] T009 [US1] Define `CreateSubscriptionCommand` in `shared/engagement/src/main/kotlin/com/cvix/subscription/application/create/CreateSubscriptionCommand.kt` and create the `CreateSubscriptionCommandHandler` to process it.
+- [ ] T010 [US1] Implement `SubscriptionService` with `create` method in `shared/engagement/src/main/kotlin/com/cvix/subscription/application/create/SubscriptionService.kt`
 - [ ] T011 [US1] Add email normalization and validation logic to `SubscriptionService`
 - [ ] T012 [US1] Implement deduplication (idempotency) logic in `SubscriptionService`
 - [ ] T013 [US1] Create `SubscriptionController` in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/web/SubscriptionController.kt`
@@ -46,8 +46,8 @@
 
 *Goal: Transactional Outbox for reliable downstream events.*
 
-- [ ] T021 [US3] Create Flyway migration for `subscription_outbox_events` in `shared/engagement/src/main/resources/db/migration/V2__create_outbox_table.sql`
-- [ ] T022 [US3] Create `OutboxEvent` entity in `shared/engagement/src/main/kotlin/com/cvix/subscription/domain/model/OutboxEvent.kt`
+- [ ] T021 [US3] Create Liquibase changelog for `subscription_outbox_events` in `shared/engagement/src/main/resources/db/changelog/migrations/007-subscription/002-create-outbox-table.yaml`
+- [ ] T022 [US3] Create `OutboxEvent` entity in `shared/engagement/src/main/kotlin/com/cvix/subscription/domain/OutboxEvent.kt`
 - [ ] T023 [US3] Create `OutboxRepository` interface and R2DBC adapter in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/persistence/OutboxRepository.kt`
 - [ ] T024 [US3] Update `SubscriptionService` to persist `OutboxEvent` transactionally with `Subscription`
 - [ ] T025 [US3] Implement `OutboxPublisher` (scheduled job) in `shared/engagement/src/main/kotlin/com/cvix/subscription/infrastructure/messaging/OutboxPublisher.kt`
