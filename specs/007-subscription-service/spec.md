@@ -1,13 +1,13 @@
-# Feature Specification: Email Capture Service
+# Feature Specification: Subscription Service
 
-**Feature Branch**: `007-email-capture-service`
+**Feature Branch**: `007-subscription-service`
 **Created**: 2026-01-17
 **Status**: Draft
 **Input**: User description: "The contact functionality needs to be refactored into a modular and
 reusable package/library. This will allow its reuse across multiple applications (as
 services/containers) without duplication. The waitlist functionality currently located at
 @server/engine/src/main/kotlin/com/cvix/waitlist/ must be modularized and generalized into a
-reusable service called email-capture-service. This generalization should allow it to handle various
+reusable service called subscription-service. This generalization should allow it to handle various
 use cases such as capturing emails for waitlists, newsletters, and other metadata-driven user
 registrations."
 
@@ -148,7 +148,8 @@ receives a notification containing the capture payload.
   to deduplication by the pair `(email_normalized, source)`. This means the same normalized email
   may exist multiple times when submitted from different sources; integrations that require global
   uniqueness should explicitly configure a different dedupe key.
-- **FR-005**: The system MUST allow attaching arbitrary metadata (key/value) to captures. Implementers
+- **FR-005**: The system MUST allow attaching arbitrary metadata (key/value) to captures.
+  Implementers
   MUST enforce documented metadata size limits and schema constraints (see "User Story 2: metadata
   validation constraints"). Example defaults: total metadata map max 10 KB, individual metadata
   field max 1 KB, maximum 100 metadata fields per capture. These limits are product-configurable;
@@ -169,11 +170,11 @@ receives a notification containing the capture payload.
   Downstream consumer requirements for idempotency: consumers MUST deduplicate notifications using a
   stable identifier (for example, `captureId` or a unique `eventId`) provided in the notification
   envelope. Example consumer strategies include:
-  - Persistent deduplication cache (e.g., Redis with TTL) keyed by `eventId` or `captureId`.
-  - Database uniqueness constraints on processed `eventId` or `captureId` when writing downstream
-    records.
-  - Versioned/state-machine-based processing where each event carries a version or sequence to
-    allow idempotent transitions.
+    - Persistent deduplication cache (e.g., Redis with TTL) keyed by `eventId` or `captureId`.
+    - Database uniqueness constraints on processed `eventId` or `captureId` when writing downstream
+      records.
+    - Versioned/state-machine-based processing where each event carries a version or sequence to
+      allow idempotent transitions.
 
   Implementations SHOULD include an `eventId` in every notification envelope and document its
   generation scheme. These deduplication approaches satisfy the at-least-once delivery model
@@ -188,22 +189,22 @@ receives a notification containing the capture payload.
 - **FR-007**: The system MUST expose explicit hooks and APIs to enable confirmation workflows (
   double opt-in) for integrators that require them. At minimum the service MUST:
     - Offer an issuance API for confirmation tokens and a way to associate a confirmation token with
-      an `EmailCaptureEntry` (for example, `issueConfirmationToken(captureId)`).
+      a `Subscription` (for example, `issueConfirmationToken(subscriptionId)`).
     - Expose a confirmation API endpoint for integrators to confirm tokens (for example,
-      `POST /captures/{id}/confirm?token=...`) and to retrieve confirmation state (for example,
-      `GET /captures/{id}` includes `status`, `confirmation_token`, `confirmation_timestamp`).
-    - Emit events/hooks for `confirmation_token.issued` and `capture.confirmed` so integrators can
+      `POST /subscriptions/{id}/confirm?token=...`) and to retrieve confirmation state (for example,
+      `GET /subscriptions/{id}` includes `status`, `confirmation_token`, `confirmation_timestamp`).
+    - Emit events/hooks for `confirmation_token.issued` and `subscription.confirmed` so integrators can
       implement email delivery and follow-up flows.
       The service itself does NOT automatically send confirmation emails by default; it provides the
       plumbing for integrators to do so. This makes responsibilities explicit and testable.
 
-    Token expiration: Confirmation tokens MUST expire after a configurable TTL. Default TTL is
-    `48 hours` unless the integrator overrides it in deployment configuration. The `POST
-    /captures/{id}/confirm` endpoint MUST validate token age and reject expired tokens with a
-    clear machine-parseable error (example: `{"code":"TOKEN_EXPIRED","message":"..."}`).
-    Implementations SHOULD store `confirmation_expires_at` on the `EmailCaptureEntry` for audit
-    and validation purposes and provide a background job or DB constraint to clean/expire old
-    tokens as appropriate.
+  Token expiration: Confirmation tokens MUST expire after a configurable TTL. Default TTL is
+  `48 hours` unless the integrator overrides it in deployment configuration. The `POST
+    /subscriptions/{id}/confirm` endpoint MUST validate token age and reject expired tokens with a
+  clear machine-parseable error (example: `{"code":"TOKEN_EXPIRED","message":"..."}`).
+  Implementations SHOULD store `confirmation_expires_at` on the `Subscription` for audit
+  and validation purposes and provide a background job or DB constraint to clean/expire old
+  tokens as appropriate.
 - **FR-008**: The system MUST return clear, machine-parseable error information for validation
   failures, duplicate attempts, and system errors.
 - **FR-009**: The system MUST support configurable deduplication rules (e.g., dedupe by email, by
@@ -215,7 +216,8 @@ receives a notification containing the capture payload.
   source to support segmentation.
 - **FR-011**: The system MUST enforce configurable rate limiting and throttling policies (per IP,
   API key, or account). Acceptance: limits configurable and tests validate limit enforcement.
-  Normative client behavior: when limits are exceeded, the service will reject excess submissions and
+  Normative client behavior: when limits are exceeded, the service will reject excess submissions
+  and
   return `429 Too Many Requests` with a `Retry-After` header indicating when the client MAY retry.
   Rejected submissions are not enqueued by the service for delayed processing; clients MUST retry if
   they wish to resubmit. Implementers must document server-side limits (burst window, sustained
@@ -230,14 +232,14 @@ receives a notification containing the capture payload.
   administrative operations containing who/what/when/why metadata and integration-friendly format.
 
 - **FR-015**: Bulk import: The system SHOULD provide a bulk import API (e.g.,
-  `POST /captures/bulk/import`) with acceptance criteria: supported formats (CSV/JSONL),
+  `POST /subscriptions/bulk/import`) with acceptance criteria: supported formats (CSV/JSONL),
   chunking/pagination, idempotency/duplicate detection, authentication, and per-batch reporting of
   successes/failures. Rate/size limits and size-per-request constraints must be documented.
 - **FR-016**: Bulk export: The system SHOULD provide a bulk export API (e.g.,
-  `GET /captures/export?filter=...`) that returns a machine-readable payload (CSV/JSONL) and
+  `GET /subscriptions/export?filter=...`) that returns a machine-readable payload (CSV/JSONL) and
   supports pagination, authentication, and audit logging.
 - **FR-017**: Bulk deletion for compliance: The system SHOULD provide a bulk deletion API (e.g.,
-  `POST /captures/bulk/delete`) with safeguards (confirmation, authorization, dry-run mode, audit
+  `POST /subscriptions/bulk/delete`) with safeguards (confirmation, authorization, dry-run mode, audit
   logging), and document soft-delete vs hard-delete semantics.
 
 ### Non-functional Requirements (high level)
@@ -266,13 +268,13 @@ receives a notification containing the capture payload.
   validation and enforce critical invariants before accepting a deployment or runtime reload. The
   loader MUST check and reject invalid configurations with clear error codes and messages. Examples
   of enforced invariants and required behavior:
-  - `custom dedupe keys` MUST NOT exclude PII fields from data-deletion scope; config validation
-    must fail if a dedupe key would prevent compliant deletion semantics.
-  - `retention TTL` configurations MUST NOT exceed the maximum legal retention period defined by
-    the organization; attempts to set longer retention MUST be rejected by the loader.
-  - `metadata size` configuration MUST enforce an upper bound for PII-containing records (example
-    default: 1 MB); setting limits that allow larger PII storage MUST fail validation unless an
-    explicit compliance waiver is present.
+    - `custom dedupe keys` MUST NOT exclude PII fields from data-deletion scope; config validation
+      must fail if a dedupe key would prevent compliant deletion semantics.
+    - `retention TTL` configurations MUST NOT exceed the maximum legal retention period defined by
+      the organization; attempts to set longer retention MUST be rejected by the loader.
+    - `metadata size` configuration MUST enforce an upper bound for PII-containing records (example
+      default: 1 MB); setting limits that allow larger PII storage MUST fail validation unless an
+      explicit compliance waiver is present.
 
   Failure behavior: invalid configurations MUST be rejected and the service must refuse to start or
   reload the configuration. Error responses from the loader SHOULD be machine-parseable (example:
@@ -295,7 +297,7 @@ receives a notification containing the capture payload.
 
 ### Key Entities *(include if feature involves data)*
 
-- **EmailCaptureEntry**: Represents a captured contact. Key attributes: id, email (normalized),
+- **Subscription**: Represents a captured contact. Key attributes: id, email (normalized),
   name (optional), source, tags (list), metadata (key/value map), createdAt, status (e.g.,
   pending/confirmed), optional `confirmation_token` and `confirmation_timestamp`,
   `confirmation_expires_at` (optional), `do_not_contact` flag, and retention metadata
@@ -306,6 +308,7 @@ receives a notification containing the capture payload.
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
+
 - **SC-001**: 95% of valid capture submissions complete and return success to the caller in under 3
   seconds under normal load. This success indicates durable persistence to the primary transactional
   store; downstream indexing/search pipelines may complete asynchronously (see Consistency &
@@ -354,20 +357,21 @@ stronger guarantees.
 The service MUST provide explicit endpoints to support privacy and legal requests. Example endpoints
 and behaviors:
 
-- `DELETE /captures/{id}`: delete a capture by id. Requires authentication/authorization. Must
+- `DELETE /subscriptions/{id}`: delete a capture by id. Requires authentication/authorization. Must
   support soft-delete vs hard-delete semantics (configurable). Success: `204 No Content`.
   Deletion MUST immediately invalidate any pending confirmation tokens associated with the
-  `EmailCaptureEntry` (soft- or hard-delete). Any subsequent attempts to confirm using those tokens
+  `Subscription` (soft- or hard-delete). Any subsequent attempts to confirm using those tokens
   MUST return `404 Not Found` or `410 Gone` and no confirmation action should be performed. Token
   invalidation is a required part of the deletion workflow and MUST be recorded in the audit log
-  alongside the deletion event (for example, an audit entry `capture.deleted` plus `token.invalidated`).
-- `DELETE /captures?email={email}`: delete all captures for an email. Requires elevated
+  alongside the deletion event (for example, an audit entry `subscription.deleted` plus
+  `token.invalidated`).
+- `DELETE /subscriptions?email={email}`: delete all captures for an email. Requires elevated
   authorization and confirmation/dry-run support. Returns `202 Accepted` for async bulk deletes with
   job id; job completion/audit logged.
-- `GET /captures/export?email={email}`: export all data for an email. Authenticated request returns
+- `GET /subscriptions/export?email={email}`: export all data for an email. Authenticated request returns
   downloadable machine-readable payload (JSONL/CSV) with all associated metadata, events, and audit
   trails. Success: `200 OK` with `Content-Disposition` attachment; export actions MUST be audited.
-- `POST /captures/{id}/do-not-contact` or `PATCH /captures/{id}` with `{ do_not_contact: true }`:
+- `POST /subscriptions/{id}/do-not-contact` or `PATCH /subscriptions/{id}` with `{ do_not_contact: true }`:
   set `do_not_contact` flag for a capture. Requires authorization and audit logging. Setting this
   flag should surface to downstream handlers/events.
 
@@ -400,9 +404,9 @@ semantics and retention consequences.
   updated.
 - Authentication failure: Call protected endpoints without credentials or with invalid credentials →
   expect `401`/`403` and no persisted entry.
-- Data deletion: Perform `DELETE /captures/{id}` → expect `204 No Content`, entry marked/removed per
+- Data deletion: Perform `DELETE /subscriptions/{id}` → expect `204 No Content`, entry marked/removed per
   retention policy, and audit log contains deletion event.
-- Data export: Perform `GET /captures/export?email=` → expect `200 OK` with machine-readable payload
+- Data export: Perform `GET /subscriptions/export?email=` → expect `200 OK` with machine-readable payload
   containing all associated data and audit entry for export.
 - Malicious input: Submit a payload containing XSS or SQL-injection-like payloads in metadata →
   expect `400 Bad Request` (or sanitized storage) and no stored unsafe content. Downstream

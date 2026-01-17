@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: Subscription Service API
+  version: 1.0.0
+  description: API for subscriptions, waitlists, and newsletters.
+paths:
+  /subscriptions:
+    post:
+      summary: Create subscription
+      operationId: createSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '200':
+          description: Idempotent success (already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Validation error
+        '429':
+          description: Rate limit exceeded
+
+  /subscriptions/{id}/confirm:
+    post:
+      summary: Confirm subscription (Double Opt-in)
+      operationId: confirmSubscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Confirmed successfully
+        '410':
+          description: Token expired or invalid
+        '404':
+          description: Subscription not found
+
+  /subscriptions/{id}:
+    delete:
+      summary: Delete subscription (Privacy)
+      operationId: deleteSubscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Deleted (or marked for deletion)
+
+components:
+  schemas:
+    SubscriptionRequest:
+      type: object
+      required:
+        - email
+        - source
+      properties:
+        email:
+          type: string
+          format: email
+        source:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+
+    SubscriptionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED ]
+        created_at:
+          type: string
+          format: date-time
