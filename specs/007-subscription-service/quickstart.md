@@ -94,11 +94,10 @@ class WelcomeEmailSender(
 
     }
 
-    @Recover
+    `@Recover`
     fun recover(e: Exception, event: SubscriptionCreatedEvent) {
         log.error("Failed to send welcome email for ${event.subscriptionId}. Moving to DLQ.", e)
         deadLetterQueue.publish(event, error = e.message)
-    }
     }
 }
 ```
