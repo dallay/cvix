@@ -6,6 +6,11 @@ import com.cvix.resume.domain.exception.ResumeAccessDeniedException
 import com.cvix.resume.domain.exception.ResumeNotFoundException
 import com.cvix.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -13,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -36,17 +41,45 @@ class DeleteResumeController(
 
     @Operation(
         summary = "Delete a resume by ID",
+        description = "Permanently deletes a resume document. Only the owner of the resume can perform this operation.",
         security = [SecurityRequirement(name = "bearerAuth")],
+        parameters = [
+            Parameter(
+                name = "id",
+                description = "The unique UUID of the resume to delete",
+                required = true,
+                `in` = ParameterIn.PATH,
+                example = "550e8400-e29b-41d4-a716-446655440000",
+            ),
+        ],
     )
     @ApiResponses(
-        ApiResponse(responseCode = "204", description = "Resume deleted successfully"),
-        ApiResponse(
-            responseCode = "400",
-            description = "Bad Request - Invalid identifier or token subject",
-        ),
-        ApiResponse(responseCode = "401", description = "Unauthorized"),
-        ApiResponse(responseCode = "403", description = "Forbidden - Access denied to this resume"),
-        ApiResponse(responseCode = "404", description = "Resume not found"),
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Resume deleted successfully",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad Request - Invalid identifier or token subject",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized - Missing or invalid authentication token",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden - Access denied to this resume",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Resume not found",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @DeleteMapping("/resume/{id}")
     suspend fun deleteResume(

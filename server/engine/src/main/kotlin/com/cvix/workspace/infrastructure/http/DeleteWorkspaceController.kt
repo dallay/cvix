@@ -3,7 +3,10 @@ package com.cvix.workspace.infrastructure.http
 import com.cvix.common.domain.bus.Mediator
 import com.cvix.spring.boot.ApiController
 import com.cvix.workspace.application.delete.DeleteWorkspaceCommand
-import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import org.springframework.http.ProblemDetail
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -41,19 +44,49 @@ class DeleteWorkspaceController(
      * @param id The id of the workspace to be deleted.
      * @return The result of the [DeleteWorkspaceCommand] dispatch.
      */
-    @Operation(summary = "Delete a workspace")
+    @Operation(
+        summary = "Delete a workspace",
+        description = "Permanently deletes a workspace and all associated resources. This operation cannot be undone.",
+        security = [SecurityRequirement(name = "bearerAuth")]
+    )
     @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Workspace deleted successfully"),
-        ApiResponse(responseCode = "404", description = "Workspace not found"),
-        ApiResponse(responseCode = "500", description = "Internal server error"),
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Workspace deleted successfully"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized - Missing or invalid authentication token",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden - User does not have permission to delete this workspace",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Workspace not found",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error during workspace deletion",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+            ),
+        ]
     )
     @DeleteMapping("/workspace/{id}")
     @ResponseStatus(HttpStatus.OK)
     suspend fun delete(
         @Parameter(
-            description = "ID of the workspace to be found",
+            name = "id",
+            description = "The unique UUID of the workspace to delete",
             required = true,
+            `in` = ParameterIn.PATH,
             schema = Schema(type = "string", format = "uuid"),
+            example = "550e8400-e29b-41d4-a716-446655440000"
         )
         @PathVariable
         id: UUID,
