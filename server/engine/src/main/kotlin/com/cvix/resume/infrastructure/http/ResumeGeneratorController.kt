@@ -7,13 +7,12 @@ import com.cvix.resume.domain.Locale
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import com.cvix.spring.boot.ApiController
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.ExampleObject
-import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
-import org.springframework.http.ProblemDetail
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -24,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
@@ -32,6 +32,26 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val STANDARD_GENERATION_EXAMPLE = """
+    {
+        "templateId": "modern",
+        "basics": {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "label": "Software Engineer",
+            "phone": "+1-555-0123"
+        },
+        "work": [
+            {
+                "name": "Tech Corp",
+                "position": "Developer",
+                "startDate": "2020-01-01"
+            }
+        ]
+    }
+"""
 
 /**
  * REST controller for resume generation endpoints.
@@ -111,23 +131,7 @@ class ResumeGeneratorController(
                         ExampleObject(
                             name = "Standard Generation",
                             summary = "Generate a resume using the 'modern' template",
-                            value = """
-                                {
-                                  "templateId": "modern",
-                                  "basics": {
-                                    "name": "John Doe",
-                                    "email": "john.doe@example.com",
-                                    "label": "Software Engineer"
-                                  },
-                                  "work": [
-                                    {
-                                      "name": "Tech Corp",
-                                      "position": "Developer",
-                                      "startDate": "2020-01-01"
-                                    }
-                                  ]
-                                }
-                            """,
+                            value = STANDARD_GENERATION_EXAMPLE,
                         ),
                     ],
                 ),

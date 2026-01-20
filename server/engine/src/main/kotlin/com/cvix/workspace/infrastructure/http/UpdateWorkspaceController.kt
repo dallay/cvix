@@ -1,22 +1,23 @@
 package com.cvix.workspace.infrastructure.http
 
 import com.cvix.common.domain.bus.Mediator
+import com.cvix.common.domain.presentation.SimpleMessageResponse
 import com.cvix.spring.boot.ApiController
-import com.cvix.spring.boot.presentation.MessageResponse
 import com.cvix.workspace.application.update.UpdateWorkspaceCommand
 import com.cvix.workspace.infrastructure.http.request.UpdateWorkspaceRequest
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import org.springframework.http.ProblemDetail
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.slf4j.LoggerFactory
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,6 +25,14 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val UPDATE_WORKSPACE_EXAMPLE = """
+    {
+        "name": "Strategic Projects",
+        "description": "High priority strategic initiatives and roadmap"
+    }
+"""
 
 /**
  * This class is a REST controller for updating workspaces.
@@ -53,41 +62,41 @@ class UpdateWorkspaceController(
         summary = "Update an existing workspace",
         description = "Modifies the name and description of an existing workspace. " +
             "Requires administrative permissions on the workspace.",
-        security = [SecurityRequirement(name = "bearerAuth")]
+        security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
                 description = "Workspace updated successfully",
-                content = [Content(schema = Schema(implementation = MessageResponse::class))]
+                content = [Content(schema = Schema(implementation = SimpleMessageResponse::class))],
             ),
             ApiResponse(
                 responseCode = "400",
                 description = "Bad request - Invalid workspace data or missing required fields",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
             ),
             ApiResponse(
                 responseCode = "401",
                 description = "Unauthorized - Missing or invalid authentication token",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
             ),
             ApiResponse(
                 responseCode = "403",
                 description = "Forbidden - User does not have permission to update this workspace",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
             ),
             ApiResponse(
                 responseCode = "404",
                 description = "Workspace not found",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = "Internal server error during workspace update",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
             ),
-        ]
+        ],
     )
     @PutMapping("/workspace/{id}/update")
     suspend fun update(
@@ -97,11 +106,11 @@ class UpdateWorkspaceController(
             required = true,
             `in` = ParameterIn.PATH,
             schema = Schema(type = "string", format = "uuid"),
-            example = "550e8400-e29b-41d4-a716-446655440000"
+            example = "550e8400-e29b-41d4-a716-446655440000",
         )
         @PathVariable
         id: UUID,
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        @OpenApiRequestBody(
             description = "Updated workspace details",
             required = true,
             content = [
@@ -111,26 +120,21 @@ class UpdateWorkspaceController(
                     examples = [
                         ExampleObject(
                             name = "Update name and description",
-                            value = """
-                            {
-                                "name": "Strategic Projects",
-                                "description": "High priority strategic initiatives and roadmap"
-                            }
-                            """
-                        )
-                    ]
-                )
-            ]
+                            value = UPDATE_WORKSPACE_EXAMPLE,
+                        ),
+                    ],
+                ),
+            ],
         )
         @Validated @RequestBody request: UpdateWorkspaceRequest,
-    ): ResponseEntity<MessageResponse> {
+    ): ResponseEntity<SimpleMessageResponse> {
         log.debug("Updating workspace with ID: {}", id)
         dispatch(
             UpdateWorkspaceCommand(
                 id, request.name, request.description?.takeIf { it.isNotBlank() },
             ),
         )
-        return ResponseEntity.ok(MessageResponse("Workspace updated successfully."))
+        return ResponseEntity.ok(SimpleMessageResponse("Workspace updated successfully."))
     }
 
     companion object {

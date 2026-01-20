@@ -8,11 +8,11 @@ import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.CreateResumeRequest
 import com.cvix.spring.boot.ApiController
 import com.cvix.spring.boot.logging.LogMasker
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
-import io.swagger.v3.oas.annotations.media.ExampleObject
-import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -30,6 +30,35 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val BASIC_RESUME_EXAMPLE = """
+    {
+        "title": "Software Engineer Resume",
+        "content": {
+            "basics": {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "label": "Senior Software Engineer",
+                "phone": "+1-555-0123",
+                "summary": "Experienced engineer with a focus on cloud-native apps."
+            },
+            "work": [
+                {
+                    "name": "Tech Corp",
+                    "position": "Senior Developer",
+                    "startDate": "2020-01-01"
+                }
+            ],
+            "skills": [
+                {
+                    "name": "Web Development",
+                    "keywords": ["Kotlin", "Spring Boot", "Vue.js"]
+                }
+            ]
+        }
+    }
+"""
 
 /**
  * Controller for creating new resume/CV documents.
@@ -147,33 +176,7 @@ class CreateResumeController(
                         ExampleObject(
                             name = "Basic Resume",
                             summary = "A simple resume with basic information and skills",
-                            value = """
-                                {
-                                  "title": "Software Engineer Resume",
-                                  "content": {
-                                    "basics": {
-                                      "name": "John Doe",
-                                      "email": "john.doe@example.com",
-                                      "label": "Senior Software Engineer",
-                                      "phone": "+1-555-0123",
-                                      "summary": "Experienced engineer with a focus on cloud-native apps."
-                                    },
-                                    "work": [
-                                      {
-                                        "name": "Tech Corp",
-                                        "position": "Senior Developer",
-                                        "startDate": "2020-01-01"
-                                      }
-                                    ],
-                                    "skills": [
-                                      {
-                                        "name": "Web Development",
-                                        "keywords": ["Kotlin", "Spring Boot", "Vue.js"]
-                                      }
-                                    ]
-                                  }
-                                }
-                            """,
+                            value = BASIC_RESUME_EXAMPLE,
                         ),
                     ],
                 ),

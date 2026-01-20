@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -31,6 +30,169 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val UPDATED_RESUME_EXAMPLE = """
+    {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "userId": "123e4567-e89b-12d3-a456-426614174000",
+        "workspaceId": "123e4567-e89b-12d3-a456-426614174000",
+        "title": "Senior Software Engineer Resume",
+        "content": {
+            "basics": {
+                "name": "John Doe",
+                "label": "Senior Software Engineer",
+                "email": "john.doe@example.com",
+                "phone": "+1-555-0123",
+                "summary": "Experienced software engineer..."
+            },
+            "work": [
+                {
+                    "name": "Tech Corp",
+                    "position": "Senior Developer",
+                    "startDate": "2020-01-01"
+                }
+            ],
+            "skills": [
+                {
+                    "name": "Web Development",
+                    "keywords": ["Kotlin", "Spring Boot"]
+                }
+            ]
+        },
+        "createdAt": "2024-01-15T10:30:00Z",
+        "updatedAt": "2024-01-20T14:25:00Z",
+        "createdBy": "john.doe@example.com",
+        "updatedBy": "john.doe@example.com"
+    }
+"""
+
+private const val INVALID_CONTENT_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/400",
+        "title": "Bad Request",
+        "status": 400,
+        "detail": "Invalid resume content structure: missing required sections",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val MISSING_AUTH_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/401",
+        "title": "Unauthorized",
+        "status": 401,
+        "detail": "Authentication required to update resume",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val ACCESS_DENIED_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/403",
+        "title": "Forbidden",
+        "status": 403,
+        "detail": "You do not have permission to modify this resume",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val RESUME_NOT_FOUND_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/404",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "Resume with ID 550e8400-e29b-41d4-a716-446655440000 not found",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val CONCURRENT_MODIFICATION_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/409",
+        "title": "Conflict",
+        "status": 409,
+        "detail": "Resume was modified by another user. Please refresh and try again.",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val VALIDATION_ERROR_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/422",
+        "title": "Unprocessable Entity",
+        "status": 422,
+        "detail": "Title must be between 1 and 200 characters",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val UPDATE_ERROR_EXAMPLE = """
+    {
+        "type": "https://httpstatuses.com/500",
+        "title": "Internal Server Error",
+        "status": 500,
+        "detail": "Failed to update resume due to internal error",
+        "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
+    }
+"""
+
+private const val STANDARD_UPDATE_EXAMPLE = """
+    {
+        "title": "Senior Software Engineer Resume - Updated",
+        "content": {
+            "basics": {
+                "name": "John Doe",
+                "label": "Senior Software Engineer",
+                "email": "john.doe@example.com",
+                "phone": "+1-555-0123",
+                "summary": "Experienced software engineer..."
+            },
+            "work": [
+                {
+                    "name": "Tech Corp",
+                    "position": "Senior Developer",
+                    "startDate": "2020-01-01"
+                }
+            ],
+            "skills": [
+                {
+                    "name": "Web Development",
+                    "keywords": ["Kotlin", "Spring Boot"]
+                }
+            ]
+        }
+    }
+"""
+
+private const val OPTIMISTIC_LOCKING_EXAMPLE = """
+    {
+        "title": "Updated Resume Title",
+        "content": {
+            "basics": {
+                "name": "John Doe",
+                "label": "Senior Software Engineer",
+                "email": "john.doe@example.com",
+                "phone": "+1-555-0123",
+                "summary": "Experienced software engineer..."
+            },
+            "work": [
+                {
+                    "name": "Tech Corp",
+                    "position": "Senior Developer",
+                    "startDate": "2020-01-01"
+                }
+            ],
+            "skills": [
+                {
+                    "name": "Web Development",
+                    "keywords": ["Kotlin", "Spring Boot"]
+                }
+            ]
+        },
+        "expectedUpdatedAt": "2024-01-20T14:25:00Z"
+    }
+"""
 
 /**
  * REST controller for updating resumes.
@@ -71,8 +233,8 @@ class UpdateResumeController(
                     Header(
                         name = "Location",
                         description = "URI of the updated resume resource",
-                        schema = Schema(type = "string")
-                    )
+                        schema = Schema(type = "string"),
+                    ),
                 ],
                 content = [
                     Content(
@@ -81,28 +243,11 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Updated resume",
-                                value = """
-                                {
-                                    "id": "550e8400-e29b-41d4-a716-446655440000",
-                                    "title": "Senior Software Engineer Resume",
-                                    "content": {
-                                        "sections": [
-                                            {
-                                                "type": "summary",
-                                                "content": "Experienced software engineer with 5+ years..."
-                                            }
-                                        ]
-                                    },
-                                    "createdAt": "2024-01-15T10:30:00Z",
-                                    "updatedAt": "2024-01-20T14:25:00Z",
-                                    "createdBy": "john.doe@example.com",
-                                    "updatedBy": "john.doe@example.com"
-                                }
-                                """
-                            )
-                        ]
-                    )
-                ]
+                                value = UPDATED_RESUME_EXAMPLE,
+                            ),
+                        ],
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -113,18 +258,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Invalid content structure",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/400",
-                                    "title": "Bad Request",
-                                    "status": 400,
-                                    "detail": "Invalid resume content structure: missing required sections",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = INVALID_CONTENT_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -136,18 +273,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Missing authentication",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/401",
-                                    "title": "Unauthorized",
-                                    "status": 401,
-                                    "detail": "Authentication required to update resume",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = MISSING_AUTH_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -159,18 +288,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Access denied",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/403",
-                                    "title": "Forbidden",
-                                    "status": 403,
-                                    "detail": "You do not have permission to modify this resume",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = ACCESS_DENIED_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -182,18 +303,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Resume not found",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/404",
-                                    "title": "Not Found",
-                                    "status": 404,
-                                    "detail": "Resume with ID 550e8400-e29b-41d4-a716-446655440000 not found",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = RESUME_NOT_FOUND_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -205,18 +318,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Concurrent modification",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/409",
-                                    "title": "Conflict",
-                                    "status": 409,
-                                    "detail": "Resume was modified by another user. Please refresh and try again.",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = CONCURRENT_MODIFICATION_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -228,18 +333,10 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Validation error",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/422",
-                                    "title": "Unprocessable Entity",
-                                    "status": 422,
-                                    "detail": "Title must be between 1 and 200 characters",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = VALIDATION_ERROR_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
             ApiResponse(
@@ -251,21 +348,13 @@ class UpdateResumeController(
                         examples = [
                             ExampleObject(
                                 name = "Update error",
-                                value = """
-                                {
-                                    "type": "https://httpstatuses.com/500",
-                                    "title": "Internal Server Error",
-                                    "status": 500,
-                                    "detail": "Failed to update resume due to internal error",
-                                    "instance": "/api/resume/550e8400-e29b-41d4-a716-446655440000/update"
-                                }
-                                """
-                            )
-                        ]
-                    )
+                                value = UPDATE_ERROR_EXAMPLE,
+                            ),
+                        ],
+                    ),
                 ],
             ),
-        ]
+        ],
     )
     @PutMapping("/resume/{id}/update")
     suspend fun updateResume(
@@ -275,12 +364,13 @@ class UpdateResumeController(
             required = true,
             `in` = ParameterIn.PATH,
             schema = Schema(type = "string", format = "uuid"),
-            example = "550e8400-e29b-41d4-a716-446655440000"
+            example = "550e8400-e29b-41d4-a716-446655440000",
         )
         @PathVariable
         id: UUID,
-        @RequestBody(
-            description = "Resume update data containing new title, content, and optional expected timestamp for optimistic locking",
+        @OpenApiRequestBody(
+            description = "Resume update data containing new title, content, and optional expected " +
+                "timestamp for optimistic locking",
             required = true,
             content = [
                 Content(
@@ -290,54 +380,18 @@ class UpdateResumeController(
                         ExampleObject(
                             name = "Standard update",
                             description = "Update resume with new title and content",
-                            value = """
-                            {
-                                "title": "Senior Software Engineer Resume - Updated",
-                                "content": {
-                                    "sections": [
-                                        {
-                                            "type": "summary",
-                                            "content": "Experienced software engineer with 6+ years in full-stack development..."
-                                        },
-                                        {
-                                            "type": "experience",
-                                            "content": {
-                                                "company": "Tech Corp",
-                                                "position": "Senior Developer",
-                                                "duration": "2020-Present"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                            """
+                            value = STANDARD_UPDATE_EXAMPLE,
                         ),
                         ExampleObject(
                             name = "Update with optimistic locking",
                             description = "Update with expected timestamp to prevent concurrent modifications",
-                            value = """
-                            {
-                                "title": "Updated Resume Title",
-                                "content": {
-                                    "sections": [
-                                        {
-                                            "type": "contact",
-                                            "content": {
-                                                "email": "john.doe@example.com",
-                                                "phone": "+1-555-0123"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "expectedUpdatedAt": "2024-01-20T14:25:00Z"
-                            }
-                            """
-                        )
-                    ]
-                )
-            ]
+                            value = OPTIMISTIC_LOCKING_EXAMPLE,
+                        ),
+                    ],
+                ),
+            ],
         )
-        @Valid @Validated 
+        @Valid @Validated @RequestBody
         request: UpdateResumeRequest
     ): ResponseEntity<ResumeDocumentResponse> {
         val sanitizedId = sanitizePathVariable(id.toString())

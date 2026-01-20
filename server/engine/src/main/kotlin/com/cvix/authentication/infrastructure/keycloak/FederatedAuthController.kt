@@ -9,9 +9,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import org.springframework.http.ProblemDetail
+import io.swagger.v3.oas.annotations.tags.Tag
 import java.net.URI
 import org.springframework.http.HttpStatus
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
@@ -27,6 +28,17 @@ private const val GITHUB = "github"
 private const val MICROSOFT = "microsoft"
 
 private const val GOOGLE = "google"
+
+private const val AUTHENTICATED_USER_EXAMPLE = """
+    {
+        "authenticated": true,
+        "provider": "google",
+        "email": "john.doe@gmail.com",
+        "displayName": "John Doe"
+    }
+"""
+
+private const val NOT_AUTHENTICATED_EXAMPLE = """{"authenticated": false}"""
 
 /**
  * REST controller for handling federated authentication (OAuth2/OIDC) flows.
@@ -72,7 +84,7 @@ class FederatedAuthController(
                 required = true,
                 `in` = ParameterIn.QUERY,
                 schema = Schema(type = "string", allowableValues = ["google", "microsoft", "github"]),
-                example = "google"
+                example = "google",
             ),
             Parameter(
                 name = "redirectUri",
@@ -80,22 +92,22 @@ class FederatedAuthController(
                 required = false,
                 `in` = ParameterIn.QUERY,
                 schema = Schema(type = "string", defaultValue = "/dashboard"),
-                example = "/profile"
-            )
-        ]
+                example = "/profile",
+            ),
+        ],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "302",
-                description = "Redirect to identity provider authorization page"
+                description = "Redirect to identity provider authorization page",
             ),
             ApiResponse(
                 responseCode = "400",
                 description = "Bad request - Unsupported or invalid identity provider",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
-            )
-        ]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @GetMapping("/initiate")
     fun initiateFederatedAuth(
@@ -141,20 +153,20 @@ class FederatedAuthController(
         description = "Processes the callback from the identity provider after successful user authorization. " +
             "Creates or updates the local user account based on the OIDC user information. " +
             "Establishes the authenticated session and redirects the user back to the application.",
-        hidden = true // Usually handled internally by Spring Security, but documented for completeness
+        hidden = true, // Usually handled internally by Spring Security, but documented for completeness
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "302",
-                description = "Authentication successful - Redirecting to the application"
+                description = "Authentication successful - Redirecting to the application",
             ),
             ApiResponse(
                 responseCode = "401",
                 description = "Unauthorized - Authentication failed with the identity provider",
-                content = [Content(schema = Schema(implementation = ProblemDetail::class))]
-            )
-        ]
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @GetMapping("/callback")
     fun handleOAuthCallback(
@@ -212,7 +224,7 @@ class FederatedAuthController(
     @Operation(
         summary = "Get federated authentication status",
         description = "Returns the current federated authentication status and user information if authenticated. " +
-            "Used by the frontend to check if a user is logged in via an external provider."
+            "Used by the frontend to check if a user is logged in via an external provider.",
     )
     @ApiResponses(
         value = [
@@ -226,24 +238,17 @@ class FederatedAuthController(
                         examples = [
                             ExampleObject(
                                 name = "Authenticated user",
-                                value = """
-                                {
-                                    "authenticated": true,
-                                    "provider": "google",
-                                    "email": "john.doe@gmail.com",
-                                    "displayName": "John Doe"
-                                }
-                                """
+                                value = AUTHENTICATED_USER_EXAMPLE,
                             ),
                             ExampleObject(
                                 name = "Not authenticated",
-                                value = "{\"authenticated\": false}"
-                            )
-                        ]
-                    )
-                ]
-            )
-        ]
+                                value = NOT_AUTHENTICATED_EXAMPLE,
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
     )
     @GetMapping("/status")
     fun getFederatedAuthStatus(

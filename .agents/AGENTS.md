@@ -185,6 +185,8 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 | [spring-boot](.agents/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security                      | Controllers, services, repositories            |
 | [hexagonal-architecture](.agents/skills/hexagonal-architecture/SKILL.md) | Hexagonal Architecture, Ports & Adapters, CQRS            | Feature structure, domain models, use cases    |
 | [playwright](.agents/skills/playwright/SKILL.md)                         | E2E testing with Playwright, Page Objects                 | E2E tests, browser automation                  |
+| [pr-creator](.agents/skills/pr-creator/SKILL.md)                         | Pull request creation workflow and templates              | Creating PRs, `gh` CLI                         |
+| [sql-optimization-patterns](.agents/skills/sql-optimization-patterns/SKILL.md) | SQL performance patterns and indexing strategies          | Query tuning, indexes, explain plans           |
 | [tailwind-4](.agents/skills/tailwind-4/SKILL.md)                         | Tailwind CSS 4 patterns and best practices                | Styling, CSS classes                           |
 | [typescript](.agents/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions                  |
 | [zod-4](.agents/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions            |

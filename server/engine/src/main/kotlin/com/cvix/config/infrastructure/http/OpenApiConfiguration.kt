@@ -17,18 +17,18 @@ import org.springframework.context.annotation.Configuration
         contact = Contact(
             name = "Cvix Support",
             email = "support@cvix.com",
-            url = "https://cvix.com"
-        )
+            url = "https://cvix.com",
+        ),
     ),
     servers = [
-        Server(url = "/", description = "Default Server URL")
-    ]
+        Server(url = "/", description = "Default Server URL"),
+    ],
 )
 @SecurityScheme(
     name = "bearerAuth",
     type = SecuritySchemeType.HTTP,
     scheme = "bearer",
     bearerFormat = "JWT",
-    description = "JWT Authorization header using the Bearer scheme."
+    description = "JWT Authorization header using the Bearer scheme.",
 )
 class OpenApiConfiguration
