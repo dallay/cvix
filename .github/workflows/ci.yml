@@ -483,6 +483,8 @@ jobs:
           args: >
             --failOnCVSS 7
             --enableRetired
+            --ossIndexUsername ${{ secrets.OSSINDEX_USER }}
+            --ossIndexPassword ${{ secrets.OSSINDEX_PASSWORD }}
 
       - name: Upload OWASP Dependency Check Report
         if: always()
