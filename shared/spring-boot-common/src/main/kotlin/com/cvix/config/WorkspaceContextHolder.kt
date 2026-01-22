@@ -25,7 +25,7 @@ import reactor.util.context.Context
  *     .flatMap { workspaceId -> doSomethingWith(workspaceId) }
  * ```
  *
- * @see com.cvix.config.db.WorkspaceConnectionFactoryDecorator
+ * @see WorkspaceConnectionFactoryDecorator
  */
 object WorkspaceContextHolder {
 

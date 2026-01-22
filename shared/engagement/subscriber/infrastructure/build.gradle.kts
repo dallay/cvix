@@ -25,13 +25,7 @@ dependencies {
     testImplementation(testFixtures(project(":shared:test-helpers")))
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        @Suppress("UnusedPrivateProperty")
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit Jupiter test framework
-            useJUnitJupiter(libs.versions.junit)
-        }
-    }
+// Using traditional test configuration instead of experimental JvmTestSuite
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

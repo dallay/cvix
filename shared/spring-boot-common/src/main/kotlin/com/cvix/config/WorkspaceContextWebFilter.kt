@@ -34,7 +34,7 @@ import reactor.core.publisher.Mono
  *
  * ### Programmatic (for endpoints with workspaceId in body)
  * When the workspace ID comes from the request body, services should
- * use [com.cvix.config.db.WorkspaceContextHolder.withWorkspace] to set the context:
+ * use [WorkspaceContextHolder.withWorkspace] to set the context:
  *
  * ```kotlin
  * suspend fun createResume(command: CreateResumeCommand) {
@@ -59,8 +59,8 @@ import reactor.core.publisher.Mono
  *                              PostgreSQL RLS policies filter data
  * ```
  *
- * @see com.cvix.config.db.WorkspaceContextHolder
- * @see com.cvix.config.db.WorkspaceConnectionFactoryDecorator
+ * @see WorkspaceContextHolder
+ * @see WorkspaceConnectionFactoryDecorator
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10) // Run early, after security filters

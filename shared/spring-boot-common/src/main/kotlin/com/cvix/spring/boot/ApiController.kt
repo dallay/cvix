@@ -133,7 +133,7 @@ abstract class ApiController(
     /**
      * Retrieves the current workspace ID from the reactive context.
      *
-     * The workspace ID is expected to be set by [WorkspaceContextWebFilter] from
+     * The workspace ID is expected to be set by [com.cvix.config.WorkspaceContextWebFilter] from
      * the `X-Workspace-Id` HTTP header. This is the primary method for obtaining
      * the workspace context in controllers.
      *

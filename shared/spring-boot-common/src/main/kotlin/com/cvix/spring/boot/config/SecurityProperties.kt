@@ -4,12 +4,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
 
 /**
- * Application security properties.
+ * Application security properties for hasher configuration.
  *
- * Binds properties under `application.security.*` so other Spring beans can adapt behaviour
- * (for example which hasher to use and the HMAC secret).
+ * Binds properties under `application.security.hasher.*` so other Spring beans can adapt behaviour
+ * (for example which hasher to use and HMAC secret).
  */
-@ConfigurationProperties(prefix = "application.security")
+@ConfigurationProperties(prefix = "application.security.hasher")
 @Validated
 data class SecurityProperties(
     val hasher: HasherProperties = HasherProperties(),

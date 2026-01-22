@@ -10,17 +10,14 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.faker)
     testImplementation(libs.junit)
+    // Needed for ParameterizedTest, MethodSource, Arguments
+    // Parameterized tests support (junit-jupiter-params)
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.1")
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        @Suppress("UnusedPrivateProperty")
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit Jupiter test framework
-            useJUnitJupiter(libs.versions.junit)
-        }
-    }
+// Using traditional test configuration instead of experimental JvmTestSuite
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

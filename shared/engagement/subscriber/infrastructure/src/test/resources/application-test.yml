@@ -16,12 +16,13 @@ spring:
 application:
   security:
     oauth2:
-      base-url: "http://localhost:9080"
-      issuer-uri: "http://localhost:9080/realms/cvix"
+      baseUrl: "http://localhost:9080"
+      serverUrl: "http://localhost:9080"
+      issuerUri: "http://localhost:9080/realms/cvix"
       realm: "cvix"
-      client-id: "web_app"
-      admin-client-id: "admin-cli"
-      admin-realm: "master"
+      clientId: "web_app"
+      adminClientId: "admin-cli"
+      adminRealm: "master"
 
 testing:
   security:

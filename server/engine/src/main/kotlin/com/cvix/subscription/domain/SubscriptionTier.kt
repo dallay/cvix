@@ -85,7 +85,11 @@ enum class SubscriptionTier(val rank: Int) {
      */
     /**
      * Reserved extension point for future custom feature gates.
+     *
      * By default, returns false; override in a tier to enable custom features.
+     *
+     * @param featureName The name of the feature to check
+     * @return true if this tier has access to the feature, false otherwise
      */
     open fun hasFeature(featureName: String): Boolean = false
 

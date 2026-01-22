@@ -31,7 +31,6 @@ fun Project.catalogBundle(alias: String) = libs.findBundle(alias).get()
 fun Project.catalogPlugin(alias: String) = libs.findPlugin(alias).get()
 
 fun KotlinDependencyHandler.catalogVersion(alias: String) = project.catalogVersion(alias)
-fun KotlinDependencyHandler.catalogLib(alias: String) = project.catalogLib(alias)
 fun KotlinDependencyHandler.catalogBundle(alias: String) = project.catalogBundle(alias)
 
 fun KotlinDependencyHandler.implementation(

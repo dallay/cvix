@@ -31,9 +31,4 @@ data class WorkspaceMemberEntity(
     override fun getId(): WorkspaceMemberId = WorkspaceMemberId(workspaceId, userId)
 
     override fun isNew(): Boolean = isNew
-
-    fun markAsNotNew(): WorkspaceMemberEntity {
-        this.isNew = false
-        return this
-    }
 }
