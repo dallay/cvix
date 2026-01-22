@@ -17,8 +17,8 @@ application:
   security:
     oauth2:
       baseUrl: "http://localhost:9080"
-      serverUrl: "http://localhost:9080"
-      issuerUri: "http://localhost:9080/realms/cvix"
+      serverUrl: "${application.security.oauth2.base-url}"
+      issuerUri: "${application.security.oauth2.base-url}/realms/cvix"
       realm: "cvix"
       clientId: "web_app"
       adminClientId: "admin-cli"
