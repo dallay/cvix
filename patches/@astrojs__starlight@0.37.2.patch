@@ -1,0 +1,15 @@
+diff --git a/components/Select.astro b/components/Select.astro
+index a77cb295a07a71b377c94603a3a120e713af05f4..f8c1154bee54590ea0544d06b9e8a550b485342f 100644
+--- a/components/Select.astro
++++ b/components/Select.astro
+@@ -70,7 +70,10 @@ interface Props {
+			text-overflow: ellipsis;
+			color: inherit;
+			cursor: pointer;
++			-webkit-appearance: none;
++			-moz-appearance: none;
+			appearance: none;
++			background-image: none;
+		}
+
+		option {

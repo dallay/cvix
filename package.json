@@ -78,11 +78,11 @@
 		"release:dry-run": "semantic-release --dry-run"
 	},
 	"devDependencies": {
-		"@dallay/agentsync": "1.7.0",
 		"@astrojs/vue": "catalog:",
 		"@biomejs/biome": "^2.3.11",
 		"@commitlint/cli": "^20.3.1",
 		"@commitlint/config-conventional": "^20.3.1",
+		"@dallay/agentsync": "1.7.0",
 		"@eslint/json": "^0.14.0",
 		"@playwright/test": "catalog:",
 		"@semantic-release/changelog": "^6.0.3",
@@ -95,6 +95,7 @@
 		"markdownlint-cli2": "^0.20.0",
 		"npm-run-all2": "catalog:",
 		"oxlint": "catalog:",
+		"patch-package": "^8.0.1",
 		"semantic-release": "catalog:",
 		"tsup": "^8.5.1",
 		"tsx": "^4.21.0",
@@ -119,6 +120,9 @@
 			"esbuild",
 			"lefthook",
 			"sharp"
-		]
+		],
+		"patchedDependencies": {
+			"@astrojs/starlight@0.37.2": "patches/@astrojs__starlight@0.37.2.patch"
+		}
 	}
 }
