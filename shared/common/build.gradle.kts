@@ -19,6 +19,6 @@ dependencies {
 }
 
 // Using traditional test configuration instead of experimental JvmTestSuite
-tasks.withType<Test>().configureEach{
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
