@@ -11,7 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -65,7 +65,7 @@ internal class UpdateResumeCommandHandlerTest {
         coVerify {
             resumeRepository.save(
                 withArg {
-                    assertEquals(resumeId, it.id.id)
+                    assertEquals(resumeId, it.id.value)
                     assertEquals(userId, it.userId)
                     assertEquals(workspaceId, it.workspaceId)
                     assertEquals("Updated Resume Title", it.title)

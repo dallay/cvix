@@ -1,6 +1,6 @@
 package com.cvix.resume.infrastructure.persistence.entity
 
-import com.cvix.common.domain.AuditableEntityFields
+import com.cvix.common.domain.model.AuditableEntityFields
 import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
 import java.io.Serializable

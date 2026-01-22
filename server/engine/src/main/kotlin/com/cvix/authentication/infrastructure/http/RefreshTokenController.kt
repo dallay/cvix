@@ -2,10 +2,10 @@ package com.cvix.authentication.infrastructure.http
 
 import com.cvix.authentication.application.RefreshTokenQueryHandler
 import com.cvix.authentication.application.query.RefreshTokenQuery
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder.buildCookies
 import com.cvix.authentication.infrastructure.cookie.getCookie
+import com.cvix.common.domain.authentication.AccessToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses

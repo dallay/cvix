@@ -91,7 +91,8 @@ $SEPARATOR""",
 
         initApplication(environment)
 
-        val errorMessage = "It should not run with both the 'dev' and 'prod' profiles at the same time."
+        val errorMessage =
+            "It should not run with both the 'dev' and 'prod' profiles at the same time."
         val logEvent = testAppender.events.find { it.message.contains(errorMessage) }
 
         assertTrue(logEvent != null, "Expected log message not found.")

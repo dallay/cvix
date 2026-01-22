@@ -70,7 +70,7 @@ object ResumeMapper {
      */
     fun ResumeDocument.toEntity(): ResumeEntity {
         return ResumeEntity(
-            id = id.id,
+            id = id.value,
             userId = userId,
             workspaceId = workspaceId,
             title = title,

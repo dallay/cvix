@@ -1,13 +1,30 @@
 package com.cvix.resume.domain
 
-import com.cvix.common.domain.BaseId
-import java.util.UUID
+import java.util.*
 
 /**
- * Identifier for a Resume Document.
+ * Value class representing a unique identifier for a [ResumeDocument].
  *
- * @property id The UUID value of the Resume Document ID
+ * @property value The underlying UUID value.
  */
-data class ResumeDocumentId(override val id: UUID) : BaseId<UUID>(id) {
-    constructor(id: String) : this(UUID.fromString(id))
+@JvmInline
+value class ResumeDocumentId(val value: UUID) {
+    override fun toString(): String = value.toString()
+
+    companion object {
+        /**
+         * Generates a new random ResumeDocumentId.
+         *
+         * @return A ResumeDocumentId with a randomly generated UUID.
+         */
+        fun random(): ResumeDocumentId = ResumeDocumentId(UUID.randomUUID())
+
+        /**
+         * Creates a ResumeDocumentId from a string representation of a UUID.
+         *
+         * @param id The string representation of the UUID.
+         * @return A ResumeDocumentId corresponding to the given UUID string.
+         */
+        fun fromString(id: String): ResumeDocumentId = ResumeDocumentId(UUID.fromString(id))
+    }
 }

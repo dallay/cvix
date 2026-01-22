@@ -11,7 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -67,7 +67,10 @@ internal class UpdateResumeControllerTest : ControllerTest() {
         // Compare mapped Resume objects instead of direct object comparison
         val expectedResume = ResumeRequestMapper.toDomain(request.content)
         assertEquals(expectedResume, commandSlot.captured.content)
-        assertEquals(Instant.parse(request.expectedUpdatedAt!!), commandSlot.captured.expectedUpdatedAt)
+        assertEquals(
+            Instant.parse(request.expectedUpdatedAt!!),
+            commandSlot.captured.expectedUpdatedAt,
+        )
     }
 
     @Test

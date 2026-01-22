@@ -23,9 +23,10 @@ class AuthenticateUserQueryHandlerTest {
     private val userAuthenticatorService: UserAuthenticatorService = UserAuthenticatorService(
         inMemoryUserAuthenticatorManager,
     )
-    private val authenticateUserQueryHandler: AuthenticateUserQueryHandler = AuthenticateUserQueryHandler(
-        userAuthenticatorService,
-    )
+    private val authenticateUserQueryHandler: AuthenticateUserQueryHandler =
+        AuthenticateUserQueryHandler(
+            userAuthenticatorService,
+        )
 
     @BeforeEach
     fun setUp() {

@@ -190,3 +190,4 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 | [tailwind-4](.agents/skills/tailwind-4/SKILL.md)                         | Tailwind CSS 4 patterns and best practices                | Styling, CSS classes                           |
 | [typescript](.agents/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions                  |
 | [zod-4](.agents/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions            |
+| [c4-diagrams](.agents/skills/c4-diagrams/SKILL.md)                       | Generate and maintain C4 diagrams (Mermaid & PlantUML)   | Changes in docs/architecture/diagrams          |

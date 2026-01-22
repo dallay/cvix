@@ -3,7 +3,7 @@ package com.cvix
 import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.credential.CredentialId
 import com.cvix.common.domain.vo.credential.CredentialValue
-import java.util.UUID
+import java.util.*
 import net.datafaker.Faker
 
 /**
@@ -29,6 +29,7 @@ object CredentialGenerator {
 
         return "DefaultPass123!"
     }
+
     private fun isPasswordValid(password: String): Boolean {
         val hasLowercase = password.any { it.isLowerCase() }
         val hasUppercase = password.any { it.isUpperCase() }

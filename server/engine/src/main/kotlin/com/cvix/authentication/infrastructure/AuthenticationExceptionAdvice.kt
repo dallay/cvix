@@ -1,26 +1,43 @@
 package com.cvix.authentication.infrastructure
 
+import com.cvix.authentication.domain.UserAuthenticationException
+import com.cvix.authentication.domain.UserRefreshTokenException
 import com.cvix.authentication.domain.error.AccountDisabledException
 import com.cvix.authentication.domain.error.FederatedAuthenticationException
 import com.cvix.authentication.domain.error.InvalidCredentialsException
 import com.cvix.authentication.domain.error.InvalidTokenException
 import com.cvix.authentication.domain.error.LogoutFailedException
+import com.cvix.authentication.domain.error.MissingCookieException
 import com.cvix.authentication.domain.error.NotAuthenticatedUserException
 import com.cvix.authentication.domain.error.RateLimitExceededException
 import com.cvix.authentication.domain.error.SessionNotFoundException
 import com.cvix.authentication.domain.error.UnknownAuthenticationException
+import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.controllers.DEFAULT_PRECEDENCE
+import com.cvix.controllers.ERROR_CATEGORY
+import com.cvix.controllers.ERROR_PAGE
+import com.cvix.controllers.LOCALIZED_MESSAGE
 import com.cvix.controllers.MESSAGE_KEY
+import com.cvix.controllers.MSG_AUTHENTICATION_FAILED
+import com.cvix.controllers.MSG_MISSING_COOKIE
 import com.cvix.controllers.TIMESTAMP
+import com.cvix.controllers.TRACE_ID
+import com.cvix.controllers.createProblemDetail
+import java.net.URI
 import java.time.Instant
+import java.util.Locale
+import org.springframework.context.MessageSource
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.server.ServerWebExchange
 import org.springframework.security.core.AuthenticationException as SpringAuthenticationException
 
 /**
@@ -207,6 +224,8 @@ internal class AccountStatusAdvice {
     }
 }
 
+private const val AUTHENTICATION = "AUTHENTICATION"
+
 /**
  * Handles general authentication errors.
  */
@@ -221,9 +240,16 @@ internal class GeneralAuthAdvice {
      */
     @ExceptionHandler(NotAuthenticatedUserException::class)
     fun NotAuthenticatedUserException.handleNotAuthenticateUser(): ProblemDetail {
-        val detail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED)
-        detail.title = "not authenticated"
-        detail.setProperty(MESSAGE_KEY, "error.http.401")
+        val detail = createProblemDetail(
+            status = HttpStatus.UNAUTHORIZED,
+            title = "not authenticated",
+            detail = null,
+            typeSuffix = "authentication/not-authenticated",
+            errorCategory = AUTHENTICATION,
+            exchange = null,
+            messageKey = "error.http.401",
+            includeInstance = false,
+        )
         return detail
     }
 
@@ -234,9 +260,16 @@ internal class GeneralAuthAdvice {
      */
     @ExceptionHandler(UnknownAuthenticationException::class)
     fun UnknownAuthenticationException.handleUnknownAuthentication(): ProblemDetail {
-        val detail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        detail.title = "unknown authentication"
-        detail.setProperty(MESSAGE_KEY, "error.http.500")
+        val detail = createProblemDetail(
+            status = HttpStatus.INTERNAL_SERVER_ERROR,
+            title = "unknown authentication",
+            detail = null,
+            typeSuffix = "authentication/unknown-authentication",
+            errorCategory = AUTHENTICATION,
+            exchange = null,
+            messageKey = "error.http.500",
+            includeInstance = false,
+        )
         return detail
     }
 
@@ -254,4 +287,109 @@ internal class GeneralAuthAdvice {
         detail.setProperty(TIMESTAMP, Instant.now().toString())
         return detail
     }
+}
+
+/**
+ * Handles user authentication exceptions.
+ */
+@ControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE - DEFAULT_PRECEDENCE)
+internal class UserAuthAdvice(
+    private val messageSource: MessageSource
+) {
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UserAuthenticationException::class, UserRefreshTokenException::class)
+    fun handleUserAuthenticationException(
+        e: Exception,
+        response: ServerHttpResponse,
+        exchange: ServerWebExchange
+    ): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, messageSource, MSG_AUTHENTICATION_FAILED)
+        val problemDetail = createProblemDetail(
+            status = HttpStatus.UNAUTHORIZED,
+            title = "User authentication failed",
+            detail = e.message,
+            typeSuffix = "user-authentication-failed",
+            errorCategory = AUTHENTICATION,
+            exchange = exchange,
+            messageKey = MSG_AUTHENTICATION_FAILED,
+            localizedMessage = localizedMessage,
+        )
+        AuthCookieBuilder.clearCookies(response)
+        return problemDetail
+    }
+}
+
+/**
+ * Handles missing cookie exceptions.
+ */
+@ControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE - DEFAULT_PRECEDENCE)
+internal class CookieAdvice(
+    private val messageSource: MessageSource
+) {
+
+    @ExceptionHandler(MissingCookieException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleMissingCookieException(
+        e: MissingCookieException,
+        response: ServerHttpResponse,
+        exchange: ServerWebExchange
+    ): ProblemDetail {
+        val localizedMessage = getLocalizedMessage(exchange, messageSource, MSG_MISSING_COOKIE)
+        response.statusCode = HttpStatus.BAD_REQUEST
+        return createProblemDetail(
+            status = HttpStatus.BAD_REQUEST,
+            title = "Missing cookie",
+            detail = e.message,
+            typeSuffix = "missing-cookie",
+            errorCategory = "MISSING_COOKIE",
+            exchange = exchange,
+            messageKey = MSG_MISSING_COOKIE,
+            localizedMessage = localizedMessage,
+        )
+    }
+}
+
+private fun getLocalizedMessage(exchange: ServerWebExchange, messageSource: MessageSource, messageKey: String): String {
+    val locale = exchange.localeContext.locale ?: Locale.getDefault()
+    return messageSource.getMessage(messageKey, null, locale) ?: messageKey
+}
+
+private fun createProblemDetail(
+    status: HttpStatus,
+    title: String,
+    detail: String?,
+    typeSuffix: String,
+    errorCategory: String,
+    exchange: ServerWebExchange,
+    messageKey: String? = null,
+    localizedMessage: String? = null,
+    additionalProperties: Map<String, Any>? = null,
+    includeInstance: Boolean = false,
+): ProblemDetail {
+    val problemDetail = ProblemDetail.forStatusAndDetail(status, detail ?: title)
+    problemDetail.title = title
+    problemDetail.type = URI.create("$ERROR_PAGE/$typeSuffix")
+    problemDetail.setProperty(ERROR_CATEGORY, errorCategory)
+    problemDetail.setProperty(TIMESTAMP, Instant.now())
+    problemDetail.setProperty(TRACE_ID, exchange.request.id)
+
+    if (includeInstance) {
+        problemDetail.instance = URI.create(exchange.request.path.toString())
+    }
+
+    if (messageKey != null) {
+        problemDetail.setProperty(MESSAGE_KEY, messageKey)
+    }
+    if (localizedMessage != null) {
+        problemDetail.setProperty(LOCALIZED_MESSAGE, localizedMessage)
+    }
+
+    additionalProperties?.forEach { (key, value) ->
+        problemDetail.setProperty(key, value)
+    }
+
+    return problemDetail
 }

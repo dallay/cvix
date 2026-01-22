@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName
  * Test configuration for Testcontainers.
  *
  * Used by:
- * - TestHatchgridApplication.kt for local development with containers
+ * - TestApplication.kt for local development with containers
  * - Integration tests via @ServiceConnection auto-configuration
  *
  * Supports environment variables with fallback to defaults:

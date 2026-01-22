@@ -3,10 +3,10 @@ package com.cvix.waitlist.application.create
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventBroadcaster
 import com.cvix.common.domain.bus.event.EventPublisher
-import com.cvix.common.domain.security.HashUtils
+import com.cvix.common.domain.model.Language
+import com.cvix.common.domain.security.Hasher
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.EmailAlreadyExistsException
-import com.cvix.waitlist.domain.Language
 import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistMetrics
@@ -29,7 +29,8 @@ class WaitlistJoiner(
     private val repository: WaitlistRepository,
     eventPublisher: EventPublisher<WaitlistEntryCreatedEvent>,
     private val metrics: WaitlistMetrics,
-    private val securityConfig: WaitlistSecurityConfig
+    private val securityConfig: WaitlistSecurityConfig,
+    private val hasher: Hasher,
 ) {
     private val eventBroadcaster = EventBroadcaster<WaitlistEntryCreatedEvent>()
 
@@ -112,10 +113,11 @@ class WaitlistJoiner(
      * @return The HMAC-SHA256 hash as a hexadecimal string.
      */
     private fun hashIpAddress(ipAddress: String): String {
+        // Security config still validates that secret exists in infra when HMAC is required.
         require(securityConfig.ipHmacSecret.isNotBlank()) {
             "No HMAC secret configured for IP address hashing. Define waitlist.security.ip-hmac-secret"
         }
-        return HashUtils.hmacSha256(ipAddress, securityConfig.ipHmacSecret)
+        return hasher.hash(ipAddress)
     }
 
     companion object {

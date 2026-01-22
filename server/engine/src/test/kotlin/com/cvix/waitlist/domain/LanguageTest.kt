@@ -1,5 +1,6 @@
 package com.cvix.waitlist.domain
 
+import com.cvix.common.domain.model.Language
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

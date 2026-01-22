@@ -1,5 +1,6 @@
 package com.cvix.config.db
 
+import com.cvix.config.WorkspaceContextHolder
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
@@ -9,8 +10,8 @@ import reactor.util.context.Context
 /**
  * Coroutine context element for propagating workspace ID through suspend functions.
  *
- * This works in conjunction with [WorkspaceContextHolder] to enable Row-Level Security (RLS)
- * in a coroutine-based application. While [WorkspaceContextHolder] uses Reactor's Context,
+ * This works in conjunction with [com.cvix.config.WorkspaceContextHolder] to enable Row-Level Security (RLS)
+ * in a coroutine-based application. While [com.cvix.config.WorkspaceContextHolder] uses Reactor's Context,
  * this element bridges the gap for suspend functions.
  *
  * ## Usage in Suspend Functions
@@ -41,11 +42,11 @@ import reactor.util.context.Context
  * 2. When a coroutine suspends and resumes on a reactive operator, the [ReactorContext]
  *    is synchronized with the coroutine context
  * 3. [WorkspaceConnectionFactoryDecorator] reads from either:
- *    - The Reactor context (via [WorkspaceContextHolder])
+ *    - The Reactor context (via [com.cvix.config.WorkspaceContextHolder])
  *    - The coroutine context (via [WorkspaceCoroutineContext])
  *
  * @property workspaceId The workspace UUID to propagate
- * @see WorkspaceContextHolder
+ * @see com.cvix.config.WorkspaceContextHolder
  * @see WorkspaceConnectionFactoryDecorator
  */
 data class WorkspaceCoroutineContext(

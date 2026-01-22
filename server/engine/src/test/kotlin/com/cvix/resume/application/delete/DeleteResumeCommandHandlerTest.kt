@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -25,6 +25,7 @@ internal class DeleteResumeCommandHandlerTest {
         DeleteResumeCommandHandler(destroyer)
     private lateinit var resumeId: UUID
     private lateinit var userId: UUID
+
     @BeforeEach
     fun setUp() {
         resumeId = randomUUID()

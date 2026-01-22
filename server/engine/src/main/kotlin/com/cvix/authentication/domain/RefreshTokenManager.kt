@@ -1,5 +1,7 @@
 package com.cvix.authentication.domain
 
+import com.cvix.common.domain.authentication.AccessToken
+
 /**
  * Represents a [RefreshTokenManager] that is responsible for refreshing the access token of the user.
  */

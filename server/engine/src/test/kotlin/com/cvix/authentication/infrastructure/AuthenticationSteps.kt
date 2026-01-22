@@ -5,8 +5,7 @@ import com.cvix.config.CucumberAuthenticationConfiguration
 import io.cucumber.java.en.Given
 import io.jsonwebtoken.Jwts
 import java.time.Instant
-import java.util.Collections
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -23,7 +22,8 @@ class AuthenticationSteps(
 
     @Given("I am logged in as {string}")
     fun authenticateUser(username: String) {
-        val userToAuthenticate = users[username] ?: throw IllegalArgumentException(unknownUserMessage(username))
+        val userToAuthenticate =
+            users[username] ?: throw IllegalArgumentException(unknownUserMessage(username))
 
         val token = userToAuthenticate.token()
 
@@ -35,7 +35,8 @@ class AuthenticationSteps(
             .build()
     }
 
-    private fun unknownUserMessage(user: String): String = "Trying to authenticate an unknown user: $user"
+    private fun unknownUserMessage(user: String): String =
+        "Trying to authenticate an unknown user: $user"
 
     @Given("I am logged out")
     fun logout() {

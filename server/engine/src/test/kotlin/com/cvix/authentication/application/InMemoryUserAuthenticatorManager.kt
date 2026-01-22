@@ -1,10 +1,10 @@
 package com.cvix.authentication.application
 
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.RefreshToken
 import com.cvix.authentication.domain.RefreshTokenManager
 import com.cvix.authentication.domain.UserAuthenticationException
 import com.cvix.authentication.domain.UserAuthenticator
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential
 
@@ -25,7 +25,11 @@ class InMemoryUserAuthenticatorManager(
      * @param rememberMe whether to extend the session duration
      * @return the access token of the user
      */
-    override suspend fun authenticate(username: Username, password: Credential, rememberMe: Boolean): AccessToken {
+    override suspend fun authenticate(
+        username: Username,
+        password: Credential,
+        rememberMe: Boolean
+    ): AccessToken {
         return if (database[username.value] == password.credentialValue.value) {
             accessToken()
         } else {

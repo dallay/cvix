@@ -7,7 +7,7 @@ import com.cvix.workspace.domain.Workspace
 import com.cvix.workspace.domain.WorkspaceFinderRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,7 +20,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     private lateinit var finder: AllWorkspaceByMemberFinder
     private lateinit var handler: AllWorkspaceByMemberQueryHandler
     private lateinit var workspaces: List<Workspace>
-    private lateinit var userId: UserId
+    private var userId: UserId = UserId(UUID.randomUUID())
 
     @BeforeEach
     fun setUp() {
@@ -36,7 +36,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     @Test
     fun `should find all workspaces`() = runTest {
         // Given
-        val query = AllWorkspaceByMemberQuery(userId.id)
+        val query = AllWorkspaceByMemberQuery(userId.value)
 
         // When
         val response = handler.handle(query)
@@ -49,7 +49,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     fun `should return empty list when no workspaces found`() = runTest {
         // Given
         coEvery { repository.findByMemberId(any()) } returns emptyList()
-        val query = AllWorkspaceByMemberQuery(userId.id)
+        val query = AllWorkspaceByMemberQuery(userId.value)
 
         // When
         val response = handler.handle(query)
@@ -62,7 +62,7 @@ internal class AllWorkspaceByMemberQueryHandlerTest {
     fun `should handle repository exception`(): Unit = runTest {
         // Given
         coEvery { repository.findByMemberId(any()) } throws RuntimeException("Database error")
-        val query = AllWorkspaceByMemberQuery(userId.id)
+        val query = AllWorkspaceByMemberQuery(userId.value)
 
         // When & Then
         val ex = assertFailsWith<RuntimeException> {

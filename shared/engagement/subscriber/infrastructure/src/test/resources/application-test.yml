@@ -1,0 +1,29 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  liquibase:
+    enabled: true
+    change-log: "classpath:db/changelog/master.yaml"
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+  r2dbc:
+    url: ${spring.r2dbc.url}
+    username: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+
+# Required for TestSecurityConfiguration and other beans
+application:
+  security:
+    oauth2:
+      base-url: "http://localhost:9080"
+      issuer-uri: "http://localhost:9080/realms/cvix"
+      realm: "cvix"
+      client-id: "web_app"
+      admin-client-id: "admin-cli"
+      admin-realm: "master"
+
+testing:
+  security:
+    username: "test-user"
+    password: "test-password"

@@ -7,7 +7,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 @UnitTest
 internal class RegisterUserCommandHandlerTest {
     private val faker = Faker()
+
     @Test
     fun `should map command to value objects and delegate to UserRegistrator`() = runTest {
         // Given

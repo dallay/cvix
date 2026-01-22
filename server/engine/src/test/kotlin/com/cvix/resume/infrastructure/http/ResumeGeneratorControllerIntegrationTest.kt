@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.jdbc.Sql
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Timeout(600) // Class-level timeout: 10 minutes max for entire test class (including @BeforeAll)
@@ -31,7 +33,8 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         // The CI workflow pre-pulls the image, so this is mainly a safety net.
         // If this times out, check that RESUME_PDF_DOCKER_CONTAINER_USER matches the CI runner's UID.
         val startTime = System.currentTimeMillis()
-        val maxWaitMinutes = System.getenv("RESUME_PDF_DOCKER_IMAGE_WAIT_MINUTES")?.toLongOrNull() ?: 5
+        val maxWaitMinutes =
+            System.getenv("RESUME_PDF_DOCKER_IMAGE_WAIT_MINUTES")?.toLongOrNull() ?: 5
         val maxWaitMillis = TimeUnit.MINUTES.toMillis(maxWaitMinutes)
         // CRITICAL: Must be LONGER than DockerPdfGenerator's internal timeout (60s) plus buffer
         // to allow the Mono to complete before .block() times out
@@ -102,7 +105,11 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
         }
     }
 
-    private fun logDockerTestFailureDetails(attempts: Int, startTime: Long, lastException: Exception?) {
+    private fun logDockerTestFailureDetails(
+        attempts: Int,
+        startTime: Long,
+        lastException: Exception?
+    ) {
         println("")
         println("╔═════════════════════════════════════════════════════╗")
         println("║  Docker Integration Test Failure Details            ║")
@@ -201,9 +208,23 @@ internal class ResumeGeneratorControllerIntegrationTest : ControllerIntegrationT
             .bodyValue(invalidRequest)
             .exchange()
             .expectStatus().isBadRequest
-            .expectBody()
-            .jsonPath("$.title").isEqualTo("Invalid Input")
-            .jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
-            .jsonPath("$.instance").isEqualTo("/api/resume/generate")
+            .expectBody().consumeWith { response ->
+                val body = response.responseBody
+                requireNotNull(body) { "Response body is null" }
+                val mapper = jacksonObjectMapper()
+                val map: Map<String, Any> = mapper.readValue(String(body))
+
+                // Title may differ depending on which exception handler handled the decoding error.
+                val title = map["title"] as? String ?: ""
+                assert(title == "Invalid Input" || title == "Bad Request") {
+                    "Unexpected problem title: $title"
+                }
+
+                val status = (map["status"] as Number).toInt()
+                assert(status == HttpStatus.BAD_REQUEST.value())
+
+                val instance = map["instance"] as? String
+                assert(instance == "/api/resume/generate")
+            }
     }
 }

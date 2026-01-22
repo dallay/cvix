@@ -4,10 +4,11 @@ import com.cvix.CredentialGenerator.generateValidPassword
 import com.cvix.UnitTest
 import com.cvix.authentication.application.AuthenticateUserQueryHandler
 import com.cvix.authentication.application.UserAuthenticatorService
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.UserAuthenticationException
 import com.cvix.authentication.domain.UserAuthenticator
+import com.cvix.authentication.infrastructure.UserAuthAdvice
 import com.cvix.authentication.infrastructure.http.request.LoginRequest
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.controllers.GlobalExceptionHandler
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,9 +32,13 @@ class UserAuthenticatorControllerTest {
     private val messageSource = mockk<MessageSource>(relaxed = true)
     private val authenticator = UserAuthenticatorService(userAuthenticator)
     private val authenticateUserQueryHandler = AuthenticateUserQueryHandler(authenticator)
-    private val userAuthenticatorController = UserAuthenticatorController(authenticateUserQueryHandler)
+    private val userAuthenticatorController =
+        UserAuthenticatorController(authenticateUserQueryHandler)
     private val webTestClient = WebTestClient.bindToController(userAuthenticatorController)
-        .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
+        .controllerAdvice(
+            UserAuthAdvice(messageSource),
+            GlobalExceptionHandler(messageSource),
+        )
         .build()
 
     @Test

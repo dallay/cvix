@@ -7,7 +7,7 @@ import com.cvix.common.domain.vo.name.LastName
 import com.cvix.users.domain.User
 import com.cvix.users.domain.UserCreator
 import com.cvix.users.domain.UserStoreException
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryUserRepository(

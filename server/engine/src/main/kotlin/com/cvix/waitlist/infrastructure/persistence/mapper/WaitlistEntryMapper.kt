@@ -1,8 +1,8 @@
 package com.cvix.waitlist.infrastructure.persistence.mapper
 
 import com.cvix.common.domain.error.DomainMappingException
+import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
-import com.cvix.waitlist.domain.Language
 import com.cvix.waitlist.domain.WaitlistEntry
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource

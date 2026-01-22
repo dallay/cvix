@@ -1,6 +1,6 @@
 package com.cvix.authentication.infrastructure.mapper
 
-import com.cvix.authentication.domain.AccessToken
+import com.cvix.common.domain.authentication.AccessToken
 import org.keycloak.representations.AccessTokenResponse
 
 /**

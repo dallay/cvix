@@ -1,6 +1,6 @@
 package com.cvix.users.domain
 
-import com.cvix.common.domain.AggregateRoot
+import com.cvix.common.domain.model.AggregateRoot
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.email.Email
@@ -114,7 +114,7 @@ data class User(
             // Record domain event when user is created
             user.record(
                 UserCreatedEvent(
-                    id = user.id.id,
+                    id = user.id.value,
                     email = user.email.value,
                     firstName = user.name?.firstName?.value,
                     lastName = user.name?.lastName?.value,

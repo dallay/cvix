@@ -29,6 +29,7 @@ internal class KeycloakLogoutRepositoryIntegrationTest : InfrastructureTestConta
         val refreshToken = RefreshToken(accessToken?.refreshToken ?: "fake refresh token")
         userAuthenticatorLogout.logout(refreshToken.value)
     }
+
     @Test
     fun `logout should handle Invalid Token`() = runTest {
         val invalidToken = "invalid_token"

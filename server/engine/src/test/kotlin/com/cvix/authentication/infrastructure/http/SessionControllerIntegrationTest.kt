@@ -1,9 +1,9 @@
 package com.cvix.authentication.infrastructure.http
 
 import com.cvix.ControllerIntegrationTest
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.UserSession
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
+import com.cvix.common.domain.authentication.AccessToken
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

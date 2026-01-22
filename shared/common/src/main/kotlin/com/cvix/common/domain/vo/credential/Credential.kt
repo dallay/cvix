@@ -1,6 +1,5 @@
 package com.cvix.common.domain.vo.credential
 
-import com.cvix.common.domain.BaseId
 import com.cvix.common.domain.vo.credential.Credential.Companion.MIN_LENGTH
 import com.cvix.common.domain.vo.credential.Credential.Companion.charLowercase
 import com.cvix.common.domain.vo.credential.Credential.Companion.charNumbers
@@ -86,12 +85,21 @@ data class Credential(
 
 /**
  * Credential id representation in the domain layer of the application that is used to identify a credential
- * @see BaseId for the base id class
  * @see UUID for the id type
  * @see Credential for the credential type
  * @see CredentialId for the id type
  */
-data class CredentialId(override val id: UUID) : BaseId<UUID>(id)
+@JvmInline
+value class CredentialId(val value: UUID) {
+    companion object {
+        /**
+         * Generates a new random CredentialId
+         * @return the generated CredentialId
+         * @see UUID.randomUUID for the id generation
+         */
+        fun random(): CredentialId = CredentialId(UUID.randomUUID())
+    }
+}
 
 /**
  * Password credential value representation with validation rules for secure passwords.

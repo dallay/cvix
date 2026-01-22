@@ -1,2 +1,3 @@
 -- file: clean.sql
-DELETE FROM resumes;
+DELETE
+FROM resumes;

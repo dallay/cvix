@@ -1,33 +1,30 @@
 package com.cvix.users.domain
 
-import com.cvix.common.domain.BaseId
 import java.util.UUID
 
 /**
- * Represents a unique identifier for a user. It is a value object.
+ * Value class representing a unique identifier for a [User].
  *
- * @created 8/7/23
- * @param id The UUID value of the user ID.
- * @constructor Creates a new instance of UserId with the specified UUID value.
- * @see BaseId for more information about the base ID
- * @see UUID for more information about the UUID
+ * @property value The underlying UUID value.
  */
-class UserId(override val id: UUID) : BaseId<UUID>(id) {
-    /**
-     * Constructs a new instance of the class with the specified ID.
-     *
-     * @param id The ID of the object as a string representation. It must be a valid UUID value.
-     * (e.g. "123e4567-e89b-12d3-a456-426614174000") see [UUID] for more information about the UUID value.
-     * @see UUID for more information about the UUID
-     */
-    constructor(id: String) : this(UUID.fromString(id))
+@JvmInline
+value class UserId(val value: UUID) {
+
+    override fun toString(): String = value.toString()
+
     companion object {
         /**
-         * Creates a new instance of the class with a random UUID value.
+         * Generates a new random UserId.
          *
-         * @return A new instance of the class with a random UUID value.
-         * @see UUID for more information about the UUID
+         * @return A UserId with a randomly generated UUID.
          */
-        fun create() = UserId(UUID.randomUUID())
+        fun random(): UserId = UserId(UUID.randomUUID())
+        /**
+         * Creates a UserId from a string representation of a UUID.
+         *
+         * @param id The string representation of the UUID.
+         * @return A UserId corresponding to the given UUID string.
+         */
+        fun fromString(id: String): UserId = UserId(UUID.fromString(id))
     }
 }

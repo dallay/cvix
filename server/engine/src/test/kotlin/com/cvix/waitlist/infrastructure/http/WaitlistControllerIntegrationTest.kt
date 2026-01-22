@@ -47,7 +47,8 @@ internal class WaitlistControllerIntegrationTest : ControllerIntegrationTest() {
             .jsonPath("$.type").exists()
             .jsonPath("$.title").isEqualTo("Validation Failed")
             .jsonPath("$.status").isEqualTo(400)
-            .jsonPath("$.detail").isEqualTo("Request validation failed. Please check the provided data.")
+            .jsonPath("$.detail")
+            .isEqualTo("Request validation failed. Please check the provided data.")
             .jsonPath("$.instance").isEqualTo("/api/waitlist")
             .jsonPath("$.errors").isArray
             .jsonPath("$.errors[0].field").isEqualTo("email")

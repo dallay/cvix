@@ -1,6 +1,6 @@
 package com.cvix.workspace.domain
 
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -32,10 +32,10 @@ class WorkspaceTest {
     @Test
     fun `create workspace`() {
         assertNotNull(workspace)
-        assertEquals(workspaceId, workspace.id.id)
+        assertEquals(workspaceId, workspace.id.value)
         assertEquals("Test Workspace", workspace.name)
         assertEquals("Workspace description", workspace.description)
-        assertEquals(ownerId, workspace.ownerId.id)
+        assertEquals(ownerId, workspace.ownerId.value)
         assertNotNull(workspace.createdAt)
         assertNotNull(workspace.updatedAt)
     }
