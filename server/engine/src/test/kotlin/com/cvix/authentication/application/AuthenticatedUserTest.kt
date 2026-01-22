@@ -170,7 +170,12 @@ internal class AuthenticatedUserTest {
         }
 
         private fun oAuth2AuthenticationToken(claims: Map<String, Any>): OAuth2AuthenticationToken {
-            val idToken = OidcIdToken(OidcParameterNames.ID_TOKEN, Instant.now(), Instant.now().plusSeconds(60), claims)
+            val idToken = OidcIdToken(
+                OidcParameterNames.ID_TOKEN,
+                Instant.now(),
+                Instant.now().plusSeconds(60),
+                claims,
+            )
             val authorities: Collection<GrantedAuthority> = listOf<GrantedAuthority>(
                 SimpleGrantedAuthority(
                     Role.USER.key(),

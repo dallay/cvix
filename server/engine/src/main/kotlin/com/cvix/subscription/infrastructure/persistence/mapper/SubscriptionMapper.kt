@@ -29,7 +29,7 @@ object SubscriptionMapper {
      * Converts a Subscription domain model to a SubscriptionEntity.
      */
     fun Subscription.toEntity(): SubscriptionEntity = SubscriptionEntity(
-        id = id.id,
+        id = id.value,
         userId = userId,
         tier = tier.name,
         status = status.name,

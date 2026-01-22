@@ -7,6 +7,9 @@ import com.cvix.spring.boot.ApiController
 import com.cvix.spring.boot.logging.LogMasker
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -15,6 +18,7 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import java.util.UUID
 import org.slf4j.LoggerFactory
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -41,22 +45,61 @@ class ListResumeController(
 ) : ApiController(mediator) {
     @Operation(
         summary = "List all resumes for a user in a workspace",
-        description = "Requires X-Workspace-Id header to specify the workspace context",
+        description = "Retrieves a paginated list of resumes within the specified workspace. " +
+            "Requires the X-Workspace-Id header to provide workspace context.",
         security = [SecurityRequirement(name = "bearerAuth")],
+        parameters = [
+            Parameter(
+                name = "X-Workspace-Id",
+                description = "The ID of the workspace to list resumes from",
+                required = true,
+                `in` = ParameterIn.HEADER,
+                schema = Schema(type = "string", format = "uuid"),
+                example = "123e4567-e89b-12d3-a456-426614174000",
+            ),
+        ],
     )
     @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Resumes retrieved successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request parameters or missing X-Workspace-Id header"),
-        ApiResponse(responseCode = "401", description = "Unauthorized"),
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Resumes retrieved successfully",
+                content = [Content(schema = Schema(implementation = ResumeDocumentResponses::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request parameters or missing X-Workspace-Id header",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized - Missing or invalid authentication token",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden - User does not have access to the specified workspace",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @GetMapping("/resume")
     suspend fun listResumes(
-        @Parameter(description = "Maximum number of results (1-100)")
+        @Parameter(
+            description = "Maximum number of results to return",
+            example = "50",
+            `in` = ParameterIn.QUERY,
+        )
         @RequestParam(defaultValue = "50")
         @Min(1)
         @Max(100)
         limit: Int,
-        @Parameter(description = "Cursor for pagination") @RequestParam(required = false) cursor: UUID?,
+        @Parameter(
+            description = "Cursor for pagination (UUID of the last item in previous page)",
+            `in` = ParameterIn.QUERY,
+        )
+        @RequestParam(required = false)
+        cursor: UUID?,
     ): ResponseEntity<ResumeDocumentResponses> {
         val userId = userIdFromToken()
         val workspaceId = workspaceIdFromContext()

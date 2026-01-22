@@ -1,13 +1,13 @@
 package com.cvix.config
 
 import com.cvix.IntegrationTest
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -72,6 +72,7 @@ abstract class InfrastructureTestContainers {
 
     companion object {
         private val log = LoggerFactory.getLogger(InfrastructureTestContainers::class.java)
+
         /**
          * Unique suffix for test container names. Can be overridden via system property
          * `tc.name.suffix` to support container reuse across test runs.
@@ -101,7 +102,14 @@ abstract class InfrastructureTestContainers {
 
         @JvmStatic
         private val greenMailContainer: GenericContainer<*> = GenericContainer<Nothing>(
-            DockerImageName.parse("greenmail/standalone:${getEnvOrDefault("GREENMAIL_VERSION", "2.1.8")}"),
+            DockerImageName.parse(
+                "greenmail/standalone:${
+                    getEnvOrDefault(
+                        "GREENMAIL_VERSION",
+                        "2.1.8",
+                    )
+                }",
+            ),
         ).apply {
             withEnv(
                 "GREENMAIL_OPTS",

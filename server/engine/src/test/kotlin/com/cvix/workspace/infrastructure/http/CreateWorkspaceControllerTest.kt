@@ -7,7 +7,7 @@ import com.cvix.workspace.infrastructure.http.request.CreateWorkspaceRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.slot
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,7 +19,7 @@ internal class CreateWorkspaceControllerTest : ControllerTest() {
         id = id,
         name = workspace.name,
         description = workspace.description,
-        ownerId = workspace.ownerId.id,
+        ownerId = workspace.ownerId.value,
     )
     private val controller = CreateWorkspaceController(mediator)
     override val webTestClient = buildWebTestClient(controller)
@@ -35,7 +35,7 @@ internal class CreateWorkspaceControllerTest : ControllerTest() {
         val request = CreateWorkspaceRequest(
             name = workspace.name,
             description = workspace.description,
-            ownerId = workspace.ownerId.id,
+            ownerId = workspace.ownerId.value,
         )
         webTestClient.put()
             .uri("/api/workspace/$id")

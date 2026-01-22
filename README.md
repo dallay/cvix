@@ -116,7 +116,7 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 
 ## ⚡ Quickstart
 
-**Prerequisites:**
+**Minimun Prerequisites:**
 - ☕ JDK 21+
 - 🟩 Node.js 20+
 - 📦 pnpm 10+

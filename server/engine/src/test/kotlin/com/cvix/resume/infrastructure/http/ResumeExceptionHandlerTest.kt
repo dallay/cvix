@@ -8,7 +8,7 @@ import com.cvix.resume.domain.exception.PdfGenerationTimeoutException
 import com.cvix.resume.domain.exception.TemplateRenderingException
 import io.mockk.every
 import io.mockk.mockk
-import java.util.Locale
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -37,6 +37,7 @@ internal class ResumeExceptionHandlerTest {
             messageSource.getMessage(
                 "resume.error.invalid_data",
                 null,
+                "resume.error.invalid_data",
                 any<Locale>(),
             )
         } returns "Invalid resume data"
@@ -46,7 +47,10 @@ internal class ResumeExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.status)
         assertEquals("Invalid Resume Data", problemDetail.title as Any)
         assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
-        assertEquals("Invalid resume data", problemDetail.properties?.get("localizedMessage") as Any)
+        assertEquals(
+            "Invalid resume data",
+            problemDetail.properties?.get("localizedMessage") as Any,
+        )
         assertNotNull(problemDetail.properties?.get("message") as Any)
         assertEquals("resume.error.invalid_data", problemDetail.properties?.get("message") as Any)
         assertNotNull(problemDetail.properties?.get("traceId") as Any)
@@ -62,7 +66,12 @@ internal class ResumeExceptionHandlerTest {
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         every {
-            messageSource.getMessage("resume.error.template_rendering", null, any<Locale>())
+            messageSource.getMessage(
+                "resume.error.template_rendering",
+                null,
+                "resume.error.template_rendering",
+                any<Locale>(),
+            )
         } returns "Failed to render resume template"
 
         val problemDetail = handler.handleTemplateRenderingException(exception, exchange)
@@ -75,7 +84,10 @@ internal class ResumeExceptionHandlerTest {
             problemDetail.properties?.get("localizedMessage") as Any,
         )
         assertNotNull(problemDetail.properties?.get("message") as Any)
-        assertEquals("resume.error.template_rendering", problemDetail.properties?.get("message") as Any)
+        assertEquals(
+            "resume.error.template_rendering",
+            problemDetail.properties?.get("message") as Any,
+        )
         assertNotNull(problemDetail.properties?.get("traceId") as Any)
         assertEquals("test-trace-id-456", problemDetail.properties?.get("traceId") as Any)
     }
@@ -92,6 +104,7 @@ internal class ResumeExceptionHandlerTest {
             messageSource.getMessage(
                 "resume.error.pdf_generation",
                 null,
+                "resume.error.pdf_generation",
                 any<Locale>(),
             )
         } returns "Failed to generate PDF"
@@ -101,7 +114,10 @@ internal class ResumeExceptionHandlerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problemDetail.status)
         assertEquals("PDF Generation Error", problemDetail.title as Any)
         assertNotNull(problemDetail.properties?.get("localizedMessage") as Any)
-        assertEquals("Failed to generate PDF", problemDetail.properties?.get("localizedMessage") as Any)
+        assertEquals(
+            "Failed to generate PDF",
+            problemDetail.properties?.get("localizedMessage") as Any,
+        )
         assertNotNull(problemDetail.properties?.get("message") as Any)
         assertEquals("resume.error.pdf_generation", problemDetail.properties?.get("message") as Any)
         assertNotNull(problemDetail.properties?.get("traceId") as Any)
@@ -117,7 +133,12 @@ internal class ResumeExceptionHandlerTest {
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         every {
-            messageSource.getMessage("resume.error.pdf_timeout", null, any<Locale>())
+            messageSource.getMessage(
+                "resume.error.pdf_timeout",
+                null,
+                "resume.error.pdf_timeout",
+                any<Locale>(),
+            )
         } returns "PDF generation timed out. Please try again with simpler content."
 
         val problemDetail = handler.handlePdfGenerationTimeoutException(exception, exchange)
@@ -140,7 +161,12 @@ internal class ResumeExceptionHandlerTest {
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         every {
-            messageSource.getMessage("resume.error.malicious_content", null, any<Locale>())
+            messageSource.getMessage(
+                "resume.error.malicious_content",
+                null,
+                "resume.error.malicious_content",
+                any<Locale>(),
+            )
         } returns "Content contains potentially unsafe characters"
 
         val problemDetail = handler.handleLaTeXInjectionException(exception, exchange)
@@ -153,7 +179,10 @@ internal class ResumeExceptionHandlerTest {
             problemDetail.properties?.get("localizedMessage") as Any,
         )
         assertNotNull(problemDetail.properties?.get("message") as Any)
-        assertEquals("resume.error.malicious_content", problemDetail.properties?.get("message") as Any)
+        assertEquals(
+            "resume.error.malicious_content",
+            problemDetail.properties?.get("message") as Any,
+        )
         assertNotNull(problemDetail.properties?.get("traceId") as Any)
         assertEquals("test-trace-id-security", problemDetail.properties?.get("traceId") as Any)
     }
@@ -167,7 +196,12 @@ internal class ResumeExceptionHandlerTest {
         every { exchange.localeContext } returns localeContextMock
         every { localeContextMock.locale } returns Locale.ENGLISH
         every {
-            messageSource.getMessage("error.internal_server_error", null, any<Locale>())
+            messageSource.getMessage(
+                "error.internal_server_error",
+                null,
+                "error.internal_server_error",
+                any<Locale>(),
+            )
         } returns "An unexpected error occurred"
 
         val problemDetail = handler.handleGenericException(exception, exchange)

@@ -1,14 +1,17 @@
 package com.cvix.waitlist.infrastructure.http
 
 import com.cvix.ControllerTest
+import com.cvix.config.WorkspaceContextWebFilter
+import com.cvix.controllers.GlobalExceptionHandler
 import com.cvix.waitlist.application.create.JoinWaitlistCommand
 import com.cvix.waitlist.domain.EmailAlreadyExistsException
+import com.cvix.waitlist.infrastructure.WaitlistExceptionAdvice
 import com.cvix.waitlist.infrastructure.http.request.JoinWaitlistRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.slot
-import java.util.Locale
+import java.util.*
 import net.datafaker.Faker
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -32,14 +35,28 @@ internal class WaitlistControllerTest : ControllerTest() {
         every {
             messageSource.getMessage("waitlist.duplicate", null, Locale.ENGLISH)
         } returns "This email is already on the waitlist"
-        every { messageSource.getMessage("waitlist.invalid", null, Locale.ENGLISH) } returns "Invalid request data"
+        every {
+            messageSource.getMessage(
+                "waitlist.invalid",
+                null,
+                Locale.ENGLISH,
+            )
+        } returns "Invalid request data"
         every {
             messageSource.getMessage("waitlist.error", null, Locale.ENGLISH)
         } returns "Internal server error. Please try again later."
 
         // Initialize after mocks are set up
         controller = WaitlistController(mediator, messageSource)
-        webTestClient = buildWebTestClient(controller)
+        // Build a WebTestClient that registers the waitlist-specific advice before the global handler
+        webTestClient = WebTestClient.bindToController(controller)
+            .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
+            .controllerAdvice(
+                WaitlistExceptionAdvice(messageSource),
+                GlobalExceptionHandler(messageSource),
+            )
+            .configureClient()
+            .build()
     }
 
     @Test
@@ -100,7 +117,9 @@ internal class WaitlistControllerTest : ControllerTest() {
             language = "en",
         )
 
-        coEvery { mediator.send(any<JoinWaitlistCommand>()) } throws EmailAlreadyExistsException(email)
+        coEvery { mediator.send(any<JoinWaitlistCommand>()) } throws EmailAlreadyExistsException(
+            email,
+        )
 
         // Act & Assert
         webTestClient.post()

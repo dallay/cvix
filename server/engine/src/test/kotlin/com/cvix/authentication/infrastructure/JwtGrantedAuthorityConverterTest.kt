@@ -34,7 +34,8 @@ internal class JwtGrantedAuthorityConverterTest {
 
     @Test
     fun shouldConvertButEmpty() {
-        val jwt = Jwt.withTokenValue("token").header("alg", JwsAlgorithms.RS256).subject(SUBJECT).build()
+        val jwt =
+            Jwt.withTokenValue("token").header("alg", JwsAlgorithms.RS256).subject(SUBJECT).build()
         val result = jwtGrantedAuthorityConverter.convert(jwt)
         assertThat(result).isEmpty()
     }

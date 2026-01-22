@@ -1,6 +1,6 @@
 package com.cvix.workspace.domain
 
-import com.cvix.common.domain.AggregateRoot
+import com.cvix.common.domain.model.AggregateRoot
 import com.cvix.users.domain.UserId
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
 import com.cvix.workspace.domain.event.WorkspaceUpdatedEvent
@@ -101,9 +101,9 @@ data class Workspace(
         // Record the workspace updated event
         record(
             WorkspaceUpdatedEvent(
-                id = this.id.id.toString(),
+                id = this.id.toString(),
                 workspaceName = this.name,
-                ownerId = this.ownerId.id.toString(),
+                ownerId = this.ownerId.toString(),
             ),
         )
     }
@@ -153,9 +153,9 @@ data class Workspace(
             // Record the workspace created event
             workspace.record(
                 WorkspaceCreatedEvent(
-                    id = workspace.id.id.toString(),
+                    id = workspace.id.toString(),
                     name = workspace.name,
-                    ownerId = workspace.ownerId.id.toString(),
+                    ownerId = workspace.ownerId.toString(),
                 ),
             )
 

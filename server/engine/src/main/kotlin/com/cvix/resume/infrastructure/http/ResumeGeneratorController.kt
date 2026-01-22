@@ -8,7 +8,11 @@ import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper
 import com.cvix.resume.infrastructure.http.request.GenerateResumeRequest
 import com.cvix.spring.boot.ApiController
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -19,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
@@ -27,6 +32,26 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val STANDARD_GENERATION_EXAMPLE = """
+    {
+        "templateId": "modern",
+        "basics": {
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "label": "Software Engineer",
+            "phone": "+1-555-0123"
+        },
+        "work": [
+            {
+                "name": "Tech Corp",
+                "position": "Developer",
+                "startDate": "2020-01-01"
+            }
+        ]
+    }
+"""
 
 /**
  * REST controller for resume generation endpoints.
@@ -43,22 +68,76 @@ class ResumeGeneratorController(
     private val applicationSecurityProperties: ApplicationSecurityProperties,
 ) : ApiController(mediator) {
 
-    @Operation(summary = "Generate a PDF resume from JSON Resume schema data")
+    @Operation(
+        summary = "Generate a PDF resume from JSON Resume schema data",
+        description = "Generates a professional PDF resume using the specified template and JSON Resume data. " +
+            "Supports localization via the Accept-Language header. Maximum payload size is 100KB.",
+        parameters = [
+            Parameter(
+                name = "Accept-Language",
+                description = "Preferred language for the generated resume (e.g., 'en', 'es')",
+                required = false,
+                `in` = ParameterIn.HEADER,
+                schema = Schema(type = "string", defaultValue = "en"),
+                example = "en-US",
+            ),
+        ],
+    )
     @ApiResponses(
-        ApiResponse(
-            responseCode = "200",
-            description = "Resume PDF generated successfully",
-            content = [Content(mediaType = "application/pdf")],
-        ),
-        ApiResponse(responseCode = "400", description = "Invalid request data"),
-        ApiResponse(responseCode = "422", description = "Business rule validation failed"),
-        ApiResponse(responseCode = "429", description = "Rate limit exceeded"),
-        ApiResponse(responseCode = "500", description = "Internal server error"),
-        ApiResponse(responseCode = "504", description = "PDF generation timeout"),
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Resume PDF generated successfully",
+                content = [Content(mediaType = "application/pdf")],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data or unsupported locale",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "422",
+                description = "Business rule validation failed",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "429",
+                description = "Rate limit exceeded",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "504",
+                description = "PDF generation timeout",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @PostMapping("/generate", produces = ["application/pdf"])
     suspend fun generateResume(
-        @Valid @RequestBody request: GenerateResumeRequest,
+        @Valid
+        @OpenApiRequestBody(
+            description = "Resume data and template selection",
+            required = true,
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = GenerateResumeRequest::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Standard Generation",
+                            summary = "Generate a resume using the 'modern' template",
+                            value = STANDARD_GENERATION_EXAMPLE,
+                        ),
+                    ],
+                ),
+            ],
+        )
+        @RequestBody request: GenerateResumeRequest,
         exchange: ServerWebExchange
     ): ResponseEntity<ByteArray> {
         // Validate payload size (FR-015: reject requests exceeding 100KB)

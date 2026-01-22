@@ -5,7 +5,7 @@ import com.cvix.workspace.domain.WorkspaceMemberId
 import com.cvix.workspace.domain.WorkspaceRole
 import com.cvix.workspace.infrastructure.persistence.entity.WorkspaceMemberEntity
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

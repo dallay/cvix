@@ -1,6 +1,6 @@
 package com.cvix.authentication.application.query
 
-import com.cvix.authentication.domain.AccessToken
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.domain.bus.query.Query
 import java.util.UUID
 

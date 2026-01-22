@@ -35,7 +35,7 @@ class SubscriptionStoreR2dbcRepository(
      */
     override suspend fun findById(id: SubscriptionId): Subscription? {
         log.debug("Finding subscription by id: {}", id)
-        return subscriptionR2dbcRepository.findById(id.id)?.toDomain()
+        return subscriptionR2dbcRepository.findById(id.value)?.toDomain()
     }
 
     /**
@@ -110,7 +110,7 @@ class SubscriptionStoreR2dbcRepository(
     override suspend fun delete(id: SubscriptionId) {
         log.debug("Deleting subscription: {}", id)
         try {
-            subscriptionR2dbcRepository.deleteById(id.id)
+            subscriptionR2dbcRepository.deleteById(id.value)
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             log.error("Error deleting subscription with id: {}", id, e)
             throw SubscriptionException("Error deleting subscription", e)

@@ -61,7 +61,7 @@ class UserRegistrator(
             eventBroadcaster.publish(it)
         }
 
-        return createdUser.id.id
+        return createdUser.id.value
     }
 
     companion object {

@@ -1,6 +1,6 @@
 package com.cvix.resume.domain
 
-import com.cvix.common.domain.AggregateRoot
+import com.cvix.common.domain.model.AggregateRoot
 import com.cvix.resume.domain.event.ResumeCreatedEvent
 import com.cvix.resume.domain.event.ResumeUpdatedEvent
 import java.time.Instant
@@ -61,7 +61,7 @@ data class ResumeDocument(
         )
         document.record(
             ResumeUpdatedEvent(
-                resumeId = document.id.id,
+                resumeId = document.id.value,
                 userId = document.userId,
                 workspaceId = document.workspaceId,
             ),
@@ -105,7 +105,7 @@ data class ResumeDocument(
             )
             resumeDocument.record(
                 ResumeCreatedEvent(
-                    resumeDocument.id.id,
+                    resumeDocument.id.value,
                     resumeDocument.userId,
                     resumeDocument.workspaceId,
                 ),

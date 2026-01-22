@@ -10,7 +10,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -90,7 +90,12 @@ class AccountResourceServiceTest {
         assertEquals(AuthoritiesConstants.USER, userResponse?.authorities?.first())
 
         // Verify that federated identity was looked up
-        coVerify { federatedIdentityRepository.findByProviderNameAndExternalUserId("oidc", keycloakUserId) }
+        coVerify {
+            federatedIdentityRepository.findByProviderNameAndExternalUserId(
+                "oidc",
+                keycloakUserId,
+            )
+        }
     }
 
     @Test

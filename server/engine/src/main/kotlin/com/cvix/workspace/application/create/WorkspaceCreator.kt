@@ -54,7 +54,7 @@ class WorkspaceCreator(
                 workspaceMetrics.incrementDuplicateDefaultIgnored()
                 log.info(
                     "Default workspace already exists for user {} (found {} workspace(s)), skipping creation",
-                    workspace.ownerId.id,
+                    workspace.ownerId.value,
                     existingWorkspaces.size,
                 )
                 return false

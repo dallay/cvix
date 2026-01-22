@@ -7,7 +7,7 @@ import com.github.dockerjava.api.exception.UnauthorizedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -60,8 +60,8 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertEquals(2, result.data.size)
-        assertEquals(expectedDocuments[0].id.id, result.data[0].id)
-        assertEquals(expectedDocuments[1].id.id, result.data[1].id)
+        assertEquals(expectedDocuments[0].id.value, result.data[0].id)
+        assertEquals(expectedDocuments[1].id.value, result.data[1].id)
         coVerify {
             workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
         }
@@ -144,7 +144,7 @@ internal class ListResumesQueryHandlerTest {
 
         // Then
         assertEquals(1, result.data.size)
-        assertEquals(expectedDocuments[0].id.id, result.data[0].id)
+        assertEquals(expectedDocuments[0].id.value, result.data[0].id)
         coVerify {
             workspaceAuthorizationService.ensureAccess(eq(workspaceId), eq(userId))
         }

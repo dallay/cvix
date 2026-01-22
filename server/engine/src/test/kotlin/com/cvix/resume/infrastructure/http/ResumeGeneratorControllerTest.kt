@@ -29,7 +29,9 @@ internal class ResumeGeneratorControllerTest : ControllerTest() {
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        coEvery { mediator.send(any<GenerateResumeCommand>()) } returns ByteArrayInputStream(pdfBytes)
+        coEvery { mediator.send(any<GenerateResumeCommand>()) } returns ByteArrayInputStream(
+            pdfBytes,
+        )
     }
 
     @Test

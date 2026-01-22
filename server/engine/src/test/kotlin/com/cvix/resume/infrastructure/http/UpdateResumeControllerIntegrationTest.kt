@@ -3,7 +3,7 @@ package com.cvix.resume.infrastructure.http
 import com.cvix.ControllerIntegrationTest
 import com.cvix.resume.ResumeTestFixtures
 import com.cvix.resume.infrastructure.http.request.UpdateResumeRequest
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType

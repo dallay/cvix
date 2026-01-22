@@ -33,7 +33,8 @@ class TestSecurityConfiguration {
     @Bean
     fun clientRegistrationRepository(
         clientRegistration: ClientRegistration
-    ): ReactiveClientRegistrationRepository = InMemoryReactiveClientRegistrationRepository(clientRegistration)
+    ): ReactiveClientRegistrationRepository =
+        InMemoryReactiveClientRegistrationRepository(clientRegistration)
 
     @Bean
     fun nonReactiveClientRegistrationRepository(

@@ -1,6 +1,6 @@
 package com.cvix.workspace.domain
 
-import com.cvix.common.domain.BaseEntity
+import com.cvix.common.domain.model.BaseEntity
 
 data class WorkspaceMember(
     override val id: WorkspaceMemberId,

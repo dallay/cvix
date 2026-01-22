@@ -3,7 +3,7 @@ package com.cvix.workspace.infrastructure.http
 import com.cvix.ControllerIntegrationTest
 import com.cvix.workspace.WorkspaceStub
 import com.cvix.workspace.infrastructure.http.request.CreateWorkspaceRequest
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf

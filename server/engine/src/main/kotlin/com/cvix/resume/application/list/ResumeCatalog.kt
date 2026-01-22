@@ -39,7 +39,7 @@ class ResumeCatalog(
         // Fetch from persistence (already ordered by updated_at DESC at the repo level)
         val resumes = resumeRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
             // Defensive: eliminate any accidental duplicates by ID while preserving order
-            .distinctBy { it.id.id }
+            .distinctBy { it.id.value }
 
         // Normalize and clamp the incoming limit
         val normalizedLimit = limit.coerceIn(0, MAX_LIMIT)
@@ -47,7 +47,7 @@ class ResumeCatalog(
         // Apply limit
         val result = if (cursor != null) {
             // Find position of cursor and take next 'normalizedLimit' items
-            val cursorIndex = resumes.indexOfFirst { it.id.id == cursor }
+            val cursorIndex = resumes.indexOfFirst { it.id.value == cursor }
             if (cursorIndex >= 0) {
                 resumes.drop(cursorIndex + 1).take(normalizedLimit)
             } else {

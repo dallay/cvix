@@ -5,12 +5,12 @@
 
 % Packages:
 \usepackage[
-    ignoreheadfoot,
-    top=2 cm,
-    bottom=2 cm,
-    left=2 cm,
-    right=2 cm,
-    footskip=1.0 cm,
+  ignoreheadfoot,
+  top=2 cm,
+  bottom=2 cm,
+  left=2 cm,
+  right=2 cm,
+  footskip=1.0 cm,
 ]{geometry}
 \usepackage{titlesec}
 \usepackage{tabularx}
@@ -21,16 +21,16 @@
 \usepackage{fontawesome5}
 \usepackage{amsmath}
 \usepackage[
-    pdftitle={Empty Fields Test -  - Currículum Vitae},
-    pdfauthor={Empty Fields Test},
-    pdfsubject={Currículum Vitae de Empty Fields Test, },
-    pdfkeywords={, Currículum Vitae},
-    pdfcreator={LaTeX with StringTemplate4},
-    pdfproducer={pdfTeX},
-    colorlinks=true,
-    urlcolor=primaryColor,
-    pdfstartview={FitH},
-    pdflang={es}
+  pdftitle={Empty Fields Test - - Currículum Vitae},
+  pdfauthor={Empty Fields Test},
+  pdfsubject={Currículum Vitae de Empty Fields Test, },
+  pdfkeywords={, Currículum Vitae},
+  pdfcreator={LaTeX with StringTemplate4},
+  pdfproducer={pdfTeX},
+  colorlinks=true,
+  urlcolor=primaryColor,
+  pdfstartview={FitH},
+  pdflang={es}
 ]{hyperref}
 \usepackage[pscoord]{eso-pic}
 \usepackage{calc}
@@ -66,86 +66,86 @@
 \titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
 
 \titlespacing{\section}{
-    -1pt
+  -1pt
 }{
-    0.3 cm
+  0.3 cm
 }{
-    0.2 cm
+  0.2 cm
 }
 
 \renewcommand\labelitemi{\textbullet}
 \newenvironment{highlights}{
-    \begin{itemize}[
-        topsep=0.10 cm,
-        parsep=0.10 cm,
-        partopsep=0pt,
-        itemsep=0pt,
-        leftmargin=0 cm + 10pt
-    ]
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=0 cm + 10pt
+  ]
 }{
-    \end{itemize}
+  \end{itemize}
 }
 
 \newenvironment{highlightsforbulletentries}{
-    \begin{itemize}[
-        topsep=0.10 cm,
-        parsep=0.10 cm,
-        partopsep=0pt,
-        itemsep=0pt,
-        leftmargin=10pt
-    ]
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=10pt
+  ]
 }{
-    \end{itemize}
+  \end{itemize}
 }
 
 \newenvironment{onecolentry}{
-    \begin{adjustwidth}{
-        0 cm + 0.00001 cm
-    }{
-        0 cm + 0.00001 cm
-    }
+  \begin{adjustwidth}{
+    0 cm + 0.00001 cm
+  }{
+    0 cm + 0.00001 cm
+  }
 }{
-    \end{adjustwidth}
+  \end{adjustwidth}
 }
 
 \newenvironment{twocolentry}[2][]{
-    \begin{onecolentry}
-    \def\secondColumn{#2}
-    \setcolumnwidth{\fill, 4.5 cm}
-    \begin{paracol}{2}
+  \begin{onecolentry}
+  \def\secondColumn{#2}
+  \setcolumnwidth{\fill, 4.5 cm}
+  \begin{paracol}{2}
 }{
-    \switchcolumn \raggedleft \secondColumn
-    \end{paracol}
-    \end{onecolentry}
+  \switchcolumn \raggedleft \secondColumn
+  \end{paracol}
+  \end{onecolentry}
 }
 
 \newenvironment{threecolentry}[3][]{
-    \begin{onecolentry}
-    \def\thirdColumn{#3}
-    \setcolumnwidth{, \fill, 4.5 cm}
-    \begin{paracol}{3}
-    {\raggedright #2} \switchcolumn
+  \begin{onecolentry}
+  \def\thirdColumn{#3}
+  \setcolumnwidth{, \fill, 4.5 cm}
+  \begin{paracol}{3}
+  {\raggedright #2} \switchcolumn
 }{
-    \switchcolumn \raggedleft \thirdColumn
-    \end{paracol}
-    \end{onecolentry}
+  \switchcolumn \raggedleft \thirdColumn
+  \end{paracol}
+  \end{onecolentry}
 }
 
 \newenvironment{header}{
-    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+  \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
 }{
-    \par\kern\topsep
+  \par\kern\topsep
 }
 
 \newcommand{\placelastupdatedtext}{%
-    \AddToShipoutPictureFG*{%
-        \put(
-        \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
-        \LenToUnit{\paperheight-1.0 cm}
-        ){\vtop{{\null}\makebox[0pt][c]{
-            \small\color{gray}\textit{Última actualización noviembre de 2025}\hspace{\widthof{Última actualización noviembre de 2025}}
-        }}}%
-    }%
+  \AddToShipoutPictureFG*{%
+    \put(
+    \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
+    \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+      \small\color{gray}\textit{Última actualización noviembre de 2025}\hspace{\widthof{Última actualización noviembre de 2025}}
+    }}}%
+  }%
 }%
 
 \let\hrefWithoutArrow\href
@@ -163,68 +163,77 @@
 \begin{document}
 
 % Header
-    \begin{header}
-        \fontsize{25 pt}{25 pt}\selectfont Empty Fields Test
+  \begin{header}
+    \fontsize{25 pt}{25 pt}\selectfont Empty Fields Test
 
-        \vspace{5 pt}
+    \vspace{5 pt}
 
-        \normalsize
-\mbox{\hrefWithoutArrow{mailto:test@example.com}{test@example.com}}%%
-        \kern 5.0 pt%
-        \AND%
-        \kern 5.0 pt%
-\mbox{\hrefWithoutArrow{tel:(555) 999-9999}{(555) 999-9999}}%
-    \end{header}
+    \normalsize
+    \mbox{\hrefWithoutArrow{mailto:test@example.com}{test@example.com}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{tel:(555) 999-9999}{(555) 999-9999}}%
+  \end{header}
 
-    \vspace{5 pt - 0.3 cm}
+  \vspace{5 pt - 0.3 cm}
 
 % Experience Section
-    \section{Experiencia}
 
-    \begin{twocolentry}{
-        2020-01-01 – Presente
-    }
-        \textbf{Position}, Company -- \end{twocolentry}
 
-    \vspace{0.10 cm}
-    \begin{onecolentry}
-        \begin{highlights}
-        \end{highlights}
-    \end{onecolentry}
+  \section{Experiencia}
 
-    \vspace{0.2 cm}
+  \begin{twocolentry}{
+    2020-01-01 – Presente
+  }
+    \textbf{Position}, Company --
+  \end{twocolentry}
 
-    \begin{twocolentry}{
-        2023-03-14 – Presente
-    }
-        \textbf{Current Position}, Current Company -- \end{twocolentry}
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+    \end{highlights}
+  \end{onecolentry}
 
-    \vspace{0.10 cm}
-    \begin{onecolentry}
-        \begin{highlights}
-           \item Achievement 1
-           \item Achievement 2
-        \end{highlights}
-    \end{onecolentry}
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2023-03-14 – Presente
+  }
+    \textbf{Current Position}, Current Company --
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Achievement 1
+      \item Achievement 2
+    \end{highlights}
+  \end{onecolentry}
 
 % Education Section
-    \section{Educación}
 
-    \begin{twocolentry}{
-        2015-01-01 – 2019-01-01
-    }
-        \textbf{University}\end{twocolentry}
 
-    \vspace{0.10 cm}
-    \begin{onecolentry}
-        \begin{highlights}\end{highlights}
-    \end{onecolentry}
+  \section{Educación}
+
+  \begin{twocolentry}{
+    2015-01-01 – 2019-01-01
+  }
+    \textbf{University}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}\end{highlights}
+  \end{onecolentry}
 
 % Skills Section
-    \section{Habilidades}
 
-    \begin{onecolentry}
-        \textbf{Programming:} Java, Python
-    \end{onecolentry}
+
+  \section{Habilidades}
+
+  \begin{onecolentry}
+    \textbf{Programming:} Java, Python
+  \end{onecolentry}
 
 \end{document}

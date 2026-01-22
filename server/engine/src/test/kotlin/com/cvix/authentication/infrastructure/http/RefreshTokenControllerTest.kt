@@ -2,11 +2,13 @@ package com.cvix.authentication.infrastructure.http
 
 import com.cvix.UnitTest
 import com.cvix.authentication.application.RefreshTokenQueryHandler
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.RefreshToken
 import com.cvix.authentication.domain.RefreshTokenManager
 import com.cvix.authentication.domain.UserRefreshTokenException
+import com.cvix.authentication.infrastructure.CookieAdvice
+import com.cvix.authentication.infrastructure.UserAuthAdvice
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.controllers.GlobalExceptionHandler
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -27,7 +29,12 @@ internal class RefreshTokenControllerTest {
     private val refreshTokenQueryHandler = RefreshTokenQueryHandler(refreshTokenManager)
     private val refreshTokenController = RefreshTokenController(refreshTokenQueryHandler)
     private val webTestClient = WebTestClient.bindToController(refreshTokenController)
-        .controllerAdvice(GlobalExceptionHandler(messageSource)) // Attach the global exception handler
+        .controllerAdvice(
+            // Attach authentication-specific advices first so they take precedence over the global handler in tests
+            UserAuthAdvice(messageSource),
+            CookieAdvice(messageSource),
+            GlobalExceptionHandler(messageSource), // keep global as a fallback
+        )
         .build()
 
     @Test

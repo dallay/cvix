@@ -13,7 +13,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
@@ -42,7 +42,12 @@ internal class ListTemplatesQueryHandlerTest {
 
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
         coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.FREE
-        coEvery { templateCatalog.listTemplates(SubscriptionTier.FREE, query.limit) } returns templates
+        coEvery {
+            templateCatalog.listTemplates(
+                SubscriptionTier.FREE,
+                query.limit,
+            )
+        } returns templates
 
         // When
         val result = listTemplatesQueryHandler.handle(query)
@@ -80,7 +85,12 @@ internal class ListTemplatesQueryHandlerTest {
 
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
         coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.BASIC
-        coEvery { templateCatalog.listTemplates(SubscriptionTier.BASIC, query.limit) } returns emptyList()
+        coEvery {
+            templateCatalog.listTemplates(
+                SubscriptionTier.BASIC,
+                query.limit,
+            )
+        } returns emptyList()
 
         // When
         listTemplatesQueryHandler.handle(query)
@@ -93,21 +103,22 @@ internal class ListTemplatesQueryHandlerTest {
     }
 
     @Test
-    fun `should throw WorkspaceAuthorizationException when user lacks workspace access`() = runTest {
-        // Given
-        val userId = UUID.randomUUID()
-        val workspaceId = UUID.randomUUID()
-        val query = ListTemplatesQuery(userId, workspaceId, 10)
-        coEvery {
-            workspaceAuthorizationService.ensureAccess(workspaceId, userId)
-        } throws com.cvix.workspace.domain.WorkspaceAuthorizationException("User not authorized")
+    fun `should throw WorkspaceAuthorizationException when user lacks workspace access`() =
+        runTest {
+            // Given
+            val userId = UUID.randomUUID()
+            val workspaceId = UUID.randomUUID()
+            val query = ListTemplatesQuery(userId, workspaceId, 10)
+            coEvery {
+                workspaceAuthorizationService.ensureAccess(workspaceId, userId)
+            } throws com.cvix.workspace.domain.WorkspaceAuthorizationException("User not authorized")
 
-        // When/Then
-        org.junit.jupiter.api.assertThrows<com.cvix.workspace.domain.WorkspaceAuthorizationException> {
-            listTemplatesQueryHandler.handle(query)
+            // When/Then
+            org.junit.jupiter.api.assertThrows<com.cvix.workspace.domain.WorkspaceAuthorizationException> {
+                listTemplatesQueryHandler.handle(query)
+            }
+            coVerify { workspaceAuthorizationService.ensureAccess(workspaceId, userId) }
         }
-        coVerify { workspaceAuthorizationService.ensureAccess(workspaceId, userId) }
-    }
 
     @Test
     fun `should return empty response when no templates are available`() = runTest {
@@ -117,7 +128,12 @@ internal class ListTemplatesQueryHandlerTest {
         val query = ListTemplatesQuery(userId, workspaceId, 5)
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
         coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.FREE
-        coEvery { templateCatalog.listTemplates(SubscriptionTier.FREE, query.limit) } returns emptyList()
+        coEvery {
+            templateCatalog.listTemplates(
+                SubscriptionTier.FREE,
+                query.limit,
+            )
+        } returns emptyList()
 
         // When
         val result = listTemplatesQueryHandler.handle(query)
@@ -177,7 +193,12 @@ internal class ListTemplatesQueryHandlerTest {
         val templates = listOf(freeTemplate, premiumTemplate)
         coEvery { workspaceAuthorizationService.ensureAccess(workspaceId, userId) } returns Unit
         coEvery { subscriptionResolver.resolve(ResolverContext.UserId(userId)) } returns SubscriptionTier.FREE
-        coEvery { templateCatalog.listTemplates(SubscriptionTier.FREE, query.limit) } returns templates
+        coEvery {
+            templateCatalog.listTemplates(
+                SubscriptionTier.FREE,
+                query.limit,
+            )
+        } returns templates
 
         // When
         val result = listTemplatesQueryHandler.handle(query)

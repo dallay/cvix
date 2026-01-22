@@ -14,7 +14,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
@@ -40,7 +40,9 @@ internal class JoinWaitlistCommandHandlerTest {
             every { ipHmacSecret } returns TestConstants.TEST_HMAC_SECRET
         }
 
-        waitlistJoiner = WaitlistJoiner(repository, eventPublisher, metrics, securityConfig)
+        val testHasher = com.cvix.common.domain.security.HmacHasher(TestConstants.TEST_HMAC_SECRET)
+        waitlistJoiner =
+            WaitlistJoiner(repository, eventPublisher, metrics, securityConfig, testHasher)
         joinWaitlistCommandHandler = JoinWaitlistCommandHandler(waitlistJoiner)
     }
 

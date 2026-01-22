@@ -1,6 +1,6 @@
 package com.cvix.workspace.infrastructure.persistence.entity
 
-import com.cvix.common.domain.AuditableEntityFields
+import com.cvix.common.domain.model.AuditableEntityFields
 import com.cvix.workspace.domain.Workspace.Companion.NAME_MAX_LENGTH
 import jakarta.validation.constraints.Size
 import java.io.Serializable

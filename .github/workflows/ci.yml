@@ -459,6 +459,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup/node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: .
+
       - name: Dependency Review
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4
@@ -474,6 +483,8 @@ jobs:
           args: >
             --failOnCVSS 7
             --enableRetired
+            --ossIndexUsername ${{ secrets.OSSINDEX_USER }}
+            --ossIndexPassword ${{ secrets.OSSINDEX_PASSWORD }}
 
       - name: Upload OWASP Dependency Check Report
         if: always()

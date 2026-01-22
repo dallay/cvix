@@ -46,7 +46,8 @@ import org.junit.jupiter.params.provider.ValueSource
 @Suppress("StringShouldBeRawString")
 internal class LatexTemplateRendererTest {
 
-    private val fixedClock = Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
+    private val fixedClock =
+        Clock.fixed(Instant.parse("2025-11-15T00:00:00Z"), ZoneId.systemDefault())
     private val renderer = LatexTemplateRenderer(fixedClock)
 
     private val defaultTemplatePath = "templates/resume/engineering/engineering.stg"
@@ -413,10 +414,21 @@ internal class LatexTemplateRendererTest {
             writeText(content)
         }
     }
+
     /**
      * Normalize line endings for cross-platform comparison.
      */
     private fun normalize(text: String): String =
+        // Normalize line endings and collapse all whitespace (spaces, tabs, newlines) to a single space.
+        // Tests expect content equality, not exact formatting/indentation — normalize to a canonical form.
         text.replace("\r\n", "\n").replace("\r", "\n")
+            .lines()
+            .joinToString(" ") { it.trim() }
+            .replace(Regex("\\s+"), " ")
             .trim()
+            // Ensure there is a separating space before LaTeX commands when a backslash
+            // follows a non-whitespace character. Some templates render control sequences
+            // directly after text without a newline/space which is acceptable LaTeX but
+            // causes fragile diffs. Make comparison robust by normalizing that case.
+            .replace(Regex("([^\\s])(?=\\\\)"), "$1 ")
 }

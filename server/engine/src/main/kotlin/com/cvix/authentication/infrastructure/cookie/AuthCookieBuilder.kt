@@ -1,6 +1,6 @@
 package com.cvix.authentication.infrastructure.cookie
 
-import com.cvix.authentication.domain.AccessToken
+import com.cvix.common.domain.authentication.AccessToken
 import java.time.Duration
 import org.springframework.http.ResponseCookie
 import org.springframework.http.server.reactive.ServerHttpResponse

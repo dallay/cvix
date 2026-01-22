@@ -17,7 +17,6 @@ import io.mockk.verify
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.time.Instant
-import kotlin.text.get
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -692,7 +691,11 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -708,7 +711,11 @@ internal class RateLimitingFilterTest {
         StepVerifier.create(result).verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/resume/generate", RateLimitStrategy.RESUME)
+            rateLimitingService.consumeToken(
+                identifier,
+                "/api/resume/generate",
+                RateLimitStrategy.RESUME,
+            )
         }
     }
 

@@ -13,7 +13,9 @@ dependencies {
     implementation(libs.spring.boot.starter.security.oauth2.resource.server)
 
     // Jackson viene automáticamente con spring-boot starters
+    testImplementation(testFixtures(project(":shared:test-helpers")))
     testImplementation(kotlin("test"))
+    // Use JUnit + kotest matchers (project uses both across modules)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.faker)
     testImplementation(libs.jackson.module.kotlin)

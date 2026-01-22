@@ -3,6 +3,7 @@ name: kotlin
 description: >
   Kotlin conventions with null safety, coroutines, and functional patterns.
   Trigger: When working with .kt files, coroutines, or Kotlin-specific patterns.
+license: Apache-2.0
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash
 metadata:
   author: cvix
@@ -96,7 +97,35 @@ sealed interface DomainError {
 }
 ```
 
-### Testing with Kotest
+### 4. Imports and Fully-Qualified Names
+
+**STRICTLY AVOID inline fully-qualified class or static references**.
+Favor top-level imports and short names.
+
+```kotlin
+// ❌ NEVER do this (inline FQCN)
+val id = java.util.UUID.randomUUID()
+fun update(@io.swagger.v3.oas.annotations.parameters.RequestBody req: Request)
+
+// ✅ ALWAYS do this
+import java.util.UUID
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+
+val id = UUID.randomUUID()
+fun update(@RequestBody req: Request)
+```
+
+**Exception**: Fully-qualified names are **ALLOWED and encouraged in KDoc** for unambiguous linking.
+
+```kotlin
+/**
+ * Processes a [com.cvix.resume.domain.Resume].
+ */
+```
+
+See [no-fully-qualified-references.md](references/no-fully-qualified-references.md) for detailed rules.
+
+## Testing with Kotest
 
 This project uses **Kotest** for expressive, idiomatic Kotlin tests.
 
@@ -124,6 +153,7 @@ class UserServiceTest : FunSpec({
             service.create(validUserData)
         }.message shouldContain "already exists"
     }
+
 })
 
 // DescribeSpec - BDD-style grouping
@@ -316,6 +346,10 @@ logger.info { "User logged in: password=${user.password}" }  // WRONG!
 ❌ **Inheritance over composition** - Prefer composition
 ❌ **Wildcard imports** - Except `java.util.*`, `io.mockk.*`
 ❌ **Mutable public properties** - Use private set or immutable data
+
+### Rules
+
+- **[No Fully Qualified References](references/no-fully-qualified-references.md)**: Avoid inline fully-qualified names; favor imports.
 
 ## Commands
 
