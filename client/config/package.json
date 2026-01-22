@@ -40,7 +40,7 @@
 		"@tailwindcss/typography": "catalog:",
 		"postcss": "catalog:",
 		"stylelint": "catalog:",
-		"stylelint-config-standard-scss": "^16.0.0",
+		"stylelint-config-standard-scss": "^17.0.0",
 		"stylelint-order": "^7.0.1",
 		"tailwindcss": "catalog:",
 		"vite-tsconfig-paths": "catalog:",

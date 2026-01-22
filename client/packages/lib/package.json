@@ -47,8 +47,8 @@
 	},
 	"dependencies": {
 		"@cvix/i18n": "workspace:*",
-		"satori": "0.18.3",
 		"clsx": "catalog:",
+		"satori": "0.19.1",
 		"tailwind-merge": "catalog:"
 	},
 	"devDependencies": {
