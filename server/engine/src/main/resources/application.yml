@@ -205,7 +205,6 @@ management:
       show-components: when-authorized
       probes:
         enabled: true
-  
   info:
     git:
       mode: full
