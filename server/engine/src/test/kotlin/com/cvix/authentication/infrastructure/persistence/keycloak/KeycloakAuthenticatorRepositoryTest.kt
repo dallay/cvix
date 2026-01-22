@@ -2,9 +2,9 @@ package com.cvix.authentication.infrastructure.persistence.keycloak
 
 import com.cvix.CredentialGenerator
 import com.cvix.UnitTest
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.UserAuthenticationException
 import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential
 import io.mockk.CapturingSlot
@@ -36,7 +36,8 @@ private const val CLIENT_SECRET = "secret"
 class KeycloakAuthenticatorRepositoryTest {
     private val faker = Faker()
     private val applicationSecurityProperties = mockk<ApplicationSecurityProperties>()
-    private val keycloakAuthenticatorRepository = KeycloakAuthenticatorRepository(applicationSecurityProperties)
+    private val keycloakAuthenticatorRepository =
+        KeycloakAuthenticatorRepository(applicationSecurityProperties)
     private val keycloak = mockk<Keycloak>()
     private val keycloakBuilder = mockk<KeycloakBuilder>()
     private val tokenManager = mockk<TokenManager>()

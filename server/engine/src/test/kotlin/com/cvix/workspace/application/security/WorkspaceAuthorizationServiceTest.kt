@@ -5,7 +5,7 @@ import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -15,14 +15,20 @@ import org.junit.jupiter.api.assertThrows
 class WorkspaceAuthorizationServiceTest {
 
     private val workspaceMemberRepository: WorkspaceMemberRepository = mockk()
-    private val workspaceAuthorizationService = WorkspaceAuthorizationService(workspaceMemberRepository)
+    private val workspaceAuthorizationService =
+        WorkspaceAuthorizationService(workspaceMemberRepository)
 
     @Test
     fun should_allowAccess_when_userIsMemberOfWorkspace() = runTest {
         val workspaceId = UUID.randomUUID()
         val userId = UUID.randomUUID()
 
-        coEvery { workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId) } returns true
+        coEvery {
+            workspaceMemberRepository.existsByWorkspaceIdAndUserId(
+                workspaceId,
+                userId,
+            )
+        } returns true
 
         workspaceAuthorizationService.ensureAccess(workspaceId, userId)
     }
@@ -32,7 +38,12 @@ class WorkspaceAuthorizationServiceTest {
         val workspaceId = UUID.randomUUID()
         val userId = UUID.randomUUID()
 
-        coEvery { workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId) } returns false
+        coEvery {
+            workspaceMemberRepository.existsByWorkspaceIdAndUserId(
+                workspaceId,
+                userId,
+            )
+        } returns false
 
         val exception = assertThrows<WorkspaceAuthorizationException> {
             workspaceAuthorizationService.ensureAccess(workspaceId, userId)

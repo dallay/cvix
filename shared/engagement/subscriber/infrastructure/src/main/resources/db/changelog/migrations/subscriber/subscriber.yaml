@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-subscriber-table
+      author: system
+      comment: Create subscribers table for storing early access signups (aligned with SubscriberEntity)
+      changes:
+        - createTable:
+            tableName: subscribers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(320)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: source
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_raw
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'en'
+              - column:
+                  name: ip_hash
+                  type: varchar(64)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: attributes
+                  type: jsonb
+                  constraints:
+                    nullable: true
+              - column:
+                  name: confirmation_token
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: confirmation_expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: true
+              - column:
+                  name: do_not_contact
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workspace_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'system'
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: true
+
+        - createIndex:
+            indexName: idx_subscribers_source
+            tableName: subscribers
+            columns:
+              - column:
+                  name: source
+
+        - createIndex:
+            indexName: idx_subscribers_created_at
+            tableName: subscribers
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+      rollback:
+        - dropTable:
+            tableName: subscribers

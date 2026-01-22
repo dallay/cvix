@@ -11,7 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 internal class ClaimsTest {
     @Test
     fun shouldExtractAuthorityFromClaims() {
-        val claims: Map<String, Any> = mapOf(CLAIMS_NAMESPACE + "roles" to listOf(Role.ADMIN.key(), Role.USER.key()))
+        val claims: Map<String, Any> =
+            mapOf(CLAIMS_NAMESPACE + "roles" to listOf(Role.ADMIN.key(), Role.USER.key()))
 
         val authorities = extractAuthorityFromClaims(claims)
         assertThat(authorities).containsExactly(
@@ -22,7 +23,8 @@ internal class ClaimsTest {
 
     @Test
     fun shouldExtractAuthorityFromClaimsNamespacedRoles() {
-        val claims: Map<String, Any> = mapOf(CLAIMS_NAMESPACE + "roles" to listOf(Role.ADMIN.key(), Role.USER.key()))
+        val claims: Map<String, Any> =
+            mapOf(CLAIMS_NAMESPACE + "roles" to listOf(Role.ADMIN.key(), Role.USER.key()))
         val authorities = extractAuthorityFromClaims(claims)
         assertThat(authorities).containsExactly(
             SimpleGrantedAuthority(Role.ADMIN.key()),

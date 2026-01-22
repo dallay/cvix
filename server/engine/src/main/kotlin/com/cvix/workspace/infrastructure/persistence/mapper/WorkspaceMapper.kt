@@ -16,10 +16,10 @@ object WorkspaceMapper {
      * @return The converted [WorkspaceEntity].
      */
     fun Workspace.toEntity(): WorkspaceEntity = WorkspaceEntity(
-        id = id.id,
+        id = id.value,
         name = name,
         description = description,
-        ownerId = ownerId.id,
+        ownerId = ownerId.value,
         isDefault = isDefault,
         createdAt = createdAt,
         createdBy = createdBy,

@@ -1,8 +1,8 @@
 package com.cvix.authentication.application
 
 import com.cvix.authentication.application.query.AuthenticateUserQuery
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.common.domain.Service
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.domain.bus.query.QueryHandler
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential

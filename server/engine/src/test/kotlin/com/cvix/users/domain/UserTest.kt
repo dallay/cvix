@@ -2,7 +2,7 @@ package com.cvix.users.domain
 
 import com.cvix.UnitTest
 import com.cvix.common.domain.vo.credential.Credential
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

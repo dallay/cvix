@@ -1,6 +1,7 @@
 package com.cvix.waitlist.domain
 
-import com.cvix.common.domain.AggregateRoot
+import com.cvix.common.domain.model.AggregateRoot
+import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import java.time.Instant

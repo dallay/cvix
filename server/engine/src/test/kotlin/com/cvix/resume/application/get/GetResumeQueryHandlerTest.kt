@@ -7,7 +7,7 @@ import com.cvix.resume.domain.exception.ResumeNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -41,7 +41,7 @@ internal class GetResumeQueryHandlerTest {
         val result = getResumeQueryHandler.handle(query)
 
         // Then
-        assertEquals(expectedDocument.id.id, result.id)
+        assertEquals(expectedDocument.id.value, result.id)
         assertEquals(expectedDocument.userId, result.userId)
         assertEquals(expectedDocument.workspaceId, result.workspaceId)
         assertEquals(expectedDocument.title, result.title)

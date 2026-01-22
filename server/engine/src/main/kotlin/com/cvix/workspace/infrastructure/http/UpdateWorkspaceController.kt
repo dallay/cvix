@@ -7,12 +7,17 @@ import com.cvix.workspace.application.update.UpdateWorkspaceCommand
 import com.cvix.workspace.infrastructure.http.request.UpdateWorkspaceRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import java.util.UUID
 import org.slf4j.LoggerFactory
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,6 +25,14 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OpenApiRequestBody
+
+private const val UPDATE_WORKSPACE_EXAMPLE = """
+    {
+        "name": "Strategic Projects",
+        "description": "High priority strategic initiatives and roadmap"
+    }
+"""
 
 /**
  * This class is a REST controller for updating workspaces.
@@ -45,21 +58,74 @@ class UpdateWorkspaceController(
      * @param request The request body containing the new workspace data.
      * @return A ResponseEntity indicating the result of the operation.
      */
-    @Operation(summary = "Update a workspace with the given data")
+    @Operation(
+        summary = "Update an existing workspace",
+        description = "Modifies the name and description of an existing workspace. " +
+            "Requires administrative permissions on the workspace.",
+        security = [SecurityRequirement(name = "bearerAuth")],
+    )
     @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Updated workspace"),
-        ApiResponse(responseCode = "400", description = "Bad request error (validation error)"),
-        ApiResponse(responseCode = "500", description = "Internal server error"),
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Workspace updated successfully",
+                content = [Content(schema = Schema(implementation = SimpleMessageResponse::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request - Invalid workspace data or missing required fields",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized - Missing or invalid authentication token",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden - User does not have permission to update this workspace",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Workspace not found",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Internal server error during workspace update",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+        ],
     )
     @PutMapping("/workspace/{id}/update")
     suspend fun update(
         @Parameter(
-            description = "ID of the workspace to be found",
+            name = "id",
+            description = "The unique UUID of the workspace to update",
             required = true,
+            `in` = ParameterIn.PATH,
             schema = Schema(type = "string", format = "uuid"),
+            example = "550e8400-e29b-41d4-a716-446655440000",
         )
         @PathVariable
         id: UUID,
+        @OpenApiRequestBody(
+            description = "Updated workspace details",
+            required = true,
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = UpdateWorkspaceRequest::class),
+                    examples = [
+                        ExampleObject(
+                            name = "Update name and description",
+                            value = UPDATE_WORKSPACE_EXAMPLE,
+                        ),
+                    ],
+                ),
+            ],
+        )
         @Validated @RequestBody request: UpdateWorkspaceRequest,
     ): ResponseEntity<SimpleMessageResponse> {
         log.debug("Updating workspace with ID: {}", id)

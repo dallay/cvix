@@ -21,7 +21,10 @@ internal class UserLogoutControllerTest {
     private val messageSource = mockk<MessageSource>(relaxed = true)
     private val userLogoutController = UserLogoutController(mediator)
     private val webTestClient = WebTestClient.bindToController(userLogoutController)
-        .controllerAdvice(GlobalExceptionHandler(messageSource))
+        .controllerAdvice(
+            com.cvix.authentication.infrastructure.CookieAdvice(messageSource),
+            GlobalExceptionHandler(messageSource),
+        )
         .build()
 
     @BeforeEach

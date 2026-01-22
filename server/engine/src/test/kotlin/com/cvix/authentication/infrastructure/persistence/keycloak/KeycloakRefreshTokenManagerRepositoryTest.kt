@@ -1,9 +1,9 @@
 package com.cvix.authentication.infrastructure.persistence.keycloak
 
 import com.cvix.UnitTest
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.RefreshToken
 import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
+import com.cvix.common.domain.authentication.AccessToken
 import io.mockk.every
 import io.mockk.mockk
 import java.net.URI
@@ -76,9 +76,12 @@ internal class KeycloakRefreshTokenManagerRepositoryTest {
         every { requestBodyUriSpec.contentType(eq(MediaType.APPLICATION_FORM_URLENCODED)) } returns requestBodyUriSpec
         every { requestBodyUriSpec.body(any()) } returns requestBodyUriSpec
         every { requestBodyUriSpec.retrieve() } returns responseSpec
-        every { responseSpec.bodyToMono(AccessTokenResponse::class.java) } returns Mono.just(expectedAccessTokenResponse)
+        every { responseSpec.bodyToMono(AccessTokenResponse::class.java) } returns Mono.just(
+            expectedAccessTokenResponse,
+        )
 
-        keycloakRefreshTokenManagerRepository = KeycloakRefreshTokenManagerRepository(applicationSecurityProperties)
+        keycloakRefreshTokenManagerRepository =
+            KeycloakRefreshTokenManagerRepository(applicationSecurityProperties)
         // add webClient to the repository by reflection
         val field = keycloakRefreshTokenManagerRepository::class.java.getDeclaredField("webClient")
         field.isAccessible = true

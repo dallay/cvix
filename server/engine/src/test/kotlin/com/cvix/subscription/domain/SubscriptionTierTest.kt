@@ -87,14 +87,26 @@ class SubscriptionTierTest {
     @Test
     fun `isAtLeastAs should correctly compare tiers`() {
         // Then - Professional is at least as capable as any tier
-        SubscriptionTier.isAtLeastAs(SubscriptionTier.PROFESSIONAL, SubscriptionTier.FREE) shouldBe true
-        SubscriptionTier.isAtLeastAs(SubscriptionTier.PROFESSIONAL, SubscriptionTier.BASIC) shouldBe true
-        SubscriptionTier.isAtLeastAs(SubscriptionTier.PROFESSIONAL, SubscriptionTier.PROFESSIONAL) shouldBe true
+        SubscriptionTier.isAtLeastAs(
+            SubscriptionTier.PROFESSIONAL,
+            SubscriptionTier.FREE,
+        ) shouldBe true
+        SubscriptionTier.isAtLeastAs(
+            SubscriptionTier.PROFESSIONAL,
+            SubscriptionTier.BASIC,
+        ) shouldBe true
+        SubscriptionTier.isAtLeastAs(
+            SubscriptionTier.PROFESSIONAL,
+            SubscriptionTier.PROFESSIONAL,
+        ) shouldBe true
 
         // Then - Basic is at least as capable as Free
         SubscriptionTier.isAtLeastAs(SubscriptionTier.BASIC, SubscriptionTier.FREE) shouldBe true
         SubscriptionTier.isAtLeastAs(SubscriptionTier.BASIC, SubscriptionTier.BASIC) shouldBe true
-        SubscriptionTier.isAtLeastAs(SubscriptionTier.BASIC, SubscriptionTier.PROFESSIONAL) shouldBe false
+        SubscriptionTier.isAtLeastAs(
+            SubscriptionTier.BASIC,
+            SubscriptionTier.PROFESSIONAL,
+        ) shouldBe false
 
         // Then - Free is only as capable as Free
         SubscriptionTier.isAtLeastAs(SubscriptionTier.FREE, SubscriptionTier.FREE) shouldBe true

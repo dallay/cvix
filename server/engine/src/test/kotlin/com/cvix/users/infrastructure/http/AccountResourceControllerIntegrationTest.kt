@@ -50,7 +50,12 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
     @Test
     fun `should get account information successfully with multiple roles`() {
         webTestClient.mutateWith(
-            oAuth2LoginMutator(roles = listOf(AuthoritiesConstants.USER, AuthoritiesConstants.ADMIN)),
+            oAuth2LoginMutator(
+                roles = listOf(
+                    AuthoritiesConstants.USER,
+                    AuthoritiesConstants.ADMIN,
+                ),
+            ),
         )
             .get().uri(ENDPOINT)
             .exchange()
@@ -75,12 +80,13 @@ class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() 
         lastname: String = "User",
         roles: List<String> = listOf(AuthoritiesConstants.USER)
     ): SecurityMockServerConfigurers.OAuth2LoginMutator =
-        mockOAuth2Login().authorities(SimpleGrantedAuthority(roles.joinToString(separator = ",") { it })).attributes {
-            it["sub"] = userId // Keycloak user ID
-            it["preferred_username"] = username
-            it["email"] = email
-            it["given_name"] = firstname
-            it["family_name"] = lastname
-            it["roles"] = roles
-        }
+        mockOAuth2Login().authorities(SimpleGrantedAuthority(roles.joinToString(separator = ",") { it }))
+            .attributes {
+                it["sub"] = userId // Keycloak user ID
+                it["preferred_username"] = username
+                it["email"] = email
+                it["given_name"] = firstname
+                it["family_name"] = lastname
+                it["roles"] = roles
+            }
 }

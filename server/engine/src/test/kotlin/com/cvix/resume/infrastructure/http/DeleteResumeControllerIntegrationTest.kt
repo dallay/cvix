@@ -26,6 +26,7 @@ internal class DeleteResumeControllerIntegrationTest : ControllerIntegrationTest
             .exchange()
             .expectStatus().isNotFound
     }
+
     @Test
     @Sql(
         "/db/user/users.sql",

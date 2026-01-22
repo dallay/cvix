@@ -2,8 +2,8 @@ package com.cvix.waitlist.application.create
 
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.command.CommandHandler
+import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
-import com.cvix.waitlist.domain.Language
 import com.cvix.waitlist.domain.WaitlistEntryId
 import com.cvix.waitlist.domain.WaitlistSource
 import org.slf4j.LoggerFactory

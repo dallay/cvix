@@ -218,6 +218,7 @@ internal class TemplateValidatorTest {
         assertThrows(LaTeXInjectionException::class.java) {
             TemplateValidator.validateContent(maliciousResume)
         }
+
     companion object {
         private const val MALICIOUS = "\\input{evil}" // Matches DANGEROUS_PATTERN
 

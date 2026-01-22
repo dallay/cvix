@@ -2,9 +2,9 @@ package com.cvix.authentication.infrastructure.http
 
 import com.cvix.authentication.application.AuthenticateUserQueryHandler
 import com.cvix.authentication.application.query.AuthenticateUserQuery
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder.buildCookies
 import com.cvix.authentication.infrastructure.http.request.LoginRequest
+import com.cvix.common.domain.authentication.AccessToken
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema

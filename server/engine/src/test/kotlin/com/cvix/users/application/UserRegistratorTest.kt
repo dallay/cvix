@@ -13,10 +13,8 @@ import com.cvix.users.domain.UserStoreException
 import com.cvix.users.domain.event.UserCreatedEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import net.datafaker.Faker
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,7 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 @UnitTest
-class UserRegistratorTest {
+internal class UserRegistratorTest {
     private val faker = Faker()
     private val email = faker.internet().emailAddress()
     private val password = Credential.generateRandomCredentialPassword()
@@ -73,7 +71,10 @@ class UserRegistratorTest {
                 )
 
                 // Verify first registration returned UUID
-                assertTrue(firstUserId.toString().isNotBlank(), "Expected valid UUID for first user")
+                assertTrue(
+                    firstUserId.toString().isNotBlank(),
+                    "Expected valid UUID for first user",
+                )
 
                 // When & Then - Attempting to register second user with same email should throw exception
                 val exception = assertThrows<UserStoreException> {
@@ -160,17 +161,24 @@ class UserRegistratorTest {
         @Test
         fun `should create user and publish domain events when registration succeeds`(): Unit =
             runTest {
-                // Given
-                val mockCreatedUser: User = mockk()
-                val userCreatedEvent: UserCreatedEvent = mockk()
+                // Given: use a real User instance instead of a pure mock to avoid MockK issues
                 val expectedUserId = UUID.randomUUID()
-                val mockUserId: com.cvix.users.domain.UserId = mockk()
 
                 // Create objects once and reuse them to ensure the same instances are used
                 val emailObj = Email(testUser.email.value)
                 val credentialObj = Credential.create(password)
                 val firstNameObj = FirstName(testUser.name?.firstName?.value ?: "")
                 val lastNameObj = LastName(testUser.name?.lastName?.value ?: "")
+
+                // Build a real user with the expected id and return it from the creator
+                val realCreatedUser =
+                    User.create(
+                        expectedUserId.toString(),
+                        emailObj.value,
+                        firstNameObj.value,
+                        lastNameObj.value,
+                        password,
+                    )
 
                 coEvery {
                     userCreator.create(
@@ -179,10 +187,7 @@ class UserRegistratorTest {
                         firstName = firstNameObj,
                         lastName = lastNameObj,
                     )
-                } returns mockCreatedUser
-                every { mockCreatedUser.pullDomainEvents() } returns listOf(userCreatedEvent)
-                every { mockCreatedUser.id } returns mockUserId
-                every { mockUserId.id } returns expectedUserId
+                } returns realCreatedUser
 
                 // When
                 val actualUserId = userRegistrator.registerNewUser(
@@ -193,7 +198,11 @@ class UserRegistratorTest {
                 )
 
                 // Then - verify returned UUID
-                assertEquals(expectedUserId, actualUserId, "Expected returned UUID to match mock")
+                assertEquals(
+                    expectedUserId,
+                    actualUserId,
+                    "Expected returned UUID to match created user",
+                )
 
                 coVerify(exactly = 1) {
                     userCreator.create(
@@ -203,14 +212,12 @@ class UserRegistratorTest {
                         lastName = lastNameObj,
                     )
                 }
-                verify(exactly = 1) { mockCreatedUser.pullDomainEvents() }
-                verify(exactly = 1) { mockCreatedUser.id }
 
                 val publishedEvents = eventPublisher.getEvents()
+                // Expect the real user creation to have produced a UserCreatedEvent
                 assertEquals(1, publishedEvents.size, "Expected exactly 1 event to be published")
-                assertEquals(
-                    userCreatedEvent,
-                    publishedEvents[0],
+                assertTrue(
+                    publishedEvents[0] is UserCreatedEvent,
                     "Expected UserCreatedEvent to be published",
                 )
             }
@@ -375,12 +382,10 @@ class UserRegistratorTest {
 
         @Test
         fun `should handle user with empty domain events list`(): Unit = runTest {
-            // Given
+            // Given - return a real User that has no recorded domain events (use the non-factory constructor)
             val userCreatorMock: UserCreator = mockk()
-            val mockUser: User = mockk()
             val registrator = UserRegistrator(userCreatorMock, eventPublisher)
             val expectedUserId = UUID.randomUUID()
-            val mockUserId: com.cvix.users.domain.UserId = mockk()
 
             val testUser =
                 User.create(UUID.randomUUID().toString(), email, firstname, lastname, password)
@@ -390,6 +395,15 @@ class UserRegistratorTest {
             val firstNameObj = FirstName(testUser.name?.firstName?.value ?: "")
             val lastNameObj = LastName(testUser.name?.lastName?.value ?: "")
 
+            // Build a user using the secondary constructor (UUID) so no UserCreatedEvent is recorded
+            val userWithNoEvents = User(
+                id = expectedUserId,
+                email = testUser.email.value,
+                firstName = firstNameObj.value,
+                lastName = lastNameObj.value,
+                credentials = mutableListOf(credential),
+            )
+
             coEvery {
                 userCreatorMock.create(
                     email = emailObj,
@@ -397,10 +411,7 @@ class UserRegistratorTest {
                     firstName = firstNameObj,
                     lastName = lastNameObj,
                 )
-            } returns mockUser
-            every { mockUser.pullDomainEvents() } returns emptyList()
-            every { mockUser.id } returns mockUserId
-            every { mockUserId.id } returns expectedUserId
+            } returns userWithNoEvents
 
             // When
             val actualUserId = registrator.registerNewUser(
@@ -426,8 +437,6 @@ class UserRegistratorTest {
                     lastName = lastNameObj,
                 )
             }
-            verify(exactly = 1) { mockUser.pullDomainEvents() }
-            verify(exactly = 1) { mockUser.id }
         }
     }
 }

@@ -8,7 +8,7 @@ import com.cvix.authentication.infrastructure.cookie.AuthCookieBuilder
 import com.cvix.common.domain.bus.Mediator
 import io.mockk.coEvery
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -65,8 +65,10 @@ internal class SessionControllerTest {
 
     companion object {
         private const val VALID_ACCESS_TOKEN = "valid-access-token"
+
         @Suppress("MaxLineLength", "MaximumLineLength")
-        private const val INVALID_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
+        private const val INVALID_ACCESS_TOKEN =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"
 
         private val TEST_USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
         private const val TEST_EMAIL = "test@example.com"

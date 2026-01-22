@@ -1,6 +1,6 @@
 package com.cvix.subscription.domain
 
-import com.cvix.common.domain.AggregateRoot
+import com.cvix.common.domain.model.AggregateRoot
 import java.time.Instant
 import java.util.UUID
 

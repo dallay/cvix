@@ -9,6 +9,7 @@ internal class ProFileTailorsApplicationTests {
     @Suppress("UnusedPrivateProperty")
     @Autowired
     private lateinit var eventConfiguration: EventConfiguration
+
     @Test
     fun should_load_context() = Unit
 }

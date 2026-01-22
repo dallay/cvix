@@ -49,7 +49,7 @@ fun isGradleKtsProjectDirectory(directory: File) =
 fun includeGradleProjectsRecursively(directoryPath: String) {
     val baseDirectory = rootDir.resolve(directoryPath)
     baseDirectory.walkTopDown()
-        .maxDepth(1)
+        .maxDepth(3)
         .filter { it.isDirectory }
         .forEach { subDir ->
             includeProjectsInDirectory(subDir.path)

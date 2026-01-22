@@ -21,13 +21,13 @@ import org.springframework.transaction.reactive.TransactionalOperator
  *
  * ## How RLS Works
  *
- * 1. [WorkspaceContextWebFilter] extracts the workspace ID from the request
- * 2. [WorkspaceContextHolder] propagates the workspace ID through the reactive context
+ * 1. [com.cvix.config.WorkspaceContextWebFilter] extracts the workspace ID from the request
+ * 2. [com.cvix.config.WorkspaceContextHolder] propagates the workspace ID through the reactive context
  * 3. [WorkspaceConnectionFactoryDecorator] sets `SET LOCAL cvix.current_workspace = '<id>'`
  * 4. PostgreSQL RLS policies use `current_setting('cvix.current_workspace')` to filter rows
  *
  * @see WorkspaceConnectionFactoryDecorator
- * @see WorkspaceContextHolder
+ * @see com.cvix.config.WorkspaceContextHolder
  */
 @Configuration
 @EnableTransactionManagement

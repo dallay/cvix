@@ -170,7 +170,8 @@ internal class UserRegisterControllerIntegrationTest : InfrastructureTestContain
 
     @Test
     fun `should not register a new user with an invalid password`() {
-        val invalidPasswords = listOf("invalid-password", "1234", "12345678", "ashihweitwjjw", "WEAKPASSWORD1")
+        val invalidPasswords =
+            listOf("invalid-password", "1234", "12345678", "ashihweitwjjw", "WEAKPASSWORD1")
         invalidPasswords.forEach {
             webTestClient
                 .mutateWith(csrf())

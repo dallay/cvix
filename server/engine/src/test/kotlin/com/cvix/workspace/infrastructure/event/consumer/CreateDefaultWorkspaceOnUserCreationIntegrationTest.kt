@@ -9,7 +9,7 @@ import com.cvix.workspace.domain.WorkspaceFinderRepository
 import io.kotest.assertions.nondeterministic.eventually
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import java.util.UUID
+import java.util.*
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -39,29 +39,35 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
     @Test
     @Sql("/db/user/users.sql")
     @Sql("/db/user/clean.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    fun `should create default workspace when user is created and has no existing workspaces`() = runTest {
-        // Given
-        val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
-        val firstname = faker.name().firstName()
-        val lastname = faker.name().lastName()
-        val email = faker.internet().emailAddress()
+    fun `should create default workspace when user is created and has no existing workspaces`() =
+        runTest {
+            // Given
+            val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
+            val firstname = faker.name().firstName()
+            val lastname = faker.name().lastName()
+            val email = faker.internet().emailAddress()
 
-        val userCreatedEvent = UserCreatedEvent(id = userId, email = email, firstName = firstname, lastName = lastname)
+            val userCreatedEvent = UserCreatedEvent(
+                id = userId,
+                email = email,
+                firstName = firstname,
+                lastName = lastname,
+            )
 
-        // When
-        eventPublisher.publish(userCreatedEvent)
+            // When
+            eventPublisher.publish(userCreatedEvent)
 
-        // Then
-        eventually(5.seconds) {
-            val workspaces = workspaceFinderRepository.findByOwnerId(UserId(userId))
-            workspaces shouldHaveSize 1
+            // Then
+            eventually(5.seconds) {
+                val workspaces = workspaceFinderRepository.findByOwnerId(UserId(userId))
+                workspaces shouldHaveSize 1
 
-            val workspace = workspaces.first()
-            workspace.name shouldBe "$firstname $lastname's Workspace"
-            workspace.description shouldBe "Default workspace created automatically upon user registration"
-            workspace.ownerId.id shouldBe userId
+                val workspace = workspaces.first()
+                workspace.name shouldBe "$firstname $lastname's Workspace"
+                workspace.description shouldBe "Default workspace created automatically upon user registration"
+                workspace.ownerId.value shouldBe userId
+            }
         }
-    }
 
     @Test
     @Sql("/db/user/users.sql")
@@ -72,7 +78,8 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
         val firstname = faker.name().firstName()
         val email = faker.internet().emailAddress()
 
-        val userCreatedEvent = UserCreatedEvent(id = userId, email = email, firstName = firstname, lastName = null)
+        val userCreatedEvent =
+            UserCreatedEvent(id = userId, email = email, firstName = firstname, lastName = null)
 
         // When
         eventPublisher.publish(userCreatedEvent)
@@ -94,7 +101,8 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
         val lastname = faker.name().lastName()
         val email = faker.internet().emailAddress()
 
-        val userCreatedEvent = UserCreatedEvent(id = userId, email = email, firstName = null, lastName = lastname)
+        val userCreatedEvent =
+            UserCreatedEvent(id = userId, email = email, firstName = null, lastName = lastname)
 
         // When
         eventPublisher.publish(userCreatedEvent)
@@ -115,14 +123,16 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
         val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
         val email = faker.internet().emailAddress()
 
-        val userCreatedEvent = UserCreatedEvent(id = userId, email = email, firstName = null, lastName = null)
+        val userCreatedEvent =
+            UserCreatedEvent(id = userId, email = email, firstName = null, lastName = null)
 
         // When
         eventPublisher.publish(userCreatedEvent)
 
         // Then
         eventually(5.seconds) {
-            workspaceFinderRepository.findByOwnerId(UserId(userId)).first().name shouldBe "My Workspace"
+            workspaceFinderRepository.findByOwnerId(UserId(userId))
+                .first().name shouldBe "My Workspace"
         }
     }
 
@@ -157,49 +167,51 @@ class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestCo
     @Test
     @Sql("/db/user/users.sql")
     @Sql("/db/user/clean.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    fun `should handle workspace names with special characters and whitespace correctly`() = runTest {
-        // Given
-        val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
-        val userCreatedEvent = UserCreatedEvent(
-            id = userId,
-            email = faker.internet().emailAddress(),
-            firstName = "  José María  ",
-            lastName = "  González-López  ",
-        )
+    fun `should handle workspace names with special characters and whitespace correctly`() =
+        runTest {
+            // Given
+            val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
+            val userCreatedEvent = UserCreatedEvent(
+                id = userId,
+                email = faker.internet().emailAddress(),
+                firstName = "  José María  ",
+                lastName = "  González-López  ",
+            )
 
-        // When
-        eventPublisher.publish(userCreatedEvent)
+            // When
+            eventPublisher.publish(userCreatedEvent)
 
-        // Then
-        eventually(5.seconds) {
-            val workspaces = workspaceFinderRepository.findByOwnerId(UserId(userId))
-            workspaces shouldHaveSize 1
-            workspaces.first().name shouldBe "José María González-López's Workspace"
+            // Then
+            eventually(5.seconds) {
+                val workspaces = workspaceFinderRepository.findByOwnerId(UserId(userId))
+                workspaces shouldHaveSize 1
+                workspaces.first().name shouldBe "José María González-López's Workspace"
+            }
         }
-    }
 
     @Test
     @Sql("/db/user/users.sql")
     @Sql("/db/user/clean.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    fun `should create only one workspace when duplicate user-created events are published concurrently`() = runTest {
-        // Given
-        val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
-        val event = UserCreatedEvent(
-            id = userId,
-            email = faker.internet().emailAddress(),
-            firstName = faker.name().firstName(),
-            lastName = faker.name().lastName(),
-        )
+    fun `should create only one workspace when duplicate user-created events are published concurrently`() =
+        runTest {
+            // Given
+            val userId = UUID.fromString("efc4b2b8-08be-4020-93d5-f795762bf5c9")
+            val event = UserCreatedEvent(
+                id = userId,
+                email = faker.internet().emailAddress(),
+                firstName = faker.name().firstName(),
+                lastName = faker.name().lastName(),
+            )
 
-        // When - publish both events concurrently
-        awaitAll(
-            async { eventPublisher.publish(event) },
-            async { eventPublisher.publish(event) },
-        )
+            // When - publish both events concurrently
+            awaitAll(
+                async { eventPublisher.publish(event) },
+                async { eventPublisher.publish(event) },
+            )
 
-        // Then - only one workspace should exist after both are processed
-        eventually(5.seconds) {
-            workspaceFinderRepository.findByOwnerId(UserId(userId)) shouldHaveSize 1
+            // Then - only one workspace should exist after both are processed
+            eventually(5.seconds) {
+                workspaceFinderRepository.findByOwnerId(UserId(userId)) shouldHaveSize 1
+            }
         }
-    }
 }

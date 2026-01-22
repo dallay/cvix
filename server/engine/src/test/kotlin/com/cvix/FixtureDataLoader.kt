@@ -44,6 +44,7 @@ object FixtureDataLoader {
             ?: throw IllegalArgumentException("Resource not found: $jsonPath")
         return useStream(inputStream)
     }
+
     fun readResource(path: String): String {
         val cl = Thread.currentThread().contextClassLoader
             ?: FixtureDataLoader::class.java.classLoader
@@ -51,6 +52,7 @@ object FixtureDataLoader {
             ?: throw IllegalArgumentException("Resource not found: $path")
         return stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
     }
+
     /**
      * Load and deserialize JSON from a file system path.
      */

@@ -1,19 +1,29 @@
 package com.cvix.subscription.domain
 
-import com.cvix.common.domain.BaseId
 import java.util.UUID
 
 /**
- * Value object representing a unique subscription identifier.
+ * Value class representing a unique identifier for a [Subscription].
  *
- * @param id The UUID value for this subscription identifier
- * @created 12/11/25
+ * @property value The underlying UUID value.
  */
-data class SubscriptionId(override val id: UUID) : BaseId<UUID>(id) {
-    private constructor(id: String) : this(UUID.fromString(id))
+@JvmInline
+value class SubscriptionId(val value: UUID) {
+    override fun toString(): String = value.toString()
 
     companion object {
+        /**
+         * Generates a new random SubscriptionId.
+         *
+         * @return A SubscriptionId with a randomly generated UUID.
+         */
         fun random(): SubscriptionId = SubscriptionId(UUID.randomUUID())
-        fun fromString(id: String): SubscriptionId = SubscriptionId(id)
+        /**
+         * Creates a SubscriptionId from a string representation of a UUID.
+         *
+         * @param id The string representation of the UUID.
+         * @return A SubscriptionId corresponding to the given UUID string.
+         */
+        fun fromString(id: String): SubscriptionId = SubscriptionId(UUID.fromString(id))
     }
 }

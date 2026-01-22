@@ -1,5 +1,6 @@
 package com.cvix.authentication.domain
 
+import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential
 

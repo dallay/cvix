@@ -1,18 +1,29 @@
 package com.cvix.workspace.domain
 
-import com.cvix.common.domain.BaseId
 import java.util.UUID
 
 /**
- * Value object representing a workspace identifier.
+ * Value class representing a unique identifier for a [Workspace].
  *
- * @property id The UUID value of the workspace identifier.
+ * @property value The underlying UUID value.
  */
-data class WorkspaceId(override val id: UUID) : BaseId<UUID>(id) {
-    constructor(id: String) : this(UUID.fromString(id))
+@JvmInline
+value class WorkspaceId(val value: UUID) {
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val serialVersionUID: Long = 1L
-        fun create() = WorkspaceId(UUID.randomUUID())
+        /**
+         * Generates a new random WorkspaceId.
+         *
+         * @return A WorkspaceId with a randomly generated UUID.
+         */
+        fun random(): WorkspaceId = WorkspaceId(UUID.randomUUID())
+        /**
+         * Creates a WorkspaceId from a string representation of a UUID.
+         *
+         * @param id The string representation of the UUID.
+         * @return A WorkspaceId corresponding to the given UUID string.
+         */
+        fun fromString(id: String): WorkspaceId = WorkspaceId(UUID.fromString(id))
     }
 }

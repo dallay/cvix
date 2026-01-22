@@ -12,23 +12,34 @@ internal class StringToFilterConditionConverterTest {
 
     @Test
     fun `converts AND condition correctly`() {
-        val result = converter.convert("AND:gte:2023-03-12T23:00:00.000Z,lte:2023-03-17T23:00:00.000Z")
+        val result =
+            converter.convert("AND:gte:2023-03-12T23:00:00.000Z,lte:2023-03-17T23:00:00.000Z")
         assertEquals(LogicalOperator.AND, result.operator)
-        assertEquals(listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"), result.values)
+        assertEquals(
+            listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"),
+            result.values,
+        )
     }
 
     @Test
     fun `converts OR condition correctly`() {
-        val result = converter.convert("OR:gte:2023-03-12T23:00:00.000Z,lte:2023-03-17T23:00:00.000Z")
+        val result =
+            converter.convert("OR:gte:2023-03-12T23:00:00.000Z,lte:2023-03-17T23:00:00.000Z")
         assertEquals(LogicalOperator.OR, result.operator)
-        assertEquals(listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"), result.values)
+        assertEquals(
+            listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"),
+            result.values,
+        )
     }
 
     @Test
     fun `converts default AND condition when no operator is specified`() {
         val result = converter.convert("gte:2023-03-12T23:00:00.000Z,lte:2023-03-17T23:00:00.000Z")
         assertEquals(LogicalOperator.AND, result.operator)
-        assertEquals(listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"), result.values)
+        assertEquals(
+            listOf("gte:2023-03-12T23:00:00.000Z", "lte:2023-03-17T23:00:00.000Z"),
+            result.values,
+        )
     }
 
     @Test

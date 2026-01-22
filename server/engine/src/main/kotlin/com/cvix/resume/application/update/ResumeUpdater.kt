@@ -80,7 +80,7 @@ class ResumeUpdater(
                 existing.updatedAt,
             )
             throw OptimisticLockException(
-                resumeId = existing.id.id,
+                resumeId = existing.id.value,
                 expectedUpdatedAt = expectedUpdatedAt,
                 actualUpdatedAt = existing.updatedAt,
             )
@@ -97,7 +97,7 @@ class ResumeUpdater(
         )
         eventBroadcaster.publish(
             ResumeUpdatedEvent(
-                resumeId = savedDocument.id.id,
+                resumeId = savedDocument.id.value,
                 userId = userId,
                 workspaceId = savedDocument.workspaceId,
             ),

@@ -8,7 +8,7 @@ import com.cvix.resume.domain.InstitutionName
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import java.util.Locale
+import java.util.*
 import org.junit.jupiter.api.Test
 
 /**

@@ -2,7 +2,7 @@ package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerIntegrationTest
 import com.cvix.resume.ResumeTestFixtures.createResumeRequest
-import java.util.UUID
+import java.util.*
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf

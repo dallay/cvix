@@ -139,6 +139,8 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.r2dbc)
 
+    testImplementation(testFixtures(project(":shared:test-helpers")))
+
     // T E S T   R U N T I M E   O N L Y
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

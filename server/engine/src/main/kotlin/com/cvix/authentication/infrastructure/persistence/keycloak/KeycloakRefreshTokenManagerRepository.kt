@@ -1,11 +1,11 @@
 package com.cvix.authentication.infrastructure.persistence.keycloak
 
-import com.cvix.authentication.domain.AccessToken
 import com.cvix.authentication.domain.RefreshToken
 import com.cvix.authentication.domain.RefreshTokenManager
 import com.cvix.authentication.domain.UserRefreshTokenException
 import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
 import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
+import com.cvix.common.domain.authentication.AccessToken
 import java.net.URI
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.keycloak.representations.AccessTokenResponse

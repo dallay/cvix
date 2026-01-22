@@ -25,6 +25,7 @@ caffeine = "3.1.8"
 stringtemplate = "4.3.4"
 docker-java = "3.7.0"
 postgresql = "42.7.8"
+r2dbc-postgresql = "1.0.7.RELEASE"
 archunit = "1.4.1"
 pdfbox = "3.0.6"
 kotlinx-coroutines = "1.10.2"
@@ -98,6 +99,7 @@ stringtemplate4 = { module = "org.antlr:ST4", version.ref = "stringtemplate" }
 docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }
 docker-java-transport-httpclient5 = { module = "com.github.docker-java:docker-java-transport-httpclient5", version.ref = "docker-java" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
 
 
 # Testing

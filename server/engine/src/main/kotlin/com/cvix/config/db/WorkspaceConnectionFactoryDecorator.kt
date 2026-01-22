@@ -1,5 +1,6 @@
 package com.cvix.config.db
 
+import com.cvix.config.WorkspaceContextHolder
 import io.r2dbc.spi.Connection
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryMetadata
@@ -19,7 +20,7 @@ private val log: Logger = LoggerFactory.getLogger(WorkspaceConnectionFactoryDeco
  * ## How It Works
  *
  * 1. When a connection is acquired from the pool, this decorator checks the
- *    reactive context for a workspace ID via [WorkspaceContextHolder]
+ *    reactive context for a workspace ID via [com.cvix.config.WorkspaceContextHolder]
  *
  * 2. If a workspace ID is present, it executes:
  *    ```sql
@@ -48,7 +49,7 @@ private val log: Logger = LoggerFactory.getLogger(WorkspaceConnectionFactoryDeco
  * ```
  *
  * @param delegate The underlying connection factory to wrap
- * @see WorkspaceContextHolder
+ * @see com.cvix.config.WorkspaceContextHolder
  */
 class WorkspaceConnectionFactoryDecorator(
     private val delegate: ConnectionFactory

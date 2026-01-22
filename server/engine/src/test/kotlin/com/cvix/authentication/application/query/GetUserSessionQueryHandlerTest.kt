@@ -6,7 +6,7 @@ import com.cvix.authentication.domain.error.InvalidTokenException
 import io.mockk.every
 import io.mockk.mockk
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

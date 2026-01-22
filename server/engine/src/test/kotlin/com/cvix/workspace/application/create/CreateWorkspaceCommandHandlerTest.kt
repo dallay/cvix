@@ -9,7 +9,7 @@ import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -63,12 +63,12 @@ internal class CreateWorkspaceCommandHandlerTest {
         coVerify {
             workspaceRepository.create(
                 withArg {
-                    assertEquals(workspaceId, it.id.id)
+                    assertEquals(workspaceId, it.id.value)
                     assertEquals(name, it.name)
                     assertEquals("A test workspace", it.description)
-                    assertEquals(ownerId, it.ownerId.id)
+                    assertEquals(ownerId, it.ownerId.value)
                     assertEquals(1, it.members.size) // Owner is added as a member
-                    assertEquals(ownerId, it.members.first().id)
+                    assertEquals(ownerId, it.members.first().value)
                 },
             )
         }

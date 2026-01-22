@@ -89,11 +89,12 @@ internal class DockerPdfGeneratorTest {
         every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
         every { createContainerCmd.exec() } answers {
             // Capture the temp dir using .use {} to properly close the stream
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
-                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
-                    .findFirst()
-                    .orElse(null)
-            }
+            actualTempDir =
+                Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                    stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                        .findFirst()
+                        .orElse(null)
+                }
 
             // Create the PDF file in the captured directory
             actualTempDir?.let { dir ->
@@ -171,11 +172,12 @@ internal class DockerPdfGeneratorTest {
         every { createContainerCmd.exec() } answers {
             // Capture the temp dir using .use {} to properly close the stream
             // Simulate failure: DON'T create the PDF file
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
-                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
-                    .findFirst()
-                    .orElse(null)
-            }
+            actualTempDir =
+                Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                    stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                        .findFirst()
+                        .orElse(null)
+                }
 
             createContainerResponse
         }
@@ -259,11 +261,12 @@ internal class DockerPdfGeneratorTest {
         every { createContainerCmd.withAttachStderr(any()) } returns createContainerCmd
         every { createContainerCmd.exec() } answers {
             // Capture the temp dir using .use {} to properly close the stream
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
-                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
-                    .findFirst()
-                    .orElse(null)
-            }
+            actualTempDir =
+                Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                    stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                        .findFirst()
+                        .orElse(null)
+                }
 
             createContainerResponse
         }
@@ -345,11 +348,12 @@ internal class DockerPdfGeneratorTest {
         }
 
         every { createContainerCmd.exec() } answers {
-            actualTempDir = Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
-                stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
-                    .findFirst()
-                    .orElse(null)
-            }
+            actualTempDir =
+                Files.list(Path.of(System.getProperty("java.io.tmpdir"))).use { stream ->
+                    stream.filter { it.fileName.toString().startsWith("resume-pdf-") }
+                        .findFirst()
+                        .orElse(null)
+                }
 
             actualTempDir?.let { dir ->
                 Files.write(dir.resolve("resume.pdf"), pdfContent)
@@ -402,7 +406,8 @@ internal class DockerPdfGeneratorTest {
         verify(exactly = 1) { dockerClient.removeContainerCmd(containerId) }
 
         // Verify retry metric was incremented (2 retries before success)
-        val retryCounter = meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
+        val retryCounter =
+            meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
         retryCounter.count() shouldBe 2.0
     }
 
@@ -420,7 +425,8 @@ internal class DockerPdfGeneratorTest {
         exception.message shouldContain "LaTeX compilation error"
 
         // Verify NO retries happened for non-transient errors
-        val retryCounter = meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
+        val retryCounter =
+            meterRegistry.counter("docker.container.retry", "component", "pdf-generator")
         retryCounter.count() shouldBe 0.0
     }
 }

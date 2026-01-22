@@ -2,7 +2,7 @@ package com.cvix.waitlist.domain
 
 import com.cvix.TestConstants
 import com.cvix.UnitTest
-import com.cvix.common.domain.security.HashUtils
+import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.waitlist.domain.event.WaitlistEntryCreatedEvent
 import io.kotest.matchers.shouldBe
@@ -183,9 +183,11 @@ internal class WaitlistEntryTest {
         exception.message shouldBe "Invalid language code 'fr'. Supported codes: en, es"
     }
 
-    // Use shared utility for hashing, same as WaitlistJoiner
-    private fun hashIpAddress(ipAddress: String): String =
-        HashUtils.hmacSha256(ipAddress, TestConstants.TEST_HMAC_SECRET)
+    // Use shared hasher implementation for hashing, same as WaitlistJoiner
+    private fun hashIpAddress(ipAddress: String): String {
+        val hasher = com.cvix.common.domain.security.HmacHasher(TestConstants.TEST_HMAC_SECRET)
+        return hasher.hash(ipAddress)
+    }
 
     private companion object {
         // ...existing code...
