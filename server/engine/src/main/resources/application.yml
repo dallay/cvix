@@ -60,14 +60,13 @@ spring:
       enabled: true
       initial-size: 10
       max-size: 20
-  jpa:
-    show-sql: true
-    hibernate.ddl-auto: none
+  sql:
+    init:
+      mode: never
   cache:
+    type: caffeine
     caffeine:
-      caches:
-        linkPreviews:
-          spec: maximumSize=500,expireAfterWrite=5m
+      spec: maximumSize=500,expireAfterWrite=5m
   mail:
     host: ${SMTP_HOST:localhost}
     port: ${SMTP_PORT:3025}
@@ -83,7 +82,6 @@ spring:
             enable: false
 application:
   name: ProFileTailors
-  homepage: https://profiletailors.com
   description: Example ProFileTailors application used as a starting point for projects.
   version: 0.0.1-SNAPSHOT
   security:
@@ -207,9 +205,6 @@ management:
       show-components: when-authorized
       probes:
         enabled: true
-  health:
-    docker:
-      enabled: true
   info:
     git:
       mode: full
@@ -241,9 +236,7 @@ management:
           enabled: true
     tags:
       application: ${spring.application.name}
-notification:
-  email:
-    sendgrid-api-key: ${SENDGRID_API_KEY:WILL_BE_REPLACED}
+
 resume:
   pdf:
     docker:

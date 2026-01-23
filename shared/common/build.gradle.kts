@@ -10,17 +10,12 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.faker)
     testImplementation(libs.junit)
+    testImplementation(libs.junit.params)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        @Suppress("UnusedPrivateProperty")
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit Jupiter test framework
-            useJUnitJupiter(libs.versions.junit)
-        }
-    }
+// Using traditional test configuration instead of experimental JvmTestSuite
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }

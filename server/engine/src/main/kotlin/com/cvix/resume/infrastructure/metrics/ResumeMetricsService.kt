@@ -48,21 +48,8 @@ class ResumeMetricsService(
         .description("Failed resume generation requests")
         .register(meterRegistry)
 
-    // Error type counters
-    private val validationErrorCounter: Counter = Counter.builder("resume.errors.validation")
-        .description("Validation errors")
-        .register(meterRegistry)
-
-    private val latexCompilationErrorCounter: Counter = Counter.builder("resume.errors.latex")
-        .description("LaTeX compilation errors")
-        .register(meterRegistry)
-
     private val timeoutErrorCounter: Counter = Counter.builder("resume.errors.timeout")
         .description("Timeout errors")
-        .register(meterRegistry)
-
-    private val dockerErrorCounter: Counter = Counter.builder("resume.errors.docker")
-        .description("Docker execution errors")
         .register(meterRegistry)
 
     private val rateLimitErrorCounter: Counter = Counter.builder("resume.errors.ratelimit")
@@ -118,20 +105,6 @@ class ResumeMetricsService(
     }
 
     /**
-     * Increment validation error counter
-     */
-    fun incrementValidationError() {
-        validationErrorCounter.increment()
-    }
-
-    /**
-     * Increment LaTeX compilation error counter
-     */
-    fun incrementLatexError() {
-        latexCompilationErrorCounter.increment()
-    }
-
-    /**
      * Increment timeout error counter
      */
     fun incrementTimeoutError() {
@@ -139,25 +112,9 @@ class ResumeMetricsService(
     }
 
     /**
-     * Increment Docker error counter
-     */
-    fun incrementDockerError() {
-        dockerErrorCounter.increment()
-    }
-
-    /**
      * Increment rate limit error counter
      */
     fun incrementRateLimitError() {
         rateLimitErrorCounter.increment()
-    }
-
-    /**
-     * Get current error rate (0.0 to 1.0)
-     */
-    fun getErrorRate(): Double {
-        val total = requestTotalCounter.count()
-        val failures = requestFailureCounter.count()
-        return if (total > 0) failures / total else 0.0
     }
 }

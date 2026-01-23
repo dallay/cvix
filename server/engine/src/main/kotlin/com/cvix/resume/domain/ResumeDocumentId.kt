@@ -13,17 +13,10 @@ value class ResumeDocumentId(val value: UUID) {
 
     companion object {
         /**
-         * Generates a new random ResumeDocumentId.
-         *
-         * @return A ResumeDocumentId with a randomly generated UUID.
-         */
-        fun random(): ResumeDocumentId = ResumeDocumentId(UUID.randomUUID())
-
-        /**
          * Creates a ResumeDocumentId from a string representation of a UUID.
          *
-         * @param id The string representation of the UUID.
-         * @return A ResumeDocumentId corresponding to the given UUID string.
+         * @param id The string representation of a UUID.
+         * @return A ResumeDocumentId corresponding to given UUID string.
          */
         fun fromString(id: String): ResumeDocumentId = ResumeDocumentId(UUID.fromString(id))
     }

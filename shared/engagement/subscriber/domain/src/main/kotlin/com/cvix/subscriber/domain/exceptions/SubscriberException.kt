@@ -8,8 +8,5 @@ sealed class SubscriberException(message: String, cause: Throwable? = null) :
 class SubscriberNotFoundException(subscriberId: String) :
     SubscriberException("Subscriber with ID $subscriberId not found.")
 
-class DuplicateSubscriberException(email: String) :
-    SubscriberException("Subscriber with email $email already exists.")
-
 class InvalidSubscriberDataException(reason: String) :
     SubscriberException("Invalid subscriber data: $reason")
