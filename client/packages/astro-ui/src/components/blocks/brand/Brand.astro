@@ -20,8 +20,9 @@ const commonUI = {
 const t = useTranslations(lang, commonUI);
 const translatePath = useTranslatedPath(lang);
 
-import LogoDark from "@cvix/assets/logos/dark-isotype.svg";
-import LogoLight from "@cvix/assets/logos/light-isotype.svg";
+import { Image } from "astro:assets";
+import LogoDark from "@cvix/assets/logos/dark-isotype.png";
+import LogoLight from "@cvix/assets/logos/light-isotype.png";
 ---
 
 <a
@@ -35,17 +36,18 @@ import LogoLight from "@cvix/assets/logos/light-isotype.svg";
   {...attrs}
   aria-label={t("logo.description")}
 >
-  <LogoLight
+  <Image
+    src={LogoLight}
+    alt={t("logo.description")}
     width={32}
     height={32}
-    fill="currentColor"
     class="relative flex-[0_0_auto] text-gray-800 block dark:hidden"
   />
-
-  <LogoDark
+  <Image
+    src={LogoDark}
+    alt={t("logo.description")}
     width={32}
     height={32}
-    fill="currentColor"
     class="relative flex-[0_0_auto] text-white hidden dark:block"
   />
   <div class="inline-flex flex-col items-center justify-center relative flex-[0_0_auto]">
