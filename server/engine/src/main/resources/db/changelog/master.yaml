@@ -2,3 +2,5 @@ databaseChangeLog:
   - includeAll:
       path: migrations
       relativeToChangelogFile: true
+  - include:
+      file: db/changelog/subscriber-master.yaml

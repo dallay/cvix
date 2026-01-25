@@ -8,6 +8,8 @@ import com.cvix.subscriber.application.create.CreateSubscriberCommand
 import com.cvix.subscriber.domain.Attributes
 import com.cvix.subscriber.infrastructure.http.request.SubscriberRequest
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -44,7 +46,18 @@ class SubscriberController(
     @Operation(
         summary = "Subscribe (email capture)",
         description = "Capture a user's email to subscribe them for notifications " +
-            "(supports waitlist, newsletter or generic email capture)",
+            "(supports waitlist, newsletter or generic email capture). " +
+            "Requires workspace context via the X-Workspace-Id header.",
+        parameters = [
+            Parameter(
+                name = "X-Workspace-Id",
+                description = "The ID of the workspace where the subscriber will be added",
+                required = true,
+                `in` = ParameterIn.HEADER,
+                schema = Schema(type = "string", format = "uuid"),
+                example = "123e4567-e89b-12d3-a456-426614174000",
+            ),
+        ],
     )
     @ApiResponses(
         value = [

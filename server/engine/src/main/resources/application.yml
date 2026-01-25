@@ -107,6 +107,8 @@ application:
       allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
       max-age: ${CORS_MAX_AGE:3600}
     domain: ${HOSTNAME:localhost}
+  hasher:
+    ip-hmac-secret: ${IP_HMAC_SECRET:}
   # Rate limiting configuration
   rate-limit:
     enabled: true
@@ -168,13 +170,13 @@ application:
         capacity: 10
         refill-tokens: 10
         refill-duration: 1m
-    # Waitlist endpoints rate limiting
-    waitlist:
+    # Subscriber endpoints rate limiting
+    subscriber:
       enabled: true
       endpoints:
-        - /api/waitlist
+        - /api/subscribers
       limit:
-        name: waitlist-per-minute
+        name: subscriber-per-minute
         capacity: 10
         refill-tokens: 10
         refill-duration: 1m
@@ -255,11 +257,7 @@ resume:
       # Path to filesystem templates (only used when FILESYSTEM is in types)
       # Can be absolute or relative to the application working directory
       path: ${TEMPLATE_SOURCE_PATH:templates/resume}
-waitlist:
-  security:
-    # HMAC secret for IP address hashing (required)
-    # Must be set via WAITLIST_IP_HMAC_SECRET environment variable
-    ip-hmac-secret: ${WAITLIST_IP_HMAC_SECRET:}
+
 springdoc:
   show-actuator: true
   api-docs:

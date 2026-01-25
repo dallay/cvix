@@ -1,4 +1,4 @@
 databaseChangeLog:
   - includeAll:
-      path: migrations
+      path: subscriber-migrations
       relativeToChangelogFile: true

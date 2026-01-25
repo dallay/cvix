@@ -6,10 +6,10 @@ import org.springframework.validation.annotation.Validated
 /**
  * Application security properties for hasher configuration.
  *
- * Binds properties under `application.security.hasher.*` so other Spring beans can adapt behaviour
+ * Binds properties under `application.hasher.*` so other Spring beans can adapt behaviour
  * (for example which hasher to use and HMAC secret).
  */
-@ConfigurationProperties(prefix = "application.security.hasher")
+@ConfigurationProperties(prefix = "application.hasher")
 @Validated
 data class SecurityProperties(
     val hasher: HasherProperties = HasherProperties(),
