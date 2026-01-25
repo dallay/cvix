@@ -1,8 +1,8 @@
 package com.cvix.form.domain.event
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.bus.event.BaseDomainEvent
 import com.cvix.common.domain.model.WorkspaceId
-import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.form.domain.SubscriptionForm
 import com.cvix.form.domain.SubscriptionFormId
 import java.time.Instant
@@ -21,4 +21,4 @@ data class SubscriptionFormCreatedEvent(
     val createdAt: Instant = Instant.now(),
     val createdBy: String = SYSTEM_USER,
     val payload: SubscriptionForm,
-): BaseDomainEvent()
+) : BaseDomainEvent()

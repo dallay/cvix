@@ -106,7 +106,11 @@ data class SubscriptionForm(
      * Helper that records a SubscriptionFormUpdatedEvent on the provided copy and returns it.
      * Extracted to avoid duplicating event creation logic across mutating operations.
      */
-    private fun withUpdatedEvent(copy: SubscriptionForm, updatedAt: Instant, updatedBy: String): SubscriptionForm {
+    private fun withUpdatedEvent(
+        copy: SubscriptionForm,
+        updatedAt: Instant,
+        updatedBy: String
+    ): SubscriptionForm {
         copy.record(
             SubscriptionFormUpdatedEvent(
                 formId = copy.id,
@@ -114,7 +118,7 @@ data class SubscriptionForm(
                 updatedAt = updatedAt,
                 updatedBy = updatedBy,
                 payload = copy,
-            )
+            ),
         )
 
         return copy
@@ -159,7 +163,7 @@ data class SubscriptionForm(
                     createdAt = form.createdAt,
                     createdBy = form.createdBy,
                     payload = form,
-                )
+                ),
             )
         }
     }

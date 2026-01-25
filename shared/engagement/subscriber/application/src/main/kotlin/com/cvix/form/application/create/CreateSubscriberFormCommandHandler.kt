@@ -31,8 +31,18 @@ class CreateSubscriberFormCommandHandler(
     override suspend fun handle(command: CreateSubscriberFormCommand) {
         log.debug("Creating form with name: ${command.name}")
         workspaceAuthorization.ensureAccess(command.workspaceId, command.userId)
+
+        // Normalize inputs (trim) and perform small safety validations here so domain can assume cleaned input
+        val name = command.name.trim()
+        val header = command.header.trim()
+
+        require(name.isNotEmpty()) { "Form name must not be blank" }
+        require(header.isNotEmpty()) { "Form header must not be blank" }
+        require(name.length <= MAX_CHARACTERS) { "Form name must be at most $MAX_CHARACTERS characters" }
+        require(header.length <= MAX_CHARACTERS) { "Form header must be at most $MAX_CHARACTERS characters" }
+
         val formSettings = SubscriptionFormSettings(
-            header = command.header,
+            header = header,
             inputPlaceholder = command.inputPlaceholder,
             buttonText = command.buttonText,
             buttonColor = HexColor(command.buttonColor),
@@ -42,7 +52,7 @@ class CreateSubscriberFormCommandHandler(
         )
         formCreator.create(
             formId = command.id,
-            name = command.name,
+            name = name,
             description = command.description,
             settings = formSettings,
             workspaceId = command.workspaceId,
@@ -51,5 +61,6 @@ class CreateSubscriberFormCommandHandler(
 
     companion object {
         private val log = LoggerFactory.getLogger(CreateSubscriberFormCommandHandler::class.java)
+        private const val MAX_CHARACTERS = 120
     }
 }

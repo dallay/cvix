@@ -11,7 +11,7 @@ package com.cvix.form.domain
  * @property textColor The color of the form's text, as a validated hexadecimal color.
  * @property buttonTextColor The color of the button's text, as a validated hexadecimal color.
  */
-data class SubscriptionFormSettings (
+data class SubscriptionFormSettings(
     val header: String,
     val inputPlaceholder: String,
     val buttonText: String,

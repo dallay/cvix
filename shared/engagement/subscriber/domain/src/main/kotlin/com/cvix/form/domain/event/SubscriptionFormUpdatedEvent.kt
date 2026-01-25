@@ -21,4 +21,4 @@ data class SubscriptionFormUpdatedEvent(
     val updatedAt: Instant = Instant.now(),
     val updatedBy: String = "system",
     val payload: SubscriptionForm,
-): BaseDomainEvent()
+) : BaseDomainEvent()

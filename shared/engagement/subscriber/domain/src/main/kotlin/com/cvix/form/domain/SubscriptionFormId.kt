@@ -1,6 +1,6 @@
 package com.cvix.form.domain
 
-import java.util.UUID
+import java.util.*
 
 /**
  * Value class representing a unique identifier for a Subscription Form.

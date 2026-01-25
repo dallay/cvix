@@ -9,7 +9,7 @@ import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormRepository
 import com.cvix.form.domain.SubscriptionFormSettings
 import com.cvix.form.domain.event.SubscriptionFormCreatedEvent
-import java.util.UUID
+import java.util.*
 import org.slf4j.LoggerFactory
 
 /**

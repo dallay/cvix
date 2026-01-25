@@ -1,7 +1,7 @@
 package com.cvix.form.application.create
 
 import com.cvix.common.domain.bus.command.Command
-import java.util.UUID
+import java.util.*
 
 /**
  * Command to create a subscriber form.
@@ -23,7 +23,7 @@ import java.util.UUID
  * @property workspaceId Identifier of the workspace that owns the form.
  * @property userId Identifier of the user creating or requesting the creation of the form.
  */
-data class CreateSubscriberFormCommand (
+data class CreateSubscriberFormCommand(
     val id: UUID,
     val name: String,
     val header: String,

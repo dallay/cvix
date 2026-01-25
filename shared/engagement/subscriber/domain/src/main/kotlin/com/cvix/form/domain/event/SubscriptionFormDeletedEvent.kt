@@ -18,4 +18,4 @@ data class SubscriptionFormDeletedEvent(
     val workspaceId: WorkspaceId,
     val deletedAt: Instant = Instant.now(),
     val deletedBy: String = "system",
-): BaseDomainEvent()
+) : BaseDomainEvent()

@@ -1,7 +1,6 @@
 package com.cvix.common.domain.model
 
 import com.cvix.common.domain.SYSTEM_USER
-
 import java.io.Serializable
 import java.time.Instant
 

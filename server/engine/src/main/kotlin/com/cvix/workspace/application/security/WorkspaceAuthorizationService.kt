@@ -1,9 +1,9 @@
 package com.cvix.workspace.application.security
 
 import com.cvix.common.domain.Service
+import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
-import com.cvix.common.domain.security.WorkspaceAuthorization
 import java.util.UUID
 
 /**

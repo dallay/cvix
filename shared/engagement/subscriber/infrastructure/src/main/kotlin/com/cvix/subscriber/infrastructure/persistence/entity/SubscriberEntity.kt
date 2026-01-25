@@ -1,5 +1,6 @@
 package com.cvix.subscriber.infrastructure.persistence.entity
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AuditableEntityFields
 import com.cvix.subscriber.domain.Attributes
 import com.cvix.subscriber.domain.SubscriberStatus

@@ -1,10 +1,10 @@
 package com.cvix.form.domain
 
 import com.cvix.common.domain.criteria.Criteria
+import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.common.domain.presentation.pagination.Cursor
 import com.cvix.common.domain.presentation.pagination.CursorPageResponse
 import com.cvix.common.domain.presentation.sort.Sort
-import com.cvix.common.domain.model.WorkspaceId
 
 /**
  * Repository interface responsible for finding and searching [SubscriptionForm] entities.
@@ -31,7 +31,10 @@ interface SubscriptionFormFinderRepository {
      * @param workspaceId The [WorkspaceId] the form belongs to.
      * @return The [SubscriptionForm] if found, or null otherwise.
      */
-    suspend fun findByFormIdAndWorkspaceId(formId: SubscriptionFormId, workspaceId: WorkspaceId): SubscriptionForm?
+    suspend fun findByFormIdAndWorkspaceId(
+        formId: SubscriptionFormId,
+        workspaceId: WorkspaceId
+    ): SubscriptionForm?
 
     /**
      * Search for subscription forms using cursor-based pagination.

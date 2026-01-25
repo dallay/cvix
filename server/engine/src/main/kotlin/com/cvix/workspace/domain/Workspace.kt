@@ -1,5 +1,6 @@
 package com.cvix.workspace.domain
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AggregateRoot
 import com.cvix.users.domain.UserId
 import com.cvix.workspace.domain.event.WorkspaceCreatedEvent
