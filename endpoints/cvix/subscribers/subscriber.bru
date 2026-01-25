@@ -31,43 +31,43 @@ settings {
 }
 
 docs {
-------------------------------------------------------------
-REQUEST DOCUMENTATION
-------------------------------------------------------------
-Endpoint: POST /api/subscribers
-Description: Creates a new subscriber (email capture) for notifications, waitlist, newsletter, or other purposes. Requires workspace context via the X-Workspace-Id header.
-
-Authentication: Inherited (XSRF token required)
-
-Required headers:
+  ------------------------------------------------------------
+  REQUEST DOCUMENTATION
+  ------------------------------------------------------------
+  Endpoint: POST /api/subscribers
+  Description: Creates a new subscriber (email capture) for notifications, waitlist, newsletter, or other purposes. Requires workspace context via the X-Workspace-Id header.
+  
+  Authentication: Inherited (XSRF token required)
+  
+  Required headers:
   - X-XSRF-TOKEN: CSRF token
   - X-Workspace-Id: Target workspace UUID
   - Content-Type: application/json
   - Accept: application/vnd.api.v1+json
-
-Body (JSON):
+  
+  Body (JSON):
   {
     "email": "user@example.com",   // Email of the user to subscribe
     "source": "landing-hero",      // Source of the subscription (e.g., form, landing, etc)
     "language": "en"               // User's preferred language
   }
-
-Responses:
+  
+  Responses:
   201: Successful subscription (MessageResponse)
   400: Invalid data (ProblemDetail)
   409: Email already subscribed (ProblemDetail)
   429: Rate limit exceeded (ProblemDetail, Retry-After header)
   500: Internal server error (ProblemDetail)
-
-Example of successful response (201):
+  
+  Example of successful response (201):
   {
     "message": "Subscription successful!"
   }
-
-Notes:
-- The endpoint validates the email and source.
-- The success message is localized according to the Accept-Language header.
-- The workspace ID is required and must be a valid UUID.
-- The endpoint implements rate limiting for abuse protection.
-------------------------------------------------------------
+  
+  Notes:
+  - The endpoint validates the email and source.
+  - The success message is localized according to the Accept-Language header.
+  - The workspace ID is required and must be a valid UUID.
+  - The endpoint implements rate limiting for abuse protection.
+  ------------------------------------------------------------
 }

@@ -44,7 +44,7 @@ data class ResumeEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = "system",
+    override val createdBy: String = SYSTEM_USER,
 
     @CreatedDate
     @Column("created_at")

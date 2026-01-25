@@ -3,6 +3,7 @@ package com.cvix.workspace.application.security
 import com.cvix.common.domain.Service
 import com.cvix.workspace.domain.WorkspaceAuthorizationException
 import com.cvix.workspace.domain.WorkspaceMemberRepository
+import com.cvix.common.domain.security.WorkspaceAuthorization
 import java.util.UUID
 
 /**
@@ -14,7 +15,7 @@ import java.util.UUID
 @Service
 class WorkspaceAuthorizationService(
     private val workspaceMemberRepository: WorkspaceMemberRepository
-) {
+) : WorkspaceAuthorization {
     /**
      * Ensures that the user has access to the specified workspace.
      * Throws a [WorkspaceAuthorizationException] if the user does not have access.
@@ -23,7 +24,7 @@ class WorkspaceAuthorizationService(
      * @param userId The [java.util.UUID] of the user.
      * @throws [WorkspaceAuthorizationException] If the user does not have access to the workspace.
      */
-    suspend fun ensureAccess(workspaceId: UUID, userId: UUID) {
+    override suspend fun ensureAccess(workspaceId: UUID, userId: UUID) {
         if (!workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId)) {
             throw WorkspaceAuthorizationException("User $userId has no access to workspace $workspaceId")
         }
@@ -38,7 +39,7 @@ class WorkspaceAuthorizationService(
      * @param userId The string representation of the user [UUID].
      * @throws [WorkspaceAuthorizationException] If the user does not have access to the workspace.
      */
-    suspend fun ensureAccess(workspaceId: String, userId: String) {
+    override suspend fun ensureAccess(workspaceId: String, userId: String) {
         ensureAccess(UUID.fromString(workspaceId), UUID.fromString(userId))
     }
 }

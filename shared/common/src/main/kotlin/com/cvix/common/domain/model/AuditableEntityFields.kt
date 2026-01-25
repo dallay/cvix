@@ -15,7 +15,7 @@ import java.time.Instant
  * @Table("my_table")
  * data class MyEntity(
  *     @Id val id: UUID,
- *     @CreatedBy @Column("created_by") override val createdBy: String = "system",
+ *     @CreatedBy @Column("created_by") override val createdBy: String = SYSTEM_USER,
  *     @CreatedDate @Column("created_at") override val createdAt: Instant,
  *     @LastModifiedBy @Column("updated_by") override var updatedBy: String? = null,
  *     @LastModifiedDate @Column("updated_at") override var updatedAt: Instant? = null,

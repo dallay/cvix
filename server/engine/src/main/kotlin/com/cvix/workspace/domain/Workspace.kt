@@ -28,7 +28,7 @@ data class Workspace(
     val isDefault: Boolean = false,
     val members: MutableSet<UserId> = mutableSetOf(),
     override val createdAt: Instant = Instant.now(),
-    override val createdBy: String = "system",
+    override val createdBy: String = SYSTEM_USER,
     override var updatedAt: Instant? = createdAt,
     override var updatedBy: String? = null
 ) : AggregateRoot<WorkspaceId>() {
