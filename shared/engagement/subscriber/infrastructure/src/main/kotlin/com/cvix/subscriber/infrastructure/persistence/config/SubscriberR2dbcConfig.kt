@@ -1,5 +1,6 @@
 package com.cvix.subscriber.infrastructure.persistence.config
 
+import com.cvix.form.infrastructure.persistence.converter.SubscriptionFormStatusWriterConverter
 import com.cvix.subscriber.infrastructure.persistence.converter.SubscriberAttributesReaderConverter
 import com.cvix.subscriber.infrastructure.persistence.converter.SubscriberAttributesWriterConverter
 import com.cvix.subscriber.infrastructure.persistence.converter.SubscriberStatusWriterConverter
@@ -16,7 +17,8 @@ class SubscriberR2dbcConfig {
         converters.add(SubscriberAttributesWriterConverter(tools.jackson.databind.json.JsonMapper()))
         converters.add(SubscriberAttributesReaderConverter(tools.jackson.databind.json.JsonMapper()))
         converters.add(SubscriberStatusWriterConverter())
+        converters.add(SubscriptionFormStatusWriterConverter())
 
-        return R2dbcCustomConversions(R2dbcCustomConversions.STORE_CONVERSIONS, converters)
+        return R2dbcCustomConversions.of(org.springframework.data.r2dbc.dialect.PostgresDialect.INSTANCE, converters)
     }
 }

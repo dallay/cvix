@@ -13,9 +13,10 @@ import net.datafaker.Faker
 
 object SubscriberFormStub {
     private val faker = Faker()
+    private const val MAX_COLOR_VALUE = 0x1000000
 
     fun randomHexColor(): String {
-        val value = Random.nextInt(0x1000000)
+        val value = Random.nextInt(MAX_COLOR_VALUE)
         return String.format(Locale.ROOT, "%06x", value)
     }
 
