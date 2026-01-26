@@ -19,7 +19,7 @@ class HasherRegistryTest {
 
     @Test
     fun `returns hmac when asked and uses provided secret`() {
-        val props = SecurityProperties(hasher = HasherProperties(default = "hmac", ipHmacSecret = "my-secret"))
+        val props = SecurityProperties(default = "hmac", ipHmacSecret = "my-secret")
         val registry = HasherRegistry(props)
 
         val hasher = registry.get("hmac")

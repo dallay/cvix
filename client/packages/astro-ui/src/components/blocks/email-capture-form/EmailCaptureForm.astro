@@ -126,7 +126,7 @@ const t = useTranslations(currentLocale);
 				// Lazy load CSRF token on first interaction with the form
 				// This avoids unnecessary requests on pages where the form is never used
 				const lazyLoadCsrf = () => {
-					const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
+					const backendUrl = form.getAttribute("data-api-url")?.replace("/api/subscribers", "");
 					if (backendUrl) {
 						window.csrfLoader.ensureToken(backendUrl).catch((err) => {
 							console.warn("CSRF lazy load failed:", err);
@@ -215,7 +215,7 @@ const t = useTranslations(currentLocale);
 						const source = form.getAttribute("data-source");
 
 						// Ensure CSRF token is loaded before submitting
-						const backendUrl = apiUrl?.replace("/api/waitlist", "");
+						const backendUrl = apiUrl?.replace("/api/subscribers", "");
 						if (backendUrl) {
 							await window.csrfLoader.ensureToken(backendUrl);
 						}

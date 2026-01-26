@@ -1,5 +1,6 @@
 package com.cvix.resume.infrastructure.persistence.entity
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AuditableEntityFields
 import io.r2dbc.postgresql.codec.Json
 import jakarta.validation.constraints.Size
@@ -44,7 +45,7 @@ data class ResumeEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = "system",
+    override val createdBy: String = SYSTEM_USER,
 
     @CreatedDate
     @Column("created_at")

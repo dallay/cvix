@@ -44,7 +44,7 @@ import org.springframework.validation.annotation.Validated
  * - [CONTENT_SECURITY_POLICY]: The default Content Security Policy for the application.
  */
 @Validated
-@ConfigurationProperties(prefix = "application.security", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "application.security", ignoreUnknownFields = true)
 data class ApplicationSecurityProperties(
     val oauth2: OAuth2 = OAuth2(),
     val cors: CorsProperties = CorsProperties(),

@@ -8,7 +8,7 @@ class HasherConfigTest {
 
     @Test
     fun `implements HasherSecurityConfig and exposes secret`() {
-        val props = SecurityProperties(hasher = HasherProperties(ipHmacSecret = "top-secret"))
+        val props = SecurityProperties(ipHmacSecret = "top-secret")
         val cfg = HasherConfig(props)
 
         (cfg as HasherSecurityConfig).ipHmacSecret shouldBe "top-secret"

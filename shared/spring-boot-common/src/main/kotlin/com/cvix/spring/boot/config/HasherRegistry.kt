@@ -11,9 +11,9 @@ class HasherRegistry(private val securityProperties: SecurityProperties) {
     init {
         // Fail fast: if configuration requests HMAC as default but no secret provided,
         // throw during bean construction so application context fails early.
-        if (securityProperties.hasher.default == "hmac" && securityProperties.hasher.ipHmacSecret.isBlank()) {
+        if (securityProperties.default == "hmac" && securityProperties.ipHmacSecret.isBlank()) {
             // use check() to assert configuration preconditions — clearer intent for a config failure
-            check(!securityProperties.hasher.ipHmacSecret.isBlank()) {
+            check(!securityProperties.ipHmacSecret.isBlank()) {
                 "HMAC selected as default hasher but application.security.hasher.ip-hmac-secret is blank"
             }
         }
@@ -22,12 +22,12 @@ class HasherRegistry(private val securityProperties: SecurityProperties) {
     private val available: Map<String, Hasher> by lazy {
         mapOf(
             "sha256" to Sha256Hasher(),
-            "hmac" to HmacHasher(securityProperties.hasher.ipHmacSecret),
+            "hmac" to HmacHasher(securityProperties.ipHmacSecret),
         )
     }
 
     fun get(name: String?): Hasher {
-        val effective = name ?: securityProperties.hasher.default
-        return available[effective] ?: available.getValue(securityProperties.hasher.default)
+        val effective = name ?: securityProperties.default
+        return available[effective] ?: available.getValue(securityProperties.default)
     }
 }

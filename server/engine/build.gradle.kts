@@ -50,6 +50,9 @@ dependencies {
     // Local dependencies
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
+    implementation(project(":shared:engagement:subscriber:domain"))
+    implementation(project(":shared:engagement:subscriber:application"))
+    implementation(project(":shared:engagement:subscriber:infrastructure"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
