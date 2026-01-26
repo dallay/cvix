@@ -20,7 +20,7 @@
 		"cvix",
 		"shared"
 	],
-	"packageManager": "pnpm@10.28.0",
+	"packageManager": "pnpm@10.28.2",
 	"type": "module",
 	"files": [
 		"src"

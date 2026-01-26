@@ -1,4 +1,6 @@
 databaseChangeLog:
+  - include:
+      file: db/changelog/common-migrations/001-create-outbox.yaml
   - includeAll:
       path: subscriber-migrations
       relativeToChangelogFile: true
