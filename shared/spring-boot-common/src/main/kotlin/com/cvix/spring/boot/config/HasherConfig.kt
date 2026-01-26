@@ -12,5 +12,5 @@ import org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(SecurityProperties::class)
 class HasherConfig(private val securityProperties: SecurityProperties) : HasherSecurityConfig {
     override val ipHmacSecret: String
-        get() = securityProperties.hasher.ipHmacSecret
+        get() = securityProperties.ipHmacSecret
 }

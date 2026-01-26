@@ -48,10 +48,11 @@ spring:
         provider:
           oidc:
             issuer-uri: ${application.security.oauth2.issuer-uri}
-        resourceserver:
-          jwt:
-            audiences: ${application.security.oauth2.audience}
-            jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
+      resourceserver:
+        jwt:
+          audiences: ${application.security.oauth2.audience}
+          jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
+
   r2dbc:
     url: ${DATABASE_URL:r2dbc:postgresql://localhost:5432/postgres}
     username: ${DATABASE_USERNAME:postgres}
