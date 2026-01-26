@@ -6,53 +6,58 @@ import com.cvix.form.domain.SubscriptionForm
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormSettings
 import com.cvix.form.infrastructure.persistence.entity.SubscriptionFormEntity
+import org.springframework.stereotype.Component
 
 /**
  * Mapper between [SubscriptionForm] domain entity and [SubscriptionFormEntity] persistence entity.
  */
-object SubscriptionFormMapper {
-
-    fun toDomain(entity: SubscriptionFormEntity): SubscriptionForm {
-        return SubscriptionForm(
-            id = SubscriptionFormId(entity.id),
-            name = entity.name,
-            description = entity.description ?: "",
+@Component
+class SubscriptionFormMapper {
+    fun SubscriptionFormEntity.toDomain(): SubscriptionForm = runCatching {
+        SubscriptionForm(
+            id = SubscriptionFormId(this.id),
+            name = this.name,
+            description = this.description ?: "",
             settings = SubscriptionFormSettings(
-                header = entity.header,
-                inputPlaceholder = entity.inputPlaceholder,
-                buttonText = entity.buttonText,
-                buttonColor = HexColor.from(entity.buttonColor),
-                backgroundColor = HexColor.from(entity.backgroundColor),
-                textColor = HexColor.from(entity.textColor),
-                buttonTextColor = HexColor.from(entity.buttonTextColor),
+                header = this.header,
+                inputPlaceholder = this.inputPlaceholder,
+                buttonText = this.buttonText,
+                buttonColor = HexColor.from(this.buttonColor),
+                backgroundColor = HexColor.from(this.backgroundColor),
+                textColor = HexColor.from(this.textColor),
+                buttonTextColor = HexColor.from(this.buttonTextColor),
             ),
-            status = entity.status,
-            workspaceId = WorkspaceId(entity.workspaceId),
-            createdAt = entity.createdAt,
-            createdBy = entity.createdBy,
-            updatedAt = entity.updatedAt,
-            updatedBy = entity.updatedBy,
+            status = this.status,
+            workspaceId = WorkspaceId(this.workspaceId),
+            createdAt = this.createdAt,
+            createdBy = this.createdBy,
+            updatedAt = this.updatedAt,
+            updatedBy = this.updatedBy,
         )
+    }.getOrElse {
+        throw DomainMappingException("Failed mapping SubscriptionFormEntity to domain", it)
     }
 
-    fun toEntity(domain: SubscriptionForm): SubscriptionFormEntity {
-        return SubscriptionFormEntity(
-            id = domain.id.value,
-            name = domain.name,
-            description = domain.description,
-            header = domain.settings.header,
-            inputPlaceholder = domain.settings.inputPlaceholder,
-            buttonText = domain.settings.buttonText,
-            buttonColor = domain.settings.buttonColor.value,
-            backgroundColor = domain.settings.backgroundColor.value,
-            textColor = domain.settings.textColor.value,
-            buttonTextColor = domain.settings.buttonTextColor.value,
-            status = domain.status,
-            workspaceId = domain.workspaceId.value,
-            createdBy = domain.createdBy,
-            createdAt = domain.createdAt,
-            updatedBy = domain.updatedBy,
-            updatedAt = domain.updatedAt,
+    fun SubscriptionForm.toEntity(): SubscriptionFormEntity = runCatching {
+        SubscriptionFormEntity(
+            id = this.id.value,
+            name = this.name,
+            description = this.description,
+            header = this.settings.header,
+            inputPlaceholder = this.settings.inputPlaceholder,
+            buttonText = this.settings.buttonText,
+            buttonColor = this.settings.buttonColor.value,
+            backgroundColor = this.settings.backgroundColor.value,
+            textColor = this.settings.textColor.value,
+            buttonTextColor = this.settings.buttonTextColor.value,
+            status = this.status,
+            workspaceId = this.workspaceId.value,
+            createdBy = this.createdBy,
+            createdAt = this.createdAt,
+            updatedBy = this.updatedBy,
+            updatedAt = this.updatedAt,
         )
+    }.getOrElse {
+        throw DomainMappingException("Failed mapping SubscriptionForm to entity", it)
     }
 }

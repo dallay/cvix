@@ -40,6 +40,16 @@ class WorkspaceAuthorizationService(
      * @throws [WorkspaceAuthorizationException] If the user does not have access to the workspace.
      */
     override suspend fun ensureAccess(workspaceId: String, userId: String) {
-        ensureAccess(UUID.fromString(workspaceId), UUID.fromString(userId))
+        val wsUuid = try {
+            UUID.fromString(workspaceId)
+        } catch (_: IllegalArgumentException) {
+            throw WorkspaceAuthorizationException("Invalid workspaceId format: $workspaceId")
+        }
+        val userUuid = try {
+            UUID.fromString(userId)
+        } catch (_: IllegalArgumentException) {
+            throw WorkspaceAuthorizationException("Invalid userId format: $userId")
+        }
+        ensureAccess(wsUuid, userUuid)
     }
 }

@@ -1,6 +1,7 @@
 package com.cvix.form.infrastructure.http
 
 import com.cvix.ControllerTest
+import com.cvix.config.WorkspaceContextWebFilter
 import com.cvix.form.application.SubscriberFormResponse
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.application.create.CreateSubscriberFormCommand
@@ -16,10 +17,15 @@ import java.util.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.test.web.reactive.server.WebTestClient
 
 internal class SubscriptionFormControllerTest : ControllerTest() {
-    private lateinit var controller: SubscriptionFormController
+    private lateinit var createController: CreateSubscriptionFormController
+    private lateinit var updateController: UpdateSubscriptionFormController
+    private lateinit var deleteController: DeleteSubscriptionFormController
+    private lateinit var getController: GetSubscriptionFormController
+    private lateinit var searchController: SearchSubscriptionFormsController
     override lateinit var webTestClient: WebTestClient
 
     @BeforeEach
@@ -35,8 +41,33 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
             messageSource.getMessage("subscription-form.delete.success", null, any())
         } returns "Form deleted successfully!"
 
-        controller = SubscriptionFormController(mediator, messageSource)
-        webTestClient = buildWebTestClient(controller)
+        createController = CreateSubscriptionFormController(mediator, messageSource)
+        updateController = UpdateSubscriptionFormController(mediator, messageSource)
+        deleteController = DeleteSubscriptionFormController(mediator, messageSource)
+        getController = GetSubscriptionFormController(mediator)
+        searchController = SearchSubscriptionFormsController(mediator)
+
+        webTestClient = WebTestClient.bindToController(
+            createController,
+            updateController,
+            deleteController,
+            getController,
+            searchController,
+        )
+            .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
+            .controllerAdvice(com.cvix.controllers.GlobalExceptionHandler(messageSource))
+            .configureClient()
+            .build()
+            .mutateWith(org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf())
+            .mutateWith(
+                org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt()
+                    .jwt { jwt ->
+                        jwt.subject(userId.toString())
+                            .claim("preferred_username", "test-user")
+                            .claim("roles", listOf("ROLE_USER"))
+                    }
+                    .authorities(AuthorityUtils.createAuthorityList("ROLE_USER")),
+            )
     }
 
     @Test
@@ -56,10 +87,10 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<CreateSubscriberFormCommand>()) } returns Unit
 
         webTestClient.post()
-            .uri("/api/subscription-forms")
+            .uri("/api/v1/subscription-forms")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept", "application/vnd.api.v1+json")
-            .header("X-Workspace-Id", UUID.randomUUID().toString())
+            .header("X-Workspace-Id", workspaceId.toString())
             .bodyValue(request)
             .exchange()
             .expectStatus().isCreated
@@ -87,10 +118,10 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<UpdateSubscriberFormCommand>()) } returns Unit
 
         webTestClient.put()
-            .uri("/api/subscription-forms/$formId")
+            .uri("/api/v1/subscription-forms/$formId")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept", "application/vnd.api.v1+json")
-            .header("X-Workspace-Id", UUID.randomUUID().toString())
+            .header("X-Workspace-Id", workspaceId.toString())
             .bodyValue(request)
             .exchange()
             .expectStatus().isOk
@@ -107,9 +138,9 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<DeleteSubscriberFormCommand>()) } returns Unit
 
         webTestClient.delete()
-            .uri("/api/subscription-forms/$formId")
+            .uri("/api/v1/subscription-forms/$formId")
             .header("Accept", "application/vnd.api.v1+json")
-            .header("X-Workspace-Id", UUID.randomUUID().toString())
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -127,9 +158,9 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<DetailSubscriberFormQuery>()) } returns response
 
         webTestClient.get()
-            .uri("/api/subscription-forms/$formId")
+            .uri("/api/v1/subscription-forms/$formId")
             .header("Accept", "application/vnd.api.v1+json")
-            .header("X-Workspace-Id", UUID.randomUUID().toString())
+            .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
             .expectStatus().isOk
             .expectBody()

@@ -106,7 +106,6 @@ export function setupMockApi(config?: MockApiConfig) {
 		): Promise<Response> => {
 			const urlString = url.toString();
 
-			// Intercept waitlist API calls
 			if (
 				urlString.includes("/api/subscribers") &&
 				options?.method === "POST"

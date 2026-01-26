@@ -109,7 +109,8 @@ application:
       max-age: ${CORS_MAX_AGE:3600}
     domain: ${HOSTNAME:localhost}
   hasher:
-    ip-hmac-secret: ${IP_HMAC_SECRET:}
+    ip-hmac-secret: ${IP_HMAC_SECRET}
+    allow-insecure-hasher: ${ALLOW_INSECURE_HASHER:false}
   # Rate limiting configuration
   rate-limit:
     enabled: true
@@ -176,6 +177,7 @@ application:
       enabled: true
       endpoints:
         - /api/subscribers
+        - /api/public/forms/{formId}/subscribe
       limit:
         name: subscriber-per-minute
         capacity: 10

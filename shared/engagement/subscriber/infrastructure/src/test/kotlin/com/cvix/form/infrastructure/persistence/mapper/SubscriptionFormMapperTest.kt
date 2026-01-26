@@ -11,11 +11,12 @@ internal class SubscriptionFormMapperTest {
     @Test
     fun `should map domain to entity and back`() {
         // Arrange
+        val mapper = SubscriptionFormMapper()
         val domain = SubscriberFormStub.randomForm()
 
         // Act
-        val entity = SubscriptionFormMapper.toEntity(domain)
-        val mappedDomain = SubscriptionFormMapper.toDomain(entity)
+        val entity = with(mapper) { domain.toEntity() }
+        val mappedDomain = with(mapper) { entity.toDomain() }
 
         // Assert
         assertEquals(domain.id, mappedDomain.id)
@@ -30,5 +31,11 @@ internal class SubscriptionFormMapperTest {
         assertEquals(domain.settings.buttonTextColor.value, mappedDomain.settings.buttonTextColor.value)
         assertEquals(domain.status, mappedDomain.status)
         assertEquals(domain.workspaceId, mappedDomain.workspaceId)
+
+        // Audit fields assertions
+        assertEquals(domain.createdAt, mappedDomain.createdAt)
+        assertEquals(domain.createdBy, mappedDomain.createdBy)
+        assertEquals(domain.updatedAt, mappedDomain.updatedAt)
+        assertEquals(domain.updatedBy, mappedDomain.updatedBy)
     }
 }

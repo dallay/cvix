@@ -18,7 +18,7 @@ dependencies {
 
     testFixturesApi(libs.faker)
     testFixturesImplementation(project(":shared:common"))
-    testFixturesImplementation(project(":shared:engagement:subscriber:domain"))
+    // Removed self-reference to avoid circular dependency
 }
 
 // Using traditional test configuration instead of experimental JvmTestSuite

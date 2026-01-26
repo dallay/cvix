@@ -19,4 +19,11 @@ data class SubscriptionFormSettings(
     val backgroundColor: HexColor,
     val textColor: HexColor,
     val buttonTextColor: HexColor,
-)
+) {
+    init {
+        require(header.isNotBlank()) { "SubscriptionFormSettings.header must not be blank" }
+        require(inputPlaceholder.isNotBlank()) { "SubscriptionFormSettings.inputPlaceholder must not be blank" }
+        require(buttonText.isNotBlank()) { "SubscriptionFormSettings.buttonText must not be blank" }
+        // Optionally validate hex colors using HexColor.value or a validator
+    }
+}

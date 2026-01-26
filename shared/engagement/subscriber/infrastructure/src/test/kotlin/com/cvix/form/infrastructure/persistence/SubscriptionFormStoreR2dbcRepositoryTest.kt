@@ -1,7 +1,7 @@
 package com.cvix.form.infrastructure.persistence
 
-import com.cvix.IntegrationTest
 import com.cvix.authentication.infrastructure.TestSecurityConfiguration
+import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.domain.SubscriptionFormId
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@IntegrationTest
 @SpringBootTest(classes = [TestSubscriptionFormApplication::class, TestSecurityConfiguration::class])
 internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestContainers() {
 
@@ -58,7 +57,7 @@ internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestCont
     fun `should find by form id and workspace id`() = runTest {
         // Arrange
         val id = UUID.randomUUID()
-        val workspaceId = com.cvix.common.domain.model.WorkspaceId.random()
+        val workspaceId = WorkspaceId.random()
         val form = SubscriberFormStub.randomForm(id = SubscriptionFormId(id), workspaceId = workspaceId)
         subscriptionFormStoreR2dbcRepository.create(form)
 

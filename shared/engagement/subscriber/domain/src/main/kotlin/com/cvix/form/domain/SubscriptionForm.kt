@@ -117,7 +117,11 @@ data class SubscriptionForm(
                 workspaceId = copy.workspaceId,
                 updatedAt = updatedAt,
                 updatedBy = updatedBy,
-                payload = copy,
+                payload = com.cvix.form.domain.event.SubscriptionFormPayload(
+                    id = copy.id,
+                    name = copy.name,
+                    description = copy.description,
+                ),
             ),
         )
 

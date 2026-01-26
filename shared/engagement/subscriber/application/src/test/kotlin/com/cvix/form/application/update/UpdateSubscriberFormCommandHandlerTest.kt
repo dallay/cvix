@@ -46,7 +46,12 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             id = SubscriptionFormId(formId),
             workspaceId = WorkspaceId(workspaceUuid),
         )
-        coEvery { formFinder.findByFormIdAndWorkspaceId(any(), any()) } returns existingForm
+        coEvery {
+            formFinder.findByFormIdAndWorkspaceId(
+                SubscriptionFormId(formId),
+                WorkspaceId(workspaceUuid),
+            )
+        } returns existingForm
         coEvery { formRepository.update(any()) } answers { firstArg() }
 
         val command = UpdateSubscriberFormCommand(
@@ -78,7 +83,12 @@ internal class UpdateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should fail when form is not found`() = runTest {
-        coEvery { formFinder.findByFormIdAndWorkspaceId(any(), any()) } returns null
+        coEvery {
+            formFinder.findByFormIdAndWorkspaceId(
+                SubscriptionFormId(formId),
+                WorkspaceId(workspaceUuid),
+            )
+        } returns null
 
         val command = UpdateSubscriberFormCommand(
             id = formId,
@@ -108,7 +118,12 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             id = SubscriptionFormId(formId),
             workspaceId = WorkspaceId(workspaceUuid),
         )
-        coEvery { formFinder.findByFormIdAndWorkspaceId(any(), any()) } returns existingForm
+        coEvery {
+            formFinder.findByFormIdAndWorkspaceId(
+                SubscriptionFormId(formId),
+                WorkspaceId(workspaceUuid),
+            )
+        } returns existingForm
 
         val command = UpdateSubscriberFormCommand(
             id = formId,

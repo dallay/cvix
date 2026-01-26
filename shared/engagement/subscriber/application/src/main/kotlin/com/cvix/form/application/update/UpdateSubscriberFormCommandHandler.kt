@@ -2,8 +2,10 @@ package com.cvix.form.application.update
 
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.command.CommandHandler
+import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.form.domain.HexColor
+import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormSettings
 
 /**
@@ -37,8 +39,8 @@ class UpdateSubscriberFormCommandHandler(
         )
 
         formUpdater.update(
-            workspaceId = command.workspaceId,
-            formId = command.id,
+            workspaceId = WorkspaceId(command.workspaceId),
+            formId = SubscriptionFormId(command.id),
             name = name,
             description = command.description,
             settings = formSettings,

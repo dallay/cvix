@@ -16,6 +16,6 @@ import java.time.Instant
 data class SubscriptionFormDeletedEvent(
     val formId: SubscriptionFormId,
     val workspaceId: WorkspaceId,
-    val deletedAt: Instant = Instant.now(),
-    val deletedBy: String = "system",
+    val deletedAt: Instant,
+    val deletedBy: String,
 ) : BaseDomainEvent()

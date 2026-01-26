@@ -17,21 +17,7 @@ headers {
   X-Workspace-Id: {{workspaceId}}
 }
 
-body:json {
-  {
-    "name": "Basic Form Newsletter",
-    "header": "Join to our newsletter",
-    "description": "This forms is to get all the emails",
-    "inputPlaceholder": "Enter your email",
-    "buttonText": "Subscribe",
-    "buttonColor": "#eb755d",
-    "backgroundColor": "#efffbf",
-    "textColor": "#189e0b",
-    "buttonTextColor": "#39aebf",
-    "workspaceId": "{{workspaceId}}",
-    "userId": "58f47f7c-d7b4-4627-b11e-65ea66048037"
-  }
-}
+
 
 settings {
   encodeUrl: false
@@ -42,15 +28,20 @@ docs {
   ------------------------------------------------------------
   REQUEST DOCUMENTATION
   ------------------------------------------------------------
-  Title: Create Subscription Form
+  Title: Delete Subscription Form
   
   Endpoint
-  POST https://{host}/api/subscription-forms
+  DELETE https://{host}/api/subscription-forms/{formId}
   
   Summary
-  Creates a new subscription form resource in a workspace. Subscription forms are used
-  to capture emails (newsletter, waitlists, notifications) and to configure the
-  UI of the signup widget.
+  Deletes an existing subscription form identified by its formId. This
+  operation removes the resource from the workspace. The operation is
+  idempotent — it is safe to call multiple times for the same formId.
+  
+  Path Parameters
+  - formId: string (uuid) — The id of the subscription form to delete. This
+    value must be provided in the URL path and should correspond to a resource
+    within the workspace identified by X-Workspace-Id.
   
   Authentication
   - Inherited from collection (XSRF token required)
@@ -59,89 +50,34 @@ docs {
   
   Required Headers
   - Accept: application/vnd.api.v1+json
-  - Content-Type: application/json
   - X-XSRF-TOKEN: <CSRF token>
   - X-Workspace-Id: <workspace UUID>
   
-  Request Body (JSON)
-  The request body represents the subscription form. Fields, types and notes:
+  Request Body
+  - No request body is expected for DELETE. The endpoint declares body: none.
   
-  {
-    "id": "string (uuid)",                // Unique resource id. Bruno can generate using {{$randomUUID}}
-    "name": "string",                     // Short display name for the form
-    "header": "string",                   // Heading text shown in the widget
-    "description": "string",              // Description / subtitle for the form
-    "inputPlaceholder": "string",         // Placeholder text for the input field
-    "buttonText": "string",               // CTA text for the submit button
-    "buttonColor": "string (hex)",        // Button background color, hex code (#RRGGBB)
-    "backgroundColor": "string (hex)",    // Form background color
-    "textColor": "string (hex)",          // Main text color
-    "buttonTextColor": "string (hex)",    // Button text color
-    "workspaceId": "string (uuid)",       // Workspace UUID (must match X-Workspace-Id)
-    "userId": "string (uuid)"             // Owner/creator user id (UUID)
-  }
-  
-  Example Request (Bruno .bru body)
-  body:json {
-    {
-      "id": "{{$randomUUID}}",
-      "name": "Basic Form",
-      "header": "Join to our newsletter",
-      "description": "This form is to get all the emails",
-      "inputPlaceholder": "Enter your email",
-      "buttonText": "Subscribe",
-      "buttonColor": "#eb755d",
-      "backgroundColor": "#efffbf",
-      "textColor": "#189e0b",
-      "buttonTextColor": "#39aebf",
-      "workspaceId": "{{workspaceId}}",
-      "userId": "58f47f7c-d7b4-4627-b11e-65ea66048037"
-    }
+  Example Request (Bruno .bru)
+  delete {
+    url: https://localhost:8443/api/subscription-forms/{{formId}}
+    body: none
+    auth: inherit
   }
   
   Responses
-  - 201 Created: The subscription form was created successfully. Response typically
-    includes the created resource or a confirmation message.
-  - 400 Bad Request: Malformed payload or missing required fields (ProblemDetail).
+  - 204 No Content: The subscription form was deleted successfully (preferred
+    for successful deletes).
+  - 200 OK: Optional success response with confirmation payload (some
+    implementations may return a confirmation object).
+  - 404 Not Found: The resource with provided formId does not exist.
   - 401 / 403: Missing/invalid XSRF token or insufficient permissions.
-  - 409 Conflict: Resource with same id already exists (if server honors client ids).
-  - 422 Unprocessable Entity: Semantic validation failed (invalid hex, UUID, etc).
   - 429 Too Many Requests: Rate limit exceeded (check Retry-After header).
   - 500 Internal Server Error: Unexpected server failure.
   
-  Validation Rules & Notes
-  - X-Workspace-Id header must be provided and be a valid UUID. The workspaceId in
-    the body should match the X-Workspace-Id header.
-  - id may be generated client-side or server-side. Using a client-generated id is
-    supported; use {{$randomUUID}} in Bruno to ensure uniqueness in tests.
-  - Color fields expect hex codes (e.g., #RRGGBB).
-  - Keep string lengths reasonable; server may enforce max lengths for title/description.
-  
-  Bruno Usage Tips
-  - Dynamic UUID: Use "{{$randomUUID}}" in the JSON body to generate a UUID per request.
-  - Pre-request scripting: Use a pre block to generate and reuse values across headers/body:
-    pre {
-      exec: |
-        const id = bru.interpolate('{{$randomUUID}}');
-        const email = `user+${bru.interpolate('{{$randomInt min=1000 max=9999}}')}@example.com`;
-        bru.setVar("generatedId", id);
-        bru.setVar("generatedEmail", email);
-    }
-    Then reference {{generatedId}} and {{generatedEmail}} in the request.
-  - Keep XSRF token and workspaceId as environment variables in Bruno to avoid mismatches.
-  
-  Testing Recommendations
-  - Use unique ids ({{$randomUUID}}) to avoid collisions when running tests repeatedly.
-  - Verify 201 response and that the created resource is discoverable via GET/list endpoints.
-  - Test error cases with invalid colors, missing workspaceId, or duplicate ids to confirm validation.
-  
-  Security & Operational Notes
-  - Obtain and store the XSRF token before executing POST requests.
-  - Rate limits may apply; add delays when performing bulk creation.
-  - Confirm userId belongs to the workspace if server enforces ownership constraints.
-  
-  Changelog
-  - Corrected endpoint in docs: the .bru target is POST /api/subscription-forms (not /api/subscribers).
+  Notes
+  - The operation is idempotent: repeated DELETE calls for the same formId
+    should not cause additional side-effects.
+  - Verify 404 behavior when deleting a non-existent resource to ensure the
+    API returns the expected status code and error payload.
   
   ------------------------------------------------------------
 }

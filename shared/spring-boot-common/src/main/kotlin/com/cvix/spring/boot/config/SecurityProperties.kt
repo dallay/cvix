@@ -17,4 +17,11 @@ data class SecurityProperties(
 
     /** Secret used by HMAC-based hashers (can be empty if not used). */
     val ipHmacSecret: String = "",
+
+    /**
+     * Allow using an insecure fallback hasher (e.g. plain SHA-256) when no HMAC secret
+     * is provided. This should be false in production to avoid accidental insecure
+     * anonymization. Bindable via `application.hasher.allow-insecure-hasher`.
+     */
+    val allowInsecureHasher: Boolean = false,
 )

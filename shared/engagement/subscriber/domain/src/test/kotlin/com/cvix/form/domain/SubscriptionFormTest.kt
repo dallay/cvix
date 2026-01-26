@@ -2,6 +2,7 @@ package com.cvix.form.domain
 
 import com.cvix.UnitTest
 import com.cvix.common.domain.model.WorkspaceId
+import com.cvix.form.domain.event.SubscriptionFormCreatedEvent
 import java.time.Instant
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -47,7 +48,12 @@ internal class SubscriptionFormTest {
 
         val events = form.pullDomainEvents()
         assertEquals(1, events.size)
-        assertNotNull(events.first())
+        val event = events.first()
+        assertNotNull(event)
+        assertEquals(true, event is SubscriptionFormCreatedEvent)
+        val createdEvent = event as SubscriptionFormCreatedEvent
+        assertEquals(id, createdEvent.formId)
+        assertEquals(workspaceId, createdEvent.workspaceId)
     }
 
     @Test

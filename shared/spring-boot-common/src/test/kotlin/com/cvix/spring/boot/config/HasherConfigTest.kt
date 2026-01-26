@@ -12,5 +12,6 @@ class HasherConfigTest {
         val cfg = HasherConfig(props)
 
         (cfg as HasherSecurityConfig).ipHmacSecret shouldBe "top-secret"
+        (cfg as HasherSecurityConfig).allowInsecureHasher shouldBe false
     }
 }

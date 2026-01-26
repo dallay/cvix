@@ -27,11 +27,11 @@ class SubscriberFormsSearcher(
         sort: Sort?,
     ): CursorPageResponse<SubscriberFormResponse> {
         log.debug(
-            "Searching forms with criteria: {}, size: {}, cursor: {}, sort: {}",
-            criteria,
+            "Searching forms with size={}, cursor={}, sort={}, filters={}",
             size,
             cursor,
             sort,
+            sanitizeCriteria(criteria),
         )
 
         val timestampCursor = cursor?.let { TimestampCursor.deserialize(it) }
@@ -48,5 +48,12 @@ class SubscriberFormsSearcher(
 
     companion object {
         private val log = LoggerFactory.getLogger(SubscriberFormsSearcher::class.java)
+        private fun sanitizeCriteria(criteria: Criteria?): String {
+            if (criteria == null) return "{}"
+            // Redact potential PII from criteria string representation
+            return criteria.toString()
+                .replace(Regex("[0-9a-fA-F-]{32,}"), "<masked-id>")
+                .replace(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"), "<masked-email>")
+        }
     }
 }

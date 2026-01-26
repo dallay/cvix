@@ -11,30 +11,32 @@ import com.cvix.form.domain.SubscriptionFormFinderRepository
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormRepository
 import com.cvix.form.infrastructure.persistence.entity.SubscriptionFormEntity
-import com.cvix.form.infrastructure.persistence.mapper.SubscriptionFormMapper.toDomain
-import com.cvix.form.infrastructure.persistence.mapper.SubscriptionFormMapper.toEntity
+import com.cvix.form.infrastructure.persistence.mapper.SubscriptionFormMapper
 import com.cvix.form.infrastructure.persistence.repository.SubscriptionFormReactiveR2dbcRepository
 import com.cvix.spring.boot.presentation.sort.toSpringSort
 import com.cvix.spring.boot.repository.R2DBCCriteriaParser
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.reactive.TransactionalOperator
+import org.springframework.transaction.reactive.executeAndAwait
 
 @Repository
 class SubscriptionFormStoreR2dbcRepository(
     private val subscriptionFormReactiveR2dbcRepository: SubscriptionFormReactiveR2dbcRepository,
+    private val mapper: SubscriptionFormMapper,
+    private val transactionalOperator: TransactionalOperator,
 ) : SubscriptionFormRepository, SubscriptionFormFinderRepository {
 
     private val criteriaParser = R2DBCCriteriaParser(SubscriptionFormEntity::class)
 
-    override suspend fun create(form: SubscriptionForm): SubscriptionForm {
+    override suspend fun create(form: SubscriptionForm): SubscriptionForm = with(mapper) {
         log.debug("Creating subscription form with ID: {}", form.id)
-        return subscriptionFormReactiveR2dbcRepository.save(toEntity(form)).let { toDomain(it) }
+        subscriptionFormReactiveR2dbcRepository.save(form.toEntity()).toDomain()
     }
 
-    override suspend fun update(form: SubscriptionForm): SubscriptionForm {
+    override suspend fun update(form: SubscriptionForm): SubscriptionForm = with(mapper) {
         log.debug("Updating subscription form with ID: {}", form.id)
-        return subscriptionFormReactiveR2dbcRepository.save(toEntity(form)).let { toDomain(it) }
+        subscriptionFormReactiveR2dbcRepository.save(form.toEntity()).toDomain()
     }
 
     override suspend fun delete(id: SubscriptionFormId) {
@@ -42,32 +44,32 @@ class SubscriptionFormStoreR2dbcRepository(
         subscriptionFormReactiveR2dbcRepository.deleteById(id.value)
     }
 
-    @Transactional(readOnly = true)
-    override suspend fun findById(id: SubscriptionFormId): SubscriptionForm? {
+    override suspend fun findById(id: SubscriptionFormId): SubscriptionForm? = transactionalOperator.executeAndAwait {
         log.debug("Finding subscription form by ID: {}", id)
-        return subscriptionFormReactiveR2dbcRepository.findById(id.value)?.let { toDomain(it) }
+        with(mapper) {
+            subscriptionFormReactiveR2dbcRepository.findById(id.value)?.toDomain()
+        }
     }
 
-    @Transactional(readOnly = true)
     override suspend fun findByFormIdAndWorkspaceId(
         formId: SubscriptionFormId,
         workspaceId: WorkspaceId
-    ): SubscriptionForm? {
+    ): SubscriptionForm? = transactionalOperator.executeAndAwait {
         log.debug("Finding subscription form by ID: {} and Workspace ID: {}", formId, workspaceId)
-        return subscriptionFormReactiveR2dbcRepository.findByIdAndWorkspaceId(
-            formId.value,
-            workspaceId.value,
-        )
-            ?.let { toDomain(it) }
+        with(mapper) {
+            subscriptionFormReactiveR2dbcRepository.findByIdAndWorkspaceId(
+                formId.value,
+                workspaceId.value,
+            )?.toDomain()
+        }
     }
 
-    @Transactional(readOnly = true)
     override suspend fun search(
         criteria: Criteria?,
         size: Int?,
         sort: Sort?,
         cursor: Cursor?
-    ): CursorPageResponse<SubscriptionForm> {
+    ): CursorPageResponse<SubscriptionForm> = transactionalOperator.executeAndAwait {
         log.debug(
             "Searching subscription forms with criteria: {}, size: {}, sort: {}, cursor: {}",
             criteria,
@@ -90,11 +92,13 @@ class SubscriptionFormStoreR2dbcRepository(
             cursor = currentCursor,
         )
 
-        return CursorPageResponse(
-            data = result.data.map { toDomain(it) },
-            prevPageCursor = result.prevPageCursor,
-            nextPageCursor = result.nextPageCursor,
-        )
+        with(mapper) {
+            CursorPageResponse(
+                data = result.data.map { it.toDomain() },
+                prevPageCursor = result.prevPageCursor,
+                nextPageCursor = result.nextPageCursor,
+            )
+        }
     }
 
     companion object {

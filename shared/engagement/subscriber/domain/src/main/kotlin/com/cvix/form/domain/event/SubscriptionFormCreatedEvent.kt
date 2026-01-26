@@ -14,6 +14,7 @@ import java.time.Instant
  * @property workspaceId Workspace where the form was created.
  * @property createdAt Timestamp when the form was created.
  * @property createdBy The actor that created the form.
+ * @property payload The created [SubscriptionForm] object.
  */
 data class SubscriptionFormCreatedEvent(
     val formId: SubscriptionFormId,

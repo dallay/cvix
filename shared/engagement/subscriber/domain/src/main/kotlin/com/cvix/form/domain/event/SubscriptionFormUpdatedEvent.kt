@@ -1,5 +1,6 @@
 package com.cvix.form.domain.event
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.bus.event.BaseDomainEvent
 import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.form.domain.SubscriptionForm
@@ -19,6 +20,12 @@ data class SubscriptionFormUpdatedEvent(
     val formId: SubscriptionFormId,
     val workspaceId: WorkspaceId,
     val updatedAt: Instant = Instant.now(),
-    val updatedBy: String = "system",
-    val payload: SubscriptionForm,
+    val updatedBy: String = SYSTEM_USER,
+    val payload: SubscriptionFormPayload,
 ) : BaseDomainEvent()
+
+data class SubscriptionFormPayload(
+    val id: SubscriptionFormId,
+    val name: String,
+    val description: String,
+)

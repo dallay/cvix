@@ -49,6 +49,7 @@ internal class FindSubscriberFormQueryHandlerTest {
 
         assertEquals(formId.toString(), result?.id)
         assertEquals(form.name, result?.name)
+        io.mockk.coVerify { workspaceAuthorization.ensureAccess(workspaceUuid, userId) }
     }
 
     @Test
@@ -59,5 +60,6 @@ internal class FindSubscriberFormQueryHandlerTest {
         val result = queryHandler.handle(query)
 
         assertNull(result)
+        io.mockk.coVerify { workspaceAuthorization.ensureAccess(workspaceUuid, userId) }
     }
 }

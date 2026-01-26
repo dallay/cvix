@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:engagement:subscriber:domain"))
+    implementation(libs.springdoc.openapi.starter.webflux.ui)
     implementation(platform(libs.jackson.bom))
     implementation(libs.jackson.module.kotlin)
 

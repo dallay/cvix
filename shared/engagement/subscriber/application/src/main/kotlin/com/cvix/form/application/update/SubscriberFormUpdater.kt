@@ -32,8 +32,8 @@ class SubscriberFormUpdater(
      * Updates an existing subscription form.
      */
     suspend fun update(
-        workspaceId: UUID,
-        formId: UUID,
+        workspaceId: WorkspaceId,
+        formId: SubscriptionFormId,
         name: String,
         description: String,
         settings: SubscriptionFormSettings,
@@ -42,8 +42,8 @@ class SubscriberFormUpdater(
         log.debug("Updating form with ID: {} in workspace: {}", formId, workspaceId)
 
         val form = formFinder.findByFormIdAndWorkspaceId(
-            formId = SubscriptionFormId(formId),
-            workspaceId = WorkspaceId(workspaceId),
+            formId = formId,
+            workspaceId = workspaceId,
         )
             ?: throw SubscriptionFormNotFoundException(
                 "Subscription form with ID $formId not found in workspace $workspaceId",

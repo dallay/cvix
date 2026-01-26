@@ -13,4 +13,7 @@ import org.springframework.context.annotation.Configuration
 class HasherConfig(private val securityProperties: SecurityProperties) : HasherSecurityConfig {
     override val ipHmacSecret: String
         get() = securityProperties.ipHmacSecret
+
+    override val allowInsecureHasher: Boolean
+        get() = securityProperties.allowInsecureHasher
 }

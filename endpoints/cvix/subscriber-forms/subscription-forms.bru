@@ -22,7 +22,7 @@ body:json {
     "id": "{{$randomUUID}}",
     "name": "Basic Form",
     "header": "Join to our newsletter",
-    "description": "This forms is to get all the emails",
+    "description": "This form is to get all the emails",
     "inputPlaceholder": "Enter your email",
     "buttonText": "Subscribe",
     "buttonColor": "#eb755d",
@@ -30,7 +30,7 @@ body:json {
     "textColor": "#189e0b",
     "buttonTextColor": "#39aebf",
     "workspaceId": "{{workspaceId}}",
-    "userId": "58f47f7c-d7b4-4627-b11e-65ea66048037"
+    "userId": "{{userId}}"
   }
 }
 
@@ -44,29 +44,29 @@ docs {
   REQUEST DOCUMENTATION
   ------------------------------------------------------------
   Title: Create Subscription Form
-  
+
   Endpoint
   POST https://{host}/api/subscription-forms
-  
+
   Summary
   Creates a new subscription form resource in a workspace. Subscription forms are used
   to capture emails (newsletter, waitlists, notifications) and to configure the
   UI of the signup widget.
-  
+
   Authentication
   - Inherited from collection (XSRF token required)
   - Provide a valid CSRF token via header X-XSRF-TOKEN
   - Include the workspace context via X-Workspace-Id
-  
+
   Required Headers
   - Accept: application/vnd.api.v1+json
   - Content-Type: application/json
   - X-XSRF-TOKEN: <CSRF token>
   - X-Workspace-Id: <workspace UUID>
-  
+
   Request Body (JSON)
   The request body represents the subscription form. Fields, types and notes:
-  
+
   {
     "id": "string (uuid)",                // Unique resource id. Bruno can generate using {{$randomUUID}}
     "name": "string",                     // Short display name for the form
@@ -81,7 +81,7 @@ docs {
     "workspaceId": "string (uuid)",       // Workspace UUID (must match X-Workspace-Id)
     "userId": "string (uuid)"             // Owner/creator user id (UUID)
   }
-  
+
   Example Request (Bruno .bru body)
   body:json {
     {
@@ -99,7 +99,7 @@ docs {
       "userId": "58f47f7c-d7b4-4627-b11e-65ea66048037"
     }
   }
-  
+
   Responses
   - 201 Created: The subscription form was created successfully. Response typically
     includes the created resource or a confirmation message.
@@ -109,7 +109,7 @@ docs {
   - 422 Unprocessable Entity: Semantic validation failed (invalid hex, UUID, etc).
   - 429 Too Many Requests: Rate limit exceeded (check Retry-After header).
   - 500 Internal Server Error: Unexpected server failure.
-  
+
   Validation Rules & Notes
   - X-Workspace-Id header must be provided and be a valid UUID. The workspaceId in
     the body should match the X-Workspace-Id header.
@@ -117,7 +117,7 @@ docs {
     supported; use {{$randomUUID}} in Bruno to ensure uniqueness in tests.
   - Color fields expect hex codes (e.g., #RRGGBB).
   - Keep string lengths reasonable; server may enforce max lengths for title/description.
-  
+
   Bruno Usage Tips
   - Dynamic UUID: Use "{{$randomUUID}}" in the JSON body to generate a UUID per request.
   - Pre-request scripting: Use a pre block to generate and reuse values across headers/body:
@@ -130,19 +130,19 @@ docs {
     }
     Then reference {{generatedId}} and {{generatedEmail}} in the request.
   - Keep XSRF token and workspaceId as environment variables in Bruno to avoid mismatches.
-  
+
   Testing Recommendations
   - Use unique ids ({{$randomUUID}}) to avoid collisions when running tests repeatedly.
   - Verify 201 response and that the created resource is discoverable via GET/list endpoints.
   - Test error cases with invalid colors, missing workspaceId, or duplicate ids to confirm validation.
-  
+
   Security & Operational Notes
   - Obtain and store the XSRF token before executing POST requests.
   - Rate limits may apply; add delays when performing bulk creation.
   - Confirm userId belongs to the workspace if server enforces ownership constraints.
-  
+
   Changelog
   - Corrected endpoint in docs: the .bru target is POST /api/subscription-forms (not /api/subscribers).
-  
+
   ------------------------------------------------------------
 }
