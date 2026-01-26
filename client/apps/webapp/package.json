@@ -48,7 +48,7 @@
 		"axios": "^1.13.2",
 		"embla-carousel-vue": "catalog:",
 		"idb-keyval": "^6.2.2",
-		"libphonenumber-js": "^1.12.34",
+		"libphonenumber-js": "^1.12.35",
 		"lucide-vue-next": "catalog:",
 		"pinia": "^3.0.4",
 		"reka-ui": "catalog:",
