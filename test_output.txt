@@ -1,0 +1,218 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.2.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Configuration on demand is an incubating feature.
+Calculating task graph as configuration cache cannot be reused because an input to task ':build-logic:common:jar' has changed.
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server
+📦 Loading submodule: engine
+🟢 Project name: server:engine
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/tmp/koverCachedVerify
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/tmp/koverHtmlReport
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/tmp/koverXmlReport
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/build/reports/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/classes
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/resources
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/kotlin
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/libs
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/test-output
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/test-results
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/src
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/src/test
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/server/engine/src/main
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared
+📦 Loading submodule: common
+🟢 Project name: shared:common
+📦 Loading submodule: spring-boot-common
+🟢 Project name: shared:spring-boot-common
+📦 Loading submodule: test-helpers
+🟢 Project name: shared:test-helpers
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement
+📦 Loading submodule: subscriber
+🟢 Project name: shared:engagement:subscriber
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/subscriber
+📦 Loading submodule: application
+🟢 Project name: shared:engagement:subscriber:application
+📦 Loading submodule: domain
+🟢 Project name: shared:engagement:subscriber:domain
+📦 Loading submodule: infrastructure
+🟢 Project name: shared:engagement:subscriber:infrastructure
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/subscriber/application
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/subscriber/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/subscriber/infrastructure
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/subscriber/domain
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/classes
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/resources
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/libs
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/engagement/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/bin
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/bin/test
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/bin/main
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/classes
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/resources
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/kotlin
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/libs
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/test-results
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/src
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/src/test
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/common/src/main
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/classes
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/resources
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/kotlin
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/libs
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/src
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/test-helpers/src/testFixtures
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/tmp/koverCachedVerify
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/tmp/koverHtmlReport
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/tmp/koverXmlReport
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/build/reports/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/kover
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/classes
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/resources
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/kotlin
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/libs
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/test-results
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/tmp
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/build/reports
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/src
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/src/test
+🟣 Loading projects from 📂  /Users/acosta/Dev/cvix/shared/spring-boot-common/src/main
+Type-safe project accessors is an incubating feature.
+> Task :build-logic:analysis-convention:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:gradle-convention:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:gradle-convention:pluginDescriptors UP-TO-DATE
+> Task :build-logic:analysis-convention:pluginDescriptors UP-TO-DATE
+> Task :build-logic:analysis-convention:processResources UP-TO-DATE
+> Task :build-logic:gradle-convention:processResources UP-TO-DATE
+> Task :build-logic:common:compileKotlin UP-TO-DATE
+> Task :build-logic:common:compileJava NO-SOURCE
+> Task :build-logic:common:pluginDescriptors UP-TO-DATE
+> Task :build-logic:common:processResources NO-SOURCE
+> Task :build-logic:common:classes UP-TO-DATE
+> Task :build-logic:common:jar UP-TO-DATE
+> Task :build-logic:gradle-convention:compileKotlin UP-TO-DATE
+> Task :build-logic:gradle-convention:compileJava NO-SOURCE
+> Task :build-logic:gradle-convention:classes UP-TO-DATE
+> Task :build-logic:gradle-convention:jar UP-TO-DATE
+> Task :build-logic:analysis-convention:compileKotlin UP-TO-DATE
+> Task :build-logic:analysis-convention:compileJava NO-SOURCE
+> Task :build-logic:analysis-convention:classes UP-TO-DATE
+> Task :build-logic:analysis-convention:jar UP-TO-DATE
+
+> Configure project :
+⚠️ NVD_API_KEY not found in the environment.
+   NVD queries may be rate-limited.
+   Create an API key at: https://nvd.nist.gov/vuln/data-feeds#apikey
+   Options: export NVD_API_KEY=... or add it as a secret in your CI/CD.
+   (cvix)
+⚠️ [NVD_API_DELAY] not found in the environment. Defaulting to 1000ms.
+
+> Task :build-logic:library-convention:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:library-convention:compileKotlin UP-TO-DATE
+> Task :build-logic:library-convention:compileJava NO-SOURCE
+> Task :build-logic:library-convention:pluginDescriptors UP-TO-DATE
+> Task :build-logic:library-convention:processResources UP-TO-DATE
+> Task :build-logic:library-convention:classes UP-TO-DATE
+> Task :build-logic:library-convention:jar UP-TO-DATE
+> Task :build-logic:spring-boot-convention:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:spring-boot-convention:compileKotlin UP-TO-DATE
+> Task :build-logic:spring-boot-convention:compileJava NO-SOURCE
+> Task :build-logic:spring-boot-convention:pluginDescriptors UP-TO-DATE
+> Task :build-logic:spring-boot-convention:processResources UP-TO-DATE
+> Task :build-logic:spring-boot-convention:classes UP-TO-DATE
+> Task :build-logic:spring-boot-convention:jar UP-TO-DATE
+> Task :shared:test-helpers:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:engagement:subscriber:infrastructure:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:spring-boot-common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:engagement:subscriber:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:engagement:subscriber:application:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:engagement:subscriber:domain:processResources NO-SOURCE
+> Task :shared:engagement:subscriber:infrastructure:koverFindJar UP-TO-DATE
+> Task :shared:test-helpers:processTestFixturesResources NO-SOURCE
+> Task :shared:common:processResources NO-SOURCE
+> Task :shared:test-helpers:compileKotlin NO-SOURCE
+> Task :shared:engagement:subscriber:domain:processTestFixturesResources NO-SOURCE
+> Task :shared:test-helpers:processResources NO-SOURCE
+> Task :shared:engagement:subscriber:application:processResources NO-SOURCE
+> Task :shared:engagement:subscriber:infrastructure:processTestResources UP-TO-DATE
+> Task :shared:spring-boot-common:processResources UP-TO-DATE
+> Task :shared:test-helpers:compileJava NO-SOURCE
+> Task :shared:test-helpers:classes UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:processResources UP-TO-DATE
+> Task :shared:test-helpers:jar UP-TO-DATE
+> Task :shared:common:compileKotlin UP-TO-DATE
+> Task :shared:common:compileJava NO-SOURCE
+> Task :shared:common:classes UP-TO-DATE
+> Task :shared:common:jar UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:compileKotlin UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:compileJava NO-SOURCE
+> Task :shared:engagement:subscriber:domain:classes UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:jar UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:compileTestFixturesKotlin UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:compileTestFixturesJava NO-SOURCE
+> Task :shared:engagement:subscriber:domain:testFixturesClasses UP-TO-DATE
+> Task :shared:engagement:subscriber:domain:testFixturesJar UP-TO-DATE
+> Task :shared:engagement:subscriber:application:compileKotlin UP-TO-DATE
+> Task :shared:engagement:subscriber:application:compileJava NO-SOURCE
+> Task :shared:engagement:subscriber:application:classes UP-TO-DATE
+> Task :shared:engagement:subscriber:application:jar UP-TO-DATE
+> Task :shared:spring-boot-common:compileKotlin UP-TO-DATE
+> Task :shared:spring-boot-common:compileJava NO-SOURCE
+> Task :shared:spring-boot-common:classes UP-TO-DATE
+> Task :shared:spring-boot-common:jar UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:compileKotlin UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:compileJava NO-SOURCE
+> Task :shared:engagement:subscriber:infrastructure:classes UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:jar UP-TO-DATE
+> Task :shared:test-helpers:compileTestFixturesKotlin UP-TO-DATE
+> Task :shared:test-helpers:compileTestFixturesJava NO-SOURCE
+> Task :shared:test-helpers:testFixturesClasses UP-TO-DATE
+> Task :shared:test-helpers:testFixturesJar UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:compileTestKotlin UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:compileTestJava NO-SOURCE
+> Task :shared:engagement:subscriber:infrastructure:testClasses UP-TO-DATE
+> Task :shared:engagement:subscriber:infrastructure:test FROM-CACHE
+
+[Incubating] Problems report is available at: file:///Users/acosta/Dev/cvix/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.2.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 7s
+40 actionable tasks: 1 from cache, 39 up-to-date
+
+Publishing Build Scan to Develocity...
+https://gradle.com/s/lw3v7udvulodq
+
+Configuration cache entry stored.

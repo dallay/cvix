@@ -7,6 +7,7 @@ import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -157,7 +158,7 @@ abstract class InfrastructureTestContainers {
 
         private fun registerDatabaseProperties(registry: DynamicPropertyRegistry) {
             log.info("Registering Database Properties")
-            startInfrastructure()
+            ensureStarted()
             val host = postgresContainer.host
             val port = postgresContainer.getMappedPort(DB_PORT)
             val db = postgresContainer.databaseName
@@ -185,7 +186,7 @@ abstract class InfrastructureTestContainers {
 
         private fun registerKeycloakProperties(registry: DynamicPropertyRegistry) {
             log.info("Registering Keycloak Properties")
-            startInfrastructure()
+            ensureStarted()
             val authServerUrl = removeLastSlash(keycloakContainer.authServerUrl)
             registry.add(
                 "spring.security.oauth2.resourceserver.jwt.issuer-uri",
@@ -226,6 +227,19 @@ abstract class InfrastructureTestContainers {
             registry.add(
                 "application.security.oauth2.admin-password",
             ) { ADMIN_PASSWORD }
+        }
+
+        // Ensure containers are started once in a thread-safe manner
+        private val started = AtomicBoolean(false)
+
+        @JvmStatic
+        fun ensureStarted() {
+            if (started.get()) return
+            synchronized(this) {
+                if (started.get()) return
+                startInfrastructure()
+                started.set(true)
+            }
         }
 
         private fun removeLastSlash(url: String): String {

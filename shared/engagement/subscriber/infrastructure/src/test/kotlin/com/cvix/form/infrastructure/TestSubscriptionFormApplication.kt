@@ -2,6 +2,9 @@ package com.cvix.form.infrastructure
 
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventPublisher
+import com.cvix.common.domain.security.Hasher
+import com.cvix.common.domain.security.Sha256Hasher
+import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
 import com.cvix.spring.boot.infrastructure.persistence.outbox.R2dbcOutboxRepository
@@ -9,10 +12,6 @@ import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
-import com.cvix.common.domain.security.WorkspaceAuthorization
-import com.cvix.common.domain.security.Hasher
-import com.cvix.common.domain.security.Sha256Hasher
-import io.mockk.mockk
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
@@ -49,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController
 open class TestSubscriptionFormApplication {
     @Bean
     fun subscriptionFormDeletedEventPublisher() = mockk<EventPublisher<SubscriptionFormDeletedEvent>>(relaxed = true)
-    
+
     @Bean
     fun workspaceAuthorization(): WorkspaceAuthorization = mockk(relaxUnitFun = true)
 
