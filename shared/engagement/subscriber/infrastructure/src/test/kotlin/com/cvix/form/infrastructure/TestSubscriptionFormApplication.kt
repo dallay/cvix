@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
 import com.cvix.common.domain.security.WorkspaceAuthorization
+import com.cvix.common.domain.security.Hasher
+import com.cvix.common.domain.security.Sha256Hasher
 import io.mockk.mockk
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.FilterType
@@ -50,4 +52,7 @@ open class TestSubscriptionFormApplication {
     
     @Bean
     fun workspaceAuthorization(): WorkspaceAuthorization = mockk(relaxUnitFun = true)
+
+    @Bean
+    fun hasher(): Hasher = Sha256Hasher()
 }
