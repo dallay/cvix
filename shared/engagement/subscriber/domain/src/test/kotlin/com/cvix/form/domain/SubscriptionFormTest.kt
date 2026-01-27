@@ -41,7 +41,7 @@ internal class SubscriptionFormTest {
         assertEquals("My Form", form.name)
         assertEquals("Description", form.description)
         assertEquals(settings, form.settings)
-        assertEquals(SubscriptionFormStatus.ACTIVE, form.status)
+        assertEquals(SubscriptionFormStatus.PUBLISHED, form.status)
         assertEquals(workspaceId, form.workspaceId)
         assertEquals(createdAt, form.createdAt)
         assertEquals("tester", form.createdBy)
@@ -57,7 +57,7 @@ internal class SubscriptionFormTest {
     }
 
     @Test
-    fun `should activate an archived form and record updated event`() {
+    fun `should publish an archived form and record updated event`() {
         val id = SubscriptionFormId.random()
         val settings = SubscriptionFormSettings(
             header = "Archived Header",
@@ -80,18 +80,18 @@ internal class SubscriptionFormTest {
         )
 
         val now = Instant.parse("2025-02-02T12:00:00Z")
-        val activated = form.activate(updatedBy = "admin", now = now)
+        val published = form.publish(updatedBy = "admin", now = now)
 
-        assertEquals(SubscriptionFormStatus.ACTIVE, activated.status)
-        assertEquals(now, activated.updatedAt)
-        assertEquals("admin", activated.updatedBy)
+        assertEquals(SubscriptionFormStatus.PUBLISHED, published.status)
+        assertEquals(now, published.updatedAt)
+        assertEquals("admin", published.updatedBy)
 
-        val events = activated.pullDomainEvents()
+        val events = published.pullDomainEvents()
         assertEquals(1, events.size)
     }
 
     @Test
-    fun `should throw when activating an already active form`() {
+    fun `should throw when publishing an already published form`() {
         val id = SubscriptionFormId.random()
         val form = SubscriptionForm(
             id = id,
@@ -106,17 +106,17 @@ internal class SubscriptionFormTest {
                 textColor = HexColor.from("000000"),
                 buttonTextColor = HexColor.from("ffffff"),
             ),
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId,
         )
 
         assertThrows(IllegalArgumentException::class.java) {
-            form.activate(updatedBy = "actor")
+            form.publish(updatedBy = "actor")
         }
     }
 
     @Test
-    fun `should archive an active form and record updated event`() {
+    fun `should archive a published form and record updated event`() {
         val id = SubscriptionFormId.random()
         val settings = SubscriptionFormSettings(
             header = "Archive",
@@ -132,7 +132,7 @@ internal class SubscriptionFormTest {
             name = "Form",
             description = "d",
             settings = settings,
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId,
             createdBy = "creator",
         )
@@ -190,7 +190,7 @@ internal class SubscriptionFormTest {
             name = "Old",
             description = "old",
             settings = settings,
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId,
         )
 
@@ -238,7 +238,7 @@ internal class SubscriptionFormTest {
                 textColor = HexColor.from("000000"),
                 buttonTextColor = HexColor.from("ffffff"),
             ),
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId,
         )
 

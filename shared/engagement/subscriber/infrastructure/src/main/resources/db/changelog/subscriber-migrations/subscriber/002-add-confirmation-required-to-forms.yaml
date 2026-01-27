@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-confirmation-required-to-subscription-forms
+      author: acosta
+      comment: Add confirmation_required column to subscription_forms table
+      changes:
+        - addColumn:
+            tableName: subscription_forms
+            columns:
+              - column:
+                  name: confirmation_required
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false

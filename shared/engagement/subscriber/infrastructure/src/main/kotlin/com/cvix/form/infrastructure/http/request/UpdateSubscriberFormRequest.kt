@@ -19,6 +19,7 @@ import java.util.*
  * @property backgroundColor Hex color for background (required, e.g. #RRGGBB)
  * @property textColor Hex color for text (required, e.g. #RRGGBB)
  * @property buttonTextColor Hex color for button text (required, e.g. #RRGGBB)
+ * @property confirmationRequired Whether the subscriber needs to confirm their email
  */
 
 @Schema(description = "Request to update a subscription form")
@@ -73,7 +74,10 @@ data class UpdateSubscriberFormRequest(
     @field:Schema(description = "Button text color (hex)", example = "#ffffff", required = true)
     @field:NotBlank
     @field:Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
-    val buttonTextColor: String
+    val buttonTextColor: String,
+
+    @field:Schema(description = "Whether confirmation is required", example = "true")
+    val confirmationRequired: Boolean = true
 ) {
     fun toCommand(id: UUID, workspaceId: UUID, userId: UUID) = UpdateSubscriberFormCommand(
         id = id,
@@ -86,6 +90,7 @@ data class UpdateSubscriberFormRequest(
         backgroundColor = backgroundColor,
         textColor = textColor,
         buttonTextColor = buttonTextColor,
+        confirmationRequired = confirmationRequired,
         workspaceId = workspaceId,
         userId = userId,
     )

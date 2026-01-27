@@ -10,6 +10,7 @@ package com.cvix.form.domain
  * @property backgroundColor The background color of the form, as a validated hexadecimal color.
  * @property textColor The color of the form's text, as a validated hexadecimal color.
  * @property buttonTextColor The color of the button's text, as a validated hexadecimal color.
+ * @property confirmationRequired Whether the subscriber needs to confirm their email (double opt-in).
  */
 data class SubscriptionFormSettings(
     val header: String,
@@ -19,6 +20,7 @@ data class SubscriptionFormSettings(
     val backgroundColor: HexColor,
     val textColor: HexColor,
     val buttonTextColor: HexColor,
+    val confirmationRequired: Boolean = true,
 ) {
     init {
         require(header.isNotBlank()) { "SubscriptionFormSettings.header must not be blank" }

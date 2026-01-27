@@ -17,6 +17,7 @@ data class UpdateSubscriberFormCommand(
     val backgroundColor: String,
     val textColor: String,
     val buttonTextColor: String,
+    val confirmationRequired: Boolean,
     val workspaceId: UUID,
     val userId: UUID,
 ) : Command

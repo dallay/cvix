@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property backgroundColor Hex color code for the form background.
  * @property textColor Hex color code for the general form text.
  * @property buttonTextColor Hex color code for the text on the submission button.
+ * @property status Current status of the subscription form.
+ * @property confirmationRequired Whether the subscriber needs to confirm their email.
  * @property workspaceId The workspace this form belongs to.
  * @property createdAt Timestamp when the form was created (ISO-8601).
  * @property updatedAt Timestamp when the form was last updated (ISO-8601), or null if never updated.
@@ -63,6 +65,12 @@ data class SubscriberFormResponse(
     @field:Schema(description = "Button text hex color", example = "#ffffff")
     val buttonTextColor: String,
 
+    @field:Schema(description = "Current status of the subscription form", example = "PUBLISHED")
+    val status: String,
+
+    @field:Schema(description = "Whether confirmation is required", example = "true")
+    val confirmationRequired: Boolean,
+
     @field:Schema(
         description = "Workspace identifier",
         example = "770e8400-e29b-41d4-a716-446655441111",
@@ -94,6 +102,8 @@ data class SubscriberFormResponse(
             backgroundColor = form.settings.backgroundColor.value,
             textColor = form.settings.textColor.value,
             buttonTextColor = form.settings.buttonTextColor.value,
+            status = form.status.name,
+            confirmationRequired = form.settings.confirmationRequired,
             workspaceId = form.workspaceId.value.toString(),
             createdAt = form.createdAt.toString(),
             updatedAt = form.updatedAt?.toString(),

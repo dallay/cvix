@@ -65,6 +65,7 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             backgroundColor = "#00FF00",
             textColor = "#0000FF",
             buttonTextColor = "#FFFFFF",
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -101,6 +102,7 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             backgroundColor = "#00FF00",
             textColor = "#0000FF",
             buttonTextColor = "#FFFFFF",
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -136,6 +138,7 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             backgroundColor = existingForm.settings.backgroundColor.value,
             textColor = existingForm.settings.textColor.value,
             buttonTextColor = existingForm.settings.buttonTextColor.value,
+            confirmationRequired = existingForm.settings.confirmationRequired,
             workspaceId = workspaceUuid,
             userId = userId,
         )

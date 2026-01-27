@@ -20,6 +20,7 @@ import java.util.*
  * @property backgroundColor Background color for the form container (hex code or token).
  * @property textColor Primary text color used within the form (hex code or token).
  * @property buttonTextColor Text color used on the submit button (hex code or token).
+ * @property confirmationRequired Whether the subscriber needs to confirm their email.
  * @property workspaceId Identifier of the workspace that owns the form.
  * @property userId Identifier of the user creating or requesting the creation of the form.
  */
@@ -34,6 +35,7 @@ data class CreateSubscriberFormCommand(
     val backgroundColor: String,
     val textColor: String,
     val buttonTextColor: String,
+    val confirmationRequired: Boolean,
     val workspaceId: UUID,
     val userId: UUID,
 ) : Command

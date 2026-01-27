@@ -12,6 +12,7 @@ import com.cvix.form.infrastructure.TestSubscriptionFormApplication
 import com.cvix.form.infrastructure.persistence.entity.SubscriptionFormEntity
 import com.cvix.spring.boot.infrastructure.persistence.outbox.OutboxEntity
 import io.mockk.mockk
+import java.time.Instant
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +24,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria.where
 import org.springframework.data.relational.core.query.Query.query
-import java.time.Instant
 
 @SpringBootTest(classes = [TestSubscriptionFormApplication::class, TestSecurityConfiguration::class])
 class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
@@ -37,7 +37,8 @@ class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
     @TestConfiguration
     class Config {
         @Bean
-        fun subscriptionFormDeletedEventPublisher(): EventPublisher<SubscriptionFormDeletedEvent> = mockk(relaxed = true)
+        fun subscriptionFormDeletedEventPublisher(): EventPublisher<SubscriptionFormDeletedEvent> =
+            mockk(relaxed = true)
     }
 
     @Test
@@ -56,9 +57,9 @@ class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
             backgroundColor = "#FFFFFF",
             textColor = "#000000",
             buttonTextColor = "#FFFFFF",
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId.value,
-            createdAt = Instant.now()
+            createdAt = Instant.now(),
         )
         entityTemplate.insert(entity).awaitFirstOrNull()
 
@@ -68,14 +69,14 @@ class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
         // Assert: Form is deleted
         val deletedForm = entityTemplate.selectOne(
             query(where("id").`is`(formId.value)),
-            SubscriptionFormEntity::class.java
+            SubscriptionFormEntity::class.java,
         ).awaitFirstOrNull()
         assertThat(deletedForm).isNull()
 
         // Assert: Outbox entry is created
         val outboxEntry = entityTemplate.selectOne(
             query(where("aggregate_id").`is`(formId.value.toString())),
-            OutboxEntity::class.java
+            OutboxEntity::class.java,
         ).awaitFirstOrNull()
 
         assertThat(outboxEntry).isNotNull

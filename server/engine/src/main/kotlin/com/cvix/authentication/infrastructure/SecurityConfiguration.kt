@@ -207,6 +207,8 @@ class SecurityConfiguration(
             ).permitAll()
             .pathMatchers(HttpMethod.POST, "/api/waitlist").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/contact").permitAll()
+            .pathMatchers(HttpMethod.POST, "/api/subscribers").permitAll()
+            .pathMatchers(HttpMethod.GET, "/api/v1/subscription-forms/*").permitAll()
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()

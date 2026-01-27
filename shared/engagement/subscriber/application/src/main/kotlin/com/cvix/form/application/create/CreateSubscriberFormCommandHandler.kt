@@ -49,6 +49,7 @@ class CreateSubscriberFormCommandHandler(
             backgroundColor = HexColor(command.backgroundColor),
             textColor = HexColor(command.textColor),
             buttonTextColor = HexColor(command.buttonTextColor),
+            confirmationRequired = command.confirmationRequired,
         )
         formCreator.create(
             formId = command.id,

@@ -7,12 +7,14 @@ import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.application.create.CreateSubscriberFormCommand
 import com.cvix.form.application.delete.DeleteSubscriberFormCommand
 import com.cvix.form.application.details.DetailSubscriberFormQuery
+import com.cvix.form.application.find.SubscriberFormFinder
 import com.cvix.form.application.update.UpdateSubscriberFormCommand
 import com.cvix.form.infrastructure.http.request.CreateSubscriberFormRequest
 import com.cvix.form.infrastructure.http.request.UpdateSubscriberFormRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.mockk
 import java.util.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -26,6 +28,7 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
     private lateinit var deleteController: DeleteSubscriptionFormController
     private lateinit var getController: GetSubscriptionFormController
     private lateinit var searchController: SearchSubscriptionFormsController
+    private val formFinder: SubscriberFormFinder = mockk()
     override lateinit var webTestClient: WebTestClient
 
     @BeforeEach
@@ -44,7 +47,7 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         createController = CreateSubscriptionFormController(mediator, messageSource)
         updateController = UpdateSubscriptionFormController(mediator, messageSource)
         deleteController = DeleteSubscriptionFormController(mediator, messageSource)
-        getController = GetSubscriptionFormController(mediator)
+        getController = GetSubscriptionFormController(mediator, formFinder)
         searchController = SearchSubscriptionFormsController(mediator)
 
         webTestClient = WebTestClient.bindToController(

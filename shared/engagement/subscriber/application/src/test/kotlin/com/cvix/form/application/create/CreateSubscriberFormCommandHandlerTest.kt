@@ -62,6 +62,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -93,6 +94,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = otherUser,
         )
@@ -120,6 +122,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -152,6 +155,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -183,6 +187,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -210,6 +215,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -231,6 +237,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -255,6 +262,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -284,6 +292,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -306,6 +315,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -330,6 +340,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -364,6 +375,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )
@@ -389,6 +401,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             backgroundColor = settings.backgroundColor.value,
             textColor = settings.textColor.value,
             buttonTextColor = settings.buttonTextColor.value,
+            confirmationRequired = true,
             workspaceId = workspaceUuid,
             userId = userId,
         )

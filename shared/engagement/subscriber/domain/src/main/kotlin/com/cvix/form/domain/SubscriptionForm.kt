@@ -14,7 +14,7 @@ import java.time.Instant
  * @property name Name of the subscription form.
  * @property description Description of the subscription form.
  * @property settings Customizable settings for the form's appearance and behavior.
- * @property status Current status of the subscription form (e.g., ACTIVE, ARCHIVED).
+ * @property status Current status of the subscription form (e.g., PUBLISHED, ARCHIVED).
  * @property workspaceId Identifier of the workspace to which the form belongs.
  * @property createdAt Timestamp when the form was created.
  * @property createdBy User or system that created the form.
@@ -56,16 +56,16 @@ data class SubscriptionForm(
     }
 
     /**
-     * Return a copy of this form with status set to ACTIVE and audit fields updated.
-     * Throws if the form is already active.
+     * Return a copy of this form with status set to PUBLISHED and audit fields updated.
+     * Throws if the form is already published.
      * @param updatedBy actor performing the activation
      * @param now timestamp to use for the update (default Instant.now())
      */
-    fun activate(updatedBy: String, now: Instant = Instant.now()): SubscriptionForm {
-        require(status != SubscriptionFormStatus.ACTIVE) { "SubscriptionForm is already active" }
+    fun publish(updatedBy: String, now: Instant = Instant.now()): SubscriptionForm {
+        require(status != SubscriptionFormStatus.PUBLISHED) { "SubscriptionForm is already published" }
 
         val copy = this.copy(
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             updatedAt = now,
             updatedBy = updatedBy,
         )
@@ -155,7 +155,7 @@ data class SubscriptionForm(
             name = name,
             description = description,
             settings = settings,
-            status = SubscriptionFormStatus.ACTIVE,
+            status = SubscriptionFormStatus.PUBLISHED,
             workspaceId = workspaceId,
             createdAt = createdAt,
             createdBy = createdBy,

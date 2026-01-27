@@ -22,6 +22,7 @@ import java.util.*
  * @property backgroundColor Form background hex color (required, e.g., #ffffff).
  * @property textColor Main text hex color (required, e.g., #000000).
  * @property buttonTextColor Button text hex color (required, e.g., #ffffff).
+ * @property confirmationRequired Whether the subscriber needs to confirm their email (default true).
  */
 @Schema(description = "Request to create a subscription form")
 data class CreateSubscriberFormRequest(
@@ -103,7 +104,10 @@ data class CreateSubscriberFormRequest(
         example = "#ffffff",
         pattern = "^#([A-Fa-f0-9]{6})$",
     )
-    val buttonTextColor: String
+    val buttonTextColor: String,
+
+    @field:Schema(description = "Whether confirmation is required", example = "true")
+    val confirmationRequired: Boolean = true
 ) {
     fun toCommand(id: UUID, workspaceId: UUID, userId: UUID) = CreateSubscriberFormCommand(
         id = id,
@@ -116,6 +120,7 @@ data class CreateSubscriberFormRequest(
         backgroundColor = backgroundColor,
         textColor = textColor,
         buttonTextColor = buttonTextColor,
+        confirmationRequired = confirmationRequired,
         workspaceId = workspaceId,
         userId = userId,
     )

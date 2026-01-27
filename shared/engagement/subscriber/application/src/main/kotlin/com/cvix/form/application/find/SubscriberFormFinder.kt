@@ -14,6 +14,12 @@ class SubscriberFormFinder(
     private val formFinderRepository: SubscriptionFormFinderRepository,
 ) {
     /**
+     * Finds a subscription form by ID.
+     */
+    suspend fun findById(formId: SubscriptionFormId): SubscriptionForm? =
+        formFinderRepository.findById(formId)
+
+    /**
      * Finds a subscription form by ID and workspace ID.
      */
     suspend fun find(formId: SubscriptionFormId, workspaceId: WorkspaceId): SubscriptionForm? =

@@ -36,6 +36,7 @@ class UpdateSubscriberFormCommandHandler(
             backgroundColor = HexColor.from(command.backgroundColor),
             textColor = HexColor.from(command.textColor),
             buttonTextColor = HexColor.from(command.buttonTextColor),
+            confirmationRequired = command.confirmationRequired,
         )
 
         formUpdater.update(

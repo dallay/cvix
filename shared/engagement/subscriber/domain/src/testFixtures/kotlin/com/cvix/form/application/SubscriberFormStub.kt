@@ -28,12 +28,13 @@ object SubscriberFormStub {
         backgroundColor = HexColor.from(randomHexColor()),
         textColor = HexColor.from(randomHexColor()),
         buttonTextColor = HexColor.from(randomHexColor()),
+        confirmationRequired = Random.nextBoolean(),
     )
 
     fun randomForm(
         id: SubscriptionFormId = SubscriptionFormId.random(),
         workspaceId: WorkspaceId = WorkspaceId.random(),
-        status: SubscriptionFormStatus = SubscriptionFormStatus.ACTIVE,
+        status: SubscriptionFormStatus = SubscriptionFormStatus.PUBLISHED,
         name: String = faker.company().name(),
         description: String = faker.lorem().sentence(),
         createdBy: String = "test",
@@ -42,7 +43,7 @@ object SubscriberFormStub {
         val settings = randomSettings()
 
         return when (status) {
-            SubscriptionFormStatus.ACTIVE -> SubscriptionForm.create(
+            SubscriptionFormStatus.PUBLISHED -> SubscriptionForm.create(
                 id = id,
                 name = name,
                 description = description,
@@ -52,12 +53,14 @@ object SubscriberFormStub {
                 createdAt = createdAt,
             )
 
+            SubscriptionFormStatus.DRAFT,
+            SubscriptionFormStatus.DISABLED,
             SubscriptionFormStatus.ARCHIVED -> SubscriptionForm(
                 id = id,
                 name = name,
                 description = description,
                 settings = settings,
-                status = SubscriptionFormStatus.ARCHIVED,
+                status = status,
                 workspaceId = workspaceId,
                 createdAt = createdAt,
                 createdBy = createdBy,

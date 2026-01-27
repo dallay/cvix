@@ -3,10 +3,10 @@ package com.cvix.spring.boot.infrastructure.persistence.outbox
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.outbox.OutboxEntry
 import com.cvix.common.domain.outbox.OutboxRepository
-import org.springframework.context.annotation.Primary
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 
-@Primary
 @Service
+@ConditionalOnMissingBean(OutboxRepository::class)
 class R2dbcOutboxRepository(
     private val repository: OutboxR2dbcRepository
 ) : OutboxRepository {
@@ -20,7 +20,7 @@ class R2dbcOutboxRepository(
             payload = entry.payload,
             occurredAt = entry.occurredAt,
             status = "PENDING",
-            attempts = 0
+            attempts = 0,
         )
         repository.save(entity)
     }

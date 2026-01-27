@@ -1,6 +1,6 @@
 package com.cvix.spring.boot.infrastructure.persistence.outbox
 
-import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import java.util.UUID
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 interface OutboxR2dbcRepository : CoroutineCrudRepository<OutboxEntity, UUID>

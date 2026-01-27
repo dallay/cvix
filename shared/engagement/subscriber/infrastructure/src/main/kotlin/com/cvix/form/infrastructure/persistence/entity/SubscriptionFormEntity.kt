@@ -60,6 +60,9 @@ data class SubscriptionFormEntity(
     @get:Size(max = 7)
     val buttonTextColor: String,
 
+    @Column("confirmation_required")
+    val confirmationRequired: Boolean = true,
+
     @Column("status")
     var status: SubscriptionFormStatus,
 
