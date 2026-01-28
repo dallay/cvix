@@ -30,6 +30,7 @@ import com.cvix.common.domain.presentation.sort.Sort as DomainSort
  * @property subscriberReactiveR2dbcRepository The underlying Spring Data R2DBC repository.
  */
 @Repository
+@Transactional("connectionFactoryTransactionManager")
 class SubscriberStoreR2dbcRepository(
     private val subscriberReactiveR2dbcRepository: SubscriberReactiveR2dbcRepository,
 ) : SubscriberRepository, SubscriberSearchRepository {
@@ -103,32 +104,32 @@ class SubscriberStoreR2dbcRepository(
         )
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "connectionFactoryTransactionManager", readOnly = true)
     override suspend fun searchActive(): List<Subscriber> {
         log.debug("Searching all active subscribers")
         return subscriberReactiveR2dbcRepository.findAllByStatus(SubscriberStatus.ENABLED)
             .map { it.toDomain() }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "connectionFactoryTransactionManager", readOnly = true)
     override suspend fun findById(id: UUID): Subscriber? {
         log.debug("Finding subscriber by ID: {}", id)
         return subscriberReactiveR2dbcRepository.findById(id)?.toDomain()
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "connectionFactoryTransactionManager", readOnly = true)
     override suspend fun findByEmailAndSource(email: String, source: String): Subscriber? {
         log.debug("Finding subscriber by email and source: {}/{}", email, source)
         return subscriberReactiveR2dbcRepository.findByEmailAndSource(email, source)?.toDomain()
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "connectionFactoryTransactionManager", readOnly = true)
     override suspend fun existsByEmailAndSource(email: String, source: String): Boolean {
         log.debug("Checking existence of subscriber by email and source: {}/{}", email, source)
         return subscriberReactiveR2dbcRepository.existsByEmailAndSource(email, source)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "connectionFactoryTransactionManager", readOnly = true)
     override suspend fun findAllByMetadata(key: String, value: String): List<Subscriber> {
         log.debug("Finding subscribers by metadata: {}={}", key, value)
         return subscriberReactiveR2dbcRepository.findAllByMetadata(key, value)

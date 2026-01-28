@@ -6,6 +6,9 @@ import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.jupiter.api.BeforeAll
@@ -42,7 +45,8 @@ abstract class InfrastructureTestContainers {
 
     init {
         log.info("Starting infrastructure... \uD83D\uDE80")
-        startInfrastructure()
+        // Ensure containers are started in a thread-safe, idempotent way
+        ensureStarted()
     }
 
     protected fun getAccessToken(
@@ -93,6 +97,13 @@ abstract class InfrastructureTestContainers {
         private val ports = arrayOf(3025, 3110, 3143, 3465, 3993, 3995, WEB_PORT)
         private val NETWORK: Network = Network.newNetwork()
 
+        // Ensure containers are started once in a thread-safe manner
+        private val started = AtomicBoolean(false)
+
+        // Named constants to avoid magic numbers in the wait logic
+        private const val DEFAULT_JDBC_TIMEOUT_SECONDS: Long = 60
+        private const val SLEEP_INTERVAL_MILLIS: Long = 1000
+
         @JvmStatic
         @Container
         private val postgresContainer: PostgreSQLContainer<*> = PostgreSQLContainer(
@@ -110,6 +121,7 @@ abstract class InfrastructureTestContainers {
             .withPassword("test")
             .withCreateContainerCmdModifier { cmd -> cmd.withName("postgres-tests-$uniqueTestSuffix") }
             .withNetwork(NETWORK)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(120)))
 
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
@@ -121,6 +133,12 @@ abstract class InfrastructureTestContainers {
                     cmd.withName("keycloak-tests-$uniqueTestSuffix")
                 }
                 .withNetwork(NETWORK)
+                // Wait for the specific realm to be available (avoid 404 during realm import)
+                .waitingFor(
+                    Wait.forHttp("/realms/$REALM").forStatusCode(200).withStartupTimeout(
+                        Duration.ofSeconds(180),
+                    ),
+                )
 
         @JvmStatic
         private val greenMailContainer: GenericContainer<*> = GenericContainer<Nothing>(
@@ -167,6 +185,9 @@ abstract class InfrastructureTestContainers {
             val jdbcUrl = postgresContainer.jdbcUrl
             val r2dbcUrl = "r2dbc:postgresql://$host:$port/$db"
 
+            // Wait for JDBC connection to become available to avoid race conditions
+            waitForJdbc(jdbcUrl, username, password)
+
             registry.add("spring.r2dbc.url") { r2dbcUrl }
             registry.add("spring.r2dbc.username") { username }
             registry.add("spring.r2dbc.password") { password }
@@ -176,6 +197,29 @@ abstract class InfrastructureTestContainers {
             registry.add("spring.datasource.url") { jdbcUrl }
             registry.add("spring.datasource.username") { username }
             registry.add("spring.datasource.password") { password }
+        }
+
+        private fun waitForJdbc(
+            jdbcUrl: String,
+            username: String,
+            password: String,
+            timeoutSeconds: Long = DEFAULT_JDBC_TIMEOUT_SECONDS
+        ) {
+            val deadline = System.currentTimeMillis() + timeoutSeconds * SLEEP_INTERVAL_MILLIS
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    DriverManager.getConnection(jdbcUrl, username, password).use { _ ->
+                        log.info("JDBC connection to $jdbcUrl successful")
+                        return
+                    }
+                } catch (e: SQLException) {
+                    log.info("Waiting for JDBC at $jdbcUrl...: ${e.message}")
+                    Thread.sleep(SLEEP_INTERVAL_MILLIS)
+                }
+            }
+            error(
+                "Postgres did not become available at $jdbcUrl within $timeoutSeconds seconds",
+            )
         }
 
         private fun registerMailProperties(registry: DynamicPropertyRegistry) {
@@ -228,9 +272,6 @@ abstract class InfrastructureTestContainers {
                 "application.security.oauth2.admin-password",
             ) { ADMIN_PASSWORD }
         }
-
-        // Ensure containers are started once in a thread-safe manner
-        private val started = AtomicBoolean(false)
 
         @JvmStatic
         fun ensureStarted() {

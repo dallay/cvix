@@ -4,7 +4,8 @@
  */
 export async function cvixLoader(
 	documentParam: Document = document,
-	importer: (path: string) => Promise<unknown> = (p: string) => import(/* @vite-ignore */ p),
+	importer: (path: string) => Promise<unknown> = (p: string) =>
+		import(/* @vite-ignore */ p),
 ) {
 	const containers = documentParam.querySelectorAll("[data-cvix-form-id]");
 	if (containers.length === 0) return;

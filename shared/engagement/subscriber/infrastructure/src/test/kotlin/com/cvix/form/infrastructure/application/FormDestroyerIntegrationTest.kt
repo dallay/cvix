@@ -6,13 +6,12 @@ import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.SubscriptionFormId
-import com.cvix.form.domain.SubscriptionFormStatus
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
 import com.cvix.form.infrastructure.TestSubscriptionFormApplication
 import com.cvix.form.infrastructure.persistence.entity.SubscriptionFormEntity
 import com.cvix.spring.boot.infrastructure.persistence.outbox.OutboxEntity
 import io.mockk.mockk
-import java.time.Instant
+import java.util.*
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -25,7 +24,20 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria.where
 import org.springframework.data.relational.core.query.Query.query
 
-@SpringBootTest(classes = [TestSubscriptionFormApplication::class, TestSecurityConfiguration::class])
+@SpringBootTest(
+    classes = [
+        TestSubscriptionFormApplication::class,
+        TestSecurityConfiguration::class, com.cvix.config.TestDatabaseConfiguration::class,
+    ],
+)
+@org.springframework.test.context.jdbc.Sql(
+    scripts = ["/db/subscription/subscription_forms.sql"],
+    executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+)
+@org.springframework.test.context.jdbc.Sql(
+    scripts = ["/db/subscription/clean.sql"],
+    executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD,
+)
 class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
 
     @Autowired
@@ -43,25 +55,9 @@ class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
 
     @Test
     fun `should delete form and create outbox entry`() = runTest {
-        // Arrange
-        val workspaceId = WorkspaceId.random()
-        val formId = SubscriptionFormId.random()
-        val entity = SubscriptionFormEntity(
-            id = formId.value,
-            name = "Test Form",
-            description = "Test Description",
-            header = "Header",
-            inputPlaceholder = "Placeholder",
-            buttonText = "Submit",
-            buttonColor = "#000000",
-            backgroundColor = "#FFFFFF",
-            textColor = "#000000",
-            buttonTextColor = "#FFFFFF",
-            status = SubscriptionFormStatus.PUBLISHED,
-            workspaceId = workspaceId.value,
-            createdAt = Instant.now(),
-        )
-        entityTemplate.insert(entity).awaitFirstOrNull()
+        // Arrange: use fixed IDs created by SQL fixture
+        val formId = SubscriptionFormId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+        val workspaceId = WorkspaceId(UUID.fromString("22222222-2222-2222-2222-222222222222"))
 
         // Act
         formDestroyer.delete(workspaceId, formId)

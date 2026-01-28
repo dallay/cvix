@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController
 open class TestSubscriberApplication {
     @Bean
     open fun workspaceAuthorization(): WorkspaceAuthorization = mockk(relaxUnitFun = true)
-    
+
     @Bean
     open fun hasher(): Hasher = Sha256Hasher()
 }

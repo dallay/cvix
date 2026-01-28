@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cvixLoader } from "../loader";
 
 function clearDOM() {
@@ -33,7 +33,10 @@ describe("cvixLoader", () => {
 
 	it("no containers - does nothing", async () => {
 		const importer = vi.fn();
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 		expect(importer).not.toHaveBeenCalled();
 	});
 
@@ -44,10 +47,15 @@ describe("cvixLoader", () => {
 		const init = vi.fn();
 		const importer = vi.fn().mockResolvedValue({ init });
 
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 
 		expect(importer).toHaveBeenCalledTimes(1);
-		expect(importer).toHaveBeenCalledWith("https://example.com/assets/embed.js");
+		expect(importer).toHaveBeenCalledWith(
+			"https://example.com/assets/embed.js",
+		);
 		expect(init).toHaveBeenCalled();
 	});
 
@@ -59,7 +67,10 @@ describe("cvixLoader", () => {
 		const init = vi.fn();
 		const importer = vi.fn().mockResolvedValue({ init });
 
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 
 		expect(importer).toHaveBeenCalledTimes(1);
 		expect(init).toHaveBeenCalledTimes(1);
@@ -72,7 +83,10 @@ describe("cvixLoader", () => {
 		const init = vi.fn();
 		const importer = vi.fn().mockResolvedValue({ init });
 
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 
 		expect(importer).toHaveBeenCalledWith("embed.js");
 		expect(init).toHaveBeenCalled();
@@ -85,7 +99,10 @@ describe("cvixLoader", () => {
 		const importer = vi.fn().mockRejectedValue(new Error("fail"));
 		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 
 		expect(spy).toHaveBeenCalled();
 	});
@@ -96,7 +113,10 @@ describe("cvixLoader", () => {
 
 		const importer = vi.fn().mockResolvedValue({ init: "not-a-fn" });
 
-		await cvixLoader(document, importer as unknown as (p: string) => Promise<unknown>);
+		await cvixLoader(
+			document,
+			importer as unknown as (p: string) => Promise<unknown>,
+		);
 
 		// resolved but init not callable - nothing thrown
 		expect(importer).toHaveBeenCalled();

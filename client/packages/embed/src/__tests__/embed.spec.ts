@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { init } from "../embed";
 
 const SAMPLE_CONFIG = {
@@ -50,7 +50,9 @@ describe("embed renderer (init + render + submit)", () => {
 		});
 		// stable UUID
 		// @ts-expect-error - crypto may be present in the env
-		uuidSpy = vi.spyOn(globalThis.crypto, "randomUUID").mockReturnValue("uuid-1");
+		uuidSpy = vi
+			.spyOn(globalThis.crypto, "randomUUID")
+			.mockReturnValue("uuid-1");
 	});
 
 	afterEach(() => {
@@ -88,13 +90,18 @@ describe("embed renderer (init + render + submit)", () => {
 
 		// GET config
 		fetchSpy.mockImplementationOnce(async (input: RequestInfo) => {
-			return { ok: true, json: async () => SAMPLE_CONFIG } as unknown as Response;
+			return {
+				ok: true,
+				json: async () => SAMPLE_CONFIG,
+			} as unknown as Response;
 		});
 
 		// POST subscriber success
 		fetchSpy.mockImplementationOnce(async (input: RequestInfo, init) => {
 			// ensure method and body
-			expect(typeof input === "string" ? input : input.url).toContain("/api/subscribers");
+			expect(typeof input === "string" ? input : input.url).toContain(
+				"/api/subscribers",
+			);
 			return { ok: true, json: async () => ({}) } as unknown as Response;
 		});
 
@@ -106,10 +113,16 @@ describe("embed renderer (init + render + submit)", () => {
 		input.value = "test@example.com";
 
 		const successPromise = new Promise<CustomEvent>((resolve) => {
-			container.addEventListener("cvix:submit:success", (ev: Event) => resolve(ev as CustomEvent), { once: true });
+			container.addEventListener(
+				"cvix:submit:success",
+				(ev: Event) => resolve(ev as CustomEvent),
+				{ once: true },
+			);
 		});
 
-		form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+		form.dispatchEvent(
+			new Event("submit", { bubbles: true, cancelable: true }),
+		);
 		await flush();
 
 		const ev = await successPromise;
@@ -125,7 +138,10 @@ describe("embed renderer (init + render + submit)", () => {
 
 		// GET config
 		fetchSpy.mockImplementationOnce(async () => {
-			return { ok: true, json: async () => SAMPLE_CONFIG } as unknown as Response;
+			return {
+				ok: true,
+				json: async () => SAMPLE_CONFIG,
+			} as unknown as Response;
 		});
 
 		// POST subscriber failure
@@ -144,10 +160,16 @@ describe("embed renderer (init + render + submit)", () => {
 		input.value = "bad-email";
 
 		const errorPromise = new Promise<CustomEvent>((resolve) => {
-			container.addEventListener("cvix:submit:error", (ev: Event) => resolve(ev as CustomEvent), { once: true });
+			container.addEventListener(
+				"cvix:submit:error",
+				(ev: Event) => resolve(ev as CustomEvent),
+				{ once: true },
+			);
 		});
 
-		form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+		form.dispatchEvent(
+			new Event("submit", { bubbles: true, cancelable: true }),
+		);
 		await flush();
 
 		const ev = await errorPromise;
@@ -160,7 +182,14 @@ describe("embed renderer (init + render + submit)", () => {
 		const container = addContainer("form-1", "http://api.test");
 		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-		fetchSpy.mockImplementationOnce(async () => ({ ok: false, status: 500, json: async () => ({}) }) as unknown as Response);
+		fetchSpy.mockImplementationOnce(
+			async () =>
+				({
+					ok: false,
+					status: 500,
+					json: async () => ({}),
+				}) as unknown as Response,
+		);
 
 		await init();
 		expect(spy).toHaveBeenCalled();

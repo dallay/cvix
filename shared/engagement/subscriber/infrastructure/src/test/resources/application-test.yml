@@ -11,6 +11,10 @@ spring:
     url: ${spring.r2dbc.url}
     username: ${spring.r2dbc.username}
     password: ${spring.r2dbc.password}
+    pool:
+      max-size: 8
+      initial-size: 2
+      max-idle-time: 30s
 
 # Required for TestSecurityConfiguration and other beans
 application:
