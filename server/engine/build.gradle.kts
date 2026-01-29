@@ -2,6 +2,7 @@ import com.cvix.buildlogic.common.AppConfiguration
 
 plugins {
     id("app.spring.boot.convention")
+    id("app.owasp.dependency.check")
     kotlin("jvm").version(libs.versions.kotlin)
     kotlin("plugin.spring").version(libs.versions.kotlin)
     alias(libs.plugins.gradle.git.properties)
