@@ -85,9 +85,12 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 ├── server/   # Backend: Spring Boot, Kotlin, PostgreSQL
 ├── shared/   # Kotlin shared libs
 ├── infra/    # Infra as code: Docker Compose, secrets, monitoring
-├── docs/     # Astro-powered docs site
+├── docs/     # Astro-powered docs site (symlink)
 ├── .agents/  # AI agent configs, skills & workflow guides
 ```
+
+> **Note:** The `docs/` directory is a symlink to `client/apps/docs/src/content/docs/`.
+> It is automatically created by running `make prepare-env`.
 
 ---
 
