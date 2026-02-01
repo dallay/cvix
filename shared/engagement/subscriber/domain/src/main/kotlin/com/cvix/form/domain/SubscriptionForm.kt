@@ -1,11 +1,16 @@
 package com.cvix.form.domain
 
 import com.cvix.common.domain.SYSTEM_USER
+import com.cvix.common.domain.SYSTEM_USER_UUID
 import com.cvix.common.domain.model.BaseEntity
 import com.cvix.common.domain.model.WorkspaceId
+import com.cvix.form.domain.event.ActorId
 import com.cvix.form.domain.event.SubscriptionFormCreatedEvent
+import com.cvix.form.domain.event.SubscriptionFormPayload
+import com.cvix.form.domain.event.SubscriptionFormSummary
 import com.cvix.form.domain.event.SubscriptionFormUpdatedEvent
 import java.time.Instant
+import java.util.UUID
 
 /**
  * Domain entity representing a subscription form.
@@ -109,7 +114,7 @@ data class SubscriptionForm(
     private fun withUpdatedEvent(
         copy: SubscriptionForm,
         updatedAt: Instant,
-        updatedBy: String
+        updatedBy: String,
     ): SubscriptionForm {
         copy.record(
             SubscriptionFormUpdatedEvent(
@@ -117,7 +122,7 @@ data class SubscriptionForm(
                 workspaceId = copy.workspaceId,
                 updatedAt = updatedAt,
                 updatedBy = updatedBy,
-                payload = com.cvix.form.domain.event.SubscriptionFormPayload(
+                payload = SubscriptionFormPayload(
                     id = copy.id,
                     name = copy.name,
                     description = copy.description,
@@ -129,6 +134,25 @@ data class SubscriptionForm(
     }
 
     companion object {
+
+        /**
+         * Parses a string into an ActorId. Handles SYSTEM_USER constant,
+         * valid UUID strings, and falls back to SYSTEM_USER_UUID for invalid inputs.
+         *
+         * @param value The string value to parse (can be "system" or a UUID string)
+         * @return An ActorId representing the actor
+         */
+        private fun parseActorId(value: String): ActorId =
+            if (value == SYSTEM_USER) {
+                ActorId(SYSTEM_USER_UUID)
+            } else {
+                try {
+                    ActorId(UUID.fromString(value))
+                } catch (_: IllegalArgumentException) {
+                    // For non-UUID strings (like test values), use system UUID
+                    ActorId(SYSTEM_USER_UUID)
+                }
+            }
 
         /**
          * Factory method to create a new [SubscriptionForm].
@@ -165,8 +189,11 @@ data class SubscriptionForm(
                     formId = form.id,
                     workspaceId = form.workspaceId,
                     createdAt = form.createdAt,
-                    createdBy = form.createdBy,
-                    payload = form,
+                    createdBy = parseActorId(form.createdBy),
+                    summary = SubscriptionFormSummary(
+                        formName = form.name,
+                        confirmationRequired = form.settings.settings.confirmationRequired,
+                    ),
                 ),
             )
         }

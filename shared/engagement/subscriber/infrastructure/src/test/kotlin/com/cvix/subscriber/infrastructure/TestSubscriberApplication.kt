@@ -4,6 +4,7 @@ import com.cvix.common.domain.Service
 import com.cvix.common.domain.security.Hasher
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.common.infrastructure.security.Sha256Hasher
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -42,4 +43,7 @@ open class TestSubscriberApplication {
 
     @Bean
     open fun hasher(): Hasher = Sha256Hasher()
+
+    @Bean
+    open fun objectMapper(): ObjectMapper = ObjectMapper()
 }

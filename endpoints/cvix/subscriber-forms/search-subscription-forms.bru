@@ -30,7 +30,6 @@ script:post-response {
   exec: |
     // If the API returns a next cursor in the response, save it to 'cursor' var
     try {
-      const res = bru.lastResponse();
       if (res && res.body) {
         const json = JSON.parse(res.body);
         const next = json.nextCursor || json.next || (json.page && json.page.nextCursor) || null;

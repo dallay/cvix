@@ -35,7 +35,10 @@ try {
 		errorStatus = res.status;
 	}
 } catch (e) {
-	console.error(`[formId.astro] Failed to fetch subscription form ${formId}:`, e);
+	console.error(
+		`[formId.astro] Failed to fetch subscription form ${formId}:`,
+		e,
+	);
 	// TODO: Add telemetry/logging service for production observability
 	errorStatus = 500;
 }

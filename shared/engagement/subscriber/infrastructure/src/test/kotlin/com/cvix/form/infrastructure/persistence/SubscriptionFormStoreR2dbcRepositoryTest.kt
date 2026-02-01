@@ -7,11 +7,13 @@ import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.infrastructure.TestSubscriptionFormApplication
 import com.cvix.form.infrastructure.persistence.repository.SubscriptionFormReactiveR2dbcRepository
+import com.cvix.subscriber.infrastructure.persistence.config.SubscriberR2dbcConfig
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest
     classes = [
         TestSubscriptionFormApplication::class,
         TestSecurityConfiguration::class,
-        com.cvix.subscriber.infrastructure.persistence.config.SubscriberR2dbcConfig::class,
+        SubscriberR2dbcConfig::class,
     ],
 )
 internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestContainers() {
@@ -88,6 +90,6 @@ internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestCont
         val found = subscriptionFormStoreR2dbcRepository.findById(SubscriptionFormId(id))
 
         // Assert
-        org.junit.jupiter.api.Assertions.assertNull(found)
+        assertNull(found)
     }
 }

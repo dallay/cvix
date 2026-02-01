@@ -4,6 +4,7 @@ import com.cvix.authentication.infrastructure.TestSecurityConfiguration
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers
+import com.cvix.config.TestDatabaseConfiguration
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
@@ -12,7 +13,7 @@ import com.cvix.form.infrastructure.persistence.entity.SubscriptionFormEntity
 import com.cvix.spring.boot.infrastructure.persistence.outbox.OutboxEntity
 import io.mockk.mockk
 import java.util.*
-import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -23,20 +24,23 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria.where
 import org.springframework.data.relational.core.query.Query.query
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase
 
 @SpringBootTest(
     classes = [
         TestSubscriptionFormApplication::class,
-        TestSecurityConfiguration::class, com.cvix.config.TestDatabaseConfiguration::class,
+        TestSecurityConfiguration::class,
+        TestDatabaseConfiguration::class,
     ],
 )
-@org.springframework.test.context.jdbc.Sql(
+@Sql(
     scripts = ["/db/subscription/subscription_forms.sql"],
-    executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+    executionPhase = ExecutionPhase.BEFORE_TEST_METHOD,
 )
-@org.springframework.test.context.jdbc.Sql(
+@Sql(
     scripts = ["/db/subscription/clean.sql"],
-    executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD,
+    executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
 )
 class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
 
@@ -66,14 +70,14 @@ class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
         val deletedForm = entityTemplate.selectOne(
             query(where("id").`is`(formId.value)),
             SubscriptionFormEntity::class.java,
-        ).awaitFirstOrNull()
+        ).awaitSingleOrNull()
         assertThat(deletedForm).isNull()
 
         // Assert: Outbox entry is created
         val outboxEntry = entityTemplate.selectOne(
             query(where("aggregate_id").`is`(formId.value.toString())),
             OutboxEntity::class.java,
-        ).awaitFirstOrNull()
+        ).awaitSingleOrNull()
 
         assertThat(outboxEntry).isNotNull
         assertThat(outboxEntry?.aggregateType).isEqualTo("SubscriptionForm")

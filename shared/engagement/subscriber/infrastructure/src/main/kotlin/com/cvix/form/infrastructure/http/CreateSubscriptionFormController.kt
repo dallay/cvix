@@ -31,12 +31,31 @@ import org.springframework.web.bind.annotation.RestController
  * Controller for creating subscription forms.
  *
  * This endpoint handles the creation of a new subscription form configuration
- * within the context of the current workspace.
+ * within the context of the current workspace. It provides full customization
+ * of form styling, content, and behavior settings.
+ *
+ * The controller validates the incoming request payload, resolves workspace and
+ * user context from authentication and headers, generates a new form ID, and
+ * dispatches the command to the application layer for processing.
+ *
+ * ## Security
+ * - Requires JWT authentication (`bearerAuth`)
+ * - Requires valid `X-Workspace-Id` header matching user's workspace access
+ * - User must have permission to create forms in the workspace
+ *
+ * ## Side Effects
+ * - Creates a new subscription form entity in the database
+ * - Generates domain events (SubscriptionFormCreatedEvent) for downstream processing
+ * - Returns HTTP 201 with Location header pointing to the new resource
+ *
+ * @property mediator Command/query dispatcher for CQRS operations.
+ * @property messageSource Resolves localized response messages.
+ * @created 25/1/26
  */
 @Validated
 @RestController
 @RequestMapping(value = ["/api/subscription-forms"])
-@Tag(name = "Subscription Form")
+@Tag(name = "Subscription Form", description = "Operations for managing subscription form configurations")
 class CreateSubscriptionFormController(
     mediator: Mediator,
     private val messageSource: MessageSource,
@@ -105,6 +124,51 @@ class CreateSubscriptionFormController(
         produces = ["application/vnd.api.v1+json"],
         consumes = ["application/json"],
     )
+    /**
+     * Creates a new subscription form for the current workspace.
+     *
+     * This endpoint performs the following operations:
+     * 1. Validates the incoming request payload against defined constraints (e.g., field lengths, hex color patterns)
+     * 2. Extracts workspace ID from the X-Workspace-Id header via context
+     * 3. Extracts user ID from the JWT authentication token
+     * 4. Generates a new UUID for the subscription form
+     * 5. Transforms the request DTO into a CreateSubscriberFormCommand
+     * 6. Dispatches the command to the application layer via the mediator
+     * 7. Returns a 201 Created response with Location header
+     *
+     * ## Input Validation
+     * - `name`: Required, max 120 characters
+     * - `description`: Required, max 500 characters
+     * - `successActionType`: Must be "SHOW_MESSAGE" or "REDIRECT"
+     * - Color fields: Must be valid hex codes (e.g., #FFFFFF)
+     * - Numeric fields: Must be within defined ranges (e.g., padding: 0-100)
+     * - Cross-field validation: `redirectUrl` required when `successActionType` is "REDIRECT"
+     *
+     * ## Business Logic Flow
+     * - Command is dispatched asynchronously to the application layer
+     * - Application layer creates domain entity and persists it
+     * - Domain events (SubscriptionFormCreatedEvent) are recorded and published
+     * - Transaction is committed atomically
+     *
+     * ## Response Behavior
+     * - **Success (201)**: Form created, Location header points to `/api/subscription-forms/{id}`
+     * - **Validation Error (400)**: Invalid payload, returns ProblemDetail with field errors
+     * - **Unauthorized (401)**: Missing or invalid JWT token
+     * - **Forbidden (403)**: User lacks access to the specified workspace
+     * - **Conflict (409)**: Form with generated ID already exists (rare, retry recommended)
+     * - **Rate Limit (429)**: Too many requests, client should back off
+     * - **Server Error (500)**: Unexpected error, check logs
+     *
+     * ## Special Considerations
+     * - Form ID is generated server-side to prevent client-supplied ID conflicts
+     * - Workspace ID must match the authenticated user's accessible workspaces
+     * - Localized success message is returned based on Accept-Language header
+     * - All operations are idempotent at the command level (duplicate commands are ignored)
+     *
+     * @param request The validated request payload containing form configuration, styling, and content settings.
+     * @param serverRequest The HTTP request used for extracting locale for message localization.
+     * @return A 201 Created response with a localized success message and Location header.
+     */
     suspend fun create(
         @Valid @RequestBody request: CreateSubscriberFormRequest,
         serverRequest: ServerHttpRequest,

@@ -3,11 +3,12 @@ package com.cvix.form.infrastructure
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.security.Hasher
-import com.cvix.common.infrastructure.security.Sha256Hasher
 import com.cvix.common.domain.security.WorkspaceAuthorization
+import com.cvix.common.infrastructure.security.Sha256Hasher
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
 import com.cvix.spring.boot.infrastructure.persistence.outbox.R2dbcOutboxRepository
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -54,4 +55,7 @@ open class TestSubscriptionFormApplication {
 
     @Bean
     fun hasher(): Hasher = Sha256Hasher()
+
+    @Bean
+    fun objectMapper(): ObjectMapper = ObjectMapper()
 }

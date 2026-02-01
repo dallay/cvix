@@ -6,6 +6,7 @@ import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.domain.SubscriptionFormRepository
+import com.cvix.form.domain.SubscriptionFormSettings
 import com.cvix.form.domain.event.SubscriptionFormCreatedEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -29,7 +30,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
         workspaceAuthorization,
         formCreator,
     )
-    private lateinit var settings: com.cvix.form.domain.SubscriptionFormSettings
+    private lateinit var settings: SubscriptionFormSettings
     private lateinit var workspaceUuid: UUID
     private val userId = UUID.randomUUID()
 

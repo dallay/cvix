@@ -1,15 +1,15 @@
 package com.cvix.form.application.update
 
 import com.cvix.UnitTest
-import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.model.WorkspaceId
+import com.cvix.common.domain.outbox.OutboxRepository
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.domain.SubscriptionFormFinderRepository
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormRepository
-import com.cvix.form.domain.event.SubscriptionFormUpdatedEvent
 import com.cvix.form.domain.exception.SubscriptionFormNotFoundException
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -21,12 +21,12 @@ import org.junit.jupiter.api.BeforeEach
 
 @UnitTest
 internal class UpdateSubscriberFormCommandHandlerTest {
-    private val eventPublisher: EventPublisher<SubscriptionFormUpdatedEvent> =
-        mockk(relaxUnitFun = true)
+    private val outboxRepository: OutboxRepository = mockk(relaxUnitFun = true)
+    private val objectMapper: ObjectMapper = mockk(relaxed = true)
     private val formRepository: SubscriptionFormRepository = mockk(relaxUnitFun = true)
     private val formFinder: SubscriptionFormFinderRepository = mockk()
     private val formUpdater: SubscriberFormUpdater =
-        SubscriberFormUpdater(formRepository, formFinder, eventPublisher)
+        SubscriberFormUpdater(formRepository, formFinder, outboxRepository, objectMapper)
     private val workspaceAuthorization: WorkspaceAuthorization = mockk(relaxUnitFun = true)
     private val commandHandler =
         UpdateSubscriberFormCommandHandler(workspaceAuthorization, formUpdater)
@@ -117,7 +117,7 @@ internal class UpdateSubscriberFormCommandHandlerTest {
                 },
             )
         }
-        coVerify(exactly = 1) { eventPublisher.publish(any<SubscriptionFormUpdatedEvent>()) }
+        coVerify(exactly = 1) { outboxRepository.save(any()) }
     }
 
     @Test
@@ -194,6 +194,6 @@ internal class UpdateSubscriberFormCommandHandlerTest {
         commandHandler.handle(command)
 
         coVerify(exactly = 0) { formRepository.update(any()) }
-        coVerify(exactly = 0) { eventPublisher.publish(any<SubscriptionFormUpdatedEvent>()) }
+        coVerify(exactly = 0) { outboxRepository.save(any()) }
     }
 }

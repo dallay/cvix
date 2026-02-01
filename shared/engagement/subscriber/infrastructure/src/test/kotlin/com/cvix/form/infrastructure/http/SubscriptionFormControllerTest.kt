@@ -2,6 +2,7 @@ package com.cvix.form.infrastructure.http
 
 import com.cvix.ControllerTest
 import com.cvix.config.WorkspaceContextWebFilter
+import com.cvix.controllers.GlobalExceptionHandler
 import com.cvix.form.application.SubscriberFormResponse
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.application.create.CreateSubscriberFormCommand
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.core.authority.AuthorityUtils
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 
 internal class SubscriptionFormControllerTest : ControllerTest() {
@@ -58,12 +61,12 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
             searchController,
         )
             .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
-            .controllerAdvice(com.cvix.controllers.GlobalExceptionHandler(messageSource))
+            .controllerAdvice(GlobalExceptionHandler(messageSource))
             .configureClient()
             .build()
-            .mutateWith(org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf())
+            .mutateWith(csrf())
             .mutateWith(
-                org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt()
+                mockJwt()
                     .jwt { jwt ->
                         jwt.subject(userId.toString())
                             .claim("preferred_username", "test-user")

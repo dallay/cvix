@@ -4,6 +4,7 @@ import com.cvix.form.application.create.ContentInput
 import com.cvix.form.application.create.CreateSubscriberFormCommand
 import com.cvix.form.application.create.StylingInput
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.AssertTrue
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -219,6 +220,10 @@ data class CreateSubscriberFormRequest(
     @field:Schema(description = "Privacy text", example = "I agree to the Privacy Policy")
     val privacyText: String? = null,
 ) {
+    @get:AssertTrue(message = "redirectUrl is required when successActionType is REDIRECT")
+    val isRedirectUrlValid: Boolean
+        get() = successActionType != "REDIRECT" || !redirectUrl.isNullOrBlank()
+
     fun toCommand(id: UUID, workspaceId: UUID, userId: UUID) = CreateSubscriberFormCommand(
         id = id,
         name = name,

@@ -8,12 +8,14 @@ import com.cvix.subscriber.infrastructure.persistence.converter.SubscriberAttrib
 import com.cvix.subscriber.infrastructure.persistence.converter.SubscriberStatusWriterConverter
 import io.r2dbc.postgresql.PostgresqlConnectionFactoryProvider
 import io.r2dbc.postgresql.codec.EnumCodec
+import io.r2dbc.postgresql.extension.Extension
 import org.springframework.boot.r2dbc.autoconfigure.ConnectionFactoryOptionsBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions
 import org.springframework.data.r2dbc.dialect.PostgresDialect
+import tools.jackson.databind.json.JsonMapper
 
 @Configuration
 class SubscriberR2dbcConfig {
@@ -28,7 +30,7 @@ class SubscriberR2dbcConfig {
         return ConnectionFactoryOptionsBuilderCustomizer { builder ->
             builder.option(
                 PostgresqlConnectionFactoryProvider.EXTENSIONS,
-                mutableListOf<io.r2dbc.postgresql.extension.Extension>(
+                mutableListOf<Extension>(
                     EnumCodec.builder()
                         .withEnum("subscription_form_status", SubscriptionFormStatus::class.java)
                         .build(),
@@ -41,9 +43,12 @@ class SubscriberR2dbcConfig {
     fun r2dbcCustomConversions(): R2dbcCustomConversions {
         val converters: MutableList<Converter<*, *>> = ArrayList()
 
+        // Use a shared JsonMapper instance for converters
+        val jsonMapper = JsonMapper()
+
         // Use project-provided converters for enum and attributes conversion
-        converters.add(SubscriberAttributesWriterConverter(tools.jackson.databind.json.JsonMapper()))
-        converters.add(SubscriberAttributesReaderConverter(tools.jackson.databind.json.JsonMapper()))
+        converters.add(SubscriberAttributesWriterConverter(jsonMapper))
+        converters.add(SubscriberAttributesReaderConverter(jsonMapper))
         converters.add(SubscriberStatusWriterConverter())
         converters.add(SubscriptionFormStatusWriterConverter())
         converters.add(SubscriptionFormStatusReaderConverter())

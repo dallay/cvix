@@ -17,5 +17,5 @@ data class SubscriptionFormDeletedEvent(
     val formId: SubscriptionFormId,
     val workspaceId: WorkspaceId,
     val deletedAt: Instant,
-    val deletedBy: String,
+    val deletedBy: ActorId,
 ) : BaseDomainEvent()

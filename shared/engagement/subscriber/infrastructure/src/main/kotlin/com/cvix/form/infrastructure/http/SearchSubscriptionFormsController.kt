@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
-import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -59,6 +58,11 @@ class SearchSubscriptionFormsController(
                 content = [Content(schema = Schema(implementation = CursorPageResponse::class))],
             ),
             ApiResponse(
+                responseCode = "400",
+                description = "Bad Request - validation failure (invalid cursor format or invalid size)",
+                content = [Content(schema = Schema(implementation = ProblemDetail::class))],
+            ),
+            ApiResponse(
                 responseCode = "401",
                 description = "Unauthorized",
                 content = [Content(schema = Schema(implementation = ProblemDetail::class))],
@@ -90,7 +94,6 @@ class SearchSubscriptionFormsController(
     suspend fun search(
         @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) cursor: String?,
-        @Suppress("UnusedParameter") serverRequest: ServerHttpRequest,
     ): ResponseEntity<CursorPageResponse<SubscriberFormResponse>> {
         val workspaceId = workspaceIdFromContext()
         val userId = userIdFromToken()

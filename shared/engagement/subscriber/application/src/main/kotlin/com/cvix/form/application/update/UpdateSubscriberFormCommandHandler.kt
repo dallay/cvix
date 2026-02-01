@@ -11,6 +11,7 @@ import com.cvix.form.domain.HexColor
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormSettings
 import com.cvix.form.domain.SuccessActionType
+import org.slf4j.LoggerFactory
 
 /**
  * Handles the update of a subscriber form.
@@ -23,6 +24,13 @@ class UpdateSubscriberFormCommandHandler(
 
     override suspend fun handle(command: UpdateSubscriberFormCommand) {
         workspaceAuthorization.ensureAccess(command.workspaceId, command.userId)
+
+        log.info(
+            "action=updating_subscription_form workspaceId={} formId={} userId={}",
+            command.workspaceId,
+            command.id,
+            command.userId,
+        )
 
         val name = command.name.trim()
         val headerTitle = command.headerTitle.trim()
@@ -81,9 +89,17 @@ class UpdateSubscriberFormCommandHandler(
             settings = formSettings,
             updatedBy = command.userId.toString(),
         )
+
+        log.info(
+            "action=subscription_form_updated_successfully workspaceId={} formId={} userId={}",
+            command.workspaceId,
+            command.id,
+            command.userId,
+        )
     }
 
     companion object {
         private const val MAX_CHARACTERS = 120
+        private val log = LoggerFactory.getLogger(UpdateSubscriberFormCommandHandler::class.java)
     }
 }

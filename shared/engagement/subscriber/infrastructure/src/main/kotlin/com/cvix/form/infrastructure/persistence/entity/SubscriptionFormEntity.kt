@@ -144,7 +144,7 @@ data class SubscriptionFormEntity(
     val headerTitle: String = "Join our newsletter",
 
     @Column("subheader_text")
-    @get:Size(max = 255)
+    @get:Size(max = 500)
     val subheaderText: String? = null,
 
     @Column("submit_button_text")

@@ -24,10 +24,10 @@ const translations = {
 
 // Form IDs mapped by theme and locale - can be overridden via env vars
 // Format: CVIX_FORM_LIGHT_EN, CVIX_FORM_LIGHT_ES, CVIX_FORM_DARK_EN, CVIX_FORM_DARK_ES
-const getFormId = (theme: 'light' | 'dark', locale: 'en' | 'es'): string => {
+const getFormId = (theme: "light" | "dark", locale: "en" | "es"): string => {
 	const envVar = `CVIX_FORM_${theme.toUpperCase()}_${locale.toUpperCase()}`;
 	const envValue = import.meta.env[envVar];
-	
+
 	// Default form IDs as fallback
 	const defaults = {
 		light: {
@@ -39,38 +39,42 @@ const getFormId = (theme: 'light' | 'dark', locale: 'en' | 'es'): string => {
 			es: "1efe6f6c-9396-4296-bbbc-6bb8d0cf8b5d",
 		},
 	};
-	
+
 	if (envValue) {
 		console.log(`[Hero] Using env form ID for ${theme}/${locale}: ${envValue}`);
 		return envValue;
 	}
-	
+
 	const fallback = defaults[theme][locale];
 	if (!fallback) {
-		console.warn(`[Hero] No form ID found for ${theme}/${locale}, using default`);
+		console.warn(
+			`[Hero] No form ID found for ${theme}/${locale}, using default`,
+		);
 		return defaults.light.en;
 	}
-	
+
 	return fallback;
 };
 
 // Build forms config dynamically
 const forms = {
 	light: {
-		en: getFormId('light', 'en'),
-		es: getFormId('light', 'es'),
+		en: getFormId("light", "en"),
+		es: getFormId("light", "es"),
 	},
 	dark: {
-		en: getFormId('dark', 'en'),
-		es: getFormId('dark', 'es'),
+		en: getFormId("dark", "en"),
+		es: getFormId("dark", "es"),
 	},
 };
 
 // Validate form IDs
 Object.entries(forms).forEach(([theme, locales]) => {
 	Object.entries(locales).forEach(([locale, formId]) => {
-		if (!formId || formId.trim() === '') {
-			console.error(`[Hero] Missing form ID for theme=${theme}, locale=${locale}`);
+		if (!formId || formId.trim() === "") {
+			console.error(
+				`[Hero] Missing form ID for theme=${theme}, locale=${locale}`,
+			);
 		}
 	});
 });

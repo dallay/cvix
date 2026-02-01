@@ -25,6 +25,31 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property workspaceId The workspace this form belongs to.
  * @property createdAt Timestamp when the form was created (ISO-8601).
  * @property updatedAt Timestamp when the form was last updated (ISO-8601), or null if never updated.
+ * @property successActionType Action type on success (SHOW_MESSAGE or REDIRECT).
+ * @property successMessage Success message when successActionType is SHOW_MESSAGE.
+ * @property redirectUrl Redirect URL when successActionType is REDIRECT.
+ * @property borderColor Border color hex code.
+ * @property borderStyle Border style (solid, dashed, dotted).
+ * @property shadow Box shadow style.
+ * @property borderThickness Border thickness in pixels.
+ * @property width Form width.
+ * @property height Form height.
+ * @property horizontalAlignment Horizontal alignment (left, center, right).
+ * @property verticalAlignment Vertical alignment (top, center, bottom).
+ * @property padding Internal padding in pixels.
+ * @property gap Gap between elements in pixels.
+ * @property cornerRadius Border radius in pixels.
+ * @property showHeader Whether to show the header.
+ * @property showSubheader Whether to show the subheader.
+ * @property headerTitle Header title text.
+ * @property subheaderText Subheader text.
+ * @property submittingButtonText Submit button text during submission.
+ * @property showTosCheckbox Whether to show Terms of Service checkbox.
+ * @property tosText Terms of Service checkbox label text.
+ * @property showPrivacyCheckbox Whether to show Privacy Policy checkbox.
+ * @property privacyText Privacy Policy checkbox label text.
+ * @property pageBackgroundColor Page background hex color.
+ * @property inputTextColor Input text hex color.
  */
 data class SubscriberFormResponse(
     @field:Schema(

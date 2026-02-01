@@ -133,7 +133,8 @@ class SubscriberController(
             "referer" to (serverRequest.headers.getFirst("Referer") ?: "direct"),
             "correlationId" to correlationId,
         )
-        val combinedMetadata = systemMetadata + (request.metadata ?: emptyMap())
+        // Reverse merge order so systemMetadata remains authoritative
+        val combinedMetadata = (request.metadata ?: emptyMap()) + systemMetadata
 
         val workspaceId = request.formId?.let { formId ->
             formFinder.findById(SubscriptionFormId(formId))?.workspaceId?.value

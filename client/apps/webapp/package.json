@@ -45,7 +45,7 @@
 		"ajv": "catalog:",
 		"ajv-errors": "^3.0.0",
 		"ajv-formats": "^3.0.1",
-		"axios": "^1.13.2",
+		"axios": "^1.13.4",
 		"embla-carousel-vue": "catalog:",
 		"idb-keyval": "^6.2.2",
 		"libphonenumber-js": "^1.12.35",
@@ -58,7 +58,7 @@
 		"vee-validate": "catalog:",
 		"vue": "catalog:",
 		"vue-i18n": "^11.2.8",
-		"vue-router": "^4.6.4",
+		"vue-router": "^5.0.0",
 		"vue-sonner": "catalog:",
 		"zod": "catalog:"
 	},

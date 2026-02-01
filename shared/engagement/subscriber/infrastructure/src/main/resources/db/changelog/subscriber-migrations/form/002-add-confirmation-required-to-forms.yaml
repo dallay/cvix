@@ -13,3 +13,7 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
+      rollback:
+        - dropColumn:
+            tableName: subscription_forms
+            columnName: confirmation_required
