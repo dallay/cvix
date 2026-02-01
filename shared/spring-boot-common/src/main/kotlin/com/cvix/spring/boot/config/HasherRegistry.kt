@@ -1,8 +1,8 @@
 package com.cvix.spring.boot.config
 
 import com.cvix.common.domain.security.Hasher
-import com.cvix.common.domain.security.HmacHasher
-import com.cvix.common.domain.security.Sha256Hasher
+import com.cvix.common.infrastructure.security.HmacHasher
+import com.cvix.common.infrastructure.security.Sha256Hasher
 import org.springframework.stereotype.Component
 
 /** Simple registry + factory for Hasher strategy implementations. */

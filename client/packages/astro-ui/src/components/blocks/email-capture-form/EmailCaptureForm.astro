@@ -1,5 +1,4 @@
 ---
-import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "astro/types";
 import CsrfToken from "../csrf-token/CsrfToken.astro";
 
@@ -102,15 +101,19 @@ const tosId = `tos-checkbox-${formId}`;
 const privacyId = `privacy-checkbox-${formId}`;
 
 // Build container styles from form config (flat structure)
+// Use nullish checks (??) instead of truthy checks to preserve valid zero values
 const containerStyles = form
 	? [
 			form.backgroundColor ? `background-color: ${form.backgroundColor}` : null,
 			form.textColor ? `color: ${form.textColor}` : null,
-			form.padding ? `padding: ${form.padding}px` : null,
-			form.gap ? `gap: ${form.gap}px` : null,
-			form.cornerRadius ? `border-radius: ${form.cornerRadius}px` : null,
-			form.borderColor && form.borderThickness
-				? `border: ${form.borderThickness}px ${form.borderStyle} ${form.borderColor}`
+			(form.padding ?? false) ? `padding: ${form.padding}px` : null,
+			(form.gap ?? false) ? `gap: ${form.gap}px` : null,
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
+			// Use default borderStyle 'solid' if not provided but borderThickness is set
+			form.borderColor && (form.borderThickness ?? false)
+				? `border: ${form.borderThickness}px ${form.borderStyle ?? "solid"} ${form.borderColor}`
 				: null,
 			form.shadow ? `box-shadow: ${form.shadow}` : null,
 			form.width ? `width: ${form.width}` : null,
@@ -128,7 +131,10 @@ const containerStyles = form
 
 const inputStyles = form
 	? [
-			form.cornerRadius ? `border-radius: ${form.cornerRadius}px` : null,
+			// Use nullish checks to preserve valid zero values for cornerRadius
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
 			form.inputTextColor ? `color: ${form.inputTextColor}` : null,
 		]
 			.filter(Boolean)
@@ -139,7 +145,10 @@ const buttonStyles = form
 	? [
 			form.buttonColor ? `background-color: ${form.buttonColor}` : null,
 			form.buttonTextColor ? `color: ${form.buttonTextColor}` : null,
-			form.cornerRadius ? `border-radius: ${form.cornerRadius}px` : null,
+			// Use nullish checks to preserve valid zero values for cornerRadius
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
 		]
 			.filter(Boolean)
 			.join("; ")
@@ -150,7 +159,7 @@ const redirectUrl = form?.redirectUrl ?? "";
 ---
 
 <div
-    class={cn("flex flex-col w-full", className)}
+    class={`flex flex-col w-full ${className ?? ''}`}
     {...attrs}
     style={containerStyles}
 >
@@ -173,9 +182,11 @@ const redirectUrl = form?.redirectUrl ?? "";
         data-form-id={form?.id}
         data-workspace-id={form?.workspaceId}
         data-success-message={successMessage ?? form?.successMessage}
+        data-error-message={errorMessage}
+        data-rate-limit-message={rateLimitMessage}
         aria-label={form?.headerTitle ? `${form.headerTitle} - Email subscription form` : "Email subscription form"}
     >
-        <div class="flex gap-2">
+        <div class="flex items-center justify-between gap-4">
             <label for={inputId}>
                 <span class="sr-only">{emailLabelText}</span>
             </label>
@@ -187,23 +198,12 @@ const redirectUrl = form?.redirectUrl ?? "";
                 placeholder={emailPlaceholder ?? form?.inputPlaceholder ?? "Enter your email"}
                 aria-describedby={statusId}
                 autocomplete="email"
-                class={cn(
-                    "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-                    "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-                    "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                )}
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                 style={inputStyles}
             />
             <button
                 type="submit"
-                class={cn(
-                    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors",
-                    "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-                    "disabled:pointer-events-none disabled:opacity-50",
-                    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-                    "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-                    "h-9 px-4 py-2"
-                )}
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
                 style={buttonStyles}
             >
                 <span
@@ -258,7 +258,7 @@ const redirectUrl = form?.redirectUrl ?? "";
     </div>
 </div>
 
-<script is:inline define:vars={{ errorMessage, rateLimitMessage }}>
+<script is:inline>
     // Guard: only initialize once across all component instances
     // When multiple EmailCaptureForm components exist on the same page,
     // each instance's is:inline script runs and would register duplicate
@@ -491,7 +491,24 @@ const redirectUrl = form?.redirectUrl ?? "";
                     e.preventDefault();
 
                     const email = emailInput.value.trim();
-                    if (!EMAIL_REGEX.test(email) || submitButton.disabled) return;
+
+                    // Validate email format - provide feedback instead of silent return
+                    if (!EMAIL_REGEX.test(email)) {
+                        emailInput.setCustomValidity("Please enter a valid email address");
+                        emailInput.reportValidity();
+                        showMessage("Please enter a valid email address", "error");
+                        emailInput.focus();
+                        return;
+                    }
+
+                    // Clear any previous custom validity
+                    emailInput.setCustomValidity("");
+
+                    // Check if button is disabled (e.g., rate limiting)
+                    if (submitButton.disabled) {
+                        showMessage("Please wait before submitting again", "info");
+                        return;
+                    }
 
                     // Store original button text
                     submitButton.setAttribute("data-original-text", submitText);
@@ -570,7 +587,7 @@ const redirectUrl = form?.redirectUrl ?? "";
                             const message =
                                 form.getAttribute("data-success-message") ||
                                 data.message ||
-                                "Successfully joined the waitlist!";
+                                "Successfully subscribed!";
                             showMessage(message, "success");
                             emailInput.value = "";
 
@@ -592,16 +609,18 @@ const redirectUrl = form?.redirectUrl ?? "";
                                 ? parseInt(retryAfterHeader, 10)
                                 : 60;
 
+                            const perFormRateLimitMessage = form.dataset.rateLimitMessage;
                             const message =
-                                rateLimitMessage ||
+                                perFormRateLimitMessage ||
                                 `Too many requests. Please try again in ${retrySeconds} seconds.`;
                             showMessage(message, "info");
                             startCountdown(retrySeconds);
                         } else {
                             // Other errors
                             const errorData = await response.json().catch(() => ({}));
+                            const perFormErrorMessage = form.dataset.errorMessage;
                             const message =
-                                errorMessage ||
+                                perFormErrorMessage ||
                                 errorData.error?.message ||
                                 errorData.message ||
                                 "Failed to submit. Please try again.";
@@ -615,8 +634,9 @@ const redirectUrl = form?.redirectUrl ?? "";
                         }
                     } catch (err) {
                         console.error("Email submission error:", err);
+                        const perFormErrorMessage = form.dataset.errorMessage;
                         const message =
-                            errorMessage || "Network error. Please check your connection.";
+                            perFormErrorMessage || "Network error. Please check your connection.";
                         showMessage(message, "error");
 
                         // Auto-hide after configured timeout

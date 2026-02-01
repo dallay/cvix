@@ -1,6 +1,8 @@
 package com.cvix.form.infrastructure.http.request
 
+import com.cvix.form.application.create.ContentInput
 import com.cvix.form.application.create.CreateSubscriberFormCommand
+import com.cvix.form.application.create.StylingInput
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -225,36 +227,38 @@ data class CreateSubscriberFormRequest(
         successActionType = successActionType,
         successMessage = successMessage,
         redirectUrl = redirectUrl,
-        // Styling
-        buttonColor = buttonColor,
-        pageBackgroundColor = pageBackgroundColor,
-        backgroundColor = backgroundColor,
-        textColor = textColor,
-        buttonTextColor = buttonTextColor,
-        inputTextColor = inputTextColor,
-        borderColor = borderColor,
-        borderStyle = borderStyle,
-        shadow = shadow,
-        borderThickness = borderThickness,
-        width = width,
-        height = height,
-        horizontalAlignment = horizontalAlignment,
-        verticalAlignment = verticalAlignment,
-        padding = padding,
-        gap = gap,
-        cornerRadius = cornerRadius,
-        // Content
-        showHeader = showHeader,
-        showSubheader = showSubheader,
-        headerTitle = headerTitle,
-        subheaderText = subheaderText,
-        inputPlaceholder = inputPlaceholder,
-        submitButtonText = submitButtonText,
-        submittingButtonText = submittingButtonText,
-        showTosCheckbox = showTosCheckbox,
-        tosText = tosText,
-        showPrivacyCheckbox = showPrivacyCheckbox,
-        privacyText = privacyText,
+        styling = StylingInput(
+            buttonColor = buttonColor,
+            pageBackgroundColor = pageBackgroundColor,
+            backgroundColor = backgroundColor,
+            textColor = textColor,
+            buttonTextColor = buttonTextColor,
+            inputTextColor = inputTextColor,
+            borderColor = borderColor,
+            borderStyle = borderStyle,
+            shadow = shadow,
+            borderThickness = borderThickness,
+            width = width,
+            height = height,
+            horizontalAlignment = horizontalAlignment,
+            verticalAlignment = verticalAlignment,
+            padding = padding,
+            gap = gap,
+            cornerRadius = cornerRadius,
+        ),
+        content = ContentInput(
+            showHeader = showHeader,
+            showSubheader = showSubheader,
+            headerTitle = headerTitle,
+            subheaderText = subheaderText,
+            inputPlaceholder = inputPlaceholder,
+            submitButtonText = submitButtonText,
+            submittingButtonText = submittingButtonText,
+            showTosCheckbox = showTosCheckbox,
+            tosText = tosText,
+            showPrivacyCheckbox = showPrivacyCheckbox,
+            privacyText = privacyText,
+        ),
         workspaceId = workspaceId,
         userId = userId,
     )

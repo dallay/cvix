@@ -1,67 +1,102 @@
 ---
-import { CVIX_API_URL } from "astro:env/client";
-import { cn } from "@cvix/lib";
-import type { HTMLAttributes } from "astro/types";
-import { type Lang, useTranslations } from "@/i18n/i18n.ts";
+import { CVIX_SUBSCRIBE_FORMS_URL } from "@cvix/lib";
 
-interface Props extends HTMLAttributes<"section"> {
-	title?: string;
+interface Props {
+	formId: string;
+	title: string;
 	description?: string;
-	formId?: string;
+	privacyText?: string;
 }
 
-const { title, description, formId, ...attrs } = Astro.props as Props;
-const currentLocale = Astro.currentLocale as Lang;
-const t = useTranslations(currentLocale);
+const { formId, title, description, privacyText } = Astro.props;
+
+// Get current locale from html lang attribute or default to "en"
+const initialLocale = "en"; // Default - client will detect actual locale
+
+// Default form configuration - single form ID for this waitlist instance
+const formConfig = {
+	id: formId,
+	baseUrl: CVIX_SUBSCRIBE_FORMS_URL,
+	locale: initialLocale,
+};
 ---
 
-<section
-	class={cn(
-		"flex w-full will-change-transform",
-		attrs.class
-	)}
-	id={formId}
-	{...attrs}
->
-	<div
-		class={cn(
-			"flex py-5 px-0",
-			"transition-colors duration-350 ease-in-out w-full"
-		)}
-	>
-		<div class="flex gap-5 mx-auto w-full">
-			<div class="flex flex-col w-full max-w-4xl">
-				<h1
-					class={cn(
-						"text-gray-900 dark:text-white text-3xl @md:text-5xl font-bold leading-tight tracking-tight relative",
-						"transition-colors duration-350 animate-fadeIn font-heading"
-					)}
-				>
-					{title || t({
-            en: "Join the ProfileTailors Waitlist",
-            es: "Únete a la lista de espera de ProfileTailors",
-          })}
-				</h1>
-				<p
-					class={cn(
-						"text-gray-900 dark:text-white relative mt-2 text-base font-medium tracking-wide leading-relaxed",
-						"animate-fadeIn animation-delay-150"
-					)}
-				>
-					{description || t({
-            en: "Sign up to be the first to know when ProfileTailors is available and receive exclusive updates.",
-            es: "Regístrate para ser el primero en saber cuándo ProfileTailors estará disponible y recibir actualizaciones exclusivas.",
-          })}
-				</p>
-                <div class="flex mt-6 w-full">
-                    <!-- Cvix embeddable form -->
-                    <div
-                      data-cvix-form-id="2b7e7d65-bae8-4c13-9135-b9a045598259"
-                      data-cvix-api-url={`${CVIX_API_URL}`}
-                      class="w-full"
-                    ></div>
-                </div>
-			</div>
+<div class="waitlist-container w-full max-w-md mx-auto my-8">
+	<div class="bg-card border border-border rounded-lg p-6 shadow-sm">
+		<h3 class="text-xl font-semibold text-foreground mb-2">{title}</h3>
+		{description && <p class="text-muted-foreground mb-4">{description}</p>}
+
+		<div class="waitlist-form-wrapper">
+			<iframe
+				src={`${formConfig.baseUrl}/${formConfig.id}`}
+				data-form-id={formConfig.id}
+				data-base-url={formConfig.baseUrl}
+				data-locale={formConfig.locale}
+				class="cvix-waitlist-embed w-full"
+				data-test-id={`cvix-waitlist-${formId}`}
+				frameborder="0"
+				scrolling="no"
+				style="height: 180px; margin: 0; border-radius: 8px; background-color: transparent; box-shadow: 0 0 #0000;"
+			></iframe>
 		</div>
+
+		{privacyText && <p class="text-xs text-muted-foreground mt-3">{privacyText}</p>}
 	</div>
-</section>
+</div>
+
+<script is:inline>
+	(function() {
+		// Prevent multiple initializations
+		if (window.__cvixWaitlistInitialized) return;
+		window.__cvixWaitlistInitialized = true;
+
+		// Find all waitlist iframes on the page
+		const iframes = document.querySelectorAll('iframe[data-test-id^="cvix-waitlist-"]');
+		if (!iframes.length) return;
+
+		// Store references and configs for each iframe
+		const waitlistInstances = [];
+
+		iframes.forEach((iframe) => {
+			const baseUrl = iframe.getAttribute("data-base-url") || "";
+			waitlistInstances.push({
+				element: iframe,
+				baseUrl: baseUrl,
+			});
+		});
+
+		// Listen for messages from any waitlist iframe
+		window.addEventListener(
+			"message",
+			function (e) {
+				// Security: Only accept messages from allowed origins
+				const allowedOrigins = waitlistInstances.map((w) => new URL(w.baseUrl).origin);
+				if (!allowedOrigins.includes(e.origin)) return;
+
+				const d = e.data || {};
+				if (!d.id) return;
+
+				// Find the matching iframe
+				const matchingIframe = waitlistInstances.find(
+					(w) => w.element.getAttribute("data-form-id") === d.id
+				);
+				if (!matchingIframe) return;
+
+				const iframe = matchingIframe.element;
+
+				switch (d.type) {
+					case "cvix:height":
+						iframe.style.height = (d.height || 180) + "px";
+						break;
+					case "cvix:submit:success":
+						iframe.dispatchEvent(new CustomEvent("cvix:submit:success", { detail: d }));
+						break;
+					case "cvix:submit:error":
+						iframe.dispatchEvent(new CustomEvent("cvix:submit:error", { detail: d }));
+						break;
+				}
+			},
+			false
+		);
+	})();
+</script>

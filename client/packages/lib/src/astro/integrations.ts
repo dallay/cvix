@@ -3,10 +3,10 @@ import { DEFAULT_LOCALE, LOCALES } from "@cvix/i18n";
 /**
  * Type for the icon configuration
  */
-export interface IconConfig {
+export type IconConfig = {
 	iconDir: string;
 	include: Record<string, string[]>;
-}
+};
 
 /**
  * Default configuration for astro-icon integration.
@@ -23,12 +23,12 @@ export const DEFAULT_ICON_CONFIG: IconConfig = {
 /**
  * Configuration options for creating sitemap config
  */
-export interface SitemapConfigOptions {
+export type SitemapConfigOptions = {
 	/** Base site URL */
 	siteUrl: string;
 	/** Pages to exclude from sitemap (e.g., '/admin/') */
 	excludePages?: string[];
-}
+};
 
 /**
  * Creates a sitemap configuration with i18n support.

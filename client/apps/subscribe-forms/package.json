@@ -2,6 +2,12 @@
 	"name": "@cvix/subscribe-forms",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@10.28.2",
+	"engines": {
+		"node": ">=16.20.0",
+		"pnpm": ">=7.0.0"
+	},
 	"scripts": {
 		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev",
 		"dev:http": "FORCE_HTTP=true astro dev",

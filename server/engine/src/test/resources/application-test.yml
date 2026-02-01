@@ -53,6 +53,8 @@ spring:
       max-size: 8
       initial-size: 2
       max-idle-time: 30s
+      validation-query: "SELECT 1"
+      validation-depth: remote
 testing:
   security:
     username: "john.doe@profiletailors.com"

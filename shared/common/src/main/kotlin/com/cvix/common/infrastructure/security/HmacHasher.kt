@@ -1,5 +1,6 @@
-package com.cvix.common.domain.security
+package com.cvix.common.infrastructure.security
 
+import com.cvix.common.domain.security.Hasher
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 

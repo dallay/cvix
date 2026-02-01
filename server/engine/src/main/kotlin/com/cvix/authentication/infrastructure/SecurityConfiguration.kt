@@ -97,19 +97,7 @@ class SecurityConfiguration(
         configuration.allowedMethods = applicationSecurityProperties.cors.allowedMethods
         // Merge configured headers with required headers for form embed
         val allowedHeaders = applicationSecurityProperties.cors.allowedHeaders.toMutableList()
-        allowedHeaders.addAll(
-            listOf(
-                "authorization",
-                "content-type",
-                "accept",
-                "origin",
-                "access-control-request-method",
-                "access-control-request-headers",
-                "x-requested-with",
-                "x-xsrf-token",
-                "x-workspace-id",
-            ),
-        )
+        allowedHeaders.addAll(ApplicationSecurityProperties.REQUIRED_CORS_HEADERS)
         configuration.allowedHeaders = allowedHeaders.distinct()
         configuration.exposedHeaders = applicationSecurityProperties.cors.exposedHeaders
         configuration.allowCredentials = applicationSecurityProperties.cors.allowCredentials

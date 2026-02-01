@@ -19,13 +19,13 @@ import org.slf4j.LoggerFactory
 class FormDestroyer(
     private val formRepository: SubscriptionFormRepository,
     private val formFinder: SubscriptionFormFinderRepository,
-    initialEventPublisher: EventPublisher<SubscriptionFormDeletedEvent>,
+    eventPublisher: EventPublisher<SubscriptionFormDeletedEvent>,
     private val outboxRepository: OutboxRepository,
 ) {
-    private val eventPublisher = EventBroadcaster<SubscriptionFormDeletedEvent>()
+    private val broadcaster = EventBroadcaster<SubscriptionFormDeletedEvent>()
 
     init {
-        this.eventPublisher.use(initialEventPublisher)
+        this.broadcaster.use(eventPublisher)
     }
 
     suspend fun delete(workspaceId: WorkspaceId, subscriptionFormId: SubscriptionFormId) {

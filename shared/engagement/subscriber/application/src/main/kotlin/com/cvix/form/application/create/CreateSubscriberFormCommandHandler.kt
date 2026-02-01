@@ -38,7 +38,7 @@ class CreateSubscriberFormCommandHandler(
 
         // Normalize inputs (trim) and perform small safety validations here so domain can assume cleaned input
         val name = command.name.trim()
-        val headerTitle = command.headerTitle.trim()
+        val headerTitle = command.content.headerTitle.trim()
 
         require(name.isNotEmpty()) { "Form name must not be blank" }
         require(headerTitle.isNotEmpty()) { "Form header must not be blank" }
@@ -53,36 +53,36 @@ class CreateSubscriberFormCommandHandler(
                 confirmationRequired = command.confirmationRequired,
             ),
             styling = FormStylingSettings(
-                pageBackgroundColor = HexColor(command.pageBackgroundColor),
-                backgroundColor = HexColor(command.backgroundColor),
-                textColor = HexColor(command.textColor),
-                buttonColor = HexColor(command.buttonColor),
-                buttonTextColor = HexColor(command.buttonTextColor),
-                inputTextColor = HexColor(command.inputTextColor),
-                borderColor = HexColor(command.borderColor),
-                borderStyle = command.borderStyle,
-                shadow = command.shadow,
-                borderThickness = command.borderThickness,
-                width = command.width,
-                height = command.height,
-                horizontalAlignment = command.horizontalAlignment,
-                verticalAlignment = command.verticalAlignment,
-                padding = command.padding,
-                gap = command.gap,
-                cornerRadius = command.cornerRadius,
+                pageBackgroundColor = HexColor(command.styling.pageBackgroundColor),
+                backgroundColor = HexColor(command.styling.backgroundColor),
+                textColor = HexColor(command.styling.textColor),
+                buttonColor = HexColor(command.styling.buttonColor),
+                buttonTextColor = HexColor(command.styling.buttonTextColor),
+                inputTextColor = HexColor(command.styling.inputTextColor),
+                borderColor = HexColor(command.styling.borderColor),
+                borderStyle = command.styling.borderStyle,
+                shadow = command.styling.shadow,
+                borderThickness = command.styling.borderThickness,
+                width = command.styling.width,
+                height = command.styling.height,
+                horizontalAlignment = command.styling.horizontalAlignment,
+                verticalAlignment = command.styling.verticalAlignment,
+                padding = command.styling.padding,
+                gap = command.styling.gap,
+                cornerRadius = command.styling.cornerRadius,
             ),
             content = FormContentSettings(
-                showHeader = command.showHeader,
-                showSubheader = command.showSubheader,
+                showHeader = command.content.showHeader,
+                showSubheader = command.content.showSubheader,
                 headerTitle = headerTitle,
-                subheaderText = command.subheaderText,
-                inputPlaceholder = command.inputPlaceholder,
-                submitButtonText = command.submitButtonText,
-                submittingButtonText = command.submittingButtonText,
-                showTosCheckbox = command.showTosCheckbox,
-                tosText = command.tosText,
-                showPrivacyCheckbox = command.showPrivacyCheckbox,
-                privacyText = command.privacyText,
+                subheaderText = command.content.subheaderText,
+                inputPlaceholder = command.content.inputPlaceholder,
+                submitButtonText = command.content.submitButtonText,
+                submittingButtonText = command.content.submittingButtonText,
+                showTosCheckbox = command.content.showTosCheckbox,
+                tosText = command.content.tosText,
+                showPrivacyCheckbox = command.content.showPrivacyCheckbox,
+                privacyText = command.content.privacyText,
             ),
         )
         formCreator.create(

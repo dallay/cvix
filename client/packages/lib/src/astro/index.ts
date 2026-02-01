@@ -20,6 +20,7 @@
 // i18n configuration
 export { createI18nConfig, DEFAULT_I18N_ROUTING } from "./i18n-config.js";
 export type { ImageConfig } from "./image-config.js";
+
 // Image service configuration
 export { DEFAULT_IMAGE_CONFIG } from "./image-config.js";
 export type { IconConfig, SitemapConfigOptions } from "./integrations.js";
@@ -30,8 +31,10 @@ export {
 	DEFAULT_ICON_CONFIG,
 } from "./integrations.js";
 export type { HttpsConfig } from "./ssl-config.js";
+
 // SSL/HTTPS configuration
 export { getHttpsConfig, hasSSLCertificates } from "./ssl-config.js";
 export type { CvixSsrNoExternal } from "./vite-config.js";
+
 // Vite SSR configuration
 export { CVIX_SSR_NO_EXTERNAL } from "./vite-config.js";

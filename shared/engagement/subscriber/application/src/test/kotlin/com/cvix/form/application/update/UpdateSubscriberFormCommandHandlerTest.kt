@@ -47,7 +47,6 @@ internal class UpdateSubscriberFormCommandHandlerTest {
         name: String = "Updated Name",
         headerTitle: String = "Updated Header",
     ): UpdateSubscriberFormCommand {
-        val settings = SubscriberFormStub.randomSettings()
         return UpdateSubscriberFormCommand(
             id = id,
             name = name,

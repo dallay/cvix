@@ -3,7 +3,7 @@ package com.cvix.form.infrastructure
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.security.Hasher
-import com.cvix.common.domain.security.Sha256Hasher
+import com.cvix.common.infrastructure.security.Sha256Hasher
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent

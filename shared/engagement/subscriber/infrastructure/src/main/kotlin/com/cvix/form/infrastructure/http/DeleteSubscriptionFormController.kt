@@ -29,6 +29,11 @@ import org.springframework.web.bind.annotation.RestController
  * Controller for deleting subscription forms.
  *
  * This endpoint handles the removal of a subscription form configuration.
+ * Requires Bearer token authentication and X-Workspace-Id header for workspace access validation.
+ *
+ * @property mediator The mediator for dispatching commands.
+ * @property messageSource The message source for localized messages.
+ * @created 2026
  */
 @Validated
 @RestController
@@ -105,12 +110,7 @@ class DeleteSubscriptionFormController(
         dispatch(command)
 
         return ResponseEntity.ok(
-            MessageResponse(getLocalizedMessage("subscription-form.delete.success", serverRequest)),
+            MessageResponse(getLocalizedMessage("subscription-form.delete.success", serverRequest, messageSource)),
         )
-    }
-
-    private fun getLocalizedMessage(key: String, request: ServerHttpRequest): String {
-        val locale = request.headers.acceptLanguageAsLocales.firstOrNull() ?: Locale.ENGLISH
-        return messageSource.getMessage(key, null, locale)
     }
 }

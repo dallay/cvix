@@ -29,7 +29,7 @@ Provides a baseline reset and essential styling for the form elements to ensure 
 
 ## 🔄 Communication Flow
 
-1. **Parent Page**: Includes an `<iframe>` pointing to `https://subscribe-forms.cvix.io/[formId]`.
+1. **Parent Page**: Includes an `<iframe>` pointing to `https://subscribe-forms.profiletailors.com/[formId]`.
 2. **Astro Server**: Fetches form settings and renders the HTML.
 3. **Iframe**: Once loaded, sends a `cvix:ready` message and its initial `height`.
 4. **Embed Script**: Receives the height and updates the `<iframe>` style in the parent DOM.

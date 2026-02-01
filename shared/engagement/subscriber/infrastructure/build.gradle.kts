@@ -15,6 +15,7 @@ dependencies {
 
     implementation(platform(libs.jackson.bom))
     implementation(libs.jackson.module.kotlin)
+    implementation(libs.springdoc.openapi.starter.webflux.ui)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.assertj)

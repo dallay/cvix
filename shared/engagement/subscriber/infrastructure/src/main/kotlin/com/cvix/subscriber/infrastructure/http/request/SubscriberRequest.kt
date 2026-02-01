@@ -64,5 +64,5 @@ data class SubscriberRequest(
         description = "Additional metadata for the subscriber",
         required = false,
     )
-    val metadata: Map<String, String>? = emptyMap(),
+    val metadata: Map<String, String> = emptyMap(),
 )

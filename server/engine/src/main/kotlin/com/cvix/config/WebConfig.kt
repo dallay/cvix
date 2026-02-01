@@ -39,19 +39,7 @@ class WebConfig(val applicationSecurityProperties: ApplicationSecurityProperties
         val cors = applicationSecurityProperties.cors
         // Merge configured headers with required headers for form embed
         val allowedHeaders = cors.allowedHeaders.toMutableList()
-        allowedHeaders.addAll(
-            listOf(
-                "authorization",
-                "content-type",
-                "accept",
-                "origin",
-                "access-control-request-method",
-                "access-control-request-headers",
-                "x-requested-with",
-                "x-xsrf-token",
-                "x-workspace-id",
-            ),
-        )
+        allowedHeaders.addAll(ApplicationSecurityProperties.REQUIRED_CORS_HEADERS)
         registry.addMapping("/api/**")
             .allowedOrigins(*cors.allowedOrigins.toTypedArray())
             .allowedMethods(*cors.allowedMethods.toTypedArray())

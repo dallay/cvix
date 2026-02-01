@@ -103,6 +103,7 @@ abstract class InfrastructureTestContainers {
         // Named constants to avoid magic numbers in the wait logic
         private const val DEFAULT_JDBC_TIMEOUT_SECONDS: Long = 60
         private const val SLEEP_INTERVAL_MILLIS: Long = 1000
+        private const val MILLIS_PER_SECOND: Long = 1000
 
         @JvmStatic
         @Container
@@ -205,7 +206,7 @@ abstract class InfrastructureTestContainers {
             password: String,
             timeoutSeconds: Long = DEFAULT_JDBC_TIMEOUT_SECONDS
         ) {
-            val deadline = System.currentTimeMillis() + timeoutSeconds * SLEEP_INTERVAL_MILLIS
+            val deadline = System.currentTimeMillis() + timeoutSeconds * MILLIS_PER_SECOND
             while (System.currentTimeMillis() < deadline) {
                 try {
                     DriverManager.getConnection(jdbcUrl, username, password).use { _ ->

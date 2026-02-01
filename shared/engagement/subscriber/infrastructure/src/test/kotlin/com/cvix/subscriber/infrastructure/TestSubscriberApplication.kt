@@ -2,8 +2,8 @@ package com.cvix.subscriber.infrastructure
 
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.security.Hasher
-import com.cvix.common.domain.security.Sha256Hasher
 import com.cvix.common.domain.security.WorkspaceAuthorization
+import com.cvix.common.infrastructure.security.Sha256Hasher
 import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan

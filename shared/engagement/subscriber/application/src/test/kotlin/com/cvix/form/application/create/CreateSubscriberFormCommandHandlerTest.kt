@@ -60,36 +60,38 @@ internal class CreateSubscriberFormCommandHandlerTest {
         successActionType = settings.settings.successActionType.name,
         successMessage = settings.settings.successMessage,
         redirectUrl = settings.settings.redirectUrl,
-        // Styling
-        buttonColor = settings.styling.buttonColor.value,
-        pageBackgroundColor = settings.styling.pageBackgroundColor.value,
-        backgroundColor = settings.styling.backgroundColor.value,
-        textColor = settings.styling.textColor.value,
-        buttonTextColor = settings.styling.buttonTextColor.value,
-        inputTextColor = settings.styling.inputTextColor.value,
-        borderColor = settings.styling.borderColor.value,
-        borderStyle = settings.styling.borderStyle,
-        shadow = settings.styling.shadow,
-        borderThickness = settings.styling.borderThickness,
-        width = settings.styling.width,
-        height = settings.styling.height,
-        horizontalAlignment = settings.styling.horizontalAlignment,
-        verticalAlignment = settings.styling.verticalAlignment,
-        padding = settings.styling.padding,
-        gap = settings.styling.gap,
-        cornerRadius = settings.styling.cornerRadius,
-        // Content
-        showHeader = settings.content.showHeader,
-        showSubheader = settings.content.showSubheader,
-        headerTitle = settings.content.headerTitle,
-        subheaderText = settings.content.subheaderText,
-        inputPlaceholder = settings.content.inputPlaceholder,
-        submitButtonText = settings.content.submitButtonText,
-        submittingButtonText = settings.content.submittingButtonText,
-        showTosCheckbox = settings.content.showTosCheckbox,
-        tosText = settings.content.tosText,
-        showPrivacyCheckbox = settings.content.showPrivacyCheckbox,
-        privacyText = settings.content.privacyText,
+        styling = StylingInput(
+            buttonColor = settings.styling.buttonColor.value,
+            pageBackgroundColor = settings.styling.pageBackgroundColor.value,
+            backgroundColor = settings.styling.backgroundColor.value,
+            textColor = settings.styling.textColor.value,
+            buttonTextColor = settings.styling.buttonTextColor.value,
+            inputTextColor = settings.styling.inputTextColor.value,
+            borderColor = settings.styling.borderColor.value,
+            borderStyle = settings.styling.borderStyle,
+            shadow = settings.styling.shadow,
+            borderThickness = settings.styling.borderThickness,
+            width = settings.styling.width,
+            height = settings.styling.height,
+            horizontalAlignment = settings.styling.horizontalAlignment,
+            verticalAlignment = settings.styling.verticalAlignment,
+            padding = settings.styling.padding,
+            gap = settings.styling.gap,
+            cornerRadius = settings.styling.cornerRadius,
+        ),
+        content = ContentInput(
+            showHeader = settings.content.showHeader,
+            showSubheader = settings.content.showSubheader,
+            headerTitle = settings.content.headerTitle,
+            subheaderText = settings.content.subheaderText,
+            inputPlaceholder = settings.content.inputPlaceholder,
+            submitButtonText = settings.content.submitButtonText,
+            submittingButtonText = settings.content.submittingButtonText,
+            showTosCheckbox = settings.content.showTosCheckbox,
+            tosText = settings.content.tosText,
+            showPrivacyCheckbox = settings.content.showPrivacyCheckbox,
+            privacyText = settings.content.privacyText,
+        ),
         workspaceId = workspaceId,
         userId = userId,
     )
@@ -130,7 +132,9 @@ internal class CreateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should fail when buttonColor is not a valid hex color`(): Unit = runTest {
-        val command = createValidCommand().copy(buttonColor = "not-a-hex")
+        val command = createValidCommand().let {
+            it.copy(styling = it.styling.copy(buttonColor = "not-a-hex"))
+        }
 
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
@@ -189,9 +193,9 @@ internal class CreateSubscriberFormCommandHandlerTest {
         assertEquals("Form name must be at most 120 characters", error.message)
 
         // header too long
-        val command2 = createValidCommand().copy(
-            headerTitle = "b".repeat(121),
-        )
+        val command2 = createValidCommand().let {
+            it.copy(content = it.content.copy(headerTitle = "b".repeat(121)))
+        }
 
         val error2 = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command2)
@@ -202,9 +206,10 @@ internal class CreateSubscriberFormCommandHandlerTest {
     @Test
     fun `should trim name and header before creation`() = runTest {
         val commandId = UUID.randomUUID()
-        val command = createValidCommand(id = commandId).copy(
+        val baseCommand = createValidCommand(id = commandId)
+        val command = baseCommand.copy(
             name = "  My Trimmed Name  ",
-            headerTitle = "  Header text  ",
+            content = baseCommand.content.copy(headerTitle = "  Header text  "),
         )
 
         commandHandler.handle(command)
@@ -232,7 +237,9 @@ internal class CreateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should reject blank header`() = runTest {
-        val command = createValidCommand().copy(headerTitle = "   ")
+        val command = createValidCommand().let {
+            it.copy(content = it.content.copy(headerTitle = "   "))
+        }
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
         }
@@ -243,9 +250,10 @@ internal class CreateSubscriberFormCommandHandlerTest {
     fun `should allow name and header at max length`() = runTest {
         val maxLen = 120
         val commandId = UUID.randomUUID()
-        val command = createValidCommand(id = commandId).copy(
+        val baseCommand = createValidCommand(id = commandId)
+        val command = baseCommand.copy(
             name = "n".repeat(maxLen),
-            headerTitle = "h".repeat(maxLen),
+            content = baseCommand.content.copy(headerTitle = "h".repeat(maxLen)),
         )
         commandHandler.handle(command)
         coVerify(exactly = 1) {
