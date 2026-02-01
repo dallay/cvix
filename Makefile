@@ -24,6 +24,7 @@ CLIENT_LANDING_FILTER := --filter @cvix/marketing
 CLIENT_WEBAPP_FILTER := --filter @cvix/webapp
 CLIENT_BLOG_FILTER := --filter @cvix/blog
 CLIENT_DOCS_FILTER := --filter @cvix/docs
+CLIENT_SUBSCRIBE_FILTER := --filter @cvix/subscribe-forms
 
 # Build configuration
 LOG_DIR := build/logs
@@ -97,6 +98,10 @@ dev-docs:
 # Runs the blog in development mode.
 dev-blog:
 	@$(PNPM) $(CLIENT_BLOG_FILTER) dev
+
+# Runs the subscribe-forms app in development mode.
+dev-subscribe:
+	@$(PNPM) $(CLIENT_SUBSCRIBE_FILTER) dev
 
 # ------------------------------------------------------------------------------------
 # LOCAL DEVELOPMENT UTILITIES
@@ -189,6 +194,14 @@ build-blog:
 # Previews the blog.
 preview-blog:
 	@$(PNPM) $(CLIENT_BLOG_FILTER) preview
+
+# Builds the subscribe-forms app.
+build-subscribe:
+	@$(PNPM) $(CLIENT_SUBSCRIBE_FILTER) build
+
+# Previews the subscribe-forms app.
+preview-subscribe:
+	@$(PNPM) $(CLIENT_SUBSCRIBE_FILTER) preview
 
 # ------------------------------------------------------------------------------------
 # TESTING & LINTING
@@ -399,4 +412,4 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
+.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets dev-subscribe build-subscribe preview-subscribe

@@ -16,7 +16,7 @@ VALUES (
   '#FFFFFF',
   '#000000',
   '#FFFFFF',
-  'PUBLISHED',
+  'PUBLISHED'::subscription_form_status,
   '22222222-2222-2222-2222-222222222222',
   now(),
   'system'

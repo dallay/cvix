@@ -173,6 +173,8 @@ extra["springProfiles"] = computedSpringProfiles
 val springProfiles: String = extra["springProfiles"] as? String ?: "dev"
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     args("--spring.profiles.active=$springProfiles")
+    // Set working directory to project root so Spring Boot can find compose.yaml
+    workingDir = rootProject.projectDir
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {

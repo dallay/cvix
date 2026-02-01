@@ -1,5 +1,17 @@
 databaseChangeLog:
   - changeSet:
+      id: create-subscription-form-status-enum
+      author: system
+      comment: Create enum type for subscription form status
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE subscription_form_status AS ENUM ('DRAFT','PUBLISHED','DISABLED','ARCHIVED');
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS subscription_form_status;
+
+  - changeSet:
       id: create-subscription-forms-table
       author: system
       comment: Create subscription_forms table for storing form configurations
@@ -58,7 +70,8 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: status
-                  type: varchar(20)
+                  type: subscription_form_status
+                  defaultValue: DRAFT
                   constraints:
                     nullable: false
               - column:

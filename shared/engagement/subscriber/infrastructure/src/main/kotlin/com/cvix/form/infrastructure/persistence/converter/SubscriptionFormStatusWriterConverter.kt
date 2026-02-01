@@ -6,8 +6,9 @@ import org.springframework.data.convert.WritingConverter
 
 /**
  * R2DBC converter to write [SubscriptionFormStatus] enum to the database.
+ * The actual PostgreSQL enum type mapping is handled by EnumCodec at the ConnectionFactory level.
  */
 @WritingConverter
-class SubscriptionFormStatusWriterConverter : Converter<SubscriptionFormStatus, String> {
-    override fun convert(source: SubscriptionFormStatus): String = source.name
+class SubscriptionFormStatusWriterConverter : Converter<SubscriptionFormStatus, SubscriptionFormStatus> {
+    override fun convert(source: SubscriptionFormStatus): SubscriptionFormStatus = source
 }

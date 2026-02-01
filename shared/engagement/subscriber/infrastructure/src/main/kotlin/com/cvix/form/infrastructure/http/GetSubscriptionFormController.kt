@@ -36,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException
  */
 @Validated
 @RestController
-@RequestMapping(value = ["/api/v1/subscription-forms"])
+@RequestMapping(value = ["/api/subscription-forms"])
 @Tag(name = "Subscription Form")
 class GetSubscriptionFormController(
     mediator: Mediator,

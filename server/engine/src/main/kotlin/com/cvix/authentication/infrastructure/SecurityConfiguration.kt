@@ -95,7 +95,22 @@ class SecurityConfiguration(
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = applicationSecurityProperties.cors.allowedOrigins
         configuration.allowedMethods = applicationSecurityProperties.cors.allowedMethods
-        configuration.allowedHeaders = applicationSecurityProperties.cors.allowedHeaders
+        // Merge configured headers with required headers for form embed
+        val allowedHeaders = applicationSecurityProperties.cors.allowedHeaders.toMutableList()
+        allowedHeaders.addAll(
+            listOf(
+                "authorization",
+                "content-type",
+                "accept",
+                "origin",
+                "access-control-request-method",
+                "access-control-request-headers",
+                "x-requested-with",
+                "x-xsrf-token",
+                "x-workspace-id",
+            ),
+        )
+        configuration.allowedHeaders = allowedHeaders.distinct()
         configuration.exposedHeaders = applicationSecurityProperties.cors.exposedHeaders
         configuration.allowCredentials = applicationSecurityProperties.cors.allowCredentials
         configuration.maxAge = applicationSecurityProperties.cors.maxAge
@@ -208,7 +223,8 @@ class SecurityConfiguration(
             .pathMatchers(HttpMethod.POST, "/api/waitlist").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/contact").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/subscribers").permitAll()
-            .pathMatchers(HttpMethod.GET, "/api/v1/subscription-forms/*").permitAll()
+            // Allow anonymous access to subscription form configuration (both v1 and non-v1 paths)
+            .pathMatchers(HttpMethod.GET, "/api/subscription-forms/*").permitAll()
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()

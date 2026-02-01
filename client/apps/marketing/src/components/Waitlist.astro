@@ -1,6 +1,5 @@
 ---
 import { CVIX_API_URL } from "astro:env/client";
-import { EmailCaptureForm } from "@cvix/astro-ui";
 import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "astro/types";
 import { type Lang, useTranslations } from "@/i18n/i18n.ts";
@@ -54,31 +53,14 @@ const t = useTranslations(currentLocale);
             es: "Regístrate para ser el primero en saber cuándo ProfileTailors estará disponible y recibir actualizaciones exclusivas.",
           })}
 				</p>
-				<div class="flex mt-6 w-full">
-					<EmailCaptureForm apiUrl={`${CVIX_API_URL}/api/subscribers`}
-						emailPlaceholder={t({
-							en: "Enter your email",
-							es: "Ingresa tu correo electrónico",
-						})}
-						buttonText={t({
-							en: "Join the waitlist",
-							es: "Únete a la lista de espera",
-						})}
-						successMessage={t({
-							en: "Successfully joined the waitlist!",
-							es: "¡Te has unido a la lista de espera!",
-						})}
-						errorMessage={t({
-							en: "Failed to join. Please try again.",
-							es: "Error al unirse. Por favor intenta de nuevo.",
-						})}
-						rateLimitMessage={t({
-							en: "Too many requests. Please wait.",
-							es: "Demasiadas solicitudes. Por favor espera.",
-						})}
-						source="landing-cta"
-					/>
-				</div>
+                <div class="flex mt-6 w-full">
+                    <!-- Cvix embeddable form -->
+                    <div
+                      data-cvix-form-id="2b7e7d65-bae8-4c13-9135-b9a045598259"
+                      data-cvix-api-url={`${CVIX_API_URL}`}
+                      class="w-full"
+                    ></div>
+                </div>
 			</div>
 		</div>
 	</div>

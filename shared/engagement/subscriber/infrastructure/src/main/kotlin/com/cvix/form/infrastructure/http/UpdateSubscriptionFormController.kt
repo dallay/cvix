@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @Validated
 @RestController
-@RequestMapping(value = ["/api/v1/subscription-forms"])
+@RequestMapping(value = ["/api/subscription-forms"])
 @Tag(name = "Subscription Form")
 class UpdateSubscriptionFormController(
     mediator: Mediator,

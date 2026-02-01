@@ -17,7 +17,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest(classes = [TestSubscriptionFormApplication::class, TestSecurityConfiguration::class])
+@SpringBootTest(
+    classes = [
+        TestSubscriptionFormApplication::class,
+        TestSecurityConfiguration::class,
+        com.cvix.subscriber.infrastructure.persistence.config.SubscriberR2dbcConfig::class,
+    ],
+)
 internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestContainers() {
 
     @Autowired
@@ -50,7 +56,7 @@ internal class SubscriptionFormStoreR2dbcRepositoryTest : InfrastructureTestCont
         assertNotNull(found)
         assertEquals(form.name, found?.name)
         assertEquals(form.workspaceId, found?.workspaceId)
-        assertEquals(form.settings.header, found?.settings?.header)
+        assertEquals(form.settings.content.headerTitle, found?.settings?.content?.headerTitle)
     }
 
     @Test

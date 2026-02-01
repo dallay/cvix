@@ -37,10 +37,25 @@ class WebConfig(val applicationSecurityProperties: ApplicationSecurityProperties
     @Suppress("SpreadOperator")
     override fun addCorsMappings(registry: CorsRegistry) {
         val cors = applicationSecurityProperties.cors
+        // Merge configured headers with required headers for form embed
+        val allowedHeaders = cors.allowedHeaders.toMutableList()
+        allowedHeaders.addAll(
+            listOf(
+                "authorization",
+                "content-type",
+                "accept",
+                "origin",
+                "access-control-request-method",
+                "access-control-request-headers",
+                "x-requested-with",
+                "x-xsrf-token",
+                "x-workspace-id",
+            ),
+        )
         registry.addMapping("/api/**")
             .allowedOrigins(*cors.allowedOrigins.toTypedArray())
             .allowedMethods(*cors.allowedMethods.toTypedArray())
-            .allowedHeaders(*cors.allowedHeaders.toTypedArray())
+            .allowedHeaders(*allowedHeaders.distinct().toTypedArray())
             .exposedHeaders(*cors.exposedHeaders.toTypedArray())
             .allowCredentials(cors.allowCredentials)
             .maxAge(cors.maxAge)

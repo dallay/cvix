@@ -47,25 +47,58 @@ internal class CreateSubscriberFormCommandHandlerTest {
         } returns Unit
     }
 
+    private fun createValidCommand(
+        id: UUID = UUID.randomUUID(),
+        name: String = "My Form",
+        workspaceId: UUID = workspaceUuid,
+        userId: UUID = this.userId,
+    ): CreateSubscriberFormCommand = CreateSubscriberFormCommand(
+        id = id,
+        name = name,
+        description = "A description",
+        confirmationRequired = settings.settings.confirmationRequired,
+        successActionType = settings.settings.successActionType.name,
+        successMessage = settings.settings.successMessage,
+        redirectUrl = settings.settings.redirectUrl,
+        // Styling
+        buttonColor = settings.styling.buttonColor.value,
+        pageBackgroundColor = settings.styling.pageBackgroundColor.value,
+        backgroundColor = settings.styling.backgroundColor.value,
+        textColor = settings.styling.textColor.value,
+        buttonTextColor = settings.styling.buttonTextColor.value,
+        inputTextColor = settings.styling.inputTextColor.value,
+        borderColor = settings.styling.borderColor.value,
+        borderStyle = settings.styling.borderStyle,
+        shadow = settings.styling.shadow,
+        borderThickness = settings.styling.borderThickness,
+        width = settings.styling.width,
+        height = settings.styling.height,
+        horizontalAlignment = settings.styling.horizontalAlignment,
+        verticalAlignment = settings.styling.verticalAlignment,
+        padding = settings.styling.padding,
+        gap = settings.styling.gap,
+        cornerRadius = settings.styling.cornerRadius,
+        // Content
+        showHeader = settings.content.showHeader,
+        showSubheader = settings.content.showSubheader,
+        headerTitle = settings.content.headerTitle,
+        subheaderText = settings.content.subheaderText,
+        inputPlaceholder = settings.content.inputPlaceholder,
+        submitButtonText = settings.content.submitButtonText,
+        submittingButtonText = settings.content.submittingButtonText,
+        showTosCheckbox = settings.content.showTosCheckbox,
+        tosText = settings.content.tosText,
+        showPrivacyCheckbox = settings.content.showPrivacyCheckbox,
+        privacyText = settings.content.privacyText,
+        workspaceId = workspaceId,
+        userId = userId,
+    )
+
     @Test
     fun `should create a form`() = runTest {
         // Arrange
         val commandId = UUID.randomUUID()
-        val command = CreateSubscriberFormCommand(
-            id = commandId,
-            name = "My Form",
-            header = settings.header,
-            description = "A description",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand(id = commandId)
 
         // Act
         commandHandler.handle(command)
@@ -83,21 +116,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             workspaceAuthorization.ensureAccess(workspaceUuid, otherUser)
         } throws IllegalStateException("access denied")
 
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "Name",
-            header = settings.header,
-            description = settings.header,
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = otherUser,
-        )
+        val command = createValidCommand(userId = otherUser)
 
         // Act & Assert
         assertFailsWith<IllegalStateException> {
@@ -111,21 +130,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should fail when buttonColor is not a valid hex color`(): Unit = runTest {
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "Name",
-            header = settings.header,
-            description = settings.header,
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = "not-a-hex",
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand().copy(buttonColor = "not-a-hex")
 
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
@@ -144,21 +149,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
             "duplicate id",
         )
 
-        val command = CreateSubscriberFormCommand(
-            id = duplicateId,
-            name = "Duplicated",
-            header = settings.header,
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand(id = duplicateId)
 
         // Act & Assert
         val error = assertFailsWith<IllegalStateException> {
@@ -176,21 +167,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
         val failingId = UUID.randomUUID()
         coEvery { formRepository.create(any()) } throws RuntimeException("db down")
 
-        val command = CreateSubscriberFormCommand(
-            id = failingId,
-            name = "WillFail",
-            header = settings.header,
-            description = settings.header,
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand(id = failingId)
 
         // Act & Assert
         assertFailsWith<RuntimeException> {
@@ -204,21 +181,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
     @Test
     fun `should validate max lengths for name and header`() = runTest {
         val longString = "a".repeat(121)
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = longString,
-            header = settings.header,
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand(name = longString)
 
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
@@ -226,20 +189,8 @@ internal class CreateSubscriberFormCommandHandlerTest {
         assertEquals("Form name must be at most 120 characters", error.message)
 
         // header too long
-        val command2 = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "Name",
-            header = "b".repeat(121),
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
+        val command2 = createValidCommand().copy(
+            headerTitle = "b".repeat(121),
         )
 
         val error2 = assertFailsWith<IllegalArgumentException> {
@@ -251,20 +202,9 @@ internal class CreateSubscriberFormCommandHandlerTest {
     @Test
     fun `should trim name and header before creation`() = runTest {
         val commandId = UUID.randomUUID()
-        val command = CreateSubscriberFormCommand(
-            id = commandId,
+        val command = createValidCommand(id = commandId).copy(
             name = "  My Trimmed Name  ",
-            header = "  Header text  ",
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
+            headerTitle = "  Header text  ",
         )
 
         commandHandler.handle(command)
@@ -272,7 +212,9 @@ internal class CreateSubscriberFormCommandHandlerTest {
         coVerify(exactly = 1) {
             formRepository.create(
                 match {
-                    it.name == "My Trimmed Name" && it.settings.header == "Header text" && it.id.value == commandId
+                    it.name == "My Trimmed Name" &&
+                        it.settings.content.headerTitle == "Header text" &&
+                        it.id.value == commandId
                 },
             )
         }
@@ -281,21 +223,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should reject blank name`() = runTest {
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "   ",
-            header = settings.header,
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand().copy(name = "   ")
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
         }
@@ -304,21 +232,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
 
     @Test
     fun `should reject blank header`() = runTest {
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "Valid Name",
-            header = "   ",
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand().copy(headerTitle = "   ")
         val error = assertFailsWith<IllegalArgumentException> {
             commandHandler.handle(command)
         }
@@ -329,26 +243,16 @@ internal class CreateSubscriberFormCommandHandlerTest {
     fun `should allow name and header at max length`() = runTest {
         val maxLen = 120
         val commandId = UUID.randomUUID()
-        val command = CreateSubscriberFormCommand(
-            id = commandId,
+        val command = createValidCommand(id = commandId).copy(
             name = "n".repeat(maxLen),
-            header = "h".repeat(maxLen),
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
+            headerTitle = "h".repeat(maxLen),
         )
         commandHandler.handle(command)
         coVerify(exactly = 1) {
             formRepository.create(
                 match {
-                    it.name == "n".repeat(maxLen) && it.settings.header == "h".repeat(maxLen) &&
+                    it.name == "n".repeat(maxLen) &&
+                        it.settings.content.headerTitle == "h".repeat(maxLen) &&
                         it.id.value == commandId
                 },
             )
@@ -364,21 +268,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
                 userId,
             )
         } throws IllegalStateException("forbidden")
-        val command = CreateSubscriberFormCommand(
-            id = UUID.randomUUID(),
-            name = "Valid Name",
-            header = settings.header,
-            description = "desc",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand()
         val error = assertFailsWith<IllegalStateException> {
             commandHandler.handle(command)
         }
@@ -390,21 +280,7 @@ internal class CreateSubscriberFormCommandHandlerTest {
     @Test
     fun `should allow whitespace-only description`() = runTest {
         val commandId = UUID.randomUUID()
-        val command = CreateSubscriberFormCommand(
-            id = commandId,
-            name = "Valid Name",
-            header = settings.header,
-            description = "   ",
-            inputPlaceholder = settings.inputPlaceholder,
-            buttonText = settings.buttonText,
-            buttonColor = settings.buttonColor.value,
-            backgroundColor = settings.backgroundColor.value,
-            textColor = settings.textColor.value,
-            buttonTextColor = settings.buttonTextColor.value,
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand(id = commandId).copy(description = "   ")
         commandHandler.handle(command)
         coVerify(exactly = 1) { formRepository.create(match { it.id.value == commandId }) }
         coVerify(exactly = 1) { eventPublisher.publish(any<SubscriptionFormCreatedEvent>()) }

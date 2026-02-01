@@ -1,0 +1,257 @@
+---
+import { CVIX_API_URL } from "@cvix/lib";
+export const prerender = false;
+
+import "@cvix/astro-ui/styles/global.css";
+import EmailCaptureForm from "@cvix/astro-ui/components/blocks/email-capture-form/EmailCaptureForm.astro";
+
+const { formId } = Astro.params;
+
+// Type for form configuration from backend
+type FormConfig = {
+	id: string;
+	name?: string;
+	status?: string;
+	workspaceId?: string;
+	language?: "en" | "es";
+	// Page-level styling
+	pageBackgroundColor?: string;
+	// Other form settings...
+	[key: string]: unknown;
+};
+
+let form: FormConfig | undefined;
+let errorStatus: number | null = null;
+
+try {
+	const res = await fetch(`${CVIX_API_URL}/api/subscription-forms/${formId}`, {
+		headers: { Accept: "application/vnd.api.v1+json" },
+	});
+	if (res.ok) {
+		form = await res.json();
+	} else if (res.status === 404) {
+		errorStatus = 404;
+	} else {
+		errorStatus = res.status;
+	}
+} catch {
+	errorStatus = 500;
+}
+
+// Determine language from form config or default to 'en'
+const lang = form?.language ?? "en";
+
+// i18n messages for error states
+const messages = {
+	en: {
+		skipLink: "Skip to subscription form",
+		notFoundTitle: "Form Not Found",
+		notFoundDescription:
+			"This subscription form is not available. It may have been removed, disabled, or the link might be incorrect.",
+		errorTitle: "Error Loading Form",
+		errorDescription: "Something went wrong. Please try again later.",
+		poweredBy: "Powered by",
+		formIdLabel: "Form ID:",
+		subscribeError: "Failed to subscribe. Please try again.",
+		rateLimitError: "Too many attempts. Please try again later.",
+	},
+	es: {
+		skipLink: "Ir al formulario de suscripción",
+		notFoundTitle: "Formulario No Encontrado",
+		notFoundDescription:
+			"Este formulario de suscripción no está disponible. Puede haber sido eliminado, desactivado o el enlace podría ser incorrecto.",
+		errorTitle: "Error al Cargar el Formulario",
+		errorDescription:
+			"Algo salió mal. Por favor, inténtalo de nuevo más tarde.",
+		poweredBy: "Desarrollado por",
+		formIdLabel: "ID del Formulario:",
+		subscribeError: "Error al suscribirse. Por favor, inténtalo de nuevo.",
+		rateLimitError:
+			"Demasiados intentos. Por favor, inténtalo de nuevo más tarde.",
+	},
+} as const;
+
+const t = messages[lang] || messages.en;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/embed.css" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+    <title>Subscribe</title>
+  </head>
+  <body style={`background-color: ${form?.pageBackgroundColor || 'transparent'};`}>
+    <!-- Skip to main content link for accessibility (WCAG 2.4.1) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+    >
+      {t.skipLink}
+    </a>
+
+    <main id="main-content" style="padding:0.5rem; width: 100%; box-sizing: border-box;">
+      {errorStatus === 404 ? (
+        <!-- Form Not Found Error -->
+        <div class="error-container" role="alert">
+          <!-- Error Icon -->
+          <div class="error-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          
+          <!-- Error Title -->
+          <h1 class="error-title">{t.notFoundTitle}</h1>
+          
+          <!-- Error Description -->
+          <p class="error-description">{t.notFoundDescription}</p>
+          
+          <!-- Form ID (for debugging) -->
+          <p class="error-form-id">
+            <span>{t.formIdLabel}</span> <code>{formId}</code>
+          </p>
+          
+          <!-- Powered by CVIX -->
+          <div class="error-footer">
+            <p>{t.poweredBy} <strong>CVIX</strong></p>
+          </div>
+        </div>
+      ) : errorStatus ? (
+        <!-- Generic Error -->
+        <div class="error-container" role="alert">
+          <div class="error-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h1 class="error-title">{t.errorTitle}</h1>
+          <p class="error-description">{t.errorDescription}</p>
+        </div>
+      ) : (
+        <!-- Normal Form -->
+        <EmailCaptureForm
+          apiUrl={`${CVIX_API_URL}/api/subscribers`}
+          form={form}
+          source={`iframe-embed-${formId}`}
+          errorMessage={t.subscribeError}
+          rateLimitMessage={t.rateLimitError}
+        />
+      )}
+    </main>
+
+    <script define:vars={{ formId }}>
+      // Notify parent about readiness and dynamic height
+      (function (id) {
+        function post(msg) {
+          try {
+            parent.postMessage(Object.assign({ id: id }, msg), '*');
+          } catch (e) {
+            // ignore
+          }
+        }
+        window.addEventListener('load', function () {
+          post({ type: 'cvix:ready' });
+          post({ type: 'cvix:height', height: document.body.scrollHeight });
+        });
+        const ro = new ResizeObserver(function () {
+          post({ type: 'cvix:height', height: document.body.scrollHeight });
+        });
+        ro.observe(document.body);
+      })(formId);
+    </script>
+
+    <style>
+      .error-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 2rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background-color: #ffffff;
+        text-align: center;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      
+      .error-icon {
+        margin-bottom: 1rem;
+        color: #dc2626;
+      }
+      
+      .error-icon svg {
+        margin: 0 auto;
+        display: block;
+      }
+      
+      .error-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 0.5rem 0;
+      }
+      
+      .error-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 0 0 1.5rem 0;
+        line-height: 1.5;
+      }
+      
+      .error-form-id {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin: 0;
+      }
+      
+      .error-form-id code {
+        font-family: monospace;
+        background: #f3f4f6;
+        padding: 0.125rem 0.375rem;
+        border-radius: 4px;
+      }
+      
+      .error-footer {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+      }
+      
+      .error-footer p {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin: 0;
+      }
+      
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        .error-container {
+          background-color: #1f2937;
+          border-color: #374151;
+        }
+        
+        .error-title {
+          color: #f9fafb;
+        }
+        
+        .error-description {
+          color: #9ca3af;
+        }
+        
+        .error-form-id code {
+          background: #374151;
+          color: #d1d5db;
+        }
+        
+        .error-footer {
+          border-color: #374151;
+        }
+      }
+    </style>
+  </body>
+</html>

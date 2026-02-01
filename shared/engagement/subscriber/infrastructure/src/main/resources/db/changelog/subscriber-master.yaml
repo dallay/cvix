@@ -4,3 +4,7 @@ databaseChangeLog:
   - includeAll:
       path: subscriber-migrations
       relativeToChangelogFile: true
+  - include:
+      file: data/seed/001-cvix-subscription-forms.yaml
+      context: seed
+      relativeToChangelogFile: true

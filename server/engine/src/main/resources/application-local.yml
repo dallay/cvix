@@ -1,0 +1,17 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+
+server:
+  ssl:
+    enabled: false
+
+spring.profiles.include:
+  - dev
+  - api-docs
+
+# Override dev profile settings
+spring.profiles.group:
+  local:
+    - local

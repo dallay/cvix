@@ -77,20 +77,33 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
     fun `should create form successfully`() {
         val request = CreateSubscriberFormRequest(
             name = "Test Form",
-            header = "Header",
             description = "Desc",
+            headerTitle = "Header",
             inputPlaceholder = "email@example.com",
-            buttonText = "Join",
+            submitButtonText = "Join",
             buttonColor = "#000000",
+            pageBackgroundColor = "#ffffff",
             backgroundColor = "#ffffff",
             textColor = "#000000",
             buttonTextColor = "#ffffff",
+            inputTextColor = "#000000",
+            borderColor = "#000000",
+            borderStyle = "solid",
+            shadow = "none",
+            borderThickness = 0,
+            width = "auto",
+            height = "auto",
+            horizontalAlignment = "center",
+            verticalAlignment = "center",
+            padding = 16,
+            gap = 16,
+            cornerRadius = 8,
         )
 
         coEvery { mediator.send(any<CreateSubscriberFormCommand>()) } returns Unit
 
         webTestClient.post()
-            .uri("/api/v1/subscription-forms")
+            .uri("/api/subscription-forms")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept", "application/vnd.api.v1+json")
             .header("X-Workspace-Id", workspaceId.toString())
@@ -108,20 +121,34 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         val formId = UUID.randomUUID()
         val request = UpdateSubscriberFormRequest(
             name = "Updated Form",
-            header = "Header",
             description = "Desc",
+            headerTitle = "Header",
             inputPlaceholder = "email@example.com",
-            buttonText = "Join",
+            submitButtonText = "Join",
+            submittingButtonText = "Joining...",
             buttonColor = "#000000",
+            pageBackgroundColor = "#ffffff",
             backgroundColor = "#ffffff",
             textColor = "#000000",
             buttonTextColor = "#ffffff",
+            inputTextColor = "#000000",
+            borderColor = "#000000",
+            borderStyle = "solid",
+            shadow = "none",
+            borderThickness = 0,
+            width = "auto",
+            height = "auto",
+            horizontalAlignment = "center",
+            verticalAlignment = "center",
+            padding = 16,
+            gap = 16,
+            cornerRadius = 8,
         )
 
         coEvery { mediator.send(any<UpdateSubscriberFormCommand>()) } returns Unit
 
         webTestClient.put()
-            .uri("/api/v1/subscription-forms/$formId")
+            .uri("/api/subscription-forms/$formId")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Accept", "application/vnd.api.v1+json")
             .header("X-Workspace-Id", workspaceId.toString())
@@ -141,7 +168,7 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<DeleteSubscriberFormCommand>()) } returns Unit
 
         webTestClient.delete()
-            .uri("/api/v1/subscription-forms/$formId")
+            .uri("/api/subscription-forms/$formId")
             .header("Accept", "application/vnd.api.v1+json")
             .header("X-Workspace-Id", workspaceId.toString())
             .exchange()
@@ -161,7 +188,7 @@ internal class SubscriptionFormControllerTest : ControllerTest() {
         coEvery { mediator.send(any<DetailSubscriberFormQuery>()) } returns response
 
         webTestClient.get()
-            .uri("/api/v1/subscription-forms/$formId")
+            .uri("/api/subscription-forms/$formId")
             .header("Accept", "application/vnd.api.v1+json")
             .header("X-Workspace-Id", workspaceId.toString())
             .exchange()

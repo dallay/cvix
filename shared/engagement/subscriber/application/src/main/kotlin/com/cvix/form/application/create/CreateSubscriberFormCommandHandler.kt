@@ -3,8 +3,12 @@ package com.cvix.form.application.create
 import com.cvix.common.domain.Service
 import com.cvix.common.domain.bus.command.CommandHandler
 import com.cvix.common.domain.security.WorkspaceAuthorization
+import com.cvix.form.domain.FormBehaviorSettings
+import com.cvix.form.domain.FormContentSettings
+import com.cvix.form.domain.FormStylingSettings
 import com.cvix.form.domain.HexColor
 import com.cvix.form.domain.SubscriptionFormSettings
+import com.cvix.form.domain.SuccessActionType
 import org.slf4j.LoggerFactory
 
 /**
@@ -34,22 +38,52 @@ class CreateSubscriberFormCommandHandler(
 
         // Normalize inputs (trim) and perform small safety validations here so domain can assume cleaned input
         val name = command.name.trim()
-        val header = command.header.trim()
+        val headerTitle = command.headerTitle.trim()
 
         require(name.isNotEmpty()) { "Form name must not be blank" }
-        require(header.isNotEmpty()) { "Form header must not be blank" }
+        require(headerTitle.isNotEmpty()) { "Form header must not be blank" }
         require(name.length <= MAX_CHARACTERS) { "Form name must be at most $MAX_CHARACTERS characters" }
-        require(header.length <= MAX_CHARACTERS) { "Form header must be at most $MAX_CHARACTERS characters" }
+        require(headerTitle.length <= MAX_CHARACTERS) { "Form header must be at most $MAX_CHARACTERS characters" }
 
         val formSettings = SubscriptionFormSettings(
-            header = header,
-            inputPlaceholder = command.inputPlaceholder,
-            buttonText = command.buttonText,
-            buttonColor = HexColor(command.buttonColor),
-            backgroundColor = HexColor(command.backgroundColor),
-            textColor = HexColor(command.textColor),
-            buttonTextColor = HexColor(command.buttonTextColor),
-            confirmationRequired = command.confirmationRequired,
+            settings = FormBehaviorSettings(
+                successActionType = SuccessActionType.valueOf(command.successActionType),
+                successMessage = command.successMessage,
+                redirectUrl = command.redirectUrl,
+                confirmationRequired = command.confirmationRequired,
+            ),
+            styling = FormStylingSettings(
+                pageBackgroundColor = HexColor(command.pageBackgroundColor),
+                backgroundColor = HexColor(command.backgroundColor),
+                textColor = HexColor(command.textColor),
+                buttonColor = HexColor(command.buttonColor),
+                buttonTextColor = HexColor(command.buttonTextColor),
+                inputTextColor = HexColor(command.inputTextColor),
+                borderColor = HexColor(command.borderColor),
+                borderStyle = command.borderStyle,
+                shadow = command.shadow,
+                borderThickness = command.borderThickness,
+                width = command.width,
+                height = command.height,
+                horizontalAlignment = command.horizontalAlignment,
+                verticalAlignment = command.verticalAlignment,
+                padding = command.padding,
+                gap = command.gap,
+                cornerRadius = command.cornerRadius,
+            ),
+            content = FormContentSettings(
+                showHeader = command.showHeader,
+                showSubheader = command.showSubheader,
+                headerTitle = headerTitle,
+                subheaderText = command.subheaderText,
+                inputPlaceholder = command.inputPlaceholder,
+                submitButtonText = command.submitButtonText,
+                submittingButtonText = command.submittingButtonText,
+                showTosCheckbox = command.showTosCheckbox,
+                tosText = command.tosText,
+                showPrivacyCheckbox = command.showPrivacyCheckbox,
+                privacyText = command.privacyText,
+            ),
         )
         formCreator.create(
             formId = command.id,

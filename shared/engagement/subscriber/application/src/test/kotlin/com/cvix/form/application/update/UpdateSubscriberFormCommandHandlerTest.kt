@@ -40,6 +40,57 @@ internal class UpdateSubscriberFormCommandHandlerTest {
         coEvery { workspaceAuthorization.ensureAccess(workspaceUuid, userId) } returns Unit
     }
 
+    private fun createValidCommand(
+        id: UUID = formId,
+        workspaceId: UUID = workspaceUuid,
+        userId: UUID = this.userId,
+        name: String = "Updated Name",
+        headerTitle: String = "Updated Header",
+    ): UpdateSubscriberFormCommand {
+        val settings = SubscriberFormStub.randomSettings()
+        return UpdateSubscriberFormCommand(
+            id = id,
+            name = name,
+            description = "Updated Description",
+            confirmationRequired = true,
+            successActionType = "SHOW_MESSAGE",
+            successMessage = "Success!",
+            redirectUrl = null,
+            // Styling
+            buttonColor = "#FF0000",
+            pageBackgroundColor = "#FFFFFF",
+            backgroundColor = "#00FF00",
+            textColor = "#0000FF",
+            buttonTextColor = "#FFFFFF",
+            inputTextColor = "#000000",
+            borderColor = "#000000",
+            borderStyle = "solid",
+            shadow = "none",
+            borderThickness = 0,
+            width = "auto",
+            height = "auto",
+            horizontalAlignment = "center",
+            verticalAlignment = "center",
+            padding = 16,
+            gap = 16,
+            cornerRadius = 8,
+            // Content
+            showHeader = true,
+            showSubheader = true,
+            headerTitle = headerTitle,
+            subheaderText = "Updated subheader",
+            inputPlaceholder = "Updated Placeholder",
+            submitButtonText = "Updated Button",
+            submittingButtonText = "Submitting...",
+            showTosCheckbox = false,
+            tosText = null,
+            showPrivacyCheckbox = false,
+            privacyText = null,
+            workspaceId = workspaceId,
+            userId = userId,
+        )
+    }
+
     @Test
     fun `should update a form`() = runTest {
         val existingForm = SubscriberFormStub.randomForm(
@@ -54,28 +105,16 @@ internal class UpdateSubscriberFormCommandHandlerTest {
         } returns existingForm
         coEvery { formRepository.update(any()) } answers { firstArg() }
 
-        val command = UpdateSubscriberFormCommand(
-            id = formId,
-            name = "Updated Name",
-            header = "Updated Header",
-            description = "Updated Description",
-            inputPlaceholder = "Updated Placeholder",
-            buttonText = "Updated Button",
-            buttonColor = "#FF0000",
-            backgroundColor = "#00FF00",
-            textColor = "#0000FF",
-            buttonTextColor = "#FFFFFF",
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand()
 
         commandHandler.handle(command)
 
         coVerify(exactly = 1) {
             formRepository.update(
                 match {
-                    it.id.value == formId && it.name == "Updated Name" && it.settings.header == "Updated Header"
+                    it.id.value == formId &&
+                        it.name == "Updated Name" &&
+                        it.settings.content.headerTitle == "Updated Header"
                 },
             )
         }
@@ -91,21 +130,7 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             )
         } returns null
 
-        val command = UpdateSubscriberFormCommand(
-            id = formId,
-            name = "Updated Name",
-            header = "Updated Header",
-            description = "Updated Description",
-            inputPlaceholder = "Updated Placeholder",
-            buttonText = "Updated Button",
-            buttonColor = "#FF0000",
-            backgroundColor = "#00FF00",
-            textColor = "#0000FF",
-            buttonTextColor = "#FFFFFF",
-            confirmationRequired = true,
-            workspaceId = workspaceUuid,
-            userId = userId,
-        )
+        val command = createValidCommand()
 
         assertFailsWith<SubscriptionFormNotFoundException> {
             commandHandler.handle(command)
@@ -127,20 +152,44 @@ internal class UpdateSubscriberFormCommandHandlerTest {
             )
         } returns existingForm
 
-        val command = UpdateSubscriberFormCommand(
-            id = formId,
+        val command = createValidCommand(
             name = existingForm.name,
-            header = existingForm.settings.header,
+            headerTitle = existingForm.settings.content.headerTitle,
+        ).copy(
             description = existingForm.description,
-            inputPlaceholder = existingForm.settings.inputPlaceholder,
-            buttonText = existingForm.settings.buttonText,
-            buttonColor = existingForm.settings.buttonColor.value,
-            backgroundColor = existingForm.settings.backgroundColor.value,
-            textColor = existingForm.settings.textColor.value,
-            buttonTextColor = existingForm.settings.buttonTextColor.value,
-            confirmationRequired = existingForm.settings.confirmationRequired,
-            workspaceId = workspaceUuid,
-            userId = userId,
+            confirmationRequired = existingForm.settings.settings.confirmationRequired,
+            successActionType = existingForm.settings.settings.successActionType.name,
+            successMessage = existingForm.settings.settings.successMessage,
+            redirectUrl = existingForm.settings.settings.redirectUrl,
+            // Styling
+            buttonColor = existingForm.settings.styling.buttonColor.value,
+            pageBackgroundColor = existingForm.settings.styling.pageBackgroundColor.value,
+            backgroundColor = existingForm.settings.styling.backgroundColor.value,
+            textColor = existingForm.settings.styling.textColor.value,
+            buttonTextColor = existingForm.settings.styling.buttonTextColor.value,
+            inputTextColor = existingForm.settings.styling.inputTextColor.value,
+            borderColor = existingForm.settings.styling.borderColor.value,
+            borderStyle = existingForm.settings.styling.borderStyle,
+            shadow = existingForm.settings.styling.shadow,
+            borderThickness = existingForm.settings.styling.borderThickness,
+            width = existingForm.settings.styling.width,
+            height = existingForm.settings.styling.height,
+            horizontalAlignment = existingForm.settings.styling.horizontalAlignment,
+            verticalAlignment = existingForm.settings.styling.verticalAlignment,
+            padding = existingForm.settings.styling.padding,
+            gap = existingForm.settings.styling.gap,
+            cornerRadius = existingForm.settings.styling.cornerRadius,
+            // Content
+            showHeader = existingForm.settings.content.showHeader,
+            showSubheader = existingForm.settings.content.showSubheader,
+            subheaderText = existingForm.settings.content.subheaderText,
+            inputPlaceholder = existingForm.settings.content.inputPlaceholder,
+            submitButtonText = existingForm.settings.content.submitButtonText,
+            submittingButtonText = existingForm.settings.content.submittingButtonText,
+            showTosCheckbox = existingForm.settings.content.showTosCheckbox,
+            tosText = existingForm.settings.content.tosText,
+            showPrivacyCheckbox = existingForm.settings.content.showPrivacyCheckbox,
+            privacyText = existingForm.settings.content.privacyText,
         )
 
         commandHandler.handle(command)

@@ -219,7 +219,7 @@ Look for vulnerabilities specific to either the backend or frontend:
 ```kotlin
 // Example: Secure reactive endpoint with authentication
 @RestController
-@RequestMapping("/api/v1/secure")
+@RequestMapping("/api/secure")
 class SecureController(
     private val dataService: DataService
 ) {
@@ -648,7 +648,7 @@ class SecureApiController(
 ```typescript
 // Frontend: Secure API call
 const createResource = async (data: ResourceRequest) => {
-    const response = await fetch('/api/v1/resource', {
+    const response = await fetch('/api/resource', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -56,6 +56,9 @@ data class SubscriberFormResponse(
     @field:Schema(description = "Button background hex color", example = "#000000")
     val buttonColor: String,
 
+    @field:Schema(description = "Page background hex color for iframe body", example = "#ffffff")
+    val pageBackgroundColor: String,
+
     @field:Schema(description = "Form background hex color", example = "#ffffff")
     val backgroundColor: String,
 
@@ -64,6 +67,9 @@ data class SubscriberFormResponse(
 
     @field:Schema(description = "Button text hex color", example = "#ffffff")
     val buttonTextColor: String,
+
+    @field:Schema(description = "Input text hex color", example = "#000000")
+    val inputTextColor: String,
 
     @field:Schema(description = "Current status of the subscription form", example = "PUBLISHED")
     val status: String,
@@ -86,6 +92,88 @@ data class SubscriberFormResponse(
         nullable = true,
     )
     val updatedAt: String?,
+
+    // Behavior settings
+    @field:Schema(
+        description = "Action type on success",
+        example = "SHOW_MESSAGE",
+        allowableValues = ["SHOW_MESSAGE", "REDIRECT"],
+    )
+    val successActionType: String,
+
+    @field:Schema(
+        description = "Success message when successActionType is SHOW_MESSAGE",
+        example = "Success! Check your email.",
+    )
+    val successMessage: String?,
+
+    @field:Schema(
+        description = "Redirect URL when successActionType is REDIRECT",
+        example = "https://example.com/thank-you",
+    )
+    val redirectUrl: String?,
+
+    // Styling settings - new fields
+    @field:Schema(description = "Border color (hex)", example = "#000000")
+    val borderColor: String,
+
+    @field:Schema(description = "Border style", example = "solid")
+    val borderStyle: String,
+
+    @field:Schema(description = "Box shadow style", example = "none")
+    val shadow: String,
+
+    @field:Schema(description = "Border thickness in pixels", example = "0")
+    val borderThickness: Int,
+
+    @field:Schema(description = "Form width", example = "auto")
+    val width: String,
+
+    @field:Schema(description = "Form height", example = "auto")
+    val height: String,
+
+    @field:Schema(description = "Horizontal alignment", example = "center")
+    val horizontalAlignment: String,
+
+    @field:Schema(description = "Vertical alignment", example = "center")
+    val verticalAlignment: String,
+
+    @field:Schema(description = "Internal padding in pixels", example = "16")
+    val padding: Int,
+
+    @field:Schema(description = "Gap between elements in pixels", example = "16")
+    val gap: Int,
+
+    @field:Schema(description = "Border radius in pixels", example = "8")
+    val cornerRadius: Int,
+
+    // Content settings
+    @field:Schema(description = "Whether to show the header", example = "true")
+    val showHeader: Boolean,
+
+    @field:Schema(description = "Whether to show the subheader", example = "true")
+    val showSubheader: Boolean,
+
+    @field:Schema(description = "Header title text", example = "Join our newsletter")
+    val headerTitle: String,
+
+    @field:Schema(description = "Subheader text", example = "Get the latest updates")
+    val subheaderText: String?,
+
+    @field:Schema(description = "Submit button text during submission", example = "Submitting...")
+    val submittingButtonText: String,
+
+    @field:Schema(description = "Whether to show Terms of Service checkbox", example = "false")
+    val showTosCheckbox: Boolean,
+
+    @field:Schema(description = "Terms of Service text", example = "I agree to the Terms of Service")
+    val tosText: String?,
+
+    @field:Schema(description = "Whether to show Privacy Policy checkbox", example = "false")
+    val showPrivacyCheckbox: Boolean,
+
+    @field:Schema(description = "Privacy Policy text", example = "I agree to the Privacy Policy")
+    val privacyText: String?,
 ) : Response {
     companion object {
         /**
@@ -94,19 +182,47 @@ data class SubscriberFormResponse(
         fun from(form: SubscriptionForm) = SubscriberFormResponse(
             id = form.id.value.toString(),
             name = form.name,
-            header = form.settings.header,
+            header = form.settings.content.headerTitle,
             description = form.description,
-            inputPlaceholder = form.settings.inputPlaceholder,
-            buttonText = form.settings.buttonText,
-            buttonColor = form.settings.buttonColor.value,
-            backgroundColor = form.settings.backgroundColor.value,
-            textColor = form.settings.textColor.value,
-            buttonTextColor = form.settings.buttonTextColor.value,
+            inputPlaceholder = form.settings.content.inputPlaceholder,
+            buttonText = form.settings.content.submitButtonText,
+            buttonColor = form.settings.styling.buttonColor.value,
+            pageBackgroundColor = form.settings.styling.pageBackgroundColor.value,
+            backgroundColor = form.settings.styling.backgroundColor.value,
+            textColor = form.settings.styling.textColor.value,
+            buttonTextColor = form.settings.styling.buttonTextColor.value,
+            inputTextColor = form.settings.styling.inputTextColor.value,
             status = form.status.name,
-            confirmationRequired = form.settings.confirmationRequired,
+            confirmationRequired = form.settings.settings.confirmationRequired,
             workspaceId = form.workspaceId.value.toString(),
             createdAt = form.createdAt.toString(),
             updatedAt = form.updatedAt?.toString(),
+            // Behavior settings
+            successActionType = form.settings.settings.successActionType.name,
+            successMessage = form.settings.settings.successMessage,
+            redirectUrl = form.settings.settings.redirectUrl,
+            // Styling settings
+            borderColor = form.settings.styling.borderColor.value,
+            borderStyle = form.settings.styling.borderStyle,
+            shadow = form.settings.styling.shadow,
+            borderThickness = form.settings.styling.borderThickness,
+            width = form.settings.styling.width,
+            height = form.settings.styling.height,
+            horizontalAlignment = form.settings.styling.horizontalAlignment,
+            verticalAlignment = form.settings.styling.verticalAlignment,
+            padding = form.settings.styling.padding,
+            gap = form.settings.styling.gap,
+            cornerRadius = form.settings.styling.cornerRadius,
+            // Content settings
+            showHeader = form.settings.content.showHeader,
+            showSubheader = form.settings.content.showSubheader,
+            headerTitle = form.settings.content.headerTitle,
+            subheaderText = form.settings.content.subheaderText,
+            submittingButtonText = form.settings.content.submittingButtonText,
+            showTosCheckbox = form.settings.content.showTosCheckbox,
+            tosText = form.settings.content.tosText,
+            showPrivacyCheckbox = form.settings.content.showPrivacyCheckbox,
+            privacyText = form.settings.content.privacyText,
         )
     }
 }

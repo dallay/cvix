@@ -31,12 +31,17 @@ class SubscriptionFormStoreR2dbcRepository(
 
     override suspend fun create(form: SubscriptionForm): SubscriptionForm = with(mapper) {
         log.debug("Creating subscription form with ID: {}", form.id)
-        subscriptionFormReactiveR2dbcRepository.save(form.toEntity()).toDomain()
+        // Save using standard save now that converters handle enum mapping
+        subscriptionFormReactiveR2dbcRepository.save(form.toEntity())
+        subscriptionFormReactiveR2dbcRepository.findById(form.id.value)?.toDomain()
+            ?: error("Failed to persist subscription form")
     }
 
     override suspend fun update(form: SubscriptionForm): SubscriptionForm = with(mapper) {
         log.debug("Updating subscription form with ID: {}", form.id)
-        subscriptionFormReactiveR2dbcRepository.save(form.toEntity()).toDomain()
+        subscriptionFormReactiveR2dbcRepository.save(form.toEntity())
+        subscriptionFormReactiveR2dbcRepository.findById(form.id.value)?.toDomain()
+            ?: error("Failed to persist subscription form")
     }
 
     override suspend fun delete(id: SubscriptionFormId) {

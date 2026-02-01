@@ -20,18 +20,53 @@ headers {
 body:json {
   {
     "id": "{{$randomUUID}}",
-    "name": "Basic Form",
-    "header": "Join to our newsletter",
-    "description": "This form is to get all the emails",
-    "inputPlaceholder": "Enter your email",
-    "buttonText": "Subscribe",
-    "buttonColor": "#eb755d",
-    "backgroundColor": "#efffbf",
-    "textColor": "#189e0b",
-    "buttonTextColor": "#39aebf",
+    "name": "Yuniel's Newsletter",
+    "description": "This is a test",
     "workspaceId": "{{workspaceId}}",
-    "userId": "{{userId}}"
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "tosText": null,
+      "showPrivacyCheckbox": false,
+      "privacyText": null
+    }
   }
+}
+
+vars:pre-request {
+  userId: 956cc148-2335-442b-96ee-e42646de10e8
 }
 
 settings {
@@ -44,105 +79,140 @@ docs {
   REQUEST DOCUMENTATION
   ------------------------------------------------------------
   Title: Create Subscription Form
-
+  
   Endpoint
   POST https://{host}/api/subscription-forms
-
+  
   Summary
   Creates a new subscription form resource in a workspace. Subscription forms are used
   to capture emails (newsletter, waitlists, notifications) and to configure the
   UI of the signup widget.
-
+  
   Authentication
   - Inherited from collection (XSRF token required)
   - Provide a valid CSRF token via header X-XSRF-TOKEN
   - Include the workspace context via X-Workspace-Id
-
+  
   Required Headers
   - Accept: application/vnd.api.v1+json
   - Content-Type: application/json
   - X-XSRF-TOKEN: <CSRF token>
   - X-Workspace-Id: <workspace UUID>
-
+  
   Request Body (JSON)
-  The request body represents the subscription form. Fields, types and notes:
-
+  The request body is organized into three main sections: settings, styling, and content.
+  
   {
-    "id": "string (uuid)",                // Unique resource id. Bruno can generate using {{$randomUUID}}
-    "name": "string",                     // Short display name for the form
-    "header": "string",                   // Heading text shown in the widget
-    "description": "string",              // Description / subtitle for the form
-    "inputPlaceholder": "string",         // Placeholder text for the input field
-    "buttonText": "string",               // CTA text for the submit button
-    "buttonColor": "string (hex)",        // Button background color, hex code (#RRGGBB)
-    "backgroundColor": "string (hex)",    // Form background color
-    "textColor": "string (hex)",          // Main text color
-    "buttonTextColor": "string (hex)",    // Button text color
-    "workspaceId": "string (uuid)",       // Workspace UUID (must match X-Workspace-Id)
-    "userId": "string (uuid)"             // Owner/creator user id (UUID)
+    "id": "string (uuid)",                    // Unique resource id
+    "name": "string",                         // Short display name for the form
+    "description": "string",                  // Form description
+    "workspaceId": "string (uuid)",           // Workspace UUID
+    "userId": "string (uuid)",                // Owner/creator user id
+    
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",    // 'SHOW_MESSAGE' or 'REDIRECT'
+      "successMessage": "string",             // Message shown after success
+      "redirectUrl": "string",                // URL to redirect (if action is REDIRECT)
+      "confirmationRequired": true            // Whether double opt-in is required
+    },
+    
+    "styling": {
+      "backgroundColor": "#FFFFFF",           // Form background color
+      "textColor": "#000000",                 // Main text color
+      "buttonColor": "#000000",               // Button background color
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",           // Button text color
+      "borderColor": "#000000",               // Border color
+      "borderStyle": "solid",                 // Border style (solid, dashed, dotted)
+      "shadow": "none",                       // Box shadow (none, sm, md, lg)
+      "borderThickness": 1,                   // Border thickness in pixels
+      "width": "100%",                        // Form width ('auto', 'fit', or value)
+      "height": "auto",                       // Form height ('auto', 'fit', or value)
+      "horizontalAlignment": "center",        // Horizontal alignment (left, center, right)
+      "verticalAlignment": "center",          // Vertical alignment (top, center, bottom)
+      "padding": 40,                          // Internal padding in pixels
+      "gap": 24,                              // Gap between elements in pixels
+      "cornerRadius": 12,                     // Border radius in pixels
+      "pageBackgroundColor": "#FFFFFF"        // Page background color behind the form
+    },
+    
+    "content": {
+      "showHeader": true,                     // Whether to show header title
+      "showSubheader": true,                  // Whether to show subheader/description
+      "headerTitle": "Yuniel's Newsletter",   // Header/title text
+      "subheaderText": "This is a test",      // Subheader/description text
+      "inputPlaceholder": "Enter your email", // Placeholder for email input
+      "submitButtonText": "Subscribe",        // Button text
+      "submittingButtonText": "Subscribing...", // Button text during submission
+      "showTosCheckbox": false,               // Show Terms of Service checkbox
+      "tosText": null,                        // ToS checkbox label text
+      "showPrivacyCheckbox": false,           // Show Privacy Policy checkbox
+      "privacyText": null                     // Privacy checkbox label text
+    }
   }
-
-  Example Request (Bruno .bru body)
-  body:json {
-    {
-      "id": "{{$randomUUID}}",
-      "name": "Basic Form",
-      "header": "Join to our newsletter",
-      "description": "This form is to get all the emails",
+  
+  Example: Minimalist Black/White Style (Yuniel's Newsletter)
+  {
+    "id": "{{$randomUUID}}",
+    "name": "Yuniel's Newsletter",
+    "description": "This is a test",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
       "inputPlaceholder": "Enter your email",
-      "buttonText": "Subscribe",
-      "buttonColor": "#eb755d",
-      "backgroundColor": "#efffbf",
-      "textColor": "#189e0b",
-      "buttonTextColor": "#39aebf",
-      "workspaceId": "{{workspaceId}}",
-      "userId": "58f47f7c-d7b4-4627-b11e-65ea66048037"
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "showPrivacyCheckbox": false
     }
   }
-
+  
   Responses
-  - 201 Created: The subscription form was created successfully. Response typically
-    includes the created resource or a confirmation message.
-  - 400 Bad Request: Malformed payload or missing required fields (ProblemDetail).
-  - 401 / 403: Missing/invalid XSRF token or insufficient permissions.
-  - 409 Conflict: Resource with same id already exists (if server honors client ids).
-  - 422 Unprocessable Entity: Semantic validation failed (invalid hex, UUID, etc).
-  - 429 Too Many Requests: Rate limit exceeded (check Retry-After header).
-  - 500 Internal Server Error: Unexpected server failure.
-
-  Validation Rules & Notes
-  - X-Workspace-Id header must be provided and be a valid UUID. The workspaceId in
-    the body should match the X-Workspace-Id header.
-  - id may be generated client-side or server-side. Using a client-generated id is
-    supported; use {{$randomUUID}} in Bruno to ensure uniqueness in tests.
-  - Color fields expect hex codes (e.g., #RRGGBB).
-  - Keep string lengths reasonable; server may enforce max lengths for title/description.
-
-  Bruno Usage Tips
-  - Dynamic UUID: Use "{{$randomUUID}}" in the JSON body to generate a UUID per request.
-  - Pre-request scripting: Use a pre block to generate and reuse values across headers/body:
-    pre {
-      exec: |
-        const id = bru.interpolate('{{$randomUUID}}');
-        const email = `user+${bru.interpolate('{{$randomInt min=1000 max=9999}}')}@example.com`;
-        bru.setVar("generatedId", id);
-        bru.setVar("generatedEmail", email);
-    }
-    Then reference {{generatedId}} and {{generatedEmail}} in the request.
-  - Keep XSRF token and workspaceId as environment variables in Bruno to avoid mismatches.
-
-  Testing Recommendations
-  - Use unique ids ({{$randomUUID}}) to avoid collisions when running tests repeatedly.
-  - Verify 201 response and that the created resource is discoverable via GET/list endpoints.
-  - Test error cases with invalid colors, missing workspaceId, or duplicate ids to confirm validation.
-
-  Security & Operational Notes
-  - Obtain and store the XSRF token before executing POST requests.
-  - Rate limits may apply; add delays when performing bulk creation.
-  - Confirm userId belongs to the workspace if server enforces ownership constraints.
-
-  Changelog
-  - Corrected endpoint in docs: the .bru target is POST /api/subscription-forms (not /api/subscribers).
-
+  - 201 Created: The subscription form was created successfully
+  - 400 Bad Request: Malformed payload or missing required fields
+  - 401 / 403: Missing/invalid XSRF token or insufficient permissions
+  - 422 Unprocessable Entity: Semantic validation failed (invalid hex, etc)
+  - 429 Too Many Requests: Rate limit exceeded
+  - 500 Internal Server Error: Unexpected server failure
+  
+  Validation Rules
+  - X-Workspace-Id header must match workspaceId in body
+  - Color fields expect valid hex codes (#RRGGBB)
+  - String fields have max lengths enforced by server
+  - Numeric fields (padding, gap, etc) must be non-negative
+  
+  Bruno Tips
+  - Use "{{$randomUUID}}" to generate unique IDs per request
+  - Store workspaceId and xsrfToken as environment variables
+  - Use pre-request scripts to generate dynamic values
+  
   ------------------------------------------------------------
 }

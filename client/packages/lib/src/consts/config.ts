@@ -125,6 +125,7 @@ export const PORTS = {
 	DOCS: 4321,
 	BLOG: 7767,
 	API: 8443,
+	SUBSCRIBE_FORMS: 7768,
 } as const;
 
 // ============================================================================
@@ -195,6 +196,23 @@ export const CVIX_OAUTH_URL = resolveUrl({
 	genericDefault: "OAUTH2_SERVER_URL", // Legacy fallback
 	localPort: 9080,
 });
+
+/**
+ * Subscribe Forms URL
+ * - Explicit: CVIX_SUBSCRIBE_FORMS_URL
+ * - Fallback (local): http://localhost:7768
+ * - Production fallback (hard-coded): https://subscribe-forms.profiletailors.com
+ */
+export const CVIX_SUBSCRIBE_FORMS_URL = (() => {
+	const resolved = resolveUrl({
+		envKey: "CVIX_SUBSCRIBE_FORMS_URL",
+		providerDefaults: { cloudflare: "CF_PAGES_URL" },
+		localPort: PORTS.SUBSCRIBE_FORMS,
+	});
+	if (resolved) return resolved;
+	// Hard-coded production URL as final fallback
+	return "https://subscribe-forms.profiletailors.com";
+})();
 
 // ============================================================================
 // BRAND CONSTANTS (unchanged)

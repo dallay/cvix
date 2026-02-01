@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @Validated
 @RestController
-@RequestMapping(value = ["/api/v1/subscription-forms"])
+@RequestMapping(value = ["/api/subscription-forms"])
 @Tag(name = "Subscription Form")
 class CreateSubscriptionFormController(
     mediator: Mediator,
@@ -116,7 +116,7 @@ class CreateSubscriptionFormController(
         val command = request.toCommand(id, workspaceId, userId)
         dispatch(command)
 
-        return ResponseEntity.created(URI.create("/api/v1/subscription-forms/$id")).body(
+        return ResponseEntity.created(URI.create("/api/subscription-forms/$id")).body(
             MessageResponse(getLocalizedMessage("subscription-form.create.success", serverRequest)),
         )
     }

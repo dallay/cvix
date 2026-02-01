@@ -19,17 +19,48 @@ headers {
 
 body:json {
   {
-    "name": "Basic Form Newsletter",
-    "header": "Join to our newsletter",
-    "description": "This form is to get all the emails",
-    "inputPlaceholder": "Enter your email",
-    "buttonText": "Subscribe",
-    "buttonColor": "#eb755d",
-    "backgroundColor": "#efffbf",
-    "textColor": "#189e0b",
-    "buttonTextColor": "#39aebf",
+    "name": "Yuniel's Newsletter - Updated",
+    "description": "This is a test - Updated description",
     "workspaceId": "{{workspaceId}}",
-    "userId": "{{userId}}"
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter - Updated",
+      "subheaderText": "This is a test - Updated description",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "tosText": null,
+      "showPrivacyCheckbox": false,
+      "privacyText": null
+    }
   }
 }
 
@@ -69,9 +100,55 @@ docs {
   - X-Workspace-Id: <workspace UUID>
   
   Request Body (JSON)
-  The request body represents the subscription form to store. PUT requests are
-  expected to be full resource representations. The server may validate that
-  workspaceId matches the X-Workspace-Id header.
+  The request body is a full resource representation organized into three sections:
+  settings, styling, and content. PUT requests replace the entire resource.
+  
+  Example Request Body:
+  {
+    "name": "Yuniel's Newsletter - Updated",
+    "description": "Updated description",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email...",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "showPrivacyCheckbox": false
+    }
+  }
   
   Responses
   - 200 OK: The subscription form was updated successfully and returns the

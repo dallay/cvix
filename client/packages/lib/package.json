@@ -30,6 +30,7 @@
 		".": "./src/index.ts",
 		"./utils": "./src/utils.ts",
 		"./ssl": "./src/consts/ssl-paths.ts",
+		"./astro": "./src/astro/index.ts",
 		"./*": "./src/*"
 	},
 	"typesVersions": {
