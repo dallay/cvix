@@ -10,10 +10,10 @@ import com.cvix.form.domain.SubscriptionFormRepository
 import com.cvix.form.domain.SubscriptionFormSettings
 import com.cvix.form.domain.event.SubscriptionFormUpdatedEvent
 import com.cvix.form.domain.exception.SubscriptionFormNotFoundException
-import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.Instant
 import java.util.*
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * Application service for updating subscription forms.
@@ -27,7 +27,7 @@ class SubscriberFormUpdater(
     private val formRepository: SubscriptionFormRepository,
     private val formFinder: SubscriptionFormFinderRepository,
     private val outboxRepository: OutboxRepository,
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
 ) {
 
     /**
@@ -93,7 +93,7 @@ class SubscriberFormUpdater(
             "updatedAt" to event.updatedAt.toString(),
             "updatedBy" to event.updatedBy,
         )
-        return objectMapper.writeValueAsString(payload)
+        return jsonMapper.writeValueAsString(payload)
     }
 
     companion object {

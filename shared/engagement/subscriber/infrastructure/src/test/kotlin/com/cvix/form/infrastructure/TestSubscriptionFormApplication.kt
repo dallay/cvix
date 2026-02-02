@@ -8,7 +8,6 @@ import com.cvix.common.infrastructure.security.Sha256Hasher
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
 import com.cvix.spring.boot.infrastructure.persistence.outbox.R2dbcOutboxRepository
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -19,6 +18,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.json.JsonMapper
 
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackages = ["com.cvix"])
@@ -57,5 +57,5 @@ open class TestSubscriptionFormApplication {
     fun hasher(): Hasher = Sha256Hasher()
 
     @Bean
-    fun objectMapper(): ObjectMapper = ObjectMapper()
+    fun jsonMapper(): JsonMapper = JsonMapper()
 }
