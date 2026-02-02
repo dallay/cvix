@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 004-add-user-email-index
-      author: bolt
+      author: yuniel
       changes:
         - createIndex:
             tableName: users
