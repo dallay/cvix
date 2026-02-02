@@ -140,6 +140,7 @@
 			"@semantic-release/github",
 			{
 				"successComment": false,
+				"failComment": false,
 				"failTitle": "Release failed",
 				"releasedLabels": ["released"]
 			}
