@@ -47,14 +47,7 @@ spring:
           keystore:
             location: "classpath:ssl/keystore.p12"
             password: "testing"
-          type: "PKCS12"
-  r2dbc:
-    pool:
-      max-size: 8
-      initial-size: 2
-      max-idle-time: 30s
-      validation-query: "SELECT 1"
-      validation-depth: remote
+            type: "PKCS12"
 testing:
   security:
     username: "john.doe@profiletailors.com"

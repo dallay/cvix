@@ -11,15 +11,14 @@ import com.cvix.subscriber.domain.SubscriberRepository
 import com.cvix.subscriber.domain.SubscriberSearchRepository
 import com.cvix.subscriber.domain.SubscriberStatus
 import com.cvix.subscriber.infrastructure.persistence.entity.SubscriberEntity
-import com.cvix.subscriber.infrastructure.persistence.mapper.SubscriberMapper
+import com.cvix.subscriber.infrastructure.persistence.mapper.SubscriberMapper.toDomain
 import com.cvix.subscriber.infrastructure.persistence.mapper.SubscriberMapper.toEntity
 import com.cvix.subscriber.infrastructure.persistence.repository.SubscriberReactiveR2dbcRepository
 import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.reactive.TransactionalOperator
-import org.springframework.transaction.reactive.executeAndAwait
+import org.springframework.transaction.annotation.Transactional
 import com.cvix.common.domain.presentation.sort.Sort as DomainSort
 
 /**
@@ -29,22 +28,18 @@ import com.cvix.common.domain.presentation.sort.Sort as DomainSort
  * and [SubscriberSearchRepository] (read) using Spring Data R2DBC.
  *
  * @property subscriberReactiveR2dbcRepository The underlying Spring Data R2DBC repository.
- * @property transactionalOperator The transactional operator for managing reactive transactions.
  */
 @Repository
 class SubscriberStoreR2dbcRepository(
     private val subscriberReactiveR2dbcRepository: SubscriberReactiveR2dbcRepository,
-    private val transactionalOperator: TransactionalOperator,
 ) : SubscriberRepository, SubscriberSearchRepository {
 
     private val criteriaParser = R2DBCCriteriaParser(SubscriberEntity::class)
 
-    override suspend fun create(subscriber: Subscriber) = transactionalOperator.executeAndAwait {
+    override suspend fun create(subscriber: Subscriber) {
         log.debug("Creating subscriber with ID: {}", subscriber.id)
         try {
-            with(SubscriberMapper) {
-                subscriberReactiveR2dbcRepository.save(subscriber.toEntity())
-            }
+            subscriberReactiveR2dbcRepository.save(subscriber.toEntity())
             log.info("Successfully created subscriber with ID: {}", subscriber.id)
         } catch (@Suppress("TooGenericExceptionCaught") error: Exception) {
             log.error("Failed to create subscriber with ID: {}", subscriber.id, error)
@@ -57,7 +52,7 @@ class SubscriberStoreR2dbcRepository(
         size: Int?,
         page: Int?,
         sort: DomainSort?,
-    ): OffsetPage<Subscriber> = transactionalOperator.executeAndAwait {
+    ): OffsetPage<Subscriber> {
         log.debug("Searching subscribers by offset. size: {}, page: {}", size, page)
         val pageSize = size ?: DEFAULT_PAGE_SIZE
         val pageNumber = page ?: DEFAULT_PAGE_NUMBER
@@ -68,15 +63,13 @@ class SubscriberStoreR2dbcRepository(
 
         val resultPage = subscriberReactiveR2dbcRepository.findAll(springCriteria, pageable, SubscriberEntity::class)
 
-        with(SubscriberMapper) {
-            OffsetPage(
-                data = resultPage.content.map { it.toDomain() },
-                total = resultPage.totalElements,
-                perPage = pageSize,
-                page = pageNumber,
-                totalPages = resultPage.totalPages,
-            )
-        }
+        return OffsetPage(
+            data = resultPage.content.map { it.toDomain() },
+            total = resultPage.totalElements,
+            perPage = pageSize,
+            page = pageNumber,
+            totalPages = resultPage.totalPages,
+        )
     }
 
     override suspend fun searchAllByCursor(
@@ -84,13 +77,15 @@ class SubscriberStoreR2dbcRepository(
         size: Int?,
         sort: DomainSort?,
         cursor: Cursor?,
-    ): CursorPage<Subscriber> = transactionalOperator.executeAndAwait {
+    ): CursorPage<Subscriber> {
         log.debug("Searching subscribers by cursor. size: {}", size)
         val pageSize = size ?: DEFAULT_PAGE_SIZE
         val springSort = sort?.toSpringSort() ?: org.springframework.data.domain.Sort.unsorted()
         val springCriteria = criteria?.let { criteriaParser.parse(it) }
             ?: org.springframework.data.relational.core.query.Criteria.empty()
 
+        // If cursor is null, we might need a default one if the repository requires it
+        // but typically ReactiveSearchRepository handles it or we provide a starting one.
         val currentCursor = cursor ?: com.cvix.common.domain.presentation.pagination.TimestampCursor.DEFAULT_CURSOR
 
         val result = subscriberReactiveR2dbcRepository.findAllByCursor(
@@ -101,57 +96,43 @@ class SubscriberStoreR2dbcRepository(
             cursor = currentCursor,
         )
 
-        with(SubscriberMapper) {
-            CursorPage(
-                data = result.data.map { it.toDomain() },
-                prevPageCursor = result.prevPageCursor,
-                nextPageCursor = result.nextPageCursor,
-            )
-        }
+        return CursorPage(
+            data = result.data.map { it.toDomain() },
+            prevPageCursor = result.prevPageCursor,
+            nextPageCursor = result.nextPageCursor,
+        )
     }
 
-    override suspend fun searchActive(): List<Subscriber> = transactionalOperator.executeAndAwait {
+    @Transactional(readOnly = true)
+    override suspend fun searchActive(): List<Subscriber> {
         log.debug("Searching all active subscribers")
-        with(SubscriberMapper) {
-            subscriberReactiveR2dbcRepository.findAllByStatus(SubscriberStatus.ENABLED)
-                .map { it.toDomain() }
-        }
+        return subscriberReactiveR2dbcRepository.findAllByStatus(SubscriberStatus.ENABLED)
+            .map { it.toDomain() }
     }
 
-    override suspend fun findById(id: UUID): Subscriber? = transactionalOperator.executeAndAwait {
+    @Transactional(readOnly = true)
+    override suspend fun findById(id: UUID): Subscriber? {
         log.debug("Finding subscriber by ID: {}", id)
-        with(SubscriberMapper) {
-            subscriberReactiveR2dbcRepository.findById(id)?.toDomain()
-        }
+        return subscriberReactiveR2dbcRepository.findById(id)?.toDomain()
     }
 
-    override suspend fun findByEmailAndSource(
-        email: String,
-        source: String,
-    ): Subscriber? = transactionalOperator.executeAndAwait {
+    @Transactional(readOnly = true)
+    override suspend fun findByEmailAndSource(email: String, source: String): Subscriber? {
         log.debug("Finding subscriber by email and source: {}/{}", email, source)
-        with(SubscriberMapper) {
-            subscriberReactiveR2dbcRepository.findByEmailAndSource(email, source)?.toDomain()
-        }
+        return subscriberReactiveR2dbcRepository.findByEmailAndSource(email, source)?.toDomain()
     }
 
-    override suspend fun existsByEmailAndSource(
-        email: String,
-        source: String,
-    ): Boolean = transactionalOperator.executeAndAwait {
+    @Transactional(readOnly = true)
+    override suspend fun existsByEmailAndSource(email: String, source: String): Boolean {
         log.debug("Checking existence of subscriber by email and source: {}/{}", email, source)
-        subscriberReactiveR2dbcRepository.existsByEmailAndSource(email, source)
+        return subscriberReactiveR2dbcRepository.existsByEmailAndSource(email, source)
     }
 
-    override suspend fun findAllByMetadata(
-        key: String,
-        value: String,
-    ): List<Subscriber> = transactionalOperator.executeAndAwait {
+    @Transactional(readOnly = true)
+    override suspend fun findAllByMetadata(key: String, value: String): List<Subscriber> {
         log.debug("Finding subscribers by metadata: {}={}", key, value)
-        with(SubscriberMapper) {
-            subscriberReactiveR2dbcRepository.findAllByMetadata(key, value)
-                .map { it.toDomain() }
-        }
+        return subscriberReactiveR2dbcRepository.findAllByMetadata(key, value)
+            .map { it.toDomain() }
     }
 
     companion object {

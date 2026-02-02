@@ -152,7 +152,7 @@ describe("useEmailSubmission", () => {
 			metadata: { campaign: "summer-2024", utm_source: "google" },
 		});
 
-		expect(fetch).toHaveBeenCalledWith("/api/subscribers", {
+		expect(fetch).toHaveBeenCalledWith("/api/waitlist", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

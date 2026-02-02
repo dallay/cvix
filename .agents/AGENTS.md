@@ -182,8 +182,7 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 | [gradle](.agents/skills/gradle/SKILL.md)                                 | Gradle best practices, custom tasks, cacheability         | `build.gradle.kts`, custom plugins, build perf |
 | [vue](.agents/skills/vue/SKILL.md)                                       | Vue 3 Composition API, Pinia, Vee-Validate + Zod          | `.vue` files, composables, stores              |
 | [kotlin](.agents/skills/kotlin/SKILL.md)                                 | Kotlin conventions, coroutines, null safety               | `.kt` files, Kotlin patterns                   |
-| [spring-boot](.agents/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security, modern patterns     | Controllers, services, repositories, HTTP interfaces   |
-| [spring-boot-best-practices](.agents/skills/spring-boot-best-practices/SKILL.md) | Spring Boot implementation best practices (Kotlin/WebFlux) | Code review, refactoring, new features         |
+| [spring-boot](.agents/skills/spring-boot/SKILL.md)                       | Spring Boot WebFlux, R2DBC, security                      | Controllers, services, repositories            |
 | [hexagonal-architecture](.agents/skills/hexagonal-architecture/SKILL.md) | Hexagonal Architecture, Ports & Adapters, CQRS            | Feature structure, domain models, use cases    |
 | [playwright](.agents/skills/playwright/SKILL.md)                         | E2E testing with Playwright, Page Objects                 | E2E tests, browser automation                  |
 | [pr-creator](.agents/skills/pr-creator/SKILL.md)                         | Pull request creation workflow and templates              | Creating PRs, `gh` CLI                         |

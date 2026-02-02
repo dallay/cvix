@@ -1,8 +1,8 @@
 ---
+import { CVIX_API_URL } from "astro:env/client";
 import CvixSystemImage from "@cvix/assets/images/cvix-system.png";
-import { OptimizedPicture } from "@cvix/astro-ui";
+import { EmailCaptureForm, OptimizedPicture } from "@cvix/astro-ui";
 import { DEFAULT_LOCALE, type Lang, LOCALES } from "@cvix/i18n/astro";
-import { CVIX_SUBSCRIBE_FORMS_URL } from "@cvix/lib";
 import { useTranslations } from "@/i18n/i18n";
 
 const astroLocale = Astro.currentLocale;
@@ -18,72 +18,14 @@ const translations = {
 	title: t("hero.title"),
 	subtitle: t("hero.subtitle"),
 	earlyAccess: t("hero.earlyAccess"),
+	emailPlaceholder: t("hero.email.placeholder"),
+	emailButton: t("hero.email.button"),
+	emailSuccess: t("hero.email.success"),
+	emailError: t("hero.email.error"),
+	emailRateLimit: t("hero.email.rateLimit"),
 	emailPrivacy: t("hero.email.privacy"),
 	mockupAlt: t("hero.mockup.alt"),
 };
-
-// Form IDs mapped by theme and locale - can be overridden via env vars
-// Format: CVIX_FORM_LIGHT_EN, CVIX_FORM_LIGHT_ES, CVIX_FORM_DARK_EN, CVIX_FORM_DARK_ES
-const getFormId = (theme: "light" | "dark", locale: "en" | "es"): string => {
-	const envVar = `CVIX_FORM_${theme.toUpperCase()}_${locale.toUpperCase()}`;
-	const envValue = import.meta.env[envVar];
-
-	// Default form IDs as fallback
-	const defaults = {
-		light: {
-			en: "f77a00fc-778c-4703-8c33-1fde0bc6437b",
-			es: "3e9f0d5a-6c4b-5e2e-ad9f-8b7c6d5e4f3a",
-		},
-		dark: {
-			en: "2d8e9c4f-5b3a-4f1d-9c8e-7a6b5c4d3e2f",
-			es: "1efe6f6c-9396-4296-bbbc-6bb8d0cf8b5d",
-		},
-	};
-
-	if (envValue) {
-		console.log(`[Hero] Using env form ID for ${theme}/${locale}: ${envValue}`);
-		return envValue;
-	}
-
-	const fallback = defaults[theme][locale];
-	if (!fallback) {
-		console.warn(
-			`[Hero] No form ID found for ${theme}/${locale}, using default`,
-		);
-		return defaults.light.en;
-	}
-
-	return fallback;
-};
-
-// Build forms config dynamically
-const forms = {
-	light: {
-		en: getFormId("light", "en"),
-		es: getFormId("light", "es"),
-	},
-	dark: {
-		en: getFormId("dark", "en"),
-		es: getFormId("dark", "es"),
-	},
-};
-
-// Validate form IDs
-Object.entries(forms).forEach(([theme, locales]) => {
-	Object.entries(locales).forEach(([locale, formId]) => {
-		if (!formId || formId.trim() === "") {
-			console.error(
-				`[Hero] Missing form ID for theme=${theme}, locale=${locale}`,
-			);
-		}
-	});
-});
-
-// Server-side: just pass locale, client will determine theme
-const localeKey = langToUse === "en" || langToUse === "es" ? langToUse : "en";
-// Default to light on server (client will override if dark)
-const initialFormId = forms.light[localeKey];
-const initialLocale = langToUse;
 ---
 
 <section class="pt-32 pb-16 md:pt-48 md:pb-32 bg-background overflow-hidden fade-in-section">
@@ -113,21 +55,22 @@ const initialLocale = langToUse;
       {translations.earlyAccess}
     </p>
 
+    <!-- Waitlist Form -->
     <div
       id="hero-waitlist"
       class="flex flex-col items-center justify-center gap-4 mb-16 fade-in-section"
     >
       <div class="w-full max-w-md">
-        <iframe
-          src={`${CVIX_SUBSCRIBE_FORMS_URL}/${initialFormId}`}
-          data-form-id={initialFormId}
-          data-forms={JSON.stringify(forms)}
-          data-base-url={CVIX_SUBSCRIBE_FORMS_URL}
-          data-locale={initialLocale}
-          class="cvix-form-embed"
-          data-test-id="cvix-form-embed"
-          title="Newsletter subscription form"
-        ></iframe>
+        <EmailCaptureForm
+          apiUrl={`${CVIX_API_URL}/api/waitlist`}
+          emailPlaceholder={translations.emailPlaceholder}
+          buttonText={translations.emailButton}
+          successMessage={translations.emailSuccess}
+          errorMessage={translations.emailError}
+          rateLimitMessage={translations.emailRateLimit}
+          source="hero-waitlist"
+          class="mx-auto max-w-md"
+        />
       </div>
       <p class="text-sm text-muted-foreground">
         {translations.emailPrivacy}
@@ -147,133 +90,3 @@ const initialLocale = langToUse;
     </div>
   </div>
 </section>
-
-<style>
-  .cvix-form-embed {
-    width: 100%;
-    height: 200px;
-    margin: 0;
-    border: none;
-    border-radius: 8px;
-    background-color: transparent;
-    box-shadow: none;
-    max-width: 100%;
-    overflow: hidden;
-  }
-</style>
-
-<!-- CVIX Form Embed Handler - Dynamic theme/locale switching -->
-<script is:inline>
-  (function() {
-    // Prevent multiple initializations
-    if (window.__cvixFormEmbedInitialized) return;
-    window.__cvixFormEmbedInitialized = true;
-
-    const iframe = document.querySelector('iframe[data-test-id="cvix-form-embed"]');
-    if (!iframe) return;
-
-    // Get forms config from iframe data attributes
-    const forms = JSON.parse(iframe.getAttribute("data-forms") || "{}");
-    const baseUrl = iframe.getAttribute("data-base-url") || "";
-
-    // Get current locale - prioritize localStorage (set by LocaleSelect), then html lang attribute
-    function getCurrentLocale() {
-      const stored = localStorage.getItem("selectedLang");
-      if (stored && (stored === "en" || stored === "es")) return stored;
-      
-      // Fallback: read from html lang attribute or data attribute on iframe
-      const htmlLang = document.documentElement.getAttribute("lang");
-      const iframeLocale = iframe.getAttribute("data-locale");
-      
-      if (htmlLang === "en" || htmlLang === "es") return htmlLang;
-      if (iframeLocale === "en" || iframeLocale === "es") return iframeLocale;
-      
-      return "en"; // Default
-    }
-
-    // Get form ID based on current theme and locale
-    function getFormId() {
-      const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-      const locale = getCurrentLocale();
-      return forms[theme]?.[locale] || forms.light?.en || forms.light?.["en"] || "";
-    }
-
-    // Update iframe with new form based on current theme/locale
-    function updateIframe() {
-      const newFormId = getFormId();
-      const currentFormId = iframe.getAttribute("data-form-id");
-
-      // Only update if form ID changed
-      if (currentFormId !== newFormId && newFormId) {
-        const newUrl = `${baseUrl}/${newFormId}`;
-        iframe.src = newUrl;
-        iframe.setAttribute("data-form-id", newFormId);
-        // Reset height on form change
-        iframe.style.height = "200px";
-      }
-    }
-
-    // Observer to detect theme changes (dark class on html element)
-    const themeObserver = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.attributeName === "class") {
-          updateIframe();
-          break;
-        }
-      }
-    });
-
-    // Initialize observer
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    // Listen for locale changes
-    window.addEventListener("storage", (e) => {
-      if (e.key === "selectedLang") {
-        updateIframe();
-      }
-    });
-
-    // Also listen for page show (back/forward cache restoration)
-    window.addEventListener("pageshow", (e) => {
-      if (e.persisted) {
-        updateIframe();
-      }
-    });
-
-    // Listen for theme toggle clicks (fast fallback)
-    document.addEventListener("click", (e) => {
-      // Guard: Check if target exists and is an Element
-      if (!e.target || !(e.target instanceof Element)) return;
-      if (e.target.closest("[data-slot='theme-toggle']")) {
-        setTimeout(updateIframe, 50);
-      }
-    }, { passive: true });
-
-    // IMPORTANT: Check and update iframe on initial load
-    // The server may have rendered with a default theme, but the client
-    // may have a different theme preference stored
-    updateIframe();
-
-    // Listen for messages from the iframe
-    window.addEventListener("message", function(e) {
-      const d = e.data || {};
-      if (!d.id || d.id !== iframe.getAttribute("data-form-id")) return;
-
-      switch (d.type) {
-        case "cvix:height":
-          iframe.style.height = (d.height || 200) + "px";
-          break;
-        case "cvix:submit:success":
-          iframe.dispatchEvent(new CustomEvent("cvix:submit:success", { detail: d }));
-          break;
-        case "cvix:submit:error":
-          iframe.dispatchEvent(new CustomEvent("cvix:submit:error", { detail: d }));
-          break;
-      }
-    }, false);
-
-  })();
-</script>

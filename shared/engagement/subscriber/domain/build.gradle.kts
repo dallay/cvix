@@ -1,6 +1,5 @@
 plugins {
     id("app.library.convention")
-    `java-test-fixtures`
 }
 
 dependencies {
@@ -15,10 +14,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(testFixtures(project(":shared:test-helpers")))
-
-    testFixturesApi(libs.faker)
-    testFixturesImplementation(project(":shared:common"))
-    // Removed self-reference to avoid circular dependency
 }
 
 // Using traditional test configuration instead of experimental JvmTestSuite

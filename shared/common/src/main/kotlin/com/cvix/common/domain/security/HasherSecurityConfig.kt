@@ -12,10 +12,4 @@ package com.cvix.common.domain.security
  */
 interface HasherSecurityConfig {
     val ipHmacSecret: String
-
-    /**
-     * Whether to allow an insecure fallback hasher when no HMAC secret is configured.
-     * Implementations should default to false for safety.
-     */
-    val allowInsecureHasher: Boolean
 }

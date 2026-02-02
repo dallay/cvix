@@ -1,0 +1,489 @@
+openapi: 3.1.0
+info:
+  title: Resume API (Resume Persistence & Templates)
+  version: 0.1.0
+  description: CRUD endpoints for storing JSON Resume documents for authenticated users.
+security:
+  - bearerAuth: []
+servers:
+  - url: /api
+paths:
+  /resumes:
+    post:
+      summary: Create a new resume
+      operationId: createResume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resume'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+    get:
+      summary: List resumes for current user
+      operationId: listResumes
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: cursor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    maxItems: 100
+                    items:
+                      $ref: '#/components/schemas/ResumeResource'
+                  nextCursor:
+                    type: string
+                    nullable: true
+  /resumes/{id}:
+    get:
+      summary: Get a resume by id
+      operationId: getResume
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+        '404':
+          description: Not Found
+    put:
+      summary: Replace a resume by id
+      operationId: replaceResume
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resume'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+        '404':
+          description: Not Found
+    patch:
+      summary: Partially update a resume by id
+      operationId: updateResume
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: |
+                Partial resume document (RFC 7386 JSON Merge Patch semantics).
+                - Missing fields are preserved (not changed).
+                - Null values set fields to null (do not delete keys).
+                - Only provided fields are updated; all others remain unchanged.
+                Example: Given original { "basics": { "name": "Alice", "email": "alice@example.com" }, "work": [...] },
+                a PATCH of { "basics": { "email": "alice@newdomain.com" }, "work": null }
+                results in { "basics": { "name": "Alice", "email": "alice@newdomain.com" }, "work": null }.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeResource'
+              examples:
+                mergePatch:
+                  summary: RFC 7386 merge-patch result
+                  value:
+                    basics:
+                      name: Alice
+                      email: alice@newdomain.com
+                    work: null
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a resume by id
+      operationId: deleteResume
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+  /templates:
+    get:
+      summary: List available PDF templates
+      operationId: listTemplates
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    maxItems: 100
+                    items:
+                      $ref: '#/components/schemas/TemplateMetadata'
+                  nextCursor:
+                    type: string
+                    nullable: true
+        '304':
+          description: Not Modified
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ResumeResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/Resume'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, ownerId, data, createdAt, updatedAt]
+    Resume:
+      type: object
+      additionalProperties: false
+      properties:
+        basics:
+          $ref: '#/components/schemas/Basics'
+        work:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Work'
+        education:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Education'
+        skills:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Skill'
+        projects:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Project'
+        languages:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Language'
+        certificates:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Certificate'
+        publications:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Publication'
+        awards:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Award'
+        volunteer:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Volunteer'
+        references:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Reference'
+    Basics:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        image:
+          type: string
+          format: uri
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        url:
+          type: string
+          format: uri
+        summary:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        profiles:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/Profile'
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        countryCode:
+          type: string
+        postalCode:
+          type: string
+    Profile:
+      type: object
+      properties:
+        network:
+          type: string
+        username:
+          type: string
+        url:
+          type: string
+          format: uri
+    Work:
+      type: object
+      properties:
+        name:
+          type: string
+        position:
+          type: string
+        url:
+          type: string
+          format: uri
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        summary:
+          type: string
+        highlights:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+    Education:
+      type: object
+      properties:
+        institution:
+          type: string
+        url:
+          type: string
+          format: uri
+        area:
+          type: string
+        studyType:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        gpa:
+          type: string
+        courses:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+    Skill:
+      type: object
+      properties:
+        name:
+          type: string
+        level:
+          type: string
+        keywords:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        keywords:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+        roles:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+    Language:
+      type: object
+      properties:
+        language:
+          type: string
+        fluency:
+          type: string
+    Certificate:
+      type: object
+      properties:
+        name:
+          type: string
+        issuer:
+          type: string
+        date:
+          type: string
+          format: date
+        url:
+          type: string
+          format: uri
+    Publication:
+      type: object
+      properties:
+        name:
+          type: string
+        publisher:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        url:
+          type: string
+          format: uri
+        summary:
+          type: string
+    Award:
+      type: object
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        awarder:
+          type: string
+        summary:
+          type: string
+    Volunteer:
+      type: object
+      properties:
+        organization:
+          type: string
+        position:
+          type: string
+        url:
+          type: string
+          format: uri
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        summary:
+          type: string
+        highlights:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+    Reference:
+      type: object
+      properties:
+        name:
+          type: string
+        reference:
+          type: string
+        contact:
+          type: string
+    TemplateMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        paramsSchema:
+          type: object
+          description: JSON Schema describing customizable template parameters
+      required: [id, name, version]

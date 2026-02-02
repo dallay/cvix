@@ -44,7 +44,7 @@ import org.springframework.validation.annotation.Validated
  * - [CONTENT_SECURITY_POLICY]: The default Content Security Policy for the application.
  */
 @Validated
-@ConfigurationProperties(prefix = "application.security", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "application.security", ignoreUnknownFields = false)
 data class ApplicationSecurityProperties(
     val oauth2: OAuth2 = OAuth2(),
     val cors: CorsProperties = CorsProperties(),
@@ -92,22 +92,5 @@ data class ApplicationSecurityProperties(
         @Suppress("MaxLineLength")
         const val CONTENT_SECURITY_POLICY =
             "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
-
-        /**
-         * Required CORS headers for form embed functionality.
-         * These headers are merged with configured allowed headers in both
-         * [SecurityConfiguration.corsConfigurationSource] and [WebConfig.addCorsMappings].
-         */
-        val REQUIRED_CORS_HEADERS = listOf(
-            "authorization",
-            "content-type",
-            "accept",
-            "origin",
-            "access-control-request-method",
-            "access-control-request-headers",
-            "x-requested-with",
-            "x-xsrf-token",
-            "x-workspace-id",
-        )
     }
 }

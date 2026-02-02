@@ -1,6 +1,5 @@
 package com.cvix.subscriber.infrastructure.persistence.entity
 
-import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AuditableEntityFields
 import com.cvix.subscriber.domain.Attributes
 import com.cvix.subscriber.domain.SubscriberStatus
@@ -90,7 +89,7 @@ data class SubscriberEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = SYSTEM_USER,
+    override val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")

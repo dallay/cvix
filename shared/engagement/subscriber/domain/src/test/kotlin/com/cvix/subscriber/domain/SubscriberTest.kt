@@ -3,7 +3,7 @@ package com.cvix.subscriber.domain
 import com.cvix.UnitTest
 import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.security.Hasher
-import com.cvix.common.infrastructure.security.HmacHasher
+import com.cvix.common.domain.security.HmacHasher
 import java.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

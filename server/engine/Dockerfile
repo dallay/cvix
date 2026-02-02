@@ -17,11 +17,6 @@ COPY build-logic /workspace/build-logic
 # Copy all subproject build files to leverage Docker layer caching
 COPY shared/common/build.gradle.kts /workspace/shared/common/
 COPY shared/spring-boot-common/build.gradle.kts /workspace/shared/spring-boot-common/
-COPY shared/test-helpers/build.gradle.kts /workspace/shared/test-helpers/
-COPY shared/engagement/subscriber/build.gradle.kts /workspace/shared/engagement/subscriber/
-COPY shared/engagement/subscriber/domain/build.gradle.kts /workspace/shared/engagement/subscriber/domain/
-COPY shared/engagement/subscriber/application/build.gradle.kts /workspace/shared/engagement/subscriber/application/
-COPY shared/engagement/subscriber/infrastructure/build.gradle.kts /workspace/shared/engagement/subscriber/infrastructure/
 COPY server/engine/build.gradle.kts /workspace/server/engine/
 
 # Download dependencies with optimizations
@@ -31,10 +26,6 @@ RUN ./gradlew dependencies --no-daemon --quiet --parallel --max-workers="$(nproc
 # Copy source code for all modules
 COPY shared/common/src /workspace/shared/common/src
 COPY shared/spring-boot-common/src /workspace/shared/spring-boot-common/src
-COPY shared/test-helpers/src /workspace/shared/test-helpers/src
-COPY shared/engagement/subscriber/domain/src /workspace/shared/engagement/subscriber/domain/src
-COPY shared/engagement/subscriber/application/src /workspace/shared/engagement/subscriber/application/src
-COPY shared/engagement/subscriber/infrastructure/src /workspace/shared/engagement/subscriber/infrastructure/src
 COPY server/engine/src /workspace/server/engine/src
 
 # Build the application with optimizations for container builds

@@ -15,7 +15,6 @@ dependencies {
 
     implementation(platform(libs.jackson.bom))
     implementation(libs.jackson.module.kotlin)
-    implementation(libs.springdoc.openapi.starter.webflux.ui)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.assertj)
@@ -24,7 +23,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(testFixtures(project(":shared:test-helpers")))
-    testImplementation(testFixtures(project(":shared:engagement:subscriber:domain")))
 }
 
 // Using traditional test configuration instead of experimental JvmTestSuite

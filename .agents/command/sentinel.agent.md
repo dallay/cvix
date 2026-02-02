@@ -219,7 +219,7 @@ Look for vulnerabilities specific to either the backend or frontend:
 ```kotlin
 // Example: Secure reactive endpoint with authentication
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/secure")
 class SecureController(
     private val dataService: DataService
 ) {
@@ -530,47 +530,6 @@ make verify-all
 
 ---
 
-## API Versioning Update
-
-All API endpoints in this mono-repo use a consistent versioning strategy with the `/api/v1` prefix.
-This standardization applies to all controller annotations and API path references.
-
-### Migration Summary
-
-| Old Path | New Path | Status |
-|----------|----------|--------|
-| `/api/secure/*` | `/api/v1/*` | Migrated |
-
-### Deprecation Timeline
-
-- **Current**: All endpoints use `/api/v1` prefix
-- **Backward Compatibility**: Previous `/api/secure` paths are deprecated and will redirect to `/api/v1` equivalents during transition period
-- **End of Life**: `/api/secure` paths will be removed in v2.0 (target: Q4 2025)
-
-### Affected Endpoints
-
-The following endpoint patterns are affected by this migration:
-- Authentication endpoints: `/api/secure/auth/*` → `/api/v1/auth/*`
-- Resource endpoints: `/api/secure/resource/*` → `/api/v1/resource/*`
-- User endpoints: `/api/secure/user/*` → `/api/v1/user/*`
-
-### Migration Guide
-
-For backend developers:
-- Update all `@RequestMapping` annotations to use `/api/v1` instead of `/api/secure`
-- Example: `@RequestMapping("/api/v1")` (standardized across all controllers)
-
-For frontend developers:
-- Update all API calls from `/api/secure/*` to `/api/v1/*`
-- Check fetch/AJAX calls in Vue.js components and Astro pages
-
-### References
-
-- [API Versioning Strategy](../docs/architecture/api-versioning.md)
-- [Migration Guide](../docs/migration/api-v1-migration.md)
-
----
-
 ## Sentinel's Journal
 
 Maintain a shared security journal at:
@@ -689,7 +648,7 @@ class SecureApiController(
 ```typescript
 // Frontend: Secure API call
 const createResource = async (data: ResourceRequest) => {
-    const response = await fetch('/api/resource', {
+    const response = await fetch('/api/v1/resource', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

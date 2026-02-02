@@ -1,0 +1,306 @@
+openapi: 3.0.3
+info:
+  title: Workspace API
+  description: API endpoints for workspace selection feature
+  version: 1.0.0
+  contact:
+    name: ProFileTailors Team
+servers:
+  - url: http://localhost:8080/api
+    description: Local development server
+  - url: https://api.cvix.dev/api
+    description: Development server
+  - url: https://api.cvix.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /workspace:
+    get:
+      summary: Get all workspaces for authenticated user
+      description: |
+        Retrieves all workspaces the authenticated user has access to.
+        Backend enforces authorization and returns only accessible workspaces.
+      operationId: getAllWorkspaces
+      tags:
+        - Workspace
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved workspaces
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/GetAllWorkspacesResponse'
+              examples:
+                multipleWorkspaces:
+                  summary: User with multiple workspaces
+                  value:
+                    data:
+                      - id: "550e8400-e29b-41d4-a716-446655440000"
+                        name: "My First Workspace"
+                        description: "Default workspace"
+                        isDefault: true
+                        ownerId: "123e4567-e89b-12d3-a456-426614174000"
+                        createdAt: "2025-10-01T10:00:00Z"
+                        updatedAt: "2025-10-01T10:00:00Z"
+                      - id: "660e8400-e29b-41d4-a716-446655440001"
+                        name: "Team Project"
+                        description: "Shared team workspace"
+                        isDefault: false
+                        ownerId: "123e4567-e89b-12d3-a456-426614174000"
+                        createdAt: "2025-10-15T14:30:00Z"
+                        updatedAt: "2025-10-15T14:30:00Z"
+                    meta:
+                      total: 2
+                      hasMore: false
+                singleWorkspace:
+                  summary: User with single workspace
+                  value:
+                    data:
+                      - id: "550e8400-e29b-41d4-a716-446655440000"
+                        name: "My Workspace"
+                        description: null
+                        isDefault: true
+                        ownerId: "123e4567-e89b-12d3-a456-426614174000"
+                        createdAt: "2025-10-01T10:00:00Z"
+                        updatedAt: "2025-10-01T10:00:00Z"
+                    meta:
+                      total: 1
+                      hasMore: false
+        '401':
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "unauthorized"
+                  message: "Authentication required"
+        '500':
+          description: Internal server error
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "internal_server_error"
+                  message: "An unexpected error occurred"
+
+  /workspace/{workspaceId}:
+    get:
+      summary: Get workspace by ID
+      description: |
+        Retrieves a specific workspace by ID. User must have access to the workspace.
+      operationId: getWorkspaceById
+      tags:
+        - Workspace
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: workspaceId
+          in: path
+          required: true
+          description: UUID of the workspace to retrieve
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Successfully retrieved workspace
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/GetWorkspaceResponse'
+              example:
+                data:
+                  id: "550e8400-e29b-41d4-a716-446655440000"
+                  name: "My Workspace"
+                  description: "Default workspace"
+                  isDefault: true
+                  ownerId: "123e4567-e89b-12d3-a456-426614174000"
+                  createdAt: "2025-10-01T10:00:00Z"
+                  updatedAt: "2025-10-01T10:00:00Z"
+        '401':
+          description: Unauthorized - Missing or invalid authentication token
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "unauthorized"
+                  message: "Authentication required"
+        '403':
+          description: Forbidden - User does not have access to this workspace
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "workspace_authorization_error"
+                  message: "You don't have permission to access this workspace"
+        '404':
+          description: Not Found - Workspace does not exist
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "workspace_not_found"
+                  message: "Workspace not found"
+        '500':
+          description: Internal server error
+          content:
+            application/vnd.api.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "internal_server_error"
+                  message: "An unexpected error occurred"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from Keycloak authentication.
+        Token should be included in Authorization header as: Bearer <token>
+
+  schemas:
+    Workspace:
+      type: object
+      required:
+        - id
+        - name
+        - isDefault
+        - ownerId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the workspace
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Display name of the workspace
+          example: "My Workspace"
+        description:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: Optional description of the workspace
+          example: "Default workspace for personal projects"
+        isDefault:
+          type: boolean
+          description: Whether this is the user's default workspace
+          example: true
+        ownerId:
+          type: string
+          format: uuid
+          description: UUID of the workspace owner
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when workspace was created
+          example: "2025-10-01T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when workspace was last updated
+          example: "2025-10-01T10:00:00Z"
+
+    GetAllWorkspacesResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workspace'
+          description: Array of workspaces accessible to the user
+          maxItems: 100
+        meta:
+          type: object
+          required:
+            - total
+            - hasMore
+          properties:
+            total:
+              type: integer
+              minimum: 0
+              description: Total number of workspaces returned
+              example: 2
+            hasMore:
+              type: boolean
+              description: Whether there are more workspaces (always false for MVP)
+              example: false
+
+    GetWorkspaceResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Workspace'
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              enum:
+                - unauthorized
+                - workspace_not_found
+                - workspace_authorization_error
+                - internal_server_error
+                - validation_error
+              example: "workspace_not_found"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Workspace not found"
+            errors:
+              type: array
+              description: Detailed validation errors (optional)
+              items:
+                type: object
+                required:
+                  - field
+                  - message
+                properties:
+                  field:
+                    type: string
+                    description: Field that failed validation
+                    example: "workspaceId"
+                  message:
+                    type: string
+                    description: Validation error message
+                    example: "Invalid UUID format"

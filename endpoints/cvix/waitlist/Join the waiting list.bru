@@ -1,0 +1,80 @@
+meta {
+  name: Join the waiting list
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/api/waitlist
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "john.doe@test.com",
+    "source": "landing-hero",
+    "language": "en"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # =====================================================================
+  # JOIN THE WAITING LIST (POST /api/waitlist)
+  # ---------------------------------------------------------------------
+  # Adds a user to the waitlist for future notifications, early access,
+  # or feature announcements related to the product.
+  #
+  # [METHOD & URL]
+  #   POST {{url}}/api/waitlist
+  #
+  # [AUTHENTICATION]
+  #   No authentication required (auth: none)
+  #
+  # [REQUEST BODY PARAMETERS]
+  #   {
+  #     "email":    string   # User email (required, valid email address)
+  #     "source":   string   # Registration source (e.g., "landing-hero")
+  #     "language": string   # Language code (e.g., "en", "es")
+  #   }
+  #
+  # [JSON BODY EXAMPLE]
+  #   {
+  #     "email": "john.doe@test.com",
+  #     "source": "landing-hero",
+  #     "language": "en"
+  #   }
+  #
+  # [RESPONSES]
+  #   201 CREATED: User successfully added. Example:
+  #     {
+  #       "id": "record-uuid",
+  #       "email": "john.doe@test.com",
+  #       "source": "landing-hero",
+  #       "language": "en"
+  #     }
+  #   409 CONFLICT: Email already exists on the waitlist.
+  #     {
+  #       "type": "https://example.com/problems/duplicate-email",
+  #       "title": "Conflict",
+  #       "status": 409,
+  #       "detail": "Email is already present in the waitlist."
+  #     }
+  #   400 BAD REQUEST: Invalid parameters, e.g.:
+  #     {
+  #       "type": "https://example.com/problems/invalid-request",
+  #       "title": "Invalid Request",
+  #       "status": 400,
+  #       "detail": "Email format is not valid."
+  #     }
+  #
+  # [NOTES]
+  #   - The "source" parameter helps track the origin of registration.
+  #   - The "language" parameter is used for customizing future communications.
+  # =====================================================================
+}

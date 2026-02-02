@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation(project(":shared:common"))
     implementation(libs.commons.text)
-    implementation(libs.jackson.module.kotlin)
     implementation(libs.kotlinx.coroutines.slf4j)
     implementation(libs.spring.boot.starter.data.r2dbc)
     implementation(libs.spring.boot.starter.security)
@@ -19,6 +18,7 @@ dependencies {
     // Use JUnit + kotest matchers (project uses both across modules)
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.faker)
+    testImplementation(libs.jackson.module.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 }

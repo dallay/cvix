@@ -41,7 +41,7 @@ data class WaitlistEntryEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = SYSTEM_USER,
+    override val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")

@@ -1,6 +1,5 @@
 package com.cvix.workspace.infrastructure.persistence.entity
 
-import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AuditableEntityFields
 import com.cvix.workspace.domain.Workspace.Companion.NAME_MAX_LENGTH
 import jakarta.validation.constraints.Size
@@ -45,7 +44,7 @@ data class WorkspaceEntity(
     @CreatedBy
     @Column("created_by")
     @get:Size(max = 50)
-    override val createdBy: String = SYSTEM_USER,
+    override val createdBy: String = "system",
 
     @CreatedDate
     @Column("created_at")

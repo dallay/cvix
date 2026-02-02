@@ -66,16 +66,9 @@ function resolveUrl(config: {
 	genericDefault?: string; // Generic convention (SITE_URL)
 	localPort?: number; // Localhost port for development
 	protocol?: "http" | "https"; // Protocol for localhost (default: http)
-	productionFallback?: string; // Hard-coded production URL as final fallback
 }): string {
-	const {
-		envKey,
-		providerDefaults,
-		genericDefault,
-		localPort,
-		protocol,
-		productionFallback,
-	} = config;
+	const { envKey, providerDefaults, genericDefault, localPort, protocol } =
+		config;
 
 	// 1. Explicit environment variable (highest priority)
 	const explicitUrl = getEnv(envKey);
@@ -114,12 +107,7 @@ function resolveUrl(config: {
 		return `${proto}://localhost:${localPort}`;
 	}
 
-	// 5. Production fallback (if provided)
-	if (productionFallback) {
-		return productionFallback;
-	}
-
-	// 6. Last resort: empty string (should never happen)
+	// 5. Last resort: empty string (should never happen)
 	// Only warn in development to avoid polluting production logs
 	if (import.meta.env?.DEV) {
 		console.warn(`⚠️  No URL found for ${envKey}`);
@@ -137,7 +125,6 @@ export const PORTS = {
 	DOCS: 4321,
 	BLOG: 7767,
 	API: 8443,
-	SUBSCRIBE_FORMS: 7768,
 } as const;
 
 // ============================================================================
@@ -207,20 +194,6 @@ export const CVIX_OAUTH_URL = resolveUrl({
 	envKey: "CVIX_OAUTH_URL",
 	genericDefault: "OAUTH2_SERVER_URL", // Legacy fallback
 	localPort: 9080,
-});
-
-/**
- * Subscribe Forms URL
- * - Explicit: CVIX_SUBSCRIBE_FORMS_URL
- * - Cloudflare: CF_PAGES_URL (auto-detected)
- * - Fallback (local): http://localhost:7768
- * - Production fallback: https://subscribe-forms.profiletailors.com
- */
-export const CVIX_SUBSCRIBE_FORMS_URL = resolveUrl({
-	envKey: "CVIX_SUBSCRIBE_FORMS_URL",
-	providerDefaults: { cloudflare: "CF_PAGES_URL" },
-	localPort: PORTS.SUBSCRIBE_FORMS,
-	productionFallback: "https://subscribe-forms.profiletailors.com",
 });
 
 // ============================================================================

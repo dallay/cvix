@@ -25,6 +25,7 @@ spring:
       dev:
         - dev
         - api-docs
+        - tls
   liquibase:
     change-log: classpath:db/changelog/master.yaml
     enabled: true
@@ -47,11 +48,10 @@ spring:
         provider:
           oidc:
             issuer-uri: ${application.security.oauth2.issuer-uri}
-      resourceserver:
-        jwt:
-          audiences: ${application.security.oauth2.audience}
-          jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
-
+        resourceserver:
+          jwt:
+            audiences: ${application.security.oauth2.audience}
+            jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
   r2dbc:
     url: ${DATABASE_URL:r2dbc:postgresql://localhost:5432/postgres}
     username: ${DATABASE_USERNAME:postgres}
@@ -102,14 +102,11 @@ application:
     cors:
       allowed-origins: ${CORS_ALLOWED_ORIGINS}
       allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
-      allowed-headers: ${CORS_ALLOWED_HEADERS:authorization,content-type,accept,origin,access-control-request-method,access-control-request-headers,x-requested-with,x-xsrf-token,x-workspace-id}
+      allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers, X-Requested-With, X-Xsrf-Token, X-New-Header}
       exposed-headers: ${CORS_EXPOSED_HEADERS:Access-Control-Allow-Origin,Access-Control-Allow-Credentials}
       allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
       max-age: ${CORS_MAX_AGE:3600}
     domain: ${HOSTNAME:localhost}
-  hasher:
-    ip-hmac-secret: ${IP_HMAC_SECRET}
-    allow-insecure-hasher: ${ALLOW_INSECURE_HASHER:false}
   # Rate limiting configuration
   rate-limit:
     enabled: true
@@ -171,14 +168,13 @@ application:
         capacity: 10
         refill-tokens: 10
         refill-duration: 1m
-    # Subscriber endpoints rate limiting
-    subscriber:
+    # Waitlist endpoints rate limiting
+    waitlist:
       enabled: true
       endpoints:
-        - /api/subscribers
-        - /api/public/forms/{formId}/subscribe
+        - /api/waitlist
       limit:
-        name: subscriber-per-minute
+        name: waitlist-per-minute
         capacity: 10
         refill-tokens: 10
         refill-duration: 1m
@@ -259,7 +255,11 @@ resume:
       # Path to filesystem templates (only used when FILESYSTEM is in types)
       # Can be absolute or relative to the application working directory
       path: ${TEMPLATE_SOURCE_PATH:templates/resume}
-
+waitlist:
+  security:
+    # HMAC secret for IP address hashing (required)
+    # Must be set via WAITLIST_IP_HMAC_SECRET environment variable
+    ip-hmac-secret: ${WAITLIST_IP_HMAC_SECRET:}
 springdoc:
   show-actuator: true
   api-docs:

@@ -2,13 +2,11 @@ package com.cvix.subscriber.infrastructure.http
 
 import com.cvix.ControllerTest
 import com.cvix.UnitTest
-import com.cvix.form.application.find.SubscriberFormFinder
 import com.cvix.subscriber.application.create.CreateSubscriberCommand
 import com.cvix.subscriber.infrastructure.http.request.SubscriberRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
 import java.util.UUID
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -16,8 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @UnitTest
 internal class SubscriberControllerLocalizedAndMetadataTest : ControllerTest() {
-    private val formFinder: SubscriberFormFinder = mockk()
-    private val controller = SubscriberController(mediator, messageSource, formFinder)
+    private val controller = SubscriberController(mediator, messageSource)
     override val webTestClient: WebTestClient = buildWebTestClient(controller)
 
     @Test

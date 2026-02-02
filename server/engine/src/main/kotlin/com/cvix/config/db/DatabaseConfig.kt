@@ -61,7 +61,6 @@ class DatabaseConfig {
      * have the correct workspace context set.
      */
     @Bean
-    @Primary
     fun connectionFactoryTransactionManager(
         workspaceAwareConnectionFactory: ConnectionFactory
     ): R2dbcTransactionManager = R2dbcTransactionManager(workspaceAwareConnectionFactory)

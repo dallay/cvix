@@ -61,7 +61,7 @@ console.log("Storage Preference:", localStorage.getItem('storage_preference'));
 - ✅ Success message appears: "✓ Storage changed successfully!"
 - ✅ Navigate to Resume Editor
 - ✅ Resume data is still visible
-- ✅ Verify in Network tab: API call to `/api/resumes/{id}` with PUT request
+- ✅ Verify in Network tab: API call to `/api/v1/resumes/{id}` with PUT request
 
 **Browser DevTools Verification:**
 ```javascript

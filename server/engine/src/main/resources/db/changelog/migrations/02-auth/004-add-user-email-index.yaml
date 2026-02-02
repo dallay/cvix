@@ -9,3 +9,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
+      rollback:
+        - dropIndex:
+            tableName: users
+            indexName: idx_users_email

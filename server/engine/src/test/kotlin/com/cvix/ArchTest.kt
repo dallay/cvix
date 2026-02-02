@@ -17,6 +17,7 @@ internal class ArchTest {
         "workspace",
         "ratelimit",
         "resume",
+        "waitlist",
         "subscription",
         "contact",
     )

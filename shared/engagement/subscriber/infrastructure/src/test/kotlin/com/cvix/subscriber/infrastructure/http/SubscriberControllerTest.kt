@@ -1,13 +1,11 @@
 package com.cvix.subscriber.infrastructure.http
 
 import com.cvix.ControllerTest
-import com.cvix.form.application.find.SubscriberFormFinder
 import com.cvix.subscriber.application.create.CreateSubscriberCommand
 import com.cvix.subscriber.infrastructure.http.request.SubscriberRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.slot
 import java.util.*
 import net.datafaker.Faker
@@ -21,7 +19,6 @@ internal class SubscriberControllerTest : ControllerTest() {
 
     private val faker = Faker()
     private lateinit var controller: SubscriberController
-    private val formFinder: SubscriberFormFinder = mockk()
     override lateinit var webTestClient: WebTestClient
 
     @BeforeEach
@@ -31,7 +28,7 @@ internal class SubscriberControllerTest : ControllerTest() {
             messageSource.getMessage("subscriber.subscribe.success", null, Locale.ENGLISH)
         } returns "Subscription successful!"
 
-        controller = SubscriberController(mediator, messageSource, formFinder)
+        controller = SubscriberController(mediator, messageSource)
         webTestClient = buildWebTestClient(controller)
     }
 

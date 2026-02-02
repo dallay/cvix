@@ -1,6 +1,5 @@
 package com.cvix.common.domain.model
 
-import com.cvix.common.domain.SYSTEM_USER
 import java.io.Serializable
 import java.time.Instant
 
@@ -18,7 +17,7 @@ import java.time.Instant
  */
 abstract class AuditableEntity(
     open val createdAt: Instant = Instant.now(),
-    open val createdBy: String = SYSTEM_USER,
+    open val createdBy: String = "system",
     open var updatedAt: Instant? = null,
     open var updatedBy: String? = null
 ) : Serializable {

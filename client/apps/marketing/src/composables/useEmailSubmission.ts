@@ -39,7 +39,7 @@ export function useEmailSubmission() {
 
 		try {
 			// Simulate API call - replace with actual endpoint
-			const response = await fetch(options.apiEndpoint || "/api/subscribers", {
+			const response = await fetch(options.apiEndpoint || "/api/waitlist", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

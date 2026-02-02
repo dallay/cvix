@@ -7,7 +7,7 @@ class HasherRegistryValidationTest {
 
     @Test
     fun `throws when default is hmac but secret is blank`() {
-        val props = SecurityProperties(default = "hmac", ipHmacSecret = "")
+        val props = SecurityProperties(hasher = HasherProperties(default = "hmac", ipHmacSecret = ""))
 
         assertThrows<IllegalStateException> {
             HasherRegistry(props)

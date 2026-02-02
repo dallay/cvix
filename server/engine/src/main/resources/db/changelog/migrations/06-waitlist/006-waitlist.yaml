@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-waitlist-table
+      author: system
+      comment: Create waitlist table for storing early access signups
+      changes:
+        - createTable:
+            tableName: waitlist
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(320)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: source
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'en'
+              - column:
+                  name: ip_hash
+                  type: varchar(64)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: metadata
+                  type: jsonb
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_by
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'system'
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: true
+
+        - createIndex:
+            indexName: idx_waitlist_source
+            tableName: waitlist
+            columns:
+              - column:
+                  name: source
+
+        - createIndex:
+            indexName: idx_waitlist_created_at
+            tableName: waitlist
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+      rollback:
+        - dropTable:
+            tableName: waitlist
