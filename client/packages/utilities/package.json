@@ -10,7 +10,7 @@
 		"node": ">=22.0.0",
 		"pnpm": ">=10.27.0"
 	},
-	"packageManager": "pnpm@10.28.0",
+	"packageManager": "pnpm@10.28.2",
 	"main": "./src/index.ts",
 	"module": "./src/index.ts",
 	"types": "./src/index.ts",

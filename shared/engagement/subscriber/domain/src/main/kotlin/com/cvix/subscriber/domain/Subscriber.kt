@@ -1,5 +1,6 @@
 package com.cvix.subscriber.domain
 
+import com.cvix.common.domain.SYSTEM_USER
 import com.cvix.common.domain.model.AggregateRoot
 import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.model.WorkspaceId
@@ -45,7 +46,7 @@ data class Subscriber(
     val doNotContact: Boolean = false,
     val workspaceId: WorkspaceId,
     override val createdAt: Instant = Instant.now(),
-    override val createdBy: String = "system",
+    override val createdBy: String = SYSTEM_USER,
     override var updatedAt: Instant? = null,
     override var updatedBy: String? = null
 ) : AggregateRoot<SubscriberId>() {

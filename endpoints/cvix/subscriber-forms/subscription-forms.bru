@@ -1,0 +1,214 @@
+meta {
+  name: subscription-forms
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://localhost:8443/api/subscription-forms
+  body: json
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api.v1+json
+  Content-Type: application/json
+  X-XSRF-TOKEN: {{xsrfToken}}
+  X-Workspace-Id: {{workspaceId}}
+}
+
+body:json {
+  {
+    "id": "{{$randomUUID}}",
+    "name": "Yuniel's Newsletter",
+    "description": "This is a test",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "tosText": null,
+      "showPrivacyCheckbox": false,
+      "privacyText": null
+    }
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
+
+docs {
+  ------------------------------------------------------------
+  REQUEST DOCUMENTATION
+  ------------------------------------------------------------
+  Title: Create Subscription Form
+  
+  Endpoint
+  POST https://{host}/api/subscription-forms
+  
+  Summary
+  Creates a new subscription form resource in a workspace. Subscription forms are used
+  to capture emails (newsletter, waitlists, notifications) and to configure the
+  UI of the signup widget.
+  
+  Authentication
+  - Inherited from collection (XSRF token required)
+  - Provide a valid CSRF token via header X-XSRF-TOKEN
+  - Include the workspace context via X-Workspace-Id
+  
+  Required Headers
+  - Accept: application/vnd.api.v1+json
+  - Content-Type: application/json
+  - X-XSRF-TOKEN: <CSRF token>
+  - X-Workspace-Id: <workspace UUID>
+  
+  Request Body (JSON)
+  The request body is organized into three main sections: settings, styling, and content.
+  
+  {
+    "id": "string (uuid)",                    // Unique resource id
+    "name": "string",                         // Short display name for the form
+    "description": "string",                  // Form description
+    "workspaceId": "string (uuid)",           // Workspace UUID
+    "userId": "string (uuid)",                // Owner/creator user id
+    
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",    // 'SHOW_MESSAGE' or 'REDIRECT'
+      "successMessage": "string",             // Message shown after success
+      "redirectUrl": "string",                // URL to redirect (if action is REDIRECT)
+      "confirmationRequired": true            // Whether double opt-in is required
+    },
+    
+    "styling": {
+      "backgroundColor": "#FFFFFF",           // Form background color
+      "textColor": "#000000",                 // Main text color
+      "buttonColor": "#000000",               // Button background color
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",           // Button text color
+      "borderColor": "#000000",               // Border color
+      "borderStyle": "solid",                 // Border style (solid, dashed, dotted)
+      "shadow": "none",                       // Box shadow (none, sm, md, lg)
+      "borderThickness": 1,                   // Border thickness in pixels
+      "width": "100%",                        // Form width ('auto', 'fit', or value)
+      "height": "auto",                       // Form height ('auto', 'fit', or value)
+      "horizontalAlignment": "center",        // Horizontal alignment (left, center, right)
+      "verticalAlignment": "center",          // Vertical alignment (top, center, bottom)
+      "padding": 40,                          // Internal padding in pixels
+      "gap": 24,                              // Gap between elements in pixels
+      "cornerRadius": 12,                     // Border radius in pixels
+      "pageBackgroundColor": "#FFFFFF"        // Page background color behind the form
+    },
+    
+    "content": {
+      "showHeader": true,                     // Whether to show header title
+      "showSubheader": true,                  // Whether to show subheader/description
+      "headerTitle": "Yuniel's Newsletter",   // Header/title text
+      "subheaderText": "This is a test",      // Subheader/description text
+      "inputPlaceholder": "Enter your email", // Placeholder for email input
+      "submitButtonText": "Subscribe",        // Button text
+      "submittingButtonText": "Subscribing...", // Button text during submission
+      "showTosCheckbox": false,               // Show Terms of Service checkbox
+      "tosText": null,                        // ToS checkbox label text
+      "showPrivacyCheckbox": false,           // Show Privacy Policy checkbox
+      "privacyText": null                     // Privacy checkbox label text
+    }
+  }
+  
+  Example: Minimalist Black/White Style (Yuniel's Newsletter)
+  {
+    "id": "{{$randomUUID}}",
+    "name": "Yuniel's Newsletter",
+    "description": "This is a test",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "showPrivacyCheckbox": false
+    }
+  }
+  
+  Responses
+  - 201 Created: The subscription form was created successfully
+  - 400 Bad Request: Malformed payload or missing required fields
+  - 401 / 403: Missing/invalid XSRF token or insufficient permissions
+  - 422 Unprocessable Entity: Semantic validation failed (invalid hex, etc)
+  - 429 Too Many Requests: Rate limit exceeded
+  - 500 Internal Server Error: Unexpected server failure
+  
+  Validation Rules
+  - X-Workspace-Id header must match workspaceId in body
+  - Color fields expect valid hex codes (#RRGGBB)
+  - String fields have max lengths enforced by server
+  - Numeric fields (padding, gap, etc) must be non-negative
+  
+  Bruno Tips
+  - Use "{{$randomUUID}}" to generate unique IDs per request
+  - Store workspaceId and xsrfToken as environment variables
+  - Use pre-request scripts to generate dynamic values
+  
+  ------------------------------------------------------------
+}

@@ -20,6 +20,12 @@ Available commands:
   preview-landing          Preview the landing page.
   build-web                Build the web application.
   build-docs               Build the documentation.
+  dev-blog                 Run the blog in development mode.
+  dev-subscribe            Run the subscribe-forms app in development mode.
+  build-blog               Build the blog.
+  build-subscribe          Build the subscribe-forms app.
+  preview-blog             Preview the blog.
+  preview-subscribe        Preview the subscribe-forms app.
   test                     Run all tests.
   test-ui                  Run all UI tests.
   test-coverage            Run all tests with coverage.
@@ -36,7 +42,7 @@ Available commands:
   start                    Start all applications.
   test-all                 Run all tests for all applications.
   precommit                Run the pre-commit checks.
-  
+
   docker-build-backend     Build the backend Docker image (TAG=yourtag, default: latest)
   docker-build-marketing   Build the marketing Docker image (TAG=yourtag, default: latest)
   docker-build-webapp      Build the webapp Docker image (TAG=yourtag, default: latest)

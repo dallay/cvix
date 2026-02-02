@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: increase-subheader-text-max-length
+      author: system
+      comment: Increase subheader_text column length from 255 to 500 characters to match API constraints
+      changes:
+        - modifyDataType:
+            tableName: subscription_forms
+            columnName: subheader_text
+            newDataType: varchar(500)
+      rollback:
+        - modifyDataType:
+            tableName: subscription_forms
+            columnName: subheader_text
+            newDataType: varchar(255)

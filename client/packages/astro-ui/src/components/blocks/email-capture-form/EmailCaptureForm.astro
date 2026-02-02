@@ -1,309 +1,657 @@
 ---
-import { type Lang, useTranslations } from "@cvix/i18n/astro";
-import { cn } from "@cvix/lib";
 import type { HTMLAttributes } from "astro/types";
 import CsrfToken from "../csrf-token/CsrfToken.astro";
 
-interface Props extends HTMLAttributes<"div"> {
-	apiUrl: string;
-	emailPlaceholder?: string;
-	buttonText?: string;
+type SuccessActionType = "SHOW_MESSAGE" | "REDIRECT";
+
+type FormConfig = {
+	id: string;
+	name?: string;
+	status?: string;
+	workspaceId?: string;
+	// Settings
+	successActionType?: SuccessActionType;
 	successMessage?: string;
+	redirectUrl?: string;
+	confirmationRequired?: boolean;
+	// Styling
+	backgroundColor?: string;
+	textColor?: string;
+	buttonColor?: string;
+	buttonTextColor?: string;
+	inputTextColor?: string;
+	borderColor?: string;
+	borderStyle?: string;
+	shadow?: string;
+	borderThickness?: number;
+	width?: string;
+	height?: string;
+	horizontalAlignment?: string;
+	verticalAlignment?: string;
+	padding?: number;
+	gap?: number;
+	cornerRadius?: number;
+	// Content
+	showHeader?: boolean;
+	showSubheader?: boolean;
+	headerTitle?: string;
+	subheaderText?: string;
+	inputPlaceholder?: string;
+	/** Button text from API (maps to submitButtonText in database) */
+	buttonText?: string;
+	submittingButtonText?: string;
+	showTosCheckbox?: boolean;
+	tosText?: string;
+	showPrivacyCheckbox?: boolean;
+	privacyText?: string;
+};
+
+type Props = Omit<HTMLAttributes<"div">, "translate"> & {
+	apiUrl: string;
+	form?: FormConfig;
 	errorMessage?: string;
 	rateLimitMessage?: string;
 	source?: string;
-}
+	emailLabel?: string;
+	tosLabel?: string;
+	privacyLabel?: string;
+	// Legacy props for backward compatibility (deprecated)
+	/** @deprecated Use form.inputPlaceholder instead */
+	emailPlaceholder?: string;
+	/** @deprecated Use form.submitButtonText instead */
+	buttonText?: string;
+	/** @deprecated Use form.successMessage instead */
+	successMessage?: string;
+};
 
 const {
 	apiUrl,
-	emailPlaceholder = "Enter your email",
-	buttonText = "Join",
-	successMessage,
+	form,
 	errorMessage,
 	rateLimitMessage,
-	source = "email-capture-form",
+	source = form?.name ?? "email-capture-form",
+	emailLabel,
+	tosLabel,
+	privacyLabel,
+	// Legacy props
+	emailPlaceholder,
+	buttonText,
+	successMessage,
 	class: className,
 	...attrs
-} = Astro.props;
+} = Astro.props as Props;
+
+// Prevent static-analysis warnings about props only used inside the
+// inline <script is:inline define:vars={...}> block by referencing them here.
+void errorMessage;
+void rateLimitMessage;
+void successMessage;
+
+// Simple labels fallback. We removed i18n/translation for now.
+const emailLabelText = (emailLabel ?? "Email") as string;
+const tosLabelText = (tosLabel ?? "I agree to the Terms of Service") as string;
+const privacyLabelText = (privacyLabel ??
+	"I agree to the Privacy Policy") as string;
 
 // Generate unique ID for this form instance
 const formId = `email-form-${crypto.randomUUID()}`;
-const currentLocale = Astro.currentLocale as Lang;
-const t = useTranslations(currentLocale);
+const inputId = `email-input-${formId}`;
+const statusId = `form-status-${formId}`;
+const tosId = `tos-checkbox-${formId}`;
+const privacyId = `privacy-checkbox-${formId}`;
+
+// Build container styles from form config (flat structure)
+// Use nullish checks (??) instead of truthy checks to preserve valid zero values
+const containerStyles = form
+	? [
+			form.backgroundColor ? `background-color: ${form.backgroundColor}` : null,
+			form.textColor ? `color: ${form.textColor}` : null,
+			(form.padding ?? false) ? `padding: ${form.padding}px` : null,
+			(form.gap ?? false) ? `gap: ${form.gap}px` : null,
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
+			// Use default borderStyle 'solid' if not provided but borderThickness is set
+			form.borderColor && (form.borderThickness ?? false)
+				? `border: ${form.borderThickness}px ${form.borderStyle ?? "solid"} ${form.borderColor}`
+				: null,
+			form.shadow ? `box-shadow: ${form.shadow}` : null,
+			form.width ? `width: ${form.width}` : null,
+			form.height ? `height: ${form.height}` : null,
+			form.horizontalAlignment
+				? `align-items: ${form.horizontalAlignment}`
+				: null,
+			form.verticalAlignment
+				? `justify-content: ${form.verticalAlignment}`
+				: null,
+		]
+			.filter(Boolean)
+			.join("; ")
+	: undefined;
+
+const inputStyles = form
+	? [
+			// Use nullish checks to preserve valid zero values for cornerRadius
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
+			form.inputTextColor ? `color: ${form.inputTextColor}` : null,
+		]
+			.filter(Boolean)
+			.join("; ")
+	: undefined;
+
+const buttonStyles = form
+	? [
+			form.buttonColor ? `background-color: ${form.buttonColor}` : null,
+			form.buttonTextColor ? `color: ${form.buttonTextColor}` : null,
+			// Use nullish checks to preserve valid zero values for cornerRadius
+			(form.cornerRadius ?? false)
+				? `border-radius: ${form.cornerRadius}px`
+				: null,
+		]
+			.filter(Boolean)
+			.join("; ")
+	: undefined;
+
+const successActionType = form?.successActionType ?? "SHOW_MESSAGE";
+const redirectUrl = form?.redirectUrl ?? "";
 ---
 
-<div class={cn("flex flex-col gap-4 w-full max-w-sm", className)} {...attrs}>
-  <CsrfToken />
-	<form id={formId} class="flex gap-2" data-api-url={apiUrl} data-source={source}>
-    <label>
-      <span class="sr-only">{t('emailCaptureForm.emailLabel')}</span>
-      <input
-        type="email"
-        name="email"
-        required
-        placeholder={emailPlaceholder}
-        class={cn(
-          "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-        )}
-      />
-    </label>
-    <button
-			type="submit"
-			class={cn(
-				"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors",
-				"focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-				"disabled:pointer-events-none disabled:opacity-50",
-				"[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-				"bg-primary text-primary-foreground shadow hover:bg-primary/90",
-				"h-9 px-4 py-2"
-			)}
-		>
-			<span class="button-text">{buttonText}</span>
-		</button>
-	</form>
+<div
+    class={`flex flex-col w-full ${className ?? ''}`}
+    {...attrs}
+    style={containerStyles}
+>
+    {form?.showHeader && form?.headerTitle && (
+        <h3 class="text-lg font-semibold">{form.headerTitle}</h3>
+    )}
 
-	<!-- Status Messages -->
-	<div
-		class="status-message hidden text-sm px-3 py-2 rounded-md transition-opacity duration-300"
-		role="alert"
-		aria-live="polite"
-	>
-	</div>
+    {form?.showSubheader && form?.subheaderText && (
+        <p class="text-sm text-muted-foreground">{form.subheaderText}</p>
+    )}
+
+    <CsrfToken />
+    <form
+        id={formId}
+        class="flex flex-col gap-2"
+        data-api-url={apiUrl}
+        data-source={source}
+        data-success-action-type={successActionType}
+        data-redirect-url={redirectUrl}
+        data-form-id={form?.id}
+        data-workspace-id={form?.workspaceId}
+        data-success-message={successMessage ?? form?.successMessage}
+        data-error-message={errorMessage}
+        data-rate-limit-message={rateLimitMessage}
+        aria-label={form?.headerTitle ? `${form.headerTitle} - Email subscription form` : "Email subscription form"}
+    >
+        <div class="flex items-center justify-between gap-4">
+            <label for={inputId}>
+                <span class="sr-only">{emailLabelText}</span>
+            </label>
+            <input
+                id={inputId}
+                type="email"
+                name="email"
+                required
+                placeholder={emailPlaceholder ?? form?.inputPlaceholder ?? "Enter your email"}
+                aria-describedby={statusId}
+                autocomplete="email"
+                class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                style={inputStyles}
+            />
+            <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                style={buttonStyles}
+            >
+                <span
+                    class="button-text"
+                    data-submit-text={buttonText ?? form?.buttonText ?? "Join"}
+                    data-submitting-text={form?.submittingButtonText ?? "Submitting..."}
+                >
+                    {buttonText ?? form?.buttonText ?? "Join"}
+                </span>
+            </button>
+        </div>
+
+        {form?.showTosCheckbox && (
+            <div class="flex items-start gap-2">
+                <input
+                    id={tosId}
+                    type="checkbox"
+                    name="tosAccepted"
+                    required
+                    class="mt-1 h-4 w-4 rounded border-input bg-background text-primary focus:ring-ring focus:ring-offset-background"
+                />
+                <label for={tosId} class="text-sm text-muted-foreground">
+                    {form?.tosText ?? tosLabelText}
+                </label>
+            </div>
+        )}
+
+        {form?.showPrivacyCheckbox && (
+            <div class="flex items-start gap-2">
+                <input
+                    id={privacyId}
+                    type="checkbox"
+                    name="privacyAccepted"
+                    required
+                    class="mt-1 h-4 w-4 rounded border-input bg-background text-primary focus:ring-ring focus:ring-offset-background"
+                />
+                <label for={privacyId} class="text-sm text-muted-foreground">
+                    {form?.privacyText ?? privacyLabelText}
+                </label>
+            </div>
+        )}
+    </form>
+
+    <!-- Status Messages - Hidden until needed, announced via aria-live -->
+    <div
+        id={statusId}
+        class="status-message hidden text-sm px-3 py-2 rounded-md transition-opacity duration-300"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    >
+    </div>
 </div>
 
-<script is:inline define:vars={{ successMessage, errorMessage, rateLimitMessage }}>
-	// Guard: only initialize once across all component instances
-	// When multiple EmailCaptureForm components exist on the same page,
-	// each instance's is:inline script runs and would register duplicate
-	// DOMContentLoaded listeners that process ALL forms, causing N API calls per submit.
-	if (window.__emailCaptureInitialized) {
-		// Already initialized by another instance - skip
-	} else {
-		window.__emailCaptureInitialized = true;
+<script is:inline>
+    // Guard: only initialize once across all component instances
+    // When multiple EmailCaptureForm components exist on the same page,
+    // each instance's is:inline script runs and would register duplicate
+    // DOMContentLoaded listeners that process ALL forms, causing N API calls per submit.
+    if (window.__emailCaptureInitialized) {
+        // Already initialized by another instance - skip
+    } else {
+        window.__emailCaptureInitialized = true;
 
-		// Email validation regex
-		const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Email validation regex
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-		// Auto-hide message timeout (in milliseconds)
-		const MESSAGE_AUTO_HIDE_MS = 5000;
+        // Auto-hide message timeout (in milliseconds)
+        const MESSAGE_AUTO_HIDE_MS = 5000;
 
-		/**
-		 * Normalize browser language to backend-supported language code
-		 * Backend only accepts 'en' or 'es'
-		 *
-		 * @param {string} browserLang - Browser language (e.g., 'en-US', 'es-ES', 'en', 'es')
-		 * @returns {string} Normalized language code ('en' or 'es')
-		 */
-		function normalizeLanguage(browserLang) {
-			if (!browserLang) return "en";
+        /**
+         * Validate redirect URL to prevent open redirect vulnerabilities
+         * Only allows same-origin URLs or relative paths
+         * 
+         * @param {string} url - URL to validate
+         * @returns {boolean} true if URL is safe for redirect
+         */
+        function isValidRedirectUrl(url) {
+            if (!url) return false;
+            
+            try {
+                // Allow relative URLs (starting with /)
+                if (url.startsWith('/') && !url.startsWith('//')) {
+                    return true;
+                }
+                
+                // For absolute URLs, check if same origin
+                const parsed = new URL(url, window.location.origin);
+                return parsed.origin === window.location.origin;
+            } catch {
+                // Invalid URL format
+                return false;
+            }
+        }
 
-			// Extract base language code (first two chars before '-' or '_')
-			const baseLang = browserLang.toLowerCase().split(/[-_]/)[0];
+        /**
+         * Safely get CSRF token with guard for undefined csrfLoader
+         * @returns {string|null} CSRF token or null if not available
+         */
+        function safeGetCsrfToken() {
+            if (typeof window.getCsrfToken === 'function') {
+                return window.getCsrfToken();
+            }
+            return null;
+        }
 
-			// Return 'es' for Spanish, 'en' for everything else
-			return baseLang === "es" ? "es" : "en";
-		}
+        /**
+         * Safely ensure CSRF token is loaded
+         * @param {string} backendUrl - Backend URL
+         * @returns {Promise<void>}
+         */
+        async function safeEnsureCsrfToken(backendUrl) {
+            if (window.csrfLoader && typeof window.csrfLoader.ensureToken === 'function') {
+                await window.csrfLoader.ensureToken(backendUrl);
+            }
+        }
 
-		// Initialize all forms on the page
-		document.addEventListener("DOMContentLoaded", () => {
-			const forms = document.querySelectorAll('form[id^="email-form-"]');
+        /**
+         * Normalize browser language to backend-supported language code
+         * Backend only accepts 'en' or 'es'
+         *
+         * @param {string} browserLang - Browser language (e.g., 'en-US', 'es-ES', 'en', 'es')
+         * @returns {string} Normalized language code ('en' or 'es')
+         */
+        function normalizeLanguage(browserLang) {
+            if (!browserLang) return "en";
 
-			forms.forEach((form) => {
-				if (!(form instanceof HTMLFormElement)) return;
+            // Extract base language code (first two chars before '-' or '_')
+            const baseLang = browserLang.toLowerCase().split(/[-_]/)[0];
 
-				const emailInput = form.querySelector('input[type="email"]');
-				const submitButton = form.querySelector('button[type="submit"]');
-				const buttonText = submitButton?.querySelector(".button-text");
-				const statusMessage = form.parentElement?.querySelector(".status-message");
+            // Return 'es' for Spanish, 'en' for everything else
+            return baseLang === "es" ? "es" : "en";
+        }
 
-				if (!emailInput || !submitButton || !buttonText || !statusMessage) return;
+        // Initialize all forms on the page
+        document.addEventListener("DOMContentLoaded", () => {
+            const forms = document.querySelectorAll('form[id^="email-form-"]');
 
-				let retryInterval = null;
-				let retryAfter = 0;
+            forms.forEach((form) => {
+                if (!(form instanceof HTMLFormElement)) return;
 
-				// Lazy load CSRF token on first interaction with the form
-				// This avoids unnecessary requests on pages where the form is never used
-				const lazyLoadCsrf = () => {
-					const backendUrl = form.getAttribute("data-api-url")?.replace("/api/waitlist", "");
-					if (backendUrl) {
-						window.csrfLoader.ensureToken(backendUrl).catch((err) => {
-							console.warn("CSRF lazy load failed:", err);
-						});
-					}
-				};
+                const emailInput = form.querySelector('input[type="email"]');
+                const submitButton = form.querySelector('button[type="submit"]');
+                const buttonText = submitButton?.querySelector(".button-text");
+                const statusMessage = form.parentElement?.querySelector(".status-message");
+                const tosCheckbox = form.querySelector('input[name="tosAccepted"]');
+                const privacyCheckbox = form.querySelector('input[name="privacyAccepted"]');
 
-				// Initialize CSRF on first focus or input
-				emailInput.addEventListener("focus", lazyLoadCsrf, { once: true });
-				emailInput.addEventListener("input", lazyLoadCsrf, { once: true });
+                if (!emailInput || !submitButton || !buttonText || !statusMessage) return;
 
-				// Validate email on input
-				emailInput.addEventListener("input", () => {
-					const email = emailInput.value;
-					const isValid = EMAIL_REGEX.test(email);
-					emailInput.setAttribute("aria-invalid", isValid ? "false" : "true");
-					submitButton.disabled = !isValid || retryAfter > 0;
-				});
+                const submitText = buttonText.getAttribute("data-submit-text") || "Join";
+                const submittingText = buttonText.getAttribute("data-submitting-text") || "Submitting...";
+                const successActionType = form.getAttribute("data-success-action-type") || "SHOW_MESSAGE";
+                const redirectUrl = form.getAttribute("data-redirect-url") || "";
 
-				// Handle Enter key
-				emailInput.addEventListener("keydown", (e) => {
-					if (e.key === "Enter" && !submitButton.disabled) {
-						e.preventDefault();
-						form.dispatchEvent(new Event("submit"));
-					}
-				});
+                let retryInterval = null;
+                let retryAfter = 0;
 
-				// Show status message
-				const showMessage = (message, type) => {
-					statusMessage.textContent = message;
-					statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 ${
-						type === "success"
-							? "text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-950/30"
-							: type === "error"
-								? "text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/30"
-								: "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30"
-					}`;
-					statusMessage.classList.remove("hidden");
-				};
+                // Check if all required checkboxes are checked
+                const areRequiredCheckboxesChecked = () => {
+                    if (tosCheckbox && !tosCheckbox.checked) return false;
+                    if (privacyCheckbox && !privacyCheckbox.checked) return false;
+                    return true;
+                };
 
-				const hideMessage = () => {
-					statusMessage.classList.add("hidden");
-				};
+                // Validate form state (email + checkboxes)
+                const validateForm = () => {
+                    const email = emailInput.value;
+                    const isEmailValid = EMAIL_REGEX.test(email);
+                    const areCheckboxesValid = areRequiredCheckboxesChecked();
+                    submitButton.disabled = !isEmailValid || !areCheckboxesValid || retryAfter > 0;
+                };
 
-				// Start countdown timer
-				const startCountdown = (seconds) => {
-					retryAfter = seconds;
-					submitButton.disabled = true;
-					emailInput.disabled = true;
+                // Lazy load CSRF token on first interaction with the form
+                // This avoids unnecessary requests on pages where the form is never used
+                const lazyLoadCsrf = () => {
+                    const backendUrl = form.getAttribute("data-api-url")?.replace("/api/subscribers", "");
+                    if (backendUrl) {
+                        safeEnsureCsrfToken(backendUrl).catch((err) => {
+                            console.warn("CSRF lazy load failed:", err);
+                        });
+                    }
+                };
 
-					if (retryInterval) clearInterval(retryInterval);
+                // Initialize CSRF on first focus or input
+                emailInput.addEventListener("focus", lazyLoadCsrf, { once: true });
+                emailInput.addEventListener("input", lazyLoadCsrf, { once: true });
 
-					retryInterval = setInterval(() => {
-						retryAfter--;
-						buttonText.textContent = `${retryAfter}s`;
+                // Validate email and checkboxes on input
+                emailInput.addEventListener("input", () => {
+                    const email = emailInput.value;
+                    const isValid = EMAIL_REGEX.test(email);
+                    emailInput.setAttribute("aria-invalid", isValid ? "false" : "true");
+                    validateForm();
+                });
 
-						if (retryAfter <= 0) {
-							clearInterval(retryInterval);
-							retryInterval = null;
-							buttonText.textContent =
-								submitButton.getAttribute("data-original-text") || "Join";
-							submitButton.disabled = false;
-							emailInput.disabled = false;
-							hideMessage();
-						}
-					}, 1000);
-				};
+                // Validate on checkbox changes
+                if (tosCheckbox) {
+                    tosCheckbox.addEventListener("change", validateForm);
+                }
+                if (privacyCheckbox) {
+                    privacyCheckbox.addEventListener("change", validateForm);
+                }
 
-				// Handle form submission
-				form.addEventListener("submit", async (e) => {
-					e.preventDefault();
+                // Handle Enter key
+                emailInput.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" && !submitButton.disabled) {
+                        e.preventDefault();
+                        form.dispatchEvent(new Event("submit"));
+                    }
+                });
 
-					const email = emailInput.value.trim();
-					if (!EMAIL_REGEX.test(email) || submitButton.disabled) return;
+                // Show status message
+                const showMessage = (message, type) => {
+                    statusMessage.textContent = message;
+                    statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 ${
+                        type === "success"
+                            ? "text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-950/30"
+                            : type === "error"
+                                ? "text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/30"
+                                : "text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30"
+                    }`;
+                    statusMessage.classList.remove("hidden");
+                };
 
-					// Store original button text
-					const originalText = buttonText.textContent;
-					submitButton.setAttribute("data-original-text", originalText);
+                const hideMessage = () => {
+                    statusMessage.classList.add("hidden");
+                };
 
-					// Show loading state
-					buttonText.textContent = "...";
-					submitButton.disabled = true;
+                // Start countdown timer - accessible
+                const startCountdown = (seconds) => {
+                    retryAfter = seconds;
+                    submitButton.disabled = true;
+                    emailInput.disabled = true;
+                    emailInput.setAttribute("aria-disabled", "true");
+                    submitButton.setAttribute("aria-disabled", "true");
 
-					try {
-						const apiUrl = form.getAttribute("data-api-url");
-						const source = form.getAttribute("data-source");
+                    if (retryInterval) clearInterval(retryInterval);
 
-						// Ensure CSRF token is loaded before submitting
-						const backendUrl = apiUrl?.replace("/api/waitlist", "");
-						if (backendUrl) {
-							await window.csrfLoader.ensureToken(backendUrl);
-						}
+                    // Helper to format time remaining
+                    const formatTime = (s) => {
+                        const mins = Math.floor(s / 60);
+                        const secs = s % 60;
+                        if (mins > 0) {
+                            return `${mins}m ${secs}s`;
+                        }
+                        return `${secs}s`;
+                    };
 
-						// Get CSRF token from cookie and add to headers
-						const csrfToken = window.getCsrfToken();
-						const headers = {
-							"Content-Type": "application/json",
-							Accept: "application/vnd.api.v1+json",
-						};
+                    // Update status message with countdown
+                    const updateCountdownMessage = () => {
+                        const timeStr = formatTime(retryAfter);
+                        statusMessage.textContent = `Too many attempts. Please try again in ${timeStr}.`;
+                        statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30`;
+                        statusMessage.classList.remove("hidden");
+                    };
+
+                    updateCountdownMessage();
+                    buttonText.textContent = "Please wait...";
+
+                    retryInterval = setInterval(() => {
+                        retryAfter--;
+                        updateCountdownMessage();
+
+                        if (retryAfter <= 0) {
+                            clearInterval(retryInterval);
+                            retryInterval = null;
+                            buttonText.textContent = submitText;
+                            submitButton.disabled = false;
+                            emailInput.disabled = false;
+                            submitButton.removeAttribute("aria-disabled");
+                            emailInput.removeAttribute("aria-disabled");
+                            hideMessage();
+                            // Announce that form is ready again
+                            statusMessage.textContent = "Form is ready for submission";
+                            statusMessage.className = `status-message text-sm px-3 py-2 rounded-md transition-opacity duration-300 text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-950/30`;
+                            statusMessage.classList.remove("hidden");
+                            setTimeout(hideMessage, 3000);
+                        }
+                    }, 1000);
+                };
+
+                // Handle form submission
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const email = emailInput.value.trim();
+
+                    // Validate email format - provide feedback instead of silent return
+                    if (!EMAIL_REGEX.test(email)) {
+                        emailInput.setCustomValidity("Please enter a valid email address");
+                        emailInput.reportValidity();
+                        showMessage("Please enter a valid email address", "error");
+                        emailInput.focus();
+                        return;
+                    }
+
+                    // Clear any previous custom validity
+                    emailInput.setCustomValidity("");
+
+                    // Check if button is disabled (e.g., rate limiting)
+                    if (submitButton.disabled) {
+                        showMessage("Please wait before submitting again", "info");
+                        return;
+                    }
+
+                    // Store original button text
+                    submitButton.setAttribute("data-original-text", submitText);
+
+                    // Show loading state - accessible
+                    buttonText.textContent = submittingText;
+                    submitButton.disabled = true;
+                    submitButton.setAttribute("aria-busy", "true");
+                    submitButton.setAttribute("aria-label", "Submitting your subscription, please wait");
+
+                    try {
+                        const apiUrl = form.getAttribute("data-api-url");
+                        const source = form.getAttribute("data-source");
+                        const formIdValue = form.getAttribute("data-form-id");
+
+                        // Ensure CSRF token is loaded before submitting
+                        const backendUrl = apiUrl?.replace("/api/subscribers", "");
+                        if (backendUrl) {
+                            await safeEnsureCsrfToken(backendUrl);
+                        }
+
+                        // Get CSRF token from cookie and add to headers
+                        const csrfToken = safeGetCsrfToken();
+                        const headers = {
+                            "Content-Type": "application/json",
+                            Accept: "application/vnd.api.v1+json",
+                        };
 
 						// Add CSRF token header if available
 						if (csrfToken) {
 							headers["X-XSRF-TOKEN"] = csrfToken;
 						}
 
+						// Add workspace ID header for backward compatibility
+						const workspaceId = form.getAttribute("data-workspace-id");
+						if (workspaceId) {
+							headers["X-Workspace-Id"] = workspaceId;
+						}
+
 						// Normalize language from browser (e.g., 'en-US' -> 'en')
-						const normalizedLanguage = normalizeLanguage(navigator.language || "en");
+                        const normalizedLanguage = normalizeLanguage(navigator.language || "en");
 
-						const response = await fetch(apiUrl, {
-							method: "POST",
-							headers,
-							body: JSON.stringify({
-								email,
-								source,
-								language: normalizedLanguage
-							}),
-							credentials: "include",
-						});
+                        // Build request body with formId and optional checkbox values
+                        const requestBody = {
+                            email,
+                            source,
+                            language: normalizedLanguage,
+                            formId: formIdValue,
+                        };
 
-						if (response.ok) {
-							// Success
-							const data = await response.json();
-							const message =
-								successMessage ||
-								data.message ||
-								"Successfully joined the waitlist!";
-							showMessage(message, "success");
-							emailInput.value = "";
+                        if (tosCheckbox) {
+                            requestBody.tosAccepted = tosCheckbox.checked;
+                        }
+                        if (privacyCheckbox) {
+                            requestBody.privacyAccepted = privacyCheckbox.checked;
+                        }
 
-							// Store in localStorage
-							try {
-								localStorage.setItem("waitlist_email", email);
-							} catch {}
+                        const response = await fetch(apiUrl, {
+                            method: "POST",
+                            headers,
+                            body: JSON.stringify(requestBody),
+                            credentials: "include",
+                        });
 
-							// Auto-hide after configured timeout
-							setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
-						} else if (response.status === 429) {
-							// Rate limited
-							const retryAfterHeader = response.headers.get("Retry-After");
-							const retrySeconds = retryAfterHeader
-								? parseInt(retryAfterHeader, 10)
-								: 60;
+                        if (response.ok) {
+                            // Success
+                            const data = await response.json();
 
-							const message =
-								rateLimitMessage ||
-								`Too many requests. Please try again in ${retrySeconds} seconds.`;
-							showMessage(message, "info");
-							startCountdown(retrySeconds);
-						} else {
-							// Other errors
-							const errorData = await response.json().catch(() => ({}));
-							const message =
-								errorMessage ||
-								errorData.error?.message ||
-								errorData.message ||
-								"Failed to submit. Please try again.";
-							showMessage(message, "error");
+                            // Handle success action type - validate redirect URL to prevent XSS
+                            if (successActionType === "REDIRECT" && redirectUrl && isValidRedirectUrl(redirectUrl)) {
+                                window.location.href = redirectUrl;
+                                return;
+                            }
 
-							// Auto-hide after configured timeout
-							setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
-						}
-					} catch (err) {
-						console.error("Email submission error:", err);
-						const message =
-							errorMessage || "Network error. Please check your connection.";
-						showMessage(message, "error");
+                            // Default: SHOW_MESSAGE
+                            const message =
+                                form.getAttribute("data-success-message") ||
+                                data.message ||
+                                "Successfully subscribed!";
+                            showMessage(message, "success");
+                            emailInput.value = "";
 
-						// Auto-hide after configured timeout
-						setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
-					} finally {
-						if (retryAfter === 0) {
-							buttonText.textContent = originalText;
-							submitButton.disabled = false;
-						}
-					}
-				});
-			});
-		});
-	}
+                            // Reset checkboxes
+                            if (tosCheckbox) tosCheckbox.checked = false;
+                            if (privacyCheckbox) privacyCheckbox.checked = false;
+
+                            // Store in localStorage
+                            try {
+                                localStorage.setItem("waitlist_email", email);
+                            } catch {}
+
+                            // Auto-hide after configured timeout
+                            setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+                        } else if (response.status === 429) {
+                            // Rate limited
+                            const retryAfterHeader = response.headers.get("Retry-After");
+                            const retrySeconds = retryAfterHeader
+                                ? parseInt(retryAfterHeader, 10)
+                                : 60;
+
+                            const perFormRateLimitMessage = form.dataset.rateLimitMessage;
+                            const message =
+                                perFormRateLimitMessage ||
+                                `Too many requests. Please try again in ${retrySeconds} seconds.`;
+                            showMessage(message, "info");
+                            startCountdown(retrySeconds);
+                        } else {
+                            // Other errors
+                            const errorData = await response.json().catch(() => ({}));
+                            const perFormErrorMessage = form.dataset.errorMessage;
+                            const message =
+                                perFormErrorMessage ||
+                                errorData.error?.message ||
+                                errorData.message ||
+                                "Failed to submit. Please try again.";
+                            showMessage(message, "error");
+
+                            // Move focus back to input for error correction (WCAG 3.3.3)
+                            emailInput.focus();
+
+                            // Auto-hide after configured timeout
+                            setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+                        }
+                    } catch (err) {
+                        console.error("Email submission error:", err);
+                        const perFormErrorMessage = form.dataset.errorMessage;
+                        const message =
+                            perFormErrorMessage || "Network error. Please check your connection.";
+                        showMessage(message, "error");
+
+                        // Auto-hide after configured timeout
+                        setTimeout(hideMessage, MESSAGE_AUTO_HIDE_MS);
+                    } finally {
+                        if (retryAfter === 0) {
+                            buttonText.textContent = submitText;
+                            submitButton.disabled = false;
+                            submitButton.removeAttribute("aria-busy");
+                            submitButton.removeAttribute("aria-label");
+                            validateForm();
+                        }
+                    }
+                });
+            });
+        });
+    }
 </script>

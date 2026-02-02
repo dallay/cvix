@@ -65,13 +65,13 @@ application:
         refill-tokens: 100
         refill-duration: 1m
 
-    # Waitlist endpoints - permissive for dev
-    waitlist:
+    # Subscriber endpoints - permissive for dev
+    subscriber:
       enabled: true
       endpoints:
-        - /api/waitlist
+        - /api/subscribers
       limit:
-        name: waitlist-per-minute
+        name: subscriber-per-minute
         capacity: 100
         refill-tokens: 100
         refill-duration: 1m

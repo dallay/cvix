@@ -1,0 +1,83 @@
+meta {
+  name: delete-subscription-forms
+  type: http
+  seq: 3
+}
+
+delete {
+  url: https://localhost:8443/api/subscription-forms/{{formId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api.v1+json
+  Content-Type: application/json
+  X-XSRF-TOKEN: {{xsrfToken}}
+  X-Workspace-Id: {{workspaceId}}
+}
+
+
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
+
+docs {
+  ------------------------------------------------------------
+  REQUEST DOCUMENTATION
+  ------------------------------------------------------------
+  Title: Delete Subscription Form
+  
+  Endpoint
+  DELETE https://{host}/api/subscription-forms/{formId}
+  
+  Summary
+  Deletes an existing subscription form identified by its formId. This
+  operation removes the resource from the workspace. The operation is
+  idempotent — it is safe to call multiple times for the same formId.
+  
+  Path Parameters
+  - formId: string (uuid) — The id of the subscription form to delete. This
+    value must be provided in the URL path and should correspond to a resource
+    within the workspace identified by X-Workspace-Id.
+  
+  Authentication
+  - Inherited from collection (XSRF token required)
+  - Provide a valid CSRF token via header X-XSRF-TOKEN
+  - Include the workspace context via X-Workspace-Id
+  
+  Required Headers
+  - Accept: application/vnd.api.v1+json
+  - X-XSRF-TOKEN: <CSRF token>
+  - X-Workspace-Id: <workspace UUID>
+  
+  Request Body
+  - No request body is expected for DELETE. The endpoint declares body: none.
+  
+  Example Request (Bruno .bru)
+  delete {
+    url: https://localhost:8443/api/subscription-forms/{{formId}}
+    body: none
+    auth: inherit
+  }
+  
+  Responses
+  - 204 No Content: The subscription form was deleted successfully (preferred
+    for successful deletes).
+  - 200 OK: Optional success response with confirmation payload (some
+    implementations may return a confirmation object).
+  - 404 Not Found: The resource with provided formId does not exist.
+  - 401 / 403: Missing/invalid XSRF token or insufficient permissions.
+  - 429 Too Many Requests: Rate limit exceeded (check Retry-After header).
+  - 500 Internal Server Error: Unexpected server failure.
+  
+  Notes
+  - The operation is idempotent: repeated DELETE calls for the same formId
+    should not cause additional side-effects.
+  - Verify 404 behavior when deleting a non-existent resource to ensure the
+    API returns the expected status code and error payload.
+  
+  ------------------------------------------------------------
+}

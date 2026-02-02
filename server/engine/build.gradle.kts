@@ -50,6 +50,9 @@ dependencies {
     // Local dependencies
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
+    implementation(project(":shared:engagement:subscriber:domain"))
+    implementation(project(":shared:engagement:subscriber:application"))
+    implementation(project(":shared:engagement:subscriber:infrastructure"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -170,6 +173,8 @@ extra["springProfiles"] = computedSpringProfiles
 val springProfiles: String = extra["springProfiles"] as? String ?: "dev"
 tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     args("--spring.profiles.active=$springProfiles")
+    // Set working directory to project root so Spring Boot can find compose.yaml
+    workingDir = rootProject.projectDir
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
