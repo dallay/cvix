@@ -4,7 +4,6 @@ import com.cvix.common.domain.Service
 import com.cvix.common.domain.security.Hasher
 import com.cvix.common.domain.security.WorkspaceAuthorization
 import com.cvix.common.infrastructure.security.Sha256Hasher
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.mockk
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.json.JsonMapper
 
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackages = ["com.cvix"])
@@ -45,5 +45,5 @@ open class TestSubscriberApplication {
     open fun hasher(): Hasher = Sha256Hasher()
 
     @Bean
-    open fun objectMapper(): ObjectMapper = ObjectMapper()
+    open fun jsonMapper(): JsonMapper = JsonMapper()
 }

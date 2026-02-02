@@ -12,10 +12,10 @@ import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormRepository
 import com.cvix.form.domain.event.ActorId
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
-import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.Instant
 import java.util.*
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.json.JsonMapper
 
 @Service
 class FormDestroyer(
@@ -23,7 +23,7 @@ class FormDestroyer(
     private val formFinder: SubscriptionFormFinderRepository,
     eventPublisher: EventPublisher<SubscriptionFormDeletedEvent>,
     private val outboxRepository: OutboxRepository,
-    private val objectMapper: ObjectMapper,
+    private val jsonMapper: JsonMapper,
 ) {
     private val broadcaster = EventBroadcaster<SubscriptionFormDeletedEvent>()
 
@@ -72,7 +72,7 @@ class FormDestroyer(
             "formId" to event.formId.value.toString(),
             "workspaceId" to event.workspaceId.value.toString(),
         )
-        return objectMapper.writeValueAsString(payload)
+        return jsonMapper.writeValueAsString(payload)
     }
 
     companion object {

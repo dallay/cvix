@@ -9,7 +9,6 @@ import com.cvix.form.domain.SubscriptionFormFinderRepository
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.SubscriptionFormRepository
 import com.cvix.form.domain.exception.SubscriptionFormNotFoundException
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,15 +17,16 @@ import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import tools.jackson.databind.json.JsonMapper
 
 @UnitTest
 internal class UpdateSubscriberFormCommandHandlerTest {
     private val outboxRepository: OutboxRepository = mockk(relaxUnitFun = true)
-    private val objectMapper: ObjectMapper = mockk(relaxed = true)
+    private val jsonMapper: JsonMapper = mockk(relaxed = true)
     private val formRepository: SubscriptionFormRepository = mockk(relaxUnitFun = true)
     private val formFinder: SubscriptionFormFinderRepository = mockk()
     private val formUpdater: SubscriberFormUpdater =
-        SubscriberFormUpdater(formRepository, formFinder, outboxRepository, objectMapper)
+        SubscriberFormUpdater(formRepository, formFinder, outboxRepository, jsonMapper)
     private val workspaceAuthorization: WorkspaceAuthorization = mockk(relaxUnitFun = true)
     private val commandHandler =
         UpdateSubscriberFormCommandHandler(workspaceAuthorization, formUpdater)
