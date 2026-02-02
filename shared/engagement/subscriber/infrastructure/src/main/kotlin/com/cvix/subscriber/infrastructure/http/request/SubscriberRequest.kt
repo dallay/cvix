@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import java.util.UUID
 
 /**
  * Request body for creating or updating a subscriber.
@@ -14,6 +15,8 @@ import jakarta.validation.constraints.Size
  *                  Must be lowercase letters, numbers, or hyphens, 1-50 characters, and not blank.
  *                  Unknown values will be normalized to 'unknown'.
  * @property language User's preferred language. Must be 'en' or 'es', and not blank.
+ * @property formId ID of the form used for capture.
+ * @property metadata Additional metadata for the subscriber.
  */
 data class SubscriberRequest(
     @field:Email(message = "Email must be valid")
@@ -49,4 +52,17 @@ data class SubscriberRequest(
         required = true,
     )
     val language: String,
+
+    @field:Schema(
+        description = "ID of the form used for capture",
+        example = "550e8400-e29b-41d4-a716-446655440000",
+        required = false,
+    )
+    val formId: UUID? = null,
+
+    @field:Schema(
+        description = "Additional metadata for the subscriber",
+        required = false,
+    )
+    val metadata: Map<String, String> = emptyMap(),
 )

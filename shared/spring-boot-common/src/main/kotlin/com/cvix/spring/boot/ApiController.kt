@@ -10,10 +10,13 @@ import com.cvix.common.domain.bus.query.Response
 import com.cvix.config.ContextKeys.WORKSPACE_CONTEXT_KEY
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import java.net.URLEncoder
+import java.util.Locale
 import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
@@ -179,5 +182,22 @@ abstract class ApiController(
             "Invalid path variable. Only alphanumeric characters, underscores, and hyphens are allowed."
         }
         return HtmlUtils.htmlEscape(URLEncoder.encode(pathVariable, "UTF-8"))
+    }
+
+    /**
+     * Gets a localized message from the message source using the request's locale.
+     *
+     * @param key The message key to look up.
+     * @param request The HTTP request to extract the locale from.
+     * @param messageSource The message source to retrieve the message from.
+     * @return The localized message string.
+     */
+    protected fun getLocalizedMessage(
+        key: String,
+        request: ServerHttpRequest,
+        messageSource: MessageSource,
+    ): String {
+        val locale = request.headers.acceptLanguageAsLocales.firstOrNull() ?: Locale.ENGLISH
+        return messageSource.getMessage(key, null, locale)
     }
 }

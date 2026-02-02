@@ -1,0 +1,179 @@
+meta {
+  name: update-subscription-forms
+  type: http
+  seq: 2
+}
+
+put {
+  url: https://localhost:8443/api/subscription-forms/{{formId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api.v1+json
+  Content-Type: application/json
+  X-XSRF-TOKEN: {{xsrfToken}}
+  X-Workspace-Id: {{workspaceId}}
+}
+
+body:json {
+  {
+    "name": "Yuniel's Newsletter - Updated",
+    "description": "This is a test - Updated description",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email to confirm your subscription.",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter - Updated",
+      "subheaderText": "This is a test - Updated description",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "tosText": null,
+      "showPrivacyCheckbox": false,
+      "privacyText": null
+    }
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
+
+docs {
+  ------------------------------------------------------------
+  REQUEST DOCUMENTATION
+  ------------------------------------------------------------
+  Title: Update Subscription Form
+  
+  Endpoint
+  PUT https://{host}/api/subscription-forms/{formId}
+  
+  Summary
+  Updates (replaces) an existing subscription form. Use PUT for full replace
+  semantics. If partial updates are supported, document PATCH alternatively.
+  This operation is idempotent — applying the same payload multiple times has
+  the same effect as applying it once.
+  
+  Path Parameters
+  - formId: string (uuid) — The id of the subscription form to update. The body
+    "id" (if present) should match this path parameter.
+  
+  Authentication
+  - Inherited from collection (XSRF token required)
+  - Provide a valid CSRF token via header X-XSRF-TOKEN
+  - Include the workspace context via X-Workspace-Id
+  
+  Required Headers
+  - Accept: application/vnd.api.v1+json
+  - Content-Type: application/json
+  - X-XSRF-TOKEN: <CSRF token>
+  - X-Workspace-Id: <workspace UUID>
+  
+  Request Body (JSON)
+  The request body is a full resource representation organized into three sections:
+  settings, styling, and content. PUT requests replace the entire resource.
+  
+  Example Request Body:
+  {
+    "name": "Yuniel's Newsletter - Updated",
+    "description": "Updated description",
+    "workspaceId": "{{workspaceId}}",
+    "userId": "{{userId}}",
+    
+    "settings": {
+      "successActionType": "SHOW_MESSAGE",
+      "successMessage": "Success! Now check your email...",
+      "redirectUrl": null,
+      "confirmationRequired": true
+    },
+    
+    "styling": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "buttonColor": "#000000",
+      "buttonTextColor": "#FFFFFF",
+      "inputTextColor": "#000000",
+      "borderColor": "#000000",
+      "borderStyle": "solid",
+      "shadow": "none",
+      "borderThickness": 1,
+      "width": "100%",
+      "height": "auto",
+      "horizontalAlignment": "center",
+      "verticalAlignment": "center",
+      "padding": 40,
+      "gap": 24,
+      "cornerRadius": 12,
+      "pageBackgroundColor": "#FFFFFF"
+    },
+    
+    "content": {
+      "showHeader": true,
+      "showSubheader": true,
+      "headerTitle": "Yuniel's Newsletter",
+      "subheaderText": "This is a test",
+      "inputPlaceholder": "Enter your email",
+      "submitButtonText": "Subscribe",
+      "submittingButtonText": "Subscribing...",
+      "showTosCheckbox": false,
+      "showPrivacyCheckbox": false
+    }
+  }
+  
+  Responses
+  - 200 OK: The subscription form was updated successfully and returns the
+    current representation.
+  - 204 No Content: Optional success with no body.
+  - 404 Not Found: No resource exists with provided formId.
+  - 400 Bad Request: Malformed payload or mismatched id.
+  - 401 / 403: Missing/invalid XSRF token or insufficient permissions.
+  - 422 Unprocessable Entity: Semantic validation failed.
+  - 429 Too Many Requests: Rate limit exceeded.
+  - 500 Internal Server Error: Unexpected server failure.
+  
+  Validation Rules & Notes
+  - X-Workspace-Id header must be provided and be a valid UUID. The workspaceId
+    in the body should match the X-Workspace-Id header.
+  - If body contains "id", it should equal the path {formId}; otherwise the
+    server may reject the request (400).
+  - PUT is idempotent; repeated identical requests should not create duplicates.
+  
+  Bruno Example
+  put {
+    url: https://localhost:8443/api/subscription-forms/{{formId}}
+    body: json
+    auth: inherit
+  }
+  
+  ------------------------------------------------------------
+}

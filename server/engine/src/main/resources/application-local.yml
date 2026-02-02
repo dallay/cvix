@@ -1,0 +1,12 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+
+server:
+  ssl:
+    enabled: false
+
+spring.profiles.include:
+  - dev
+  - api-docs

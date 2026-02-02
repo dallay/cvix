@@ -57,7 +57,7 @@ class WorkspaceAuthorizationServiceTest {
         val invalidWorkspaceId = "invalid-uuid"
         val invalidUserId = "invalid-uuid"
 
-        assertThrows<IllegalArgumentException> {
+        assertThrows<WorkspaceAuthorizationException> {
             workspaceAuthorizationService.ensureAccess(invalidWorkspaceId, invalidUserId)
         }
     }

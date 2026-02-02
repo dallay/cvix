@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-cvix-subscription-forms
+      author: system
+      context: seed
+      comment: Seed subscription forms for CVIX workspace - Light/Dark modes in English and Spanish
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: subscription_forms
+      changes:
+        - loadData:
+            file: db/changelog/data/seed/cvix_subscription_forms.csv
+            separator: ","
+            tableName: subscription_forms
+            usePreparedStatements: false
+            columns:
+              - column: {name: id, type: uuid}
+              - column: {name: name, type: string}
+              - column: {name: description, type: string}
+              - column: {name: header, type: string}
+              - column: {name: input_placeholder, type: string}
+              - column: {name: button_text, type: string}
+              - column: {name: button_color, type: string}
+              - column: {name: background_color, type: string}
+              - column: {name: text_color, type: string}
+              - column: {name: button_text_color, type: string}
+              - column: {name: status, type: string}
+              - column: {name: workspace_id, type: uuid}
+              - column: {name: created_by, type: string}
+              - column: {name: created_at, type: datetime}
+              - column: {name: updated_by, type: string}
+              - column: {name: updated_at, type: datetime}
+              - column: {name: confirmation_required, type: boolean}
+              - column: {name: success_action_type, type: string}
+              - column: {name: success_message, type: string}
+              - column: {name: redirect_url, type: string}
+              - column: {name: border_color, type: string}
+              - column: {name: border_style, type: string}
+              - column: {name: shadow, type: string}
+              - column: {name: border_thickness, type: numeric}
+              - column: {name: form_width, type: string}
+              - column: {name: form_height, type: string}
+              - column: {name: horizontal_alignment, type: string}
+              - column: {name: vertical_alignment, type: string}
+              - column: {name: padding, type: numeric}
+              - column: {name: gap, type: numeric}
+              - column: {name: corner_radius, type: numeric}
+              - column: {name: show_header, type: boolean}
+              - column: {name: show_subheader, type: boolean}
+              - column: {name: header_title, type: string}
+              - column: {name: subheader_text, type: string}
+              - column: {name: submit_button_text, type: string}
+              - column: {name: submitting_button_text, type: string}
+              - column: {name: show_tos_checkbox, type: boolean}
+              - column: {name: tos_text, type: string}
+              - column: {name: show_privacy_checkbox, type: boolean}
+              - column: {name: privacy_text, type: string}
+              - column: {name: page_background_color, type: string}
+              - column: {name: input_text_color, type: string}
+
+      rollback:
+        - delete:
+            tableName: subscription_forms
+            where: "workspace_id = '44130a13-029f-352a-a6a2-b318640aecec' AND name LIKE 'CVIX Newsletter%'"
