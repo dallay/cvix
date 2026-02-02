@@ -87,8 +87,8 @@ jobs:
             if [ "${{ inputs.dry_run }}" = "true" ]; then
               DRY="--dry-run"
             fi
-            # Use the semantic-release CLI to match previous behavior
-            npx -y semantic-release $DRY --branches '["main",{"name":"beta","prerelease":true},{"name":"alpha","prerelease":true}]'
+            # Use the semantic-release CLI - branches are configured in .releaserc.json
+            npx -y semantic-release $DRY
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           GIT_AUTHOR_NAME: cvix-release-bot[bot]
