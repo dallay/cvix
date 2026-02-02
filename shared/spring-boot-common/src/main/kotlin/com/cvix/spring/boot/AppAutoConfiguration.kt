@@ -3,6 +3,7 @@ package com.cvix.spring.boot
 import com.cvix.common.domain.bus.Mediator
 import com.cvix.common.domain.bus.MediatorBuilder
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import tools.jackson.databind.json.JsonMapper
@@ -24,6 +25,7 @@ class AppAutoConfiguration {
      * This can be overridden by the main application if needed.
      */
     @Bean
+    @ConditionalOnMissingBean(JsonMapper::class)
     fun jsonMapper(): JsonMapper =
         JsonMapper.builder()
             .addModule(

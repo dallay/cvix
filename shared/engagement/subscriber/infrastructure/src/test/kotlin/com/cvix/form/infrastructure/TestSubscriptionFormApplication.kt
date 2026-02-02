@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RestController
-import tools.jackson.databind.json.JsonMapper
 
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackages = ["com.cvix"])
@@ -55,7 +54,4 @@ open class TestSubscriptionFormApplication {
 
     @Bean
     fun hasher(): Hasher = Sha256Hasher()
-
-    @Bean
-    fun jsonMapper(): JsonMapper = JsonMapper()
 }
