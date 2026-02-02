@@ -18,7 +18,7 @@ internal class ArchTest {
         "ratelimit",
         "resume",
         "subscription",
-        "contact",
+        // "contact" has been extracted to server/modules/contact
     )
 
     @BeforeEach
