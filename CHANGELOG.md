@@ -1,3 +1,28 @@
+## [3.13.0](https://github.com/dallay/cvix/compare/v3.12.2...v3.13.0) (2026-02-02)
+
+### ✨ Features
+
+* Enhance Subscriber Service and Standardize API Documentation ([#544](https://github.com/dallay/cvix/issues/544)) ([30ca2d2](https://github.com/dallay/cvix/commit/30ca2d2d5abf5b7c0350c4f73d63875c6ecf0e8e))
+* integrate JsonMapper for improved JSON handling and update dependencies ([#557](https://github.com/dallay/cvix/issues/557)) ([d01988d](https://github.com/dallay/cvix/commit/d01988dfb2a0d06e86f3bf929522818511dfbff8))
+* subscriber forms  ([#549](https://github.com/dallay/cvix/issues/549)) ([e371baf](https://github.com/dallay/cvix/commit/e371baf0ccdcbbea8ef797bf5b33cc5722ad2084)), closes [#548](https://github.com/dallay/cvix/issues/548)
+
+### 🐛 Bug Fixes
+
+* disable success comment for GitHub releases ([8c33c46](https://github.com/dallay/cvix/commit/8c33c46820034922f8420183f89d47d9e0c7e1bb))
+
+### 🚀 Performance Improvements
+
+* add user email index ([#558](https://github.com/dallay/cvix/issues/558)) ([50c0246](https://github.com/dallay/cvix/commit/50c0246d1acc7320d1f74d65fa5bbdfe6314bced))
+
+### ♻️ Refactors
+
+* clean up configuration, remove unused code, and improve property naming ([#545](https://github.com/dallay/cvix/issues/545)) ([21cc372](https://github.com/dallay/cvix/commit/21cc37287f1338139ef2a54f0970b163ed663b34))
+* update release.yml to simplify branch configuration for semantic-release ([e166cc8](https://github.com/dallay/cvix/commit/e166cc8a1be798db78ece5e52ae6795640ea02d0))
+
+### 📝 Documentation
+
+* subscription service spec feature ([#539](https://github.com/dallay/cvix/issues/539)) ([35854f8](https://github.com/dallay/cvix/commit/35854f889f214043157830ae52730a26cdf2809f))
+
 ## [3.12.2](https://github.com/dallay/cvix/compare/v3.12.1...v3.12.2) (2026-01-16)
 
 ### 🚀 Performance Improvements

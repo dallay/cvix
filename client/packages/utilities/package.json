@@ -1,6 +1,6 @@
 {
 	"name": "@cvix/utilities",
-	"version": "3.12.2",
+	"version": "3.13.0",
 	"description": "A collection of utilities for the ProFileTailors",
 	"license": "MIT",
 	"type": "module",
