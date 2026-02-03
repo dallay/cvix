@@ -15,10 +15,10 @@ internal class ArchTest {
         "users",
         "authentication",
         "workspace",
-        "ratelimit",
         "resume",
         "subscription",
         // "contact" has been extracted to server/modules/contact
+        // "ratelimit" has been extracted to shared/ratelimit
     )
 
     @BeforeEach
