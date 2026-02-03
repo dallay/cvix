@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":server:modules:contact:domain"))
+    api(project(":server:modules:contact:domain"))
     implementation(project(":shared:common"))
 
     // SLF4J is provided by Spring Boot through shared:common
