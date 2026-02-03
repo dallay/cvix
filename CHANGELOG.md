@@ -1,3 +1,9 @@
+## [3.14.0](https://github.com/dallay/cvix/compare/v3.13.1...v3.14.0) (2026-02-03)
+
+### ✨ Features
+
+* add generation and skill documentation for Vitest integration ([abf87b3](https://github.com/dallay/cvix/commit/abf87b3b87424d02fd1bc8f9b5c75bc583c26c8f))
+
 ## [3.13.1](https://github.com/dallay/cvix/compare/v3.13.0...v3.13.1) (2026-02-03)
 
 ### ♻️ Refactors
