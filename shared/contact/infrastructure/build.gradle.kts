@@ -10,8 +10,8 @@ dependencies {
     implementation(springBootBom)
     implementation(jacksonBom)
 
-    implementation(project(":server:modules:contact:domain"))
-    implementation(project(":server:modules:contact:application"))
+    implementation(project(":shared:contact:domain"))
+    implementation(project(":shared:contact:application"))
     implementation(project(":shared:common"))
     implementation(project(":shared:spring-boot-common"))
 

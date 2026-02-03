@@ -55,7 +55,7 @@ dependencies {
     implementation(project(":shared:engagement:subscriber:infrastructure"))
 
     // Server modules - Plug and play modules
-    implementation(project(":server:modules:contact"))
+    implementation(project(":shared:contact"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
