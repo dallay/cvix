@@ -24,9 +24,10 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
     all {
-        // Security: Force AssertJ 3.27.7 to address CVE-2026-24400
-        // This ensures all transitive dependencies use the patched version
-        resolutionStrategy.force("org.assertj:assertj-core:3.27.7")
+        // Security: Force AssertJ to patched version to address CVE-2026-24400
+        // This ensures all transitive dependencies use the secure version from the catalog
+        val assertjVersion = libs.versions.assertj.get()
+        resolutionStrategy.force("org.assertj:assertj-core:$assertjVersion")
     }
 }
 
