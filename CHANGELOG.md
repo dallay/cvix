@@ -1,3 +1,9 @@
+## [3.13.1](https://github.com/dallay/cvix/compare/v3.13.0...v3.13.1) (2026-02-03)
+
+### ♻️ Refactors
+
+* extract contact module ([#559](https://github.com/dallay/cvix/issues/559)) ([cf15eb2](https://github.com/dallay/cvix/commit/cf15eb23ef94fd570ddad03028907f2654746134))
+
 ## [3.13.0](https://github.com/dallay/cvix/compare/v3.12.2...v3.13.0) (2026-02-02)
 
 ### ✨ Features
