@@ -29,6 +29,7 @@ r2dbc-postgresql = "1.0.7.RELEASE"
 archunit = "1.4.1"
 pdfbox = "3.0.6"
 kotlinx-coroutines = "1.10.2"
+assertj = "3.27.7"  # Security: Pinned to 3.27.7 for CVE-2026-24400
 
 [libraries]
 # Gradle Plugins
@@ -111,7 +112,7 @@ reactor-test = { module = "io.projectreactor:reactor-test", version = "3.8.0" }
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
 mockk = { module = "io.mockk:mockk", version = "1.14.6" }
 faker = { module = "net.datafaker:datafaker", version = "2.5.3" }
-assertj = { module ="org.assertj:assertj-core", version = "3.27.6" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }  # Security: Pinned to 3.27.7 for CVE-2026-24400
 kotest-assertions-core-jvm = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
 kotest-assertions-json = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }

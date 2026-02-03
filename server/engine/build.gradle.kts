@@ -23,6 +23,12 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    all {
+        // Security: Force AssertJ to patched version to address CVE-2026-24400
+        // This ensures all transitive dependencies use the secure version from the catalog
+        val assertjVersion = libs.versions.assertj.get()
+        resolutionStrategy.force("org.assertj:assertj-core:$assertjVersion")
+    }
 }
 
 repositories {
@@ -53,6 +59,9 @@ dependencies {
     implementation(project(":shared:engagement:subscriber:domain"))
     implementation(project(":shared:engagement:subscriber:application"))
     implementation(project(":shared:engagement:subscriber:infrastructure"))
+
+    // Server modules - Plug and play modules
+    implementation(project(":server:modules:contact"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
