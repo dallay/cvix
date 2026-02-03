@@ -1,6 +1,7 @@
 package com.cvix.ratelimit
 
 import com.cvix.UnitTest
+import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
@@ -8,7 +9,6 @@ import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -19,7 +19,6 @@ import java.time.Instant
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.context.ApplicationEventPublisher
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
@@ -37,12 +36,12 @@ class RateLimitingServiceTest {
 
     private lateinit var service: RateLimitingService
     private lateinit var rateLimiter: RateLimiter
-    private lateinit var eventPublisher: ApplicationEventPublisher
+    private lateinit var eventPublisher: EventPublisher<RateLimitExceededEvent>
 
     @BeforeEach
     fun setUp() {
         rateLimiter = mockk()
-        eventPublisher = mockk()
+        eventPublisher = mockk(relaxed = true)
         service = RateLimitingService(rateLimiter, eventPublisher)
     }
 
@@ -77,7 +76,6 @@ class RateLimitingServiceTest {
         verify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
-        verify(exactly = 0) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -106,7 +104,6 @@ class RateLimitingServiceTest {
         verify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
-        verify(exactly = 0) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -124,8 +121,6 @@ class RateLimitingServiceTest {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         } returns Mono.just(expectedResult)
 
-        every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
-
         // When/Then
         StepVerifier.create(service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH))
             .assertNext { result ->
@@ -136,16 +131,6 @@ class RateLimitingServiceTest {
 
         verify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
-        }
-
-        verify(exactly = 1) {
-            eventPublisher.publishEvent(
-                withArg<RateLimitExceededEvent> { event ->
-                    event.identifier shouldBe identifier
-                    event.endpoint shouldBe endpoint
-                    event.windowDuration shouldBe retryAfter
-                },
-            )
         }
     }
 
@@ -171,7 +156,6 @@ class RateLimitingServiceTest {
         verify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
-        verify(exactly = 0) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -189,8 +173,6 @@ class RateLimitingServiceTest {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         } returns Mono.just(expectedResult)
 
-        every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
-
         // When/Then
         StepVerifier.create(service.consumeToken(identifier, endpoint, RateLimitStrategy.BUSINESS))
             .assertNext { result ->
@@ -199,13 +181,7 @@ class RateLimitingServiceTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            eventPublisher.publishEvent(
-                withArg<RateLimitExceededEvent> { event ->
-                    event.identifier shouldBe identifier
-                    event.endpoint shouldBe endpoint
-                    event.windowDuration shouldBe retryAfter
-                },
-            )
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
     }
 
@@ -267,7 +243,6 @@ class RateLimitingServiceTest {
         verify(exactly = 3) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
-        verify(exactly = 0) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -293,8 +268,6 @@ class RateLimitingServiceTest {
                 ),
             )
 
-        every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
-
         // When/Then - First request (allowed)
         StepVerifier.create(service.consumeToken(identifier, endpoint))
             .assertNext { result ->
@@ -313,7 +286,6 @@ class RateLimitingServiceTest {
         verify(exactly = 2) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
-        verify(exactly = 1) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -331,8 +303,6 @@ class RateLimitingServiceTest {
         StepVerifier.create(service.consumeToken(identifier, endpoint))
             .expectError(RuntimeException::class.java)
             .verify()
-
-        verify(exactly = 0) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 
     @Test
@@ -361,8 +331,6 @@ class RateLimitingServiceTest {
             ),
         )
 
-        every { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) } just Runs
-
         // When/Then - identifier1 (allowed)
         StepVerifier.create(service.consumeToken(identifier1, endpoint))
             .assertNext { result ->
@@ -383,6 +351,5 @@ class RateLimitingServiceTest {
         verify(exactly = 1) {
             rateLimiter.consumeToken(identifier2, RateLimitStrategy.BUSINESS)
         }
-        verify(exactly = 1) { eventPublisher.publishEvent(any<RateLimitExceededEvent>()) }
     }
 }

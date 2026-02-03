@@ -16,6 +16,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.assertj)
+    testImplementation(libs.bundles.kotest)
     testImplementation(libs.faker)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

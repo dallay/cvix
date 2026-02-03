@@ -1,7 +1,6 @@
 package com.cvix.ratelimit
 
 import com.cvix.UnitTest
-
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
