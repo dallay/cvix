@@ -1,3 +1,9 @@
+## [3.14.1](https://github.com/dallay/cvix/compare/v3.14.0...v3.14.1) (2026-02-03)
+
+### 🐛 Bug Fixes
+
+* format registry.json for consistent indentation ([34e4623](https://github.com/dallay/cvix/commit/34e4623c0c39b8563a030b4c5380b703b8dcdce7))
+
 ## [3.14.0](https://github.com/dallay/cvix/compare/v3.13.1...v3.14.0) (2026-02-03)
 
 ### ✨ Features
