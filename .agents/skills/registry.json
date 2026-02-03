@@ -1,16 +1,16 @@
 {
-  "schemaVersion": 1,
-  "last_updated": "2026-02-03T12:11:30.844366+00:00",
-  "skills": {
-    "vitest": {
-      "name": "vitest",
-      "version": null,
-      "description": "Vitest fast unit testing framework powered by Vite with Jest-compatible API. Use when writing tests, mocking, configuring coverage, or working with test filtering and fixtures.",
-      "provider": null,
-      "source": "/var/folders/zz/d4kl1hfj1j15nxm43d24px300000gn/T/.tmpzGawgT",
-      "installedAt": "2026-02-03T12:11:30.844358+00:00",
-      "files": null,
-      "manifestHash": null
-    }
-  }
+	"schemaVersion": 1,
+	"last_updated": "2026-02-03T12:11:30.844366+00:00",
+	"skills": {
+		"vitest": {
+			"name": "vitest",
+			"version": null,
+			"description": "Vitest fast unit testing framework powered by Vite with Jest-compatible API. Use when writing tests, mocking, configuring coverage, or working with test filtering and fixtures.",
+			"provider": null,
+			"source": "/var/folders/zz/d4kl1hfj1j15nxm43d24px300000gn/T/.tmpzGawgT",
+			"installedAt": "2026-02-03T12:11:30.844358+00:00",
+			"files": null,
+			"manifestHash": null
+		}
+	}
 }
