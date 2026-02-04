@@ -278,6 +278,48 @@ internal class RateLimitingFilterIpExtractionTest {
     }
 
     @Test
+    fun `should allow bracket-enclosed IPv6 in X-Forwarded-For`() {
+        // Given - Bracket-enclosed IPv6 address (common in some proxy configurations)
+        val rawIp = "[2001:db8::1]"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", rawIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // Expected: brackets removed by sanitization
+        val expectedIdentifier = "IP:2001:db8::1"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
     fun `should allow valid IPv6 addresses in X-Forwarded-For header`() {
         // Given - Valid IPv6 address
         val ipv6Address = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"

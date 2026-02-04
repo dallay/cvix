@@ -8,6 +8,7 @@ import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
 import java.time.Duration
 import java.time.Instant
+import java.security.MessageDigest
 
 /**
  * Application service for handling rate limiting logic.
@@ -52,11 +53,25 @@ class RateLimitingService(
             try {
                 publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
             } catch (e: Exception) {
-                logger.error("Failed to publish rate limit exceeded event for identifier: {}", identifier, e)
+                val hashedId = hashIdentifier(identifier)
+                logger.error("Failed to publish rate limit exceeded event for identifier: {} (hashed)", hashedId, e)
                 // We don't rethrow to ensure the Denied result is still returned to the caller
             }
         }
         return result
+    }
+
+    /**
+     * Creates a non-reversible hash of the identifier for safe logging of PII.
+     */
+    private fun hashIdentifier(identifier: String): String {
+        return try {
+            val digest = MessageDigest.getInstance("SHA-256")
+            val hashBytes = digest.digest(identifier.toByteArray())
+            hashBytes.joinToString("") { "%02x".format(it) }.take(8) + "..."
+        } catch (e: Exception) {
+            "unknown-id-hash-failed"
+        }
     }
 
     private suspend fun publishRateLimitExceededEvent(
