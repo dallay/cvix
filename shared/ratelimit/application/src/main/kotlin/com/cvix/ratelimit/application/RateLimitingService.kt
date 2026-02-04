@@ -6,9 +6,9 @@ import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
+import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
-import java.security.MessageDigest
 
 /**
  * Application service for handling rate limiting logic.
@@ -68,8 +68,9 @@ class RateLimitingService(
         return try {
             val digest = MessageDigest.getInstance("SHA-256")
             val hashBytes = digest.digest(identifier.toByteArray())
-            hashBytes.joinToString("") { "%02x".format(it) }.take(8) + "..."
+            hashBytes.joinToString("") { "%02x".format(it) }.take(HASH_LOG_LENGTH) + "..."
         } catch (e: Exception) {
+            logger.warn("Failed to hash identifier for safe logging", e)
             "unknown-id-hash-failed"
         }
     }
@@ -90,5 +91,9 @@ class RateLimitingService(
             resetTime = Instant.now().plus(retryAfter),
         )
         eventPublisher.publish(event)
+    }
+
+    companion object {
+        private const val HASH_LOG_LENGTH = 8
     }
 }
