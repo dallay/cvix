@@ -15,8 +15,35 @@
 # VARIABLES
 # ------------------------------------------------------------------------------------
 
-# Environment variables
-SHELL := /bin/bash
+# Operating System Detection
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+else
+    DETECTED_OS := $(shell uname -s 2>/dev/null || echo Unknown)
+endif
+
+# Platform-specific configurations
+ifeq ($(DETECTED_OS),Windows)
+    # Try to find bash.exe in the PATH
+    SHELL_PATH := $(firstword $(shell where bash.exe 2>NUL))
+    ifeq ($(SHELL_PATH),)
+        SHELL := cmd.exe
+        GRADLEW := gradlew.bat
+        DEV_NULL := NUL
+        MKDIR_P := mkdir
+    else
+        SHELL := $(SHELL_PATH)
+        GRADLEW := ./gradlew
+        DEV_NULL := /dev/null
+        MKDIR_P := mkdir -p
+    endif
+else
+    SHELL := /bin/bash
+    GRADLEW := ./gradlew
+    DEV_NULL := /dev/null
+    MKDIR_P := mkdir -p
+endif
+
 PNPM := pnpm
 
 # Project specific variables
@@ -61,7 +88,7 @@ update-deps:
 
 # Prepares the local developer environment (.env, symlinks, tooling checks).
 prepare-env:
-	@bash ./scripts/prepare-env.sh
+	@$(SHELL) ./scripts/prepare-env.sh
 
 # ------------------------------------------------------------------------------------
 # DEVELOPMENT
@@ -73,11 +100,11 @@ prepare:
 
 # Checks the project's agent configuration synchronization.
 agents-check:
-	@./scripts/sync-agents.sh --dry-run
+	@$(SHELL) ./scripts/sync-agents.sh --dry-run
 
 # Applies the project's agent configurations (creates symlinks).
 agents-sync:
-	@./scripts/sync-agents.sh
+	@$(SHELL) ./scripts/sync-agents.sh
 
 # Runs all applications in development mode.
 dev:
@@ -109,7 +136,7 @@ dev-subscribe:
 
 # Generate local development SSL certificates (interactive; uses mkcert and openssl)
 ssl-cert:
-	@bash ./scripts/generate-ssl-certificate.sh
+	@$(SHELL) ./scripts/generate-ssl-certificate.sh
 
 # ------------------------------------------------------------------------------------
 # DOCKER IMAGE BUILDS (BACKEND & FRONTEND)
@@ -151,15 +178,15 @@ docker-build-all: docker-build-backend docker-build-marketing docker-build-webap
 # Usage: make docker-clean [TAG=yourtag]
 docker-clean:
 	@echo "Removing Docker images with tag '$(TAG)'..."
-	@docker rmi -f cvix-engine:$(TAG) 2>/dev/null || true
-	@docker rmi -f cvix-webapp:$(TAG) 2>/dev/null || true
-	@docker rmi -f cvix-marketing:$(TAG) 2>/dev/null || true
+	@docker rmi -f cvix-engine:$(TAG) 2>$(DEV_NULL) || true
+	@docker rmi -f cvix-webapp:$(TAG) 2>$(DEV_NULL) || true
+	@docker rmi -f cvix-marketing:$(TAG) 2>$(DEV_NULL) || true
 	@echo "✅ Docker images with tag '$(TAG)' removed"
 
 # Verifies Docker containers are running as non-root users
 # Tests that all frontend containers properly run as non-root user
 docker-verify-nonroot:
-	@bash ./scripts/verify-nonroot-docker.sh
+	@$(SHELL) ./scripts/verify-nonroot-docker.sh
 
 # ------------------------------------------------------------------------------------
 # BUILD
@@ -233,7 +260,7 @@ check:
 
 # Verifies Docker secrets synchronization between entrypoint and compose files.
 verify-secrets:
-	@./scripts/verify-secrets-sync.sh
+	@$(SHELL) ./scripts/verify-secrets-sync.sh
 
 # ------------------------------------------------------------------------------------
 # CLEAN
@@ -243,29 +270,32 @@ verify-secrets:
 clean:
 	@$(PNPM) clean
 
+# Cleans both frontend and backend.
+clean-all: clean backend-clean
+
 # ------------------------------------------------------------------------------------
 # BACKEND
 # ------------------------------------------------------------------------------------
 
 # Builds the backend.
 backend-build:
-	@./gradlew build
+	@$(GRADLEW) build
 
 # Runs the backend.
 backend-run:
-	@./gradlew bootRun
+	@$(GRADLEW) bootRun
 
 # Runs the backend tests.
 backend-test:
-	@./gradlew test
+	@$(GRADLEW) test
 
 # Cleans the backend.
 backend-clean:
-	@./gradlew clean
+	@$(GRADLEW) clean
 
 # Cleans up test containers left running from Testcontainers.
 cleanup-test-containers:
-	@./scripts/cleanup-test-containers.sh
+	@$(SHELL) ./scripts/cleanup-test-containers.sh
 
 # ------------------------------------------------------------------------------------
 # APPLICATION LIFECYCLE
@@ -305,7 +335,7 @@ define run_verified_step
 	@echo ""
 	@echo "⏳ Step $(1): $(2)..."
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@mkdir -p $(LOG_DIR)
+	@$(MKDIR_P) $(LOG_DIR)
 	@$(3) > $(LOG_DIR)/$(4).log 2>&1 && echo "✅ $(2): PASSED" || (echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log for details"; exit 1)
 endef
 
@@ -313,53 +343,13 @@ endef
 # Usage: $(call verify_step, step_num, description, command, log_name)
 define verify_step
 	@echo "⏳ [$(1)/10] $(2)..." && \
-	mkdir -p $(LOG_DIR) && \
+	$(MKDIR_P) $(LOG_DIR) && \
 	$(3) > $(LOG_DIR)/$(4).log 2>&1 && \
 	echo "✅ $(2): PASSED" || \
 	(echo "❌ $(2): FAILED. See $(LOG_DIR)/$(4).log"; exit 1)
 endef
 
 # Individual verification targets (for parallel execution)
-.PHONY: _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml
-.PHONY: _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
-
-_verify-frontend-build:
-	$(call verify_step,1,Building frontend applications,$(PNPM) build,pnpm-build)
-
-_verify-backend-build:
-	$(call verify_step,2,Building backend,./gradlew --no-daemon assemble < /dev/null,backend-build)
-
-_verify-frontend-check:
-	$(call verify_step,3,Running frontend checks (Biome),$(PNPM) check,frontend-check)
-
-_verify-backend-check:
-	$(call verify_step,4,Running backend checks (Detekt),./gradlew --no-daemon detektAll < /dev/null,backend-check)
-
-_verify-markdown:
-	$(call verify_step,5,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
-
-_verify-yaml:
-	@echo "⏳ [6/10] Running YAML lint..." && \
-	mkdir -p $(LOG_DIR) && \
-	if command -v yamllint >/dev/null 2>&1; then \
-		yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && \
-		echo "✅ YAML lint: PASSED" || \
-		(echo "❌ YAML lint: FAILED. See $(LOG_DIR)/yaml-lint.log"; exit 1); \
-	else \
-		echo "⚠️  YAML lint: SKIPPED (yamllint not installed)"; \
-	fi
-
-_verify-secrets:
-	$(call verify_step,7,Checking secrets synchronization,./scripts/check-secrets.sh,secrets-check)
-
-_verify-frontend-tests:
-	$(call verify_step,8,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
-
-_verify-backend-tests:
-	$(call verify_step,9,Running backend tests,$(TIMEOUT_600) ./gradlew --no-daemon test < /dev/null,backend-tests)
-
-_verify-e2e-tests:
-	$(call verify_step,10,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
 
 # Verifies the entire project with all checks, lints, and tests
 # Runs checks in parallel groups for optimal performance
@@ -377,17 +367,12 @@ verify-all:
 	@$(MAKE) -j2 _verify-frontend-build _verify-backend-build || exit 1
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 2: Static Analysis & Linting (Parallel)"
+	@echo "Phase 2: Static Analysis, Security & Linting (Parallel)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@$(MAKE) -j4 _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml || exit 1
+	@$(MAKE) -j5 _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-secrets || exit 1
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 3: Security & Configuration Checks"
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@$(MAKE) _verify-secrets || exit 1
-	@echo ""
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "Phase 4: Testing (Parallel)"
+	@echo "Phase 3: Testing (Parallel)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@$(MAKE) -j3 _verify-frontend-tests _verify-backend-tests _verify-e2e-tests || exit 1
 	@echo ""
@@ -412,4 +397,4 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets dev-subscribe build-subscribe preview-subscribe
+.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean clean-all backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets dev-subscribe build-subscribe preview-subscribe
