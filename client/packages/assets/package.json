@@ -1,6 +1,6 @@
 {
 	"name": "@cvix/assets",
-	"version": "3.14.1",
+	"version": "3.14.2",
 	"private": true,
 	"type": "module",
 	"description": "Shared assets for all CVIX frontend applications",
