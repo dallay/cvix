@@ -35,9 +35,11 @@ sealed class RateLimitResult {
      *
      * @property retryAfter The duration until the next token is available.
      * @property limitCapacity The maximum number of tokens the bucket can hold (for X-RateLimit-Limit header).
+     * @property windowDuration The configured time window for the rate limit (e.g., 1 minute, 1 hour).
      */
     data class Denied(
         val retryAfter: Duration,
-        val limitCapacity: Long
+        val limitCapacity: Long,
+        val windowDuration: Duration
     ) : RateLimitResult()
 }

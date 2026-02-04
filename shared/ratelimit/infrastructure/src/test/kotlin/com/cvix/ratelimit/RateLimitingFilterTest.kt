@@ -134,7 +134,13 @@ internal class RateLimitingFilterTest {
 
         every {
             reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 10))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = retryAfter,
+                limitCapacity = 10,
+                windowDuration = Duration.ofMinutes(1),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -268,6 +274,7 @@ internal class RateLimitingFilterTest {
             RateLimitResult.Denied(
                 retryAfter = Duration.ofSeconds(retryAfterSeconds),
                 limitCapacity = 10,
+                windowDuration = Duration.ofMinutes(1),
             ),
         )
 
@@ -290,6 +297,7 @@ internal class RateLimitingFilterTest {
             RateLimitResult.Denied(
                 retryAfter = Duration.ofMinutes(5),
                 limitCapacity = 10,
+                windowDuration = Duration.ofMinutes(1),
             ),
         )
 
