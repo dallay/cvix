@@ -1,3 +1,9 @@
+## [3.14.4](https://github.com/dallay/cvix/compare/v3.14.3...v3.14.4) (2026-02-04)
+
+### 🚀 Performance Improvements
+
+* **make:** 🚀 Optimize Makefile for cross-platform compatibility and performance ([#563](https://github.com/dallay/cvix/issues/563)) ([cbd2bce](https://github.com/dallay/cvix/commit/cbd2bce64f0bf176821a1f0c8e8c5408debb4644))
+
 ## [3.14.3](https://github.com/dallay/cvix/compare/v3.14.2...v3.14.3) (2026-02-04)
 
 ### ♻️ Refactors
