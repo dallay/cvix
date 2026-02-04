@@ -68,7 +68,7 @@ class RateLimitingService(
         return try {
             val digest = MessageDigest.getInstance("SHA-256")
             val hashBytes = digest.digest(identifier.toByteArray())
-            hashBytes.joinToString("") { "%02x".format(it) }.take(HASH_LOG_LENGTH) + "..."
+            hashBytes.joinToString("") { "%02x".format(it.toInt() and 0xff) }.take(HASH_LOG_LENGTH) + "..."
         } catch (e: Exception) {
             logger.warn("Failed to hash identifier for safe logging", e)
             "unknown-id-hash-failed"
