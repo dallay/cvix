@@ -60,6 +60,11 @@ dependencies {
     implementation(project(":shared:engagement:subscriber:application"))
     implementation(project(":shared:engagement:subscriber:infrastructure"))
 
+    // Shared modules
+    implementation(project(":shared:ratelimit"))
+    // Direct access to RateLimitingFilter in SecurityConfiguration
+    implementation(project(":shared:ratelimit:infrastructure"))
+
     // Server modules - Plug and play modules
     implementation(project(":server:modules:contact"))
 
@@ -94,8 +99,6 @@ dependencies {
     implementation(libs.bundles.kotlin.jvm)
 
     // External libraries
-    implementation(libs.bucket4j.core)
-    implementation(libs.caffeine)
     implementation(libs.commons.text)
     implementation(libs.docker.java.core)
     implementation(libs.docker.java.transport.httpclient5)
