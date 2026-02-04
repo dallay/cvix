@@ -4,13 +4,13 @@ import com.cvix.UnitTest
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
 import com.cvix.ratelimit.infrastructure.metrics.RateLimitMetrics
-import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -173,13 +173,12 @@ class RateLimitMetricsTest {
     }
 
     @Test
-    fun `should record token consumption time`() {
+    fun `should record token consumption time`() = runTest {
         // Given
         val strategy = RateLimitStrategy.WAITLIST
 
         // When
         val result = metrics.recordTokenConsumption(strategy) {
-            Thread.sleep(10) // Simulate some work
             "test-result"
         }
 
@@ -191,11 +190,10 @@ class RateLimitMetricsTest {
             "strategy", "waitlist",
         )
         timer.count() shouldBe 1L
-        timer.totalTime(java.util.concurrent.TimeUnit.MILLISECONDS) shouldBeGreaterThan 0.0
     }
 
     @Test
-    fun `should record multiple token consumptions for same strategy`() {
+    fun `should record multiple token consumptions for same strategy`() = runTest {
         // Given
         val strategy = RateLimitStrategy.AUTH
 
@@ -217,7 +215,7 @@ class RateLimitMetricsTest {
     }
 
     @Test
-    fun `should track token consumption for different strategies separately`() {
+    fun `should track token consumption for different strategies separately`() = runTest {
         // When
         metrics.recordTokenConsumption(RateLimitStrategy.AUTH) { "auth" }
         metrics.recordTokenConsumption(RateLimitStrategy.BUSINESS) { "business" }

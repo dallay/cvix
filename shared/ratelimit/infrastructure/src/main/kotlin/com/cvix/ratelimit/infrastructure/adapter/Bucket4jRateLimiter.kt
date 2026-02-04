@@ -13,6 +13,8 @@ import io.github.bucket4j.ConsumptionProbe
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -96,45 +98,49 @@ class Bucket4jRateLimiter(
     ): RateLimitResult {
         // Record token consumption time and update cache size metric
         return metrics.recordTokenConsumption(strategy) {
-            val cacheKey = "${strategy.name}:$identifier"
-            val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
-            val bucket = entry.bucket
-            val limitCapacity = entry.limitCapacity
-            val refillDuration = entry.refillPeriodNanos
+            // Caffeine synchronous lookups and Bucket4j operations are blocking
+            // We wrap them in Dispatchers.IO to prevent starving the coroutine dispatcher
+            withContext(Dispatchers.IO) {
+                val cacheKey = "${strategy.name}:$identifier"
+                val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
+                val bucket = entry.bucket
+                val limitCapacity = entry.limitCapacity
+                val refillDuration = entry.refillPeriodNanos
 
-            // Update cache size and stats metrics after potential cache insertion
-            metrics.updateCacheSize(cache.estimatedSize().toInt())
+                // Update cache size and stats metrics after potential cache insertion
+                metrics.updateCacheSize(cache.estimatedSize().toInt())
 
-            val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
+                val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
-            // Metadata already extracted from entry above
-            val result = if (probe.isConsumed) {
-                val resetTime = calculateResetTime(refillDuration)
-                logger.debug(
-                    "Token consumed for identifier: {}, strategy: {}, remaining: {}, limit: {}, reset: {}",
-                    identifier, strategy, probe.remainingTokens, limitCapacity, resetTime,
-                )
-                RateLimitResult.Allowed(
-                    remainingTokens = probe.remainingTokens,
-                    limitCapacity = limitCapacity,
-                    resetTime = resetTime,
-                )
-            } else {
-                val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
-                logger.warn(
-                    "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}, limit: {}",
-                    identifier, strategy, retryAfter, limitCapacity,
-                )
-                RateLimitResult.Denied(
-                    retryAfter = retryAfter,
-                    limitCapacity = limitCapacity,
-                )
+                // Metadata already extracted from entry above
+                val result = if (probe.isConsumed) {
+                    val resetTime = calculateResetTime(refillDuration)
+                    logger.debug(
+                        "Token consumed for identifier: {}, strategy: {}, remaining: {}, limit: {}, reset: {}",
+                        identifier, strategy, probe.remainingTokens, limitCapacity, resetTime,
+                    )
+                    RateLimitResult.Allowed(
+                        remainingTokens = probe.remainingTokens,
+                        limitCapacity = limitCapacity,
+                        resetTime = resetTime,
+                    )
+                } else {
+                    val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
+                    logger.warn(
+                        "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}, limit: {}",
+                        identifier, strategy, retryAfter, limitCapacity,
+                    )
+                    RateLimitResult.Denied(
+                        retryAfter = retryAfter,
+                        limitCapacity = limitCapacity,
+                    )
+                }
+
+                // Record metrics for this rate limit check
+                metrics.recordRateLimitCheck(strategy, result)
+
+                result
             }
-
-            // Record metrics for this rate limit check
-            metrics.recordRateLimitCheck(strategy, result)
-
-            result
         }
     }
 

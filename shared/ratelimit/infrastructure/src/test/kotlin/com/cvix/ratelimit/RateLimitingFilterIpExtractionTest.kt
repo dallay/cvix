@@ -178,6 +178,14 @@ internal class RateLimitingFilterIpExtractionTest {
         // Then
         StepVerifier.create(result)
             .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
     }
 
     // ==================== Log Injection Prevention Tests ====================

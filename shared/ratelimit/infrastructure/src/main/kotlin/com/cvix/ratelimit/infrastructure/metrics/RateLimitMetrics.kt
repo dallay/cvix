@@ -77,17 +77,20 @@ class RateLimitMetrics(private val meterRegistry: MeterRegistry) {
      * @param operation A function that performs the token consumption
      * @return The result of the operation
      */
-    fun <T : Any> recordTokenConsumption(
+    suspend fun <T : Any> recordTokenConsumption(
         strategy: RateLimitStrategy,
-        operation: () -> T
+        operation: suspend () -> T
     ): T {
         val timer = Timer.builder("rate_limit.token.consumption.time")
             .tag(STRATEGY, strategy.name.lowercase())
             .description("Time taken to consume a rate limit token")
             .register(meterRegistry)
 
-        return requireNotNull(timer.recordCallable(operation)) {
-            "RateLimitMetrics: operation() returned null in recordTokenConsumption, which is not allowed."
+        val sample = Timer.start(meterRegistry)
+        return try {
+            operation()
+        } finally {
+            sample.stop(timer)
         }
     }
 

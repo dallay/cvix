@@ -21,6 +21,8 @@ class RateLimitingService(
     private val eventPublisher: EventPublisher<RateLimitExceededEvent>
 ) {
 
+    private val logger = org.slf4j.LoggerFactory.getLogger(RateLimitingService::class.java)
+
     /**
      * Consumes a token for a given identifier using the default BUSINESS strategy.
      *
@@ -47,7 +49,12 @@ class RateLimitingService(
     ): RateLimitResult {
         val result = rateLimiter.consumeToken(identifier, strategy)
         if (result is RateLimitResult.Denied) {
-            publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
+            try {
+                publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
+            } catch (e: Exception) {
+                logger.error("Failed to publish rate limit exceeded event for identifier: {}", identifier, e)
+                // We don't rethrow to ensure the Denied result is still returned to the caller
+            }
         }
         return result
     }
