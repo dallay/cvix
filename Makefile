@@ -205,9 +205,9 @@ docker-build-all: docker-build-backend docker-build-marketing docker-build-webap
 
 docker-clean: ## Remove local Docker images and stop containers
 	@echo "🛑 Stopping containers for tag '$(TAG)'..."
-	@docker ps -q --filter ancestor=cvix-engine:$(TAG) | xargs -r docker stop
-	@docker ps -q --filter ancestor=cvix-webapp:$(TAG) | xargs -r docker stop
-	@docker ps -q --filter ancestor=cvix-marketing:$(TAG) | xargs -r docker stop
+	@ids=$$(docker ps -q --filter ancestor=cvix-engine:$(TAG)); [ -n "$$ids" ] && docker stop $$ids || true
+	@ids=$$(docker ps -q --filter ancestor=cvix-webapp:$(TAG)); [ -n "$$ids" ] && docker stop $$ids || true
+	@ids=$$(docker ps -q --filter ancestor=cvix-marketing:$(TAG)); [ -n "$$ids" ] && docker stop $$ids || true
 	@echo "🧹 Removing images..."
 	@docker rmi -f cvix-engine:$(TAG) 2>$(DEV_NULL) || true
 	@docker rmi -f cvix-webapp:$(TAG) 2>$(DEV_NULL) || true
