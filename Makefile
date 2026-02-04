@@ -24,10 +24,11 @@ endif
 
 # Platform-specific configurations
 ifeq ($(DETECTED_OS),Windows)
-    # Try to find bash.exe in the PATH
-    SHELL_PATH := $(firstword $(shell where bash.exe 2>NUL))
+    # Find bash.exe and convert to short path (8.3) to avoid space issues
+    # We take the first match from 'where' command
+    SHELL_PATH := $(shell for /f "delims=" %i in ('where bash.exe 2^>NUL') do @(for %j in ("%i") do @echo %~sj & exit /b 0))
     ifeq ($(SHELL_PATH),)
-        $(error A bash-compatible shell (Git Bash, WSL, etc.) is required to run this Makefile on Windows. Please install one and ensure it is in your PATH.)
+        $(error A bash-compatible shell (Git Bash, WSL, etc.) is required to run this Makefile on Windows. Please refer to the development guide in CONTRIBUTING.md for installation instructions.)
     endif
     SHELL := $(SHELL_PATH)
     GRADLEW := ./gradlew
@@ -57,6 +58,19 @@ TIMEOUT_300 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 300,)
 TIMEOUT_600 := $(if $(TIMEOUT_CMD),$(TIMEOUT_CMD) 600,)
 # Markdown lint command with glob pattern
 MARKDOWNLINT_CMD := npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json
+
+# ------------------------------------------------------------------------------------
+# TOOL VALIDATION
+# ------------------------------------------------------------------------------------
+
+# List of tools required for the project
+REQUIRED_TOOLS := pnpm npx docker git java
+
+# Check each tool and error out if missing with a helpful message
+# We use the defined SHELL for these checks
+$(foreach tool,$(REQUIRED_TOOLS),$(if $(shell $(SHELL) -c "command -v $(tool)" 2>$(DEV_NULL)),,$(error $(tool) is not installed. Please refer to the development guide in CONTRIBUTING.md.)))
+
+# ------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------------
 # HELP
