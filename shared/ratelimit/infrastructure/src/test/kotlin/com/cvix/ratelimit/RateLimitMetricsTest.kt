@@ -64,6 +64,7 @@ class RateLimitMetricsTest {
         val result = RateLimitResult.Denied(
             retryAfter = Duration.ofMinutes(1),
             limitCapacity = 10,
+            windowDuration = Duration.ofMinutes(1),
         )
 
         // When
@@ -96,6 +97,7 @@ class RateLimitMetricsTest {
         val deniedResult = RateLimitResult.Denied(
             retryAfter = Duration.ofHours(1),
             limitCapacity = 10,
+            windowDuration = Duration.ofHours(1),
         )
 
         // When

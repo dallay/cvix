@@ -51,7 +51,13 @@ class RateLimitingService(
         val result = rateLimiter.consumeToken(identifier, strategy)
         if (result is RateLimitResult.Denied) {
             try {
-                publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
+                publishRateLimitExceededEvent(
+                    identifier = identifier,
+                    endpoint = endpoint,
+                    retryAfter = result.retryAfter,
+                    windowDuration = result.windowDuration,
+                    strategy = strategy,
+                )
             } catch (e: Exception) {
                 val hashedId = hashIdentifier(identifier)
                 logger.error("Failed to publish rate limit exceeded event for identifier: {} (hashed)", hashedId, e)
@@ -79,6 +85,7 @@ class RateLimitingService(
         identifier: String,
         endpoint: String,
         retryAfter: Duration,
+        windowDuration: Duration,
         strategy: RateLimitStrategy
     ) {
         val event = RateLimitExceededEvent(
@@ -86,7 +93,7 @@ class RateLimitingService(
             endpoint = endpoint,
             attemptCount = null, // Bucket4j doesn't track individual attempts
             maxAttempts = null, // Bucket4j doesn't track individual attempts
-            windowDuration = retryAfter,
+            windowDuration = windowDuration,
             strategy = strategy,
             resetTime = Instant.now().plus(retryAfter),
         )

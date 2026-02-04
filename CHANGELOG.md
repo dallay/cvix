@@ -1,3 +1,9 @@
+## [3.14.3](https://github.com/dallay/cvix/compare/v3.14.2...v3.14.3) (2026-02-04)
+
+### ♻️ Refactors
+
+* complete ratelimit extraction ([#562](https://github.com/dallay/cvix/issues/562)) ([2545e94](https://github.com/dallay/cvix/commit/2545e941c3b5787a28768d3090f447f16ab2b911))
+
 ## [3.14.2](https://github.com/dallay/cvix/compare/v3.14.1...v3.14.2) (2026-02-04)
 
 ### ♻️ Refactors
