@@ -150,7 +150,13 @@ internal class RateLimitingFilterStrategyTest {
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
             )
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 10))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = retryAfter,
+                limitCapacity = 10,
+                windowDuration = Duration.ofMinutes(1),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)
@@ -235,7 +241,13 @@ internal class RateLimitingFilterStrategyTest {
                 "/api/waitlist",
                 RateLimitStrategy.WAITLIST,
             )
-        } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 5))
+        } returns Mono.just(
+            RateLimitResult.Denied(
+                retryAfter = retryAfter,
+                limitCapacity = 5,
+                windowDuration = Duration.ofMinutes(1),
+            ),
+        )
 
         // When
         val result = filter.filter(exchange, chain)

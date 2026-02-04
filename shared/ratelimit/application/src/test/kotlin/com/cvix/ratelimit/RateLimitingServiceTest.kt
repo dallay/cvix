@@ -116,6 +116,7 @@ class RateLimitingServiceTest {
         val expectedResult = RateLimitResult.Denied(
             retryAfter = retryAfter,
             limitCapacity = 10,
+            windowDuration = Duration.ofMinutes(1),
         )
 
         coEvery {
@@ -177,6 +178,7 @@ class RateLimitingServiceTest {
         val expectedResult = RateLimitResult.Denied(
             retryAfter = retryAfter,
             limitCapacity = 100,
+            windowDuration = Duration.ofHours(1),
         )
 
         coEvery {
@@ -267,6 +269,7 @@ class RateLimitingServiceTest {
             RateLimitResult.Denied(
                 retryAfter = retryAfter,
                 limitCapacity = 100,
+                windowDuration = Duration.ofHours(1),
             ),
         )
 
@@ -329,6 +332,7 @@ class RateLimitingServiceTest {
         } returns RateLimitResult.Denied(
             retryAfter = Duration.ofHours(1),
             limitCapacity = 100,
+            windowDuration = Duration.ofHours(1),
         )
 
         coEvery {

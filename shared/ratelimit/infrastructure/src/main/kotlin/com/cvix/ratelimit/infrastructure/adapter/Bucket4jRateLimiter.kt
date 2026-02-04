@@ -133,6 +133,7 @@ class Bucket4jRateLimiter(
                     RateLimitResult.Denied(
                         retryAfter = retryAfter,
                         limitCapacity = limitCapacity,
+                        windowDuration = Duration.ofNanos(refillDuration),
                     )
                 }
 
