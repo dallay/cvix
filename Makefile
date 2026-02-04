@@ -27,16 +27,12 @@ ifeq ($(DETECTED_OS),Windows)
     # Try to find bash.exe in the PATH
     SHELL_PATH := $(firstword $(shell where bash.exe 2>NUL))
     ifeq ($(SHELL_PATH),)
-        SHELL := cmd.exe
-        GRADLEW := gradlew.bat
-        DEV_NULL := NUL
-        MKDIR_P := mkdir
-    else
-        SHELL := $(SHELL_PATH)
-        GRADLEW := ./gradlew
-        DEV_NULL := /dev/null
-        MKDIR_P := mkdir -p
+        $(error A bash-compatible shell (Git Bash, WSL, etc.) is required to run this Makefile on Windows. Please install one and ensure it is in your PATH.)
     endif
+    SHELL := $(SHELL_PATH)
+    GRADLEW := ./gradlew
+    DEV_NULL := /dev/null
+    MKDIR_P := mkdir -p
 else
     SHELL := /bin/bash
     GRADLEW := ./gradlew
@@ -351,6 +347,44 @@ endef
 
 # Individual verification targets (for parallel execution)
 
+_verify-frontend-build:
+	$(call verify_step,1,Building frontend applications,$(PNPM) build,pnpm-build)
+
+_verify-backend-build:
+	$(call verify_step,2,Building backend,$(GRADLEW) --no-daemon assemble < $(DEV_NULL),backend-build)
+
+_verify-frontend-check:
+	$(call verify_step,3,Running frontend checks (Biome),$(PNPM) check,frontend-check)
+
+_verify-backend-check:
+	$(call verify_step,4,Running backend checks (Detekt),$(GRADLEW) --no-daemon detektAll < $(DEV_NULL),backend-check)
+
+_verify-markdown:
+	$(call verify_step,5,Running Markdown lint,$(MARKDOWNLINT_CMD),markdown-lint)
+
+_verify-yaml:
+	@echo "⏳ [6/10] Running YAML lint..." && \
+	$(MKDIR_P) $(LOG_DIR) && \
+	if command -v yamllint >$(DEV_NULL) 2>&1; then \
+		yamllint . > $(LOG_DIR)/yaml-lint.log 2>&1 && \
+		echo "✅ YAML lint: PASSED" || \
+		(echo "❌ YAML lint: FAILED. See $(LOG_DIR)/yaml-lint.log"; exit 1); \
+	else \
+		echo "⚠️  YAML lint: SKIPPED (yamllint not installed)"; \
+	fi
+
+_verify-secrets:
+	$(call verify_step,7,Checking secrets synchronization,$(SHELL) ./scripts/check-secrets.sh,secrets-check)
+
+_verify-frontend-tests:
+	$(call verify_step,8,Running frontend unit tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
+
+_verify-backend-tests:
+	$(call verify_step,9,Running backend tests,$(TIMEOUT_600) $(GRADLEW) --no-daemon test < $(DEV_NULL),backend-tests)
+
+_verify-e2e-tests:
+	$(call verify_step,10,Running E2E tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)
+
 # Verifies the entire project with all checks, lints, and tests
 # Runs checks in parallel groups for optimal performance
 verify-all:
@@ -397,4 +431,28 @@ verify-all:
 	@echo "📋 Logs available in: $(LOG_DIR)/"
 	@echo ""
 
-.PHONY: all verify-all help install update-deps prepare-env prepare agents-check agents-sync dev dev-landing dev-web dev-docs dev-blog build build-landing preview-landing build-web build-docs build-blog preview-blog test test-ui test-coverage lint lint-strict check verify-secrets clean clean-all backend-build backend-run backend-test backend-clean cleanup-test-containers start test-all precommit ssl-cert docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets dev-subscribe build-subscribe preview-subscribe
+# ------------------------------------------------------------------------------------
+# PHONY TARGETS
+# ------------------------------------------------------------------------------------
+
+# Core & Lifecycle
+.PHONY: all verify-all help install update-deps prepare-env prepare precommit ssl-cert start clean clean-all
+
+# Development
+.PHONY: dev dev-landing dev-web dev-docs dev-blog dev-subscribe agents-check agents-sync
+
+# Build & Preview
+.PHONY: build build-landing build-web build-docs build-blog build-subscribe preview-landing preview-blog preview-subscribe
+
+# Test & Lint
+.PHONY: test test-ui test-coverage test-all lint lint-strict check
+
+# Backend
+.PHONY: backend-build backend-run backend-test backend-clean cleanup-test-containers
+
+# Docker
+.PHONY: docker-build-backend docker-build-webapp docker-build-marketing docker-build-all docker-clean docker-verify-nonroot
+
+# Internal Verification Targets
+.PHONY: verify-secrets _verify-frontend-build _verify-backend-build _verify-frontend-check _verify-backend-check \
+        _verify-markdown _verify-yaml _verify-frontend-tests _verify-e2e-tests _verify-backend-tests _verify-secrets
