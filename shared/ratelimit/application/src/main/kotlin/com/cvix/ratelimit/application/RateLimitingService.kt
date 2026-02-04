@@ -8,14 +8,12 @@ import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
 import java.time.Duration
 import java.time.Instant
-import kotlinx.coroutines.reactor.mono
-import reactor.core.publisher.Mono
 
 /**
  * Application service for handling rate limiting logic.
  * This service acts as a use case handler, orchestrating the interaction
  * between the incoming request (port in) and the rate limiting implementation (port out).
- * All operations are non-blocking using reactive types.
+ * All operations are non-blocking using suspend functions.
  */
 @Service
 class RateLimitingService(
@@ -28,9 +26,9 @@ class RateLimitingService(
      *
      * @param identifier The identifier to rate limit (e.g., API key or IP address).
      * @param endpoint The endpoint being accessed.
-     * @return A [Mono] of [RateLimitResult] indicating if the request was allowed or denied.
+     * @return A [RateLimitResult] indicating if the request was allowed or denied.
      */
-    fun consumeToken(identifier: String, endpoint: String): Mono<RateLimitResult> =
+    suspend fun consumeToken(identifier: String, endpoint: String): RateLimitResult =
         consumeToken(identifier, endpoint, RateLimitStrategy.BUSINESS)
 
     /**
@@ -40,30 +38,26 @@ class RateLimitingService(
      * @param identifier The identifier to rate limit (e.g., API key or IP address).
      * @param endpoint The endpoint being accessed.
      * @param strategy The rate limiting strategy to apply.
-     * @return A [Mono] of [RateLimitResult] indicating if the request was allowed or denied.
+     * @return A [RateLimitResult] indicating if the request was allowed or denied.
      */
-    fun consumeToken(
+    suspend fun consumeToken(
         identifier: String,
         endpoint: String,
         strategy: RateLimitStrategy
-    ): Mono<RateLimitResult> {
-        return rateLimiter.consumeToken(identifier, strategy)
-            .flatMap { result ->
-                if (result is RateLimitResult.Denied) {
-                    publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
-                        .thenReturn(result)
-                } else {
-                    Mono.just(result)
-                }
-            }
+    ): RateLimitResult {
+        val result = rateLimiter.consumeToken(identifier, strategy)
+        if (result is RateLimitResult.Denied) {
+            publishRateLimitExceededEvent(identifier, endpoint, result.retryAfter, strategy)
+        }
+        return result
     }
 
-    private fun publishRateLimitExceededEvent(
+    private suspend fun publishRateLimitExceededEvent(
         identifier: String,
         endpoint: String,
         retryAfter: Duration,
         strategy: RateLimitStrategy
-    ): Mono<Void> = mono {
+    ) {
         val event = RateLimitExceededEvent(
             identifier = identifier,
             endpoint = endpoint,
@@ -74,5 +68,5 @@ class RateLimitingService(
             resetTime = Instant.now().plus(retryAfter),
         )
         eventPublisher.publish(event)
-    }.then()
+    }
 }

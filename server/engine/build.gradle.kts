@@ -62,6 +62,8 @@ dependencies {
 
     // Shared modules
     implementation(project(":shared:ratelimit"))
+    // Direct access to RateLimitingFilter in SecurityConfiguration
+    implementation(project(":shared:ratelimit:infrastructure"))
 
     // Server modules - Plug and play modules
     implementation(project(":server:modules:contact"))

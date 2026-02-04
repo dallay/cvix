@@ -5,7 +5,7 @@ import com.cvix.ratelimit.domain.RateLimitStrategy
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.ZoneOffset
 
 /**
  * Domain event emitted when a rate limit is exceeded.
@@ -38,7 +38,7 @@ data class RateLimitExceededEvent(
     val strategy: RateLimitStrategy,
     val timestamp: Instant = Instant.now(),
     val resetTime: Instant? = null,
-) : BaseDomainEvent(LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault())) {
+) : BaseDomainEvent(LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC)) {
     init {
         require(identifier.isNotBlank()) { "Identifier cannot be blank" }
         require(endpoint.isNotBlank()) { "Endpoint cannot be blank" }

@@ -12,7 +12,6 @@ base {
 dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:ratelimit:domain"))
-    implementation(libs.kotlinx.coroutines.reactor)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.assertj)

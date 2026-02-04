@@ -1,9 +1,9 @@
 package com.cvix.ratelimit
 
 import com.cvix.UnitTest
-import com.cvix.ratelimit.application.RateLimitingService
 import com.cvix.ratelimit.domain.RateLimitResult
 import com.cvix.ratelimit.domain.RateLimitStrategy
+import com.cvix.ratelimit.infrastructure.adapter.ReactiveRateLimitingAdapter
 import com.cvix.ratelimit.infrastructure.config.BucketConfigurationFactory
 import com.cvix.ratelimit.infrastructure.filter.RateLimitingFilter
 import io.kotest.matchers.shouldBe
@@ -46,19 +46,19 @@ import tools.jackson.module.kotlin.kotlinModule
 internal class RateLimitingFilterTest {
 
     private lateinit var filter: RateLimitingFilter
-    private lateinit var rateLimitingService: RateLimitingService
+    private lateinit var reactiveRateLimitingAdapter: ReactiveRateLimitingAdapter
     private lateinit var configurationFactory: BucketConfigurationFactory
     private lateinit var jsonMapper: JsonMapper
     private lateinit var chain: WebFilterChain
 
     @BeforeEach
     fun setUp() {
-        rateLimitingService = mockk()
+        reactiveRateLimitingAdapter = mockk()
         configurationFactory = mockk()
         jsonMapper = jsonMapper { addModule(kotlinModule()) }
         chain = mockk()
 
-        filter = RateLimitingFilter(rateLimitingService, jsonMapper, configurationFactory)
+        filter = RateLimitingFilter(reactiveRateLimitingAdapter, jsonMapper, configurationFactory)
 
         // Default mocks
         every { configurationFactory.isRateLimitEnabled(RateLimitStrategy.AUTH) } returns true
@@ -91,7 +91,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -109,7 +109,7 @@ internal class RateLimitingFilterTest {
 
         verify(exactly = 1) { chain.filter(exchange) }
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         }
 
         // Verify standard rate limit headers
@@ -130,7 +130,7 @@ internal class RateLimitingFilterTest {
         val retryAfter = Duration.ofMinutes(5)
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         } returns Mono.just(RateLimitResult.Denied(retryAfter = retryAfter, limitCapacity = 10))
 
         // When
@@ -142,7 +142,7 @@ internal class RateLimitingFilterTest {
 
         verify(exactly = 0) { chain.filter(exchange) }
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         }
 
         exchange.response.statusCode shouldBe HttpStatus.TOO_MANY_REQUESTS
@@ -168,7 +168,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) { chain.filter(exchange) }
-        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+        verify(exactly = 0) { reactiveRateLimitingAdapter.consumeToken(any(), any(), any()) }
     }
 
     @Test
@@ -186,7 +186,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) { chain.filter(exchange) }
-        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+        verify(exactly = 0) { reactiveRateLimitingAdapter.consumeToken(any(), any(), any()) }
     }
 
     @Test
@@ -199,7 +199,7 @@ internal class RateLimitingFilterTest {
         val expectedIdentifier = "IP:203.0.113.1" // Should use first IP
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 expectedIdentifier,
                 "/api/auth/login",
                 RateLimitStrategy.AUTH,
@@ -220,7 +220,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 expectedIdentifier,
                 "/api/auth/login",
                 RateLimitStrategy.AUTH,
@@ -238,7 +238,7 @@ internal class RateLimitingFilterTest {
         val expectedIdentifier = "IP:192.168.1.100"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 expectedIdentifier,
                 "/api/auth/login",
                 RateLimitStrategy.AUTH,
@@ -259,7 +259,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 expectedIdentifier,
                 "/api/auth/login",
                 RateLimitStrategy.AUTH,
@@ -277,7 +277,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/auth/register",
                 RateLimitStrategy.AUTH,
@@ -298,7 +298,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/auth/register",
                 RateLimitStrategy.AUTH,
@@ -314,7 +314,7 @@ internal class RateLimitingFilterTest {
         val remainingTokens = 42L
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = remainingTokens,
@@ -338,7 +338,7 @@ internal class RateLimitingFilterTest {
         val retryAfterSeconds = 600L
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Denied(
                 retryAfter = Duration.ofSeconds(retryAfterSeconds),
@@ -360,7 +360,7 @@ internal class RateLimitingFilterTest {
         val exchange = MockServerWebExchange.from(request)
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Denied(
                 retryAfter = Duration.ofMinutes(5),
@@ -394,7 +394,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) { chain.filter(exchange) }
-        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+        verify(exactly = 0) { reactiveRateLimitingAdapter.consumeToken(any(), any(), any()) }
     }
 
     @Test
@@ -404,7 +404,7 @@ internal class RateLimitingFilterTest {
         val exchange = MockServerWebExchange.from(request)
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -430,7 +430,7 @@ internal class RateLimitingFilterTest {
         val postExchange = MockServerWebExchange.from(postRequest)
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -444,17 +444,17 @@ internal class RateLimitingFilterTest {
 
         // Then
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(any(), "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), "/api/auth/login", RateLimitStrategy.AUTH)
         }
 
-        clearMocks(rateLimitingService, answers = false)
+        clearMocks(reactiveRateLimitingAdapter, answers = false)
 
         // Given - GET request (less common for auth, but should still work)
         val getRequest = MockServerHttpRequest.get("/api/auth/login").build()
         val getExchange = MockServerWebExchange.from(getRequest)
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 8,
@@ -468,7 +468,7 @@ internal class RateLimitingFilterTest {
 
         // Then
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(any(), "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), "/api/auth/login", RateLimitStrategy.AUTH)
         }
     }
 
@@ -479,7 +479,7 @@ internal class RateLimitingFilterTest {
         val exchange = MockServerWebExchange.from(request)
 
         every {
-            rateLimitingService.consumeToken(any(), any(), RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(any(), any(), RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -506,7 +506,7 @@ internal class RateLimitingFilterTest {
         val expectedIdentifier = "IP:unknown"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 expectedIdentifier,
                 "/api/auth/login",
                 RateLimitStrategy.AUTH,
@@ -537,7 +537,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -558,7 +558,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -581,7 +581,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) { chain.filter(exchange) }
-        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+        verify(exactly = 0) { reactiveRateLimitingAdapter.consumeToken(any(), any(), any()) }
     }
 
     @Test
@@ -595,7 +595,7 @@ internal class RateLimitingFilterTest {
         val retryAfter = Duration.ofMinutes(5)
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -611,7 +611,7 @@ internal class RateLimitingFilterTest {
 
         verify(exactly = 0) { chain.filter(exchange) }
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -644,7 +644,7 @@ internal class RateLimitingFilterTest {
         StepVerifier.create(result2).verifyComplete()
 
         verify(exactly = 2) { chain.filter(any()) }
-        verify(exactly = 0) { rateLimitingService.consumeToken(any(), any(), any()) }
+        verify(exactly = 0) { reactiveRateLimitingAdapter.consumeToken(any(), any(), any()) }
     }
 
     @Test
@@ -657,7 +657,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         } returns Mono.just(
             RateLimitResult.Allowed(
                 remainingTokens = 9,
@@ -673,7 +673,7 @@ internal class RateLimitingFilterTest {
         StepVerifier.create(result).verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
+            reactiveRateLimitingAdapter.consumeToken(identifier, "/api/auth/login", RateLimitStrategy.AUTH)
         }
     }
 
@@ -691,7 +691,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -711,7 +711,7 @@ internal class RateLimitingFilterTest {
         StepVerifier.create(result).verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/resume/generate",
                 RateLimitStrategy.RESUME,
@@ -729,7 +729,7 @@ internal class RateLimitingFilterTest {
         val identifier = "IP:127.0.0.1"
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/waitlist",
                 RateLimitStrategy.WAITLIST,
@@ -750,7 +750,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/waitlist",
                 RateLimitStrategy.WAITLIST,
@@ -773,7 +773,7 @@ internal class RateLimitingFilterTest {
         val retryAfter = Duration.ofMinutes(10)
 
         every {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/waitlist",
                 RateLimitStrategy.WAITLIST,
@@ -788,7 +788,7 @@ internal class RateLimitingFilterTest {
             .verifyComplete()
 
         verify(exactly = 1) {
-            rateLimitingService.consumeToken(
+            reactiveRateLimitingAdapter.consumeToken(
                 identifier,
                 "/api/waitlist",
                 RateLimitStrategy.WAITLIST,

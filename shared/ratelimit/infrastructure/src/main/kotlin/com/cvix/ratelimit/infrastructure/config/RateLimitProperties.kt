@@ -83,6 +83,12 @@ data class RateLimitProperties(
     val waitlist: WaitlistRateLimitConfig = WaitlistRateLimitConfig()
 ) {
 
+    companion object {
+        const val TIER_FREE = "free"
+        const val TIER_BASIC = "basic"
+        const val TIER_PROFESSIONAL = "professional"
+    }
+
     /**
      * Configuration for the rate limiter bucket cache.
      * Prevents unbounded memory growth by limiting cache size and using TTL-based eviction.
@@ -196,19 +202,19 @@ data class RateLimitProperties(
          * Keys are plan names (e.g., "free", "basic", "professional").
          */
         val pricingPlans: Map<String, BandwidthLimit> = mapOf(
-            "free" to BandwidthLimit(
+            TIER_FREE to BandwidthLimit(
                 name = "free-plan",
                 capacity = 20,
                 refillTokens = 20,
                 refillDuration = Duration.ofHours(1),
             ),
-            "basic" to BandwidthLimit(
+            TIER_BASIC to BandwidthLimit(
                 name = "basic-plan",
                 capacity = 40,
                 refillTokens = 40,
                 refillDuration = Duration.ofHours(1),
             ),
-            "professional" to BandwidthLimit(
+            TIER_PROFESSIONAL to BandwidthLimit(
                 name = "professional-plan",
                 capacity = 100,
                 refillTokens = 100,

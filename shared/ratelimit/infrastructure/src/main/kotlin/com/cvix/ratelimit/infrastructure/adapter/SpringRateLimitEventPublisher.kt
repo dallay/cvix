@@ -2,6 +2,7 @@ package com.cvix.ratelimit.infrastructure.adapter
 
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
@@ -16,7 +17,18 @@ class SpringRateLimitEventPublisher(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : EventPublisher<RateLimitExceededEvent> {
 
+    private val logger = LoggerFactory.getLogger(SpringRateLimitEventPublisher::class.java)
+
     override suspend fun publish(event: RateLimitExceededEvent) {
-        applicationEventPublisher.publishEvent(event)
+        try {
+            applicationEventPublisher.publishEvent(event)
+            logger.debug("Published RateLimitExceededEvent for identifier: {}", event.identifier)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Failed to publish RateLimitExceededEvent for identifier: {}", event.identifier, e)
+            throw e
+        } catch (e: IllegalStateException) {
+            logger.error("Failed to publish RateLimitExceededEvent for identifier: {}", event.identifier, e)
+            throw e
+        }
     }
 }

@@ -16,9 +16,9 @@ import java.time.Duration
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.test.StepVerifier
 
 /**
  * Unit tests for Bucket4jRateLimiter.
@@ -94,203 +94,181 @@ class Bucket4jRateLimiterTest {
     }
 
     @Test
-    fun `should allow token consumption when under limit for AUTH strategy`() {
+    fun `should allow token consumption when under limit for AUTH strategy`() = runTest {
         // Given
         val identifier = "IP:192.168.1.1"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
-                result.limitCapacity shouldBe 5
-                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+        result.limitCapacity shouldBe 5
+        result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
     }
 
     @Test
-    fun `should deny token consumption when limit exceeded for AUTH strategy`() {
+    fun `should deny token consumption when limit exceeded for AUTH strategy`() = runTest {
         // Given
         val identifier = "IP:192.168.1.2"
 
         // Consume all tokens
         repeat(5) {
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
 
-        // When/Then - next request should be denied
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-                result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+
+        // Then - next request should be denied
+        result.shouldBeInstanceOf<RateLimitResult.Denied>()
+        result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+        result.limitCapacity shouldBe 5
     }
 
     @Test
-    fun `should allow token consumption when under limit for BUSINESS strategy with FREE plan`() {
+    fun `should allow token consumption when under limit for BUSINESS strategy with FREE plan`() = runTest {
         // Given
         val identifier = "FREE-KEY-123"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 2 // 3 capacity - 1 consumed
-                result.limitCapacity shouldBe 3
-                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 2 // 3 capacity - 1 consumed
+        result.limitCapacity shouldBe 3
+        result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
     }
 
     @Test
-    fun `should deny token consumption when limit exceeded for BUSINESS strategy`() {
+    fun `should deny token consumption when limit exceeded for BUSINESS strategy`() = runTest {
         // Given
         val identifier = "FREE-KEY-456"
 
         // Consume all tokens
         repeat(3) {
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
 
-        // When/Then - next request should be denied
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-                result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
-                result.limitCapacity shouldBe 3
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+
+        // Then - next request should be denied
+        result.shouldBeInstanceOf<RateLimitResult.Denied>()
+        result.retryAfter.seconds shouldBeGreaterThanOrEqual 0
+        result.limitCapacity shouldBe 3
     }
 
     @Test
-    fun `should allow token consumption for BASIC plan`() {
+    fun `should allow token consumption for BASIC plan`() = runTest {
         // Given
         val identifier = "BX001-BASIC-KEY"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
-                result.limitCapacity shouldBe 5
-                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 4 // 5 capacity - 1 consumed
+        result.limitCapacity shouldBe 5
+        result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
     }
 
     @Test
-    fun `should allow token consumption for PROFESSIONAL plan`() {
+    fun `should allow token consumption for PROFESSIONAL plan`() = runTest {
         // Given
         val identifier = "PX001-PRO-KEY"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 9 // 10 capacity - 1 consumed
-                result.limitCapacity shouldBe 10
-                result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 9 // 10 capacity - 1 consumed
+        result.limitCapacity shouldBe 10
+        result.resetTime.epochSecond shouldBeGreaterThanOrEqual 0
     }
 
     @Test
-    fun `should maintain separate buckets for different identifiers with same strategy`() {
+    fun `should maintain separate buckets for different identifiers with same strategy`() = runTest {
         // Given
         val identifier1 = "IP:192.168.1.1"
         val identifier2 = "IP:192.168.1.2"
 
         // When - consume tokens for identifier1
         repeat(5) {
-            rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH)
         }
 
         // Then - identifier2 should still have tokens available
-        StepVerifier.create(rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-            }
-            .verifyComplete()
+        val result = rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH)
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
     }
 
     @Test
-    fun `should maintain separate buckets for same identifier with different strategies`() {
+    fun `should maintain separate buckets for same identifier with different strategies`() = runTest {
         // Given
         val identifier = "TEST-KEY"
 
         // When - consume all AUTH tokens
         repeat(5) {
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
 
         // Then - BUSINESS strategy should still have tokens available
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-            }
-            .verifyComplete()
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
     }
 
     @Test
-    fun `should decrement remaining tokens with each consumption`() {
+    fun `should decrement remaining tokens with each consumption`() = runTest {
         // Given
         val identifier = "IP:192.168.1.3"
 
         // When/Then - first consumption
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 4
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        val result1 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result1.remainingTokens shouldBe 4
+        result1.limitCapacity shouldBe 5
 
         // When/Then - second consumption
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 3
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        val result2 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        result2.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result2.remainingTokens shouldBe 3
+        result2.limitCapacity shouldBe 5
 
         // When/Then - third consumption
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 2
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        val result3 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        result3.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result3.remainingTokens shouldBe 2
+        result3.limitCapacity shouldBe 5
     }
 
     @Test
-    fun `should use default BUSINESS strategy when calling consumeToken with identifier only`() {
+    fun `should use default BUSINESS strategy when calling consumeToken with identifier only`() = runTest {
         // Given
         val identifier = "DEFAULT-KEY"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                // Should use FREE plan (3 tokens) as default
-                result.remainingTokens shouldBe 2
-                result.limitCapacity shouldBe 3
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        // Should use FREE plan (3 tokens) as default
+        result.remainingTokens shouldBe 2
+        result.limitCapacity shouldBe 3
     }
 
     @Test
-    fun `should cache buckets for repeated requests`() {
+    fun `should cache buckets for repeated requests`() = runTest {
         // Given
         val identifier = "CACHED-KEY"
 
         // When - make multiple requests
-        val result1 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
-        val result2 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+        val result1 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        val result2 = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
 
         // Then - should see token decrements indicating same bucket is being used
         result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
@@ -303,62 +281,58 @@ class Bucket4jRateLimiterTest {
     }
 
     @Test
-    fun `should handle IP-based identifiers correctly`() {
+    fun `should handle IP-based identifiers correctly`() = runTest {
         // Given
         val ipIdentifier = "IP:10.0.0.1"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(ipIdentifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(ipIdentifier, RateLimitStrategy.AUTH)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.limitCapacity shouldBe 5
     }
 
     @Test
-    fun `should handle API key identifiers correctly`() {
+    fun `should handle API key identifiers correctly`() = runTest {
         // Given
         val apiKeyIdentifier = "PX001-ABC123"
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(apiKeyIdentifier, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 9 // Professional plan (10 tokens)
-                result.limitCapacity shouldBe 10
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(apiKeyIdentifier, RateLimitStrategy.BUSINESS)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 9 // Professional plan (10 tokens)
+        result.limitCapacity shouldBe 10
     }
 
     @Test
-    fun `should return non-negative retry after duration when denied`() {
+    fun `should return non-negative retry after duration when denied`() = runTest {
         // Given
         val identifier = "RETRY-TEST"
 
         // Consume all tokens
         repeat(5) {
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
 
-        // When/Then
-        StepVerifier.create(rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-                result.retryAfter.isNegative shouldBe false
-                result.retryAfter.isZero shouldBe false
-                result.limitCapacity shouldBe 5
-            }
-            .verifyComplete()
+        // When
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Denied>()
+        result.retryAfter.isNegative shouldBe false
+        result.retryAfter.isZero shouldBe false
+        result.limitCapacity shouldBe 5
     }
 
     // Option A: Tolerant test - assert resetTime is between now and now + refillDuration + tolerance
     @Test
-    fun `reset time is within expected range (tolerant)`() {
+    fun `reset time is within expected range (tolerant)`() = runTest {
         val identifier = "TOLERANT-TEST"
         val now = Instant.now()
-        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
-            .block() as RateLimitResult.Allowed
+        val result = rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH) as RateLimitResult.Allowed
 
         // refillDuration configured for AUTH is 1 minute
         val upperBound = now.plus(Duration.ofMinutes(1)).plusMillis(1000) // 1s tolerance
@@ -368,7 +342,7 @@ class Bucket4jRateLimiterTest {
 
     // Option B: Deterministic test by injecting a fixed clock
     @Test
-    fun `reset time deterministic with injected clock`() {
+    fun `reset time deterministic with injected clock`() = runTest {
         val fixedNow = Instant.parse("2025-01-01T00:00:00Z")
         val fixedClock = Clock.fixed(fixedNow, java.time.ZoneOffset.UTC)
         val configFactory = BucketConfigurationFactory(properties)
@@ -384,7 +358,6 @@ class Bucket4jRateLimiterTest {
         )
 
         val result = deterministicLimiter.consumeToken("DETERMINISTIC-KEY", RateLimitStrategy.AUTH)
-            .block()
         assertTrue(
             result is RateLimitResult.Allowed,
             "Expected RateLimitResult.Allowed, got ${result?.let { it::class }}",
@@ -398,7 +371,7 @@ class Bucket4jRateLimiterTest {
     }
 
     @Test
-    fun `should select shortest refill period when multiple bandwidths share minimum capacity`() {
+    fun `should select shortest refill period when multiple bandwidths share minimum capacity`() = runTest {
         // Given - configure multiple bandwidths with the same capacity but different refill periods
         // This tests the edge case where:
         // Bandwidth A: 10 requests per minute (capacity=10, refill=60s)
@@ -436,7 +409,6 @@ class Bucket4jRateLimiterTest {
 
         // When - consume a token
         val result = customLimiter.consumeToken("MULTI-BANDWIDTH-TEST", RateLimitStrategy.AUTH)
-            .block()
 
         // Then - should select the shortest refill period (60s, not 3600s)
         // The resetTime should be now + 60 seconds, not now + 3600 seconds

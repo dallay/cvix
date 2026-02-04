@@ -15,13 +15,10 @@ import java.time.Duration
 import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 
 /**
  * Adapter that implements the RateLimiter port using Bucket4j.
  * This class is responsible for the actual rate limiting logic using the Bucket4j library.
- * Operations are executed on a bounded elastic scheduler to avoid blocking the reactive pipeline.
  *
  * This implementation supports multiple strategies:
  * - AUTH: For authentication endpoints, using time-based limits (per-minute, per-hour)
@@ -83,7 +80,7 @@ class Bucket4jRateLimiter(
         )
     }
 
-    override fun consumeToken(identifier: String): Mono<RateLimitResult> =
+    override suspend fun consumeToken(identifier: String): RateLimitResult =
         consumeToken(identifier, RateLimitStrategy.BUSINESS)
 
     /**
@@ -91,56 +88,54 @@ class Bucket4jRateLimiter(
      *
      * @param identifier The identifier to rate limit (e.g., API key or IP address).
      * @param strategy The rate limiting strategy to apply.
-     * @return A [Mono] of [RateLimitResult] indicating if the request was allowed or denied.
+     * @return A [RateLimitResult] indicating if the request was allowed or denied.
      */
-    override fun consumeToken(
+    override suspend fun consumeToken(
         identifier: String,
         strategy: RateLimitStrategy
-    ): Mono<RateLimitResult> {
-        return Mono.fromCallable {
-            // Record token consumption time and update cache size metric
-            metrics.recordTokenConsumption(strategy) {
-                val cacheKey = "${strategy.name}:$identifier"
-                val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
-                val bucket = entry.bucket
-                val limitCapacity = entry.limitCapacity
-                val refillDuration = entry.refillPeriodNanos
+    ): RateLimitResult {
+        // Record token consumption time and update cache size metric
+        return metrics.recordTokenConsumption(strategy) {
+            val cacheKey = "${strategy.name}:$identifier"
+            val entry = cache.get(cacheKey) { createCachedBucketEntry(identifier, strategy) }
+            val bucket = entry.bucket
+            val limitCapacity = entry.limitCapacity
+            val refillDuration = entry.refillPeriodNanos
 
-                // Update cache size and stats metrics after potential cache insertion
-                metrics.updateCacheSize(cache.estimatedSize().toInt())
+            // Update cache size and stats metrics after potential cache insertion
+            metrics.updateCacheSize(cache.estimatedSize().toInt())
 
-                val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
+            val probe: ConsumptionProbe = bucket.tryConsumeAndReturnRemaining(1)
 
-                // Metadata already extracted from entry above
-                val result = if (probe.isConsumed) {
-                    val resetTime = calculateResetTime(refillDuration)
-                    logger.debug(
-                        "Token consumed for identifier: {}, strategy: {}, remaining: {}, limit: {}, reset: {}",
-                        identifier, strategy, probe.remainingTokens, limitCapacity, resetTime,
-                    )
-                    RateLimitResult.Allowed(
-                        remainingTokens = probe.remainingTokens,
-                        limitCapacity = limitCapacity,
-                        resetTime = resetTime,
-                    )
-                } else {
-                    val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
-                    logger.warn(
-                        "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}, limit: {}",
-                        identifier, strategy, retryAfter, limitCapacity,
-                    )
-                    RateLimitResult.Denied(
-                        retryAfter = retryAfter,
-                        limitCapacity = limitCapacity,
-                    )
-                }
-
-                // Record metrics for this rate limit check
-                metrics.recordRateLimitCheck(strategy, result)
-
-                result
+            // Metadata already extracted from entry above
+            val result = if (probe.isConsumed) {
+                val resetTime = calculateResetTime(refillDuration)
+                logger.debug(
+                    "Token consumed for identifier: {}, strategy: {}, remaining: {}, limit: {}, reset: {}",
+                    identifier, strategy, probe.remainingTokens, limitCapacity, resetTime,
+                )
+                RateLimitResult.Allowed(
+                    remainingTokens = probe.remainingTokens,
+                    limitCapacity = limitCapacity,
+                    resetTime = resetTime,
+                )
+            } else {
+                val retryAfter = Duration.ofNanos(probe.nanosToWaitForRefill)
+                logger.warn(
+                    "Rate limit exceeded for identifier: {}, strategy: {}, retry after: {}, limit: {}",
+                    identifier, strategy, retryAfter, limitCapacity,
+                )
+                RateLimitResult.Denied(
+                    retryAfter = retryAfter,
+                    limitCapacity = limitCapacity,
+                )
             }
-        }.subscribeOn(Schedulers.boundedElastic())
+
+            // Record metrics for this rate limit check
+            metrics.recordRateLimitCheck(strategy, result)
+
+            result
+        }
     }
 
     /**

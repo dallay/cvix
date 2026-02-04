@@ -9,18 +9,20 @@ import com.cvix.ratelimit.domain.RateLimiter
 import com.cvix.ratelimit.domain.event.RateLimitExceededEvent
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.mockk.Runs
 import io.mockk.clearAllMocks
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
+import org.junit.jupiter.api.assertThrows
 
 /**
  * Unit tests for RateLimitingService.
@@ -29,9 +31,10 @@ import reactor.test.StepVerifier
  * - Token consumption with default and specific strategies
  * - Event publishing when rate limit is exceeded
  * - Integration with Bucket4jRateLimiter
- * - Reactive flow handling
+ * - Coroutine-based flow handling
  */
 @UnitTest
+@OptIn(ExperimentalCoroutinesApi::class)
 class RateLimitingServiceTest {
 
     private lateinit var service: RateLimitingService
@@ -41,7 +44,7 @@ class RateLimitingServiceTest {
     @BeforeEach
     fun setUp() {
         rateLimiter = mockk()
-        eventPublisher = mockk(relaxed = true)
+        eventPublisher = mockk()
         service = RateLimitingService(rateLimiter, eventPublisher)
     }
 
@@ -51,7 +54,7 @@ class RateLimitingServiceTest {
     }
 
     @Test
-    fun `should consume token with default BUSINESS strategy`() {
+    fun `should consume token with default BUSINESS strategy`() = runTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
@@ -61,25 +64,24 @@ class RateLimitingServiceTest {
             resetTime = Instant.now().plusSeconds(3600),
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(expectedResult)
+        } returns expectedResult
 
-        // When/Then
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 99
-            }
-            .verifyComplete()
+        // When
+        val result = service.consumeToken(identifier, endpoint)
 
-        verify(exactly = 1) {
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 99
+
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
     }
 
     @Test
-    fun `should consume token with specific AUTH strategy`() {
+    fun `should consume token with specific AUTH strategy`() = runTest {
         // Given
         val identifier = "IP:192.168.1.1"
         val endpoint = "/api/auth/login"
@@ -89,25 +91,24 @@ class RateLimitingServiceTest {
             resetTime = Instant.now().plusSeconds(60),
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
-        } returns Mono.just(expectedResult)
+        } returns expectedResult
 
-        // When/Then
-        StepVerifier.create(service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 9
-            }
-            .verifyComplete()
+        // When
+        val result = service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH)
 
-        verify(exactly = 1) {
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result.remainingTokens shouldBe 9
+
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
     }
 
     @Test
-    fun `should publish event when rate limit is exceeded`() {
+    fun `should publish event when rate limit is exceeded`() = runTest {
         // Given
         val identifier = "IP:192.168.1.2"
         val endpoint = "/api/auth/login"
@@ -117,25 +118,31 @@ class RateLimitingServiceTest {
             limitCapacity = 10,
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
-        } returns Mono.just(expectedResult)
+        } returns expectedResult
 
-        // When/Then
-        StepVerifier.create(service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-                result.retryAfter shouldBe retryAfter
-            }
-            .verifyComplete()
+        coEvery {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
+        } just Runs
 
-        verify(exactly = 1) {
+        // When
+        val result = service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Denied>()
+        result.retryAfter shouldBe retryAfter
+
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        }
+        coVerify(exactly = 1) {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
         }
     }
 
     @Test
-    fun `should not publish event when rate limit is not exceeded`() {
+    fun `should not publish event when rate limit is not exceeded`() = runTest {
         // Given
         val identifier = "IP:192.168.1.3"
         val endpoint = "/api/auth/login"
@@ -145,21 +152,24 @@ class RateLimitingServiceTest {
             resetTime = Instant.now().plusSeconds(60),
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
-        } returns Mono.just(expectedResult)
+        } returns expectedResult
 
         // When
-        service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH).block()
+        service.consumeToken(identifier, endpoint, RateLimitStrategy.AUTH)
 
         // Then
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        }
+        coVerify(exactly = 0) {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
         }
     }
 
     @Test
-    fun `should publish event with BUSINESS strategy when limit exceeded`() {
+    fun `should publish event with BUSINESS strategy when limit exceeded`() = runTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
@@ -169,186 +179,175 @@ class RateLimitingServiceTest {
             limitCapacity = 100,
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(expectedResult)
+        } returns expectedResult
 
-        // When/Then
-        StepVerifier.create(service.consumeToken(identifier, endpoint, RateLimitStrategy.BUSINESS))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-            }
-            .verifyComplete()
+        coEvery {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
+        } just Runs
 
-        verify(exactly = 1) {
+        // When
+        val result = service.consumeToken(identifier, endpoint, RateLimitStrategy.BUSINESS)
+
+        // Then
+        result.shouldBeInstanceOf<RateLimitResult.Denied>()
+
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+        }
+        coVerify(exactly = 1) {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
         }
     }
 
     @Test
-    fun `should handle multiple consecutive allowed requests`() {
+    fun `should handle multiple consecutive allowed requests`() = runTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
         val resetTime = Instant.now().plusSeconds(3600)
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(
+        } returnsMany listOf(
             RateLimitResult.Allowed(
                 remainingTokens = 10,
                 limitCapacity = 100,
                 resetTime = resetTime,
             ),
-        ) andThen
-            Mono.just(
-                RateLimitResult.Allowed(
-                    remainingTokens = 9,
-                    limitCapacity = 100,
-                    resetTime = resetTime,
-                ),
-            ) andThen
-            Mono.just(
-                RateLimitResult.Allowed(
-                    remainingTokens = 8,
-                    limitCapacity = 100,
-                    resetTime = resetTime,
-                ),
-            )
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 100,
+                resetTime = resetTime,
+            ),
+            RateLimitResult.Allowed(
+                remainingTokens = 8,
+                limitCapacity = 100,
+                resetTime = resetTime,
+            ),
+        )
 
-        // When/Then - First request
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 10
-            }
-            .verifyComplete()
+        // When - First request
+        val result1 = service.consumeToken(identifier, endpoint)
+        result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result1.remainingTokens shouldBe 10
 
-        // When/Then - Second request
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 9
-            }
-            .verifyComplete()
+        // When - Second request
+        val result2 = service.consumeToken(identifier, endpoint)
+        result2.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result2.remainingTokens shouldBe 9
 
-        // When/Then - Third request
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-                result.remainingTokens shouldBe 8
-            }
-            .verifyComplete()
+        // When - Third request
+        val result3 = service.consumeToken(identifier, endpoint)
+        result3.shouldBeInstanceOf<RateLimitResult.Allowed>()
+        result3.remainingTokens shouldBe 8
 
-        verify(exactly = 3) {
+        // Then
+        coVerify(exactly = 3) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
         }
     }
 
     @Test
-    fun `should handle transition from allowed to denied`() {
+    fun `should handle transition from allowed to denied`() = runTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
         val retryAfter = Duration.ofHours(1)
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(
+        } returnsMany listOf(
             RateLimitResult.Allowed(
                 remainingTokens = 1,
                 limitCapacity = 100,
                 resetTime = Instant.now().plusSeconds(3600),
             ),
-        ) andThen
-            Mono.just(
-                RateLimitResult.Denied(
-                    retryAfter = retryAfter,
-                    limitCapacity = 100,
-                ),
-            )
+            RateLimitResult.Denied(
+                retryAfter = retryAfter,
+                limitCapacity = 100,
+            ),
+        )
 
-        // When/Then - First request (allowed)
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-            }
-            .verifyComplete()
+        coEvery {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
+        } just Runs
 
-        // When/Then - Second request (denied)
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-                result.retryAfter shouldBe retryAfter
-            }
-            .verifyComplete()
+        // When - First request (allowed)
+        val result1 = service.consumeToken(identifier, endpoint)
+        result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
 
-        verify(exactly = 2) {
+        // When - Second request (denied)
+        val result2 = service.consumeToken(identifier, endpoint)
+        result2.shouldBeInstanceOf<RateLimitResult.Denied>()
+        result2.retryAfter shouldBe retryAfter
+
+        // Then
+        coVerify(exactly = 2) {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
+        }
+        coVerify(exactly = 1) {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
         }
     }
 
     @Test
-    fun `should propagate errors from rate limiter`() {
+    fun `should propagate errors from rate limiter`() = runTest {
         // Given
         val identifier = "API:test-key"
         val endpoint = "/api/business/data"
         val error = RuntimeException("Rate limiter error")
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
-        } returns Mono.error(error)
+        } throws error
 
         // When/Then
-        StepVerifier.create(service.consumeToken(identifier, endpoint))
-            .expectError(RuntimeException::class.java)
-            .verify()
+        assertThrows<RuntimeException> {
+            service.consumeToken(identifier, endpoint)
+        }
     }
 
     @Test
-    fun `should handle different identifiers independently`() {
+    fun `should handle different identifiers independently`() = runTest {
         // Given
         val identifier1 = "API:key-1"
         val identifier2 = "API:key-2"
         val endpoint = "/api/business/data"
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier1, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(
-            RateLimitResult.Allowed(
-                remainingTokens = 10,
-                limitCapacity = 100,
-                resetTime = Instant.now().plusSeconds(3600),
-            ),
+        } returns RateLimitResult.Allowed(
+            remainingTokens = 10,
+            limitCapacity = 100,
+            resetTime = Instant.now().plusSeconds(3600),
         )
 
-        every {
+        coEvery {
             rateLimiter.consumeToken(identifier2, RateLimitStrategy.BUSINESS)
-        } returns Mono.just(
-            RateLimitResult.Denied(
-                retryAfter = Duration.ofHours(1),
-                limitCapacity = 100,
-            ),
+        } returns RateLimitResult.Denied(
+            retryAfter = Duration.ofHours(1),
+            limitCapacity = 100,
         )
 
-        // When/Then - identifier1 (allowed)
-        StepVerifier.create(service.consumeToken(identifier1, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Allowed>()
-            }
-            .verifyComplete()
+        coEvery {
+            eventPublisher.publish(any<RateLimitExceededEvent>())
+        } just Runs
 
-        // When/Then - identifier2 (denied)
-        StepVerifier.create(service.consumeToken(identifier2, endpoint))
-            .assertNext { result ->
-                result.shouldBeInstanceOf<RateLimitResult.Denied>()
-            }
-            .verifyComplete()
+        // When - identifier1 (allowed)
+        val result1 = service.consumeToken(identifier1, endpoint)
+        result1.shouldBeInstanceOf<RateLimitResult.Allowed>()
 
-        verify(exactly = 1) {
+        // When - identifier2 (denied)
+        val result2 = service.consumeToken(identifier2, endpoint)
+        result2.shouldBeInstanceOf<RateLimitResult.Denied>()
+
+        // Then
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier1, RateLimitStrategy.BUSINESS)
         }
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             rateLimiter.consumeToken(identifier2, RateLimitStrategy.BUSINESS)
         }
     }

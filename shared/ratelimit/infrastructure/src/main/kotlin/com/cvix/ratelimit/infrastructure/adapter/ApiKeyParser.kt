@@ -1,6 +1,9 @@
 package com.cvix.ratelimit.infrastructure.adapter
 
 import com.cvix.ratelimit.infrastructure.config.RateLimitProperties
+import com.cvix.ratelimit.infrastructure.config.RateLimitProperties.Companion.TIER_BASIC
+import com.cvix.ratelimit.infrastructure.config.RateLimitProperties.Companion.TIER_FREE
+import com.cvix.ratelimit.infrastructure.config.RateLimitProperties.Companion.TIER_PROFESSIONAL
 import org.springframework.stereotype.Component
 
 /**
@@ -41,9 +44,9 @@ class ApiKeyParser(
         val prefixes = properties.apiKeyPrefixes
 
         return when {
-            apiKey.startsWith(prefixes.professional) -> "professional"
-            apiKey.startsWith(prefixes.basic) -> "basic"
-            else -> "free"
+            apiKey.startsWith(prefixes.professional) -> TIER_PROFESSIONAL
+            apiKey.startsWith(prefixes.basic) -> TIER_BASIC
+            else -> TIER_FREE
         }
     }
 }

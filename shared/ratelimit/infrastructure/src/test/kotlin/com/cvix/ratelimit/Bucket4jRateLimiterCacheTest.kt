@@ -13,6 +13,7 @@ import io.kotest.matchers.shouldBe
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.time.Clock
 import java.time.Duration
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -65,7 +66,7 @@ class Bucket4jRateLimiterCacheTest {
     }
 
     @Test
-    fun `should respect maximum cache size and eventually evict entries`() {
+    fun `should respect maximum cache size and eventually evict entries`() = runTest {
         // Given: Rate limiter with small cache (10 entries)
         val configFactory = BucketConfigurationFactory(properties)
         val apiKeyParser = ApiKeyParser(properties)
@@ -86,7 +87,7 @@ class Bucket4jRateLimiterCacheTest {
         // When: Add many more entries than cache size (30 entries, max cache size 10)
         repeat(30) { i ->
             val identifier = "IP:192.168.1.$i"
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
 
         // Force Caffeine to process evictions synchronously for deterministic testing
@@ -114,7 +115,7 @@ class Bucket4jRateLimiterCacheTest {
     }
 
     @Test
-    fun `should provide accurate cache statistics`() {
+    fun `should provide accurate cache statistics`() = runTest {
         // Given: Rate limiter with cache stats enabled
         val configFactory = BucketConfigurationFactory(properties)
         val apiKeyParser = ApiKeyParser(properties)
@@ -137,12 +138,12 @@ class Bucket4jRateLimiterCacheTest {
         val identifier2 = "IP:192.168.1.2"
 
         // First access - cache miss
-        rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH).block()
-        rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH).block()
+        rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH)
+        rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH)
 
         // Second access - cache hit
-        rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH).block()
-        rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH).block()
+        rateLimiter.consumeToken(identifier1, RateLimitStrategy.AUTH)
+        rateLimiter.consumeToken(identifier2, RateLimitStrategy.AUTH)
 
         // Then: Stats should reflect hits and misses
         val stats = rateLimiter.getCacheStats()
@@ -152,7 +153,7 @@ class Bucket4jRateLimiterCacheTest {
     }
 
     @Test
-    fun `should clear cache correctly`() {
+    fun `should clear cache correctly`() = runTest {
         // Given: Rate limiter with some cached entries
         val configFactory = BucketConfigurationFactory(properties)
         val apiKeyParser = ApiKeyParser(properties)
@@ -169,7 +170,7 @@ class Bucket4jRateLimiterCacheTest {
         // Add several entries
         repeat(5) { i ->
             val identifier = "IP:192.168.1.$i"
-            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
+            rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
         }
 
         // When: Clear cache
@@ -181,7 +182,7 @@ class Bucket4jRateLimiterCacheTest {
     }
 
     @Test
-    fun `should maintain separate cache entries for different strategies`() {
+    fun `should maintain separate cache entries for different strategies`() = runTest {
         // Given: Rate limiter
         val configFactory = BucketConfigurationFactory(properties)
         val apiKeyParser = ApiKeyParser(properties)
@@ -197,8 +198,8 @@ class Bucket4jRateLimiterCacheTest {
 
         // When: Use same identifier with different strategies
         val identifier = "TEST-KEY"
-        rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH).block()
-        rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS).block()
+        rateLimiter.consumeToken(identifier, RateLimitStrategy.AUTH)
+        rateLimiter.consumeToken(identifier, RateLimitStrategy.BUSINESS)
 
         // Then: Should have two separate cache entries (AUTH:TEST-KEY and BUSINESS:TEST-KEY)
         val cacheSize = rateLimiter.getCacheSize()
