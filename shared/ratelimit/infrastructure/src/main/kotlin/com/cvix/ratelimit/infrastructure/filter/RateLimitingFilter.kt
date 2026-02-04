@@ -135,9 +135,34 @@ class RateLimitingFilter(
         // API keys are not typically present in these requests
         val forwardedFor = exchange.request.headers.getFirst("X-Forwarded-For")
         if (forwardedFor != null) {
-            return "IP:${forwardedFor.split(",").first().trim()}"
+            val rawIp = forwardedFor.split(",").first().trim()
+            val sanitizedIp = sanitizeIpAddress(rawIp)
+            return "IP:$sanitizedIp"
         }
         return "IP:${exchange.request.remoteAddress?.address?.hostAddress ?: "unknown"}"
+    }
+
+    /**
+     * Sanitizes an IP address string to prevent log injection attacks.
+     *
+     * This method removes any characters that could be used to forge log entries,
+     * such as newlines, carriage returns, and other control characters.
+     * Only allows alphanumeric characters, dots, colons (for IPv6), and hyphens.
+     *
+     * @param ip The raw IP address string from the X-Forwarded-For header
+     * @return A sanitized IP address string safe for logging
+     */
+    private fun sanitizeIpAddress(ip: String): String {
+        // Allow only valid IP address characters: alphanumeric, dots, colons (IPv6), hyphens
+        // This prevents log injection via newlines, carriage returns, and other control characters
+        val sanitized = ip.replace(IP_SANITIZE_REGEX, "")
+
+        // Truncate to prevent excessively long values that could affect log readability
+        return if (sanitized.length > MAX_IP_LENGTH) {
+            sanitized.substring(0, MAX_IP_LENGTH)
+        } else {
+            sanitized
+        }
     }
 
     /**
@@ -212,5 +237,19 @@ class RateLimitingFilter(
 
     companion object {
         private const val RATE_LIMIT_PROCESSED_KEY = "rateLimitProcessed"
+
+        /**
+         * Maximum allowed length for an IP address string.
+         * IPv6 addresses can be up to 45 characters (e.g., "0000:0000:0000:0000:0000:0000:0000:0000").
+         * We allow a bit more for edge cases like IPv4-mapped IPv6 addresses.
+         */
+        private const val MAX_IP_LENGTH = 50
+
+        /**
+         * Regex pattern to match characters NOT allowed in IP addresses.
+         * Allowed characters: alphanumeric (a-z, A-Z, 0-9), dots (.), colons (:), and hyphens (-).
+         * This prevents log injection attacks via control characters like newlines (\n, \r).
+         */
+        private val IP_SANITIZE_REGEX = Regex("[^a-zA-Z0-9.:\\-]")
     }
 }

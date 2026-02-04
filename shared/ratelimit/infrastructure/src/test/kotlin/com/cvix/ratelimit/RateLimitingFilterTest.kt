@@ -802,4 +802,260 @@ internal class RateLimitingFilterTest {
         exchange.response.headers["X-Rate-Limit-Retry-After-Seconds"]?.get(0) shouldBe "600"
         // Optionally assert response body for error message, if needed
     }
+
+    // ==================== Log Injection Prevention Tests ====================
+    // These tests verify that malicious X-Forwarded-For headers are sanitized
+    // to prevent log injection attacks (CVE mitigation)
+
+    @Test
+    fun `should sanitize X-Forwarded-For header with newline characters to prevent log injection`() {
+        // Given - Attacker attempts log injection via newline in X-Forwarded-For
+        val maliciousIp = "192.168.1.1\n[INFO] Fake log entry - user authenticated successfully"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", maliciousIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // After sanitization: "192.168.1.1INFOFakelogentry-userauthenticatedsuccessfully"
+        // newline, brackets, and spaces removed. Then truncated to MAX_IP_LENGTH (50 chars)
+        val expectedIdentifier = "IP:192.168.1.1INFOFakelogentry-userauthenticatedsucce"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
+    fun `should sanitize X-Forwarded-For header with carriage return characters`() {
+        // Given - Attacker attempts log injection via carriage return
+        val maliciousIp = "10.0.0.1\r[WARN] Security alert bypassed"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", maliciousIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // Expected: carriage return and brackets removed, truncated to MAX_IP_LENGTH
+        val expectedIdentifier = "IP:10.0.0.1WARNSecurityalertbypassed"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
+    fun `should allow valid IPv6 addresses in X-Forwarded-For header`() {
+        // Given - Valid IPv6 address
+        val ipv6Address = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", ipv6Address)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        val expectedIdentifier = "IP:$ipv6Address"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
+    fun `should truncate excessively long X-Forwarded-For values`() {
+        // Given - Excessively long IP value (potential DoS or buffer overflow attempt)
+        val longIp = "192.168.1.1" + "a".repeat(100)
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", longIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // Expected: truncated to MAX_IP_LENGTH (50 characters)
+        val expectedIdentifier = "IP:" + "192.168.1.1" + "a".repeat(39) // 11 + 39 = 50 chars
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
+    fun `should sanitize X-Forwarded-For header with tab characters`() {
+        // Given - Attacker attempts log injection via tab character
+        val maliciousIp = "172.16.0.1\tinjected-data"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", maliciousIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // Expected: tab removed
+        val expectedIdentifier = "IP:172.16.0.1injected-data"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
+
+    @Test
+    fun `should sanitize X-Forwarded-For header with special characters`() {
+        // Given - Attacker attempts injection with various special chars
+        val maliciousIp = "10.0.0.1; DROP TABLE users; --"
+        val request = MockServerHttpRequest.post("/api/auth/login")
+            .header("X-Forwarded-For", maliciousIp)
+            .build()
+        val exchange = MockServerWebExchange.from(request)
+
+        // Expected: semicolons, spaces, and special chars removed
+        val expectedIdentifier = "IP:10.0.0.1DROPTABLEusers--"
+
+        every {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        } returns Mono.just(
+            RateLimitResult.Allowed(
+                remainingTokens = 9,
+                limitCapacity = 10,
+                resetTime = Instant.now().plusSeconds(60),
+            ),
+        )
+
+        // When
+        val result = filter.filter(exchange, chain)
+
+        // Then
+        StepVerifier.create(result)
+            .verifyComplete()
+
+        verify(exactly = 1) {
+            reactiveRateLimitingAdapter.consumeToken(
+                expectedIdentifier,
+                "/api/auth/login",
+                RateLimitStrategy.AUTH,
+            )
+        }
+    }
 }
