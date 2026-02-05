@@ -1,10 +1,8 @@
 package com.cvix
 
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 
-@SpringBootConfiguration
-@EnableAutoConfiguration
+@SpringBootApplication
 @ConfigurationPropertiesScan
 open class TestApplication

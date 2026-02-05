@@ -17,6 +17,9 @@ import org.springframework.test.context.ActiveProfiles
 @Tag("integration")
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = [
+        com.cvix.TestApplication::class,
+    ],
 )
 @ActiveProfiles("test")
 annotation class IntegrationTest(@get:AliasFor(annotation = SpringBootTest::class) val properties: Array<String> = [])

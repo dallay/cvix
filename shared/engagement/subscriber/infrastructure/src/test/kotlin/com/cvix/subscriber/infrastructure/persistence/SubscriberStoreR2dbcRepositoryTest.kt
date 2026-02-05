@@ -1,10 +1,10 @@
 package com.cvix.subscriber.infrastructure.persistence
 
 import com.cvix.IntegrationTest
-import com.cvix.config.TestSecurityConfiguration
 import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.config.InfrastructureTestContainers
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.subscriber.domain.Attributes
 import com.cvix.subscriber.domain.Subscriber
 import com.cvix.subscriber.domain.SubscriberId

@@ -1,6 +1,10 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/cvix_test
+    username: test
+    password: test
   liquibase:
     change-log: classpath:/db/changelog/identity-master.yaml
   security:
@@ -15,7 +19,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           oidc:
-            issuer-uri: ${application.security.oauth2.issuer-uri:http://localhost:8080/realms/cvix}
+            issuer-uri: https://cvix.com/realms/cvix
             authorization-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/auth
             token-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/token
             user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo

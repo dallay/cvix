@@ -1,8 +1,12 @@
 package com.cvix.ratelimit.infrastructure.config
 
+import com.cvix.common.domain.Service
+import com.cvix.ratelimit.application.RateLimitingService
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FilterType
 
 /**
  * Configuration class to enable rate limiting properties and create necessary beans.
@@ -11,6 +15,15 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 @EnableConfigurationProperties(RateLimitProperties::class)
+@ComponentScan(
+    basePackages = ["com.cvix.ratelimit.application"],
+    includeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ANNOTATION,
+            classes = [Service::class],
+        ),
+    ],
+)
 class RateLimitConfiguration {
 
     /**

@@ -1,10 +1,10 @@
 package com.cvix.form.infrastructure.application
 
-import com.cvix.config.TestSecurityConfiguration
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers
 import com.cvix.config.TestDatabaseConfiguration
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
