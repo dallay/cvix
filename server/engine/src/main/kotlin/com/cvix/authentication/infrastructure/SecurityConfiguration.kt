@@ -202,7 +202,6 @@ class SecurityConfiguration(
                 "/api/auth/refresh-token", "/api/auth/login", "/api/auth/logout",
                 "/api/auth/csrf",
                 "/api/auth/federated/**", "/oauth2/**", "/login/oauth2/**",
-                "actuator/info",
             ).permitAll()
             .pathMatchers(
                 "/swagger-ui/**", "/webjars/**", "/api-docs/**", "/swagger-ui.html",
@@ -213,11 +212,12 @@ class SecurityConfiguration(
             .pathMatchers(HttpMethod.POST, "/api/subscribers").permitAll()
             // Allow anonymous access to subscription form configuration (both v1 and non-v1 paths)
             .pathMatchers(HttpMethod.GET, "/api/subscription-forms/*").permitAll()
+            // Security: Secure all actuator endpoints except health checks
+            // health check is needed for external monitoring and orchestration (K8s)
+            .pathMatchers("/actuator/health", "/management/health").permitAll()
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
-            .pathMatchers("/management/health").permitAll()
-            .pathMatchers("/management/info").permitAll()
-            .pathMatchers("/management/prometheus").permitAll()
+            // Security: Prometheus and Info endpoints can leak sensitive data, restrict to ADMIN
             .pathMatchers("/management/**").hasAuthority(Role.ADMIN.key())
     }
 
