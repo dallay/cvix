@@ -1,7 +1,7 @@
 package com.cvix.aop.logging
 
-import com.cvix.AppConstants
 import com.cvix.common.domain.Generated
+import com.cvix.spring.boot.AppConstants
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.AfterThrowing

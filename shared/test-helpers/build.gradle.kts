@@ -30,6 +30,8 @@ dependencies {
     testFixturesApi(libs.testcontainers.postgresql)
     testFixturesApi(libs.testcontainers.r2dbc)
     testFixturesApi(libs.testcontainers.keycloak)
+    testFixturesApi(libs.faker)
+    testFixturesApi(libs.bundles.kotest)
     // Keycloak admin client for AccessTokenResponse and related types
     testFixturesApi(libs.bundles.keycloak)
     // OAuth2 and JWT helpers needed by controller tests

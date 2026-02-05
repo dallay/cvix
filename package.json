@@ -64,7 +64,7 @@
 		"test:utilities": "pnpm --filter @dallay/utilities test",
 		"lint": "pnpm --recursive run lint",
 		"lint:strict": "pnpm --recursive run lint:strict",
-		"lint:markdown": "npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json",
+		"lint:markdown": "pnpm exec markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json",
 		"check": "pnpm run -r check && biome check . --write",
 		"clean": "pnpm --recursive run clean",
 		"backend:build": "./gradlew build",

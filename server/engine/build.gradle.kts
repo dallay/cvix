@@ -67,6 +67,12 @@ dependencies {
 
     // Server modules - Plug and play modules
     implementation(project(":server:modules:contact"))
+    implementation(project(":server:modules:contact:domain")) // Explicit domain for test
+    // implementation(project(":server:modules:identity"))
+    implementation(project(":server:modules:identity:identity-domain"))
+    implementation(project(":server:modules:identity:identity-application"))
+    // Expose infrastructure to engine for configuration (SecurityProperties, etc.)
+    implementation(project(":server:modules:identity:identity-infrastructure"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")

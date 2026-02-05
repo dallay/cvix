@@ -1,7 +1,7 @@
 package com.cvix.config.springdoc
 
-import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
 import com.cvix.common.domain.Generated
+import com.cvix.identity.infrastructure.authentication.ApplicationSecurityProperties
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.ExternalDocumentation
 import io.swagger.v3.oas.models.OpenAPI

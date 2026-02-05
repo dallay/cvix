@@ -1,7 +1,7 @@
 package com.cvix.resume.infrastructure.http
 
 import com.cvix.ControllerTest
-import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
+import com.cvix.identity.infrastructure.authentication.ApplicationSecurityProperties
 import com.cvix.resume.ResumeTestFixtures
 import com.cvix.resume.application.generate.GenerateResumeCommand
 import com.cvix.resume.domain.Locale

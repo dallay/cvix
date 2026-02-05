@@ -1,9 +1,9 @@
 package com.cvix.config
 
 import com.cvix.IntegrationTest
-import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
 import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
+import com.cvix.identity.infrastructure.authentication.mapper.AccessTokenResponseMapper.toAccessToken
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
