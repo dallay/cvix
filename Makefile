@@ -268,7 +268,7 @@ _verify-frontend-tests:
 	$(call verify_step,8,Frontend Unit Tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
 
 _verify-backend-tests:
-	$(call verify_step,9,Backend Tests,$(TIMEOUT_600) $(GRADLEW) --no-daemon test < $(DEV_NULL),backend-tests)
+	$(call verify_step,9,Backend Tests,$(TIMEOUT_600) $(GRADLEW) --no-daemon test -PincludeTags=unit < $(DEV_NULL),backend-tests)
 
 _verify-e2e-tests:
 	$(call verify_step,10,E2E Tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)

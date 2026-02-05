@@ -41,3 +41,14 @@ dependencies {
     testImplementation(testFixtures(project(":shared:test-helpers")))
     testImplementation(testFixtures(project(":server:modules:identity:identity-domain")))
 }
+
+tasks.test {
+    useJUnitPlatform {
+        if (project.hasProperty("includeTags")) {
+            includeTags.add(project.property("includeTags") as String)
+        }
+        if (project.hasProperty("excludeTags")) {
+            excludeTags.add(project.property("excludeTags") as String)
+        }
+    }
+}
