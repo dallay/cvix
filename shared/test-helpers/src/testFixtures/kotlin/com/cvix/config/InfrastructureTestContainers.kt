@@ -161,6 +161,8 @@ abstract class InfrastructureTestContainers {
                 cmd.withName("greenmail-tests-$uniqueTestSuffix")
             }
             withNetwork(NETWORK)
+            // Add network alias so Keycloak can resolve "greenmail-tests" hostname
+            withNetworkAliases("greenmail-tests")
         }
 
         @JvmStatic
