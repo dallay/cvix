@@ -26,15 +26,12 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
 private const val WEB_PORT = 6080
 
 private const val DB_PORT = 5432
 
-@Testcontainers
 @IntegrationTest
 abstract class InfrastructureTestContainers {
     @Value("\${testing.security.username}")
@@ -106,7 +103,6 @@ abstract class InfrastructureTestContainers {
         private const val MILLIS_PER_SECOND: Long = 1000
 
         @JvmStatic
-        @Container
         private val postgresContainer: PostgreSQLContainer<*> = PostgreSQLContainer(
             DockerImageName.parse(
                 "postgres:${
@@ -195,6 +191,8 @@ abstract class InfrastructureTestContainers {
 
             // Liquibase and any JDBC usage expect a JDBC URL
             registry.add("spring.liquibase.url") { jdbcUrl }
+            registry.add("spring.liquibase.user") { username }
+            registry.add("spring.liquibase.password") { password }
             registry.add("spring.datasource.url") { jdbcUrl }
             registry.add("spring.datasource.username") { username }
             registry.add("spring.datasource.password") { password }
@@ -233,9 +231,15 @@ abstract class InfrastructureTestContainers {
             log.info("Registering Keycloak Properties")
             ensureStarted()
             val authServerUrl = removeLastSlash(keycloakContainer.authServerUrl)
+            val issuerUri = "$authServerUrl/realms/$REALM"
             registry.add(
                 "spring.security.oauth2.resourceserver.jwt.issuer-uri",
             ) { authServerUrl }
+
+            // OAuth2 client provider configuration (used by SecurityConfiguration.jwtDecoder)
+            registry.add(
+                "spring.security.oauth2.client.provider.oidc.issuer-uri",
+            ) { issuerUri }
 
             registry.add(
                 "application.security.oauth2.base-url",
@@ -247,7 +251,7 @@ abstract class InfrastructureTestContainers {
 
             registry.add(
                 "application.security.oauth2.issuer-uri",
-            ) { "$authServerUrl/realms/$REALM" }
+            ) { issuerUri }
 
             registry.add(
                 "application.security.oauth2.realm",

@@ -25,6 +25,14 @@ spring:
             user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo
             jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
             user-name-attribute: preferred_username
+
+application:
+  security:
+    oauth2:
+      audience:
+        - account
+        - web_app
+
 testing:
   security:
     username: "john.doe@profiletailors.com"

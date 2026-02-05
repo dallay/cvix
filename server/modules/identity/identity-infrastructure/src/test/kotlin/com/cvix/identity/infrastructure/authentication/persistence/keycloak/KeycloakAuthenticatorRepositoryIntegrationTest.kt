@@ -1,7 +1,6 @@
 package com.cvix.identity.infrastructure.authentication.persistence.keycloak
 
 import com.cvix.CredentialGenerator
-import com.cvix.IntegrationTest
 import com.cvix.common.domain.vo.Username
 import com.cvix.common.domain.vo.credential.Credential
 import com.cvix.common.domain.vo.email.Email
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-@IntegrationTest
 class KeycloakAuthenticatorRepositoryIntegrationTest : InfrastructureTestContainers() {
     // this user is created by default in Keycloak container (see demo-realm-test.json)
     private val email = "john.doe@profiletailors.com"

@@ -4,9 +4,10 @@ import com.cvix.common.domain.error.BusinessRuleValidationException
 import com.cvix.common.domain.error.EntityNotFoundException
 import java.net.URI
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
+import org.springframework.context.NoSuchMessageException
 import org.springframework.core.codec.DecodingException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -52,6 +53,7 @@ class GlobalExceptionHandler(
             exchange = exchange,
             messageKey = MSG_ENTITY_NOT_FOUND,
             localizedMessage = localizedMessage,
+            includeInstance = true,
         )
     }
 
@@ -251,7 +253,11 @@ class GlobalExceptionHandler(
 
     private fun getLocalizedMessage(exchange: ServerWebExchange, messageKey: String): String {
         val locale = exchange.localeContext.locale ?: Locale.getDefault()
-        return messageSource.getMessage(messageKey, null, locale) ?: messageKey
+        return try {
+            messageSource.getMessage(messageKey, null, locale) ?: messageKey
+        } catch (_: NoSuchMessageException) {
+            messageKey
+        }
     }
 
     /**

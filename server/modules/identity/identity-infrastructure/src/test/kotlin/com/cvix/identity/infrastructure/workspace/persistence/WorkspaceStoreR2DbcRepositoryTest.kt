@@ -1,6 +1,6 @@
 package com.cvix.identity.infrastructure.workspace.persistence
 
-import com.cvix.IntegrationTest
+import com.cvix.config.InfrastructureTestContainers
 import com.cvix.identity.domain.user.UserId
 import com.cvix.identity.domain.workspace.Workspace
 import com.cvix.identity.domain.workspace.WorkspaceException
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 
-@IntegrationTest
 @Sql(
     scripts = ["/db/user/users.sql", "/db/workspace/workspace.sql"],
     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
@@ -32,7 +31,7 @@ import org.springframework.test.context.jdbc.Sql
     scripts = ["/db/workspace/clean.sql", "/db/user/clean.sql"],
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
 )
-internal class WorkspaceStoreR2DbcRepositoryTest {
+internal class WorkspaceStoreR2DbcRepositoryTest : InfrastructureTestContainers() {
     @Autowired
     private lateinit var workspaceStoreR2dbcRepository: WorkspaceStoreR2DbcRepository
 

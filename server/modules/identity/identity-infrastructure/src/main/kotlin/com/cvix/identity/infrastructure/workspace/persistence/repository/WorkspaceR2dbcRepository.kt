@@ -1,7 +1,6 @@
 package com.cvix.identity.infrastructure.workspace.persistence.repository
 
 import com.cvix.identity.infrastructure.workspace.persistence.entity.WorkspaceEntity
-import com.cvix.spring.boot.repository.ReactiveSearchRepository
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
@@ -9,9 +8,7 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface WorkspaceR2dbcRepository :
-    CoroutineCrudRepository<WorkspaceEntity, UUID>,
-    ReactiveSearchRepository<WorkspaceEntity> {
+interface WorkspaceR2dbcRepository : CoroutineCrudRepository<WorkspaceEntity, UUID> {
     /**
      * Finds all workspaces owned by a user.
      *

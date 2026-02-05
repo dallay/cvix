@@ -30,6 +30,12 @@ dependencies {
     testFixturesApi(libs.testcontainers.postgresql)
     testFixturesApi(libs.testcontainers.r2dbc)
     testFixturesApi(libs.testcontainers.keycloak)
+    // JDBC driver for PostgreSQL - needed by InfrastructureTestContainers.waitForJdbc()
+    testFixturesApi(libs.postgresql)
+    // JDBC auto-configuration - needed by @Sql annotations in tests
+    testFixturesApi("org.springframework.boot:spring-boot-starter-jdbc")
+    // R2DBC driver for PostgreSQL - needed by R2DBC connection factory
+    testFixturesApi(libs.r2dbc.postgresql)
     testFixturesApi(libs.faker)
     testFixturesApi(libs.bundles.kotest)
     // Keycloak admin client for AccessTokenResponse and related types
@@ -40,8 +46,8 @@ dependencies {
     testFixturesApi("org.springframework.security:spring-security-oauth2-jose")
 
     // If tests need other internal modules
-    testFixturesImplementation(project(":shared:common"))
-    testFixturesImplementation(project(":shared:spring-boot-common"))
+    testFixturesApi(project(":shared:common"))
+    testFixturesApi(project(":shared:spring-boot-common"))
 }
 
 kotlin {

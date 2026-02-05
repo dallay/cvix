@@ -1,10 +1,9 @@
 package com.cvix.identity.infrastructure
 
 import com.cvix.common.domain.Service
-import com.cvix.config.TestSecurityConfiguration
+import com.cvix.config.TestDataSourceConfiguration
 import com.cvix.identity.infrastructure.authentication.OAuth2Configuration
 import com.cvix.ratelimit.infrastructure.config.RateLimitConfiguration
-import com.cvix.spring.boot.repository.ReactiveSearchRepositoryImpl
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.ComponentScan
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 @ConfigurationPropertiesScan(basePackages = ["com.cvix"])
 @EnableR2dbcRepositories(
     basePackages = ["com.cvix.identity.infrastructure", "com.cvix.spring.boot.infrastructure.persistence.outbox"],
-    repositoryBaseClass = ReactiveSearchRepositoryImpl::class
 )
 @ComponentScan(
     basePackages = ["com.cvix"],
@@ -31,12 +29,12 @@ import org.springframework.web.bind.annotation.RestController
     excludeFilters = [
         ComponentScan.Filter(
             type = FilterType.REGEX,
-            pattern = [".*Test.*Application"],
+            pattern = [".*Test.*Application", ".*CucumberAuthenticationConfiguration", ".*TestSecurityConfiguration"],
         ),
     ],
 )
 @Import(
-    TestSecurityConfiguration::class,
+    TestDataSourceConfiguration::class,
     OAuth2Configuration::class,
     RateLimitConfiguration::class,
 )

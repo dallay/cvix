@@ -1,10 +1,12 @@
 package com.cvix
 
 import com.cvix.config.InfrastructureTestContainers
+import com.cvix.config.TestDataSourceConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.Import
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.JwtDecoders
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
@@ -29,6 +31,7 @@ private const val ROLES_CLAIM = "roles"
  */
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@Import(TestDataSourceConfiguration::class)
 abstract class ControllerIntegrationTest : InfrastructureTestContainers() {
     @Value("\${application.security.oauth2.issuer-uri}")
     protected lateinit var issuerUri: String

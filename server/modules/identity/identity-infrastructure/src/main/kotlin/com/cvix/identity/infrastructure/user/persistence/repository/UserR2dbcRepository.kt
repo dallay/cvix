@@ -1,7 +1,6 @@
 package com.cvix.identity.infrastructure.user.persistence.repository
 
 import com.cvix.identity.infrastructure.user.persistence.entity.UserEntity
-import com.cvix.spring.boot.repository.ReactiveSearchRepository
 import java.util.UUID
 import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
@@ -9,9 +8,7 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserR2dbcRepository :
-    CoroutineCrudRepository<UserEntity, UUID>,
-    ReactiveSearchRepository<UserEntity> {
+interface UserR2dbcRepository : CoroutineCrudRepository<UserEntity, UUID> {
     @Query(
         """
         INSERT INTO users (id, email, full_name)

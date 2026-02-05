@@ -1,6 +1,5 @@
 package com.cvix.identity.infrastructure.workspace.event.consumer
 
-import com.cvix.IntegrationTest
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.config.InfrastructureTestContainers
 import com.cvix.identity.domain.user.UserId
@@ -20,8 +19,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 
-@IntegrationTest
-class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestContainers() {
+internal class CreateDefaultWorkspaceOnUserCreationIntegrationTest : InfrastructureTestContainers() {
 
     @Autowired
     private lateinit var eventPublisher: EventPublisher<UserCreatedEvent>

@@ -1,8 +1,10 @@
 package com.cvix
 
-import org.springframework.boot.fromApplication
-import org.springframework.boot.with
+import org.springframework.boot.builder.SpringApplicationBuilder
 
 fun main(args: Array<String>) {
-    fromApplication<Application>().with(TestcontainersConfiguration::class).run(*args)
+    SpringApplicationBuilder(Application::class.java)
+        .sources(TestcontainersConfiguration::class.java)
+        .profiles("local")
+        .run(*args)
 }

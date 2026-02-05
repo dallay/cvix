@@ -25,8 +25,9 @@ import com.cvix.identity.domain.authentication.error.UnknownAuthenticationExcept
 import com.cvix.identity.infrastructure.authentication.cookie.AuthCookieBuilder
 import java.net.URI
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 import org.springframework.context.MessageSource
+import org.springframework.context.NoSuchMessageException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
@@ -354,7 +355,11 @@ internal class CookieAdvice(
 
 private fun getLocalizedMessage(exchange: ServerWebExchange, messageSource: MessageSource, messageKey: String): String {
     val locale = exchange.localeContext.locale ?: Locale.getDefault()
-    return messageSource.getMessage(messageKey, null, locale) ?: messageKey
+    return try {
+        messageSource.getMessage(messageKey, null, locale) ?: messageKey
+    } catch (_: NoSuchMessageException) {
+        messageKey
+    }
 }
 
 private fun createProblemDetail(

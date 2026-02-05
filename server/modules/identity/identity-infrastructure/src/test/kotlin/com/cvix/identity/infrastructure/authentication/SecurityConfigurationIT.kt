@@ -1,6 +1,6 @@
 package com.cvix.identity.infrastructure.authentication
 
-import com.cvix.IntegrationTest
+import com.cvix.config.InfrastructureTestContainers
 import com.cvix.identity.domain.authentication.Role
 import java.time.Instant
 import org.assertj.core.api.Assertions.assertThatCode
@@ -14,8 +14,7 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames.ID_TOKEN
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 
-@IntegrationTest
-internal class SecurityConfigurationIT {
+internal class SecurityConfigurationIT : InfrastructureTestContainers() {
     @Autowired
     private lateinit var grantedAuthoritiesMapper: GrantedAuthoritiesMapper
 

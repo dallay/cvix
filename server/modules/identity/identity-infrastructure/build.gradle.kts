@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":shared:spring-boot-common"))
     implementation(project(":shared:ratelimit:infrastructure"))
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation(libs.bundles.keycloak)
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -33,6 +34,8 @@ dependencies {
     // Testing
     testImplementation(springBootBom)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    // JDBC support for @Sql annotation in integration tests
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.faker)
     testImplementation(libs.mockk)

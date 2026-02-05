@@ -1,6 +1,5 @@
 package com.cvix.identity.infrastructure.authentication.persistence.keycloak
 
-import com.cvix.IntegrationTest
 import com.cvix.config.InfrastructureTestContainers
 import com.cvix.identity.domain.authentication.RefreshToken
 import com.cvix.identity.domain.authentication.RefreshTokenManager
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-@IntegrationTest
 internal class KeycloakRefreshTokenManagerRepositoryIntegrationTest :
     InfrastructureTestContainers() {
 

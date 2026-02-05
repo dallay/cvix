@@ -6,8 +6,14 @@ import com.cvix.identity.domain.authentication.AuthoritiesConstants
 import com.cvix.identity.infrastructure.authentication.cookie.AuthCookieBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 
 @Suppress("MultilineRawStringIndentation")
+@SqlGroup(
+    Sql(scripts = ["classpath:db/user/users.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+    Sql(scripts = ["classpath:db/user/clean.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
+)
 internal class AccountResourceCookieAuthIntegrationTest : ControllerIntegrationTest() {
     private val email = "john.doe@profiletailors.com"
     private val password = "S3cr3tP@ssw0rd*123"

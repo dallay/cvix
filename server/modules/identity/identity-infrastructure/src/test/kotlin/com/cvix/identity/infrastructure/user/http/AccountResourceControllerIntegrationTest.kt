@@ -11,12 +11,18 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.web.reactive.server.WebTestClient
 
 private const val ENDPOINT = "/api/account"
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SqlGroup(
+    Sql(scripts = ["classpath:db/user/users.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+    Sql(scripts = ["classpath:db/user/clean.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
+)
 class AccountResourceControllerIntegrationTest : InfrastructureTestContainers() {
 
     @Autowired
