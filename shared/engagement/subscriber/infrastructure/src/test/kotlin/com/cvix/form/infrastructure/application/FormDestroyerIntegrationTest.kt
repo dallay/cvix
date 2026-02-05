@@ -1,6 +1,6 @@
 package com.cvix.form.infrastructure.application
 
-import com.cvix.authentication.infrastructure.TestSecurityConfiguration
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers

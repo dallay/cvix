@@ -1,0 +1,31 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  liquibase:
+    change-log: classpath:/db/changelog/identity-master.yaml
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-secret: web_app
+            client-id: web_app
+            scope: openid,profile,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          oidc:
+            issuer-uri: ${application.security.oauth2.issuer-uri:http://localhost:8080/realms/cvix}
+            authorization-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/auth
+            token-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/token
+            user-info-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/userinfo
+            jwk-set-uri: ${application.security.oauth2.issuer-uri}/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+testing:
+  security:
+    username: "john.doe@profiletailors.com"
+    password: "S3cr3tP@ssw0rd*123"
+resume:
+  pdf:
+    docker:
+      timeout-seconds: 300

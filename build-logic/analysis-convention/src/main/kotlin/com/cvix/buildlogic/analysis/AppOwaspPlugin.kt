@@ -46,6 +46,20 @@ internal class AppOwaspPlugin : ConventionPlugin {
             }
         }
 
+        // Configure all OWASP dependency check tasks to not use configuration cache
+        // The OWASP plugin is not compatible with configuration cache due to Task.project access at execution time
+        tasks.withType(org.owasp.dependencycheck.gradle.tasks.Analyze::class.java).configureEach {
+            notCompatibleWithConfigurationCache("OWASP Dependency Check plugin accesses Task.project at execution time")
+        }
+
+        // Disable the aggregate task due to Kover plugin incompatibility
+        // The aggregate task tries to resolve Kover configurations which causes unsafe resolution errors
+        tasks.withType(org.owasp.dependencycheck.gradle.tasks.Aggregate::class.java).configureEach {
+            enabled = false
+            println("⚠️  Task '$name' is disabled due to incompatibility with the Kover plugin.")
+            println("    Use './gradlew dependencyCheckAnalyze' on individual projects instead.")
+        }
+
         // Make dependencyCheckAnalyze task depend on purgeDependencyCheckDatabase if purging is enabled
         if (PURGE_DATABASE) {
             tasks.named("dependencyCheckAnalyze").configure {
@@ -78,12 +92,22 @@ internal class AppOwaspPlugin : ConventionPlugin {
 
                 // remove plugin dependencies, for configs see
                 // https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_plugin_and_dependency_management
-                val validConfigurations = listOf("compileClasspath", "runtimeClasspath", "default")
+                val validConfigurations = listOf("compileClasspath", "runtimeClasspath")
+                val excludedPatterns = listOf("kover", "test", "jacoco", "detekt")
                 scanConfigurations.set(
                     configurations.names
-                        .filter { validConfigurations.contains(it) }
+                        .filter { configName ->
+                            validConfigurations.any { valid -> configName.contains(valid, ignoreCase = true) } &&
+                                excludedPatterns.none { excluded -> configName.contains(excluded, ignoreCase = true) }
+                        }
                         .toList(),
                 )
+
+                // Note: The dependencyCheckAggregate task has known issues with the Kover plugin
+                // due to unsafe configuration resolution. Use './gradlew dependencyCheckAnalyze'
+                // on individual projects instead, or run with '--no-configuration-cache'
+                // See: https://github.com/jeremylong/DependencyCheck/issues/5005
+
                 outputDirectory.set(layout.buildDirectory.dir("reports/owasp").get())
             }
         }

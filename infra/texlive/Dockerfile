@@ -96,9 +96,13 @@ RUN echo "selected_scheme scheme-basic" > texlive.profile \
 # Run the official TexLive installer
 RUN ./install-tl --profile=texlive.profile --no-interaction
 
+# Update PATH environment variable for both architectures
+# Docker will use whichever path exists based on the actual build architecture
+ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/x86_64-linux:/usr/local/texlive/${TEXLIVE_VERSION}/bin/aarch64-linux:${PATH}"
+
 # Install additional packages needed for resume generation
 # These are installed via tlmgr (TeX Live package manager)
-RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
+RUN tlmgr install \
     # Core LaTeX packages
     latex \
     latex-bin \
@@ -148,10 +152,6 @@ RUN /usr/local/texlive/${TEXLIVE_VERSION}/bin/*/tlmgr install \
     luatex \
     xunicode \
     xltxtra
-
-# Update PATH environment variable for both architectures
-# Docker will use whichever path exists based on the actual build architecture
-ENV PATH="/usr/local/texlive/${TEXLIVE_VERSION}/bin/x86_64-linux:/usr/local/texlive/${TEXLIVE_VERSION}/bin/aarch64-linux:${PATH}"
 
 # Update font cache
 RUN fc-cache -fv

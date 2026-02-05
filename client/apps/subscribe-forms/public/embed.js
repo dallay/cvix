@@ -19,7 +19,7 @@
 
 			// Check src attribute for the form ID
 			const src = iframe.getAttribute("src");
-			if (src && src.includes(id)) return iframe;
+			if (src?.includes(id)) return iframe;
 		}
 		return null;
 	}
@@ -79,7 +79,7 @@
 					// Security: Validate and sanitize height before applying
 					// Prevents CSS injection via malicious height values like "100px; malicious-code"
 					const safeHeight = sanitizeHeight(d.height);
-					iframe.style.height = safeHeight + "px";
+					iframe.style.height = `${safeHeight}px`;
 					break;
 				}
 				case "cvix:submit:success":

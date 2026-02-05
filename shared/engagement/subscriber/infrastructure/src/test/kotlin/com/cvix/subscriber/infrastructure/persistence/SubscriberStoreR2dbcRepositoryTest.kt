@@ -1,7 +1,7 @@
 package com.cvix.subscriber.infrastructure.persistence
 
 import com.cvix.IntegrationTest
-import com.cvix.authentication.infrastructure.TestSecurityConfiguration
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.common.domain.model.Language
 import com.cvix.common.domain.vo.email.Email
 import com.cvix.config.InfrastructureTestContainers

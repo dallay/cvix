@@ -1,4 +1,4 @@
-package com.cvix.authentication.infrastructure
+package com.cvix.config
 
 import org.mockito.Mockito.mock
 import org.springframework.boot.test.context.TestConfiguration
