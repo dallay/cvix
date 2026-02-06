@@ -1,5 +1,6 @@
 package com.cvix.identity.infrastructure.authentication
 
+import com.cvix.identity.infrastructure.TestIdentityApplication
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
