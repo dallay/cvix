@@ -11,6 +11,14 @@
 			"installedAt": "2026-02-03T12:11:30.844358+00:00",
 			"files": null,
 			"manifestHash": null
+		},
+		"pinned-tag": {
+			"name": "pinned-tag",
+			"version": "1.1",
+			"description": "Skill for managing \"pinned tags\" and commit SHAs, primarily for GitHub Actions security. Trigger: When fixing \"Unpinned tag for a non-immutable Action\" warnings or when pinning dependencies to specific git versions.",
+			"provider": "yuniel",
+			"installedAt": "2026-02-06T12:00:00.000Z",
+			"source": "user-request"
 		}
 	}
 }

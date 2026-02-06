@@ -192,3 +192,4 @@ Skills provide detailed patterns and conventions for specific technologies. Loca
 | [typescript](.agents/skills/typescript/SKILL.md)                         | TypeScript strict patterns, generics, types               | `.ts` files, type definitions                  |
 | [zod-4](.agents/skills/zod-4/SKILL.md)                                   | Zod 4 schema validation, breaking changes from v3         | Form validation, schema definitions            |
 | [c4-diagrams](.agents/skills/c4-diagrams/SKILL.md)                       | Generate and maintain C4 diagrams (Mermaid & PlantUML)   | Changes in docs/architecture/diagrams          |
+| [pinned-tag](.agents/skills/pinned-tag/SKILL.md)                         | Managing pinned tags and commit SHAs for security         | Fixing unpinned tag warnings, pinning Actions  |
