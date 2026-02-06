@@ -2,7 +2,7 @@ name: Contributor Report
 
 on:
   pull_request_target:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize, edited]
 
 permissions:
   contents: read
@@ -11,6 +11,7 @@ permissions:
 jobs:
   check-contributor:
     name: Contributor Quality Report
+    if: github.event.pull_request
     runs-on: ubuntu-latest
     steps:
       - name: Check Contributor Report
