@@ -1,16 +1,20 @@
 package com.cvix.identity.infrastructure.authentication
 
-import com.cvix.config.InfrastructureTestContainers
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = [TestIdentityApplication::class],
+)
 @AutoConfigureWebTestClient
 @TestPropertySource(properties = ["server.ssl.enabled=false"])
-class AuthenticationExceptionAdviceIT : InfrastructureTestContainers() {
+class AuthenticationExceptionAdviceIT {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
