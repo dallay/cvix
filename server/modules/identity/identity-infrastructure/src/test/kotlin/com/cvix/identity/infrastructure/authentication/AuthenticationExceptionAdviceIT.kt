@@ -1,23 +1,16 @@
 package com.cvix.identity.infrastructure.authentication
 
-import com.cvix.config.InfrastructureTestContainers
-import com.cvix.identity.infrastructure.TestIdentityApplication
+import com.cvix.UnitTest
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    classes = [TestIdentityApplication::class],
-)
-@AutoConfigureWebTestClient
-internal class AuthenticationExceptionAdviceIT : InfrastructureTestContainers() {
+@UnitTest
+internal class AuthenticationExceptionAdviceIT {
 
-    @Autowired
-    private lateinit var webTestClient: WebTestClient
+    private val webTestClient = WebTestClient.bindToController(AccountExceptionResource())
+        .controllerAdvice(GeneralAuthAdvice())
+        .build()
 
     @Test
     fun `should handle NotAuthenticatedUserException`() {
