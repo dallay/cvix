@@ -127,6 +127,9 @@ abstract class InfrastructureTestContainers {
                 .withRealmImportFile("keycloak/demo-realm-test.json")
                 .withAdminUsername(ADMIN_USER)
                 .withAdminPassword(ADMIN_PASSWORD)
+                .withEnv("KC_HOSTNAME_STRICT", "false")
+                .withEnv("KC_HOSTNAME_ADMIN_STRICT", "false")
+                .withEnv("KC_HEALTH_ENABLED", "true")
                 .withCreateContainerCmdModifier { cmd ->
                     cmd.withName("keycloak-tests-$uniqueTestSuffix")
                 }
@@ -134,9 +137,11 @@ abstract class InfrastructureTestContainers {
                 // Wait for the specific realm to be available (avoid 404 during realm import)
                 // Increased timeout to 900s for CI environments with limited resources
                 .waitingFor(
-                    Wait.forHttp("/realms/$REALM").forStatusCode(200).withStartupTimeout(
-                        Duration.ofSeconds(900),
-                    ),
+                    Wait.forHttp("/health/live")
+                        .forPort(8080)
+                        .withStartupTimeout(
+                            Duration.ofSeconds(900),
+                        ),
                 )
 
         @JvmStatic
@@ -238,7 +243,7 @@ abstract class InfrastructureTestContainers {
             val issuerUri = "$authServerUrl/realms/$REALM"
             registry.add(
                 "spring.security.oauth2.resourceserver.jwt.issuer-uri",
-            ) { authServerUrl }
+            ) { issuerUri }
 
             // OAuth2 client provider configuration (used by SecurityConfiguration.jwtDecoder)
             registry.add(
