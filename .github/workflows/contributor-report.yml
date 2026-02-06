@@ -1,8 +1,8 @@
 name: Contributor Report
 
 on:
-  pull_request_target:
-    types: [opened, reopened]
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Contributor Report
-        uses: jdiegosierra/contributor-report@bcfc4dc20034d8c1793d41e394ee356c2dbcd0a9
+        uses: jdiegosierra/contributor-report@v1.3.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Individual thresholds
