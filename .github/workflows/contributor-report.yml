@@ -1,7 +1,7 @@
 name: Contributor Report
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened]
 
 permissions:
@@ -13,11 +13,8 @@ jobs:
     name: Contributor Quality Report
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Check Contributor Report
-        uses: jdiegosierra/contributor-report@v1
+        uses: jdiegosierra/contributor-report@bcfc4dc20034d8c1793d41e394ee356c2dbcd0a9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Individual thresholds
