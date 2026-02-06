@@ -1,3 +1,9 @@
+## [3.15.0](https://github.com/dallay/cvix/compare/v3.14.4...v3.15.0) (2026-02-06)
+
+### ✨ Features
+
+* add identity module with user and workspace management features ([#564](https://github.com/dallay/cvix/issues/564)) ([3a56972](https://github.com/dallay/cvix/commit/3a569723482bd483121548b3b1672ab5a02f6ca2))
+
 ## [3.14.4](https://github.com/dallay/cvix/compare/v3.14.3...v3.14.4) (2026-02-04)
 
 ### 🚀 Performance Improvements
