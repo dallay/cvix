@@ -5,7 +5,11 @@ inputs:
   node-version:
     description: "Node.js version to use"
     required: false
-    default: "22"
+    default: "24.12.0"
+  node-version-file:
+    description: "Path to a file containing the Node.js version (e.g. .nvmrc)"
+    required: false
+    default: ""
   cwd:
     description: "Changes node's process.cwd() if the project is not located on the root. Default to process.cwd()"
     required: false
@@ -18,7 +22,16 @@ runs:
       with:
         run_install: false
     #        version: 10.13.1
-    - name: Setup Node.js
+    - name: Setup Node.js (version file)
+      if: ${{ inputs.node-version-file != '' }}
+      # Pinned to v4 commit hash for security
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903  # v6
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: "pnpm"
+
+    - name: Setup Node.js (version)
+      if: ${{ inputs.node-version-file == '' }}
       # Pinned to v4 commit hash for security
       uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903  # v6
       with:

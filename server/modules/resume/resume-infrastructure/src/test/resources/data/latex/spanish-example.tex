@@ -1,0 +1,658 @@
+%! Author = John Doe
+%! Date = 13/11/25
+
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+  ignoreheadfoot,
+  top=2 cm,
+  bottom=2 cm,
+  left=2 cm,
+  right=2 cm,
+  footskip=1.0 cm,
+]{geometry}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage[
+  pdftitle={John Doe - Ingeniero Full-Stack \& Líder Técnico - Currículum Vitae},
+  pdfauthor={John Doe},
+  pdfsubject={Currículum Vitae de John Doe, Ingeniero Full-Stack \& Líder Técnico},
+  pdfkeywords={Ingeniero Full-Stack \& Líder Técnico, Currículum Vitae, San Francisco, California},
+  pdfcreator={LaTeX with StringTemplate4},
+  pdfproducer={pdfTeX},
+  colorlinks=true,
+  urlcolor=primaryColor,
+  pdfstartview={FitH},
+  pdflang={es}
+]{hyperref}
+\usepackage[pscoord]{eso-pic}
+\usepackage{calc}
+\usepackage{bookmark}
+\usepackage{lastpage}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{ifthen}
+\usepackage{needspace}
+\usepackage{iftex}
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Some settings:
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+
+\titlespacing{\section}{
+  -1pt
+}{
+  0.3 cm
+}{
+  0.2 cm
+}
+
+\renewcommand\labelitemi{\textbullet}
+\newenvironment{highlights}{
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=0 cm + 10pt
+  ]
+}{
+  \end{itemize}
+}
+
+\newenvironment{highlightsforbulletentries}{
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=10pt
+  ]
+}{
+  \end{itemize}
+}
+
+\newenvironment{onecolentry}{
+  \begin{adjustwidth}{
+    0 cm + 0.00001 cm
+  }{
+    0 cm + 0.00001 cm
+  }
+}{
+  \end{adjustwidth}
+}
+
+\newenvironment{twocolentry}[2][]{
+  \begin{onecolentry}
+  \def\secondColumn{#2}
+  \setcolumnwidth{\fill, 4.5 cm}
+  \begin{paracol}{2}
+}{
+  \switchcolumn \raggedleft \secondColumn
+  \end{paracol}
+  \end{onecolentry}
+}
+
+\newenvironment{threecolentry}[3][]{
+  \begin{onecolentry}
+  \def\thirdColumn{#3}
+  \setcolumnwidth{, \fill, 4.5 cm}
+  \begin{paracol}{3}
+  {\raggedright #2} \switchcolumn
+}{
+  \switchcolumn \raggedleft \thirdColumn
+  \end{paracol}
+  \end{onecolentry}
+}
+
+\newenvironment{header}{
+  \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+  \par\kern\topsep
+}
+
+\newcommand{\placelastupdatedtext}{%
+  \AddToShipoutPictureFG*{%
+    \put(
+    \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
+    \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+      \small\color{gray}\textit{Última actualización noviembre de 2025}\hspace{\widthof{Última actualización noviembre de 2025}}
+    }}}%
+  }%
+}%
+
+\let\hrefWithoutArrow\href
+
+\newcommand{\AND}{\unskip
+\cleaders\copy\ANDbox\hskip\wd\ANDbox
+\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{$|$}
+
+% Now that the macro is defined above, place the last updated text
+\placelastupdatedtext
+
+\begin{document}
+
+% Header
+  \begin{header}
+    \fontsize{25 pt}{25 pt}\selectfont John Doe
+
+    \vspace{5 pt}
+
+    \normalsize
+    \mbox{San Francisco, California}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{mailto:john@gmail.com}{john@gmail.com}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{tel:(912) 555-4321}{(912) 555-4321}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{https://johndoe.com}{https://johndoe.com}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{https://linkedin.com/in/johndoe}{LinkedIn: johndoe}}%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{https://github.com/johndoe}{GitHub: johndoe}}%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{https://twitter.com/john}{Twitter: john}}
+  \end{header}
+
+  \vspace{5 pt - 0.3 cm}
+
+% About Me Section
+
+
+  \section{Acerca de Mí}
+
+  \begin{onecolentry}
+    Ingeniero Full-Stack orientado a resultados con más de 6 años de experiencia diseñando y escalando sistemas distribuidos que manejan más de \$5B en volumen de transacciones anual. Historial comprobado impulsando la innovación técnica en dominios de fintech, infraestructura de ML y SaaS. La experiencia abarca microservicios backend, infraestructura cloud y optimización de pipelines de ML.
+  \end{onecolentry}
+% Experience Section
+
+
+  \section{Experiencia}
+
+  \begin{twocolentry}{
+    2021-06-15 – 2024-03-01
+  }
+    \textbf{Ingeniero Backend Senior}, Nexus Financial Technologies -- https://www.nexusfintech.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Lideré el rediseño de la arquitectura de microservicios para el motor de conversión de divisas, reduciendo la latencia p95 en un 40\%.
+      \item Implementé características de seguridad y prevención de fraudes, disminuyendo las transacciones fraudulentas en un 15\%.
+      \item Mentoricé a 2 ingenieros junior y establecí las mejores prácticas de codificación dentro del equipo.
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2022-09-10 – 2024-04-15
+  }
+    \textbf{Científico de Datos, Infraestructura de ML}, StreamFlow Inc. -- https://www.streamflow.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Optimicé el algoritmo central de recomendación, aumentando el tiempo de visualización de los usuarios en un 8\%.
+      \item Automaticé el pipeline de entrenamiento y evaluación de modelos usando AWS SageMaker, reduciendo el tiempo de iteración en un 70\%.
+      \item Colaboré con equipos de ingeniería para integrar modelos de NLP que analizan reseñas y mejoran el etiquetado de contenido.
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2020-03-01 – 2022-08-30
+  }
+    \textbf{Ingeniero de Confiabilidad del Sitio (SRE)}, GlobalShop -- https://www.globalshop.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Reduje el tiempo de inactividad no planificado en un 60\% mediante la implementación de mejores prácticas de observabilidad (monitoreo, alertas, dashboards).
+      \item Automaticé el escalado de infraestructura en Kubernetes para manejar picos de tráfico que superaban 1 millón de solicitudes por minuto.
+      \item Lideré la iniciativa de Chaos Engineering, ejecutando experimentos controlados para identificar y fortalecer las debilidades del sistema.
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2019-11-15 – 2021-05-20
+  }
+    \textbf{Gerente de Producto Técnico}, CollabTool SaaS -- https://www.collabtool.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Lancé la función 'Espacios de Trabajo Compartidos', que se convirtió en el principal impulsor de conversión para los planes empresariales, generando \$2M en nuevos ingresos recurrentes anuales (ARR).
+      \item Traduje requisitos complejos de los clientes a historias de usuario técnicas y especificaciones de ingeniería claras para un equipo de 8 desarrolladores.
+      \item Realicé un análisis competitivo que identificó una oportunidad de mercado, resultando en una nueva línea de productos que capturó el 5\% de la cuota de mercado en el primer año.
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2018-07-01 – 2020-02-28
+  }
+    \textbf{Probador de Penetración}, ShieldCyber Consultancy -- https://www.shieldcyber.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Descubrí y reporté más de 50 vulnerabilidades críticas y de alto riesgo (inyecciones SQL, lógica de negocio explotable) antes de que pudieran ser explotadas maliciosamente.
+      \item Automaticé los procesos de reconocimiento y explotación inicial con scripts de Python, aumentando la eficiencia del equipo en un 25\%.
+      \item Creé informes técnicos detallados y presenté hallazgos a ejecutivos de nivel C, guiando una remediación efectiva de riesgos.
+    \end{highlights}
+  \end{onecolentry}
+
+% Education Section
+
+
+  \section{Educación}
+
+  \begin{twocolentry}{
+    2011-01-01 – 2017-01-01
+  }
+    \textbf{University of Pennsylvania}, Licenciatura in Ciencias de la Computación (\href{https://www.upenn.edu/}{link})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Promedio: 3.9/4.0
+      \item \textbf{Materias Cursadas:} Arquitectura de Computadoras, Comparación de Algoritmos de Aprendizaje, Teoría Computacional
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2005-09-01 – 2007-06-01
+  }
+    \textbf{Stanford University}, Maestría in Inteligencia Artificial (\href{https://www.stanford.edu/}{link})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Promedio: 4.0/4.0
+      \item \textbf{Materias Cursadas:} Machine Learning, Procesamiento de Lenguaje Natural, Visión por Computadora
+    \end{highlights}
+  \end{onecolentry}
+
+% Skills Section
+
+
+  \section{Habilidades}
+
+  \begin{onecolentry}
+    \textbf{Lenguajes de Programación:} Java, Python, C++, JavaScript, TypeScript, Go, Kotlin
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Frameworks \& Librerías:} Spring Boot, React, Node.js, Django, TensorFlow, PyTorch
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Cloud \& DevOps:} AWS, Docker, Kubernetes, Terraform, Jenkins, GitHub Actions
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Bases de Datos:} PostgreSQL, MongoDB, Redis, Elasticsearch, MySQL
+  \end{onecolentry}
+
+% Projects Section
+
+
+  \section{Proyectos}
+
+  \begin{twocolentry}{
+    \href{https://github.com/johndoe/shopease}{github.com/johndoe/shopease}
+  }
+    \textbf{ShopEase}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Una plataforma de comercio electrónico construida con Flutter, que permite a los usuarios navegar por productos, gestionar su carrito y completar compras con seguimiento de pedidos en tiempo real. Integrada con Stripe para el procesamiento seguro de pagos y Firebase para la sincronización de inventario en tiempo real.
+      \item Flutter
+      \item Dart
+      \item Firebase
+      \item Stripe API
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    \href{https://github.com/johndoe/budgetbuddy}{github.com/johndoe/budgetbuddy}
+  }
+    \textbf{BudgetBuddy}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Un rastreador de finanzas personales que ayuda a los usuarios a monitorear sus gastos, establecer presupuestos y visualizar tendencias de gasto con gráficos interactivos. Las características incluyen plantillas de transacciones recurrentes, soporte multi-moneda y predicciones de gastos impulsadas por machine learning.
+      \item Flutter
+      \item Dart
+      \item SQLite
+      \item Visualización de Datos
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    \href{https://github.com/johndoe/reciperealm}{github.com/johndoe/reciperealm}
+  }
+    \textbf{RecipeRealm}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Una aplicación de descubrimiento de recetas que categoriza platos por cocina, proporciona instrucciones de cocina paso a paso y permite a los usuarios guardar sus recetas favoritas. Aprovecha la integración de API REST con una base de datos completa de alimentos e incluye capacidad offline para el acceso a recetas.
+      \item Flutter
+      \item Dart
+      \item REST API
+      \item Diseño UI/UX
+    \end{highlights}
+  \end{onecolentry}
+
+% Publications Section
+
+
+  \section{Publicaciones}
+
+  \begin{samepage}
+    \begin{twocolentry}{
+      2023-06-15
+    }
+      \textbf{Optimización de Pipelines de Machine Learning Distribuido para Procesamiento de Datos en Tiempo Real}
+    \end{twocolentry}
+
+    \vspace{0.10 cm}
+
+    \begin{onecolentry}
+      IEEE Transactions on Parallel and Distributed Systems
+
+      \vspace{0.10 cm}
+
+      Este artículo presenta un enfoque novedoso para optimizar pipelines de machine learning en entornos distribuidos, reduciendo la latencia en un 40\% mientras se mantiene la precisión del modelo. La investigación demuestra aplicaciones prácticas para sistemas de inferencia en tiempo real que procesan conjuntos de datos a escala de petabytes en infraestructura global.
+
+      \vspace{0.10 cm}
+
+      \href{https://doi.org/10.1109/TPDS.2023.123456}{doi.org/10.1109/TPDS.2023.123456}
+    \end{onecolentry}
+  \end{samepage}
+
+  \vspace{0.2 cm}
+
+  \begin{samepage}
+    \begin{twocolentry}{
+      2022-11-20
+    }
+      \textbf{Arquitectura de Microservicios Escalable: Lecciones de Sistemas en Producción}
+    \end{twocolentry}
+
+    \vspace{0.10 cm}
+
+    \begin{onecolentry}
+      ACM Computing Surveys
+
+      \vspace{0.10 cm}
+
+      Un análisis integral de los patrones y anti-patrones de microservicios basado en sistemas de producción del mundo real a escala. Sintetiza las mejores prácticas de plataformas de alto tráfico, proporcionando guía accionable para arquitectos que diseñan sistemas distribuidos resilientes y mantenibles.
+
+      \vspace{0.10 cm}
+
+      \href{https://doi.org/10.1145/3571234}{doi.org/10.1145/3571234}
+    \end{onecolentry}
+  \end{samepage}
+
+% Certificates Section
+
+
+  \section{Certificaciones}
+
+  \begin{twocolentry}{
+    2023-05-15
+  }
+    \textbf{AWS Certified Solutions Architect - Professional} (\href{https://aws.amazon.com/certification/}{aws.amazon.com/certification})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Emitido por: Amazon Web Services
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2022-09-20
+  }
+    \textbf{Administrador Certificado de Kubernetes (CKA)} (\href{https://www.cncf.io/certification/cka/}{cncf.io/certification/cka})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Emitido por: Cloud Native Computing Foundation
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2021-11-07
+  }
+    \textbf{Ingeniero de Datos Profesional de Google Cloud} (\href{https://cloud.google.com/certification/data-engineer}{cloud.google.com/certification/data-engineer})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Emitido por: Google Cloud
+  \end{onecolentry}
+
+% Awards Section
+
+
+  \section{Premios y Reconocimientos}
+
+  \begin{twocolentry}{
+    2023-12-01
+  }
+    \textbf{Premio a la Excelencia en Innovación}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Otorgado por: IEEE Computer Society
+
+    \vspace{0.10 cm}
+
+    Reconocido por contribuciones sobresalientes a la arquitectura de sistemas distribuidos y optimización del rendimiento. Galardonado por el trabajo pionero en la reducción de latencia y mejora de la confiabilidad en sistemas de procesamiento de transacciones a gran escala.
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2022-01-15
+  }
+    \textbf{Empleado del Año}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Otorgado por: Apple Inc.
+
+    \vspace{0.10 cm}
+
+    Galardonado por un liderazgo excepcional y excelencia técnica en la entrega de mejoras críticas de infraestructura. Reconocido por el impacto en la mentoría y las contribuciones estratégicas a las iniciativas de confiabilidad de plataformas a escala empresarial.
+  \end{onecolentry}
+
+% Volunteer Experience Section
+
+
+  \section{Experiencia de Voluntariado}
+
+  \begin{twocolentry}{
+    2022-01-01 – Presente
+  }
+    \textbf{Mentor Técnico}, Code for Good (\href{https://codeforgood.org/}{link})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Mentorizando a estudiantes y profesionales en etapas tempranas de su carrera en fundamentos de desarrollo de software y prácticas de ingeniería avanzadas. Fomentando la participación inclusiva en la comunidad tecnológica a través de talleres prácticos y desarrollo de currículos dirigidos a grupos demográficos subrepresentados en los sectores tecnológicos.
+
+    \vspace{0.10 cm}
+
+    \begin{highlights}
+      \item Mentoricé a más de 20 estudiantes en desarrollo web y fundamentos de programación
+      \item Organicé talleres mensuales de programación para comunidades subrepresentadas
+      \item Contribuí a proyectos de código abierto que apoyan a organizaciones sin fines de lucro
+    \end{highlights}
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{twocolentry}{
+    2020-06-01 – 2021-12-31
+  }
+    \textbf{Facilitador de Talleres}, Tech Education Alliance (\href{https://techeducation.org/}{link})
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    Diseñé y entregué currículos técnicos integrales para educadores y estudiantes de K-12. Impulsé iniciativas de alfabetización tecnológica en comunidades desatendidas mientras establecía competencias fundamentales en ciencias de la computación a través de experiencias de taller atractivas y prácticas.
+
+    \vspace{0.10 cm}
+
+    \begin{highlights}
+      \item Desarrollé y entregué un currículo de programación en Python para estudiantes de secundaria
+      \item Facilité más de 15 talleres llegando a más de 300 estudiantes
+    \end{highlights}
+  \end{onecolentry}
+
+% Languages Section
+
+
+  \section{Idiomas}
+
+  \begin{onecolentry}
+    \textbf{Inglés:} Nativo
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Español:} Competencia profesional
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Francés:} Competencia limitada
+  \end{onecolentry}
+
+% Interests Section
+
+
+  \section{Intereses}
+
+  \begin{onecolentry}
+    \textbf{Código Abierto:} Kubernetes, Kernel de Linux, Herramientas de Desarrollo
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Tecnologías Emergentes:} Machine Learning, Blockchain, Computación Cuántica
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Actividades al Aire Libre:} Senderismo, Fotografía, Carrera por Montaña
+  \end{onecolentry}
+
+% References Section
+
+
+  \section{Referencias}
+
+  \begin{onecolentry}
+    \textbf{Dra. Sarah Johnson - Gerente Senior de Ingeniería, Apple}
+
+    \vspace{0.10 cm}
+
+    Tuve el placer de gestionar a John durante dos años en Apple. Su experiencia técnica y habilidades de liderazgo fueron fundamentales para entregar mejoras críticas de infraestructura. John demostró consistentemente habilidades excepcionales para resolver problemas y mentorizó eficazmente a ingenieros junior. Su capacidad para equilibrar las prioridades comerciales con la excelencia técnica lo convierte en un activo invaluable para cualquier organización.
+  \end{onecolentry}
+
+  \vspace{0.2 cm}
+
+  \begin{onecolentry}
+    \textbf{Michael Chen - Ingeniero Principal de Software, Microsoft}
+
+    \vspace{0.10 cm}
+
+    John fue un pasante excepcional que rápidamente se convirtió en un miembro valioso del equipo. Su capacidad para aprender nuevas tecnologías y contribuir a proyectos complejos fue impresionante. Lo recomiendo encarecidamente para cualquier puesto de ingeniería senior. El enfoque proactivo de John para resolver problemas y su mentalidad colaborativa lo distinguen de sus compañeros.
+  \end{onecolentry}
+
+\end{document}

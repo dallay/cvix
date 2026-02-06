@@ -1,0 +1,75 @@
+{
+	"templateId": "simple-template-002",
+	"basics": {
+		"name": "Alice Johnson",
+		"email": "alice@example.com",
+		"phone": "(555) 123-4567",
+		"summary": "A very long summary that spans multiple lines and contains various details about the person's background, experience, and skills. This is designed to test how the template handles lengthy text blocks that might cause line breaks or formatting issues in the LaTeX output. The summary continues with more information about achievements, goals, and professional philosophy. It includes numbers like $1M, percentages like 99%, and symbols like & to ensure proper escaping throughout a long paragraph."
+	},
+	"work": [
+		{
+			"name": "Company Name",
+			"position": "Position Title",
+			"url": "https://example.com",
+			"startDate": "2015-01-01",
+			"endDate": "2024-11-14",
+			"summary": "Another very long description that goes into great detail about the responsibilities, achievements, and impact of this role. This tests how the template handles extensive work descriptions that might span multiple paragraphs or require special formatting considerations.",
+			"highlights": [
+				"First highlight with detailed information",
+				"Second highlight that is also quite long and detailed",
+				"Third highlight with even more extensive information about a specific achievement",
+				"Fourth highlight continuing the pattern",
+				"Fifth highlight to test list rendering",
+				"Sixth highlight with special characters: $100K savings & 50% improvement",
+				"Seventh highlight",
+				"Eighth highlight",
+				"Ninth highlight",
+				"Tenth highlight to ensure proper list handling"
+			]
+		}
+	],
+	"education": [
+		{
+			"institution": "University Name",
+			"area": "Computer Science",
+			"studyType": "BS",
+			"startDate": "2010-01-01",
+			"endDate": "2014-01-01",
+			"courses": [
+				"Course 1",
+				"Course 2",
+				"Course 3",
+				"Course 4",
+				"Course 5",
+				"Course 6",
+				"Course 7",
+				"Course 8"
+			]
+		}
+	],
+	"skills": [
+		{
+			"name": "Skill Category 1",
+			"keywords": [
+				"Skill1",
+				"Skill2",
+				"Skill3",
+				"Skill4",
+				"Skill5",
+				"Skill6",
+				"Skill7",
+				"Skill8",
+				"Skill9",
+				"Skill10"
+			]
+		}
+	],
+	"volunteer": [],
+	"awards": [],
+	"certificates": [],
+	"publications": [],
+	"languages": [],
+	"interests": [],
+	"references": [],
+	"projects": []
+}

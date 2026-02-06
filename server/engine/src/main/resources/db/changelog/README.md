@@ -1,11 +1,17 @@
 # Database Changelog
 
-This directory contains all Liquibase database migration files for the cvix application.
+This directory contains the **engine-level** Liquibase changelog and migrations for the cvix
+application. Feature-level migrations now live in their respective module resources.
+
+As of 2026-02-06:
+- Identity migrations live under `server/modules/identity/identity-infrastructure/src/main/resources/db/changelog`
+- Resume migrations live under `server/modules/resume/resume-infrastructure/src/main/resources/db/changelog`
+- Subscription migrations live under `server/modules/subscription/subscription-infrastructure/src/main/resources/db/changelog`
 
 ## Structure
 
-- `master.yaml` - Master changelog file that includes all migrations via `includeAll`
-- `migrations/` - Individual migration files, executed in alphabetical order
+- `master.yaml` - Master changelog file that includes module masters and engine-level migrations
+- `migrations/` - Engine-only migration files, executed in alphabetical order
 - `data/` - CSV files containing seed/test data for development environments
 
 ## Migration Naming Convention
