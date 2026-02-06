@@ -2,7 +2,6 @@ package com.cvix.identity.infrastructure
 
 import com.cvix.common.domain.Service
 import com.cvix.config.TestDataSourceConfiguration
-import com.cvix.identity.infrastructure.authentication.OAuth2Configuration
 import com.cvix.ratelimit.infrastructure.config.RateLimitConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController
 )
 @Import(
     TestDataSourceConfiguration::class,
-    OAuth2Configuration::class,
     RateLimitConfiguration::class,
 )
 open class TestIdentityApplication
