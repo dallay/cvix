@@ -217,7 +217,6 @@ class SecurityConfiguration(
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()
             .pathMatchers("/management/info").permitAll()
-            .pathMatchers("/management/prometheus").permitAll()
             .pathMatchers("/management/**").hasAuthority(Role.ADMIN.key())
     }
 
