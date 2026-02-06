@@ -3,8 +3,6 @@ package com.cvix.identity.infrastructure.authentication
 import com.cvix.identity.infrastructure.TestIdentityApplication
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
-import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.MediaType
@@ -14,10 +12,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = [TestIdentityApplication::class],
-    exclude = [
-        ReactiveOAuth2ClientAutoConfiguration::class,
-        ReactiveOAuth2ResourceServerAutoConfiguration::class,
-    ],
 )
 @AutoConfigureWebTestClient
 @TestPropertySource(properties = ["server.ssl.enabled=false"])
