@@ -1,7 +1,7 @@
 package com.cvix.resume.infrastructure.http
 
-import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
 import com.cvix.common.domain.bus.Mediator
+import com.cvix.identity.infrastructure.authentication.ApplicationSecurityProperties
 import com.cvix.resume.application.generate.GenerateResumeCommand
 import com.cvix.resume.domain.Locale
 import com.cvix.resume.infrastructure.http.mapper.ResumeRequestMapper

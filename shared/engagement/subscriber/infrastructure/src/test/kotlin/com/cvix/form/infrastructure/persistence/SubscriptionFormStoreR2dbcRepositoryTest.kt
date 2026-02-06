@@ -1,8 +1,8 @@
 package com.cvix.form.infrastructure.persistence
 
-import com.cvix.authentication.infrastructure.TestSecurityConfiguration
 import com.cvix.common.domain.model.WorkspaceId
 import com.cvix.config.InfrastructureTestContainers
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.form.application.SubscriberFormStub
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.infrastructure.TestSubscriptionFormApplication

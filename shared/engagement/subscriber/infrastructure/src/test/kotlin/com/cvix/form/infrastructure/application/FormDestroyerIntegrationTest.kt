@@ -1,10 +1,10 @@
 package com.cvix.form.infrastructure.application
 
-import com.cvix.authentication.infrastructure.TestSecurityConfiguration
 import com.cvix.common.domain.bus.event.EventPublisher
 import com.cvix.common.domain.model.WorkspaceId
-import com.cvix.config.InfrastructureTestContainers
+import com.cvix.config.DatabaseTestContainers
 import com.cvix.config.TestDatabaseConfiguration
+import com.cvix.config.TestSecurityConfiguration
 import com.cvix.form.application.delete.FormDestroyer
 import com.cvix.form.domain.SubscriptionFormId
 import com.cvix.form.domain.event.SubscriptionFormDeletedEvent
@@ -42,7 +42,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase
     scripts = ["/db/subscription/clean.sql"],
     executionPhase = ExecutionPhase.AFTER_TEST_METHOD,
 )
-class FormDestroyerIntegrationTest : InfrastructureTestContainers() {
+class FormDestroyerIntegrationTest : DatabaseTestContainers() {
 
     @Autowired
     private lateinit var formDestroyer: FormDestroyer

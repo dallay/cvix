@@ -1,6 +1,6 @@
 package com.cvix.config
 
-import com.cvix.authentication.infrastructure.ApplicationSecurityProperties
+import com.cvix.identity.infrastructure.authentication.ApplicationSecurityProperties
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

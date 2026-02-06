@@ -1,9 +1,11 @@
 package com.cvix
 
+import com.cvix.config.TestDataSourceConfiguration
 import java.lang.annotation.Inherited
 import org.junit.jupiter.api.DisplayNameGeneration
 import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.core.annotation.AliasFor
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
@@ -17,10 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 @Tag("integration")
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    classes = [
-        com.cvix.TestApplication::class,
-        com.cvix.authentication.infrastructure.TestSecurityConfiguration::class,
-    ],
 )
 @ActiveProfiles("test")
+@Import(TestDataSourceConfiguration::class)
 annotation class IntegrationTest(@get:AliasFor(annotation = SpringBootTest::class) val properties: Array<String> = [])

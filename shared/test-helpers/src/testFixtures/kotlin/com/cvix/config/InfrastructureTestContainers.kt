@@ -26,15 +26,12 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
 private const val WEB_PORT = 6080
 
 private const val DB_PORT = 5432
 
-@Testcontainers
 @IntegrationTest
 abstract class InfrastructureTestContainers {
     @Value("\${testing.security.username}")
@@ -106,7 +103,6 @@ abstract class InfrastructureTestContainers {
         private const val MILLIS_PER_SECOND: Long = 1000
 
         @JvmStatic
-        @Container
         private val postgresContainer: PostgreSQLContainer<*> = PostgreSQLContainer(
             DockerImageName.parse(
                 "postgres:${
@@ -122,7 +118,8 @@ abstract class InfrastructureTestContainers {
             .withPassword("test")
             .withCreateContainerCmdModifier { cmd -> cmd.withName("postgres-tests-$uniqueTestSuffix") }
             .withNetwork(NETWORK)
-            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(120)))
+            // Increase startup timeout for CI environments with limited I/O
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(180)))
 
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
@@ -135,9 +132,10 @@ abstract class InfrastructureTestContainers {
                 }
                 .withNetwork(NETWORK)
                 // Wait for the specific realm to be available (avoid 404 during realm import)
+                // Increased timeout to 900s for CI environments with limited resources
                 .waitingFor(
                     Wait.forHttp("/realms/$REALM").forStatusCode(200).withStartupTimeout(
-                        Duration.ofSeconds(180),
+                        Duration.ofSeconds(900),
                     ),
                 )
 
@@ -164,6 +162,8 @@ abstract class InfrastructureTestContainers {
                 cmd.withName("greenmail-tests-$uniqueTestSuffix")
             }
             withNetwork(NETWORK)
+            // Add network alias so Keycloak can resolve "greenmail-tests" hostname
+            withNetworkAliases("greenmail-tests")
         }
 
         @JvmStatic
@@ -195,6 +195,8 @@ abstract class InfrastructureTestContainers {
 
             // Liquibase and any JDBC usage expect a JDBC URL
             registry.add("spring.liquibase.url") { jdbcUrl }
+            registry.add("spring.liquibase.user") { username }
+            registry.add("spring.liquibase.password") { password }
             registry.add("spring.datasource.url") { jdbcUrl }
             registry.add("spring.datasource.username") { username }
             registry.add("spring.datasource.password") { password }
@@ -233,9 +235,15 @@ abstract class InfrastructureTestContainers {
             log.info("Registering Keycloak Properties")
             ensureStarted()
             val authServerUrl = removeLastSlash(keycloakContainer.authServerUrl)
+            val issuerUri = "$authServerUrl/realms/$REALM"
             registry.add(
                 "spring.security.oauth2.resourceserver.jwt.issuer-uri",
             ) { authServerUrl }
+
+            // OAuth2 client provider configuration (used by SecurityConfiguration.jwtDecoder)
+            registry.add(
+                "spring.security.oauth2.client.provider.oidc.issuer-uri",
+            ) { issuerUri }
 
             registry.add(
                 "application.security.oauth2.base-url",
@@ -247,7 +255,7 @@ abstract class InfrastructureTestContainers {
 
             registry.add(
                 "application.security.oauth2.issuer-uri",
-            ) { "$authServerUrl/realms/$REALM" }
+            ) { issuerUri }
 
             registry.add(
                 "application.security.oauth2.realm",

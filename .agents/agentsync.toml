@@ -112,18 +112,6 @@ destination = ".gemini/skills"
 type = "symlink-contents"
 
 # -----------------------------------------------------------------------------
-# Cursor AI - VS Code based AI
-# -----------------------------------------------------------------------------
-[agents.cursor]
-enabled = true
-description = "Cursor AI"
-
-[agents.cursor.targets.rules]
-source = "AGENTS.md"
-destination = ".cursor/rules"
-type = "symlink"
-
-# -----------------------------------------------------------------------------
 # Root AGENTS.md - For tools that look for it in repo root
 # -----------------------------------------------------------------------------
 [agents.root]

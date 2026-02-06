@@ -133,7 +133,6 @@ playwright-report/
 # START AI Agent Symlinks
 .claude/commands
 .claude/skills
-.cursor/rules
 .gemini/commands
 .gemini/settings.json
 .gemini/skills

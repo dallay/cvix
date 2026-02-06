@@ -1,13 +1,17 @@
 package com.cvix.config
 
 import com.cvix.IntegrationTest
-import com.cvix.authentication.infrastructure.mapper.AccessTokenResponseMapper.toAccessToken
 import com.cvix.common.domain.authentication.AccessToken
 import com.cvix.common.util.SystemEnvironment.getEnvOrDefault
+import com.cvix.identity.infrastructure.authentication.mapper.AccessTokenResponseMapper.toAccessToken
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import java.net.URI
 import java.net.URISyntaxException
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.time.Duration
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.jupiter.api.BeforeAll
 import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
@@ -21,11 +25,13 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
 private const val WEB_PORT = 6080
+private const val DB_PORT = 5432
 
 @Testcontainers
 @IntegrationTest
@@ -38,7 +44,7 @@ abstract class InfrastructureTestContainers {
 
     init {
         log.info("Starting infrastructure... \uD83D\uDE80")
-        startInfrastructure()
+        ensureStarted()
     }
 
     protected fun getAccessToken(
@@ -89,6 +95,32 @@ abstract class InfrastructureTestContainers {
         private val ports = arrayOf(3025, 3110, 3143, 3465, 3993, 3995, WEB_PORT)
         private val NETWORK: Network = Network.newNetwork()
 
+        // Ensure containers are started once in a thread-safe manner
+        private val started = AtomicBoolean(false)
+
+        // Named constants to avoid magic numbers in the wait logic
+        private const val DEFAULT_JDBC_TIMEOUT_SECONDS: Long = 60
+        private const val SLEEP_INTERVAL_MILLIS: Long = 1000
+        private const val MILLIS_PER_SECOND: Long = 1000
+
+        @JvmStatic
+        private val postgresContainer: PostgreSQLContainer<*> = PostgreSQLContainer(
+            DockerImageName.parse(
+                "postgres:${
+                    getEnvOrDefault(
+                        "POSTGRES_VERSION",
+                        "15-alpine",
+                    )
+                }",
+            ),
+        )
+            .withDatabaseName("cvix_test")
+            .withUsername("test")
+            .withPassword("test")
+            .withCreateContainerCmdModifier { cmd -> cmd.withName("postgres-engine-tests-$uniqueTestSuffix") }
+            .withNetwork(NETWORK)
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(120)))
+
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
             KeycloakContainer("keycloak/keycloak:${getEnvOrDefault("KEYCLOAK_VERSION", "26.2.3")}")
@@ -126,8 +158,59 @@ abstract class InfrastructureTestContainers {
         @JvmStatic
         @DynamicPropertySource
         fun registerResourceServerIssuerProperty(registry: DynamicPropertyRegistry) {
+            registerDatabaseProperties(registry)
             registerKeycloakProperties(registry)
             registerMailProperties(registry)
+        }
+
+        private fun registerDatabaseProperties(registry: DynamicPropertyRegistry) {
+            log.info("Registering Database Properties")
+            ensureStarted()
+            val host = postgresContainer.host
+            val port = postgresContainer.getMappedPort(DB_PORT)
+            val db = postgresContainer.databaseName
+            val username = postgresContainer.username
+            val password = postgresContainer.password
+            val jdbcUrl = postgresContainer.jdbcUrl
+            val r2dbcUrl = "r2dbc:postgresql://$host:$port/$db"
+
+            // Wait for JDBC connection to become available to avoid race conditions
+            waitForJdbc(jdbcUrl, username, password)
+
+            registry.add("spring.r2dbc.url") { r2dbcUrl }
+            registry.add("spring.r2dbc.username") { username }
+            registry.add("spring.r2dbc.password") { password }
+
+            // Liquibase and any JDBC usage expect a JDBC URL
+            registry.add("spring.liquibase.url") { jdbcUrl }
+            registry.add("spring.liquibase.user") { username }
+            registry.add("spring.liquibase.password") { password }
+            registry.add("spring.datasource.url") { jdbcUrl }
+            registry.add("spring.datasource.username") { username }
+            registry.add("spring.datasource.password") { password }
+        }
+
+        private fun waitForJdbc(
+            jdbcUrl: String,
+            username: String,
+            password: String,
+            timeoutSeconds: Long = DEFAULT_JDBC_TIMEOUT_SECONDS,
+        ) {
+            val deadline = System.currentTimeMillis() + timeoutSeconds * MILLIS_PER_SECOND
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    DriverManager.getConnection(jdbcUrl, username, password).use { _ ->
+                        log.info("JDBC connection to $jdbcUrl successful")
+                        return
+                    }
+                } catch (e: SQLException) {
+                    log.info("Waiting for JDBC at $jdbcUrl...: ${e.message}")
+                    Thread.sleep(SLEEP_INTERVAL_MILLIS)
+                }
+            }
+            error(
+                "Postgres did not become available at $jdbcUrl within $timeoutSeconds seconds",
+            )
         }
 
         private fun registerMailProperties(registry: DynamicPropertyRegistry) {
@@ -138,7 +221,7 @@ abstract class InfrastructureTestContainers {
 
         private fun registerKeycloakProperties(registry: DynamicPropertyRegistry) {
             log.info("Registering Keycloak Properties")
-            startInfrastructure()
+            ensureStarted()
             val authServerUrl = removeLastSlash(keycloakContainer.authServerUrl)
             registry.add(
                 "spring.security.oauth2.resourceserver.jwt.issuer-uri",
@@ -188,9 +271,23 @@ abstract class InfrastructureTestContainers {
             return url
         }
 
+        @JvmStatic
+        fun ensureStarted() {
+            if (started.get()) return
+            synchronized(this) {
+                if (started.get()) return
+                startInfrastructure()
+                started.set(true)
+            }
+        }
+
         @BeforeAll
         @JvmStatic
         fun startInfrastructure() {
+            if (!postgresContainer.isRunning) {
+                log.info("Postgres Container Start \uD83D\uDE80")
+                postgresContainer.start()
+            }
             if (!keycloakContainer.isRunning) {
                 log.info("Keycloak Containers Start \uD83D\uDE80")
                 keycloakContainer.start()

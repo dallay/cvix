@@ -2,13 +2,13 @@ package com.cvix.resume.application.template
 
 import com.cvix.FixtureDataLoader
 import com.cvix.UnitTest
+import com.cvix.identity.application.workspace.security.WorkspaceAuthorizationService
 import com.cvix.resume.application.TemplateMetadataResponses
 import com.cvix.resume.domain.Locale
 import com.cvix.resume.domain.TemplateMetadata
 import com.cvix.subscription.domain.ResolverContext
 import com.cvix.subscription.domain.SubscriptionResolver
 import com.cvix.subscription.domain.SubscriptionTier
-import com.cvix.workspace.application.security.WorkspaceAuthorizationService
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -111,10 +111,10 @@ internal class ListTemplatesQueryHandlerTest {
             val query = ListTemplatesQuery(userId, workspaceId, 10)
             coEvery {
                 workspaceAuthorizationService.ensureAccess(workspaceId, userId)
-            } throws com.cvix.workspace.domain.WorkspaceAuthorizationException("User not authorized")
+            } throws com.cvix.identity.domain.workspace.WorkspaceAuthorizationException("User not authorized")
 
             // When/Then
-            org.junit.jupiter.api.assertThrows<com.cvix.workspace.domain.WorkspaceAuthorizationException> {
+            org.junit.jupiter.api.assertThrows<com.cvix.identity.domain.workspace.WorkspaceAuthorizationException> {
                 listTemplatesQueryHandler.handle(query)
             }
             coVerify { workspaceAuthorizationService.ensureAccess(workspaceId, userId) }

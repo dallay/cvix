@@ -1,5 +1,6 @@
 package com.cvix
 
+import com.cvix.spring.boot.AppConstants
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.Locale

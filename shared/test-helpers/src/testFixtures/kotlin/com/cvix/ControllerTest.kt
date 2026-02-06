@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import java.time.Duration
 import java.util.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -72,6 +73,7 @@ abstract class ControllerTest {
             .webFilter<WebTestClient.ControllerSpec>(WorkspaceContextWebFilter())
             .controllerAdvice(GlobalExceptionHandler(messageSource))
             .configureClient()
+            .responseTimeout(Duration.ofSeconds(TEST_TIMEOUT_SECONDS))
             .build()
             .mutateWith(csrf())
             .mutateWith(
@@ -109,5 +111,14 @@ abstract class ControllerTest {
     @AfterEach
     protected fun tearDown() {
         unmockkStatic(ReactiveSecurityContextHolder::class)
+    }
+
+    companion object {
+        /**
+         * Extended timeout for WebTestClient responses.
+         * Default (5s) is insufficient for CI environments where Hibernate Validator
+         * lazy-initialization can be slow on first validation request.
+         */
+        private const val TEST_TIMEOUT_SECONDS = 30L
     }
 }

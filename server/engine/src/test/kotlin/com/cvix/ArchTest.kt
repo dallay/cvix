@@ -12,11 +12,9 @@ internal class ArchTest {
 
     private lateinit var importedClasses: JavaClasses
     private val boundedContexts = listOf(
-        "users",
-        "authentication",
-        "workspace",
         "resume",
         "subscription",
+        // "users", "authentication", "workspace" extracted to server/modules/identity
         // "contact" has been extracted to server/modules/contact
         // "ratelimit" has been extracted to shared/ratelimit
     )

@@ -9,12 +9,12 @@ pre-commit:
       run: git update-index --again
     markdownlint:
       glob: "**/*.{md,mdx}"
-      run: npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json
+      run: pnpm exec markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json
 
 commit-msg:
   commands:
     a_lint:
-      run: npx --no-install commitlint --edit
+      run: pnpm exec commitlint --edit
 
 post-commit:
   commands:

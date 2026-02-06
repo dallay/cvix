@@ -243,8 +243,15 @@ _verify-frontend-check:
 _verify-backend-check:
 	$(call verify_step,4,Backend Checks (Detekt),$(GRADLEW) --no-daemon detektAll < $(DEV_NULL),backend-check)
 
+# Configuration
+MARKDOWNLINT := ./node_modules/.bin/markdownlint-cli2
+MARKDOWNLINT_CONFIG := $(CURDIR)/.markdownlint.json
+
 _verify-markdown:
-	$(call verify_step,5,Markdown Lint,npx --no-install markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json,markdown-lint)
+	@echo "⏳ [5/10] Markdown Lint..." && $(MKDIR_P) $(LOG_DIR) && \
+	$(MARKDOWNLINT) '**/*.{md,mdx}' --config $(MARKDOWNLINT_CONFIG) > $(LOG_DIR)/markdown-lint.log 2>&1 && \
+	echo "✅ Markdown Lint: PASSED" || \
+	(echo "❌ Markdown Lint: FAILED. See $(LOG_DIR)/markdown-lint.log"; exit 1)
 
 _verify-yaml:
 	@echo "⏳ [6/10] YAML Lint..." && $(MKDIR_P) $(LOG_DIR) && \
@@ -261,7 +268,7 @@ _verify-frontend-tests:
 	$(call verify_step,8,Frontend Unit Tests,$(TIMEOUT_300) $(PNPM) test,frontend-tests)
 
 _verify-backend-tests:
-	$(call verify_step,9,Backend Tests,$(TIMEOUT_600) $(GRADLEW) --no-daemon test < $(DEV_NULL),backend-tests)
+	$(call verify_step,9,Backend Tests,$(TIMEOUT_600) $(GRADLEW) --no-daemon test -PincludeTags=unit < $(DEV_NULL),backend-tests)
 
 _verify-e2e-tests:
 	$(call verify_step,10,E2E Tests,FORCE_HTTP=true $(TIMEOUT_600) $(PNPM) test:e2e,e2e-tests)

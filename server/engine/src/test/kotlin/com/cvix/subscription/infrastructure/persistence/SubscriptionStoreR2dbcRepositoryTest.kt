@@ -2,10 +2,10 @@ package com.cvix.subscription.infrastructure.persistence
 
 import com.cvix.IntegrationTest
 import com.cvix.config.InfrastructureTestContainers
+import com.cvix.identity.infrastructure.user.persistence.repository.UserR2dbcRepository
 import com.cvix.subscription.domain.Subscription
 import com.cvix.subscription.domain.SubscriptionStatus
 import com.cvix.subscription.domain.SubscriptionTier
-import com.cvix.users.infrastructure.persistence.repository.UserR2dbcRepository
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
