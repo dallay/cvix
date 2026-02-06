@@ -118,7 +118,8 @@ abstract class InfrastructureTestContainers {
             .withPassword("test")
             .withCreateContainerCmdModifier { cmd -> cmd.withName("postgres-tests-$uniqueTestSuffix") }
             .withNetwork(NETWORK)
-            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(120)))
+            // Increase startup timeout for CI environments with limited I/O
+            .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(180)))
 
         @JvmStatic
         private val keycloakContainer: KeycloakContainer =
@@ -131,10 +132,10 @@ abstract class InfrastructureTestContainers {
                 }
                 .withNetwork(NETWORK)
                 // Wait for the specific realm to be available (avoid 404 during realm import)
-                // Increased timeout to 300s for CI environments with limited resources
+                // Increased timeout to 600s for CI environments with limited resources
                 .waitingFor(
                     Wait.forHttp("/realms/$REALM").forStatusCode(200).withStartupTimeout(
-                        Duration.ofSeconds(300),
+                        Duration.ofSeconds(600),
                     ),
                 )
 
