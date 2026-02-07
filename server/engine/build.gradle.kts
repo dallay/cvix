@@ -68,6 +68,8 @@ dependencies {
     // Server modules - Plug and play modules
     implementation(project(":server:modules:contact"))
     implementation(project(":server:modules:contact:domain")) // Explicit domain for test
+    implementation(project(":server:modules:resume"))
+    implementation(project(":server:modules:subscription"))
     // implementation(project(":server:modules:identity"))
     implementation(project(":server:modules:identity:identity-domain"))
     implementation(project(":server:modules:identity:identity-application"))

@@ -7,7 +7,7 @@
 	"type": "module",
 	"homepage": "https://blog.profiletailors.com",
 	"engines": {
-		"node": ">=22.0.0",
+		"node": ">=24.12.0",
 		"pnpm": ">=10.27.0"
 	},
 	"packageManager": "pnpm@10.28.2",
@@ -31,9 +31,11 @@
 	"scripts": {
 		"update": "pnpm update",
 		"update-interactive": "pnpm update --interactive",
-		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev",
+		"dev": "astro dev",
+		"dev:insecure": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev",
 		"dev:http": "FORCE_HTTP=true astro dev",
-		"start": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev --open",
+		"start": "astro dev --open",
+		"start:insecure": "NODE_TLS_REJECT_UNAUTHORIZED=0 astro dev --open",
 		"build": "astro check && astro build",
 		"preview": "astro preview",
 		"check": "astro check",

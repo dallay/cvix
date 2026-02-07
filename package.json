@@ -65,7 +65,8 @@
 		"lint": "pnpm --recursive run lint",
 		"lint:strict": "pnpm --recursive run lint:strict",
 		"lint:markdown": "pnpm exec markdownlint-cli2 '**/*.{md,mdx}' --config .markdownlint.json",
-		"check": "pnpm run -r check && biome check . --write",
+		"check": "pnpm run -r check && biome check .",
+		"format": "biome check . --write",
 		"clean": "pnpm --recursive run clean",
 		"backend:build": "./gradlew build",
 		"backend:run": "./gradlew bootRun",
@@ -110,11 +111,14 @@
 			"js-yaml": "^4.1.1",
 			"devalue": "^5.6.2",
 			"h3": "^1.15.5",
-			"tar": "^7.5.6",
+			"tar": "^7.5.7",
 			"lodash": "^4.17.23",
 			"lodash-es": "^4.17.23",
 			"diff": "^8.0.3",
-			"undici": "^7.18.2"
+			"undici": "^7.18.2",
+			"brace-expansion": "^4.0.1",
+			"fast-xml-parser": "^5.3.4",
+			"npm": "^11.5.2"
 		},
 		"onlyBuiltDependencies": [
 			"@biomejs/biome",

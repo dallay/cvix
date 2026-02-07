@@ -15,7 +15,7 @@ on:
         required: false
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.12.0"
   TEXLIVE_IMAGE: dallay/texlive:2025 # TexLive Docker image for PDF generation
   REGISTRY_GHCR: ghcr.io
   REGISTRY_DOCKERHUB: docker.io

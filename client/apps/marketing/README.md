@@ -48,7 +48,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 24.12+
 - pnpm 10+
 
 ### Commands

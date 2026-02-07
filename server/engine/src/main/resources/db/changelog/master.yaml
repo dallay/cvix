@@ -1,6 +1,10 @@
 databaseChangeLog:
   - include:
       file: db/changelog/identity-master.yaml
+  - include:
+      file: db/changelog/resume-master.yaml
+  - include:
+      file: db/changelog/subscription-master.yaml
   - includeAll:
       path: migrations
       relativeToChangelogFile: true

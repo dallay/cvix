@@ -1,0 +1,265 @@
+%! Author = Test \$pecial Ch@rs \& More!
+%! Date = 13/11/25
+
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+  ignoreheadfoot,
+  top=2 cm,
+  bottom=2 cm,
+  left=2 cm,
+  right=2 cm,
+  footskip=1.0 cm,
+]{geometry}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage[
+  pdftitle={Test \$pecial Ch@rs \& More! - Engineer \& Developer - Resume/CV},
+  pdfauthor={Test \$pecial Ch@rs \& More!},
+  pdfsubject={Resume/CV of Test \$pecial Ch@rs \& More!, Engineer \& Developer},
+  pdfkeywords={Engineer \& Developer, Resume/CV, San Francisco, California},
+  pdfcreator={LaTeX with StringTemplate4},
+  pdfproducer={pdfTeX},
+  colorlinks=true,
+  urlcolor=primaryColor,
+  pdfstartview={FitH},
+  pdflang={en}
+]{hyperref}
+\usepackage[pscoord]{eso-pic}
+\usepackage{calc}
+\usepackage{bookmark}
+\usepackage{lastpage}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{ifthen}
+\usepackage{needspace}
+\usepackage{iftex}
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Some settings:
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+
+\titlespacing{\section}{
+  -1pt
+}{
+  0.3 cm
+}{
+  0.2 cm
+}
+
+\renewcommand\labelitemi{\textbullet}
+\newenvironment{highlights}{
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=0 cm + 10pt
+  ]
+}{
+  \end{itemize}
+}
+
+\newenvironment{highlightsforbulletentries}{
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=10pt
+  ]
+}{
+  \end{itemize}
+}
+
+\newenvironment{onecolentry}{
+  \begin{adjustwidth}{
+    0 cm + 0.00001 cm
+  }{
+    0 cm + 0.00001 cm
+  }
+}{
+  \end{adjustwidth}
+}
+
+\newenvironment{twocolentry}[2][]{
+  \begin{onecolentry}
+  \def\secondColumn{#2}
+  \setcolumnwidth{\fill, 4.5 cm}
+  \begin{paracol}{2}
+}{
+  \switchcolumn \raggedleft \secondColumn
+  \end{paracol}
+  \end{onecolentry}
+}
+
+\newenvironment{threecolentry}[3][]{
+  \begin{onecolentry}
+  \def\thirdColumn{#3}
+  \setcolumnwidth{, \fill, 4.5 cm}
+  \begin{paracol}{3}
+  {\raggedright #2} \switchcolumn
+}{
+  \switchcolumn \raggedleft \thirdColumn
+  \end{paracol}
+  \end{onecolentry}
+}
+
+\newenvironment{header}{
+  \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+  \par\kern\topsep
+}
+
+\newcommand{\placelastupdatedtext}{%
+  \AddToShipoutPictureFG*{%
+    \put(
+    \LenToUnit{\paperwidth-2 cm-0 cm+0.05cm},
+    \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+      \small\color{gray}\textit{Last updated November 2025}\hspace{\widthof{Last updated November 2025}}
+    }}}%
+  }%
+}%
+
+\let\hrefWithoutArrow\href
+
+\newcommand{\AND}{\unskip
+\cleaders\copy\ANDbox\hskip\wd\ANDbox
+\ignorespaces
+}
+\newsavebox\ANDbox
+\sbox\ANDbox{$|$}
+
+% Now that the macro is defined above, place the last updated text
+\placelastupdatedtext
+
+\begin{document}
+
+% Header
+  \begin{header}
+    \fontsize{25 pt}{25 pt}\selectfont Test \$pecial Ch@rs \& More!
+
+    \vspace{5 pt}
+
+    \normalsize
+    \mbox{San Francisco, California}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{mailto:test\_user+tag@example.com}{test\_user+tag@example.com}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{tel:(123) 456-7890}{(123) 456-7890}}%%
+    \kern 5.0 pt%
+    \AND%
+    \kern 5.0 pt%
+    \mbox{\hrefWithoutArrow{https://example.com/~user}{https://example.com/~user}}%
+  \end{header}
+
+  \vspace{5 pt - 0.3 cm}
+
+% About Me Section
+
+
+  \section{About Me}
+
+  \begin{onecolentry}
+    Summary with \$5B revenue, 40\% growth, \#1 ranking, and special chars: \& \% \$ \# \_ \{ \} \textasciitilde{} \textasciicircum{} \textbackslash\{\}
+  \end{onecolentry}
+% Experience Section
+
+
+  \section{Experience}
+
+  \begin{twocolentry}{
+    2020-01-01 – 2024-11-14
+  }
+    \textbf{Senior Engineer \& Tech Lead}, Company \& Co. -- https://example.com
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item Reduced latency by 40\% \& improved performance
+      \item Saved \$500K annually through optimization
+      \item Led team of 5-10 engineers \#techleadership with \textbackslash\{\}LaTeX docs
+    \end{highlights}
+  \end{onecolentry}
+
+% Education Section
+
+
+  \section{Education}
+
+  \begin{twocolentry}{
+    2015-01-01 – 2019-01-01
+  }
+    \textbf{MIT \& Stanford}, BS in CS \& Math
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item GPA: 3.9/4.0
+      \item \textbf{Coursework:} Algorithms \& Data Structures, Machine Learning 101, Advanced Topics in AI
+    \end{highlights}
+  \end{onecolentry}
+
+% Skills Section
+
+
+  \section{Skills}
+
+  \begin{onecolentry}
+    \textbf{Languages \& Frameworks:} C++, Python 3.x, Node.js \& Express, React \& Vue.js
+  \end{onecolentry}
+
+% Projects Section
+
+
+  \section{Projects}
+
+  \begin{twocolentry}{
+    \href{https://github.com/user/project\_name}{github.com/user/project\_name}
+  }
+    \textbf{Project\_Name\_With\_Underscores}
+  \end{twocolentry}
+
+  \vspace{0.10 cm}
+  \begin{onecolentry}
+    \begin{highlights}
+      \item A project with \$1M funding \& 100\% success rate
+      \item Built with Flutter \& Dart
+      \item Achieved 99.9\% uptime
+    \end{highlights}
+  \end{onecolentry}
+
+\end{document}

@@ -77,7 +77,7 @@ See `.agents/skills/hexagonal-architecture/SKILL.md` for detailed architecture d
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 24.12+
 - pnpm 10+
 - Backend services running (see root README)
 

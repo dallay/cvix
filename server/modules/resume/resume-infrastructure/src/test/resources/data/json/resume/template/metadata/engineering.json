@@ -1,0 +1,23 @@
+{
+	"id": "engineering",
+	"name": "Engineering Resume",
+	"version": "0.1.0",
+	"descriptions": {
+		"EN": "Engineering resume template (single-column focused for engineering profiles).",
+		"ES": "Plantilla de currículum para ingeniería (diseño de una sola columna enfocado en perfiles de ingeniería)."
+	},
+	"supportedLocales": ["EN", "ES"],
+	"templatePath": "templates/engineering",
+	"previewUrl": "https://placehold.co/300x600.png",
+	"requiredSubscriptionTier": "FREE",
+	"params": {
+		"colorPalette": "blue",
+		"fontFamily": "Roboto",
+		"spacing": "normal",
+		"density": "comfortable",
+		"customParams": {
+			"includePhoto": true,
+			"highlightSkills": true
+		}
+	}
+}
