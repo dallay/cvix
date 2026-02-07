@@ -10,6 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@cvix/ui/components/ui/dropdown-menu";
+import { Loader2 } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -81,7 +82,11 @@ const getDisplayName = (currentUser: typeof user.value) => {
 <template>
   <DropdownMenu v-if="user">
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" class="relative h-8 w-8 rounded-full">
+      <Button
+        variant="ghost"
+        class="relative h-8 w-8 rounded-full"
+        :aria-label="'User menu for ' + getDisplayName(user)"
+      >
         <Avatar class="h-8 w-8">
           <AvatarFallback>{{ getUserInitials(user) }}</AvatarFallback>
         </Avatar>
@@ -111,7 +116,8 @@ const getDisplayName = (currentUser: typeof user.value) => {
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleLogout" :disabled="isLoggingOut">
-        <PhSignOutLight class="mr-2 h-4 w-4" />
+        <Loader2 v-if="isLoggingOut" class="mr-2 h-4 w-4 animate-spin" />
+        <PhSignOutLight v-else class="mr-2 h-4 w-4" />
         <span>{{ isLoggingOut ? "Logging out..." : "Log out" }}</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
