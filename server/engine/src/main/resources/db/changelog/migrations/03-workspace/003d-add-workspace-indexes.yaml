@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003d-add-workspace-indexes
+      author: bolt
+      comment: |
+        Add indexes to optimize workspace-related queries.
+        - idx_workspaces_owner_id: Optimizes finding workspaces by owner.
+        - idx_workspace_members_user_id: Optimizes finding workspaces a user belongs to.
+      changes:
+        - createIndex:
+            tableName: workspaces
+            indexName: idx_workspaces_owner_id
+            columns:
+              - column:
+                  name: owner_id
+        - createIndex:
+            tableName: workspace_members
+            indexName: idx_workspace_members_user_id
+            columns:
+              - column:
+                  name: user_id
+      rollback:
+        - dropIndex:
+            tableName: workspaces
+            indexName: idx_workspaces_owner_id
+        - dropIndex:
+            tableName: workspace_members
+            indexName: idx_workspace_members_user_id
