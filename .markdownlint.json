@@ -17,6 +17,7 @@
 		"allowed_elements": [
 			"Card",
 			"CardGrid",
+			"LinkCard",
 			"PageHeadline",
 			"Waitlist",
 			"div",
