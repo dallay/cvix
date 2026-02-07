@@ -68,6 +68,7 @@ jobs:
         uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache-dependency-path: "pnpm-lock.yaml"
 
       - name: Verify commit analyzer
         run: |
