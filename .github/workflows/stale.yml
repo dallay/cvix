@@ -10,17 +10,5 @@ permissions:
 
 jobs:
   stale:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/stale@5f858e3efba33a5ca4407a664cc011ad407f2008   # v10
-        with:
-          days-before-stale: 120
-          days-before-close: 60
-          stale-issue-message: >
-            This issue was marked as stale due to inactivity. It will be closed automatically in 60 days if there are no updates.
-          stale-pr-message: >
-            This PR was marked as stale due to inactivity. It will be closed automatically in 60 days if there are no updates.
-          stale-issue-label: "stale"
-          stale-pr-label: "stale"
-          exempt-issue-labels: "priority:high,security"
-          exempt-pr-labels: "priority:high,security"
+    uses: dallay/common-actions/.github/workflows/stale.yml@main
+    secrets: inherit

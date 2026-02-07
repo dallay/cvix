@@ -9,18 +9,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  check-contributor:
-    name: Contributor Quality Report
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Contributor Report
-        uses: jdiegosierra/contributor-report@v1.3.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Individual thresholds
-          threshold-pr-merge-rate: '0.3'
-          threshold-account-age: '30'
-          threshold-positive-reactions: '1'
-          threshold-negative-reactions: '5'
-          # Action on fail
-          on-fail: 'comment'
+  report:
+    uses: dallay/common-actions/.github/workflows/contributor-report.yml@main
+    secrets: inherit

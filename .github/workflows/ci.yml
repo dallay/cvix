@@ -176,7 +176,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Setup Java
-        uses: ./.github/actions/setup/java
+        uses: dallay/common-actions/actions/setup-java@main
       - name: Install reviewdog
         run: |
           curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0
@@ -200,7 +200,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Setup Java
-        uses: ./.github/actions/setup/java
+        uses: dallay/common-actions/actions/setup-java@main
       - name: Pre-pull TexLive Docker image
         timeout-minutes: 10
         run: |
@@ -287,12 +287,13 @@ jobs:
             **/build/test-results/**/*.xml
       - name: Upload coverage to Codecov
         id: codecov
-        uses: ./.github/actions/codecov
+        uses: dallay/common-actions/actions/codecov@main
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/reports/kover/report.xml
           flags: backend
           name: codecov-backend
+          slug: dallay/cvix
           verbose: "true"
       - name: Upload build artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
@@ -315,7 +316,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Run Biome Check
@@ -335,7 +336,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Build
@@ -344,12 +345,13 @@ jobs:
         run: pnpm test:coverage
       - name: Upload coverage to Codecov
         id: codecov
-        uses: ./.github/actions/codecov
+        uses: dallay/common-actions/actions/codecov@main
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
           files: client/**/coverage/lcov.info
           flags: frontend
           name: codecov-frontend
+          slug: dallay/cvix
           verbose: "true"
       - name: Upload build artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
@@ -376,7 +378,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -384,7 +386,7 @@ jobs:
         run: pnpm --filter @cvix/utilities build
 
       - name: Run E2E tests
-        uses: ./.github/actions/test-playwright
+        uses: dallay/common-actions/actions/playwright-test@main
         with:
           browser: ${{ matrix.browser }}
           upload-results: "true"
@@ -460,7 +462,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -493,24 +495,6 @@ jobs:
           name: owasp-dependency-check-report
           path: ${{github.workspace}}/reports
           retention-days: 7
-
-  # ============================================================================
-  # PR Automation - Non-blocking
-  # ============================================================================
-  labeler:
-    name: Label PRs
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - name: Run Labeler
-        uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler.yaml
 
   # ============================================================================
   # Dockerfile Validation - Lint only, actual builds happen in release.yml
