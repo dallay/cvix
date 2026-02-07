@@ -82,6 +82,8 @@ jobs:
           languages: javascript-typescript
       - name: Setup Node.js and pnpm
         uses: dallay/common-actions/actions/setup-node@main
+        with:
+          node-version: "24.12.0"
       - name: Build PNPM project
         run: pnpm run build
       - name: Analyze with CodeQL

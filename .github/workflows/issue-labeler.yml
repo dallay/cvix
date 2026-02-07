@@ -10,4 +10,3 @@ permissions:
 jobs:
   label:
     uses: dallay/common-actions/.github/workflows/issue-labeler.yml@main
-    secrets: inherit

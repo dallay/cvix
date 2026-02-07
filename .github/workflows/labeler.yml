@@ -13,4 +13,3 @@ jobs:
     uses: dallay/common-actions/.github/workflows/pr-labeler.yml@main
     with:
       configuration-path: .github/labeler.yaml
-    secrets: inherit

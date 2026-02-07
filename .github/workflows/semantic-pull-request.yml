@@ -13,4 +13,3 @@ permissions:
 jobs:
   lint:
     uses: dallay/common-actions/.github/workflows/semantic-pr.yml@main
-    secrets: inherit

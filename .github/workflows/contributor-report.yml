@@ -11,4 +11,3 @@ permissions:
 jobs:
   report:
     uses: dallay/common-actions/.github/workflows/contributor-report.yml@main
-    secrets: inherit
