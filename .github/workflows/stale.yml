@@ -10,17 +10,13 @@ permissions:
 
 jobs:
   stale:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/stale@5f858e3efba33a5ca4407a664cc011ad407f2008   # v10
-        with:
-          days-before-stale: 120
-          days-before-close: 60
-          stale-issue-message: >
-            This issue was marked as stale due to inactivity. It will be closed automatically in 60 days if there are no updates.
-          stale-pr-message: >
-            This PR was marked as stale due to inactivity. It will be closed automatically in 60 days if there are no updates.
-          stale-issue-label: "stale"
-          stale-pr-label: "stale"
-          exempt-issue-labels: "priority:high,security"
-          exempt-pr-labels: "priority:high,security"
+    uses: dallay/common-actions/.github/workflows/stale.yml@main
+    with:
+      days-before-stale: 60
+      days-before-close: 7
+      stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity. It will be closed in 7 days if no further activity occurs."
+      stale-pr-message: "This pull request has been automatically marked as stale because it has not had recent activity. It will be closed in 7 days if no further activity occurs."
+      close-issue-message: "This issue has been automatically closed due to inactivity."
+      close-pr-message: "This pull request has been automatically closed due to inactivity."
+      exempt-issue-labels: "pinned,security,bug"
+      exempt-pr-labels: "pinned,security,bug"

@@ -13,7 +13,7 @@ jobs:
           # Pinned to v4 commit hash for security
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8    # v6
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
         with:
           node-version: "24.12.0"
 

@@ -57,7 +57,7 @@ jobs:
         with:
           languages: java-kotlin
       - name: Setup Java
-        uses: ./.github/actions/setup/java
+        uses: dallay/common-actions/actions/setup-java@main
         with:
           java-version: "24"
           distribution: "temurin"
@@ -81,7 +81,9 @@ jobs:
         with:
           languages: javascript-typescript
       - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup/node
+        uses: dallay/common-actions/actions/setup-node@main
+        with:
+          node-version: "24.12.0"
       - name: Build PNPM project
         run: pnpm run build
       - name: Analyze with CodeQL
