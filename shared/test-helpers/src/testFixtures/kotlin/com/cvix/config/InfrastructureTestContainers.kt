@@ -16,6 +16,7 @@ import org.keycloak.representations.AccessTokenResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.util.LinkedMultiValueMap
@@ -27,10 +28,13 @@ import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
+import reactor.netty.http.client.HttpClient
 
 private const val WEB_PORT = 6080
 
 private const val DB_PORT = 5432
+
+private const val TOKEN_REQUEST_TIMEOUT_SECONDS = 30L
 
 @IntegrationTest
 abstract class InfrastructureTestContainers {
@@ -54,7 +58,11 @@ abstract class InfrastructureTestContainers {
             val authServerUrl = removeLastSlash(keycloakContainer.authServerUrl)
             val openIdConnectToken = "protocol/openid-connect/token"
             val authorizationURI = URI("$authServerUrl/realms/$REALM/$openIdConnectToken")
-            val webclient = WebClient.builder().build()
+            val httpClient = HttpClient.create()
+                .responseTimeout(Duration.ofSeconds(TOKEN_REQUEST_TIMEOUT_SECONDS))
+            val webclient = WebClient.builder()
+                .clientConnector(ReactorClientHttpConnector(httpClient))
+                .build()
             val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
             formData.add("grant_type", "password")
             formData.add("client_id", CLIENT_ID)
@@ -67,7 +75,7 @@ abstract class InfrastructureTestContainers {
                 .body(BodyInserters.fromFormData(formData))
                 .retrieve()
                 .bodyToMono(AccessTokenResponse::class.java)
-                .block()
+                .block(Duration.ofSeconds(TOKEN_REQUEST_TIMEOUT_SECONDS))
 
             result?.toAccessToken()
         } catch (e: URISyntaxException) {
