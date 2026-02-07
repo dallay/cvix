@@ -1,3 +1,9 @@
+## [3.15.1](https://github.com/dallay/cvix/compare/v3.15.0...v3.15.1) (2026-02-07)
+
+### ♻️ Refactors
+
+* restructure SQL files and update Node.js version in configuration ([#570](https://github.com/dallay/cvix/issues/570)) ([69b56b1](https://github.com/dallay/cvix/commit/69b56b1525b9b124e38b325b3f4b620b9ea5dfbe)), closes [#571](https://github.com/dallay/cvix/issues/571)
+
 ## [3.15.0](https://github.com/dallay/cvix/compare/v3.14.4...v3.15.0) (2026-02-06)
 
 ### ✨ Features
