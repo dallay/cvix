@@ -81,7 +81,11 @@ const getDisplayName = (currentUser: typeof user.value) => {
 <template>
   <DropdownMenu v-if="user">
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" class="relative h-8 w-8 rounded-full">
+      <Button
+        variant="ghost"
+        class="relative h-8 w-8 rounded-full"
+        aria-label="Open user menu"
+      >
         <Avatar class="h-8 w-8">
           <AvatarFallback>{{ getUserInitials(user) }}</AvatarFallback>
         </Avatar>
