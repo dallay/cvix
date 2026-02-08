@@ -25,8 +25,15 @@ const themes = [
     <DropdownMenuTrigger as-child>
       <Button variant="ghost" size="icon">
         <span class="sr-only">Select theme</span>
-        <PhSunLight class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <PhMoonLight class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <PhSunLight
+          :class="['h-[1.2rem] w-[1.2rem] transition-all', resolvedTheme === 'light' ? 'rotate-0 scale-100' : 'rotate-90 scale-0']"
+        />
+        <PhMoonLight
+          :class="['absolute h-[1.2rem] w-[1.2rem] transition-all', resolvedTheme === 'dark' ? 'rotate-0 scale-100' : '-rotate-90 scale-0']"
+        />
+        <PhMonitorLight
+          :class="['absolute h-[1.2rem] w-[1.2rem] transition-all', resolvedTheme === 'system' ? 'rotate-0 scale-100' : '-rotate-90 scale-0']"
+        />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
