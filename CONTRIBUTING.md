@@ -1,33 +1,37 @@
-# Contributing to cvix
+# Contributing to ProFileTailors
 
 Thanks for your interest! This guide summarizes how to set up the environment, run tests, and open high-quality PRs.
 
 ## Requirements
 
-- Java 21 (Temurin)
-- Node.js 22 and pnpm 10
+- Java 21 (Temurin) or higher
+- Node.js 22 and pnpm 10 or higher
 - Docker (for Postgres/Testcontainers)
+- Make utility
 - Git
 
 ## Quick setup
 
+The project uses a centralized `Makefile` to simplify common tasks.
+
 ```bash
-pnpm install
-./gradlew --version
+make prepare-env   # Setup .env and config files
+make install       # Install all dependencies
+make ssl-cert      # Generate local SSL certificates
 ```
 
 ### Backend
 
 ```bash
-./gradlew build
+make backend-build
 ```
 
 ### Frontend
 
 ```bash
-pnpm -r run lint --if-present
-pnpm -r run test --if-present
-pnpm -r run build --if-present
+make lint
+make test
+make build
 ```
 
 ### Database
@@ -111,9 +115,21 @@ Tags: `latest`, `<version>`, `v<major>`, `<sha>`
 1. Create a branch from `main`.
 2. Follow the PR template.
 3. Link an issue ("Closes #123").
-4. Ensure CI passes (Gradle and pnpm).
+4. **Ensure all checks pass** by running the full verification suite:
+   ```bash
+   make verify-all
+   ```
 5. Update documentation in `docs/src/content/docs` if applicable.
 6. Request review (CODEOWNERS will be auto-requested).
+
+## Documentation Contributions
+
+Documentation is a first-class citizen in ProFileTailors. If you are contributing documentation:
+
+- Public-facing docs live in `docs/src/content/docs/`.
+- Use `make dev-docs` to preview your changes locally.
+- Ensure all code examples are syntax-highlighted (`typescript`, `kotlin`, `bash`).
+- Follow the structure and tone of existing documentation.
 
 ## Code standards
 
