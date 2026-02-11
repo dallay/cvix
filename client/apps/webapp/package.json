@@ -46,7 +46,7 @@
 		"ajv": "catalog:",
 		"ajv-errors": "^3.0.0",
 		"ajv-formats": "^3.0.1",
-		"axios": "^1.13.4",
+		"axios": "^1.13.5",
 		"embla-carousel-vue": "catalog:",
 		"idb-keyval": "^6.2.2",
 		"libphonenumber-js": "^1.12.36",
