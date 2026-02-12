@@ -11,7 +11,7 @@ ProFileTailors is a production-grade platform for creating, customizing, and exp
 
 - **Full-featured résumé generator:** Interactive web forms, dynamic previews, and fast PDF export.
 - **Modern SPA frontend:** Built with Vue 3, TypeScript, and Tailwind CSS.
-- **Reactive, modular backend:** Kotlin + Spring Boot 3 with a clean, hexagonal architecture.
+- **Reactive, modular backend:** Kotlin 2.2 + Spring Boot 4.0 with a clean, hexagonal architecture.
 - **Security-first:** OAuth2 SSO via Keycloak and strict data privacy measures.
 
 ## Goal

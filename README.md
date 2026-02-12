@@ -56,7 +56,7 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
   - Atomic, semantic styling driven by a token-based design system
 
 - ⚡ **Reactive, modular backend:**
-  - Kotlin + Spring Boot 3 (WebFlux, non-blocking I/O)
+  - Kotlin 2.2 + Spring Boot 4.0 (WebFlux, non-blocking I/O)
   - PostgreSQL, R2DBC, ensemble of unit/integration tests
   - Hexagonal (clean) architecture: domain, application, infrastructure separated like real professionals do
 
@@ -95,7 +95,7 @@ ProFileTailors is a **production-grade platform** for creating, customizing, and
 
 ### 🏗️ Backend
 
-- 👩‍💻 Kotlin 2, Spring Boot 3 (WebFlux, reactive)
+- 👩‍💻 Kotlin 2.2, Spring Boot 4.0 (WebFlux, reactive)
 - 🐘 PostgreSQL (UUIDs, RLS), R2DBC, Liquibase
 - 🛡️ Keycloak 26, OAuth2 Resource Server
 - 🧪 JUnit5, Kotest, MockK, Testcontainers

@@ -12,7 +12,7 @@ This guide provides the essential steps to get the ProFileTailors platform runni
 Before you begin, ensure you have the following installed:
 
 - **Java (JDK)**: Version 21 or higher
-- **Node.js**: Version 24.12 or higher
+- **Node.js**: Version 24.12.0 or higher
 - **pnpm**: Version 10 or higher
 - **Docker and Docker Compose**: For running backend services and dependencies
 - **Make**: To use the simplified commands in the `Makefile`
