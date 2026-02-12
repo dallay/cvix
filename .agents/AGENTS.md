@@ -168,7 +168,7 @@ cvix/
 ## Key Stack
 
 - **Frontend**: Vue 3.5, Vite, TailwindCSS 4, Pinia, Zod, Vitest, Playwright
-- **Backend**: Spring Boot 3.5, Kotlin 2.2, WebFlux, R2DBC, PostgreSQL
+- **Backend**: Spring Boot 4.0, Kotlin 2.2, WebFlux, R2DBC, PostgreSQL
 - **Testing**: JUnit 5, Kotest, Testcontainers, MockK
 
 ## Available Skills

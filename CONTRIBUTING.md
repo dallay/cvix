@@ -5,29 +5,41 @@ Thanks for your interest! This guide summarizes how to set up the environment, r
 ## Requirements
 
 - Java 21 (Temurin)
-- Node.js 22 and pnpm 10
+- Node.js 24.12.0 and pnpm 10+
 - Docker (for Postgres/Testcontainers)
 - Git
 
 ## Quick setup
 
+The project uses a centralized `Makefile` to simplify development.
+
 ```bash
-pnpm install
-./gradlew --version
+make prepare-env   # Setup .env and config files
+make install       # Install Node & Gradle dependencies
+make ssl-cert      # Generate dev SSL certs
 ```
 
 ### Backend
 
 ```bash
-./gradlew build
+make backend-build  # Build backend
+make backend-run    # Run backend services (Postgres, Keycloak) and application
 ```
 
 ### Frontend
 
 ```bash
-pnpm -r run lint --if-present
-pnpm -r run test --if-present
-pnpm -r run build --if-present
+make lint           # Frontend linting
+make test           # Frontend unit tests
+make build          # Build all frontend apps
+```
+
+### Verification
+
+Always run this command before opening a PR:
+
+```bash
+make verify-all     # Full project verification (lint, test, build)
 ```
 
 ### Database
