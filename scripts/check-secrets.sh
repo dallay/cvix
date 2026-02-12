@@ -13,13 +13,14 @@ GITLEAKS_VERSION="8.30.0"
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
 case "$ARCH" in
-  x86_64) ARCH="amd64" ;;
+  x86_64) ARCH="x64" ;;
   aarch64 | arm64) ARCH="arm64" ;;
   *) echo -e "${RED}❌ Unsupported architecture: $ARCH${RESET}" >&2; exit 1 ;;
 esac
 
 TARBALL="gitleaks_${GITLEAKS_VERSION}_${OS}_${ARCH}.tar.gz"
-CHECKSUMS_URL="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/checksums.txt"
+CHECKSUMS_FILE="gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+CHECKSUMS_URL="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${CHECKSUMS_FILE}"
 TARBALL_URL="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${TARBALL}"
 
 INSTALL_DIR="$HOME/.local/bin"
@@ -29,7 +30,7 @@ if ! command -v gitleaks >/dev/null 2>&1; then
   echo -e "${YELLOW}🔍 gitleaks not found, installing to $INSTALL_DIR...${RESET}"
   curl -sSL -O "$TARBALL_URL"
   curl -sSL -O "$CHECKSUMS_URL"
-  grep "$TARBALL" checksums.txt > "${TARBALL}.sha256"
+  grep "$TARBALL" "$CHECKSUMS_FILE" > "${TARBALL}.sha256"
   sha256sum -c "${TARBALL}.sha256"
   tar -xzf "$TARBALL" gitleaks
   mv gitleaks "$INSTALL_DIR/"

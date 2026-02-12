@@ -202,7 +202,6 @@ class SecurityConfiguration(
                 "/api/auth/refresh-token", "/api/auth/login", "/api/auth/logout",
                 "/api/auth/csrf",
                 "/api/auth/federated/**", "/oauth2/**", "/login/oauth2/**",
-                "actuator/info",
             ).permitAll()
             .pathMatchers(
                 "/swagger-ui/**", "/webjars/**", "/api-docs/**", "/swagger-ui.html",
@@ -216,8 +215,6 @@ class SecurityConfiguration(
             .pathMatchers("/actuator/**").authenticated()
             .pathMatchers("/api/**").authenticated()
             .pathMatchers("/management/health").permitAll()
-            .pathMatchers("/management/info").permitAll()
-            .pathMatchers("/management/prometheus").permitAll()
             .pathMatchers("/management/**").hasAuthority(Role.ADMIN.key())
     }
 
