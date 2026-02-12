@@ -5,6 +5,7 @@ import com.cvix.resume.domain.TemplateMetadata
 import com.cvix.resume.domain.TemplateSourceStrategy
 import com.cvix.subscription.domain.SubscriptionTier
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 
 /**
  * Catalog service for managing and retrieving template metadata.
@@ -44,6 +45,9 @@ class TemplateCatalog(private val templateSourceStrategy: TemplateSourceStrategy
      * @param limit Maximum number of templates to return (null = no limit)
      * @return List of template metadata from all active sources, filtered by subscription tier
      */
+    // Performance: Cache results to avoid repeated scanning of template repositories.
+    // Keyed by tier and limit as these are the primary filter criteria.
+    @Cacheable(value = ["templates"], key = "#subscriptionTier.toString() + '-' + (#limit ?: -1)")
     suspend fun listTemplates(
         subscriptionTier: SubscriptionTier,
         limit: Int?

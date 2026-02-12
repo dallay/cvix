@@ -8,6 +8,7 @@ import com.cvix.resume.domain.exception.TemplateNotFoundException
 import com.cvix.subscription.domain.SubscriptionTier
 import java.util.UUID
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 
 /**
  * Service for finding and validating template access.
@@ -37,6 +38,9 @@ class TemplateFinder(
      * @throws TemplateNotFoundException if template not found in any active repository
      * @throws TemplateAccessDeniedException if user lacks required subscription tier
      */
+    // Performance: Cache template details and access validation results.
+    // Keyed by template and tier; userId is excluded as access is strictly tier-based.
+    @Cacheable(value = ["template-details"], key = "#templateId + '-' + #userTier.toString()")
     suspend fun findByIdAndValidateAccess(
         templateId: String,
         userId: UUID,
