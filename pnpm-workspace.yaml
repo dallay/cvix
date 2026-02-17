@@ -78,6 +78,8 @@ minimumReleaseAgeExclude:
   - lodash-es
   - tar
   - '@biomejs/*'
+  # Renovate security update: axios@1.13.5
+  - axios@1.13.5
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
