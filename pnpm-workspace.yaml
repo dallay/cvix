@@ -23,7 +23,7 @@ catalog:
   '@tailwindcss/typography': ^0.5.19
   '@tailwindcss/vite': ^4.1.18
   '@tanstack/vue-table': ^8.21.3
-  '@types/node': ^25.2.0
+  '@types/node': ^25.2.3
   '@unovis/ts': ^1.6.4
   '@unovis/vue': ^1.6.4
   '@vee-validate/zod': ^4.15.1
