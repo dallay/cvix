@@ -78,6 +78,8 @@ minimumReleaseAgeExclude:
   - lodash-es
   - tar
   - '@biomejs/*'
+  # Renovate security update: fast-xml-parser@5.3.6
+  - fast-xml-parser@5.3.6
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
